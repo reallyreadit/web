@@ -1,0 +1,15 @@
+{
+	"version": "0.1.0",
+	"command": "powershell",
+	"isShellCommand": true,
+	"args": [
+		"-Command",
+		"node",
+		"${workspaceRoot}/node_modules/gulp/bin/gulp.js"
+	],
+	"tasks": [
+		{
+			"taskName": "build:dev"
+		}
+	]
+}

@@ -1,0 +1,59 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Dev Server",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/src/server/cli.js",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": "${workspaceRoot}",
+			"preLaunchTask": "build:dev",
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"console": "internalConsole",
+			"sourceMaps": true,
+			"outDir": "${workspaceRoot}/bin/dev/server"
+		},
+		{
+			"name": "Attach to Dev Server",
+			"type": "node",
+			"request": "attach",
+			"port": 5858,
+			"address": "localhost",
+			"restart": false,
+			"sourceMaps": true,
+			"outDir": "${workspaceRoot}/bin/dev/server",
+			"localRoot": "${workspaceRoot}",
+			"remoteRoot": null
+		},
+		{
+			"name": "Launch Gulp",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+			"stopOnEntry": false,
+			"args": [
+				"build:dev:browser"
+			],
+			"cwd": "${workspaceRoot}",
+			"preLaunchTask": null,
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"console": "internalConsole",
+			"sourceMaps": false,
+			"outDir": null
+		}
+	]
+}

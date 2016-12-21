@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"jsx": "react",
+		"target": "es6",
+		"moduleResolution": "node",
+		"module": "commonjs",
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true
+	}
+}
