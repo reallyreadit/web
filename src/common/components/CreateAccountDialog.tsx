@@ -3,21 +3,23 @@ import Context from '../Context';
 import InputField from './InputField';
 import InputFieldState from './InputFieldState';
 import Dialog from './Dialog';
+import CancelablePromise from '../CancelablePromise';
 
 export default class CreateAccountDialog extends Dialog<{}, {
 	nameError?: string,
 	emailError?: string
 }> {
 	private name = new InputFieldState().addListener('change', () => this.setState({ nameError: undefined }));
-	private email = new InputFieldState().addListener('change', () => this.setState({ emailError: undefined }));;
+	private email = new InputFieldState().addListener('change', () => this.setState({ emailError: undefined }));
 	private password = new InputFieldState();
 	protected title = 'Create Account';
 	protected className = 'create-account-dialog';
+	protected submitButtonText = 'Create Account';
 	constructor(props: {}, context: Context) {
 		super(props, {}, context);
 	}
 	protected onSubmit() {
-		return this.context.api
+		return new CancelablePromise(this.context.api
 			.createUserAccount(this.name.value, this.email.value, this.password.value)
 			.then(userAccount => {
 				this.context.user.signIn(userAccount);
@@ -30,7 +32,7 @@ export default class CreateAccountDialog extends Dialog<{}, {
 				if (errors.some(error => error === 'DuplicateEmail')) {
 					this.setState({ emailError: 'Email address already in use.' });
 				}
-			});
+		}));
 	}
 	protected validate() {
 		return [this.name, this.email, this.password].every(state => state.isValid) &&

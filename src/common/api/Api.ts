@@ -23,8 +23,11 @@ abstract class Api {
 			{ name, email, password }
 		));
 	}
+	public signIn(name: string, password: string) {
+		return this.post<UserAccount>(new Request('/UserAccounts/SignIn', { name, password }));
+	}
 	public signOut() {
-		return this.post<{}>(new Request('/UserAccounts/SignOut'));
+		return this.post(new Request('/UserAccounts/SignOut'));
 	}
 }
 export default Api;

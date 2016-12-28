@@ -13,7 +13,6 @@ import routes from '../common/routes';
 import ServerUser from './ServerUser';
 import UserAccount from '../common/api/models/UserAccount';
 import Request from '../common/api/Request';
-import Session from '../common/api/models/Session';
 
 const port = 5000;
 
@@ -57,14 +56,9 @@ http.createServer((req, res) => {
 				new Promise<UserAccount>((resolve, reject) => {
 						if (req.headers['cookie'] !== undefined) {
 							// TODO: FIX THIS
-							api.getJson(new Request(`/UserAccounts/GetSession?${req.headers['cookie']}`))
-								.then((session: Session) => session !== null ?
-									resolve({
-										id: session.userAccountId,
-										name: session.userAccountName,
-										email: session.userAccountEmail
-									}) :
-									resolve(undefined));
+							api.getJson(new Request(`/UserAccounts/GetUserAccount?${req.headers['cookie']}`))
+								.then((userAccount: UserAccount) => userAccount !== null ?
+									resolve(userAccount) : resolve(undefined));
 						} else {
 							resolve(undefined);
 						}

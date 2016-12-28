@@ -3,8 +3,10 @@ import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import Button from './Button';
 import CreateAccountDialog from './CreateAccountDialog';
+import SignInDialog from './SignInDialog';
 
 export default class AccountManager extends ContextComponent<{}, { isLoading: boolean }> {
+	private showSignInDialog = () => this.context.dialog.show(React.createElement(SignInDialog));
 	private showCreateAccountDialog = () => this.context.dialog.show(React.createElement(CreateAccountDialog));
 	private signOut = () => {
 		this.setState({ isLoading: true });
@@ -31,11 +33,11 @@ export default class AccountManager extends ContextComponent<{}, { isLoading: bo
 			currentUser !== undefined ? 
 				<div className="account-manager">
 					<strong>{currentUser.name}</strong>
-					<Button style="preferred">My Account</Button>
-					<Button onClick={this.signOut}>Sign Out</Button>
+					<Button style="preferred" state={this.state.isLoading ? 'disabled' : 'normal'}>My Account</Button>
+					<Button onClick={this.signOut} state={this.state.isLoading ? 'busy' : 'normal'}>Sign Out</Button>
 				</div> :
 				<div className="account-manager">
-					<Button>Sign In</Button>
+					<Button onClick={this.showSignInDialog}>Sign In</Button>
 					<Button onClick={this.showCreateAccountDialog} style="preferred">Create Account</Button>
 				</div>
 		);

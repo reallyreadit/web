@@ -10,19 +10,23 @@ export default class BrowserApi extends Api {
 		super(endpoint);
 		this.reqStore = new RequestStore(requestData);
 	}
+	private static parseResponse(request: XMLHttpRequest, handler: (data: any) => void, defaultValue?: any) {
+		const contentType = request.getResponseHeader('Content-Type');
+		if (contentType && contentType.startsWith('application/json')) {
+			handler(JSON.parse(request.responseText));
+		} else {
+			handler(defaultValue);
+		}
+	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
 			const req = new XMLHttpRequest();
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
 				if (this.status === 200) {
-					resolve(JSON.parse(this.responseText));
+					BrowserApi.parseResponse(this, resolve);
 				} else {
-					if (this.getResponseHeader('Content-Type').startsWith('application/json')) {
-						reject(JSON.parse(this.responseText));
-					} else {
-						reject([]);
-					}
+					BrowserApi.parseResponse(this, reject, []);
 				}
 			});
 			req.addEventListener('error', function () {
