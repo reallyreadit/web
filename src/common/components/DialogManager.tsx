@@ -1,9 +1,9 @@
 import * as React from 'react';
-import ContextComponent from '../ContextComponent';
+import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import * as className from 'classnames';
 
-export default class DialogManager extends ContextComponent<{}, {}> {
+export default class DialogManager extends PureContextComponent<{}, {}> {
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		context.dialog

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import logo from '../templates/logo';
 import { Link } from 'react-router';
-import ContextComponent from '../ContextComponent';
+import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import DialogManager from './DialogManager';
 import AccountManager from './AccountManager';
 
-export default class MainView extends ContextComponent<{}, {}> {
+export default class MainView extends PureContextComponent<{}, {}> {
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		context.pageTitle.addListener('change', this.forceUpdate);

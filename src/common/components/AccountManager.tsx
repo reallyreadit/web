@@ -1,11 +1,11 @@
 import * as React from 'react';
-import ContextComponent from '../ContextComponent';
+import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import Button from './Button';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
 
-export default class AccountManager extends ContextComponent<{}, { isLoading: boolean }> {
+export default class AccountManager extends PureContextComponent<{}, { isLoading: boolean }> {
 	private showSignInDialog = () => this.context.dialog.show(React.createElement(SignInDialog));
 	private showCreateAccountDialog = () => this.context.dialog.show(React.createElement(CreateAccountDialog));
 	private signOut = () => {

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import ContextComponent from '../ContextComponent';
+import PureContextComponent from '../PureContextComponent';
 
-export default class About extends ContextComponent<{}, {}> {
+export default class About extends PureContextComponent<{}, {}> {
 	public componentWillMount() {
 		this.context.pageTitle.set('About Us');
 	}
