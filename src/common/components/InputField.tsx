@@ -15,7 +15,8 @@ export default class InputField extends React.PureComponent<Props, {
 	value: string,
 	error: string,
 	showError: boolean,
-	hasFocus: boolean
+	hasFocus: boolean,
+	hasChanged: boolean
 }> {
 	private static emailRegExp = /.+@.+/;
 	private handleFocus = () => {
@@ -26,13 +27,14 @@ export default class InputField extends React.PureComponent<Props, {
 			  error = this.getError(value);
 		this.setState({
 			value, error,
-			showError: false
+			showError: false,
+			hasChanged: true
 		});
 		this.props.onChange(value, error === undefined);
 	};
 	private handleBlur = () => {
 		this.setState({
-			showError: true,
+			showError: this.state.hasChanged || this.state.showError,
 			hasFocus: false
 		});
 	};
@@ -42,7 +44,8 @@ export default class InputField extends React.PureComponent<Props, {
 			value: '',
 			error: this.getError(''),
 			showError: false,
-			hasFocus: false
+			hasFocus: false,
+			hasChanged: false
 		};
 	}
 	private getError(value: string) {
@@ -70,7 +73,6 @@ export default class InputField extends React.PureComponent<Props, {
 		}
 	}
 	public render() {
-		console.log(`InputField (${this.props.label}): render`);
 		return (
 			<label className="input-field">
 				<strong>{this.props.label}</strong>
