@@ -41,7 +41,7 @@ export default class CreateAccountDialog extends Dialog<{}, {
 	protected renderFields() {
 		return (
 			<div>
-				<InputField type="text" label="Username" required minLength={3} maxLength={30} error={this.state.nameError} showError={this.state.showErrors} onChange={this.name.handleChange} />
+				<InputField type="text" label="Username" autoFocus required minLength={3} maxLength={30} error={this.state.nameError} showError={this.state.showErrors} onChange={this.name.handleChange} />
 				<InputField type="email" label="Email Address" required maxLength={256} error={this.state.emailError} showError={this.state.showErrors} onChange={this.email.handleChange} />
 				<InputField type="password" label="Password" required minLength={8} maxLength={256} showError={this.state.showErrors} onChange={this.password.handleChange} />
 			</div>

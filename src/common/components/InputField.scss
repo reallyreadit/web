@@ -26,6 +26,9 @@
 		border-radius: 0;
 		background: #fff;
 	}
+	input:focus {
+		outline: none;
+	}
 	.error {
 		position: relative;
 		line-height: 16px;

@@ -57,6 +57,7 @@ $disabled-border-color: #ccc;
 .button::after { @include end-cap-right($bevel-width, $border-color); }
 .button:focus {
 	outline: none;
+	text-decoration: underline;
 }
 .button:not(.disabled):active {
 	.content {
@@ -128,7 +129,7 @@ $disabled-border-color: #ccc;
 .button.busy {
 	.loading {
 		position: absolute;
-		bottom: 0;
+		bottom: -1px;
 		left: 50%;
 		transform: translateX(-50%);
 		line-height: normal;

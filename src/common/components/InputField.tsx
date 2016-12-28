@@ -3,6 +3,7 @@ import * as React from 'react';
 interface Props {
 	type: 'text' | 'email' | 'password',
 	label: string,
+	autoFocus?: boolean,
 	required?: boolean,
 	minLength?: number,
 	maxLength?: number,
@@ -74,7 +75,7 @@ export default class InputField extends React.PureComponent<Props, {
 			<label className="input-field">
 				<strong>{this.props.label}</strong>
 				<div className="field-container">
-					<input type={this.props.type} onFocus={this.handleFocus} onChange={this.handleChange} onBlur={this.handleBlur} />
+					<input autoFocus={this.props.autoFocus} type={this.props.type} onFocus={this.handleFocus} onChange={this.handleChange} onBlur={this.handleBlur} />
 					<div className="error">{this.state.showError ? this.state.error || this.props.error : ''}</div>
 				</div>
 			</label>
