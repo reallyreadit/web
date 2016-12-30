@@ -8,5 +8,6 @@ export default {
 	api: React.PropTypes.instanceOf(Api),
 	pageTitle: React.PropTypes.instanceOf(PageTitle),
 	user: React.PropTypes.instanceOf(User),
-	dialog: React.PropTypes.instanceOf(Dialog)
+	dialog: React.PropTypes.instanceOf(Dialog),
+	router: React.PropTypes.object
 };
