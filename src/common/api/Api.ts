@@ -1,5 +1,6 @@
 import Fetchable from './Fetchable';
 import Article from './models/Article';
+import UserArticle from './models/UserArticle';
 import UserAccount from './models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
@@ -28,6 +29,9 @@ abstract class Api {
 	}
 	public signOut() {
 		return this.post(new Request('/UserAccounts/SignOut'));
+	}
+	public listUserArticles(callback: (articles: Fetchable<UserArticle[]>) => void) {
+		return this.get<UserArticle[]>(new Request('/Articles/UserList'), callback);
 	}
 }
 export default Api;

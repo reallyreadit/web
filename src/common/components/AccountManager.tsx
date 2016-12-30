@@ -8,6 +8,7 @@ import SignInDialog from './SignInDialog';
 export default class AccountManager extends PureContextComponent<{}, { isLoading: boolean }> {
 	private showSignInDialog = () => this.context.dialog.show(React.createElement(SignInDialog));
 	private showCreateAccountDialog = () => this.context.dialog.show(React.createElement(CreateAccountDialog));
+	private goToMyAccount = () => this.context.router.push('/account');
 	private signOut = () => {
 		this.setState({ isLoading: true });
 		this.context.api.signOut().then(() => {
@@ -33,7 +34,7 @@ export default class AccountManager extends PureContextComponent<{}, { isLoading
 			currentUser !== undefined ? 
 				<div className="account-manager">
 					<strong>{currentUser.name}</strong>
-					<Button style="preferred" state={this.state.isLoading ? 'disabled' : 'normal'}>My Account</Button>
+					<Button onClick={this.goToMyAccount} style="preferred" state={this.state.isLoading ? 'disabled' : 'normal'}>My Account</Button>
 					<Button onClick={this.signOut} state={this.state.isLoading ? 'busy' : 'normal'}>Sign Out</Button>
 				</div> :
 				<div className="account-manager">

@@ -26,13 +26,15 @@ export default class List extends ContextComponent<{}, { articles: Fetchable<Art
 				{this.state.articles.isLoading ?
 					<li>Loading...</li> :
 					this.state.articles.isSuccessful ?
-						this.state.articles.value.map((article) =>
-							<li key={article.id}>
-								<span className="title">{article.title}</span><br />
-								<span className="source">[{article.source}{article.author ? ` - ${article.author}` : ''}]</span>
-								<span> - </span>
-								<span className="comment-count">{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</span>
-							</li>) :
+						this.state.articles.value.length > 0 ?
+							this.state.articles.value.map(article =>
+								<li key={article.id}>
+									<span className="title">{article.title}</span><br />
+									<span className="source">[{article.source}{article.author ? ` - ${article.author}` : ''}]</span>
+									<span> - </span>
+									<span className="comment-count">{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</span>
+								</li>) :
+							<li>No articles found! (Go comment on one you read!)</li> :
 						<li>Error loading articles.</li>}
 				</ul>
 			</div>
