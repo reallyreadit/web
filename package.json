@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
+    "@types/chrome": "0.0.37",
     "@types/classnames": "0.0.32",
     "@types/node": "0.0.0",
     "@types/react": "^0.14.51",

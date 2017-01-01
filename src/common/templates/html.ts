@@ -14,7 +14,7 @@ export default (model: {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, user-scalable=no">
-		<link rel="icon" type="image/x-icon" href="./bin/dev/browser/common/images/favicon.ico" />
+		<link rel="icon" type="image/x-icon" href="./bin/dev/browser/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="./bin/dev/browser/bundle.css" />
 		<title>${model.title}</title>
 	</head>

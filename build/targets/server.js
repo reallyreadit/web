@@ -1,18 +1,14 @@
-const gulp = 		 require('gulp'),
-	  sourcemaps = 	 require('gulp-sourcemaps'),
-	  typeScript =	 require('gulp-typescript'),
-	  path = 		 require('path'),
-	  del = 		 require('del'),
-	  childProcess = require('child_process'),
-	  changed =		 require('gulp-changed');
+const path = require('path'),
+	  del = require('del'),
+	  childProcess = require('child_process');
 
 const project = require('../project'),
 	  delayedWatch = require('../delayedWatch'),
+	  buildTypescript = require('../buildTypescript'),
 	  tsConfig = require('../../tsconfig.json');
 
 const srcGlob = `${project.srcDir}/{server,common}/**/*.{ts,tsx}`,
-	  devPath = path.posix.join(project.devPath, 'server'),
-	  tsProject = typeScript.createProject(tsConfig.compilerOptions);
+	  outPath = path.posix.join(project.devPath, 'server');
 
 class Server {
 	constructor() {
@@ -22,26 +18,22 @@ class Server {
 		this.watch = this.watch.bind(this);
 	}
 	clean() {
-		return del(`${devPath}/*`);
+		return del(`${outPath}/*`);
 	}
 	build() {
-		return gulp
-			.src(srcGlob)
-			.pipe(changed(devPath, { extension: '.js' }))
-			.pipe(sourcemaps.init())
-			.pipe(tsProject())
-			.pipe(sourcemaps.write('.', {
-				includeContent: false,
-				sourceRoot: path.relative(devPath, project.srcDir)
-			}))
-			.pipe(gulp.dest(devPath));
+		return buildTypescript({
+			src: srcGlob,
+			dest: outPath,
+			sourceMaps: true,
+			compilerOptions: tsConfig.compilerOptions
+		});
 	}
 	run() {
 		this.process = childProcess
 			.spawn('node', [
 				'--debug',
 				'--no-lazy',
-				path.join(devPath, 'server/main.js')
+				path.join(outPath, 'server/main.js')
 			], {
 				stdio: 'inherit',
 				env: {
