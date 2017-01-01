@@ -3,10 +3,10 @@ const del = require('del'),
 
 const project = require('../project'),
 	  createBuild = require('../createBuild'),
-	  browserAction = require('./extension/browser-action'),
-	  contentScripts = require('./extension/content-scripts'),
-	  eventPage = require('./extension/event-page'),
-	  sourceParsers = require('./extension/source-parsers');
+	  browserAction = require('./extension/browserAction'),
+	  contentScripts = require('./extension/contentScripts'),
+	  eventPage = require('./extension/eventPage'),
+	  sourceParsers = require('./extension/sourceParsers');
 
 const outPath = path.join(project.devPath, 'extension'),
 	  staticAssets = createBuild({
