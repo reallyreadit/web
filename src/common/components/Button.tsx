@@ -6,8 +6,6 @@ export default class Button extends React.PureComponent<{
 	state?: 'normal' | 'disabled' | 'busy'
 	onClick?: () => void
 }, {}> {
-	// prevents focus to avoid retained focus style
-	private handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault();
 	private handleClick = () => {
 		if (
 			(this.props.state === 'normal' || this.props.state === undefined) &&
@@ -23,7 +21,7 @@ export default class Button extends React.PureComponent<{
 			busy: this.props.state === 'busy'
 		};
 		return (
-			<button className={className('button', classList)} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
+			<button className={className('button', classList)} onClick={this.handleClick}>
 				<div className="outer-wrap">
 					<div className="inner-wrap">
 						<div className="content">

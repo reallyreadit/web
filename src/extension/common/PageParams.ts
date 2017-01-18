@@ -1,5 +1,6 @@
 interface PageParams {
 	element: Element,
+	title: string,
 	url: string,
 	blockElements: Element[] | NodeListOf<Element>,
 	number: number,

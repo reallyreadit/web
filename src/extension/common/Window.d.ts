@@ -2,7 +2,7 @@ import PageParams from './PageParams';
 
 declare global {
 	interface Window {
-		_getPageParams(urlId: string): PageParams,
+		_getPageParams(url: string): PageParams,
 		_standardBlockSelectors: string[]
 	}
 }
