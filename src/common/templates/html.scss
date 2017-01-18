@@ -1,9 +1,14 @@
 @font-face {
-  font-family: 'Adler';
-  src: url('./fonts/Adler.ttf');
+	font-family: 'Adler';
+	src: url('./fonts/Adler.ttf');
 }
 
 html,
 body {
 	margin: 0;
+  	height: 100%;
+}
+
+#root {
+	height: 100%;
 }

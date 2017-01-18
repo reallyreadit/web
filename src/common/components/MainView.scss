@@ -2,6 +2,7 @@
 	font-family: monospace;
 	font-size: 13px;
 	max-width: 850px;
+	height: 100%;
 	margin: 0 auto;
 	position: relative;
 	header {
@@ -33,5 +34,6 @@
 	}
 	footer {
 		text-align: center;
+		padding-bottom: 20px;
 	}
 }
