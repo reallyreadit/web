@@ -2,7 +2,7 @@ interface PageParams {
 	element: Element,
 	title: string,
 	url: string,
-	blockElements: Element[] | NodeListOf<Element>,
+	blockElements: Element[] | NodeListOf<Element> | HTMLCollection,
 	number: number,
 	pageLinks: string[]
 }
