@@ -1,7 +1,9 @@
-import Page from '../common/Page';
-import ReadState from '../common/ReadState';
+import ContentPage from './ContentPage';
+import EventPageApi from './EventPageApi';
+import ContentPageData from '../common/ContentPageData';
+import ContentScriptOptions from '../common/ContentScriptOptions';
 
-window._standardBlockSelectors = Page.standardBlockSelectors;
+console.log('loading main.ts...');
 
 var isReading = false,
 	intervals: {
@@ -10,8 +12,11 @@ var isReading = false,
 		commitReadState?: number,
 		checkUrl?: number
 	} = {},
-	page: Page,
-	options: { wordReadRate: number, pageOffsetUpdateRate: number, readStateCommitRate: number, urlCheckRate: number };
+	page: ContentPage,
+	options: ContentScriptOptions;
+
+const api = new EventPageApi(updateReadState);
+
 
 // read intervals
 function readWord() {
@@ -25,28 +30,28 @@ function updatePageOffset() {
 	page.updateOffset();
 }
 function commitReadState() {
-	chrome.runtime.sendMessage({
-		command: 'commitReadState',
-		data: {
-			urlId: page.urlId,
-			readStateArray: page.getReadState().readStateArray
-		}
-	});
+	api.commit(page.serialize())
+		.then(data => {
+			if (data) {
+				page.update(data);
+			}
+		});
 }
 function checkUrl() {
-	var currentUrlId = Page.getUrlId(window.location); 
-	if (currentUrlId !== page.urlId) {
-		initializePage(currentUrlId);
-	}
+	// TODO: need a better way to detect an article change
+	//       extraneous fragments and querystrings can trigger false positives
+	// if (window.location.href !== page.url) {
+	// 	initializePage();
+	// }
 }
 
 // start/stop reading
 function startReading() {
 	if (!isReading && !page.isRead()) {
-		intervals.readWord = window.setInterval(readWord, options.wordReadRate);
-		intervals.updatePageOffset = window.setInterval(updatePageOffset, options.pageOffsetUpdateRate);
-		intervals.commitReadState = window.setInterval(commitReadState, options.readStateCommitRate);
-		intervals.checkUrl = window.setInterval(checkUrl, options.urlCheckRate);
+		// intervals.readWord = window.setInterval(readWord, options.wordReadRate);
+		// intervals.updatePageOffset = window.setInterval(updatePageOffset, options.pageOffsetUpdateRate);
+		// intervals.commitReadState = window.setInterval(commitReadState, options.readStateCommitRate);
+		// intervals.checkUrl = window.setInterval(checkUrl, options.urlCheckRate);
 		isReading = true;
 	}
 }
@@ -63,72 +68,39 @@ function stopReading() {
 }
 
 // helpers
-function updateReadState(eventPageData: { urlId: string, readStateArray: number[] }) {
-	if (page.urlId === eventPageData.urlId) {
-		page.setReadState(new ReadState(eventPageData.readStateArray));
-	}
-}
-function initializePage(urlId: string, callback?: Function) {
-	const pageParams = window._getPageParams(urlId);
-	if (pageParams) {
-		page = new Page(pageParams);
-		chrome.runtime.sendMessage(
-			{
-				command: 'registerTab',
-				data: {
-					urlId: page.urlId,
-					pageNumber: page.number,
-					pageLinks: page.pageLinks
-				}
-			},
-			function (response) {
-				// update read state
-				if (response.pageData.readStateArray !== undefined) {
-					updateReadState(response.pageData);
-				}
-				// set options
-				options = response.options;
-				// callback
-				if (typeof callback === 'function') {
-					callback();
-				}
-			} 
-		);
+function updateReadState(data: ContentPageData) {
+	if (page.slug === data.slug) {
+		page.update(data);
 	}
 }
 
-// initialize the page at the current location and then initialize the document
-initializePage(Page.getUrlId(window.location), function () {
-	// set document visibility event handler
-	document.addEventListener('visibilitychange', function () {
-		// toggle reading based on document visibility
-		if (document.hidden) {
-			stopReading();
-		} else {
-			startReading();
-		}
-	});
-	// set window unload event handler
-	window.addEventListener('unload', function () {
-		// unregister tab
-		chrome.runtime.sendMessage({
-			command: 'unregisterTab',
-			data: {
-				urlId: page.urlId,
-				readStateArray: page.getReadState().readStateArray
+console.log('initializing page...');
+api.findSource(window.location.hostname).then(source => {
+	eval(source.parser)
+	const pageParams = window._getContentPageMetadata();
+	if (pageParams) {
+		console.log('page parsed...');
+		page = new ContentPage(pageParams, source);
+		api.getOptions().then(opts => {
+			options = opts;
+			// set document visibility event handler
+			document.addEventListener('visibilitychange', function () {
+				// toggle reading based on document visibility
+				if (document.hidden) {
+					stopReading();
+				} else {
+					startReading();
+				}
+			});
+			// set window unload event handler
+			window.addEventListener('unload', function () {
+				// unregister tab
+				api.unregisterTab();
+			});
+			// start reading!
+			if (document.visibilityState === 'visible') {
+				startReading();
 			}
 		});
-	});
-	// set chrome message listener
-	chrome.runtime.onMessage.addListener(function (request, sender, callback) {
-		switch (request.command) {
-			case 'updateReadState':
-				updateReadState(request.data);
-				return;
-		}
-	});
-	// start reading!
-	if (document.visibilityState === 'visible') {
-		startReading();
 	}
 });

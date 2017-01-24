@@ -1,11 +1,8 @@
-window._getPageParams = (urlId: string) => {
+window._getContentPageMetadata = () => {
     const article = document.querySelector('[itemtype="http://schema.org/NewsArticle"]');
     return {
-        element: article,
-        title: article.querySelector('[itemprop="headline"]').textContent,
         url: article.querySelector('[itemprop="mainEntityOfPage"]').getAttribute('content'),
-        blockElements: article.querySelector('[itemprop="articleBody"]').children,
-        number: 1,
-        pageLinks: []
+        title: article.querySelector('[itemprop="headline"]').textContent,
+        element: article
     };
 };
