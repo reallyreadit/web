@@ -5,22 +5,24 @@ export default class User extends EventEmitter<{
 	'signIn': UserAccount,
 	'signOut': UserAccount
 }> {
-	constructor(protected userAccount: UserAccount) {
+	protected _userAccount: UserAccount;
+	constructor(userAccount: UserAccount) {
 		super();
+		this._userAccount = userAccount;
 	}
 	public isSignedIn() {
-		return this.userAccount !== undefined;
+		return this._userAccount !== undefined;
 	}
 	public signIn(userAccount: UserAccount) {
-		this.userAccount = userAccount;
+		this._userAccount = userAccount;
 		this.emitEvent('signIn', userAccount);
 	}
 	public signOut() {
-		const userAccount = this.userAccount;
-		this.userAccount = undefined;
+		const userAccount = this._userAccount;
+		this._userAccount = undefined;
 		this.emitEvent('signOut', userAccount);
 	}
 	public getUserAccount() {
-		return this.userAccount;
+		return this._userAccount;
 	}
 }

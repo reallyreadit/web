@@ -104,3 +104,7 @@ api.findSource(window.location.hostname).then(source => {
 		});
 	}
 });
+
+(window as any).ctx = {
+	page, api, readWord, updatePageOffset, commitReadState, checkUrl
+};

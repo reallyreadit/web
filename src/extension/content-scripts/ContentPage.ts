@@ -15,7 +15,11 @@ export default class ContentPage {
     private _blocks: Block[];
     private _slug: string;
     constructor(metadata: ContentPageMetadata, source: Source) {
-        this._metadata = metadata;
+        this._metadata = {
+            pageNumber: 1,
+            pageLinks: [],
+            ...metadata
+        };
         this._source = source;
         // set up the blocks and overlay
         const overlayContainer = templates.overlayContainer;

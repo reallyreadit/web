@@ -49,14 +49,13 @@ http.createServer((req, res) => {
 			match({ routes, location: req.url }, (error, nextLocation, nextState) => {
 				const api = new ServerApi({
 						scheme: 'http',
-						host: 'localhost',
-						port: 4001
-					}),
+						host: 'api.dev.reallyread.it',
+						port: 80
+					}, req.headers['cookie']),
 					pageTitle = new ServerPageTitle();
 				new Promise<UserAccount>((resolve, reject) => {
-						if (req.headers['cookie'] !== undefined) {
-							// TODO: FIX THIS
-							api.getJson(new Request(`/UserAccounts/GetUserAccount?${req.headers['cookie']}`))
+						if (api.hasSessionKey()) {
+							api.getJson(new Request('/UserAccounts/GetUserAccount'))
 								.then((userAccount: UserAccount) => userAccount !== null ?
 									resolve(userAccount) : resolve(undefined));
 						} else {

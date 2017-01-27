@@ -15,17 +15,15 @@ export default class ObjectStore<K, V> {
 		}
 		this._getKey = getKey;
 		// clear the storage in case it's uninitialized/corrupted
-		try {
-			this.readItems();
-		} catch (ex) {
+		if (!this.readItems()) {
 			this.clear();
 		}
 	}
 	private readItems() {
-		return JSON.parse(this._storage.getItem(name)) as V[];
+		return JSON.parse(this._storage.getItem(this._name)) as V[];
 	}
 	private writeItems(items: V[]) {
-		this._storage.setItem(name, JSON.stringify(items));
+		this._storage.setItem(this._name, JSON.stringify(items));
 	}
 	private clear() {
 		this.writeItems([]);

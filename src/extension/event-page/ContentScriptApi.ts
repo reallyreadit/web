@@ -14,7 +14,7 @@ export default class ContentScriptApi {
 			switch (message.type) {
 				case 'findSource':
 					handlers.onFindSource(message.data.hostname).then(sendResponse);
-					break;
+					return true;
 				case 'registerTab':
 					handlers.onRegisterTab(sender.tab.id, message.data.articleSlug);
 					break;
@@ -28,6 +28,7 @@ export default class ContentScriptApi {
 					handlers.onUnregisterTab(sender.tab.id);
 					break;
 			}
+			return false;
 		});
 	}
 }

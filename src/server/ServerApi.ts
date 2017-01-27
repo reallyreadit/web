@@ -6,13 +6,21 @@ import RequestStore from '../common/api/RequestStore';
 import Endpoint from '../common/api/Endpoint';
 
 export default class ServerApi extends Api {
-	constructor(endpoint: Endpoint) {
+	private _cookie: string;
+	constructor(endpoint: Endpoint, cookie: string) {
 		super(endpoint);
+		this._cookie = cookie;
 		this.reqStore = new RequestStore();
 	}
 	public getJson(params: Request) {
 		// TODO: append querystring from query object
-		return new Promise((resolve, reject) => http.get(this.getUrl(params.path), res => {
+		return new Promise((resolve, reject) => http.get({
+				protocol: this.endpoint.scheme + ':',
+				hostname: this.endpoint.host,
+				port: this.endpoint.port,
+				path: params.path,
+				...(this._cookie ? { headers: { 'Cookie': this._cookie } } : {})
+			}, res => {
 				let body = '';
 				res.on('data', chunk => body += chunk);
 				res.on('end', () => resolve(JSON.parse(body)));
@@ -51,5 +59,8 @@ export default class ServerApi extends Api {
 	}
 	public getInitData() {
 		return this.reqStore.requests;
+	}
+	public hasSessionKey() {
+		return this._cookie != null;
 	}
 }
