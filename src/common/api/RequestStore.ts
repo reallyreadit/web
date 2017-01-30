@@ -7,13 +7,13 @@ export default class RequestStore {
 		this.requests = requestData.map(data => new Request(data.path, data.query, data.responseData));
 	}
 	public get(request: Request) {
-		return this.requests.filter(request => request.equals(request))[0];
+		return this.requests.find(existingRequest => existingRequest.equals(request));
 	}
 	public getData(request: Request) {
 		return this.get(request).responseData;
 	}
 	public add(request: Request) {
-		if (this.get(request) === undefined) {
+		if (!this.get(request)) {
 			this.requests.push(request);
 		}
 	}

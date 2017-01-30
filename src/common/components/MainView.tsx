@@ -9,7 +9,9 @@ import AccountManager from './AccountManager';
 export default class MainView extends PureContextComponent<{}, {}> {
 	constructor(props: {}, context: Context) {
 		super(props, context);
-		context.pageTitle.addListener('change', this.forceUpdate);
+	}
+	public componentDidMount() {
+		this.context.pageTitle.addListener('change', this.forceUpdate);
 	}
 	public componentWillUnmount() {
 		this.context.pageTitle.removeListener('change', this.forceUpdate);

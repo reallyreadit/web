@@ -17,18 +17,31 @@ interface Props {
 export default class ArticlePage extends ContextComponent<Props, {
 	article: Fetchable<Article>,
 	comments: Fetchable<Comment[]>,
-	commentText?: string
+	commentText?: string,
+	isPosting?: boolean
 }> {
 	private _slug: string;
-	private _updateCommentText = (event: React.FormEvent<HTMLTextAreaElement>) =>
-		this.state.commentText = (event.target as HTMLTextAreaElement).value;
-	private _postComment = () =>
+	private _updateCommentText = (event: React.FormEvent<HTMLTextAreaElement>) => this.setState({ commentText: (event.target as HTMLTextAreaElement).value });
+	private _refreshComments = () => this.setState({
+		article: this.context.api.getArticleDetails(this._slug, article => this.setState({ article })),
+		comments: this.context.api.listComments(this._slug, comments => this.setState({ comments }))
+	});
+	private _postComment = () => {
+		this.setState({ isPosting: true });
 		this.context.api
 			.postComment(this.state.commentText, this.state.article.value.id)
-			.then(() => this.setState({
-				comments: this.context.api.listComments(this._slug, comments => this.setState({ comments })),
-				commentText: ''
-			}));
+			.then(() => {
+				this.setState({
+					commentText: '',
+					isPosting: false
+				});
+				this._refreshComments();
+			});
+	};
+	private _handleUserChange = () => {
+		this.forceUpdate();
+		this._refreshComments();
+	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
 		this._slug = this.props.params.source + '_' + this.props.params.article;
@@ -48,6 +61,16 @@ export default class ArticlePage extends ContextComponent<Props, {
 	}
 	public componentWillMount() {
 		this.setPageTitle();
+	}
+	public componentDidMount() {
+		this.context.user
+			.addListener('signIn', this._handleUserChange)
+			.addListener('signOut', this._handleUserChange);
+	}
+	public componentWillUnmount() {
+		this.context.user
+			.removeListener('signIn', this._handleUserChange)
+			.removeListener('signOut', this._handleUserChange);
 	}
 	public render() {
 		return (
@@ -74,10 +97,13 @@ export default class ArticlePage extends ContextComponent<Props, {
 								<li>No comments found! (Post one!)</li> :
 							<li>Error loading comments.</li>}
 				</ul>
-				<hr />
-				<textarea value={this.state.commentText} onChange={this._updateCommentText} />
-				<br />
-				<Button style="preferred" onClick={this._postComment}>Post Comment</Button>
+				{this.context.user.isSignedIn() ?
+					<div>
+						<hr />
+						<textarea value={this.state.commentText} onChange={this._updateCommentText} />
+						<br />
+						<Button style="preferred" state={this.state.isPosting ? 'busy' : 'normal'} onClick={this._postComment}>Post Comment</Button>
+					</div> : null}
 			</div>
 		);
 	}
