@@ -13,12 +13,11 @@ export default class ServerApi extends Api {
 		this.reqStore = new RequestStore();
 	}
 	public getJson(params: Request) {
-		// TODO: append querystring from query object
 		return new Promise((resolve, reject) => http.get({
 				protocol: this.endpoint.scheme + ':',
 				hostname: this.endpoint.host,
 				port: this.endpoint.port,
-				path: params.path,
+				path: params.path + params.getQueryString(),
 				...(this._cookie ? { headers: { 'Cookie': this._cookie } } : {})
 			}, res => {
 				let body = '';

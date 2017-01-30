@@ -22,4 +22,14 @@ export default class Request {
 		}
 		return true;
 	}
+	public getQueryString() {
+		// TODO: support nested objects and arrays
+		if (this.query) {
+			const kvps = Object.keys(this.query).map(key => encodeURIComponent(key) + '=' + encodeURIComponent((this.query as { [key: string]: any })[key]));
+			if (kvps.length) {
+				return '?' + kvps.join('&');
+			}
+		}
+		return '';
+	}
 }
