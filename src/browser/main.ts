@@ -11,11 +11,15 @@ const api = new BrowserApi(window._apiEndpoint, window._apiInitData),
 	  pageTitle = new BrowserPageTitle(document.title);
 
 ReactDOM.render(
-	<App api={api} pageTitle={pageTitle} user={new BrowserUser(window._userInitData)}>
-		<Router history={browserHistory}>
-			{routes}
-		</Router>
-	</App>,
+	React.createElement(
+		App,
+		{ api, pageTitle, user: new BrowserUser(window._userInitData) },
+		React.createElement(
+			Router,
+			{ history: browserHistory },
+			routes
+		)
+	),
 	document.getElementById('root')
 );
 

@@ -63,21 +63,25 @@ http.createServer((req, res) => {
 						}
 					})
 					.then(userAccount => {
-						const user = new ServerUser(userAccount);
-						ReactDOMServer.renderToString(
-							<App api={api} pageTitle={pageTitle} user={user}>
-								<RouterContext {...nextState} />
-							</App>
-						);
+						const user = new ServerUser(userAccount),
+							  appElement = React.createElement(
+									App,
+									{ api, pageTitle, user },
+									React.createElement(RouterContext, nextState)
+								);
+						// call renderToString first to capture all the api requests
+						ReactDOMServer.renderToString(appElement);
 						api.processRequests().then(() => {
+							// call renderToString again to render with api request results
+							ReactDOMServer.renderToString(appElement);
+							// one more call is needed since the page title renders before
+							// the pages which in turn set the page title in any async manner
+							const content = ReactDOMServer.renderToString(appElement);
+							// return the content and init data
 							res.setHeader('content-type', 'text/html');
 							res.end(renderHtml({
+								content,
 								title: pageTitle.get(),
-								content: ReactDOMServer.renderToString(
-									<App api={api} pageTitle={pageTitle} user={user}>
-										<RouterContext {...nextState} />
-									</App>
-								),
 								apiEndpoint: api.getEndpoint(),
 								apiInitData: api.getInitData(),
 								userInitData: user.getInitData()
