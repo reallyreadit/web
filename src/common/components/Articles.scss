@@ -1,28 +1,3 @@
 .articles {
-	ul {
-		list-style: none;
-		margin: 10px 0;
-		padding: 0;
-		li {
-			border: 1px solid #666;
-			border-radius: 5px;
-			padding: 5px;
-			margin-bottom: 7px;
-			.title {
-				color: blue;
-				display: inline-block;
-				margin: 0 0 3px 0;
-				text-decoration: underline;
-			}
-			.source {
-				color: mediumorchid;
-			}
-			.comment-count {
-				color: magenta;
-			}
-		}
-		li:last-child {
-			margin-bottom: 0;
-		}
-	}
+	
 }

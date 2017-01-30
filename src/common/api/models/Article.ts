@@ -6,6 +6,8 @@ interface Article {
 	datePublished: string,
 	source: string,
 	url: string,
-	commentCount: number
+	commentCount: number,
+	pageCount: number,
+	percentComplete: number
 }
 export default Article;

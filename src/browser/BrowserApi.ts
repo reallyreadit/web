@@ -37,8 +37,14 @@ export default class BrowserApi extends Api {
 				req.setRequestHeader('Content-Type', 'application/json');
 				req.send(JSON.stringify(params.query));
 			} else {
-				// TODO: append querystring from query object
-				req.open(method, this.getUrl(params.path));
+				let url = this.getUrl(params.path);
+				if (params.query) {
+					const kvps = Object.keys(params.query).map(key => encodeURIComponent(key) + '=' + encodeURIComponent((params.query as { [key: string]: any })[key]));
+					if (kvps.length) {
+						url += '?' + kvps.join('&');
+					}
+				}
+				req.open(method, url);
 				req.send();
 			}
 		});

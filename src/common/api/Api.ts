@@ -1,6 +1,6 @@
 import Fetchable from './Fetchable';
 import Article from './models/Article';
-import UserArticle from './models/UserArticle';
+import Comment from './models/Comment';
 import UserAccount from './models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
@@ -30,8 +30,17 @@ abstract class Api {
 	public signOut() {
 		return this.post(new Request('/UserAccounts/SignOut'));
 	}
-	public listUserArticles(callback: (articles: Fetchable<UserArticle[]>) => void) {
-		return this.get<UserArticle[]>(new Request('/Articles/UserList'), callback);
+	public listUserArticles(callback: (articles: Fetchable<Article[]>) => void) {
+		return this.get<Article[]>(new Request('/Articles/UserList'), callback);
+	}
+	public getArticleDetails(slug: string, callback: (article: Fetchable<Article>) => void) {
+		return this.get<Article>(new Request('/Articles/Details', { slug }), callback);
+	}
+	public listComments(slug: string, callback: (comments: Fetchable<Comment[]>) => void) {
+		return this.get<Comment[]>(new Request('/Articles/ListComments', { slug }), callback);
+	}
+	public postComment(text: string, articleId: string) {
+		return this.post(new Request('/Articles/PostComment', { text, articleId }));
 	}
 }
 export default Api;

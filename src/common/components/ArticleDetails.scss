@@ -1,0 +1,17 @@
+.article-details {
+	.title {
+		color: blue;
+		display: inline-block;
+		margin: 0 0 3px 0;
+		text-decoration: underline;
+	}
+	.source {
+		color: mediumorchid;
+	}
+	.comment-count {
+		color: magenta;
+	}
+	.percent-complete {
+		color: mediumspringgreen;
+	}
+}
