@@ -1,4 +1,5 @@
-import icon from './icon';
+import drawBrowserActionIcon from './drawBrowserActionIcon';
+import BrowserActionBadge from './BrowserActionBadge';
 import ObjectStore from './ObjectStore';
 import Tab from './Tab';
 import ContentScriptApi from './ContentScriptApi';
@@ -6,13 +7,16 @@ import ServerApi from './ServerApi';
 
 console.log('loading eventPage.ts...');
 
-interface IconArticle {
-	percentComplete: number,
-	state: 'locked' | 'unlocked'
-}
-
 // server
-const serverApi = new ServerApi();
+const serverApi = new ServerApi({
+	onAuthenticationChanged: isAuthenticated => {
+		// update icon
+		updateIcon();
+		// signal content scripts
+
+	},
+	onArticleUpdated: () => updateIcon()
+});
 
 // tabs
 const tabs = new ObjectStore<number, Tab>('tabs', 'session', t => t.id);
@@ -47,44 +51,34 @@ new ContentScriptApi({
 });
 
 // icon interface
-var setIcon = (function () {
-	var frameIndex = 0,
-		frameCount = 5,
-		animationInterval: number;
-	return function (params: { article: IconArticle, commentCount: number | string }) {
-		// set the icon
-		if (params.hasOwnProperty('article')) {
-			icon.setIcon(params.article || {});
-		}
-		// set the badge text
-		if (typeof params.commentCount === 'number' || params.commentCount === '') {
-			if (animationInterval !== undefined) {
-				window.clearInterval(animationInterval);
-				animationInterval = undefined;
-				frameIndex = 0;
+const browserActionBadge = new BrowserActionBadge();
+function updateIcon() {
+	if (serverApi.isAuthenticated) {
+		getFocusedTab(chromeTab => {
+			console.log('\tupdateIcon (tabId: ' + chromeTab.id + ')');
+			const tab = tabs.get(chromeTab.id);
+			if (tab) {
+				const article = serverApi.getArticle(tab.articleSlug);
+				drawBrowserActionIcon(
+					'signedIn',
+					article.percentComplete,
+					article.percentComplete >= serverApi.eventPageOptions.articleUnlockThreshold ? 'unlocked' : 'locked'
+				)
+				browserActionBadge.set(typeof article.commentCount === 'number' ? article.commentCount : 'loading');
+			} else {
+				drawBrowserActionIcon('signedIn', 0, 'locked');
+				browserActionBadge.set();
 			}
-			chrome.browserAction.setBadgeText({ text: params.commentCount.toString() });
-		} else if (params.commentCount === 'loading' && animationInterval === undefined) {
-			animationInterval = window.setInterval(function () {
-				var text = '';
-				for (var i = 0; i < frameCount - 1; i++) {
-					if (i === frameIndex) {
-						text += '.';
-					} else {
-						text += ' ';
-					}
-				}
-				chrome.browserAction.setBadgeText({ text: text });
-				frameIndex = ++frameIndex % frameCount;
-			}, 150);
-		}
-	};
-}());
+		});
+	} else {
+		drawBrowserActionIcon('signedOut', 0, 'locked');
+		browserActionBadge.set();
+	}
+}
 
-// browser interface
-// - utilities
+// tab helpers
 function getActiveTab(window: chrome.windows.Window) {
-	return window.tabs.filter(t => t.active)[0];
+	return window.tabs.find(t => t.active);
 }
 function getFocusedWindow(callback: (window: chrome.windows.Window) => void) {
 	chrome.windows.getLastFocused(
@@ -98,70 +92,24 @@ function getFocusedWindow(callback: (window: chrome.windows.Window) => void) {
 function getFocusedTab(callback: (tab: chrome.tabs.Tab) => void) {
 	getFocusedWindow(w => callback(getActiveTab(w)));
 }
-function updateIcon() {
-	getFocusedTab(chromeTab => {
-		console.log('\tupdateIcon (tabId: ' + chromeTab.id + ')');
-		const tab = tabs.get(chromeTab.id);
-		if (tab) {
-			const article = serverApi.getArticle(tab.articleSlug),
-				iconArticle: IconArticle = {
-					percentComplete: article.percentComplete,
-					state: article.percentComplete >= serverApi.eventPageOptions.articleUnlockThreshold ? 'unlocked' : 'locked' 
-				};
-			let iconCommentCount: number | string;
-			if (article.commentCount) {
-				iconCommentCount = article.commentCount;
-			} else {
-				iconCommentCount = 'loading';
-			}
-			setIcon({
-				article: iconArticle,
-				commentCount: iconCommentCount
-			});
-		} else {
-			// set the default icon
-			setIcon({
-				article: null,
-				commentCount: ''
-			});
-		}
-	});
-}
-// - event handlers
-var ignoreTabsOnActivated = false;
-chrome.runtime.onInstalled.addListener(function (details) {
+
+// chrome event handlers
+chrome.runtime.onInstalled.addListener(details => {
 	console.log('chrome.runtime.onInstalled');
-	// set the default icon
-	setIcon({
-		article: null,
-		commentCount: ''
-	});
+	// update icon
+	updateIcon();
 });
-chrome.tabs.onActivated.addListener(function (activeInfo) {
-	if (!ignoreTabsOnActivated) {
-		console.log('chrome.tabs.onActivated (tabId: ' + activeInfo.tabId + ')');
-		// update icon
-		updateIcon();
-	}
+chrome.tabs.onActivated.addListener(activeInfo => {
+	console.log('chrome.tabs.onActivated (tabId: ' + activeInfo.tabId + ')');
+	// update icon
+	updateIcon();
 });
 chrome.windows.onFocusChanged.addListener(
-	function (windowId) {
+	windowId => {
 		if (windowId !== chrome.windows.WINDOW_ID_NONE) {
 			console.log('chrome.windows.onFocusChanged (windowId: ' + windowId + ')');
-			// tabs.onActivated may not fire after this event so we need to handle
-			// the call to updateIcon here and prevent tabs.onActivated from
-			// executing if it does fire
-			ignoreTabsOnActivated = true;
-			chrome.windows.get(
-				windowId,
-				{
-					populate: true,
-				},
-				function (window) {
-					updateIcon();
-					ignoreTabsOnActivated = false;
-				}
-			);
+			// update icon
+			updateIcon();
 		}
 	},
 	{ windowTypes: ['normal'] }

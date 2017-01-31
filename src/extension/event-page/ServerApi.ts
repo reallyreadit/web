@@ -56,9 +56,12 @@ export default class ServerApi {
 	}
 	private _eventPageOptions: EventPageOptions;
 	private _contentScriptOptions: ContentScriptOptions;
-	//private _sessionKey: string;
+	private _isAuthenticated = false;
 	private _articles = new ObjectStore<string, Article>('articles', 'local', a => a.slug);
-	constructor() {
+	constructor(handlers: {
+		onAuthenticationChanged: (isAuthenticated: boolean) => void,
+		onArticleUpdated: () => void
+	}) {
 		// options
 		// this._eventPageOptions = JSON.parse(localStorage.getItem('eventPageOptions'));
 		// this._contentScriptOptions = JSON.parse(localStorage.getItem('contentScriptOptions'));
@@ -83,23 +86,18 @@ export default class ServerApi {
 			readStateCommitRate: 2000,
 			urlCheckRate: 2500
 		};
-		// session key
-		// chrome.cookies.get({
-		// 	url: 'http://dev.reallyread.it',
-		// 	name: 'sessionKey'
-		// }, cookie => {
-		// 	if (cookie) {
-		// 		this._sessionKey = cookie.value;
-		// 	}
-		// });
-		// chrome.cookies.onChanged.addListener(changeInfo => {
-		// 	console.log(`chrome.cookies.onChanged (${changeInfo.cause}/${changeInfo.cookie}/removed:${changeInfo.removed})`);
-		// 	if (changeInfo.removed) {
-		// 		this._sessionKey = undefined;
-		// 	} else {
-		// 		this._sessionKey = changeInfo.cookie.value;
-		// 	}
-		// });
+		// authentication
+		chrome.cookies.get({
+			url: 'http://dev.reallyread.it',
+			name: 'sessionKey'
+		}, cookie => this._isAuthenticated = !!cookie);
+		chrome.cookies.onChanged.addListener(changeInfo => {
+			if (changeInfo.cookie.name === 'sessionKey') {
+				console.log(`chrome.cookies.onChanged (${changeInfo.cause}/${changeInfo.cookie}/removed:${changeInfo.removed})`);
+				this._isAuthenticated = !changeInfo.removed;
+				handlers.onAuthenticationChanged(this._isAuthenticated);
+			}
+		});
 	}
 	private commitToServer(data: ContentPageData) {
 		this.fetchJson<{ readState: number[], percentComplete: number }>('POST', '/Extension/Commit', data)
@@ -190,5 +188,8 @@ export default class ServerApi {
 	}
 	public get contentScriptOptions() {
 		return this._contentScriptOptions;
+	}
+	public get isAuthenticated() {
+		return this._isAuthenticated;
 	}
 }
