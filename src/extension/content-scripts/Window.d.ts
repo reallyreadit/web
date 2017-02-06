@@ -1,7 +1,7 @@
-import ContentPageMetadata from './ContentPageMetadata';
+import ParseResult from './ParseResult';
 
 declare global {
 	interface Window {
-		_getContentPageMetadata(): ContentPageMetadata
+		_parse(): ParseResult
 	}
 }

@@ -1,34 +1,50 @@
-import Source from '../common/Source';
-import ContentScriptOptions from '../common/ContentScriptOptions';
-import ContentPageData from '../common/ContentPageData';
+import ContentScriptInitData from '../common/ContentScriptInitData';
+import ReadStateCommitData from '../common/ReadStateCommitData';
+import PageInfo from '../common/PageInfo';
+import UserPage from '../common/UserPage';
 
 export default class ContentScriptApi {
+	private static sendMessage<T>(tabId: number, type: string, data?: {}) {
+		return new Promise<T>((resolve, reject) => {
+			try {
+				chrome.tabs.sendMessage(tabId, { type, data }, resolve);
+			} catch (ex) {
+				reject();
+			}
+		});
+	}
 	constructor(handlers: {
-		onFindSource: (hostname: string) => Promise<Source>,
-		onRegisterTab: (tabId: number, articleSlug: string) => void,
-		onGetOptions: () => ContentScriptOptions,
-		onCommit: (data: ContentPageData) => ContentPageData,
-		onUnregisterTab: (tabId: number) => void
+		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
+		onRegisterPage: (tabId: number, data: PageInfo) => Promise<UserPage>,
+		onCommitReadState: (data: ReadStateCommitData) => void,
+		onUnregisterContentScript: (tabId: number) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
-				case 'findSource':
-					handlers.onFindSource(message.data.hostname).then(sendResponse);
+				case 'registerContentScript':
+					handlers
+						.onRegisterContentScript(sender.tab.id, message.data)
+						.then(sendResponse);
 					return true;
-				case 'registerTab':
-					handlers.onRegisterTab(sender.tab.id, message.data.articleSlug);
+				case 'registerPage':
+					handlers
+						.onRegisterPage(sender.tab.id, message.data)
+						.then(sendResponse);
+					return true;
+				case 'commitReadState':
+					handlers.onCommitReadState(message.data);
 					break;
-				case 'getOptions':
-					sendResponse(handlers.onGetOptions());
-					break;
-				case 'commit':
-					sendResponse(handlers.onCommit(message.data.data));
-					break;
-				case 'unregisterTab':
-					handlers.onUnregisterTab(sender.tab.id);
+				case 'unregisterContentScript':
+					handlers.onUnregisterContentScript(sender.tab.id);
 					break;
 			}
-			return false;
+			return undefined;
 		});
+	}
+	public reinitialize(tabId: number) {
+		return ContentScriptApi.sendMessage<void>(tabId, 'reinitialize');
+	}
+	public terminate(tabId: number) {
+		return ContentScriptApi.sendMessage<void>(tabId, 'terminate');
 	}
 }

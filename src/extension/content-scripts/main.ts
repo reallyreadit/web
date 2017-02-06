@@ -1,24 +1,28 @@
-import ContentPage from './ContentPage';
+import Page from './Page';
 import EventPageApi from './EventPageApi';
-import ContentPageData from '../common/ContentPageData';
 import ContentScriptOptions from '../common/ContentScriptOptions';
 
 console.log('loading main.ts...');
 
-var isReading = false,
-	intervals: {
-		readWord?: number,
-		updatePageOffset?: number,
-		commitReadState?: number,
-		checkUrl?: number
-	} = {},
-	page: ContentPage,
+// local state
+let isInitialized = false,
+	isReading = false,
+	page: Page,
 	options: ContentScriptOptions;
 
-const api = new EventPageApi(updateReadState);
-
+// event page
+const eventPageApi = new EventPageApi({
+	onReinitialize: initialize,
+	onTerminate: terminate
+});
 
 // read intervals
+const intervals: {
+	readWord?: number,
+	updatePageOffset?: number,
+	commitReadState?: number,
+	checkUrl?: number
+} = {};
 function readWord() {
 	page.readWord();
 	if (page.isRead()) {
@@ -30,12 +34,13 @@ function updatePageOffset() {
 	page.updateOffset();
 }
 function commitReadState() {
-	api.commit(page.serialize())
-		.then(data => {
-			if (data) {
-				page.update(data);
-			}
-		});
+	console.log('committing read state...');
+	eventPageApi
+		.commitReadState({
+			userPageId: page.getUserPageId(),
+			readState: page.getReadState().readStateArray
+		})
+		.catch(terminate);
 }
 function checkUrl() {
 	// TODO: need a better way to detect an article change
@@ -47,15 +52,17 @@ function checkUrl() {
 
 // start/stop reading
 function startReading() {
-	if (!isReading && !page.isRead()) {
-		// intervals.readWord = window.setInterval(readWord, options.wordReadRate);
-		// intervals.updatePageOffset = window.setInterval(updatePageOffset, options.pageOffsetUpdateRate);
-		// intervals.commitReadState = window.setInterval(commitReadState, options.readStateCommitRate);
-		// intervals.checkUrl = window.setInterval(checkUrl, options.urlCheckRate);
+	console.log('start reading...');
+	if (isInitialized && !isReading && !page.isRead()) {
+		intervals.readWord = window.setInterval(readWord, options.wordReadRate);
+		intervals.updatePageOffset = window.setInterval(updatePageOffset, options.pageOffsetUpdateRate);
+		intervals.commitReadState = window.setInterval(commitReadState, options.readStateCommitRate);
+		intervals.checkUrl = window.setInterval(checkUrl, options.urlCheckRate);
 		isReading = true;
 	}
 }
 function stopReading() {
+	console.log('stop reading...');
 	clearInterval(intervals.readWord);
 	intervals.readWord = undefined;
 	clearInterval(intervals.updatePageOffset);
@@ -67,44 +74,55 @@ function stopReading() {
 	isReading = false;
 }
 
-// helpers
-function updateReadState(data: ContentPageData) {
-	if (page.slug === data.slug) {
-		page.update(data);
-	}
+function initialize() {
+	console.log('initializing page...');
+	eventPageApi
+		.registerContentScript(window.location)
+		.then(initData => {
+			eval(initData.source.parser)
+			const parseResult = window._parse();
+			if (parseResult) {
+				console.log('page parsed');
+				page = new Page(parseResult.element);
+				options = initData.options;
+				eventPageApi
+					.registerPage({ ...parseResult.pageInfo, wordCount: (parseResult.pageInfo.wordCount ? parseResult.pageInfo.wordCount : page.getReadState().wordCount) })
+					.then(userPage => {
+						console.log('tab registered');
+						page.setUserPageId(userPage.id)
+							.setReadState(userPage.readState);
+						isInitialized = true;
+						if (document.visibilityState === 'visible') {
+							startReading();
+						}
+					});
+			}
+		})
+		.catch(terminate);
+}
+function terminate() {
+	console.log('terminating page...');
+	isInitialized = false;
+	stopReading();
 }
 
-console.log('initializing page...');
-api.findSource(window.location.hostname).then(source => {
-	eval(source.parser)
-	const pageParams = window._getContentPageMetadata();
-	if (pageParams) {
-		console.log('page parsed...');
-		page = new ContentPage(pageParams, source);
-		api.getOptions().then(opts => {
-			options = opts;
-			// set document visibility event handler
-			document.addEventListener('visibilitychange', function () {
-				// toggle reading based on document visibility
-				if (document.hidden) {
-					stopReading();
-				} else {
-					startReading();
-				}
-			});
-			// set window unload event handler
-			window.addEventListener('unload', function () {
-				// unregister tab
-				api.unregisterTab();
-			});
-			// start reading!
-			if (document.visibilityState === 'visible') {
-				startReading();
-			}
-		});
+// event handlers
+document.addEventListener('visibilitychange', function () {
+	// toggle reading based on document visibility
+	if (document.hidden) {
+		stopReading();
+	} else {
+		startReading();
 	}
 });
+window.addEventListener('unload', function () {
+	// unregister tab
+	eventPageApi.unregisterContentScript();
+});
+
+// initialize
+initialize();
 
 (window as any).ctx = {
-	page, api, readWord, updatePageOffset, commitReadState, checkUrl
+	page, eventPageApi, readWord, updatePageOffset, commitReadState, checkUrl
 };

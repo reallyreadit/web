@@ -1,7 +1,7 @@
 import drawBrowserActionIcon from './drawBrowserActionIcon';
 import BrowserActionBadge from './BrowserActionBadge';
 import ObjectStore from './ObjectStore';
-import Tab from './Tab';
+import ContentScriptTab from './ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
 
@@ -9,41 +9,57 @@ console.log('loading eventPage.ts...');
 
 // server
 const serverApi = new ServerApi({
-	onAuthenticationChanged: isAuthenticated => {
+	onAuthenticationStatusChanged: isAuthenticated => {
 		// update icon
 		updateIcon();
 		// signal content scripts
-
+		if (isAuthenticated) {
+			tabs.getAll().forEach(tab => contentScriptApi.reinitialize(tab.id));
+		} else {
+			tabs.getAll().forEach(tab => contentScriptApi.terminate(tab.id));
+		}
 	},
-	onArticleUpdated: () => updateIcon()
+	onRequestChanged: updateIcon,
+	onCacheUpdated: updateIcon
 });
 
 // tabs
-const tabs = new ObjectStore<number, Tab>('tabs', 'session', t => t.id);
+const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'session', t => t.id);
 
 // content script
-new ContentScriptApi({
-	onFindSource: hostname => serverApi.findSource(hostname),
-	onRegisterTab: (tabId, articleSlug) => {
-		// update tabs store
-		tabs.set({
-			id: tabId,
-			articleSlug
-		});
+const contentScriptApi = new ContentScriptApi({
+	onRegisterContentScript: (tabId, url) => {
+		// update tabs
+		tabs.set({ id: tabId });
 		// update icon
 		updateIcon();
+		// return source and options
+		return serverApi
+			.findSource(tabId, new URL(url).hostname)
+			.then(source => ({ source, options: serverApi.contentScriptOptions }));
 	},
-	onGetOptions: () => serverApi.contentScriptOptions,
-	onCommit: data => {
-		// commit
-		const result = serverApi.commit(data);
-		// update icon
-		updateIcon();
-		// return result
-		return result;
+	onRegisterPage: (tabId, data) => {
+		// get read state
+		return serverApi
+			.getUserArticle(tabId, data)
+			.then(result => {
+				// update tabs
+				tabs.set({
+					id: tabId,
+					articleId: result.userArticle.id
+				})
+				// update icon
+				updateIcon();
+				// return page init data
+				return result.userPage;
+			});
 	},
-	onUnregisterTab: tabId => {
-		// update tabs store
+	onCommitReadState: data => {
+		// commit read state
+		serverApi.commitReadState(data);
+	},
+	onUnregisterContentScript: tabId => {
+		// update tabs
 		tabs.remove(tabId)
 		// update icon
 		updateIcon();
@@ -53,27 +69,38 @@ new ContentScriptApi({
 // icon interface
 const browserActionBadge = new BrowserActionBadge();
 function updateIcon() {
-	if (serverApi.isAuthenticated) {
-		getFocusedTab(chromeTab => {
-			console.log('\tupdateIcon (tabId: ' + chromeTab.id + ')');
-			const tab = tabs.get(chromeTab.id);
-			if (tab) {
-				const article = serverApi.getArticle(tab.articleSlug);
-				drawBrowserActionIcon(
-					'signedIn',
-					article.percentComplete,
-					article.percentComplete >= serverApi.eventPageOptions.articleUnlockThreshold ? 'unlocked' : 'locked'
-				)
-				browserActionBadge.set(typeof article.commentCount === 'number' ? article.commentCount : 'loading');
+	console.log('\tupdateIcon');
+	serverApi
+		.getAuthStatus()
+		.then(isAuthenticated => {
+			if (isAuthenticated) {
+				getFocusedTab(chromeTab => {
+					const tab = tabs.get(chromeTab.id);
+					if (tab) {
+						// get article and pending requests
+						serverApi
+							.getUserArticleFromCache(tab.articleId)
+							.then(article => {
+								const pendingRequests = serverApi.getRequests(tab);
+								drawBrowserActionIcon(
+									'signedIn',
+									article ? article.percentComplete : 0,
+									article && article.percentComplete >= serverApi.eventPageOptions.articleUnlockThreshold ? 'unlocked' : 'locked'
+								);
+								browserActionBadge.set(pendingRequests.some(r => r.type === 'FindSource' || r.type === 'GetUserArticle') ? 'loading' : article ? article.commentCount : null);
+							});
+					} else {
+						// not one of our tabs
+						drawBrowserActionIcon('signedIn', 0, 'locked');
+						browserActionBadge.set();
+					}
+				});
 			} else {
-				drawBrowserActionIcon('signedIn', 0, 'locked');
+				// signed out
+				drawBrowserActionIcon('signedOut', 0, 'locked');
 				browserActionBadge.set();
 			}
 		});
-	} else {
-		drawBrowserActionIcon('signedOut', 0, 'locked');
-		browserActionBadge.set();
-	}
 }
 
 // tab helpers
@@ -96,6 +123,9 @@ function getFocusedTab(callback: (tab: chrome.tabs.Tab) => void) {
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('chrome.runtime.onInstalled');
+	// clear storage
+	serverApi.clearCache();
+	tabs.clear();
 	// update icon
 	updateIcon();
 });

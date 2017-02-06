@@ -25,14 +25,14 @@ export default class ObjectStore<K, V> {
 	private writeItems(items: V[]) {
 		this._storage.setItem(this._name, JSON.stringify(items));
 	}
-	private clear() {
-		this.writeItems([]);
-	}
 	private getItemByKey(key: K, items: V[]) {
 		return items.filter(item => this._getKey(item) === key)[0];
 	}
 	public get(key: K) {
 		return this.getItemByKey(key, this.readItems());
+	}
+	public getAll() {
+		return this.readItems();
 	}
 	public set(item: V) {
 		const items = this.readItems();
@@ -52,5 +52,8 @@ export default class ObjectStore<K, V> {
 			this.writeItems(items);
 		}
 		return item;
+	}
+	public clear() {
+		this.writeItems([]);
 	}
 }

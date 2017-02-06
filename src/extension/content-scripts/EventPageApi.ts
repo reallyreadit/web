@@ -1,6 +1,7 @@
-import Source from '../common/Source';
-import ContentScriptOptions from '../common/ContentScriptOptions';
-import ContentPageData from '../common/ContentPageData';
+import ContentScriptInitData from '../common/ContentScriptInitData';
+import ReadStateCommitData from '../common/ReadStateCommitData';
+import PageInfo from '../common/PageInfo';
+import UserPage from '../common/UserPage';
 
 export default class EventPageApi {
 	private static sendMessage<T>(type: string, data?: {}) {
@@ -12,28 +13,31 @@ export default class EventPageApi {
 			}
 		});
 	}
-	constructor(onUpdate: (data: ContentPageData) => void) {
+	constructor(handlers: {
+		onReinitialize: () => void,
+		onTerminate: () => void
+	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
-				case 'update':
-					onUpdate(message.data);
+				case 'reinitialize':
+					handlers.onReinitialize();
+					break;
+				case 'terminate':
+					handlers.onTerminate();
 					break;
 			}
 		});
 	}
-	public findSource(hostname: string) {
-		return EventPageApi.sendMessage<Source>('findSource', { hostname });
+	public registerContentScript(location: Location) {
+		return EventPageApi.sendMessage<ContentScriptInitData>('registerContentScript', location.toString());
 	}
-	public registerTab(articleSlug: string) {
-		return EventPageApi.sendMessage<void>('registerTab', { articleSlug });
+	public registerPage(data: PageInfo) {
+		return EventPageApi.sendMessage<UserPage>('registerPage', data);
 	}
-	public getOptions() {
-		return EventPageApi.sendMessage<ContentScriptOptions>('getOptions');
+	public commitReadState(data: ReadStateCommitData) {
+		return EventPageApi.sendMessage<void>('commitReadState', data);
 	}
-	public commit(data: ContentPageData) {
-		return EventPageApi.sendMessage<ContentPageData>('commit', { data });
-	}
-	public unregisterTab() {
-		return EventPageApi.sendMessage<void>('unregisterTab');
+	public unregisterContentScript() {
+		return EventPageApi.sendMessage<void>('unregisterContentScript');
 	}
 }

@@ -1,10 +1,13 @@
-import EventPageOptions from '../common/EventPageOptions';
+import EventPageOptions from './EventPageOptions';
 import ContentScriptOptions from '../common/ContentScriptOptions';
 import Source from '../common/Source';
-import Article from './Article';
+import UserArticle from './UserArticle';
+import UserPage from '../common/UserPage';
 import ObjectStore from './ObjectStore';
-import ContentPageData from '../common/ContentPageData';
-//import UserAccount from './UserAccount';
+import PageInfo from '../common/PageInfo';
+import ReadStateCommitData from '../common/ReadStateCommitData';
+import Request from './Request';
+import ContentScriptTab from './ContentScriptTab';
 
 export default class ServerApi {
 	private static getUrl(path: string) {
@@ -18,65 +21,18 @@ export default class ServerApi {
 			handler(defaultValue);
 		}
 	}
-	private fetchJson<T>(method: 'GET' | 'POST', path: string, data?: {}) {
-		//if (this._sessionKey) {
-			return new Promise<T>((resolve, reject) => {
-				const req = new XMLHttpRequest();
-				req.withCredentials = true;
-				req.addEventListener('load', function () {
-					if (this.status === 200) {
-						ServerApi.parseResponse(this, resolve);
-					} else {
-						ServerApi.parseResponse(this, reject, []);
-					}
-				});
-				req.addEventListener('error', function () {
-					reject([]);
-				});
-				if (method === 'POST') {
-					req.open(method, ServerApi.getUrl(path));
-					//req.setRequestHeader('Cookie', `sessionKey=${this._sessionKey}`);
-					req.setRequestHeader('Content-Type', 'application/json');
-					req.send(JSON.stringify(data));
-				} else {
-					let url = ServerApi.getUrl(path);
-					if (data) {
-						const kvps = Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent((data as { [key: string]: any })[key]));
-						if (kvps.length) {
-							url += '?' + kvps.join('&');
-						}
-					}
-					req.open(method, url);
-					//req.setRequestHeader('Cookie', `sessionKey=${this._sessionKey}`);
-					req.send();
-				}
-			});
-		// }
-		// return Promise.reject(['UnauthenticatedSession']);
-	}
 	private _eventPageOptions: EventPageOptions;
 	private _contentScriptOptions: ContentScriptOptions;
-	private _isAuthenticated = false;
-	private _articles = new ObjectStore<string, Article>('articles', 'local', a => a.slug);
+	private _articles = new ObjectStore<string, UserArticle>('articles', 'local', a => a.id);
+	private _requests: Request[] = [];
+	private _onRequestChanged: () => void;
+	private _onCacheUpdated: () => void;
 	constructor(handlers: {
-		onAuthenticationChanged: (isAuthenticated: boolean) => void,
-		onArticleUpdated: () => void
+		onAuthenticationStatusChanged: (isAuthenticated: boolean) => void,
+		onRequestChanged: () => void,
+		onCacheUpdated: () => void
 	}) {
 		// options
-		// this._eventPageOptions = JSON.parse(localStorage.getItem('eventPageOptions'));
-		// this._contentScriptOptions = JSON.parse(localStorage.getItem('contentScriptOptions'));
-		// if (!this._eventPageOptions || !this._contentScriptOptions) {
-		// 	this.fetchJson<{
-		// 			eventPageOptions: EventPageOptions,
-		// 			contentScriptOptions: ContentScriptOptions
-		// 		}>('GET', '/Extension/GetOptions')
-		// 		.then(opts => {
-		// 			this._eventPageOptions = opts.eventPageOptions;
-		// 			this._contentScriptOptions = opts.contentScriptOptions;
-		// 			localStorage.setItem('eventPageOptions', JSON.stringify(opts.eventPageOptions));
-		// 			localStorage.setItem('contentScriptOptions', JSON.stringify(opts.contentScriptOptions));
-		// 		});
-		// }
 		this._eventPageOptions = {
 			articleUnlockThreshold: 90
 		};
@@ -87,101 +43,78 @@ export default class ServerApi {
 			urlCheckRate: 2500
 		};
 		// authentication
-		chrome.cookies.get({
-			url: 'http://dev.reallyread.it',
-			name: 'sessionKey'
-		}, cookie => this._isAuthenticated = !!cookie);
 		chrome.cookies.onChanged.addListener(changeInfo => {
 			if (changeInfo.cookie.name === 'sessionKey') {
 				console.log(`chrome.cookies.onChanged (${changeInfo.cause}/${changeInfo.cookie}/removed:${changeInfo.removed})`);
-				this._isAuthenticated = !changeInfo.removed;
-				handlers.onAuthenticationChanged(this._isAuthenticated);
+				// clear cache
+				this._articles.clear();
+				// fire handler
+				handlers.onAuthenticationStatusChanged(!changeInfo.removed);
+			}
+		});
+		// requests handler
+		this._onRequestChanged = handlers.onRequestChanged;
+		// cache update handler
+		this._onCacheUpdated = handlers.onCacheUpdated;
+	}
+	private fetchJson<T>(request: Request) {
+		const removeRequest = () => {
+			this._requests.splice(this._requests.indexOf(request), 1)
+			this._onRequestChanged();
+		};
+		this._requests.push(request);
+		this._onRequestChanged();
+		return new Promise<T>((resolve, reject) => {
+			const req = new XMLHttpRequest();
+			req.withCredentials = true;
+			req.addEventListener('load', function () {
+				removeRequest();
+				if (this.status === 200) {
+					ServerApi.parseResponse(this, resolve);
+				} else {
+					ServerApi.parseResponse(this, reject, []);
+				}
+			});
+			req.addEventListener('error', function () {
+				removeRequest();
+				reject([]);
+			});
+			if (request.method === 'POST') {
+				req.open(request.method, ServerApi.getUrl(request.path));
+				req.setRequestHeader('Content-Type', 'application/json');
+				req.send(JSON.stringify(request.query));
+			} else {
+				req.open(request.method, ServerApi.getUrl(request.path + request.getQueryString()));
+				req.send();
 			}
 		});
 	}
-	private commitToServer(data: ContentPageData) {
-		this.fetchJson<{ readState: number[], percentComplete: number }>('POST', '/Extension/Commit', data)
-			.then(updatedData => {
-				if (updatedData) {
-					const article = this._articles.get(data.slug);
-					const page = article.pages.find(p => p.number === data.pageNumber);
-					page.readState = updatedData.readState;
-					page.percentComplete = updatedData.percentComplete;
-					this._articles.set(article);
-				}
+	public findSource(tabId: number, hostname: string) {
+		return this.fetchJson<Source>(new Request('FindSource', tabId, null, 'GET', '/Extension/FindSource', { hostname }));
+	}
+	public getUserArticle(tabId: number, data: PageInfo) {
+		return this
+			.fetchJson<{
+				userArticle: UserArticle,
+				userPage: UserPage
+			}>(new Request('GetUserArticle', tabId, null, 'POST', '/Extension/GetUserArticle', data))
+			.then(result => {
+				this._articles.set(result.userArticle)
+				return result;
 			});
 	}
-	public findSource(hostname: string) {
-		return this.fetchJson<Source>('GET', '/Extension/FindSource', { hostname });
+	public getUserArticleFromCache(id: string) {
+		return Promise.resolve(this._articles.get(id));
 	}
-	public commit(data: ContentPageData) {
-		// merge data
-		const article = this._articles.get(data.slug);
-		if (article) {
-			// compare versions
-			const page = article.pages.find(p => p.number === data.pageNumber);
-			if (data.percentComplete >= page.percentComplete) {
-				// update article
-				// - cache
-				page.readState = data.readState;
-				page.percentComplete = data.percentComplete;
-				article.percentComplete = article.pages.reduce((sum, page) => sum += page.percentComplete, 0) / article.pages.length;
-				this._articles.set(article);
-				// - server
-				this.commitToServer(data);
-			} else {
-				// return newer copy
-				return {
-					slug: article.slug,
-					title: article.title,
-					wordCount: page.wordCount,
-					readState: page.readState,
-					percentComplete: page.percentComplete,
-					url: page.url,
-					datePublished: article.datePublished,
-					author: article.author,
-					pageNumber: page.number,
-					pageLinks: article.pages.map(p => ({
-						url: p.url,
-						pageNumber: p.number
-					})),
-					sourceId: article.sourceId
-				};
-			}
-		} else {
-			// add article
-			// - cache
-			this._articles.set({
-				slug: data.slug,
-				title: data.title,
-				datePublished: data.datePublished,
-				author: data.author,
-				pages: data.pageLinks
-					.filter(p => p.pageNumber !== data.pageNumber)
-					.map(p => ({
-						url: p.url,
-						number: p.pageNumber,
-						wordCount: 0,
-						readState: [],
-						percentComplete: 0
-					}))
-					.concat([{
-						url: data.url,
-						number: data.pageNumber,
-						wordCount: data.wordCount,
-						readState: data.readState,
-						percentComplete: data.percentComplete
-					}]),
-				percentComplete: data.percentComplete / (data.pageLinks.filter(p => p.pageNumber !== data.pageNumber).length + 1),
-				sourceId: data.sourceId
+	public commitReadState(data: ReadStateCommitData) {
+		this.fetchJson<UserArticle>(new Request('CommitReadState', null, null, 'POST', '/Extension/CommitReadState', data))
+			.then(userArticle => {
+				this._articles.set(userArticle);
+				this._onCacheUpdated();
 			});
-			// - server
-			this.commitToServer(data);
-		}
-		return undefined;
 	}
-	public getArticle(slug: string) {
-		return this._articles.get(slug);
+	public getRequests(tab: ContentScriptTab) {
+		return this._requests.filter(r => r.tabId === tab.id || (tab.articleId ? r.articleId === tab.articleId : false));
 	}
 	public get eventPageOptions() {
 		return this._eventPageOptions;
@@ -189,7 +122,19 @@ export default class ServerApi {
 	public get contentScriptOptions() {
 		return this._contentScriptOptions;
 	}
-	public get isAuthenticated() {
-		return this._isAuthenticated;
+	public getAuthStatus() {
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				chrome.cookies.get({
+					url: 'http://dev.reallyread.it',
+					name: 'sessionKey'
+				}, cookie => resolve(!!cookie));
+			} catch (ex) {
+				reject();
+			}
+		});
+	}
+	public clearCache() {
+		this._articles.clear();
 	}
 }
