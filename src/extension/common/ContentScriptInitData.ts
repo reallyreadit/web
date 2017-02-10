@@ -1,8 +1,8 @@
 import Source from './Source';
-import ContentScriptOptions from './ContentScriptOptions';
+import ContentScriptConfig from './ContentScriptConfig';
 
 interface ContentScriptInitData {
 	source: Source,
-	options: ContentScriptOptions
+	config: ContentScriptConfig
 }
 export default ContentScriptInitData;

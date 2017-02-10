@@ -1,128 +1,159 @@
 import Page from './Page';
 import EventPageApi from './EventPageApi';
-import ContentScriptOptions from '../common/ContentScriptOptions';
+import ContentScriptConfig from '../common/ContentScriptConfig';
 
 console.log('loading main.ts...');
 
 // local state
-let isInitialized = false,
-	isReading = false,
-	page: Page,
-	options: ContentScriptOptions;
+let isReading = false,
+	context: {
+		path: string,
+		page?: Page
+	} = { path: window.location.pathname },
+	config: ContentScriptConfig;
 
-// event page
+// event page interface
 const eventPageApi = new EventPageApi({
-	onReinitialize: initialize,
-	onTerminate: terminate
+	onLoadPage: loadPage,
+	onUnloadPage: unloadPage
 });
 
-// read intervals
-const intervals: {
-	readWord?: number,
+// timers
+const timers: {
+	readWord?: {
+		handle?: number,
+		rate?: number
+	},
 	updatePageOffset?: number,
 	commitReadState?: number,
 	checkUrl?: number
-} = {};
+} = { readWord: {} };
+
+// intervalic functions
 function readWord() {
-	page.readWord();
-	if (page.isRead()) {
-		stopReading();
-		commitReadState();
+	if (context.page.readWord()) {
+		if (context.page.isRead()) {
+			console.log('reading complete');
+			stopReading();
+			commitReadState();
+		} else if (timers.readWord.rate === config.idleReadRate) {
+			console.log('resuming reading...');
+			window.clearInterval(timers.readWord.handle);
+			timers.readWord = {
+				handle: window.setInterval(readWord, config.wordReadRate),
+				rate: config.wordReadRate
+			};
+			timers.commitReadState = window.setInterval(commitReadState, config.readStateCommitRate);
+		}
+	} else if (timers.readWord.rate === config.wordReadRate) {
+		console.log('suspending reading...');
+		window.clearInterval(timers.readWord.handle);
+		timers.readWord = {
+			handle: window.setInterval(readWord, config.idleReadRate),
+			rate: config.idleReadRate
+		};
+		window.clearInterval(timers.commitReadState);
 	}
 }
 function updatePageOffset() {
-	page.updateOffset();
+	context.page.updateOffset();
 }
 function commitReadState() {
-	console.log('committing read state...');
+	console.log('commitReadState');
 	eventPageApi
-		.commitReadState({
-			userPageId: page.getUserPageId(),
-			readState: page.getReadState().readStateArray
-		})
-		.catch(terminate);
+		.commitReadState(context.page.getReadStateCommitData())
+		.catch(unloadPage);
 }
 function checkUrl() {
-	// TODO: need a better way to detect an article change
-	//       extraneous fragments and querystrings can trigger false positives
-	// if (window.location.href !== page.url) {
-	// 	initializePage();
-	// }
+	if (window.location.pathname !== context.path) {
+		console.log('url changed...');
+		context.path = window.location.pathname;
+		loadPage();
+	}
 }
 
-// start/stop reading
+// reading lifecycle
 function startReading() {
-	console.log('start reading...');
-	if (isInitialized && !isReading && !page.isRead()) {
-		intervals.readWord = window.setInterval(readWord, options.wordReadRate);
-		intervals.updatePageOffset = window.setInterval(updatePageOffset, options.pageOffsetUpdateRate);
-		intervals.commitReadState = window.setInterval(commitReadState, options.readStateCommitRate);
-		intervals.checkUrl = window.setInterval(checkUrl, options.urlCheckRate);
+	if (!isReading && !context.page.isRead()) {
+		console.log('startReading');
+		timers.readWord = {
+			handle: window.setInterval(readWord, config.idleReadRate),
+			rate: config.idleReadRate
+		};
+		timers.updatePageOffset = window.setInterval(updatePageOffset, config.pageOffsetUpdateRate);
 		isReading = true;
+		readWord();
 	}
 }
 function stopReading() {
-	console.log('stop reading...');
-	clearInterval(intervals.readWord);
-	intervals.readWord = undefined;
-	clearInterval(intervals.updatePageOffset);
-	intervals.updatePageOffset = undefined;
-	clearInterval(intervals.commitReadState);
-	intervals.commitReadState = undefined;
-	clearInterval(intervals.checkUrl);
-	intervals.checkUrl = undefined;
-	isReading = false;
+	if (isReading) {
+		console.log('stopReading');
+		clearTimeout(timers.readWord.handle);
+		clearInterval(timers.updatePageOffset);
+		clearInterval(timers.commitReadState);
+		isReading = false;
+	}
 }
 
-function initialize() {
-	console.log('initializing page...');
-	eventPageApi
-		.registerContentScript(window.location)
-		.then(initData => {
-			eval(initData.source.parser)
-			const parseResult = window._parse();
-			if (parseResult) {
-				console.log('page parsed');
-				page = new Page(parseResult.element);
-				options = initData.options;
-				eventPageApi
-					.registerPage({ ...parseResult.pageInfo, wordCount: (parseResult.pageInfo.wordCount ? parseResult.pageInfo.wordCount : page.getReadState().wordCount) })
-					.then(userPage => {
-						console.log('tab registered');
-						page.setUserPageId(userPage.id)
-							.setReadState(userPage.readState);
-						isInitialized = true;
-						if (document.visibilityState === 'visible') {
-							startReading();
-						}
-					});
-			}
-		})
-		.catch(terminate);
+// page lifecycle
+function loadPage() {
+	console.log('loadPage');
+	unloadPage().then(() => {
+		const parseResult = window._parse();
+		if (parseResult) {
+			context.page = new Page(parseResult.element);
+			eventPageApi
+				.registerPage({
+					...parseResult.pageInfo,
+					wordCount: parseResult.pageInfo.wordCount ? parseResult.pageInfo.wordCount : context.page.wordCount
+				})
+				.then(userPage => {
+					console.log('initializing page...');
+					context.page.initialize(userPage);
+					if (document.visibilityState === 'visible') {
+						startReading();
+					}
+				})
+				.catch(() => {
+					context.page.remove();
+					context.page = null;
+				});
+		}
+	});
 }
-function terminate() {
-	console.log('terminating page...');
-	isInitialized = false;
-	stopReading();
+function unloadPage() {
+	if (context.page) {
+		console.log('unloadPage');
+		stopReading();
+		context.page.remove();
+		context.page = null;
+		return eventPageApi.unregisterPage();
+	}
+	return Promise.resolve();
 }
 
 // event handlers
-document.addEventListener('visibilitychange', function () {
-	// toggle reading based on document visibility
-	if (document.hidden) {
-		stopReading();
-	} else {
-		startReading();
+document.addEventListener('visibilitychange', () => {
+	if (context.page) {
+		if (document.hidden) {
+			stopReading();
+		} else {
+			startReading();
+		}
 	}
 });
-window.addEventListener('unload', function () {
-	// unregister tab
-	eventPageApi.unregisterContentScript();
-});
+window.addEventListener('unload', () => eventPageApi.unregisterContentScript());
 
-// initialize
-initialize();
+// register content script
+eventPageApi
+	.registerContentScript(window.location)
+	.then(initData => {
+		console.log('initializing content script...');
+		eval(initData.source.parser)
+		config = initData.config;
+		timers.checkUrl = window.setInterval(checkUrl, initData.config.urlCheckRate);
+		loadPage();
+	});
 
-(window as any).ctx = {
-	page, eventPageApi, readWord, updatePageOffset, commitReadState, checkUrl
-};
+// debug
+(<any>window).getContext = () => context;

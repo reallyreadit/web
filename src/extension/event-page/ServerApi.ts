@@ -1,5 +1,5 @@
-import EventPageOptions from './EventPageOptions';
-import ContentScriptOptions from '../common/ContentScriptOptions';
+import EventPageConfig from './EvetPageConfig';
+import ContentScriptConfig from '../common/ContentScriptConfig';
 import Source from '../common/Source';
 import UserArticle from './UserArticle';
 import UserPage from '../common/UserPage';
@@ -7,6 +7,7 @@ import ObjectStore from './ObjectStore';
 import PageInfo from '../common/PageInfo';
 import ReadStateCommitData from '../common/ReadStateCommitData';
 import Request from './Request';
+import RequestType from './RequestType';
 import ContentScriptTab from './ContentScriptTab';
 
 export default class ServerApi {
@@ -21,31 +22,31 @@ export default class ServerApi {
 			handler(defaultValue);
 		}
 	}
-	private _eventPageOptions: EventPageOptions;
-	private _contentScriptOptions: ContentScriptOptions;
+	private _eventPageConfig: EventPageConfig;
+	private _contentScriptConfig: ContentScriptConfig;
 	private _articles = new ObjectStore<string, UserArticle>('articles', 'local', a => a.id);
 	private _requests: Request[] = [];
-	private _onRequestChanged: () => void;
+	private _onRequestChanged: (type: RequestType) => void;
 	private _onCacheUpdated: () => void;
 	constructor(handlers: {
 		onAuthenticationStatusChanged: (isAuthenticated: boolean) => void,
-		onRequestChanged: () => void,
+		onRequestChanged: (type: RequestType) => void,
 		onCacheUpdated: () => void
 	}) {
-		// options
-		this._eventPageOptions = {
+		// configs
+		this._eventPageConfig = {
 			articleUnlockThreshold: 90
 		};
-		this._contentScriptOptions = {
+		this._contentScriptConfig = {
 			wordReadRate: 100,
-			pageOffsetUpdateRate: 2000,
-			readStateCommitRate: 2000,
-			urlCheckRate: 2500
+			idleReadRate: 3000,
+			pageOffsetUpdateRate: 3000,
+			readStateCommitRate: 3000,
+			urlCheckRate: 1000
 		};
 		// authentication
 		chrome.cookies.onChanged.addListener(changeInfo => {
 			if (changeInfo.cookie.name === 'sessionKey') {
-				console.log(`chrome.cookies.onChanged (${changeInfo.cause}/${changeInfo.cookie}/removed:${changeInfo.removed})`);
 				// clear cache
 				this._articles.clear();
 				// fire handler
@@ -60,10 +61,10 @@ export default class ServerApi {
 	private fetchJson<T>(request: Request) {
 		const removeRequest = () => {
 			this._requests.splice(this._requests.indexOf(request), 1)
-			this._onRequestChanged();
+			this._onRequestChanged(request.type);
 		};
 		this._requests.push(request);
-		this._onRequestChanged();
+		this._onRequestChanged(request.type);
 		return new Promise<T>((resolve, reject) => {
 			const req = new XMLHttpRequest();
 			req.withCredentials = true;
@@ -90,24 +91,24 @@ export default class ServerApi {
 		});
 	}
 	public findSource(tabId: number, hostname: string) {
-		return this.fetchJson<Source>(new Request('FindSource', tabId, null, 'GET', '/Extension/FindSource', { hostname }));
+		return this.fetchJson<Source>(new Request(RequestType.FindSource, tabId, null, 'GET', '/Extension/FindSource', { hostname }));
 	}
-	public getUserArticle(tabId: number, data: PageInfo) {
+	public registerPage(tabId: number, data: PageInfo) {
 		return this
 			.fetchJson<{
 				userArticle: UserArticle,
 				userPage: UserPage
-			}>(new Request('GetUserArticle', tabId, null, 'POST', '/Extension/GetUserArticle', data))
+			}>(new Request(RequestType.GetUserArticle, tabId, null, 'POST', '/Extension/GetUserArticle', data))
 			.then(result => {
 				this._articles.set(result.userArticle)
 				return result;
 			});
 	}
-	public getUserArticleFromCache(id: string) {
+	public getUserArticle(id: string) {
 		return Promise.resolve(this._articles.get(id));
 	}
-	public commitReadState(data: ReadStateCommitData) {
-		this.fetchJson<UserArticle>(new Request('CommitReadState', null, null, 'POST', '/Extension/CommitReadState', data))
+	public commitReadState(tabId: number, data: ReadStateCommitData) {
+		this.fetchJson<UserArticle>(new Request(RequestType.CommitReadState, tabId, null, 'POST', '/Extension/CommitReadState', data))
 			.then(userArticle => {
 				this._articles.set(userArticle);
 				this._onCacheUpdated();
@@ -116,11 +117,11 @@ export default class ServerApi {
 	public getRequests(tab: ContentScriptTab) {
 		return this._requests.filter(r => r.tabId === tab.id || (tab.articleId ? r.articleId === tab.articleId : false));
 	}
-	public get eventPageOptions() {
-		return this._eventPageOptions;
+	public get eventPageConfig() {
+		return this._eventPageConfig;
 	}
-	public get contentScriptOptions() {
-		return this._contentScriptOptions;
+	public get contentScriptConfig() {
+		return this._contentScriptConfig;
 	}
 	public getAuthStatus() {
 		return new Promise<boolean>((resolve, reject) => {

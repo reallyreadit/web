@@ -16,7 +16,8 @@ export default class ContentScriptApi {
 	constructor(handlers: {
 		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
 		onRegisterPage: (tabId: number, data: PageInfo) => Promise<UserPage>,
-		onCommitReadState: (data: ReadStateCommitData) => void,
+		onCommitReadState: (tabId: number, data: ReadStateCommitData) => void,
+		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -32,7 +33,10 @@ export default class ContentScriptApi {
 						.then(sendResponse);
 					return true;
 				case 'commitReadState':
-					handlers.onCommitReadState(message.data);
+					handlers.onCommitReadState(sender.tab.id, message.data);
+					break;
+				case 'unregisterPage':
+					handlers.onUnregisterPage(sender.tab.id);
 					break;
 				case 'unregisterContentScript':
 					handlers.onUnregisterContentScript(sender.tab.id);
@@ -41,10 +45,10 @@ export default class ContentScriptApi {
 			return undefined;
 		});
 	}
-	public reinitialize(tabId: number) {
-		return ContentScriptApi.sendMessage<void>(tabId, 'reinitialize');
+	public loadPage(tabId: number) {
+		return ContentScriptApi.sendMessage<void>(tabId, 'loadPage');
 	}
-	public terminate(tabId: number) {
-		return ContentScriptApi.sendMessage<void>(tabId, 'terminate');
+	public unloadPage(tabId: number) {
+		return ContentScriptApi.sendMessage<void>(tabId, 'unloadPage');
 	}
 }

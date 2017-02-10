@@ -26,9 +26,10 @@ export default class Line {
     }
     public readWord() {
         // read word
-        this._readState.readWord();				
+        const result = this._readState.readWord();
         // update overlay background
         this._setOverlayProgress();
+        return result;
     }
     public get readState() {
         return this._readState;

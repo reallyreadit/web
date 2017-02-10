@@ -30,8 +30,8 @@
     {
       "matches": [
         "*://localhost/projects/reallyreadit/*",
-        "*://medium.com/*",
-        "*://newyorker.com/*"
+        "*://*.medium.com/*",
+        "*://*.newyorker.com/*"
       ],
       "js": [
         "./content-scripts/bundle.js"

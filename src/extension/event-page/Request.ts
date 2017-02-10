@@ -1,6 +1,8 @@
+import RequestType from './RequestType';
+
 export default class Request {
 	constructor (
-		public readonly type: 'FindSource' | 'GetUserArticle' | 'CommitReadState',
+		public readonly type: RequestType,
 		public readonly tabId: number,
 		public readonly articleId: string,
 		public readonly method: 'GET' | 'POST',

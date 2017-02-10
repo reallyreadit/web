@@ -1,13 +1,16 @@
 window._parse = () => {
-    const article = document.querySelector('[itemtype="http://schema.org/NewsArticle"]');
-    return {
-        pageInfo: {
-            url: article.querySelector('[itemprop="mainEntityOfPage"]').getAttribute('content'),
-            number: 1,
-            article: {
-                title: article.querySelector('[itemprop="headline"]').textContent
-            }
-        },
-        element: article
-    };
+    const metaDataEl = document.querySelector('[itemtype="http://schema.org/NewsArticle"]');
+    if (metaDataEl) {
+        return {
+            pageInfo: {
+                url: metaDataEl.querySelector('[itemprop="mainEntityOfPage"]').getAttribute('content'),
+                number: 1,
+                article: {
+                    title: metaDataEl.querySelector('[itemprop="headline"]').textContent
+                }
+            },
+            element: metaDataEl
+        };
+    }
+    return null;
 };

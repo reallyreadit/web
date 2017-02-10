@@ -1,44 +1,8 @@
 import ReadState from './ReadState';
 import Line from './Line';
 import templates from './templates';
-
-interface Rect {
-    top: number,
-    left: number,
-    width: number,
-    height: number
-}
-
-function getLineHeight(block: Element) {
-    var blankText = templates.blankText,
-        lineHeight;
-    block.appendChild(blankText);
-    lineHeight = blankText.getBoundingClientRect().height;
-    blankText.remove();
-    return lineHeight;
-}
-function getContentRect(block: Element) {
-    var computedStyle = getComputedStyle(block),
-        border = {
-            top: parseInt(computedStyle.borderTopWidth),
-            right: parseInt(computedStyle.borderRightWidth),
-            bottom: parseInt(computedStyle.borderBottomWidth),
-            left: parseInt(computedStyle.borderLeftWidth)
-        },
-        padding = {
-            top: parseInt(computedStyle.paddingTop),
-            right: parseInt(computedStyle.paddingRight),
-            bottom: parseInt(computedStyle.paddingBottom),
-            left: parseInt(computedStyle.paddingLeft)
-        },
-        rect = block.getBoundingClientRect();
-    return {
-        top: window.pageYOffset + rect.top + border.top + padding.top,
-        left: rect.left + border.left + padding.left,
-        width: rect.width - border.left - padding.left - padding.right - border.right,
-        height: rect.height - border.top - padding.top - padding.bottom - border.bottom
-    };
-}
+import Rect from './Rect';
+import { getLineHeight, getContentRect } from './elementUtils';
 
 export default class Block {
     private _element: Element;
@@ -47,7 +11,7 @@ export default class Block {
     private _wordCount: number;
     private _lines: Line[];
     private _contentRect: Rect;
-    constructor(element: Element, overlay: HTMLElement, readStateDelegate?: (wordCount: number) => ReadState) {
+    constructor(element: Element, overlay: HTMLElement, pageRect: Rect) {
         // fields
         this._element = element;
         this._overlay = overlay;
@@ -56,7 +20,9 @@ export default class Block {
         this._lines = [];
         // init
         this._contentRect = getContentRect(element);
-        this._setLines(readStateDelegate !== undefined ? readStateDelegate(this._wordCount) : new ReadState([-this._wordCount]));
+        this._contentRect.top -= pageRect.top;
+        this._contentRect.left -= pageRect.left;
+        this._setLines(new ReadState([-this._wordCount]));
         this._setOverlayPosition();
     }
     private isLineReadable(line: Line) {
@@ -88,15 +54,16 @@ export default class Block {
         this._overlay.style.height = this._contentRect.height + 'px';
         this._overlay.style.width = this._contentRect.width + 'px';		
     }
-    public updateOffset() {
-        var contentRect = getContentRect(this._element);
+    public updateOffset(pageRect: Rect) {
+        const contentRect = getContentRect(this._element);
+        contentRect.top -= pageRect.top;
+        contentRect.left -= pageRect.left;
         if (contentRect.top !== this._contentRect.top ||
             contentRect.left !== this._contentRect.left ||
             contentRect.width !== this._contentRect.width ||
             contentRect.height !== this._contentRect.height) {
                 this._contentRect = contentRect;
-                var readState = this.getReadState();
-                this._setLines(readState);
+                this._setLines(this.getReadState());
                 this._setOverlayPosition();
         }		
     }
@@ -104,10 +71,11 @@ export default class Block {
         return this._lines.some(line => this.isLineReadable(line));
     }
     public readWord() {
-        var line = this._lines.filter(line => this.isLineReadable(line))[0];
-        if (line !== undefined) {
-            line.readWord();
+        var line = this._lines.find(line => this.isLineReadable(line));
+        if (line) {
+            return line.readWord();
         }
+        return false;
     }
     public getReadState() {
         return new ReadState(this._lines.map(function (line) {

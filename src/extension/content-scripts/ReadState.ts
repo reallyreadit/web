@@ -42,7 +42,11 @@ export default class ReadState {
             // update state
             if (this._state[0] === -1) {
                 this._state.splice(0, 1);
-                this._state[0]++;
+                if (this._state[0]) {
+                    this._state[0]++;
+                } else {
+                    this._state[0] = 1;
+                }
             } else {
                 if (this._state[0] > 0) {
                     this._state[0]++;
@@ -60,7 +64,9 @@ export default class ReadState {
             }
             // update words read
             this._wordsRead++;
+            return true;
         }
+        return false;
     }
     public slice(startIndex: number, count: number) {
         var index = 0,

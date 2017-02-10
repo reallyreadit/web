@@ -4,23 +4,33 @@ import ObjectStore from './ObjectStore';
 import ContentScriptTab from './ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
+import RequestType from './RequestType';
 
-console.log('loading eventPage.ts...');
+console.log('loading main.ts...');
 
 // server
 const serverApi = new ServerApi({
 	onAuthenticationStatusChanged: isAuthenticated => {
+		console.log('serverApi.onAuthenticationStatusChanged');
 		// update icon
 		updateIcon();
 		// signal content scripts
 		if (isAuthenticated) {
-			tabs.getAll().forEach(tab => contentScriptApi.reinitialize(tab.id));
+			tabs.getAll().forEach(tab => contentScriptApi.loadPage(tab.id));
 		} else {
-			tabs.getAll().forEach(tab => contentScriptApi.terminate(tab.id));
+			tabs.getAll().forEach(tab => contentScriptApi.unloadPage(tab.id));
 		}
 	},
-	onRequestChanged: updateIcon,
-	onCacheUpdated: updateIcon
+	onRequestChanged: type => {
+		if (type & (RequestType.FindSource | RequestType.GetUserArticle)) {
+			console.log('serverApi.onRequestChanged');
+			updateIcon();
+		}
+	},
+	onCacheUpdated: () => {
+		console.log('serverApi.onCacheUpdated');
+		updateIcon();
+	}
 });
 
 // tabs
@@ -29,19 +39,21 @@ const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'session', t => t
 // content script
 const contentScriptApi = new ContentScriptApi({
 	onRegisterContentScript: (tabId, url) => {
+		console.log('contentScriptApi.onRegisterContentScript');
 		// update tabs
 		tabs.set({ id: tabId });
 		// update icon
 		updateIcon();
-		// return source and options
+		// return source and config
 		return serverApi
 			.findSource(tabId, new URL(url).hostname)
-			.then(source => ({ source, options: serverApi.contentScriptOptions }));
+			.then(source => ({ source, config: serverApi.contentScriptConfig }));
 	},
 	onRegisterPage: (tabId, data) => {
+		console.log('contentScriptApi.onRegisterPage');
 		// get read state
 		return serverApi
-			.getUserArticle(tabId, data)
+			.registerPage(tabId, data)
 			.then(result => {
 				// update tabs
 				tabs.set({
@@ -54,11 +66,20 @@ const contentScriptApi = new ContentScriptApi({
 				return result.userPage;
 			});
 	},
-	onCommitReadState: data => {
+	onCommitReadState: (tabId, data) => {
+		console.log('contentScriptApi.onCommitReadState');
 		// commit read state
-		serverApi.commitReadState(data);
+		serverApi.commitReadState(tabId, data);
+	},
+	onUnregisterPage: tabId => {
+		console.log('contentScriptApi.onUnregisterPage');
+		// update tabs
+		tabs.set({ id: tabId });
+		// update icon
+		updateIcon();
 	},
 	onUnregisterContentScript: tabId => {
+		console.log('contentScriptApi.onUnregisterContentScript');
 		// update tabs
 		tabs.remove(tabId)
 		// update icon
@@ -79,15 +100,15 @@ function updateIcon() {
 					if (tab) {
 						// get article and pending requests
 						serverApi
-							.getUserArticleFromCache(tab.articleId)
+							.getUserArticle(tab.articleId)
 							.then(article => {
 								const pendingRequests = serverApi.getRequests(tab);
 								drawBrowserActionIcon(
 									'signedIn',
 									article ? article.percentComplete : 0,
-									article && article.percentComplete >= serverApi.eventPageOptions.articleUnlockThreshold ? 'unlocked' : 'locked'
+									article && article.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked'
 								);
-								browserActionBadge.set(pendingRequests.some(r => r.type === 'FindSource' || r.type === 'GetUserArticle') ? 'loading' : article ? article.commentCount : null);
+								browserActionBadge.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.GetUserArticle))) ? 'loading' : article ? article.commentCount : null);
 							});
 					} else {
 						// not one of our tabs

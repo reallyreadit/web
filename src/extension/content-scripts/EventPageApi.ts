@@ -14,16 +14,16 @@ export default class EventPageApi {
 		});
 	}
 	constructor(handlers: {
-		onReinitialize: () => void,
-		onTerminate: () => void
+		onLoadPage: () => void,
+		onUnloadPage: () => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
-				case 'reinitialize':
-					handlers.onReinitialize();
+				case 'loadPage':
+					handlers.onLoadPage();
 					break;
-				case 'terminate':
-					handlers.onTerminate();
+				case 'unloadPage':
+					handlers.onUnloadPage();
 					break;
 			}
 		});
@@ -36,6 +36,9 @@ export default class EventPageApi {
 	}
 	public commitReadState(data: ReadStateCommitData) {
 		return EventPageApi.sendMessage<void>('commitReadState', data);
+	}
+	public unregisterPage() {
+		return EventPageApi.sendMessage<void>('unregisterPage');
 	}
 	public unregisterContentScript() {
 		return EventPageApi.sendMessage<void>('unregisterContentScript');
