@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig",
+	"include": [
+		"src/extension/content-script",
+		"src/extension/common"
+	],
+	"exclude": [
+		"src/extension/content-script/source-parsers"
+	]
+}

@@ -1,7 +1,0 @@
-{
-	"extends": "./tsconfig",
-	"include": [
-		"src/extension/content-scripts",
-		"src/extension/common"
-	]
-}

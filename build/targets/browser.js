@@ -6,12 +6,12 @@ const project = require('../project'),
 const build = createBuild({
 	webpack: {
 		configFileName: 'tsconfig.browser.json',
-		entry: path.posix.join(project.srcDir, 'browser/main.ts')
+		entry: path.posix.join(project.srcDir, 'app/browser/main.ts')
 	},
-	scss: `${project.srcDir}/{browser,common}/**/*.{css,scss}`,
-	staticAssets: `${project.srcDir}/{browser,common}/**/*.{ico,ttf}`,
-	srcPath: path.posix.join(project.srcDir, 'browser'),
-	outPath: path.posix.join(project.devPath, 'browser')
+	scss: `${project.srcDir}/app/{browser,common}/**/*.{css,scss}`,
+	staticAssets: `${project.srcDir}/app/{browser,common}/**/*.{ico,ttf}`,
+	srcPath: path.posix.join(project.srcDir, 'app/browser'),
+	outPath: path.posix.join(project.devPath, 'app/browser')
 });
 
 module.exports = build;

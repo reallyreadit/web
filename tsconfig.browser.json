@@ -1,7 +1,7 @@
 {
 	"extends": "./tsconfig",
 	"include": [
-		"src/browser",
-		"src/common"
+		"src/app/browser",
+		"src/app/common"
 	]
 }

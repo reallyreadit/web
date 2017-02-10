@@ -7,8 +7,8 @@ const project = require('../../project'),
 	  tsConfig = require('../../../tsconfig.json');
 
 const srcGlob = [
-		`${project.srcDir}/extension/source-parsers/**/*.ts`,
-		`${project.srcDir}/extension/common/Window.d.ts`
+		`${project.srcDir}/extension/content-script/source-parsers/**/*.ts`,
+		`${project.srcDir}/extension/content-script/Window.d.ts`
 	  ],
 	  outPath = path.posix.join(project.devPath, 'extension/source-parsers');
 

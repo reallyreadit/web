@@ -29,12 +29,12 @@
   "content_scripts": [ 
     {
       "matches": [
-        "*://localhost/projects/reallyreadit/*",
+        "*://*.localhost/projects/reallyreadit/*",
         "*://*.medium.com/*",
         "*://*.newyorker.com/*"
       ],
       "js": [
-        "./content-scripts/bundle.js"
+        "./content-script/bundle.js"
       ]
     }
   ],

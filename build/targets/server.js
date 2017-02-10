@@ -7,8 +7,8 @@ const project = require('../project'),
 	  buildTypescript = require('../buildTypescript'),
 	  tsConfig = require('../../tsconfig.json');
 
-const srcGlob = `${project.srcDir}/{server,common}/**/*.{ts,tsx}`,
-	  outPath = path.posix.join(project.devPath, 'server');
+const srcGlob = `${project.srcDir}/app/{server,common}/**/*.{ts,tsx}`,
+	  outPath = path.posix.join(project.devPath, 'app/server');
 
 class Server {
 	constructor() {

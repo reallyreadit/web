@@ -4,7 +4,7 @@ const del = require('del'),
 const project = require('../project'),
 	  createBuild = require('../createBuild'),
 	  browserAction = require('./extension/browserAction'),
-	  contentScripts = require('./extension/contentScripts'),
+	  contentScript = require('./extension/contentScript'),
 	  eventPage = require('./extension/eventPage'),
 	  sourceParsers = require('./extension/sourceParsers');
 
@@ -24,7 +24,7 @@ function clean() {
 function build() {
 	return Promise.all([
 		browserAction.build(),
-		contentScripts.build(),
+		contentScript.build(),
 		eventPage.build(),
 		sourceParsers.build(),
 		staticAssets.build()
@@ -32,7 +32,7 @@ function build() {
 }
 function watch() {
 	browserAction.watch();
-	contentScripts.watch();
+	contentScript.watch();
 	eventPage.watch();
 	sourceParsers.watch();
 	staticAssets.watch();
