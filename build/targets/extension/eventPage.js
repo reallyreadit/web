@@ -6,11 +6,11 @@ const project = require('../../project'),
 const build = createBuild({
 	webpack: {
 		configFileName: 'tsconfig.extension.event-page.json',
-		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts')
+		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts'),
+		appConfig: true
 	},
 	staticAssets: `${project.srcDir}/extension/{event-page,common}/**/*.{html,ttf}`,
-	srcPath: path.posix.join(project.srcDir, 'extention/event-page'),
-	outPath: path.posix.join(project.devPath, 'extension/event-page')
+	path: 'extension/event-page'
 });
 
 module.exports = build;

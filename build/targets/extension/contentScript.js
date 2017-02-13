@@ -8,8 +8,7 @@ const build = createBuild({
 		configFileName: 'tsconfig.extension.content-script.json',
 		entry: path.posix.join(project.srcDir, 'extension/content-script/main.ts')
 	},
-	srcPath: path.posix.join(project.srcDir, 'extension/content-script'),
-	outPath: path.posix.join(project.devPath, 'extension/content-script')
+	path: 'extension/content-script'
 });
 
 module.exports = build;

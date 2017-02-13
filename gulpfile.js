@@ -1,6 +1,7 @@
 const gulp = require('gulp'),
-	  Server = require('./build/targets/Server.js'),
-	  browser = require('./build/targets/browser.js'),
+	  project = require('./build/project'),
+	  Server = require('./build/targets/Server'),
+	  browser = require('./build/targets/browser'),
 	  extension = require('./build/targets/extension');
 
 /**
@@ -11,19 +12,31 @@ gulp.task('build:dev:app', ['build:dev:server', 'build:dev:browser']);
 gulp.task('run:dev:app', ['run:dev:server', 'build:dev:browser']);
 gulp.task('watch:dev:app', ['watch:dev:server', 'watch:dev:browser']);
 
+gulp.task('clean:stage:app', ['clean:stage:server', 'clean:stage:browser']);
+gulp.task('build:stage:app', ['build:stage:server', 'build:stage:browser']);
+
 const server = new Server();
-gulp.task('clean:dev:server', server.clean);
-gulp.task('build:dev:server', server.build);
+gulp.task('clean:dev:server', () => server.clean(project.env.dev));
+gulp.task('build:dev:server', () => server.build(project.env.dev));
 gulp.task('run:dev:server', ['build:dev:server'], server.run);
 gulp.task('watch:dev:server', ['run:dev:server'], server.watch);
 
-gulp.task('clean:dev:browser', browser.clean);
-gulp.task('build:dev:browser', browser.build);
+gulp.task('clean:stage:server', () => server.clean(project.env.stage));
+gulp.task('build:stage:server', () => server.build(project.env.stage));
+
+gulp.task('clean:dev:browser', () => browser.clean(project.env.dev));
+gulp.task('build:dev:browser', () => browser.build(project.env.dev));
 gulp.task('watch:dev:browser', browser.watch);
+
+gulp.task('clean:stage:browser', () => browser.clean(project.env.stage));
+gulp.task('build:stage:browser', () => browser.build(project.env.stage));
 
 /**
  * extension
  */
-gulp.task('clean:dev:extension', extension.clean);
-gulp.task('build:dev:extension', extension.build);
-gulp.task('watch:dev:extension', extension.watch);
+gulp.task('clean:dev:extension', () => extension.clean(project.env.dev));
+gulp.task('build:dev:extension', () => extension.build(project.env.dev));
+gulp.task('watch:dev:extension', () => extension.watch());
+
+gulp.task('clean:stage:extension', () => extension.clean(project.env.stage));
+gulp.task('build:stage:extension', () => extension.build(project.env.stage));

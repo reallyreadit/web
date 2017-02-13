@@ -5,6 +5,7 @@ import Endpoint from '../api/Endpoint';
 export default (model: {
 	title: string,
 	content: string,
+	contentRootPath: string,
 	apiEndpoint: Endpoint,
 	apiInitData: Request[],
 	userInitData: UserAccount
@@ -14,8 +15,8 @@ export default (model: {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, user-scalable=no">
-		<link rel="icon" type="image/x-icon" href="/bin/dev/app/browser/images/favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="/bin/dev/app/browser/bundle.css" />
+		<link rel="icon" type="image/x-icon" href="${model.contentRootPath}/images/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="${model.contentRootPath}/bundle.css" />
 		<title>${model.title}</title>
 	</head>
 	<body>
@@ -25,6 +26,6 @@ export default (model: {
 			window._apiInitData = ${JSON.stringify(model.apiInitData)};
 			window._userInitData = ${JSON.stringify(model.userInitData)};
 		</script>
-		<script type="text/javascript" src="/bin/dev/app/browser/bundle.js"></script>
+		<script type="text/javascript" src="${model.contentRootPath}/bundle.js"></script>
 	</body>
 </html>`

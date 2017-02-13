@@ -1,5 +1,4 @@
-const del = require('del'),
-	  path = require('path');
+const del = require('del');
 
 const project = require('../project'),
 	  createBuild = require('../createBuild'),
@@ -8,26 +7,25 @@ const project = require('../project'),
 	  eventPage = require('./extension/eventPage'),
 	  sourceParsers = require('./extension/sourceParsers');
 
-const outPath = path.join(project.devPath, 'extension'),
-	  staticAssets = createBuild({
-		   staticAssets: [
-			   `${project.srcDir}/extension/icons/**`,
-			   `${project.srcDir}/extension/manifest.json`
-		   ],
-		   srcPath: path.posix.join(project.srcDir, 'extension'),
-		   outPath
-	  });
+const targetPath = 'extension',
+	staticAssets = createBuild({
+		staticAssets: [
+			`${project.srcDir}/extension/icons/**`,
+			`${project.srcDir}/extension/manifest.json`
+		],
+		path: targetPath
+	});
 
-function clean() {
-	return del(`${outPath}/*`);
+function clean(env) {
+	return del(project.getOutPath(targetPath, env) + '/*');
 }
-function build() {
+function build(env) {
 	return Promise.all([
-		browserAction.build(),
-		contentScript.build(),
-		eventPage.build(),
-		sourceParsers.build(),
-		staticAssets.build()
+		browserAction.build(env),
+		contentScript.build(env),
+		eventPage.build(env),
+		sourceParsers.build(env),
+		staticAssets.build(env)
 	]);
 }
 function watch() {

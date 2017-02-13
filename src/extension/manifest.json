@@ -24,7 +24,7 @@
   	"persistent": false
   },
   "externally_connectable": {
-    "matches": ["*://dev.reallyread.it/*"]
+    "matches": ["*://*.reallyread.it/*"]
   },
   "content_scripts": [ 
     {

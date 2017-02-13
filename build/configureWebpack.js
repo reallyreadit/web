@@ -1,39 +1,50 @@
-const path = require('path');
+const path = require('path'),
+	  fs = require('fs'),
+	  webpack = require('webpack');
 
 const project = require('./project');
 
 function configureWebpack(params) {
 	const tsConfig = {
-		configFileName: params.configFileName,
-		compilerOptions: {
-			sourceMap: true
-		}
-	};
-	return {
-		entry: params.entry,
-		devtool: 'source-map',
-		output: {
-			path: path.join(project.rootAbsPath, params.outputPath),
-			filename: 'bundle.js'
+			configFileName: params.configFileName,
+			compilerOptions: {}
 		},
-		resolve: {
-			extensions: ['', '.webpack.js', '.web.js', '.js', '.ts', '.tsx']
-		},
-		module: {
-			loaders: [
-				{
-					loader: `ts-loader?${JSON.stringify(tsConfig)}`,
-					test: /\.tsx?$/
-				}
-			],
-			preLoaders: [
-				{
-					loader: 'source-map-loader',
-					test: /\.js$/
-				}
-			]
-		}
-	};
+		webpackConfig = {
+			entry: params.entry,
+			output: {
+				path: path.join(project.rootAbsPath, project.getOutPath(params.path, params.env)),
+				filename: 'bundle.js'
+			},
+			resolve: {
+				extensions: ['.webpack.js', '.web.js', '.js', '.ts', '.tsx']
+			},
+			module: {
+				rules: [
+					{
+						test: /\.tsx?$/,
+						loader: 'ts-loader',
+						options: tsConfig
+					}
+				]
+			}
+		};
+	if (params.env === project.env.dev) {
+		tsConfig.compilerOptions.sourceMap = true;
+		webpackConfig.devtool = 'source-map';
+		webpackConfig.module.rules.push({
+			test: /\.js$/,
+			enforce: 'pre',
+			loader: 'source-map-loader'
+		});
+	}
+	if (params.appConfig) {
+		const config = JSON.parse(fs.readFileSync(path.posix.join(project.srcDir, params.path, `config.${params.env}.json`)).toString());
+		// TODO: FIX THIS!!!
+		config.api.protocol = JSON.stringify(config.api.protocol);
+		config.api.host = JSON.stringify(config.api.host);
+		webpackConfig.plugins = [new webpack.DefinePlugin({ config })];
+	}
+	return webpackConfig;
 }
 
 module.exports = configureWebpack;

@@ -9,31 +9,35 @@ const project = require('./project'),
 	  buildScss = require('./buildScss');
 
 function createBuild(params) {
-	let webpackConfig, staticAssetsParams;
-	if (params.webpack) {
-		webpackConfig = configureWebpack({
+	const srcPath = path.posix.join(project.srcDir, params.path)
+		  devOutPath = project.getOutPath(params.path, project.env.dev);
+	function getWebpackConfig(env) {
+		return configureWebpack({
 			configFileName: params.webpack.configFileName,
 			entry: './' + params.webpack.entry,
-			outputPath: params.outPath
+			appConfig: params.webpack.appConfig,
+			path: params.path,
+			env
 		});
 	}
 	return {
-		clean() {
-			return del(`${params.outPath}/*`);
+		clean(env) {
+			return del(project.getOutPath(params.path, env) + '/*');
 		},
-		build() {
-			const tasks = [];
+		build(env) {
+			const outPath = project.getOutPath(params.path, env),
+				  tasks = [];
 			if (params.webpack) {
-				tasks.push(new Promise((resolve, reject) => runWebpack(webpackConfig, resolve)));
+				tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig(env), resolve)));
 			}
 			if (params.scss) {
-				tasks.push(new Promise((resolve, reject) => buildScss(params.scss, params.outPath, resolve)));
+				tasks.push(new Promise((resolve, reject) => buildScss(params.scss, outPath, resolve)));
 			}
 			if (params.staticAssets) {
 				tasks.push(new Promise((resolve, reject) => buildStaticAssets({
 					src: params.staticAssets,
-					dest: params.outPath,
-					base: params.srcPath,
+					dest: outPath,
+					base: srcPath,
 					onComplete: resolve
 				})));
 			}
@@ -41,17 +45,17 @@ function createBuild(params) {
 		},
 		watch() {
 			if (params.webpack) {
-				runWebpack(Object.assign({}, webpackConfig, { watch: true }));
+				runWebpack(Object.assign({}, getWebpackConfig(project.env.dev), { watch: true }));
 			}
 			if (params.scss) {
-				buildScss(params.scss, params.outPath, () => delayedWatch(params.scss, () => buildScss(params.scss, params.outPath)));
+				buildScss(params.scss, devOutPath, () => delayedWatch(params.scss, () => buildScss(params.scss, devOutPath)));
 			}
 			if (params.staticAssets) {
 				buildStaticAssets({
 					src: params.staticAssets,
-					dest: params.outPath,
-					base: params.srcPath,
-					onComplete: () => delayedWatch(params.staticAssets, () => buildStaticAssets(params.staticAssets, params.outPath))
+					dest: devOutPath,
+					base: srcPath,
+					onComplete: () => delayedWatch(params.staticAssets, () => buildStaticAssets(params.staticAssets, devOutPath))
 				});
 			}
 		}

@@ -8,7 +8,7 @@ const project = require('../project'),
 	  tsConfig = require('../../tsconfig.json');
 
 const srcGlob = `${project.srcDir}/app/{server,common}/**/*.{ts,tsx}`,
-	  outPath = path.posix.join(project.devPath, 'app/server');
+	  targetPath = 'app/server';
 
 class Server {
 	constructor() {
@@ -17,14 +17,14 @@ class Server {
 		this.run = this.run.bind(this);
 		this.watch = this.watch.bind(this);
 	}
-	clean() {
-		return del(`${outPath}/*`);
+	clean(env) {
+		return del(project.getOutPath(targetPath, env) + '/*');
 	}
-	build() {
+	build(env) {
 		return buildTypescript({
 			src: srcGlob,
-			dest: outPath,
-			sourceMaps: true,
+			dest: project.getOutPath(targetPath, env),
+			sourceMaps: env === project.env.dev,
 			compilerOptions: tsConfig.compilerOptions
 		});
 	}
@@ -33,19 +33,14 @@ class Server {
 			.spawn('node', [
 				'--debug',
 				'--no-lazy',
-				path.join(outPath, 'server/main.js')
-			], {
-				stdio: 'inherit',
-				env: {
-					NODE_ENV: 'development'
-				}
-			});
+				path.join(project.getOutPath(targetPath, project.env.dev), 'server/main.js')
+			], { stdio: 'inherit' });
 	}
 	watch() {
 		return delayedWatch(
 			srcGlob, 
 			() => this.process
-				.on('exit', () => this.build().on('end', this.run))
+				.on('exit', () => this.build(project.env.dev).on('end', this.run))
 				.kill()
 		);
 	}

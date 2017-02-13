@@ -10,8 +10,7 @@ const build = createBuild({
 	},
 	scss: `${project.srcDir}/app/{browser,common}/**/*.{css,scss}`,
 	staticAssets: `${project.srcDir}/app/{browser,common}/**/*.{ico,ttf}`,
-	srcPath: path.posix.join(project.srcDir, 'app/browser'),
-	outPath: path.posix.join(project.devPath, 'app/browser')
+	path: 'app/browser'
 });
 
 module.exports = build;

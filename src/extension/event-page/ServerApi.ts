@@ -12,7 +12,7 @@ import ContentScriptTab from './ContentScriptTab';
 
 export default class ServerApi {
 	private static getUrl(path: string) {
-		return 'http://api.dev.reallyread.it' + path;
+		return `${config.api.protocol}://${config.api.host}` + path;
 	}
 	private static parseResponse(request: XMLHttpRequest, handler: (data: any) => void, defaultValue?: any) {
 		const contentType = request.getResponseHeader('Content-Type');
@@ -127,7 +127,7 @@ export default class ServerApi {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				chrome.cookies.get({
-					url: 'http://dev.reallyread.it',
+					url: `${config.api.protocol}://${config.api.host}`,
 					name: 'sessionKey'
 				}, cookie => resolve(!!cookie));
 			} catch (ex) {

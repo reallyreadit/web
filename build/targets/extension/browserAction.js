@@ -9,8 +9,7 @@ const build = createBuild({
 		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts')
 	},
 	staticAssets: `${project.srcDir}/extension/{browser-action,common}/**/*.html`,
-	srcPath: path.posix.join(project.srcDir, 'extension/browser-action'),
-	outPath: path.posix.join(project.devPath, 'extension/browser-action')
+	path: 'extension/browser-action'
 });
 
 module.exports = build;

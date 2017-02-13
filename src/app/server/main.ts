@@ -13,6 +13,7 @@ import routes from '../common/routes';
 import ServerUser from './ServerUser';
 import UserAccount from '../common/api/models/UserAccount';
 import Request from '../common/api/Request';
+import config from './config';
 
 const port = 5000;
 
@@ -49,8 +50,8 @@ http.createServer((req, res) => {
 			match({ routes, location: req.url }, (error, nextLocation, nextState) => {
 				const api = new ServerApi({
 						scheme: 'http',
-						host: 'api.dev.reallyread.it',
-						port: 80
+						host: 'localhost',
+						port: 4001
 					}, req.headers['cookie']),
 					pageTitle = new ServerPageTitle();
 				new Promise<UserAccount>((resolve, reject) => {
@@ -82,7 +83,12 @@ http.createServer((req, res) => {
 							res.end(renderHtml({
 								content,
 								title: pageTitle.get(),
-								apiEndpoint: api.getEndpoint(),
+								contentRootPath: config.contentRootPath,
+								apiEndpoint: {
+									scheme: config.api.protocol,
+									host: config.api.host,
+									port: config.api.port
+								},
 								apiInitData: api.getInitData(),
 								userInitData: user.getInitData()
 							}));

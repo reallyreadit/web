@@ -1,5 +1,4 @@
-const path = require('path'),
-	  del = require('del');
+const del = require('del');
 
 const project = require('../../project'),
 	  delayedWatch = require('../../delayedWatch'),
@@ -10,20 +9,20 @@ const srcGlob = [
 		`${project.srcDir}/extension/content-script/source-parsers/**/*.ts`,
 		`${project.srcDir}/extension/content-script/Window.d.ts`
 	  ],
-	  outPath = path.posix.join(project.devPath, 'extension/source-parsers');
+	  targetPath = 'extension/source-parsers';
 
-function clean() {
-	return del(`${outPath}/*`);
+function clean(env) {
+	return del(project.getOutPath(targetPath, env) + '/*');
 }
-function build() {
+function build(env) {
 	return buildTypescript({
 		src: srcGlob,
-		dest: outPath,
+		dest: project.getOutPath(targetPath, env),
 		compilerOptions: tsConfig.compilerOptions
 	});
 }
 function watch() {
-	return delayedWatch(srcGlob, build);
+	return delayedWatch(srcGlob, () => build(project.env.dev));
 }
 
 module.exports = {
