@@ -5,9 +5,11 @@ import Article from '../api/models/Article';
 import Fetchable from '../api/Fetchable';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
+import Button from './Button';
 
 export default class MyAccountPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
-	private _handleSignOut = () => this.context.router.push('/');
+	private _redirectToHomepage = () => this.context.router.push('/');
+	private _refresh = () => this.setState({ articles: this.context.api.listUserArticles(articles => this.setState({ articles })) });
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		this.state = {
@@ -18,15 +20,15 @@ export default class MyAccountPage extends ContextComponent<{}, { articles: Fetc
 		this.context.pageTitle.set('My Account');
 	}
 	public componentDidMount() {
-		this.context.user.addListener('signOut', this._handleSignOut);
+		this.context.user.addListener('signOut', this._redirectToHomepage);
 	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('signOut', this._handleSignOut);
+		this.context.user.removeListener('signOut', this._redirectToHomepage);
 	}
 	public render() {
 		return (
 			<div className="my-account-page">
-				<h3>My Articles</h3>
+				<h3>My Articles <Button onClick={this._refresh} state={this.state.articles.isLoading ? 'disabled' : 'normal'}>Refresh</Button></h3>
 				<ArticleList>
 					{this.state.articles.isLoading ?
 						<li>Loading...</li> :

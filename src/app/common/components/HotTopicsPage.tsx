@@ -5,6 +5,7 @@ import Article from '../api/models/Article';
 import Fetchable from '../api/Fetchable';
 import ArticleDetails from './ArticleDetails';
 import ArticleList from './ArticleList';
+import Button from './Button';
 
 export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
 	private _refresh = () => this.setState({ articles: this.context.api.listArticles(articles => this.setState({ articles })) });
@@ -30,6 +31,7 @@ export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetc
 	public render() {
 		return (
 			<div className="hot-topics-page">
+				<Button onClick={this._refresh} state={this.state.articles.isLoading ? 'disabled' : 'normal'}>Refresh</Button>
 				<ArticleList>
 					{this.state.articles.isLoading ?
 						<li>Loading...</li> :

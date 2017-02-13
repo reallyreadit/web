@@ -22,7 +22,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 }> {
 	private _slug: string;
 	private _updateCommentText = (event: React.FormEvent<HTMLTextAreaElement>) => this.setState({ commentText: (event.target as HTMLTextAreaElement).value });
-	private _refreshComments = () => this.setState({
+	private _refresh = () => this.setState({
 		article: this.context.api.getArticleDetails(this._slug, article => this.setState({ article })),
 		comments: this.context.api.listComments(this._slug, comments => this.setState({ comments }))
 	});
@@ -35,12 +35,12 @@ export default class ArticlePage extends ContextComponent<Props, {
 					commentText: '',
 					isPosting: false
 				});
-				this._refreshComments();
+				this._refresh();
 			});
 	};
 	private _handleUserChange = () => {
 		this.forceUpdate();
-		this._refreshComments();
+		this._refresh();
 	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
@@ -75,6 +75,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 	public render() {
 		return (
 			<div className="article-page">
+				<Button onClick={this._refresh} state={this.state.article.isLoading || this.state.comments.isLoading ? 'disabled' : 'normal'}>Refresh</Button>
 				<ArticleList>
 					{this.state.article.isLoading ?
 						<li>Loading...</li> :
