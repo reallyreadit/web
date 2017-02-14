@@ -36,7 +36,7 @@ const serverApi = new ServerApi({
 });
 
 // tabs
-const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'session', t => t.id);
+const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'local', t => t.id);
 
 // browser action
 new BrowserActionApi({
@@ -181,6 +181,13 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.setItem('showOverlay', JSON.stringify(false));
 	// clear storage
 	serverApi.clearCache();
+	tabs.clear();
+	// update icon
+	updateIcon();
+});
+chrome.runtime.onStartup.addListener(() => {
+	console.log('chrome.tabs.onStartup');
+	// clear tabs
 	tabs.clear();
 	// update icon
 	updateIcon();

@@ -15,7 +15,12 @@ export default class ObjectStore<K, V> {
 		}
 		this._getKey = getKey;
 		// clear the storage in case it's uninitialized/corrupted
-		if (!this.readItems()) {
+		// JSON.parse can throw an exception
+		try {
+			if (!this.readItems()) {
+				this.clear();
+			}
+		} catch (ex) {
 			this.clear();
 		}
 	}
