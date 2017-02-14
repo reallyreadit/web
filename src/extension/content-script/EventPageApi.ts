@@ -7,7 +7,7 @@ export default class EventPageApi {
 	private static sendMessage<T>(type: string, data?: {}) {
 		return new Promise<T>((resolve, reject) => {
 			try {
-				chrome.runtime.sendMessage({ type, data }, resolve);
+				chrome.runtime.sendMessage({ to: 'eventPage', type, data }, resolve);
 			} catch (ex) {
 				reject();
 			}
@@ -15,7 +15,8 @@ export default class EventPageApi {
 	}
 	constructor(handlers: {
 		onLoadPage: () => void,
-		onUnloadPage: () => void
+		onUnloadPage: () => void,
+		onShowOverlay: (value: boolean) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
@@ -24,6 +25,9 @@ export default class EventPageApi {
 					break;
 				case 'unloadPage':
 					handlers.onUnloadPage();
+					break;
+				case 'showOverlay':
+					handlers.onShowOverlay(message.data);
 					break;
 			}
 		});

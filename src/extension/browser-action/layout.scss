@@ -1,0 +1,44 @@
+@font-face {
+	font-family: 'Adler';
+	src: url('./Adler.ttf');
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: monospace;
+	font-size: 11px;
+	white-space: nowrap;
+}
+
+h1 {
+	font-family: 'Adler';
+	font-size: 14pt;
+	text-align: center;
+	margin: 0;
+	padding: 12px 0 0 0;
+}
+
+table {
+	margin: 5px;
+}
+th {
+	text-align: right;
+	font-weight: bold;
+}
+td {
+	width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+th,
+td {
+	line-height: 22px;
+}
+td.null {
+	color: #999;
+}
+
+input {
+	vertical-align: middle;
+}

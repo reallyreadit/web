@@ -1,24 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>reallyread.it Extension's Popup</title>
-    <style>
-      body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
-      }
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 400px;
-      }
-    </style>
-    <script type="text/javascript" src="./bundle.js"></script>
-  </head>
-  <body>
-    <h1>Hello!</h1>
-  </body>
+	<head>
+		<link rel="stylesheet" type="text/css" href="./bundle.css" />
+	</head>
+	<body>
+		<h1>reallyread.it</h1>
+		<table>
+			<tbody>
+				<tr>
+					<th>Authenticated:</th>
+					<td>
+						<input type="checkbox" name="authenticated" disabled />
+					</td>
+				</tr>
+				<tr>
+					<th>Article title:</th>
+					<td data-name="articleTitle"></td>
+				</tr>
+				<tr>
+					<th>Settings:</th>
+					<td>
+						<label><input type="checkbox" name="showOverlay" />Show overlay</label>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<script type="text/javascript" src="./bundle.js"></script>
+	</body>
 </html>
-

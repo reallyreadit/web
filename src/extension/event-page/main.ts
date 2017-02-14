@@ -1,10 +1,12 @@
 import drawBrowserActionIcon from './drawBrowserActionIcon';
-import BrowserActionBadge from './BrowserActionBadge';
+import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import ObjectStore from './ObjectStore';
 import ContentScriptTab from './ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
 import RequestType from './RequestType';
+import BrowserActionApi from './BrowserActionApi';
+import UserArticle from '../common/UserArticle';
 
 console.log('loading main.ts...');
 
@@ -36,6 +38,21 @@ const serverApi = new ServerApi({
 // tabs
 const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'session', t => t.id);
 
+// browser action
+new BrowserActionApi({
+	onGetState: () => getState().then(state => ({
+		isAuthenticated: state.isAuthenticated,
+		userArticle: state.userArticle,
+		showOverlay: JSON.parse(localStorage.getItem('showOverlay'))
+	})),
+	onUpdateShowOverlay: showOverlay => {
+		// update settings
+		localStorage.setItem('showOverlay', JSON.stringify(showOverlay));
+		// update tabs
+		tabs.getAll().forEach(tab => contentScriptApi.showOverlay(tab.id, showOverlay));
+	}
+});
+
 // content script
 const contentScriptApi = new ContentScriptApi({
 	onRegisterContentScript: (tabId, url) => {
@@ -47,7 +64,11 @@ const contentScriptApi = new ContentScriptApi({
 		// return source and config
 		return serverApi
 			.findSource(tabId, new URL(url).hostname)
-			.then(source => ({ source, config: serverApi.contentScriptConfig }));
+			.then(source => ({
+				config: serverApi.contentScriptConfig,
+				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
+				source
+			}));
 	},
 	onRegisterPage: (tabId, data) => {
 		console.log('contentScriptApi.onRegisterPage');
@@ -87,63 +108,77 @@ const contentScriptApi = new ContentScriptApi({
 	}
 });
 
-// icon interface
-const browserActionBadge = new BrowserActionBadge();
-function updateIcon() {
-	console.log('\tupdateIcon');
-	serverApi
-		.getAuthStatus()
-		.then(isAuthenticated => {
-			if (isAuthenticated) {
-				getFocusedTab(chromeTab => {
-					const tab = tabs.get(chromeTab.id);
-					if (tab) {
-						// get article and pending requests
-						serverApi
-							.getUserArticle(tab.articleId)
-							.then(article => {
-								const pendingRequests = serverApi.getRequests(tab);
-								drawBrowserActionIcon(
-									'signedIn',
-									article ? article.percentComplete : 0,
-									article && article.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked'
-								);
-								browserActionBadge.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.GetUserArticle))) ? 'loading' : article ? article.commentCount : null);
-							});
-					} else {
-						// not one of our tabs
-						drawBrowserActionIcon('signedIn', 0, 'locked');
-						browserActionBadge.set();
-					}
-				});
+// query current state
+function getState() {
+	return Promise
+		.all([
+			serverApi.getAuthStatus(),
+			getFocusedTab()
+		])
+		.then<{
+			isAuthenticated: boolean,
+			focusedTab: ContentScriptTab,
+			userArticle: UserArticle
+		}>(values => {
+			let focusedTab: ContentScriptTab;
+			if (values[0] && (focusedTab = tabs.get(values[1].id))) {
+				return new Promise(resolve => serverApi
+					.getUserArticle(focusedTab.articleId)
+					.then(userArticle => resolve({ isAuthenticated: true, focusedTab, userArticle })));
 			} else {
-				// signed out
-				drawBrowserActionIcon('signedOut', 0, 'locked');
-				browserActionBadge.set();
+				return Promise.resolve({
+					isAuthenticated: values[0],
+					focusedTab: focusedTab,
+					userArticle: null
+				});
 			}
 		});
 }
 
-// tab helpers
-function getActiveTab(window: chrome.windows.Window) {
-	return window.tabs.find(t => t.active);
+// icon interface
+const browserActionBadgeApi = new BrowserActionBadgeApi();
+function updateIcon() {
+	console.log('\tupdateIcon');
+	getState().then(state => {
+		if (state.isAuthenticated) {
+			if (state.focusedTab) {
+				// get pending requests
+				const pendingRequests = serverApi.getRequests(state.focusedTab);
+				drawBrowserActionIcon(
+					'signedIn',
+					state.userArticle ? state.userArticle.percentComplete : 0,
+					state.userArticle && state.userArticle.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked'
+				);
+				browserActionBadgeApi.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.GetUserArticle))) ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
+			} else {
+				// not one of our tabs
+				drawBrowserActionIcon('signedIn', 0, 'locked');
+				browserActionBadgeApi.set();
+			}
+		} else {
+			// signed out
+			drawBrowserActionIcon('signedOut', 0, 'locked');
+			browserActionBadgeApi.set();
+		}
+	});
 }
-function getFocusedWindow(callback: (window: chrome.windows.Window) => void) {
-	chrome.windows.getLastFocused(
+
+// tab helpers
+function getFocusedTab() {
+	return new Promise<chrome.tabs.Tab>(resolve => chrome.windows.getLastFocused(
 		{
 			populate: true,
 			windowTypes: ['normal']
 		},
-		callback
-	);
-}
-function getFocusedTab(callback: (tab: chrome.tabs.Tab) => void) {
-	getFocusedWindow(w => callback(getActiveTab(w)));
+		window => resolve(window.tabs.find(tab => tab.active))
+	));
 }
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('chrome.runtime.onInstalled');
+	// initialize settings
+	localStorage.setItem('showOverlay', JSON.stringify(false));
 	// clear storage
 	serverApi.clearCache();
 	tabs.clear();

@@ -8,7 +8,8 @@ const build = createBuild({
 		configFileName: 'tsconfig.extension.browser-action.json',
 		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts')
 	},
-	staticAssets: `${project.srcDir}/extension/{browser-action,common}/**/*.html`,
+	scss: `${project.srcDir}/extension/browser-action/**/*.{css,scss}`,
+	staticAssets: `${project.srcDir}/extension/browser-action/**/*.{html,ttf}`,
 	path: 'extension/browser-action'
 });
 

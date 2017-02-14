@@ -10,12 +10,19 @@ let isReading = false,
 		path: string,
 		page?: Page
 	} = { path: window.location.pathname },
-	config: ContentScriptConfig;
+	config: ContentScriptConfig,
+	showOverlay: boolean;
 
 // event page interface
 const eventPageApi = new EventPageApi({
 	onLoadPage: loadPage,
-	onUnloadPage: unloadPage
+	onUnloadPage: unloadPage,
+	onShowOverlay: value => {
+		showOverlay = value;
+		if (context.page) {
+			context.page.showOverlay(value);
+		}
+	}
 });
 
 // timers
@@ -101,7 +108,7 @@ function loadPage() {
 	unloadPage().then(() => {
 		const parseResult = window._parse();
 		if (parseResult) {
-			context.page = new Page(parseResult.element);
+			context.page = new Page(parseResult.element, showOverlay);
 			eventPageApi
 				.registerPage({
 					...parseResult.pageInfo,
@@ -151,6 +158,7 @@ eventPageApi
 		console.log('initializing content script...');
 		eval(initData.source.parser)
 		config = initData.config;
+		showOverlay = initData.showOverlay;
 		timers.checkUrl = window.setInterval(checkUrl, initData.config.urlCheckRate);
 		loadPage();
 	});

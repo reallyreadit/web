@@ -3,6 +3,7 @@ import ContentScriptConfig from './ContentScriptConfig';
 
 interface ContentScriptInitData {
 	source: Source,
-	config: ContentScriptConfig
+	config: ContentScriptConfig,
+	showOverlay: boolean
 }
 export default ContentScriptInitData;

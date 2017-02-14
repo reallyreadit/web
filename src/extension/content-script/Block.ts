@@ -11,7 +11,7 @@ export default class Block {
     private _wordCount: number;
     private _lines: Line[];
     private _contentRect: Rect;
-    constructor(element: Element, overlay: HTMLElement, pageRect: Rect) {
+    constructor(element: Element, overlay: HTMLElement, overlayContainerRect: Rect) {
         // fields
         this._element = element;
         this._overlay = overlay;
@@ -20,10 +20,8 @@ export default class Block {
         this._lines = [];
         // init
         this._contentRect = getContentRect(element);
-        this._contentRect.top -= pageRect.top;
-        this._contentRect.left -= pageRect.left;
         this._setLines(new ReadState([-this._wordCount]));
-        this._setOverlayPosition();
+        this._setOverlayPosition(overlayContainerRect);
     }
     private isLineReadable(line: Line) {
         return this._contentRect.top + line.top >= window.pageYOffset &&
@@ -48,24 +46,22 @@ export default class Block {
             wordCount += lineWordCount;
         }
     }
-    private _setOverlayPosition() {
-        this._overlay.style.top = this._contentRect.top + 'px';
-        this._overlay.style.left = this._contentRect.left + 'px';
+    private _setOverlayPosition(overlayContainerRect: Rect) {
+        this._overlay.style.top = this._contentRect.top - overlayContainerRect.top + 'px';
+        this._overlay.style.left = this._contentRect.left - overlayContainerRect.left + 'px';
         this._overlay.style.height = this._contentRect.height + 'px';
         this._overlay.style.width = this._contentRect.width + 'px';		
     }
-    public updateOffset(pageRect: Rect) {
+    public updateOffset(overlayContainerRect: Rect) {
         const contentRect = getContentRect(this._element);
-        contentRect.top -= pageRect.top;
-        contentRect.left -= pageRect.left;
-        if (contentRect.top !== this._contentRect.top ||
-            contentRect.left !== this._contentRect.left ||
-            contentRect.width !== this._contentRect.width ||
-            contentRect.height !== this._contentRect.height) {
+        // if (contentRect.top !== this._contentRect.top ||
+        //     contentRect.left !== this._contentRect.left ||
+        //     contentRect.width !== this._contentRect.width ||
+        //     contentRect.height !== this._contentRect.height) {
                 this._contentRect = contentRect;
                 this._setLines(this.getReadState());
-                this._setOverlayPosition();
-        }		
+                this._setOverlayPosition(overlayContainerRect);
+        //}		
     }
     public isReadable() {
         return this._lines.some(line => this.isLineReadable(line));

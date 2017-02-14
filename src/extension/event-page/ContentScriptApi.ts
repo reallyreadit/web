@@ -21,26 +21,28 @@ export default class ContentScriptApi {
 		onUnregisterContentScript: (tabId: number) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			switch (message.type) {
-				case 'registerContentScript':
-					handlers
-						.onRegisterContentScript(sender.tab.id, message.data)
-						.then(sendResponse);
-					return true;
-				case 'registerPage':
-					handlers
-						.onRegisterPage(sender.tab.id, message.data)
-						.then(sendResponse);
-					return true;
-				case 'commitReadState':
-					handlers.onCommitReadState(sender.tab.id, message.data);
-					break;
-				case 'unregisterPage':
-					handlers.onUnregisterPage(sender.tab.id);
-					break;
-				case 'unregisterContentScript':
-					handlers.onUnregisterContentScript(sender.tab.id);
-					break;
+			if (message.to === 'eventPage') {
+				switch (message.type) {
+					case 'registerContentScript':
+						handlers
+							.onRegisterContentScript(sender.tab.id, message.data)
+							.then(sendResponse);
+						return true;
+					case 'registerPage':
+						handlers
+							.onRegisterPage(sender.tab.id, message.data)
+							.then(sendResponse);
+						return true;
+					case 'commitReadState':
+						handlers.onCommitReadState(sender.tab.id, message.data);
+						break;
+					case 'unregisterPage':
+						handlers.onUnregisterPage(sender.tab.id);
+						break;
+					case 'unregisterContentScript':
+						handlers.onUnregisterContentScript(sender.tab.id);
+						break;
+				}
 			}
 			return undefined;
 		});
@@ -50,5 +52,8 @@ export default class ContentScriptApi {
 	}
 	public unloadPage(tabId: number) {
 		return ContentScriptApi.sendMessage<void>(tabId, 'unloadPage');
+	}
+	public showOverlay(tabId: number, value: boolean) {
+		return ContentScriptApi.sendMessage<void>(tabId, 'showOverlay', value);
 	}
 }

@@ -1,4 +1,4 @@
-export default class BrowserActionBadge {
+export default class BrowserActionBadgeApi {
 	private _frameIndex = 0;
 	private _frameCount = 5;
 	private _animationInterval: number;
