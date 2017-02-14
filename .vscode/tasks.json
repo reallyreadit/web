@@ -9,7 +9,7 @@
 	],
 	"tasks": [
 		{
-			"taskName": "build:dev"
+			"taskName": "build:dev:app"
 		}
 	]
 }

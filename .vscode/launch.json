@@ -5,21 +5,16 @@
 			"name": "Launch Dev Server",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/src/server/cli.js",
+			"program": "${workspaceRoot}/src/app/server/main.ts",
 			"stopOnEntry": false,
 			"args": [],
 			"cwd": "${workspaceRoot}",
-			"preLaunchTask": "build:dev",
+			"preLaunchTask": "build:dev:app",
 			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
+			"runtimeArgs": ["--nolazy"],
 			"console": "internalConsole",
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/bin/dev/server"
+			"outFiles": ["${workspaceRoot}/bin/dev/app/server/**/*.js"]
 		},
 		{
 			"name": "Attach to Dev Server",
@@ -29,7 +24,7 @@
 			"address": "localhost",
 			"restart": false,
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/bin/dev/server",
+			"outFiles": ["${workspaceRoot}/bin/dev/app/server/**/*.js"],
 			"localRoot": "${workspaceRoot}",
 			"remoteRoot": null
 		},
@@ -40,7 +35,7 @@
 			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
 			"stopOnEntry": false,
 			"args": [
-				"build:dev:extension"
+				"build:dev:app"
 			],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
@@ -48,12 +43,8 @@
 			"runtimeArgs": [
 				"--nolazy"
 			],
-			"env": {
-				"NODE_ENV": "development"
-			},
 			"console": "internalConsole",
-			"sourceMaps": false,
-			"outDir": null
+			"sourceMaps": false
 		}
 	]
 }
