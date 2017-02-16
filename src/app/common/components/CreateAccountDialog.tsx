@@ -2,10 +2,10 @@ import * as React from 'react';
 import Context from '../Context';
 import InputField from './InputField';
 import InputFieldState from './InputFieldState';
-import Dialog from './Dialog';
+import Dialog, { DialogState } from './Dialog';
 import CancelablePromise from '../CancelablePromise';
 
-export default class CreateAccountDialog extends Dialog<{}, {
+export default class CreateAccountDialog extends Dialog<{}, Partial<DialogState> & {
 	nameError?: string,
 	emailError?: string
 }> {

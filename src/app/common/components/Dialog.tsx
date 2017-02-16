@@ -5,10 +5,11 @@ import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import CancelablePromise from '../CancelablePromise';
 
-abstract class Dialog<P, S> extends PureContextComponent<P, S & {
+interface DialogState {
 	isLoading: boolean,
 	showErrors: boolean
-}> {
+}
+abstract class Dialog<P, S extends Partial<DialogState>> extends PureContextComponent<P, S> {
 	private submitPromise: CancelablePromise<any>;
 	private handleSubmit = () => {
 		this.setState({ showErrors: true });
@@ -55,4 +56,5 @@ abstract class Dialog<P, S> extends PureContextComponent<P, S & {
 		);
 	}
 }
+export { DialogState };
 export default Dialog;
