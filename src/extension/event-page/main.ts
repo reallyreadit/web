@@ -56,7 +56,7 @@ new BrowserActionApi({
 // content script
 const contentScriptApi = new ContentScriptApi({
 	onRegisterContentScript: (tabId, url) => {
-		console.log('contentScriptApi.onRegisterContentScript');
+		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
 		// update tabs
 		tabs.set({ id: tabId });
 		// update icon
@@ -71,7 +71,7 @@ const contentScriptApi = new ContentScriptApi({
 			}));
 	},
 	onRegisterPage: (tabId, data) => {
-		console.log('contentScriptApi.onRegisterPage');
+		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
 		// get read state
 		return serverApi
 			.registerPage(tabId, data)
@@ -88,19 +88,19 @@ const contentScriptApi = new ContentScriptApi({
 			});
 	},
 	onCommitReadState: (tabId, data) => {
-		console.log('contentScriptApi.onCommitReadState');
+		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
 		serverApi.commitReadState(tabId, data);
 	},
 	onUnregisterPage: tabId => {
-		console.log('contentScriptApi.onUnregisterPage');
+		console.log(`contentScriptApi.onUnregisterPage (tabId: ${tabId})`);
 		// update tabs
 		tabs.set({ id: tabId });
 		// update icon
 		updateIcon();
 	},
 	onUnregisterContentScript: tabId => {
-		console.log('contentScriptApi.onUnregisterContentScript');
+		console.log(`contentScriptApi.onUnregisterContentScript (tabId: ${tabId})`);
 		// update tabs
 		tabs.remove(tabId)
 		// update icon
@@ -113,7 +113,10 @@ function getState() {
 	return Promise
 		.all([
 			serverApi.getAuthStatus(),
-			getFocusedTab()
+			new Promise<chrome.tabs.Tab>(resolve => chrome.tabs.query({
+				active: true,
+				currentWindow: true
+			}, result => resolve(result[0])))
 		])
 		.then<{
 			isAuthenticated: boolean,
@@ -161,17 +164,6 @@ function updateIcon() {
 			browserActionBadgeApi.set();
 		}
 	});
-}
-
-// tab helpers
-function getFocusedTab() {
-	return new Promise<chrome.tabs.Tab>(resolve => chrome.windows.getLastFocused(
-		{
-			populate: true,
-			windowTypes: ['normal']
-		},
-		window => resolve(window.tabs.find(tab => tab.active))
-	));
 }
 
 // chrome event handlers
