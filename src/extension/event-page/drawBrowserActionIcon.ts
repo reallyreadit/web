@@ -49,7 +49,7 @@ function drawProgressBar(percentComplete: number, articleStatus: ArticleStatus, 
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	// draw progress bar
-	ctx.fillStyle = articleStatus === 'locked' ? 'rgba(255,0,0,0.35)' : 'rgba(0,255,0,0.35)';
+	ctx.fillStyle = articleStatus === 'locked' ? 'pink' : 'palegreen';
 	ctx.fillRect(0, ctx.canvas.height - barHeight, ctx.canvas.width, barHeight);
 	ctx.restore();
 }
