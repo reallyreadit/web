@@ -20,10 +20,12 @@ export default class MainView extends PureContextComponent<{}, {}> {
 		return (
 			<div className="main-view">
 				<header>
-					<div className="logo" dangerouslySetInnerHTML={{ __html: logo() }}></div>
-					<Link to="/">						
-						<h1>reallyread.it</h1>
+					<Link to="/">
+						<div className="logo" dangerouslySetInnerHTML={{ __html: logo() }}></div>				
 					</Link>
+					<h1>
+						<Link to="/">reallyread.it</Link>
+					</h1>
 					<AccountManager />
 				</header>
 				<h2>{this.context.pageTitle.get()}</h2>

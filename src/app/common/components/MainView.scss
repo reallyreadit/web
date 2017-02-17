@@ -9,23 +9,23 @@
 		display: flex;
 		flex-flow: row;
 		align-items: center;
-		.logo {
-			width: 200px;
-			text-align: center;
-			svg {
-				width: 48px;
-			}
+	}
+	header > a {
+		width: 200px;
+		text-align: center;
+		svg {
+			width: 48px;
 		}
-		a {
-			flex: 1 1 auto;
-			text-align: center;
-			text-decoration: none;
-			color: #000;
-			h1 {
-				font-family: 'Adler';
-				font-size: 36px;
-			}
-		}
+	}
+	header > h1 {
+		flex: 1 1 auto;
+		text-align: center;
+		font-family: 'Adler';
+		font-size: 36px;
+	}
+	header > h1 > a {
+		text-decoration: none;
+		color: #000;
 	}
 	h2 {
 		text-align: center;
