@@ -123,17 +123,15 @@ function getState() {
 			focusedTab: ContentScriptTab,
 			userArticle: UserArticle
 		}>(values => {
+			const isAuthenticated = values[0],
+				  focusedChromeTab = values[1];
 			let focusedTab: ContentScriptTab;
-			if (values[0] && (focusedTab = tabs.get(values[1].id))) {
+			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
 				return new Promise(resolve => serverApi
 					.getUserArticle(focusedTab.articleId)
 					.then(userArticle => resolve({ isAuthenticated: true, focusedTab, userArticle })));
 			} else {
-				return Promise.resolve({
-					isAuthenticated: values[0],
-					focusedTab: focusedTab,
-					userArticle: null
-				});
+				return Promise.resolve({ isAuthenticated });
 			}
 		});
 }
