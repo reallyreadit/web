@@ -7,6 +7,7 @@ import Comment from '../api/models/Comment';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
 import Button from './Button';
+import readingParameters from '../../../common/readingParameters';
 
 interface Props {
 	params: {
@@ -73,6 +74,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 			.removeListener('signOut', this._handleUserChange);
 	}
 	public render() {
+		const isAllowedToPost = this.state.article.value && this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
 		return (
 			<div className="article-page">
 				<Button onClick={this._refresh} state={this.state.article.isLoading || this.state.comments.isLoading ? 'disabled' : 'normal'}>Refresh</Button>
@@ -103,7 +105,8 @@ export default class ArticlePage extends ContextComponent<Props, {
 						<hr />
 						<textarea value={this.state.commentText} onChange={this._updateCommentText} />
 						<br />
-						<Button style="preferred" state={this.state.isPosting ? 'busy' : 'normal'} onClick={this._postComment}>Post Comment</Button>
+						<Button style="preferred" state={this.state.isPosting ? 'busy' : isAllowedToPost ? 'normal' : 'disabled'} onClick={this._postComment}>Post Comment</Button>
+						{this.state.article.value && !isAllowedToPost ? <span> - You have to read the article before you can comment!</span> : null}
 					</div> : null}
 			</div>
 		);
