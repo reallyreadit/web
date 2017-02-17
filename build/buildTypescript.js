@@ -9,7 +9,7 @@ const project = require('./project');
 function buildTypescript(params) {
 	let tsProject = typeScript.createProject(params.compilerOptions),
 		task = gulp
-			.src(params.src)
+			.src(params.src, { base: project.srcDir })
 			.pipe(changed(params.dest, { extension: '.js' }));
 	if (params.sourceMaps) {
 		task = task.pipe(sourcemaps.init());

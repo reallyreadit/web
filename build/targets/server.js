@@ -7,7 +7,10 @@ const project = require('../project'),
 	  buildTypescript = require('../buildTypescript'),
 	  tsConfig = require('../../tsconfig.json');
 
-const srcGlob = `${project.srcDir}/app/{server,common}/**/*.{ts,tsx}`,
+const srcGlob = [
+		  `${project.srcDir}/app/{server,common}/**/*.{ts,tsx}`,
+		  `${project.srcDir}/common/**/*.{ts,tsx}`
+	  ],
 	  targetPath = 'app/server';
 
 class Server {
@@ -33,7 +36,7 @@ class Server {
 			.spawn('node', [
 				'--debug',
 				'--no-lazy',
-				path.join(project.getOutPath(targetPath, project.env.dev), 'server/main.js')
+				path.join(project.getOutPath(targetPath, project.env.dev), 'app/server/main.js')
 			], { stdio: 'inherit' });
 	}
 	watch() {
