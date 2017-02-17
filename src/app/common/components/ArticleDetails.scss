@@ -12,6 +12,9 @@
 		color: magenta;
 	}
 	.percent-complete {
-		color: mediumspringgreen;
+		color: salmon
+	}
+	.percent-complete.unlocked {
+		color: springgreen
 	}
 }
