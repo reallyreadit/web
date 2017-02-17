@@ -8,10 +8,10 @@ export default (article: Article) => {
 	const slugParts = article.slug.split('_');
 	return (
 		<div className="article-details">
-			<span className="title"><Link to={`/articles/${slugParts[0]}/${slugParts[1]}`}>{article.title}</Link></span><br />
+			<span className="title"><a href={article.url} target="_blank">{article.title}</a></span><br />
 			<span className="source">[{article.source}{article.author ? ` - ${article.author}` : ''}]</span>
 			<span> - </span>
-			<span className="comment-count">{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</span>
+			<span className="comment-count"><Link to={`/articles/${slugParts[0]}/${slugParts[1]}`}>{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</Link></span>
 			{article.percentComplete ? <span> - </span> : null}
 			{article.percentComplete ?
 				<span className={className('percent-complete', { unlocked: article.percentComplete >= readingParameters.articleUnlockThreshold })}>Percent Complete: {article.percentComplete}%</span> :

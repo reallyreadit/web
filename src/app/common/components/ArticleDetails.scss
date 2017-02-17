@@ -1,5 +1,5 @@
 .article-details {
-	.title {
+	.title > a {
 		color: blue;
 		display: inline-block;
 		margin: 0 0 3px 0;
@@ -8,7 +8,7 @@
 	.source {
 		color: mediumorchid;
 	}
-	.comment-count {
+	.comment-count > a {
 		color: magenta;
 	}
 	.percent-complete {
