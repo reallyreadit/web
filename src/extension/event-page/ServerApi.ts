@@ -9,6 +9,7 @@ import ReadStateCommitData from '../common/ReadStateCommitData';
 import Request from './Request';
 import RequestType from './RequestType';
 import ContentScriptTab from './ContentScriptTab';
+import readingParameters from '../../common/readingParameters';
 
 export default class ServerApi {
 	private static getUrl(path: string) {
@@ -35,7 +36,7 @@ export default class ServerApi {
 	}) {
 		// configs
 		this._eventPageConfig = {
-			articleUnlockThreshold: 90
+			articleUnlockThreshold: readingParameters.articleUnlockThreshold
 		};
 		this._contentScriptConfig = {
 			wordReadRate: 100,
