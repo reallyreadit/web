@@ -1,6 +1,6 @@
 import ContentScriptInitData from '../common/ContentScriptInitData';
 import ReadStateCommitData from '../common/ReadStateCommitData';
-import PageInfo from '../common/PageInfo';
+import ParseResult from '../common/ParseResult';
 import UserPage from '../common/UserPage';
 
 export default class ContentScriptApi {
@@ -15,7 +15,7 @@ export default class ContentScriptApi {
 	}
 	constructor(handlers: {
 		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
-		onRegisterPage: (tabId: number, data: PageInfo) => Promise<UserPage>,
+		onRegisterPage: (tabId: number, data: ParseResult) => Promise<UserPage>,
 		onCommitReadState: (tabId: number, data: ReadStateCommitData) => void,
 		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void
@@ -26,7 +26,7 @@ export default class ContentScriptApi {
 					case 'registerContentScript':
 						handlers
 							.onRegisterContentScript(sender.tab.id, message.data)
-							.then(sendResponse);
+							.then(sendResponse)
 						return true;
 					case 'registerPage':
 						handlers
@@ -55,5 +55,8 @@ export default class ContentScriptApi {
 	}
 	public showOverlay(tabId: number, value: boolean) {
 		return ContentScriptApi.sendMessage<void>(tabId, 'showOverlay', value);
+	}
+	public updateHistoryState(tabId: number, url: string) {
+		return ContentScriptApi.sendMessage<void>(tabId, 'updateHistoryState', url);
 	}
 }

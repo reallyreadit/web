@@ -10,23 +10,35 @@ export default class BrowserApi extends Api {
 		super(endpoint);
 		this.reqStore = new RequestStore(requestData);
 	}
-	private static parseResponse(request: XMLHttpRequest, handler: (data: any) => void, defaultValue?: any) {
-		const contentType = request.getResponseHeader('Content-Type');
-		if (contentType && contentType.startsWith('application/json')) {
-			handler(JSON.parse(request.responseText));
-		} else {
-			handler(defaultValue);
-		}
-	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
 			const req = new XMLHttpRequest();
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
-				if (this.status === 200) {
-					BrowserApi.parseResponse(this, resolve);
-				} else {
-					BrowserApi.parseResponse(this, reject, []);
+				switch (this.status) {
+					case 200:
+						if (parseInt(this.getResponseHeader('Content-Length'))) {
+							resolve(JSON.parse(this.responseText));
+						} else {
+							resolve();
+						}
+						break;
+					case 400:
+						// TODO: update api server to always return JSON on bad request response
+						const contentType = this.getResponseHeader('Content-Type');
+						if (contentType && contentType.startsWith('application/json')) {
+							reject(JSON.parse(this.responseText));
+						} else {
+							reject([]);
+						}
+						break;
+					case 401:
+						// TODO: should probably notify user, sign out and redirect if applicable
+						reject(['Unauthenticated']);
+						break;
+					default:
+						reject([]);
+						break;
 				}
 			});
 			req.addEventListener('error', function () {
@@ -61,7 +73,7 @@ export default class BrowserApi extends Api {
 				.catch(reason => callback({
 					isLoading: false,
 					isSuccessful: false,
-					errors: reason instanceof Array ? reason : []  
+					errors: reason
 				}));
 			return {
 				isLoading: true

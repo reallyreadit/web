@@ -20,11 +20,31 @@ export default class ServerApi extends Api {
 				path: params.path + params.getQueryString(),
 				...(this._cookie ? { headers: { 'Cookie': this._cookie } } : {})
 			}, res => {
-				let body = '';
-				res.on('data', chunk => body += chunk);
-				res.on('end', () => resolve(JSON.parse(body)));
+				switch (res.statusCode) {
+					case 200:
+						let body = '';
+						res.on('data', chunk => body += chunk)
+							.on('end', () => resolve(JSON.parse(body)));
+						break;
+					case 400:
+						// TODO: update api server to always return JSON on bad request response
+						if (res.headers['content-type'] && res.headers['content-type'].startsWith('application/json')) {
+							let body = '';
+							res.on('data', chunk => body += chunk)
+								.on('end', () => reject(JSON.parse(body)));
+						} else {
+							reject([]);
+						}
+						break;
+					case 401:
+						reject(['Unauthenticated']);
+						break;
+					default:
+						reject([]);
+						break;
+				}
 			})
-			.on('error', reject));
+			.on('error', () => reject([])));
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (this.isInitialized) {
@@ -52,9 +72,6 @@ export default class ServerApi extends Api {
 				.getJson(req)
 				.then(value => req.responseData = value)))
 			.then(() => this.isInitialized = true);
-	}
-	public getEndpoint() {
-		return this.endpoint;
 	}
 	public getInitData() {
 		return this.reqStore.requests;

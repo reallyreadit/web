@@ -1,6 +1,7 @@
 import Page from './Page';
 import EventPageApi from './EventPageApi';
 import ContentScriptConfig from '../common/ContentScriptConfig';
+import parseDocument from './parseDocument';
 
 console.log('loading main.ts...');
 
@@ -14,6 +15,8 @@ let isReading = false,
 	showOverlay: boolean;
 
 // event page interface
+let historyStateUpdatedTimeout: number;
+
 const eventPageApi = new EventPageApi({
 	onLoadPage: loadPage,
 	onUnloadPage: unloadPage,
@@ -22,6 +25,19 @@ const eventPageApi = new EventPageApi({
 		if (context.page) {
 			context.page.showOverlay(value);
 		}
+	},
+	onHistoryStateUpdated: url => {
+		// throttle updates
+		window.clearTimeout(historyStateUpdatedTimeout);
+		historyStateUpdatedTimeout = window.setTimeout(() => {
+			const newPath = new URL(url).pathname;
+			if (newPath !== context.path) {
+				console.log('url changed...');
+				context.path = newPath;
+				// TODO: gotta come up with a more robust way to detect page changes
+				setTimeout(loadPage, 2000);
+			}
+		}, 250);
 	}
 });
 
@@ -32,11 +48,9 @@ const timers: {
 		rate?: number
 	},
 	updatePageOffset?: number,
-	commitReadState?: number,
-	checkUrl?: number
+	commitReadState?: number
 } = { readWord: {} };
 
-// intervalic functions
 function readWord() {
 	if (context.page.readWord()) {
 		if (context.page.isRead()) {
@@ -47,12 +61,12 @@ function readWord() {
 			console.log('resuming reading...');
 			window.clearInterval(timers.readWord.handle);
 			timers.readWord = {
-				handle: window.setInterval(readWord, config.wordReadRate),
-				rate: config.wordReadRate
+				handle: window.setInterval(readWord, config.readWordRate),
+				rate: config.readWordRate
 			};
 			timers.commitReadState = window.setInterval(commitReadState, config.readStateCommitRate);
 		}
-	} else if (timers.readWord.rate === config.wordReadRate) {
+	} else if (timers.readWord.rate === config.readWordRate) {
 		console.log('suspending reading...');
 		window.clearInterval(timers.readWord.handle);
 		timers.readWord = {
@@ -70,13 +84,6 @@ function commitReadState() {
 	eventPageApi
 		.commitReadState(context.page.getReadStateCommitData())
 		.catch(unloadPage);
-}
-function checkUrl() {
-	if (window.location.pathname !== context.path) {
-		console.log('url changed...');
-		context.path = window.location.pathname;
-		loadPage();
-	}
 }
 
 // reading lifecycle
@@ -106,14 +113,12 @@ function stopReading() {
 function loadPage() {
 	console.log('loadPage');
 	unloadPage().then(() => {
-		const parseResult = window._parse();
-		if (parseResult) {
-			context.page = new Page(parseResult.element, showOverlay);
+		const parseResult = parseDocument();
+		const articleEl = document.getElementsByTagName('article')[0];
+		if (parseResult.url && parseResult.article.title && articleEl) {
+			context.page = new Page(articleEl, showOverlay);
 			eventPageApi
-				.registerPage({
-					...parseResult.pageInfo,
-					wordCount: parseResult.pageInfo.wordCount ? parseResult.pageInfo.wordCount : context.page.wordCount
-				})
+				.registerPage({ ...parseResult, wordCount: context.page.wordCount })
 				.then(userPage => {
 					console.log('initializing page...');
 					context.page.initialize(userPage);
@@ -121,10 +126,7 @@ function loadPage() {
 						startReading();
 					}
 				})
-				.catch(() => {
-					context.page.remove();
-					context.page = null;
-				});
+				.catch(unloadPage);
 		}
 	});
 }
@@ -156,11 +158,11 @@ eventPageApi
 	.registerContentScript(window.location)
 	.then(initData => {
 		console.log('initializing content script...');
-		eval(initData.source.parser)
 		config = initData.config;
 		showOverlay = initData.showOverlay;
-		timers.checkUrl = window.setInterval(checkUrl, initData.config.urlCheckRate);
-		loadPage();
+		if (initData.loadPage) {	
+			loadPage();
+		}
 	});
 
 // debug

@@ -1,8 +1,7 @@
 interface ContentScriptConfig {
-	wordReadRate: number,
+	readWordRate: number,
 	idleReadRate: number,
 	pageOffsetUpdateRate: number,
-	readStateCommitRate: number,
-	urlCheckRate: number
+	readStateCommitRate: number
 }
 export default ContentScriptConfig;

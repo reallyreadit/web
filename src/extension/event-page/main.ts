@@ -63,11 +63,11 @@ const contentScriptApi = new ContentScriptApi({
 		updateIcon();
 		// return source and config
 		return serverApi
-			.findSource(tabId, new URL(url).hostname)
-			.then(source => ({
+			.getAuthStatus()
+			.then(isAuthenticated => ({
 				config: serverApi.contentScriptConfig,
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
-				source
+				loadPage: isAuthenticated
 			}));
 	},
 	onRegisterPage: (tabId, data) => {
@@ -197,3 +197,7 @@ chrome.windows.onFocusChanged.addListener(
 	},
 	{ windowTypes: ['normal'] }
 );
+chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
+	console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
+	contentScriptApi.updateHistoryState(details.tabId, details.url);
+});

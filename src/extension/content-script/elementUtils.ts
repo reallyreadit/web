@@ -30,3 +30,6 @@ export function getContentRect(block: Element) {
         height: rect.height - border.top - padding.top - padding.bottom - border.bottom
     };
 }
+export function getElementAttribute<T extends Element>(element: Element, selector: (element: T) => string) {
+	return element ? selector(element as T) : null;
+}

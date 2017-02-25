@@ -5,17 +5,17 @@ const gulp = 		require('gulp'),
 
 const mapSourceRoot = require('./mapSourceRoot');
 
-function buildScss(src, dest, onComplete) {
+function buildScss(params) {
 	return gulp
-		.src(src)
+		.src(params.src, { base: params.base })
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
 		.pipe(concat('bundle.css'))
 		.pipe(sourcemaps.write('.', {
-			sourceRoot: file => mapSourceRoot(file, dest)
+			sourceRoot: file => mapSourceRoot(file, params.dest)
 		}))
-		.pipe(gulp.dest(dest))
-		.on('end', onComplete || function () {});
+		.pipe(gulp.dest(params.dest))
+		.on('end', params.onComplete || function () {});
 }
 
 module.exports = buildScss;

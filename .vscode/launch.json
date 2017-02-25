@@ -35,7 +35,7 @@
 			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
 			"stopOnEntry": false,
 			"args": [
-				"build:dev:app"
+				"watch:dev:browser"
 			],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,

@@ -1,10 +1,10 @@
 import EventPageConfig from './EvetPageConfig';
 import ContentScriptConfig from '../common/ContentScriptConfig';
-import Source from '../common/Source';
+import Source from './Source';
 import UserArticle from '../common/UserArticle';
 import UserPage from '../common/UserPage';
 import ObjectStore from './ObjectStore';
-import PageInfo from '../common/PageInfo';
+import ParseResult from '../common/ParseResult';
 import ReadStateCommitData from '../common/ReadStateCommitData';
 import Request from './Request';
 import RequestType from './RequestType';
@@ -14,14 +14,6 @@ import readingParameters from '../../common/readingParameters';
 export default class ServerApi {
 	private static getUrl(path: string) {
 		return `${config.api.protocol}://${config.api.host}` + path;
-	}
-	private static parseResponse(request: XMLHttpRequest, handler: (data: any) => void, defaultValue?: any) {
-		const contentType = request.getResponseHeader('Content-Type');
-		if (contentType && contentType.startsWith('application/json')) {
-			handler(JSON.parse(request.responseText));
-		} else {
-			handler(defaultValue);
-		}
 	}
 	private _eventPageConfig: EventPageConfig;
 	private _contentScriptConfig: ContentScriptConfig;
@@ -39,11 +31,10 @@ export default class ServerApi {
 			articleUnlockThreshold: readingParameters.articleUnlockThreshold
 		};
 		this._contentScriptConfig = {
-			wordReadRate: 100,
+			readWordRate: 100,
 			idleReadRate: 3000,
 			pageOffsetUpdateRate: 3000,
-			readStateCommitRate: 3000,
-			urlCheckRate: 1000
+			readStateCommitRate: 3000
 		};
 		// authentication
 		chrome.cookies.onChanged.addListener(changeInfo => {
@@ -71,10 +62,31 @@ export default class ServerApi {
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
 				removeRequest();
-				if (this.status === 200) {
-					ServerApi.parseResponse(this, resolve);
-				} else {
-					ServerApi.parseResponse(this, reject, []);
+				switch (this.status) {
+					case 200:
+						if (parseInt(this.getResponseHeader('Content-Length'))) {
+							resolve(JSON.parse(this.responseText));
+						} else {
+							resolve();
+						}
+						break;
+					case 400:
+						// TODO: update api server to always return JSON on bad request response
+						const contentType = this.getResponseHeader('Content-Type');
+						if (contentType && contentType.startsWith('application/json')) {
+							reject(JSON.parse(this.responseText));
+						} else {
+							reject([]);
+						}
+						break;
+					case 401:
+						// cookie will be cleared by http response
+						// auth logic handled by cookie change listener
+						reject(['Unauthenticated']);
+						break;
+					default:
+						reject([]);
+						break;
 				}
 			});
 			req.addEventListener('error', function () {
@@ -94,7 +106,7 @@ export default class ServerApi {
 	public findSource(tabId: number, hostname: string) {
 		return this.fetchJson<Source>(new Request(RequestType.FindSource, tabId, null, 'GET', '/Extension/FindSource', { hostname }));
 	}
-	public registerPage(tabId: number, data: PageInfo) {
+	public registerPage(tabId: number, data: ParseResult) {
 		return this
 			.fetchJson<{
 				userArticle: UserArticle,

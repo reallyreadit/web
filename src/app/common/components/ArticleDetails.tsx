@@ -8,8 +8,14 @@ export default (article: Article) => {
 	const slugParts = article.slug.split('_');
 	return (
 		<div className="article-details">
-			<span className="title"><a href={article.url} target="_blank">{article.title}</a></span><br />
-			<span className="source">[{article.source}{article.author ? ` - ${article.author}` : ''}]</span>
+			<div className="top-row">
+				<div className="title">
+					<a href={article.url} target="_blank">{article.title}</a>
+					{article.tags.length ? article.tags.map(tag => <span key={tag} className="tag">{tag}</span>) : null}
+				</div>
+				{article.description ? <span className="description">{article.description}</span> : null}
+			</div>
+			<span className="source">[{article.source}{article.section ? ' >> ' + article.section : ''}{article.authors.length ? ' - ' + article.authors.join(', ') : ''}]</span>
 			<span> - </span>
 			<span className="comment-count"><Link to={`/articles/${slugParts[0]}/${slugParts[1]}`}>{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</Link></span>
 			{article.percentComplete ? <span> - </span> : null}

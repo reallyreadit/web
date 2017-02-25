@@ -22,7 +22,7 @@ http.createServer((req, res) => {
 			fs.readFile(`.${req.url}`, (error, content) => {
 				if (error) {
 					res.writeHead(500);
-					res.end('Error 500');
+					res.end('Server Error');
 				} else {
 					let contentType: string;
 					switch (path.extname(url.parse(req.url).pathname)) {
@@ -57,42 +57,52 @@ http.createServer((req, res) => {
 				new Promise<UserAccount>((resolve, reject) => {
 						if (api.hasSessionKey()) {
 							api.getJson(new Request('/UserAccounts/GetUserAccount'))
-								.then((userAccount: UserAccount) => userAccount !== null ?
-									resolve(userAccount) : resolve(undefined));
+								.then((userAccount: UserAccount) => resolve(userAccount))
+								.catch((errors: string[]) => {
+									if (errors.some(e => e === 'Unauthenticated')) {
+										res.setHeader('Set-Cookie', 'sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=dev.reallyread.it; path=/');
+									}
+									resolve();
+								});
 						} else {
-							resolve(undefined);
+							resolve();
 						}
 					})
 					.then(userAccount => {
-						const user = new ServerUser(userAccount),
-							  appElement = React.createElement(
-									App,
-									{ api, pageTitle, user },
-									React.createElement(RouterContext, nextState)
-								);
-						// call renderToString first to capture all the api requests
-						ReactDOMServer.renderToString(appElement);
-						api.processRequests().then(() => {
-							// call renderToString again to render with api request results
+						if (!userAccount && url.parse(req.url).pathname === '/account') {
+							res.writeHead(302, { 'Location': '/' });
+							res.end();
+						} else {
+							const user = new ServerUser(userAccount),
+								appElement = React.createElement(
+										App,
+										{ api, pageTitle, user },
+										React.createElement(RouterContext, nextState)
+									);
+							// call renderToString first to capture all the api requests
 							ReactDOMServer.renderToString(appElement);
-							// one more call is needed since the page title renders before
-							// the pages which in turn set the page title in any async manner
-							const content = ReactDOMServer.renderToString(appElement);
-							// return the content and init data
-							res.setHeader('content-type', 'text/html');
-							res.end(renderHtml({
-								content,
-								title: pageTitle.get(),
-								contentRootPath: config.contentRootPath,
-								apiEndpoint: {
-									scheme: config.api.protocol,
-									host: config.api.host,
-									port: config.api.port
-								},
-								apiInitData: api.getInitData(),
-								userInitData: user.getInitData()
-							}));
-						});
+							api.processRequests().then(() => {
+								// call renderToString again to render with api request results
+								ReactDOMServer.renderToString(appElement);
+								// one more call is needed since the page title renders before
+								// the pages which in turn set the page title in any async manner
+								const content = ReactDOMServer.renderToString(appElement);
+								// return the content and init data
+								res.setHeader('content-type', 'text/html');
+								res.end(renderHtml({
+									content,
+									title: pageTitle.get(),
+									contentRootPath: config.contentRootPath,
+									apiEndpoint: {
+										scheme: config.api.protocol,
+										host: config.api.host,
+										port: config.api.port
+									},
+									apiInitData: api.getInitData(),
+									userInitData: user.getInitData()
+								}));
+							});
+						}
 					});
 			});
 		}

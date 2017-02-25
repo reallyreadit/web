@@ -1,6 +1,6 @@
 import ContentScriptInitData from '../common/ContentScriptInitData';
 import ReadStateCommitData from '../common/ReadStateCommitData';
-import PageInfo from '../common/PageInfo';
+import ParseResult from '../common/ParseResult';
 import UserPage from '../common/UserPage';
 
 export default class EventPageApi {
@@ -16,7 +16,8 @@ export default class EventPageApi {
 	constructor(handlers: {
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
-		onShowOverlay: (value: boolean) => void
+		onShowOverlay: (value: boolean) => void,
+		onHistoryStateUpdated: (url: string) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
@@ -29,13 +30,16 @@ export default class EventPageApi {
 				case 'showOverlay':
 					handlers.onShowOverlay(message.data);
 					break;
+				case 'updateHistoryState':
+					handlers.onHistoryStateUpdated(message.data);
+					break;
 			}
 		});
 	}
 	public registerContentScript(location: Location) {
 		return EventPageApi.sendMessage<ContentScriptInitData>('registerContentScript', location.toString());
 	}
-	public registerPage(data: PageInfo) {
+	public registerPage(data: ParseResult) {
 		return EventPageApi.sendMessage<UserPage>('registerPage', data);
 	}
 	public commitReadState(data: ReadStateCommitData) {

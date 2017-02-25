@@ -1,9 +1,27 @@
 .article-details {
 	.title > a {
 		color: blue;
-		display: inline-block;
-		margin: 0 0 3px 0;
 		text-decoration: underline;
+	}
+	.title > .tag {
+		white-space: nowrap;
+		margin: 0 1px;
+		color: lightgray;
+		border: 1px dotted lightgray;
+		border-radius: 3px;
+		padding: 0 1px;
+	}
+	.title > .tag:first-of-type {
+		margin-left: 3px;
+	}
+	.description {
+		display: block;
+		font-size: smaller;
+		color: lightblue;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		margin-top: 1px;
 	}
 	.source {
 		color: mediumorchid;

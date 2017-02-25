@@ -24,14 +24,14 @@
   	"persistent": false
   },
   "externally_connectable": {
-    "matches": ["*://*.reallyread.it/*"]
+    "matches": [
+      "*://*.reallyread.it/*"
+    ]
   },
   "content_scripts": [ 
     {
       "matches": [
-        "*://*.localhost/projects/reallyreadit/*",
-        "*://*.medium.com/*",
-        "*://*.newyorker.com/*"
+        "*://*/*"
       ],
       "js": [
         "./content-script/bundle.js"
@@ -39,7 +39,8 @@
     }
   ],
   "permissions": [
+    "*://*.reallyread.it/*",
     "cookies",
-    "*://*.reallyread.it/*"
+    "webNavigation"
   ]
 }

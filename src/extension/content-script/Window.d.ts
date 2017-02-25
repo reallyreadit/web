@@ -1,4 +1,4 @@
-import ParseResult from './ParseResult';
+import ParseResult from '../common/ParseResult';
 
 declare global {
 	interface Window {
