@@ -3,6 +3,12 @@
 		color: blue;
 		text-decoration: underline;
 	}
+	.title > .word-count {
+		color: darkgray;
+		font-size: 12px;
+		margin: 0 3px;
+		white-space: nowrap;
+	}
 	.title > .tag {
 		white-space: nowrap;
 		margin: 0 1px;
@@ -16,12 +22,15 @@
 	}
 	.description {
 		display: block;
-		font-size: smaller;
+		font-size: 11px;
 		color: lightblue;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		margin-top: 1px;
+	}
+	.date-published {
+		color: hotpink;
 	}
 	.source {
 		color: mediumorchid;
