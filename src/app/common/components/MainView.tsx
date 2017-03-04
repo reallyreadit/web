@@ -5,6 +5,7 @@ import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import DialogManager from './DialogManager';
 import AccountManager from './AccountManager';
+import ReadReadinessBar from './ReadReadinessBar';
 
 export default class MainView extends PureContextComponent<{}, {}> {
 	constructor(props: {}, context: Context) {
@@ -19,6 +20,7 @@ export default class MainView extends PureContextComponent<{}, {}> {
 	public render() {
 		return (
 			<div className="main-view">
+				<ReadReadinessBar />
 				<header>
 					<Link to="/">
 						<div className="logo" dangerouslySetInnerHTML={{ __html: logo() }}></div>				

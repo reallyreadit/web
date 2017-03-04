@@ -14,6 +14,7 @@ import ServerUser from './ServerUser';
 import UserAccount from '../common/api/models/UserAccount';
 import Request from '../common/api/Request';
 import config from './config';
+import ServerExtension from './ServerExtension';
 
 const port = 5000;
 
@@ -76,7 +77,13 @@ http.createServer((req, res) => {
 							const user = new ServerUser(userAccount),
 								appElement = React.createElement(
 										App,
-										{ api, pageTitle, user },
+										{
+											api,
+											pageTitle,
+											user,
+											extension: new ServerExtension(),
+											environment: 'server'
+										},
 										React.createElement(RouterContext, nextState)
 									);
 							// call renderToString first to capture all the api requests
@@ -99,7 +106,8 @@ http.createServer((req, res) => {
 										port: config.api.port
 									},
 									apiInitData: api.getInitData(),
-									userInitData: user.getInitData()
+									userInitData: user.getInitData(),
+									extensionId: config.extensionId
 								}));
 							});
 						}

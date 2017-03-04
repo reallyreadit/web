@@ -6,6 +6,7 @@ declare global {
 	interface Window {
 		_apiEndpoint: Endpoint,
 		_apiInitData: RequestData[],
-		_userInitData: UserAccount
+		_userInitData: UserAccount,
+		_extensionId: string
 	}
 }

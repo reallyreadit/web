@@ -6,6 +6,7 @@ import BrowserPageTitle from './BrowserPageTitle';
 import { Router, browserHistory } from 'react-router';
 import routes from '../common/routes';
 import BrowserUser from './BrowserUser';
+import BrowserExtension from './BrowserExtension';
 
 const api = new BrowserApi(window._apiEndpoint, window._apiInitData),
 	  pageTitle = new BrowserPageTitle(document.title);
@@ -13,7 +14,13 @@ const api = new BrowserApi(window._apiEndpoint, window._apiInitData),
 ReactDOM.render(
 	React.createElement(
 		App,
-		{ api, pageTitle, user: new BrowserUser(window._userInitData) },
+		{
+			api,
+			pageTitle,
+			user: new BrowserUser(window._userInitData),
+			extension: new BrowserExtension(window._extensionId),
+			environment: 'browser'
+		},
 		React.createElement(
 			Router,
 			{ history: browserHistory },

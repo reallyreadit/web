@@ -8,7 +8,8 @@ export default (model: {
 	contentRootPath: string,
 	apiEndpoint: Endpoint,
 	apiInitData: Request[],
-	userInitData: UserAccount
+	userInitData: UserAccount,
+	extensionId: string
 }) => 
 `<!DOCTYPE html>
 <html lang="en">
@@ -25,6 +26,7 @@ export default (model: {
 			window._apiEndpoint = ${JSON.stringify(model.apiEndpoint)};
 			window._apiInitData = ${JSON.stringify(model.apiInitData)};
 			window._userInitData = ${JSON.stringify(model.userInitData)};
+			window._extensionId = ${JSON.stringify(model.extensionId)};
 		</script>
 		<script type="text/javascript" src="${model.contentRootPath}/bundle.js"></script>
 	</body>
