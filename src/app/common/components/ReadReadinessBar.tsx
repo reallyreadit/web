@@ -3,6 +3,7 @@ import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 
 export default class ReadReadinessBar extends PureContextComponent<{}, {}> {
+    private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
     constructor(props: {}, context: Context) {
         super(props, context);
         if (context.environment === 'browser') {
@@ -15,7 +16,7 @@ export default class ReadReadinessBar extends PureContextComponent<{}, {}> {
                 this.context.extension.isInstalled() === false ?
                     <div className="read-readiness-bar">
                         {this.context.extension.isBrowserCompatible() ?
-                            <span>Click here to install the Chrome extension!</span> :
+                            <span>Click <a onClick={this._installExtension}>here</a> to install the Chrome extension!</span> :
                             <span>You gotta use Chrome to install our extension!</span>}
                     </div> :
                     null :

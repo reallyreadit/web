@@ -7,4 +7,7 @@ export default class ServerExtension extends Extension {
     public isBrowserCompatible() {
         return false;
     }
+    public getExtensionId() {
+        return '';
+    }
 }

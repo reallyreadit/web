@@ -28,4 +28,7 @@ export default class BrowserExtension extends Extension {
     public isBrowserCompatible() {
         return window.navigator.userAgent.indexOf('Chrome') !== -1;
     }
+    public getExtensionId() {
+        return this._extensionId;
+    }
 }
