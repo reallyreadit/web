@@ -82,7 +82,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 					{this.state.article.isLoading ?
 						<li>Loading...</li> :
 						this.state.article.isSuccessful ?
-							<li><ArticleDetails {...this.state.article.value} /></li> :
+							<li><ArticleDetails article={this.state.article.value} /></li> :
 							<li>Error loading article.</li>}
 				</ArticleList>
 				<h3>Comments</h3>
