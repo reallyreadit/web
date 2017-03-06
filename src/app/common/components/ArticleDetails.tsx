@@ -41,7 +41,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 					{article.description ? <span className="description">{article.description}</span> : null}
 				</div>
 				<span className="date-published">{article.datePublished ? article.datePublished.substring(0, 10) : ''}</span>
-				<span> - </span>
+				{article.datePublished ? <span> - </span> : null}
 				<span className="source">[{article.source}{article.section ? ' >> ' + article.section : ''}{article.authors.length ? ' - ' + article.authors.join(', ') : ''}]</span>
 				<span> - </span>
 				<span className="comment-count"><Link to={`/articles/${this.slugParts[0]}/${this.slugParts[1]}`}>{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</Link></span>
