@@ -1,0 +1,12 @@
+.comment-box {
+    text-align: right;
+    textarea {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 40px;
+        resize: vertical;
+    }
+    .button:last-child {
+		margin-left: (8 + 6) + px;
+	}
+}

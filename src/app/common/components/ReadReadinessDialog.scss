@@ -10,6 +10,17 @@
 		font-size: 17px;
 		text-align: center;
 	}
+	a {
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.continue {
+		margin: 15px 0 0 0;
+		text-align: center;
+	}
+	.continue > a {
+		color: darkgray;
+	}
 	.buttons {
 		margin-top: 6px;
 		text-align: right;

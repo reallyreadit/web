@@ -21,7 +21,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 		}
 		if (reason) {
 			e.preventDefault();
-			this.context.dialog.show(React.createElement(ReadReadinessDialog, { reason }));
+			this.context.dialog.show(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
 		}
 	};
 	constructor(props: Props, context: Context) {

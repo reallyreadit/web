@@ -3,7 +3,10 @@ import Button from './Button';
 import PureContextComponent from '../PureContextComponent';
 import SignInDialog from './SignInDialog';
 
-export default class ReadReadinessDialog extends PureContextComponent<{ reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut' }, {}> {
+export default class ReadReadinessDialog extends PureContextComponent<{
+    reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut',
+    articleUrl: string
+}, {}> {
     private _closeDialog = () => this.context.dialog.close();
     private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
     private _showSignInDialog = () => {
@@ -28,6 +31,9 @@ export default class ReadReadinessDialog extends PureContextComponent<{ reason: 
                 <h3>One sec!</h3>
                 <h3>Make sure you're ready to read before continuing:</h3>
                 {message}
+                <div className="continue">
+                    <a href={this.props.articleUrl} onClick={this._closeDialog} target="_blank">That's OK, take me to the article anyway.</a>   
+                </div>
                 <div className="buttons">
                     <Button onClick={this._closeDialog}>Cancel</Button>
                 </div>

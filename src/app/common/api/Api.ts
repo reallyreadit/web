@@ -39,8 +39,8 @@ abstract class Api {
 	public listComments(slug: string, callback: (comments: Fetchable<Comment[]>) => void) {
 		return this.get<Comment[]>(new Request('/Articles/ListComments', { slug }), callback);
 	}
-	public postComment(text: string, articleId: string) {
-		return this.post(new Request('/Articles/PostComment', { text, articleId }));
+	public postComment(text: string, articleId: string, parentCommentId?: string) {
+		return this.post<Comment>(new Request('/Articles/PostComment', { text, articleId, parentCommentId }));
 	}
 }
 export default Api;
