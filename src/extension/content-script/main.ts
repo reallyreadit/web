@@ -114,19 +114,27 @@ function loadPage() {
 	console.log('[rrit] loadPage');
 	unloadPage().then(() => {
 		const parseResult = parseDocument();
-		const articleEl = document.getElementsByTagName('article')[0];
-		if (parseResult.url && parseResult.article.title && articleEl) {
-			context.page = new Page(articleEl, showOverlay);
-			eventPageApi
-				.registerPage({ ...parseResult, wordCount: context.page.wordCount })
-				.then(userPage => {
-					console.log('[rrit] initializing page...');
-					context.page.initialize(userPage);
-					if (document.visibilityState === 'visible') {
-						startReading();
-					}
-				})
-				.catch(unloadPage);
+		if (parseResult.url && parseResult.article.title) {
+			context.page = new Page(document.body, showOverlay);
+			if (context.page.wordCount) {
+				eventPageApi
+					.registerPage({ ...parseResult, wordCount: context.page.wordCount })
+					.then(userPage => {
+						console.log('[rrit] initializing page...');
+						context.page.initialize(userPage);
+						if (document.visibilityState === 'visible') {
+							startReading();
+						}
+					})
+					.catch(() => {
+						console.error('[rrit] failed to register page');
+						unloadPage();
+					});
+			} else {
+				console.log('[rrit] no content found');
+			}
+		} else {
+			console.log('[rrit] no metadata found');
 		}
 	});
 }
