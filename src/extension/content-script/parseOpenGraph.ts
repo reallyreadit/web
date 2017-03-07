@@ -7,6 +7,7 @@ function findMetaElementContent(property: string, elements: Element[]) {
 function parseOpenGraph(): ParseResult {
 	const elements = Array.from(document.getElementsByTagName('meta'));
 	if (findMetaElementContent('og:type', elements) === 'article') {
+		console.log('[rrit] metadata found: OpenGraph');
 		return {
 			url: findMetaElementContent('og:url', elements),
 			article: {

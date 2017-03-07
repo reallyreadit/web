@@ -63,8 +63,17 @@ function parseDocument() {
 		openGraph = parseOpenGraph() || emptyResult;
 	let schema: ParseResult;
 	const script = document.querySelector('script[type="application/ld+json"]');
-	if (script) {
-		schema = parseSchema([JSON.parse(script.textContent)]);
+	if (script && script.textContent) {
+		const cdataMatch = script.textContent.match(/^\s*\/\/<!\[CDATA\[([\s\S]*)\/\/\]\]>\s*$/);
+		try {
+			if (cdataMatch) {
+				schema = parseSchema([JSON.parse(cdataMatch[1])]);
+			} else {
+				schema = parseSchema([JSON.parse(script.textContent)]);
+			}
+		} catch (ex) {
+			console.error('[rrit] LD+JSON parse error');
+		}
 	}
 	if (!schema) {
 		schema = parseSchema(parseElementMicrodata(document.documentElement)) || emptyResult

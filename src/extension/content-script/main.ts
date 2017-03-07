@@ -3,7 +3,7 @@ import EventPageApi from './EventPageApi';
 import ContentScriptConfig from '../common/ContentScriptConfig';
 import parseDocument from './parseDocument';
 
-console.log('loading main.ts...');
+console.log('[rrit] loading main.ts...');
 
 // local state
 let isReading = false,
@@ -32,7 +32,7 @@ const eventPageApi = new EventPageApi({
 		historyStateUpdatedTimeout = window.setTimeout(() => {
 			const newPath = new URL(url).pathname;
 			if (newPath !== context.path) {
-				console.log('url changed...');
+				console.log('[rrit] url changed...');
 				context.path = newPath;
 				// TODO: gotta come up with a more robust way to detect page changes
 				setTimeout(loadPage, 2000);
@@ -54,11 +54,11 @@ const timers: {
 function readWord() {
 	if (context.page.readWord()) {
 		if (context.page.isRead()) {
-			console.log('reading complete');
+			console.log('[rrit] reading complete');
 			stopReading();
 			commitReadState();
 		} else if (timers.readWord.rate === config.idleReadRate) {
-			console.log('resuming reading...');
+			console.log('[rrit] resuming reading...');
 			window.clearInterval(timers.readWord.handle);
 			timers.readWord = {
 				handle: window.setInterval(readWord, config.readWordRate),
@@ -67,7 +67,7 @@ function readWord() {
 			timers.commitReadState = window.setInterval(commitReadState, config.readStateCommitRate);
 		}
 	} else if (timers.readWord.rate === config.readWordRate) {
-		console.log('suspending reading...');
+		console.log('[rrit] suspending reading...');
 		window.clearInterval(timers.readWord.handle);
 		timers.readWord = {
 			handle: window.setInterval(readWord, config.idleReadRate),
@@ -80,7 +80,7 @@ function updatePageOffset() {
 	context.page.updateOffset();
 }
 function commitReadState() {
-	console.log('commitReadState');
+	console.log('[rrit] commitReadState');
 	eventPageApi
 		.commitReadState(context.page.getReadStateCommitData())
 		.catch(unloadPage);
@@ -89,7 +89,7 @@ function commitReadState() {
 // reading lifecycle
 function startReading() {
 	if (!isReading && !context.page.isRead()) {
-		console.log('startReading');
+		console.log('[rrit] startReading');
 		timers.readWord = {
 			handle: window.setInterval(readWord, config.idleReadRate),
 			rate: config.idleReadRate
@@ -101,7 +101,7 @@ function startReading() {
 }
 function stopReading() {
 	if (isReading) {
-		console.log('stopReading');
+		console.log('[rrit] stopReading');
 		clearTimeout(timers.readWord.handle);
 		clearInterval(timers.updatePageOffset);
 		clearInterval(timers.commitReadState);
@@ -111,7 +111,7 @@ function stopReading() {
 
 // page lifecycle
 function loadPage() {
-	console.log('loadPage');
+	console.log('[rrit] loadPage');
 	unloadPage().then(() => {
 		const parseResult = parseDocument();
 		const articleEl = document.getElementsByTagName('article')[0];
@@ -120,7 +120,7 @@ function loadPage() {
 			eventPageApi
 				.registerPage({ ...parseResult, wordCount: context.page.wordCount })
 				.then(userPage => {
-					console.log('initializing page...');
+					console.log('[rrit] initializing page...');
 					context.page.initialize(userPage);
 					if (document.visibilityState === 'visible') {
 						startReading();
@@ -132,7 +132,7 @@ function loadPage() {
 }
 function unloadPage() {
 	if (context.page) {
-		console.log('unloadPage');
+		console.log('[rrit] unloadPage');
 		stopReading();
 		context.page.remove();
 		context.page = null;
@@ -157,7 +157,7 @@ window.addEventListener('unload', () => eventPageApi.unregisterContentScript());
 eventPageApi
 	.registerContentScript(window.location)
 	.then(initData => {
-		console.log('initializing content script...');
+		console.log('[rrit] initializing content script...');
 		config = initData.config;
 		showOverlay = initData.showOverlay;
 		if (initData.loadPage) {	
