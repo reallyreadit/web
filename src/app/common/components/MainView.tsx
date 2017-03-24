@@ -1,5 +1,5 @@
 import * as React from 'react';
-import logo from '../templates/logo';
+import logo from '../svg/logo';
 import { Link } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
@@ -23,7 +23,7 @@ export default class MainView extends PureContextComponent<{}, {}> {
 				<ReadReadinessBar />
 				<header>
 					<Link to="/">
-						<div className="logo" dangerouslySetInnerHTML={{ __html: logo() }}></div>				
+						<div className="logo" dangerouslySetInnerHTML={{ __html: logo }}></div>				
 					</Link>
 					<h1>
 						<Link to="/">reallyread.it</Link>
