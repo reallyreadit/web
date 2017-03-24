@@ -1,6 +1,7 @@
 import Request from '../api/Request';
 import UserAccount from '../api/models/UserAccount';
 import Endpoint from '../api/Endpoint';
+import icons from '../svg/icons';
 
 export default (model: {
 	title: string,
@@ -22,6 +23,7 @@ export default (model: {
 		<title>${model.title}</title>
 	</head>
 	<body>
+		${icons}
 		<div id="root">${model.content}</div>
 		<script type="text/javascript">
 			window._apiEndpoint = ${JSON.stringify(model.apiEndpoint)};
