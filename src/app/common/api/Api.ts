@@ -42,5 +42,8 @@ abstract class Api {
 	public postComment(text: string, articleId: string, parentCommentId?: string) {
 		return this.post<Comment>(new Request('/Articles/PostComment', { text, articleId, parentCommentId }));
 	}
+	public deleteUserArticle(articleId: string) {
+		return this.post(new Request('/Articles/UserDelete', { articleId }));
+	}
 }
 export default Api;

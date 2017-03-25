@@ -1,4 +1,17 @@
 .article-details {
+	display: flex;
+	border: 1px solid #666;
+	border-radius: 5px;
+	overflow: hidden;
+	.content {
+		flex: 1 1 auto;
+		padding: 5px;
+		overflow: hidden;
+	}
+	.content.with-controls {
+		padding-right: 0;
+		border-right: 3px double #666;
+	}
 	.title {
 		white-space: nowrap;
 		overflow: hidden;
@@ -48,5 +61,19 @@
 	}
 	.percent-complete.unlocked {
 		color: springgreen
+	}
+	.controls {
+		flex: 0 0 auto;
+		width: 35px;
+		overflow: hidden;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 20px;
+		cursor: pointer;
+	}
+	.controls:active {
+		color: white;
+		background-color: black;
 	}
 }
