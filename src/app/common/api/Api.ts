@@ -45,5 +45,8 @@ abstract class Api {
 	public deleteUserArticle(articleId: string) {
 		return this.post(new Request('/Articles/UserDelete', { articleId }));
 	}
+	public listReplies(callback: (comments: Fetchable<Comment[]>) => void) {
+		return this.get<Comment[]>(new Request('/Articles/ListReplies'), callback);
+	}
 }
 export default Api;

@@ -4,14 +4,24 @@ import CommentDetails from './CommentDetails';
 
 export default class CommentList extends React.Component<{
     comments: Comment[],
-    isAllowedToPost: boolean,
+    mode: 'reply' | 'link',
+    isAllowedToPost?: boolean,
     parentCommentId?: string,
-    onCommentAdded: (comment: Comment) => void
+    onCommentAdded?: (comment: Comment) => void,
+    onViewThread?: (comment: Comment) => void
 }, {}> {
     public render() {
         return (
             <ul className="comment-list">
-                {this.props.comments.map(comment => <CommentDetails key={comment.id} comment={comment} isAllowedToPost={this.props.isAllowedToPost} parentCommentId={this.props.parentCommentId} onCommentAdded={this.props.onCommentAdded} />)}
+                {this.props.comments.map(comment => <CommentDetails
+                        key={comment.id}
+                        comment={comment}
+                        mode={this.props.mode}
+                        isAllowedToPost={this.props.isAllowedToPost}
+                        parentCommentId={this.props.parentCommentId}
+                        onCommentAdded={this.props.onCommentAdded}
+                        onViewThread={this.props.onViewThread}
+                    />)}
             </ul>
         );
     }

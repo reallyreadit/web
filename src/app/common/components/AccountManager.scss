@@ -1,13 +1,20 @@
 .account-manager {
 	width: 200px;
 	text-align: center;
-	strong {
-		display: block;
-		height: 20px;
-		line-height: 20px;
-		margin-top: -20px;
-	}
-	.button:last-child {
-		margin-left: (8 + 6) + px;
-	}
+}
+.account-manager > .user-details {
+	height: 20px;
+   line-height: 20px;
+   margin-bottom: 6px;
+}
+.account-manager > .user-details > a {
+	color: black;
+	font-size: 20px;
+	margin-right: 5px;
+}
+.account-manager > .user-details > a > .icon {
+	vertical-align: middle;
+}
+.account-manager > .button:last-child {
+	margin-left: (8 + 6) + px;
 }

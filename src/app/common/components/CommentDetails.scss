@@ -1,6 +1,19 @@
 .comment-details {
-    width: 400px;
     margin: 5px 0;
+}
+.comment-details.reply {
+    width: 400px;
+}
+.comment-details > .article-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    font-style: italic;
+    color: darkviolet;
+}
+.comment-details > .article-title::before {
+    content: "Re: ";
 }
 .comment-details > .title {
     color: dimgray;
@@ -11,12 +24,12 @@
     font-size: 16px;
     margin: 3px 0 0 0;
 }
-.comment-details > .reply {
+.comment-details > .link {
     color: darkgray;
     text-decoration: underline;
     cursor: pointer;
 }
-.comment-details > .reply:hover {
+.comment-details > .link:hover {
     color: black;
 }
 .comment-details > .comment-list {

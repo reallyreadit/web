@@ -5,6 +5,7 @@ import HotTopicsPage from './components/HotTopicsPage';
 import AboutPage from './components/AboutPage'; 
 import MyAccountPage from './components/MyAccountPage'; 
 import ArticlePage from './components/ArticlePage';
+import MyInboxPage from './components/MyInboxPage';
 
 export default
 	<Route component={MainView}>
@@ -12,4 +13,5 @@ export default
 		<Route path="/about" component={AboutPage} />
 		<Route path="/account" component={MyAccountPage} />
 		<Route path="/articles/:source/:article" component={ArticlePage} />
+		<Route path="/inbox" component={MyInboxPage} />
 	</Route>

@@ -4,6 +4,7 @@ import Context from '../Context';
 import Button from './Button';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
+import { Link } from 'react-router';
 
 export default class AccountManager extends PureContextComponent<{}, { isLoading: boolean }> {
 	private showSignInDialog = () => this.context.dialog.show(React.createElement(SignInDialog));
@@ -33,7 +34,12 @@ export default class AccountManager extends PureContextComponent<{}, { isLoading
 		return (
 			currentUser !== undefined ? 
 				<div className="account-manager">
-					<strong>{currentUser.name}</strong>
+					<div className="user-details">
+						<Link to="/inbox">
+							<svg className="icon"><use xlinkHref="#icon-mail"></use></svg>
+						</Link>	
+						<strong>{currentUser.name}</strong>
+					</div>
 					<Button onClick={this.goToMyAccount} style="preferred" state={this.state.isLoading ? 'disabled' : 'normal'}>My Account</Button>
 					<Button onClick={this.signOut} state={this.state.isLoading ? 'busy' : 'normal'}>Sign Out</Button>
 				</div> :

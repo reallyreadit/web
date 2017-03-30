@@ -82,7 +82,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 					<span>Loading...</span> :
 					this.state.comments.isSuccessful ?
 						this.state.comments.value.length ?
-							<CommentList comments={this.state.comments.value} isAllowedToPost={isAllowedToPost} onCommentAdded={this._refreshArticle} /> :
+							<CommentList comments={this.state.comments.value} mode="reply" isAllowedToPost={isAllowedToPost} onCommentAdded={this._refreshArticle} /> :
 							<span>No comments found! (Post one!)</span> :
 						<span>Error loading comments.</span>}
 				<hr />
