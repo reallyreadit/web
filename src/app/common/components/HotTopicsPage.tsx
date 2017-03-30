@@ -16,7 +16,7 @@ export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetc
 		};
 	}
 	public componentWillMount() {
-		this.context.pageTitle.set('Hot Topics');
+		this.context.pageTitle.set('🔥 Hot Topics 🔥');
 	}
 	public componentDidMount() {
 		this.context.user
