@@ -1,7 +1,12 @@
 {
 	"compilerOptions": {
 		"jsx": "react",
-		"target": "es6",
+		"target": "es2016",
+		"lib": [
+			"dom",
+			"es2016",
+			"dom.iterable"
+		],
 		"moduleResolution": "node",
 		"module": "commonjs",
 		"forceConsistentCasingInFileNames": true,
