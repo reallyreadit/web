@@ -1,7 +1,8 @@
 import Page from './Page';
 import EventPageApi from './EventPageApi';
 import ContentScriptConfig from '../common/ContentScriptConfig';
-import parseDocument from './parseDocument';
+import parseDocumentMetadata from './parseDocumentMetadata';
+import parseDocumentContent from './parseDocumentContent';
 
 console.log('[rrit] loading main.ts...');
 
@@ -113,12 +114,13 @@ function stopReading() {
 function loadPage() {
 	console.log('[rrit] loadPage');
 	unloadPage().then(() => {
-		const parseResult = parseDocument();
-		if (parseResult.url && parseResult.article.title) {
-			context.page = new Page(document.body, showOverlay);
-			if (context.page.wordCount) {
+		const metadata = parseDocumentMetadata();
+		if (metadata.url && metadata.article.title) {
+			const contentEls = parseDocumentContent();
+			if (contentEls.size) {
+				context.page = new Page(contentEls, showOverlay);
 				eventPageApi
-					.registerPage({ ...parseResult, wordCount: context.page.wordCount })
+					.registerPage({ ...metadata, wordCount: context.page.wordCount })
 					.then(userPage => {
 						console.log('[rrit] initializing page...');
 						context.page.initialize(userPage);

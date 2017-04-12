@@ -3,17 +3,12 @@ import Block from './Block';
 import UserPage from '../common/UserPage';
 
 export default class Page {
-	private _element: Element;
 	private _blocks: Block[];
 	private _userPageId: string;
 	private _wordCount: number;
-	constructor(element: Element, showOverlay: boolean) {
-		// set up the blocks and overlays
-		this._element = element;
-		// TODO: walk the tree and find elements with textContent !== ''
-		this._blocks = Array
-			.from(element.getElementsByTagName('p'))
-			.filter(el => el.textContent.length >= 100)
+	constructor(contentEls: Set<HTMLElement>, showOverlay: boolean) {
+		// set up the blocks
+		this._blocks = [...contentEls]
 			.map(blockEl => new Block(blockEl, showOverlay))
 			.sort((a, b) => a.offsetTop - b.offsetTop);
 		// cache the word count

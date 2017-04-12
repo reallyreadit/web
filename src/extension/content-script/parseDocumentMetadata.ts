@@ -58,10 +58,23 @@ function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): 
 		}
 	};
 }
-function parseDocument() {
-	const misc = parseMiscMetadata() || emptyResult,
-		openGraph = parseOpenGraph() || emptyResult;
+function parseDocumentMetadata() {
+	// parse misc. and OpenGraph metadata
+	let misc = parseMiscMetadata(),
+		openGraph = parseOpenGraph();
+	// log misc metadata
+	console.log('[rrit] misc metadata:')
+	console.log(misc);
+	// log OpenGraph metadata or assign empty result
+	if (openGraph) {
+		console.log('[rrit] OpenGraph metadata:');
+		console.log(openGraph);
+	} else {
+		openGraph = emptyResult;
+	}
+	// parse schema.org metadata
 	let schema: ParseResult;
+	// first check for an LD+JSON script
 	const script = document.querySelector('script[type="application/ld+json"]');
 	if (script && script.textContent) {
 		const cdataMatch = script.textContent.match(/^\s*\/\/<!\[CDATA\[([\s\S]*)\/\/\]\]>\s*$/);
@@ -75,10 +88,18 @@ function parseDocument() {
 			console.error('[rrit] LD+JSON parse error');
 		}
 	}
-	if (!schema) {
-		schema = parseSchema(parseElementMicrodata(document.documentElement)) || emptyResult
+	// log or parse document microdata
+	if (schema) {
+		console.log('[rrit] schema.org metadata found (LD+JSON):');
+		console.log(schema);
+	} else if (schema = parseSchema(parseElementMicrodata(document.documentElement))) {
+		console.log('[rrit] schema.org metadata found (Microdata):');
+		console.log(schema);
+	} else {
+		schema = emptyResult;
 	}
+	// merge metadata objects
 	return merge(schema, misc, openGraph);
 }
 
-export default parseDocument;
+export default parseDocumentMetadata;
