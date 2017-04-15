@@ -2,7 +2,6 @@
 	font-family: 'Adler';
 	src: url('./Adler.ttf');
 }
-
 body {
 	margin: 0;
 	padding: 0;
@@ -10,7 +9,6 @@ body {
 	font-size: 11px;
 	white-space: nowrap;
 }
-
 h1 {
 	font-family: 'Adler';
 	font-size: 14pt;
@@ -18,27 +16,35 @@ h1 {
 	margin: 0;
 	padding: 12px 0 0 0;
 }
-
-table {
+#article-info {
+	padding: 5px;
+}
+#article-title {
+	font-size: 12px;
+   margin: 5px 0;
+	font-style: italic;
+   color: darkviolet;
+}
+#percent-complete {
+	color: salmon
+}
+#percent-complete.unlocked {
+	color: springgreen
+}
+#comments {
+	color: magenta;
+}
+#article-placeholder {
+	padding: 15px;
+   color: #999;
+   font-style: italic;
+}
+#settings {
 	margin: 5px;
+   padding: 5px;
+   border: 1px solid #999;
 }
-th {
-	text-align: right;
-	font-weight: bold;
-}
-td {
-	width: 200px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-th,
-td {
-	line-height: 22px;
-}
-td.null {
-	color: #999;
-}
-
-input {
+#settings > label > input,
+#settings > label > span {
 	vertical-align: middle;
 }

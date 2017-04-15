@@ -5,30 +5,18 @@
 	</head>
 	<body>
 		<h1>reallyread.it</h1>
-		<table>
-			<tbody>
-				<tr>
-					<th>Authenticated:</th>
-					<td>
-						<input type="checkbox" name="authenticated" disabled />
-					</td>
-				</tr>
-				<tr>
-					<th>Article title:</th>
-					<td data-name="articleTitle"></td>
-				</tr>
-				<tr>
-					<th>Percent complete:</th>
-					<td data-name="percentComplete"></td>
-				</tr>
-				<tr>
-					<th>Settings:</th>
-					<td>
-						<label><input type="checkbox" name="showOverlay" />Show overlay</label>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div id="article-info">
+			<h2 id="article-title"></h2>
+			<label id="percent-complete">Percent Complete: <span></span></label> -
+			<a id="comments" target="_blank"></a>
+		</div>
+		<div id="article-placeholder">
+			No article found on page
+		</div>
+		<fieldset id="settings">
+			<legend>Settings</legend>
+			<label><input id="show-overlay" type="checkbox" />Show overlay</label>
+		</fieldset>
 		<script type="text/javascript" src="./bundle.js"></script>
 	</body>
 </html>
