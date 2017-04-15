@@ -28,7 +28,7 @@ export default class Block {
             !line.isRead();
     }
     private _setLines(readState: ReadState) {
-        var lineCount = Math.floor(this._contentRect.height / this._lineHeight),
+        var lineCount = Math.max(1, Math.floor(this._contentRect.height / this._lineHeight)),
             minWordsPerLine = Math.floor(this._wordCount / lineCount),
             remainder = this._wordCount % lineCount;
         while (this._lines.length > 0) {
