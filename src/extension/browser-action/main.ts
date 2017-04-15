@@ -27,4 +27,5 @@ eventPageApi
 		overlayCheckbox.checked = state.showOverlay;
 	});
 
+(document.getElementById('home-link') as HTMLAnchorElement).href = `${config.web.protocol}://${config.web.host}`;
 overlayCheckbox.addEventListener('change', e => eventPageApi.updateShowOverlay((e.currentTarget as HTMLInputElement).checked));
