@@ -9,12 +9,14 @@ export default class Block {
     private _wordCount: number;
     private _lines: Line[];
     private _contentRect: Rect;
+    private _showOverlay: boolean;
     constructor(element: HTMLElement, showOverlay: boolean) {
         // fields
         this._element = element;
         this._lineHeight = getLineHeight(element);
         this._wordCount = element.textContent.split(' ').length;
         this._lines = [];
+        this._showOverlay = showOverlay;
         // init
         this._contentRect = getContentRect(element);
         this._setLines(new ReadState([-this._wordCount]));
@@ -42,6 +44,10 @@ export default class Block {
             wordCount += lineWordCount;
         }
     }
+    private _setBackgroundProgress() {
+        const percentComplete = this.getReadState().getPercentComplete();
+        this._element.style.backgroundImage = `linear-gradient(to right, pink ${percentComplete}%, transparent ${percentComplete}%)`;
+    }
     public updateOffset() {
         const contentRect = getContentRect(this._element);
         if (contentRect.top !== this._contentRect.top ||
@@ -53,15 +59,26 @@ export default class Block {
         }		
     }
     public showOverlay(value: boolean) {
-        this._element.style.backgroundColor = value ? 'pink' : '';
+        if (value) {
+            this._element.style.outline = '3px dotted red';
+            this._setBackgroundProgress();
+        } else {
+            this._element.style.outline = '';
+            this._element.style.backgroundImage = '';
+        }
+        this._showOverlay = value;
     }
     public isReadable() {
         return this._lines.some(line => this.isLineReadable(line));
     }
     public readWord() {
-        var line = this._lines.find(line => this.isLineReadable(line));
+        const line = this._lines.find(line => this.isLineReadable(line));
         if (line) {
-            return line.readWord();
+            const wordRead = line.readWord();
+            if (this._showOverlay && wordRead) {
+                this._setBackgroundProgress();
+            }
+            return wordRead;
         }
         return false;
     }
@@ -72,6 +89,9 @@ export default class Block {
     }
     public setReadState(readState: ReadState) {
         this._setLines(readState);
+        if (this._showOverlay) {
+            this._setBackgroundProgress();
+        }
     }
     public isRead() {
         return !this._lines.some(function (line) {
