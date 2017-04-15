@@ -10,6 +10,7 @@ const build = createBuild({
 	},
 	scss: `${project.srcDir}/extension/browser-action/**/*.{css,scss}`,
 	staticAssets: `${project.srcDir}/extension/browser-action/**/*.{html,ttf}`,
+	appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 	path: 'extension/browser-action'
 });
 

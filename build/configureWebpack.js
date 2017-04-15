@@ -42,6 +42,8 @@ function configureWebpack(params) {
 		// TODO: FIX THIS!!!
 		config.api.protocol = JSON.stringify(config.api.protocol);
 		config.api.host = JSON.stringify(config.api.host);
+		config.web.protocol = JSON.stringify(config.web.protocol);
+		config.web.host = JSON.stringify(config.web.host);
 		webpackConfig.plugins = [new webpack.DefinePlugin({ config })];
 	}
 	return webpackConfig;
