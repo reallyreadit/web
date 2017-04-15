@@ -17,14 +17,14 @@ function parseSchema(topLevelTypes: any[]): ParseResult {
 			article: {
 				title: first(data.headline) || first(data.name),
 				source: first(data.publisher || data.sourceOrganization || data.provider, x => ({
-					name: x.name,
-					url: x.url
+					name: first(x.name),
+					url: first(x.url)
 				})) || {},
 				datePublished: first(data.datePublished),
 				dateModified: first(data.dateModified),
 				authors: many(data.author || data.creator, x => ({
-					name: x.name,
-					url: x.url
+					name: first(x.name),
+					url: first(x.url)
 				})),
 				section: first(data.articleSection) || first(data.printSection),
 				description: first(data.description),
