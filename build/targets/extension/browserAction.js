@@ -6,11 +6,11 @@ const project = require('../../project'),
 const build = createBuild({
 	webpack: {
 		configFileName: 'tsconfig.extension.browser-action.json',
-		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts')
+		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts'),
+		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 	},
 	scss: `${project.srcDir}/extension/browser-action/**/*.{css,scss}`,
 	staticAssets: `${project.srcDir}/extension/browser-action/**/*.{html,ttf}`,
-	appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 	path: 'extension/browser-action'
 });
 
