@@ -38,7 +38,7 @@ function configureWebpack(params) {
 		});
 	}
 	if (params.appConfig) {
-		const config = JSON.parse(fs.readFileSync(path.posix.join(project.srcDir, params.path, `config.${params.env}.json`)).toString());
+		const config = JSON.parse(fs.readFileSync(params.appConfig.replace('{env}', params.env)).toString());
 		// TODO: FIX THIS!!!
 		config.api.protocol = JSON.stringify(config.api.protocol);
 		config.api.host = JSON.stringify(config.api.host);

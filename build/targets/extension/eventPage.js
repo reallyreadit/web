@@ -7,7 +7,7 @@ const build = createBuild({
 	webpack: {
 		configFileName: 'tsconfig.extension.event-page.json',
 		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts'),
-		appConfig: true
+		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json')
 	},
 	staticAssets: `${project.srcDir}/extension/{event-page,common}/**/*.{html,ttf}`,
 	path: 'extension/event-page'
