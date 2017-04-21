@@ -11,14 +11,12 @@ export default class Block {
     private _contentRect: Rect;
     private _showOverlay: boolean;
     constructor(element: HTMLElement, showOverlay: boolean) {
-        // fields
         this._element = element;
-        this._lineHeight = getLineHeight(element);
+        this._contentRect = getContentRect(element);
+        this._lineHeight = getLineHeight(element) || this._contentRect.height;
         this._wordCount = element.textContent.split(' ').length;
         this._lines = [];
         this._showOverlay = showOverlay;
-        // init
-        this._contentRect = getContentRect(element);
         this._setLines(new ReadState([-this._wordCount]));
         this.showOverlay(showOverlay);
     }
