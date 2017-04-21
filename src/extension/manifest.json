@@ -3,7 +3,7 @@
 
   "name": "reallyread.it",
   "description": "Really read it!",
-  "version": "0.13",
+  "version": "0.14",
 	
   "icons": {
     "16": "./icons/icon-16.png",
