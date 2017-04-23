@@ -12,12 +12,22 @@ export default class Block {
     private _showOverlay: boolean;
     constructor(element: HTMLElement, showOverlay: boolean) {
         this._element = element;
+        // measure the element and then get the line height or use the element height
         this._contentRect = getContentRect(element);
         this._lineHeight = getLineHeight(element) || this._contentRect.height;
-        this._wordCount = element.textContent.split(' ').length;
+        // get the word count using child text nodes only
+        this._wordCount = 0;
+        for (let i = 0; i < element.childNodes.length; i++) {
+            const childNode = element.childNodes[i];
+            if (childNode.nodeType === Node.TEXT_NODE) {
+                this._wordCount += childNode.textContent.split(' ').length;
+            }
+        }
+        // initialize the lines array and then set the lines
         this._lines = [];
-        this._showOverlay = showOverlay;
         this._setLines(new ReadState([-this._wordCount]));
+        // initialize the overlay
+        this._showOverlay = showOverlay;
         this.showOverlay(showOverlay);
     }
     private isLineReadable(line: Line) {
