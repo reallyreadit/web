@@ -41,11 +41,11 @@
 	.description {
 		display: block;
 		font-size: 11px;
-		color: lightblue;
+		color: skyblue;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		margin-top: 1px;
+		margin: 1px 0;
 	}
 	.date-published {
 		color: hotpink;
@@ -55,6 +55,10 @@
 	}
 	.comment-count > a {
 		color: magenta;
+		font-weight: bold;
+		border: 1px dotted deeppink;
+		padding: 0 2px 1px 2px;
+		border-radius: 3px;
 	}
 	.percent-complete {
 		color: salmon

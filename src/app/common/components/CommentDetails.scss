@@ -1,9 +1,6 @@
 .comment-details {
     margin: 5px 0;
 }
-.comment-details.reply {
-    width: 400px;
-}
 .comment-details > .article-title {
     white-space: nowrap;
     overflow: hidden;
@@ -23,6 +20,7 @@
     font-family: serif;
     font-size: 16px;
     margin: 3px 0 0 0;
+    max-width: 600px;
 }
 .comment-details > .link {
     color: darkgray;

@@ -2,7 +2,6 @@ import * as React from 'react';
 import Comment from '../api/models/Comment';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
-import * as className from 'classnames';
 
 interface Props {
     comment: Comment,
@@ -34,7 +33,7 @@ export default class CommentDetails extends React.Component<Props, {
     }
     public render(): JSX.Element {
         return (
-            <li className={className('comment-details', this.props.mode)}>
+            <li className="comment-details">
                 {this.props.mode === 'link' ? <div className="article-title">{this.props.comment.articleTitle}</div> : null}
                 <div className="title">Posted by <strong>{this.props.comment.userAccount}</strong> on {this.props.comment.dateCreated}</div>
 				<div className="text">{this.props.comment.text}</div>
