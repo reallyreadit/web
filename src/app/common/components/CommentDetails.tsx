@@ -36,7 +36,7 @@ export default class CommentDetails extends React.Component<Props, {
             <li className="comment-details">
                 {this.props.mode === 'link' ? <div className="article-title">{this.props.comment.articleTitle}</div> : null}
                 <div className="title">Posted by <strong>{this.props.comment.userAccount}</strong> on {this.props.comment.dateCreated}</div>
-				<div className="text">{this.props.comment.text}</div>
+                <div className="text" dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}></div>
                 {this.state.showCommentBox ? 
                     <CommentBox articleId={this.props.comment.articleId} parentCommentId={this.props.comment.id} isAllowedToPost={this.props.isAllowedToPost} onCommentPosted={this._addComment} onCancel={this._hideCommentBox} /> :
                     this.props.mode === 'reply' ?
