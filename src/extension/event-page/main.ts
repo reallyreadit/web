@@ -198,7 +198,9 @@ chrome.windows.onFocusChanged.addListener(
 	{ windowTypes: ['normal'] }
 );
 chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
-	console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
-	contentScriptApi.updateHistoryState(details.tabId, details.url);
+	if (details.transitionType === 'link') {
+		console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
+		contentScriptApi.updateHistoryState(details.tabId, details.url);
+	}
 });
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => sendResponse(true));

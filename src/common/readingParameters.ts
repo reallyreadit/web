@@ -1,3 +1,4 @@
 export default {
-	articleUnlockThreshold: 80
+	articleUnlockThreshold: 80,
+	averageWordsPerMinute: 184
 };

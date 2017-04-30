@@ -32,7 +32,7 @@ export default class ServerApi {
 		};
 		this._contentScriptConfig = {
 			readWordRate: 100,
-			idleReadRate: 3000,
+			idleReadRate: 1000,
 			pageOffsetUpdateRate: 3000,
 			readStateCommitRate: 3000
 		};

@@ -2,6 +2,7 @@ interface ParseResult {
 	url: string,
 	number?: number,
 	wordCount?: number,
+	readableWordCount?: number,
 	article: {
 		title: string,
 		source: {

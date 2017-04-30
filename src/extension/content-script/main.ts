@@ -4,7 +4,7 @@ import ContentScriptConfig from '../common/ContentScriptConfig';
 import parseDocumentMetadata from './parseDocumentMetadata';
 import parseDocumentContent from './parseDocumentContent';
 
-console.log('[rrit] loading main.ts...');
+console.log(`[rrit] loading main.ts... (${window.location.pathname})`);
 
 // local state
 let isReading = false,
@@ -33,7 +33,7 @@ const eventPageApi = new EventPageApi({
 		historyStateUpdatedTimeout = window.setTimeout(() => {
 			const newPath = new URL(url).pathname;
 			if (newPath !== context.path) {
-				console.log('[rrit] url changed...');
+				console.log(`[rrit] url changed... (${newPath})`);
 				context.path = newPath;
 				// TODO: gotta come up with a more robust way to detect page changes
 				setTimeout(loadPage, 2000);
@@ -54,11 +54,7 @@ const timers: {
 
 function readWord() {
 	if (context.page.readWord()) {
-		if (context.page.isRead()) {
-			console.log('[rrit] reading complete');
-			stopReading();
-			commitReadState();
-		} else if (timers.readWord.rate === config.idleReadRate) {
+		if (timers.readWord.rate === config.idleReadRate) {
 			console.log('[rrit] resuming reading...');
 			window.clearInterval(timers.readWord.handle);
 			timers.readWord = {
@@ -67,6 +63,10 @@ function readWord() {
 			};
 			timers.commitReadState = window.setInterval(commitReadState, config.readStateCommitRate);
 		}
+	} else if (context.page.isRead()) {
+		console.log('[rrit] reading complete');
+		stopReading();
+		commitReadState();
 	} else if (timers.readWord.rate === config.readWordRate) {
 		console.log('[rrit] suspending reading...');
 		window.clearInterval(timers.readWord.handle);
@@ -116,11 +116,15 @@ function loadPage() {
 	unloadPage().then(() => {
 		const metadata = parseDocumentMetadata();
 		if (metadata.url && metadata.article.title) {
-			const contentEls = parseDocumentContent();
-			if (contentEls.size) {
-				context.page = new Page(contentEls, showOverlay);
+			const content = parseDocumentContent();
+			if (content.elements.size) {
+				context.page = new Page(content.elements, showOverlay);
 				eventPageApi
-					.registerPage({ ...metadata, wordCount: context.page.wordCount })
+					.registerPage({
+						...metadata,
+						wordCount: content.wordCount,
+						readableWordCount: context.page.wordCount
+					})
 					.then(userPage => {
 						console.log('[rrit] initializing page...');
 						context.page.initialize(userPage);
@@ -170,7 +174,7 @@ eventPageApi
 		console.log('[rrit] initializing content script...');
 		config = initData.config;
 		showOverlay = initData.showOverlay;
-		if (initData.loadPage) {	
+		if (initData.loadPage) {
 			loadPage();
 		}
 	});

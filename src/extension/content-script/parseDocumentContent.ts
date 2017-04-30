@@ -1,5 +1,7 @@
 import Readability from './Readability';
+import ContentElement from './ContentElement';
 
+const wordRegEx = /\S+/g;
 function getReadabilityUri() {
 	const loc = document.location;
 	return {
@@ -10,27 +12,44 @@ function getReadabilityUri() {
 		pathBase: loc.protocol + '//' + loc.host +  loc.pathname.substr(0, loc.pathname.lastIndexOf('/') + 1)
 	};
 }
-function getContentElements(node: Node, contentEls: Set<HTMLElement>) {
-	let nodeAddedToSet = false;
+function getContentElements(node: Node, contentEls: Set<ContentElement>) {
+	let wordCount = 0;
+	const potentialContentEl = (
+		node.nodeType === Node.ELEMENT_NODE &&
+		node.ref &&
+		(node.ref as HTMLElement).offsetParent &&
+		(node.ref as HTMLElement).clientHeight > 0
+	);
 	for (let i = 0; i < node.childNodes.length; i++) {
 		const childNode = node.childNodes[i];
-		if (childNode.nodeType === Node.ELEMENT_NODE) {
-			getContentElements(childNode, contentEls);
-		} else if (
-			!nodeAddedToSet &&
-			node.ref &&
-			childNode.nodeType === Node.TEXT_NODE &&
-			childNode.textContent.trim() !== ''
-		) {
-			contentEls.add(node.ref as HTMLElement);
-			nodeAddedToSet = true;
+		switch (childNode.nodeType) {
+			case Node.ELEMENT_NODE:
+				getContentElements(childNode, contentEls);
+				break;
+			case Node.TEXT_NODE:
+				if (potentialContentEl) {
+					const words = childNode.textContent.match(wordRegEx);
+					if (words) {
+						wordCount += words.length;
+					}
+				}
+				break;
 		}
+	}
+	if (potentialContentEl && wordCount > 5) {
+		contentEls.add(new ContentElement(node.ref as HTMLElement, wordCount));
 	}
 }
 
 export default function () {
-	const contentEls = new Set<HTMLElement>();
-	getContentElements(new Readability(getReadabilityUri(), document).parse().rootEl, contentEls);
-	console.log(`[rrit] ${contentEls.size} content elements found`);
-	return contentEls;
+	const parseResult = new Readability(getReadabilityUri(), document).parse();
+	const elements = new Set<ContentElement>();
+	const words = parseResult.content.match(wordRegEx);
+	if (words) {
+		getContentElements(parseResult.rootEl, elements);
+		console.log(`[rrit] ${elements.size} content elements found`);
+		return { elements, wordCount: words.length };
+	}
+	console.log('[rrit] no content elements found');
+	return { elements, wordCount: 0 };
 }

@@ -1,34 +1,35 @@
 import ReadState from './ReadState';
 import Line from './Line';
-import Rect from './Rect';
-import { getLineHeight, getContentRect } from './elementUtils';
 
-export default class Block {
+export default class ContentElement {
     private _element: HTMLElement;
     private _lineHeight: number;
     private _wordCount: number;
     private _lines: Line[];
-    private _contentRect: Rect;
+    private _contentOffset: {
+        top: number,
+        right: number,
+        bottom: number,
+        left: number
+    };
+    private _contentRect: {
+        top: number,
+        left: number,
+        width: number,
+        height: number
+    };
     private _showOverlay: boolean;
-    constructor(element: HTMLElement, showOverlay: boolean) {
+    constructor(element: HTMLElement, wordCount: number) {
+        // assign the element before executing any other methods
         this._element = element;
         // measure the element and then get the line height or use the element height
-        this._contentRect = getContentRect(element);
-        this._lineHeight = getLineHeight(element) || this._contentRect.height;
-        // get the word count using child text nodes only
-        this._wordCount = 0;
-        for (let i = 0; i < element.childNodes.length; i++) {
-            const childNode = element.childNodes[i];
-            if (childNode.nodeType === Node.TEXT_NODE) {
-                this._wordCount += childNode.textContent.split(' ').length;
-            }
-        }
-        // initialize the lines array and then set the lines
-        this._lines = [];
+        this._contentOffset = this._getContentOffset();
+        this._contentRect = this._getContentRect();
+        this._lineHeight = this._getLineHeight() || this._contentRect.height || 1;
+        // assign the wordCount before calculating the lines
+        this._wordCount = wordCount;
+        // set the lines
         this._setLines(new ReadState([-this._wordCount]));
-        // initialize the overlay
-        this._showOverlay = showOverlay;
-        this.showOverlay(showOverlay);
     }
     private isLineReadable(line: Line) {
         return this._contentRect.top + line.top >= window.pageYOffset &&
@@ -39,9 +40,7 @@ export default class Block {
         var lineCount = Math.max(1, Math.floor(this._contentRect.height / this._lineHeight)),
             minWordsPerLine = Math.floor(this._wordCount / lineCount),
             remainder = this._wordCount % lineCount;
-        while (this._lines.length > 0) {
-            this._lines.splice(0, 1);
-        }
+        this._lines = [];
         for (var i = 0, wordCount = 0; i < lineCount; i++) {
             var lineWordCount = minWordsPerLine + (remainder > 0 ? remainder - --remainder : 0);
             this._lines.push(new Line(
@@ -52,12 +51,50 @@ export default class Block {
             wordCount += lineWordCount;
         }
     }
+    private _getLineHeight() {
+        const blankText = document.createElement('span');
+        blankText.innerHTML = '&nbsp;';
+        this._element.appendChild(blankText);
+        const lineHeight = blankText.getBoundingClientRect().height;
+        blankText.remove();
+        return lineHeight;
+    }
+    private _getContentOffset() {
+        const computedStyle = window.getComputedStyle(this._element);
+        const border = {
+            top: parseInt(computedStyle.borderTopWidth),
+            right: parseInt(computedStyle.borderRightWidth),
+            bottom: parseInt(computedStyle.borderBottomWidth),
+            left: parseInt(computedStyle.borderLeftWidth)
+        };
+        const padding = {
+            top: parseInt(computedStyle.paddingTop),
+            right: parseInt(computedStyle.paddingRight),
+            bottom: parseInt(computedStyle.paddingBottom),
+            left: parseInt(computedStyle.paddingLeft)
+        };
+        return {
+            top: border.top + padding.top,
+            right: border.right + padding.right,
+            bottom: border.bottom + padding.bottom,
+            left: border.left + padding.left
+        };
+    }
+    private _getContentRect() {
+        const rect = this._element.getBoundingClientRect();
+        return {
+            top: window.pageYOffset + rect.top + this._contentOffset.top,
+            left: rect.left + this._contentOffset.left,
+            width: rect.width - (this._contentOffset.left + this._contentOffset.right),
+            height: rect.height - (this._contentOffset.top + this._contentOffset.bottom)
+        };
+    }
     private _setBackgroundProgress() {
         const percentComplete = this.getReadState().getPercentComplete();
         this._element.style.backgroundImage = `linear-gradient(to right, pink ${percentComplete}%, transparent ${percentComplete}%)`;
     }
     public updateOffset() {
-        const contentRect = getContentRect(this._element);
+        const contentRect = this._getContentRect();
         if (contentRect.top !== this._contentRect.top ||
             contentRect.left !== this._contentRect.left ||
             contentRect.width !== this._contentRect.width ||
@@ -68,10 +105,10 @@ export default class Block {
     }
     public showOverlay(value: boolean) {
         if (value) {
-            this._element.style.outline = '3px dotted red';
+            this._element.style.boxShadow = 'inset 0 0 0 3px red';
             this._setBackgroundProgress();
         } else {
-            this._element.style.outline = '';
+            this._element.style.boxShadow = '';
             this._element.style.backgroundImage = '';
         }
         this._showOverlay = value;

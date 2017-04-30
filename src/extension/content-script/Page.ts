@@ -1,27 +1,26 @@
 import ReadState from './ReadState';
-import Block from './Block';
+import ContentElement from './ContentElement';
 import UserPage from '../common/UserPage';
 
 export default class Page {
-	private _blocks: Block[];
+	private _contentEls: ContentElement[];
 	private _userPageId: string;
 	private _wordCount: number;
-	constructor(contentEls: Set<HTMLElement>, showOverlay: boolean) {
-		// set up the blocks
-		this._blocks = [...contentEls]
-			.map(blockEl => new Block(blockEl, showOverlay))
-			.sort((a, b) => a.offsetTop - b.offsetTop);
+	constructor(contentEls: Set<ContentElement>, showOverlay: boolean) {
+		// set up the content elements
+		this._contentEls = [...contentEls].sort((a, b) => a.offsetTop - b.offsetTop);
+		this._contentEls.forEach(el => el.showOverlay(showOverlay));
 		// cache the word count
 		this._wordCount = this.getReadState().wordCount;
 	}
 	private getReadState() {
-		return new ReadState(this._blocks.map(b => b.getReadState()));
+		return new ReadState(this._contentEls.map(b => b.getReadState()));
 	}
 	private setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
 		const readState = new ReadState(readStateArray);
 		let wordCount = 0;
-		this._blocks.forEach(function (block) {
+		this._contentEls.forEach(function (block) {
 			const wordsAvailable = readState.wordCount - wordCount;
 			if (wordsAvailable >= block.wordCount) {
 				block.setReadState(readState.slice(wordCount, block.wordCount));
@@ -45,23 +44,23 @@ export default class Page {
 		};
 	}
 	public updateOffset() {
-		this._blocks.forEach(block => block.updateOffset());
+		this._contentEls.forEach(block => block.updateOffset());
 	}
 	public isRead() {
-		return !this._blocks.some(block => !block.isRead());
+		return !this._contentEls.some(block => !block.isRead());
 	}
 	public readWord() {
-		var block = this._blocks.find(block => block.isReadable());
+		var block = this._contentEls.find(block => block.isReadable());
 		if (block) {
 			return block.readWord();
 		}
 		return false;
 	}
 	public showOverlay(value: boolean) {
-		this._blocks.forEach(block => block.showOverlay(value));
+		this._contentEls.forEach(block => block.showOverlay(value));
 	}
 	public remove() {
-		this._blocks.forEach(block => block.showOverlay(false));
+		this._contentEls.forEach(block => block.showOverlay(false));
 	}
 	public get wordCount() {
 		return this._wordCount;

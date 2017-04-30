@@ -12,6 +12,7 @@ interface Article {
 	authors: string[],
 	tags: string[],
 	wordCount: number,
+	readableWordCount: number,
 	pageCount: number,
 	percentComplete: number,
 	commentCount: number
