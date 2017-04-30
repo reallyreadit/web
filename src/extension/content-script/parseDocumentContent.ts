@@ -18,7 +18,7 @@ function getContentElements(node: Node, contentEls: Set<ContentElement>) {
 		node.nodeType === Node.ELEMENT_NODE &&
 		node.ref &&
 		(node.ref as HTMLElement).offsetParent &&
-		(node.ref as HTMLElement).clientHeight > 0
+		(node.ref as HTMLElement).offsetHeight > 0
 	);
 	for (let i = 0; i < node.childNodes.length; i++) {
 		const childNode = node.childNodes[i];
