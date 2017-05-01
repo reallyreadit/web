@@ -1,12 +1,13 @@
 .comment-box {
     text-align: right;
-    textarea {
-        box-sizing: border-box;
-        width: 100%;
-        min-height: 40px;
-        resize: vertical;
-    }
-    .button:last-child {
-		margin-left: (8 + 6) + px;
-	}
+    max-width: 400px;
+}
+.comment-box > textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 40px;
+    resize: vertical;
+}
+.comment-box > .button:last-child {
+    margin-left: (8 + 6) + px;
 }
