@@ -31,7 +31,7 @@ export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetc
 	public render() {
 		return (
 			<div className="hot-topics-page">
-				<Button onClick={this._refresh} state={this.state.articles.isLoading ? 'disabled' : 'normal'}>Refresh</Button>
+				<Button text="Refresh" iconLeft="refresh" onClick={this._refresh} state={this.state.articles.isLoading ? 'disabled' : 'normal'} />
 				<ArticleList>
 					{this.state.articles.isLoading ?
 						<li>Loading...</li> :

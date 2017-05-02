@@ -49,8 +49,8 @@ abstract class Dialog<P, S extends Partial<DialogState>> extends PureContextComp
 				<h3>{this.title}</h3>
 				{this.renderFields()}
 				<div className="buttons">
-					<Button onClick={this.handleCancel} state={this.state.isLoading ? 'disabled' : 'normal'}>Cancel</Button>
-					<Button onClick={this.handleSubmit} style="preferred" state={this.state.isLoading ? 'busy' : 'normal'}>{this.submitButtonText}</Button>
+					<Button text="Cancel" iconLeft="forbid" onClick={this.handleCancel} state={this.state.isLoading ? 'disabled' : 'normal'} />
+					<Button text={this.submitButtonText} iconLeft="checkmark" onClick={this.handleSubmit} style="preferred" state={this.state.isLoading ? 'busy' : 'normal'} />
 				</div>
 			</div>
 		);

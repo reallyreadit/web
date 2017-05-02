@@ -69,7 +69,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn() && this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
 		return (
 			<div className="article-page">
-				<Button onClick={this._refreshArticleAndComments} state={this.state.article.isLoading || this.state.comments.isLoading ? 'disabled' : 'normal'}>Refresh</Button>
+				<Button text="Refresh" onClick={this._refreshArticleAndComments} state={this.state.article.isLoading || this.state.comments.isLoading ? 'disabled' : 'normal'} />
 				<ArticleList>
 					{this.state.article.isLoading ?
 						<li>Loading...</li> :

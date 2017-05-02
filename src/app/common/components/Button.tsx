@@ -2,6 +2,8 @@ import * as React from 'react';
 import * as className from 'classnames';
 
 export default class Button extends React.PureComponent<{
+	text: string,
+	iconLeft?: string,
 	style?: 'normal' | 'preferred',
 	state?: 'normal' | 'disabled' | 'busy'
 	onClick?: () => void
@@ -25,7 +27,10 @@ export default class Button extends React.PureComponent<{
 				<div className="outer-wrap">
 					<div className="inner-wrap">
 						<div className="content">
-							<span className="text">{this.props.children}</span>
+							{this.props.iconLeft ?
+								<svg className="icon"><use xlinkHref={`#icon-${this.props.iconLeft}`}></use></svg> :
+								null}
+							<span className="text">{this.props.text}</span>
 							<div className="loading"></div>
 						</div>
 					</div>

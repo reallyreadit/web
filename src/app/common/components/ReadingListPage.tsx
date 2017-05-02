@@ -7,7 +7,7 @@ import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
 import Button from './Button';
 
-export default class MyAccountPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
+export default class ReadingListPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
 	private _redirectToHomepage = () => this.context.router.push('/');
 	private _refresh = () => this.setState({ articles: this.context.api.listUserArticles(articles => this.setState({ articles })) });
 	private _deleteArticle = (article: Article) => {
@@ -23,7 +23,7 @@ export default class MyAccountPage extends ContextComponent<{}, { articles: Fetc
 		};
 	}
 	public componentWillMount() {
-		this.context.pageTitle.set('My Account');
+		this.context.pageTitle.set('Reading List');
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
@@ -33,8 +33,8 @@ export default class MyAccountPage extends ContextComponent<{}, { articles: Fetc
 	}
 	public render() {
 		return (
-			<div className="my-account-page">
-				<h3>My Articles <Button onClick={this._refresh} state={this.state.articles.isLoading ? 'disabled' : 'normal'}>Refresh</Button></h3>
+			<div className="reading-list-page">
+				<Button text="Refresh" iconLeft="refresh" onClick={this._refresh} state={this.state.articles.isLoading ? 'disabled' : 'normal'} />
 				<ArticleList>
 					{this.state.articles.isLoading ?
 						<li>Loading...</li> :

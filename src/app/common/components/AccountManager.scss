@@ -1,20 +1,17 @@
-.account-manager {
-	width: 200px;
-	text-align: center;
+.account-manager > .user-name {
+	height: 18px;
+	text-align: right;
 }
-.account-manager > .user-details {
-	height: 20px;
-   line-height: 20px;
-   margin-bottom: 6px;
-}
-.account-manager > .user-details > a {
-	color: black;
-	font-size: 20px;
-	margin-right: 5px;
-}
-.account-manager > .user-details > a > .icon {
+.account-manager > .user-name > div > span {
 	vertical-align: middle;
+	margin-right: 6px;
 }
-.account-manager > .button:last-child {
-	margin-left: (8 + 6) + px;
+.account-manager > .user-name > div > svg {
+	vertical-align: middle;
+	cursor: pointer;
+	width: 12px;
+	height: 12px;
+}
+.account-manager > .buttons > .button:not(:last-child) {
+	margin-right: (4 + 6) + px;
 }

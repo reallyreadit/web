@@ -57,7 +57,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 				</div>
 				{this.props.showControls ?
 					<div className="controls" title="Delete" onClick={this._deleteArticle}>
-						<svg className="icon"><use xlinkHref="#icon-x"></use></svg>
+						<svg className="icon"><use xlinkHref="#icon-cancel"></use></svg>
 					</div> : null}
 			</div>
 		);
