@@ -5,7 +5,9 @@ export default class Button extends React.PureComponent<{
 	text: string,
 	iconLeft?: string,
 	style?: 'normal' | 'preferred',
-	state?: 'normal' | 'disabled' | 'busy'
+	state?: 'normal' | 'disabled' | 'busy',
+	showIndicator?: boolean,
+	textStyle?: 'normal' | 'error'
 	onClick?: () => void
 }, {}> {
 	private handleClick = () => {
@@ -28,9 +30,9 @@ export default class Button extends React.PureComponent<{
 					<div className="inner-wrap">
 						<div className="content">
 							{this.props.iconLeft ?
-								<svg className="icon"><use xlinkHref={`#icon-${this.props.iconLeft}`}></use></svg> :
+								<span className={className('icon-wrapper', { 'indicator': this.props.showIndicator })}><svg className="icon"><use xlinkHref={`#icon-${this.props.iconLeft}`}></use></svg></span> :
 								null}
-							<span className="text">{this.props.text}</span>
+							<span className={className('text', { 'error': this.props.textStyle === 'error' })}>{this.props.text}</span>
 							<div className="loading"></div>
 						</div>
 					</div>
