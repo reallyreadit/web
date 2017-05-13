@@ -11,7 +11,7 @@ export default class User extends EventEmitter<{
 		this._userAccount = userAccount;
 	}
 	public isSignedIn() {
-		return this._userAccount !== undefined;
+		return !!this._userAccount;
 	}
 	public signIn(userAccount: UserAccount) {
 		this._userAccount = userAccount;
@@ -19,7 +19,7 @@ export default class User extends EventEmitter<{
 	}
 	public signOut() {
 		const userAccount = this._userAccount;
-		this._userAccount = undefined;
+		this._userAccount = null;
 		this.emitEvent('signOut', userAccount);
 	}
 	public getUserAccount() {

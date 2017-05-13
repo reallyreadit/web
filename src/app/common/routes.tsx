@@ -7,12 +7,14 @@ import ReadingListPage from './components/ReadingListPage';
 import ArticlePage from './components/ArticlePage';
 import InboxPage from './components/InboxPage';
 import SettingsPage from './components/SettingsPage';
+import EmailConfirmationPage from './components/EmailConfirmationPage';
 
 export default
 	<Route component={MainView}>
 		<Route path="/" component={HotTopicsPage} />
 		<Route path="/about" component={AboutPage} />
 		<Route path="/articles/:source/:article" component={ArticlePage} />
+		<Route path="/emailConfirmation/:result" component={EmailConfirmationPage} />
 		<Route path="/list" component={ReadingListPage} />
 		<Route path="/inbox" component={InboxPage} />
 		<Route path="/settings" component={SettingsPage} />

@@ -34,7 +34,7 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 		const currentUser = this.context.user.getUserAccount();
 		const buttonState = this.state.isSigningOut ? 'disabled' : 'normal';
 		return (
-			currentUser !== undefined ? 
+			currentUser ? 
 				<div className="account-manager">
 					<div className="user-name">
 						<div>

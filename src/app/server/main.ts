@@ -58,19 +58,23 @@ http.createServer((req, res) => {
 				new Promise<UserAccount>((resolve, reject) => {
 						if (api.hasSessionKey()) {
 							api.getJson(new Request('/UserAccounts/GetUserAccount'))
-								.then((userAccount: UserAccount) => resolve(userAccount))
-								.catch((errors: string[]) => {
-									if (errors.some(e => e === 'Unauthenticated')) {
+								.then((userAccount: UserAccount) => {
+									if (!userAccount) {
 										res.setHeader('Set-Cookie', 'sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=dev.reallyread.it; path=/');
 									}
-									resolve();
+									resolve(userAccount);
 								});
 						} else {
 							resolve();
 						}
 					})
 					.then(userAccount => {
-						if (!userAccount && url.parse(req.url).pathname === '/account') {
+						if (!userAccount && [
+								'/list',
+								'/inbox',
+								'/settings'
+							].indexOf(url.parse(req.url).pathname) !== -1
+						) {
 							res.writeHead(302, { 'Location': '/' });
 							res.end();
 						} else {
