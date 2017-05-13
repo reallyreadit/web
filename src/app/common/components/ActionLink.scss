@@ -1,0 +1,23 @@
+.action-link {
+	text-decoration: underline;
+	cursor: pointer;
+}
+.action-link.disabled {
+	color: #ccc;
+	cursor: default;
+}
+.action-link > .icon {
+	width: 12px;
+	height: 12px;
+	margin-right: 3px;
+	position: relative;
+	top: 2px;
+}
+.action-link.busy > .icon {
+	animation: action-link-spinner 1000ms linear infinite;
+}
+
+@keyframes action-link-spinner {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}

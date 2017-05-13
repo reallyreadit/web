@@ -19,7 +19,7 @@ export default class EmailConfirmationPage extends PureContextComponent<{
 	public render() {
 		return (
 			<div className="email-confirmation-page">
-				<strong className={className({ 'success': ['alreadyConfirmed', 'success'].indexOf(this.props.params.result) !== -1 })}>
+				<strong className={className({ 'success': ['alreadyConfirmed', 'success'].indexOf(this.props.params.result) > -1 })}>
 					{resultMessages[this.props.params.result]}
 				</strong>
 			</div>

@@ -4,6 +4,8 @@ import Context from '../Context';
 import Button from './Button';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
+import ActionLink from './ActionLink';
+import Separator from './Separator';
 
 export default class AccountManager extends PureContextComponent<{}, { isSigningOut: boolean }> {
 	private showSignInDialog = () => this.context.dialog.show(React.createElement(SignInDialog));
@@ -39,7 +41,8 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 					<div className="user-name">
 						<div>
 							<span>Sup, <strong>{currentUser.name}</strong></span>
-							<svg title="Sign Out" className="icon" onClick={this.signOut}><use xlinkHref="#icon-in-alt"></use></svg>
+							<Separator />
+							<ActionLink text="Sign Out" iconLeft="in-alt" onClick={this.signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
 						</div>
 					</div>
 					<div className="buttons">

@@ -3,7 +3,11 @@ import EventEmitter from './EventEmitter';
 
 export default class User extends EventEmitter<{
 	'signIn': UserAccount,
-	'signOut': UserAccount
+	'signOut': UserAccount,
+	'change': {
+		prevUserAccount: UserAccount,
+		currUserAccount: UserAccount
+	}
 }> {
 	protected _userAccount: UserAccount;
 	constructor(userAccount: UserAccount) {
@@ -24,5 +28,10 @@ export default class User extends EventEmitter<{
 	}
 	public getUserAccount() {
 		return this._userAccount;
+	}
+	public update(userAccount: UserAccount) {
+		const prevUserAccount = this._userAccount;
+		this._userAccount = userAccount;
+		this.emitEvent('change', { prevUserAccount, currUserAccount: userAccount });
 	}
 }

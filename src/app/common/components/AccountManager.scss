@@ -2,16 +2,6 @@
 	height: 18px;
 	text-align: right;
 }
-.account-manager > .user-name > div > span {
-	vertical-align: middle;
-	margin-right: 6px;
-}
-.account-manager > .user-name > div > svg {
-	vertical-align: middle;
-	cursor: pointer;
-	width: 12px;
-	height: 12px;
-}
 .account-manager > .buttons > .button:not(:last-child) {
 	margin-right: (4 + 6) + px;
 }

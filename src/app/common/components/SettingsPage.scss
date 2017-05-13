@@ -1,0 +1,14 @@
+.settings-page > ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.settings-page > ul > li {
+	padding: 10px 0;
+}
+.settings-page > ul > li > label {
+	display: block;
+}
+.settings-page > ul > li > label:first-child {
+	font-weight: bold;
+}
