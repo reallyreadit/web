@@ -17,7 +17,7 @@ abstract class EventEmitter<T> {
 	public removeListener<K extends keyof T>(type: K, delegate: (ev: T[K]) => void) {
 		const listener = this.getListener(type, delegate);
 		if (listener !== undefined) {
-			this.listeners.splice(this.listeners.indexOf(listener, 1));
+			this.listeners.splice(this.listeners.indexOf(listener), 1);
 		}
 		return this;
 	}
