@@ -14,14 +14,35 @@
 }
 .main-view > nav > .left-col {
 	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
 }
 .main-view > nav > .left-col > .logo {
+	flex: 0 0 auto;
+	margin-right: 10px;
 	text-decoration: none;
 	color: #000;
 }
 .main-view > nav > .left-col > .logo > svg {
+	display: block;
 	width: 44px;
-	vertical-align: middle;
+}
+.main-view > nav > .left-col > .info-box {
+	flex: 0 0 auto;
+	font-size: 11px;
+}
+.main-view > nav > .left-col > .info-box > span {
+	font-style: italic;
+   color: #666;
+}
+.main-view > nav > .left-col > .info-box > .real-time {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.main-view > nav > .left-col > .info-box > .real-time > li > .stat {
+	color: deepskyblue;
+	text-decoration: underline;
 }
 .main-view > nav > .right-col {
 	flex: 0 0 auto;
@@ -40,15 +61,25 @@
 	color: #000;
 }
 .main-view > header > h2 {
-	position: relative;
-	text-align: center;
+	display: flex;
+	justify-content: center;
 	font-size: 22px;
 	height: 30px;
    line-height: 30px;
 	margin: 0;
 }
+.main-view > header > h2 > .spacer {
+	flex: 1 1 auto;
+	max-width: 28px;
+}
+.main-view > header > h2 > .text {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 .main-view > header > h2 > .icon {
-	position: absolute;
+	flex: 0 0 auto;
+	position: relative;
 	top: 5px;
 	margin-left: 8px;
 	width: 20px;

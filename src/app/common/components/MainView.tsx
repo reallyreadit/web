@@ -21,6 +21,17 @@ export default class MainView extends PureContextComponent<{}, {}> {
 				<nav>
 					<div className="left-col">
 						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logo }}></Link>
+						<div className="info-box">
+							<span>Read the f'in article!™©</span>
+							<ul className="real-time">
+								<li>
+									<span className="stat">12 people reading right now</span>
+								</li>
+								<li>
+									<span className="stat">8 people commenting right now</span>
+								</li>
+							</ul>
+						</div>
 					</div>
 					<div className="right-col">
 						<AccountManager />
@@ -31,7 +42,8 @@ export default class MainView extends PureContextComponent<{}, {}> {
 						<Link to="/">reallyread.it</Link>
 					</h1>
 					<h2 className={this.context.page.isLoading ? 'loading' : null}>
-						{this.context.page.title}
+						<div className="spacer"></div>
+						<span className="text">{this.context.page.title}</span>
 						<svg className="icon" onClick={this._reloadPage}><use xlinkHref="#icon-refresh"></use></svg>
 					</h2>
 				</header>
