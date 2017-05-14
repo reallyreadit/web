@@ -1,39 +1,37 @@
 import * as React from 'react';
 import PureContextComponent from '../PureContextComponent';
-import Button from './Button';
-import Context from '../Context';
 
-export default class SettingsPage extends PureContextComponent<{}, { isLoading: boolean }> {
+export default class SettingsPage extends PureContextComponent<{}, {}> {
 	private _redirectToHomepage = () => this.context.router.push('/');
-	private _refreshUserAccount = () => this.setState(
-		{ isLoading: true },
-		() => this.context.api.getUserAccount(user => {
-			this.setState({ isLoading: false });
+	private _loadUser = () => {
+		this.context.page.setState({ isLoading: true });
+		this.context.api.getUserAccount(user => {
 			this.context.user.update(user.value);
-		})
-	);
-	constructor(props: {}, context: Context) {
-		super(props, context);
-		this.state = { isLoading: false };
-	}
+			this.context.page.setState({ isLoading: false });
+		});
+	};
 	public componentWillMount() {
-		this.context.pageTitle.set('Settings');
+		this.context.page.setState({
+			title: 'Settings',
+			isLoading: false
+		});
 	}
 	public componentDidMount() {
 		this.context.user
 			.addListener('signOut', this._redirectToHomepage)
-			.addListener('change', this.forceUpdate);
+			.addListener('update', this.forceUpdate);
+		this.context.page.addListener('reload', this._loadUser);
 	}
 	public componentWillUnmount() {
 		this.context.user
 			.removeListener('signOut', this._redirectToHomepage)
-			.removeListener('change', this.forceUpdate);
+			.removeListener('update', this.forceUpdate);
+		this.context.page.removeListener('reload', this._loadUser);
 	}
 	public render() {
 		const user = this.context.user.getUserAccount();
 		return (
 			<div className="settings-page">
-				<Button text="Refresh" iconLeft="refresh" onClick={this._refreshUserAccount} state={this.state.isLoading ? 'busy' : 'normal'} />
 				<ul>
 					<li>
 						<label>Username</label>

@@ -51,15 +51,12 @@ export default class ServerApi extends Api {
 			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
-				isSuccessful: true,
 				value: this.reqStore.getData(request)
 			};
 		} else {
 			console.log('Api: fetch[sync/loading, async/na]');
 			this.reqStore.add(request);
-			return {
-				isLoading: true
-			};
+			return { isLoading: true };
 		}
 	}
 	protected post<T>(request: Request) : Promise<T> {

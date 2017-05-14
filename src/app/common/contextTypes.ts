@@ -1,13 +1,13 @@
 import * as React from 'react';
 import Api from './api/Api';
-import PageTitle from './PageTitle';
+import Page from './Page';
 import User from './User';
 import Dialog from './Dialog';
 import Extension from './Extension';
 
 export default {
 	api: React.PropTypes.instanceOf(Api),
-	pageTitle: React.PropTypes.instanceOf(PageTitle),
+	page: React.PropTypes.instanceOf(Page),
 	user: React.PropTypes.instanceOf(User),
 	dialog: React.PropTypes.instanceOf(Dialog),
 	router: React.PropTypes.object,

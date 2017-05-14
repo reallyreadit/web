@@ -59,25 +59,14 @@ export default class BrowserApi extends Api {
 			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
-				isSuccessful: true,
 				value: this.reqStore.getData(request)
 			};
 		} else {
 			console.log('Api: fetch[sync/loading, async/value]');
 			this.fetchJson<T>('GET', request)
-				.then(value => callback({
-					isLoading: false,
-					isSuccessful: true,
-					value: value
-				}))
-				.catch(reason => callback({
-					isLoading: false,
-					isSuccessful: false,
-					errors: reason
-				}));
-			return {
-				isLoading: true
-			};
+				.then(value => callback({ isLoading: false, value }))
+				.catch(errors => callback({ isLoading: false, errors }));
+			return { isLoading: true };
 		}
 	}
 	protected post<T>(request: Request) {

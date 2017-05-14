@@ -40,13 +40,35 @@
 	color: #000;
 }
 .main-view > header > h2 {
+	position: relative;
 	text-align: center;
 	font-size: 22px;
 	height: 30px;
    line-height: 30px;
 	margin: 0;
 }
+.main-view > header > h2 > .icon {
+	position: absolute;
+	top: 5px;
+	margin-left: 8px;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	transition: transform 250ms;
+	color: #666;
+}
+.main-view > header > h2.loading > .icon {
+	animation: main-view-page-loading 1000ms linear infinite;
+}
+.main-view > header > h2 > .icon:hover {
+	transform: rotate(-22deg);
+}
 .main-view > footer {
 	text-align: center;
 	padding: 20px 0;
+}
+
+@keyframes main-view-page-loading {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
 }

@@ -3,7 +3,10 @@ import PureContextComponent from '../PureContextComponent';
 
 export default class AboutPage extends PureContextComponent<{}, {}> {
 	public componentWillMount() {
-		this.context.pageTitle.set('About Us');
+		this.context.page.setState({
+			title: 'About reallyread.it',
+			isLoading: false
+		});
 	}
 	public render() {
 		return (

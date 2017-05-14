@@ -1,14 +1,14 @@
 import * as React from 'react';
 import Api from './api/Api';
 import contextTypes from './contextTypes';
-import PageTitle from './PageTitle';
+import Page from './Page';
 import User from './User';
 import Dialog from './Dialog';
 import Extension from './Extension';
 
 export default class App extends React.Component<{
 	api: Api,
-	pageTitle: PageTitle,
+	page: Page,
 	user: User,
 	extension: Extension,
 	environment: 'server' | 'browser'
@@ -18,7 +18,7 @@ export default class App extends React.Component<{
 	public getChildContext() {
 		return {
 			api: this.props.api,
-			pageTitle: this.props.pageTitle,
+			page: this.props.page,
 			user: this.props.user,
 			dialog: this.dialog,
 			extension: this.props.extension,

@@ -1,5 +1,5 @@
 import Api from './api/Api';
-import PageTitle from './PageTitle';
+import Page from './Page';
 import User from './User';
 import Dialog from './Dialog';
 import Router from 'react-router';
@@ -7,7 +7,7 @@ import Extension from './Extension';
 
 interface Context {
 	api: Api,
-	pageTitle: PageTitle,
+	page: Page,
 	user: User,
 	dialog: Dialog,
 	router: Router.InjectedRouter,

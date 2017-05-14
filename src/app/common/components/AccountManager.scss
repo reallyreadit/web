@@ -2,6 +2,9 @@
 	height: 18px;
 	text-align: right;
 }
+.account-manager > .user-name.signing-out {
+	color: #ccc;
+}
 .account-manager > .buttons > .button:not(:last-child) {
 	margin-right: (4 + 6) + px;
 }

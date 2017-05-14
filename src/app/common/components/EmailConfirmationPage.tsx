@@ -8,13 +8,17 @@ const resultMessages: { [key: string]: string } = {
 	'alreadyConfirmed': 'This email address has already been confirmed.',
 	'success': 'Thanks for confirming your email address!'
 };
-export default class EmailConfirmationPage extends PureContextComponent<{
+interface Props {
 	params: {
 		result: string
 	}
-}, {}> {
+}
+export default class EmailConfirmationPage extends PureContextComponent<Props, {}> {
 	public componentWillMount() {
-		this.context.pageTitle.set('Email Confirmation');
+		this.context.page.setState({
+			title: 'Email Confirmation',
+			isLoading: false
+		});
 	}
 	public render() {
 		return (

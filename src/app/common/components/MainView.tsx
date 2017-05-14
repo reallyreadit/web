@@ -2,20 +2,17 @@ import * as React from 'react';
 import logo from '../svg/logo';
 import { Link } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
-import Context from '../Context';
 import DialogManager from './DialogManager';
 import AccountManager from './AccountManager';
 import ReadReadinessBar from './ReadReadinessBar';
 
 export default class MainView extends PureContextComponent<{}, {}> {
-	constructor(props: {}, context: Context) {
-		super(props, context);
-	}
+	private _reloadPage = () => this.context.page.reload();
 	public componentDidMount() {
-		this.context.pageTitle.addListener('change', this.forceUpdate);
+		this.context.page.addListener('change', this.forceUpdate);
 	}
 	public componentWillUnmount() {
-		this.context.pageTitle.removeListener('change', this.forceUpdate);
+		this.context.page.removeListener('change', this.forceUpdate);
 	}
 	public render() {
 		return (
@@ -33,7 +30,10 @@ export default class MainView extends PureContextComponent<{}, {}> {
 					<h1>
 						<Link to="/">reallyread.it</Link>
 					</h1>
-					<h2>{this.context.pageTitle.get()}</h2>
+					<h2 className={this.context.page.isLoading ? 'loading' : null}>
+						{this.context.page.title}
+						<svg className="icon" onClick={this._reloadPage}><use xlinkHref="#icon-refresh"></use></svg>
+					</h2>
 				</header>
 				<main>
 					{this.props.children}

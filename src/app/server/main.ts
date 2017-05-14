@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import App from '../common/App';
 import ServerApi from './ServerApi';
-import ServerPageTitle from './ServerPageTitle';
+import ServerPage from './ServerPage';
 import renderHtml from '../common/templates/html';
 import { RouterContext, match } from 'react-router';
 import routes from '../common/routes';
@@ -54,7 +54,7 @@ http.createServer((req, res) => {
 						host: 'localhost',
 						port: 4001
 					}, req.headers['cookie']),
-					pageTitle = new ServerPageTitle();
+					page = new ServerPage();
 				new Promise<UserAccount>((resolve, reject) => {
 						if (api.hasSessionKey()) {
 							api.getJson(new Request('/UserAccounts/GetUserAccount'))
@@ -83,7 +83,7 @@ http.createServer((req, res) => {
 										App,
 										{
 											api,
-											pageTitle,
+											page,
 											user,
 											extension: new ServerExtension(),
 											environment: 'server'
@@ -102,7 +102,7 @@ http.createServer((req, res) => {
 								res.setHeader('content-type', 'text/html');
 								res.end(renderHtml({
 									content,
-									title: pageTitle.get(),
+									title: page.title,
 									contentRootPath: config.contentRootPath,
 									apiEndpoint: {
 										scheme: config.api.protocol,
