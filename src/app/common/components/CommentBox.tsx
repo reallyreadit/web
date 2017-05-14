@@ -40,9 +40,13 @@ export default class CommentBox extends ContextComponent<Props, {
             <div className="comment-box">
                 <textarea value={this.state.commentText} onChange={this._updateCommentText} autoFocus={!!this.props.parentCommentId} />
                 <br />
-                {this.props.articleId && !this.props.isAllowedToPost ? <span>You have to read the article before you can comment!</span> : null}
-                {this.props.onCancel ? <Button text="Cancel" onClick={this.props.onCancel} /> : null}
-                <Button text="Post Comment" style="preferred" state={this.state.isPosting ? 'busy' : this.props.isAllowedToPost ? 'normal' : 'disabled'} onClick={this._postComment} />
+                {this.props.articleId && !this.props.isAllowedToPost ?
+                    <span>You have to read the article before you can comment!</span> :
+                    null}
+                {this.props.onCancel ?
+                    <Button text="Cancel" iconLeft="forbid" onClick={this.props.onCancel} /> :
+                    null}
+                <Button text={`Post ${this.props.parentCommentId ? 'Reply' : 'Comment'}`} iconLeft="checkmark" style="preferred" state={this.state.isPosting ? 'busy' : this.props.isAllowedToPost ? 'normal' : 'disabled'} onClick={this._postComment} />
             </div>
         );
     }

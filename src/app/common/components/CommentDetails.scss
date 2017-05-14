@@ -22,12 +22,10 @@
     margin: 3px 0 0 0;
     max-width: 600px;
 }
-.comment-details > .link {
+.comment-details > .action-link {
     color: darkgray;
-    text-decoration: underline;
-    cursor: pointer;
 }
-.comment-details > .link:hover {
+.comment-details > .action-link:hover {
     color: black;
 }
 .comment-details > .comment-list {

@@ -9,6 +9,7 @@ import ArticleDetails from './ArticleDetails';
 import readingParameters from '../../../common/readingParameters';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
+import { State as PageState } from '../Page';
 
 interface Props {
 	params: {
@@ -31,22 +32,26 @@ export default class ArticlePage extends ContextComponent<Props, {
 		this.setState({ comments: { ...this.state.comments, value: comments }});
 		this._reloadArticle();
 	};
-	private _checkLoadState = () => {
-		if (!this.state.article.isLoading && !this.state.comments.isLoading) {
-			this.context.page.setState({ isLoading: false });
+	private _updatePageState = () => {
+		if (!this.state.article.isLoading) {
+			const state: Partial<PageState> = { title: this.state.article.value.title };
+			if (!this.state.comments.isLoading) {
+				state.isLoading = false;
+			}
+			this.context.page.setState(state);
 		}
 	};
 	private _loadPage = () => {
 		this.context.page.setState({ isLoading: true });
-		this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._checkLoadState));
-		this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._checkLoadState));
+		this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState));
+		this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState));
 	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
 		this._slug = this.props.params.source + '_' + this.props.params.article;
 		this.state = {
-			article: this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._checkLoadState)),
-			comments: this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._checkLoadState))
+			article: this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState)),
+			comments: this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState))
 		};
 	}
 	public componentWillMount() {
@@ -56,15 +61,11 @@ export default class ArticlePage extends ContextComponent<Props, {
 		});
 	}
 	public componentDidMount() {
-		this.context.user
-			.addListener('signIn', this._loadPage)
-			.addListener('signOut', this._loadPage);
+		this.context.user.addListener('authChange', this._loadPage);
 		this.context.page.addListener('reload', this._loadPage);
 	}
 	public componentWillUnmount() {
-		this.context.user
-			.removeListener('signIn', this._loadPage)
-			.removeListener('signOut', this._loadPage);
+		this.context.user.removeListener('authChange', this._loadPage);
 		this.context.page.removeListener('reload', this._loadPage);
 	}
 	public render() {

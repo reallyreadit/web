@@ -2,6 +2,7 @@ import * as React from 'react';
 import Comment from '../api/models/Comment';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
+import ActionLink from './ActionLink';
 
 interface Props {
     comment: Comment,
@@ -40,8 +41,10 @@ export default class CommentDetails extends React.Component<Props, {
                 {this.state.showCommentBox ? 
                     <CommentBox articleId={this.props.comment.articleId} parentCommentId={this.props.comment.id} isAllowedToPost={this.props.isAllowedToPost} onCommentPosted={this._addComment} onCancel={this._hideCommentBox} /> :
                     this.props.mode === 'reply' ?
-                        this.props.isAllowedToPost ? <span className="link" onClick={this._showCommentBox}>Reply</span> : null :
-                        <span className="link" onClick={this._viewThread}>View Thread</span>}
+                        this.props.isAllowedToPost ?
+                            <ActionLink text="Reply" iconLeft="backward" onClick={this._showCommentBox} /> :
+                            null :
+                        <ActionLink text="View Thread" iconLeft="comments" onClick={this._viewThread} />}
                 {this.state.children.length ? <CommentList comments={this.state.children} mode={this.props.mode} isAllowedToPost={this.props.isAllowedToPost} parentCommentId={this.props.comment.id} onCommentAdded={this.props.onCommentAdded} onViewThread={this.props.onViewThread} /> : null}
             </li>
         );
