@@ -10,14 +10,14 @@ export default class EventPageApi {
 			}
 		});
 	}
-	public getState() {
+	public static getState() {
 		return EventPageApi.sendMessage<{
 			isAuthenticated: boolean,
 			userArticle: UserArticle,
 			showOverlay: boolean
 		}>('getState');
 	}
-	public updateShowOverlay(showOverlay: boolean) {
+	public static updateShowOverlay(showOverlay: boolean) {
 		return EventPageApi.sendMessage<void>('updateShowOverlay', showOverlay);
 	}
 }
