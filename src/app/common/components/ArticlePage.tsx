@@ -22,9 +22,11 @@ export default class ArticlePage extends ContextComponent<Props, {
 	comments: Fetchable<Comment[]>
 }> {
 	private _slug: string;
+	private _loadArticle = () => this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState));
+	private _loadComments = () => this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState));
 	private _reloadArticle = () => {
 		this.context.page.setState({ isLoading: true });
-		this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, () => this.context.page.setState({ isLoading: false })));
+		this._loadArticle();
 	};
 	private _addComment = (comment: Comment) => {
 		const comments = this.state.comments.value.slice();
@@ -41,17 +43,17 @@ export default class ArticlePage extends ContextComponent<Props, {
 			this.context.page.setState(state);
 		}
 	};
-	private _loadPage = () => {
+	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
-		this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState));
-		this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState));
+		this._loadArticle();
+		this._loadComments();
 	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
 		this._slug = this.props.params.source + '_' + this.props.params.article;
 		this.state = {
-			article: this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState)),
-			comments: this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState))
+			article: this._loadArticle(),
+			comments: this._loadComments()
 		};
 	}
 	public componentWillMount() {
@@ -61,12 +63,12 @@ export default class ArticlePage extends ContextComponent<Props, {
 		});
 	}
 	public componentDidMount() {
-		this.context.user.addListener('authChange', this._loadPage);
-		this.context.page.addListener('reload', this._loadPage);
+		this.context.user.addListener('authChange', this._reload);
+		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('authChange', this._loadPage);
-		this.context.page.removeListener('reload', this._loadPage);
+		this.context.user.removeListener('authChange', this._reload);
+		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn() && this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;

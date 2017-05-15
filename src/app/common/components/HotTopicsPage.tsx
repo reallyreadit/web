@@ -7,15 +7,14 @@ import ArticleDetails from './ArticleDetails';
 import ArticleList from './ArticleList';
 
 export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
-	private _loadArticles = () => {
+	private _loadArticles = () => this.context.api.listArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })));
+	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
-		this.context.api.listArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })));
+		this._loadArticles();
 	};
 	constructor(props: {}, context: Context) {
 		super(props, context);
-		this.state = {
-			articles: this.context.api.listArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })))
-		};
+		this.state = { articles: this._loadArticles() };
 	}
 	public componentWillMount() {
 		this.context.page.setState({
@@ -24,12 +23,12 @@ export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetc
 		});
 	}
 	public componentDidMount() {
-		this.context.user.addListener('authChange', this._loadArticles);
-		this.context.page.addListener('reload', this._loadArticles);
+		this.context.user.addListener('authChange', this._reload);
+		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('authChange', this._loadArticles);
-		this.context.page.removeListener('reload', this._loadArticles);
+		this.context.user.removeListener('authChange', this._reload);
+		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		return (

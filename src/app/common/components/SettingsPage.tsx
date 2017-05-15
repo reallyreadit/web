@@ -3,7 +3,7 @@ import PureContextComponent from '../PureContextComponent';
 
 export default class SettingsPage extends PureContextComponent<{}, {}> {
 	private _redirectToHomepage = () => this.context.router.push('/');
-	private _loadUser = () => {
+	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
 		this.context.api.getUserAccount(user => {
 			this.context.user.update(user.value);
@@ -20,13 +20,13 @@ export default class SettingsPage extends PureContextComponent<{}, {}> {
 		this.context.user
 			.addListener('signOut', this._redirectToHomepage)
 			.addListener('update', this.forceUpdate);
-		this.context.page.addListener('reload', this._loadUser);
+		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
 		this.context.user
 			.removeListener('signOut', this._redirectToHomepage)
 			.removeListener('update', this.forceUpdate);
-		this.context.page.removeListener('reload', this._loadUser);
+		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		const user = this.context.user.getUserAccount();

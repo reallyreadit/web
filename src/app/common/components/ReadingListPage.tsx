@@ -14,15 +14,14 @@ export default class ReadingListPage extends ContextComponent<{}, { articles: Fe
 		this.setState({ articles: { ...this.state.articles, value: articles }});
 		this.context.api.deleteUserArticle(article.id);
 	};
-	private _loadArticles = () => {
+	private _loadArticles = () => this.context.api.listUserArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })));
+	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
-		this.context.api.listUserArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })));
+		this._loadArticles();
 	};
 	constructor(props: {}, context: Context) {
 		super(props, context);
-		this.state = {
-			articles: this.context.api.listUserArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })))
-		};
+		this.state = { articles: this._loadArticles() };
 	}
 	public componentWillMount() {
 		this.context.page.setState({
@@ -32,11 +31,11 @@ export default class ReadingListPage extends ContextComponent<{}, { articles: Fe
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
-		this.context.page.addListener('reload', this._loadArticles);
+		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
-		this.context.page.removeListener('reload', this._loadArticles);
+		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		return (

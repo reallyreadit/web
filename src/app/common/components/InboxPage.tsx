@@ -11,15 +11,14 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 		const slugParts = comment.articleSlug.split('_');
 		this.context.router.push(`/articles/${slugParts[0]}/${slugParts[1]}`);
 	};
-	private _loadReplies = () => {
+	private _loadReplies = () => this.context.api.listReplies(replies => this.setState({ replies }, () => this.context.page.setState({ isLoading: false })));
+	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
-		this.context.api.listReplies(replies => this.setState({ replies }, () => this.context.page.setState({ isLoading: false })));
+		this._loadReplies();
 	};
 	constructor(props: {}, context: Context) {
 		super(props, context);
-		this.state = {
-			replies: this.context.api.listReplies(replies => this.setState({ replies }, () => this.context.page.setState({ isLoading: false })))
-		};
+		this.state = { replies: this._loadReplies() };
 	}
 	public componentWillMount() {
 		this.context.page.setState({
@@ -29,11 +28,11 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
-		this.context.page.addListener('reload', this._loadReplies);
+		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
-		this.context.page.removeListener('reload', this._loadReplies);
+		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		return (
