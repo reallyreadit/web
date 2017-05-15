@@ -2,7 +2,7 @@ import * as React from 'react';
 import Comment from '../api/models/Comment';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
-import ActionLink from './ActionLink';
+import ActionLink from '../../../common/components/ActionLink';
 
 interface Props {
     comment: Comment,

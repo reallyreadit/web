@@ -1,11 +1,11 @@
 import * as React from 'react';
 import Article from '../api/models/Article';
-import { Link } from 'react-router';
 import * as className from 'classnames';
 import readingParameters from '../../../common/readingParameters';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
+import CommentsActionLink from '../../../common/components/CommentsActionLink';
 
 interface Props {
 	article: Article,
@@ -28,6 +28,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 			this.context.dialog.show(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
 		}
 	};
+	private _goToComments = () => this.context.router.push(`/articles/${this.slugParts[0]}/${this.slugParts[1]}`);
 	private _deleteArticle = (e: React.MouseEvent<HTMLDivElement>) => this.props.onDelete(this.props.article);
 	constructor(props: Props, context: Context) {
 		super(props, context);
@@ -50,7 +51,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 					{article.datePublished ? <span> - </span> : null}
 					<span className="source">[{article.source}{article.section ? ' >> ' + article.section : ''}{article.authors.length ? ' - ' + article.authors.join(', ') : ''}]</span>
 					<span> - </span>
-					<span className="comment-count"><Link to={`/articles/${this.slugParts[0]}/${this.slugParts[1]}`}>{`${article.commentCount} comment${article.commentCount !== 1 ? 's' : ''}`}</Link></span>
+					<CommentsActionLink commentCount={article.commentCount} onClick={this._goToComments} />
 					{article.percentComplete ? <span> - </span> : null}
 					{article.percentComplete ?
 						<span className={className('percent-complete', { unlocked: article.percentComplete >= readingParameters.articleUnlockThreshold })}>Percent Complete: {article.percentComplete}%</span> : null}

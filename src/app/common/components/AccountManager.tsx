@@ -4,7 +4,7 @@ import Context from '../Context';
 import Button from './Button';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
-import ActionLink from './ActionLink';
+import ActionLink from '../../../common/components/ActionLink';
 import Separator from './Separator';
 import * as className from 'classnames';
 

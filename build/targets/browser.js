@@ -8,7 +8,10 @@ const build = createBuild({
 		configFileName: 'tsconfig.browser.json',
 		entry: path.posix.join(project.srcDir, 'app/browser/main.ts')
 	},
-	scss: `${project.srcDir}/app/{browser,common}/**/*.{css,scss}`,
+	scss: [
+		`${project.srcDir}/app/{browser,common}/**/*.scss`,
+		`${project.srcDir}/common/**/*.scss`
+	],
 	staticAssets: `${project.srcDir}/app/{browser,common}/**/*.{ico,ttf}`,
 	path: 'app/browser'
 });

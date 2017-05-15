@@ -1,7 +1,7 @@
 import Request from '../api/Request';
 import UserAccount from '../api/models/UserAccount';
 import Endpoint from '../api/Endpoint';
-import icons from '../svg/icons';
+import icons from '../../../common/svg/icons';
 
 export default (model: {
 	title: string,
