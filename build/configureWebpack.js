@@ -13,7 +13,7 @@ function configureWebpack(params) {
 			entry: params.entry,
 			output: {
 				path: path.join(project.rootAbsPath, project.getOutPath(params.path, params.env)),
-				filename: 'bundle.js'
+				filename: params.fileName
 			},
 			resolve: {
 				extensions: ['.webpack.js', '.web.js', '.js', '.ts', '.tsx']
@@ -26,9 +26,10 @@ function configureWebpack(params) {
 						options: tsConfig
 					}
 				]
-			}
+			},
+			watch: params.watch
 		};
-	if (params.env === project.env.dev) {
+	if (params.sourceMaps) {
 		tsConfig.compilerOptions.sourceMap = true;
 		webpackConfig.devtool = 'source-map';
 		webpackConfig.module.rules.push({

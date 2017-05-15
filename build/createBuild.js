@@ -1,5 +1,6 @@
 const del = require('del'),
-	  path = require('path');
+	  path = require('path'),
+	  fs = require('fs');
 
 const project = require('./project'),
 	  delayedWatch = require('./delayedWatch'),
@@ -11,14 +12,27 @@ const project = require('./project'),
 function createBuild(params) {
 	const srcPath = path.posix.join(project.srcDir, params.path),
 		  devOutPath = project.getOutPath(params.path, project.env.dev);
-	function getWebpackConfig(env) {
+	function getWebpackConfig(entry, fileName, sourceMaps, env, watch) {
 		return configureWebpack({
 			configFileName: params.webpack.configFileName,
-			entry: './' + params.webpack.entry,
+			entry: './' + entry,
 			appConfig: params.webpack.appConfig,
 			path: params.path,
-			env
+			fileName,
+			sourceMaps,
+			env,
+			watch
 		});
+	}
+	function getHtmlTemplateDelegate(outPath, resolve) {
+		return () => {
+			const template = path.join(outPath, 'html.js');
+			fs.writeFileSync(path.join(outPath, 'index.html'), eval(fs.readFileSync(template).toString()).default);
+			fs.unlinkSync(template);
+			if (resolve) {
+				resolve();
+			}
+		};
 	}
 	return {
 		clean(env) {
@@ -28,7 +42,10 @@ function createBuild(params) {
 			const outPath = project.getOutPath(params.path, env),
 				  tasks = [];
 			if (params.webpack) {
-				tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig(env), resolve)));
+				tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig(params.webpack.entry, 'bundle.js', env === project.env.dev, env), resolve)));
+				if (params.webpack.htmlTemplate) {
+					tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig(params.webpack.htmlTemplate, 'html.js', false, env), getHtmlTemplateDelegate(outPath, resolve))));
+				}
 			}
 			if (params.scss) {
 				tasks.push(new Promise((resolve, reject) => buildScss({
@@ -50,7 +67,10 @@ function createBuild(params) {
 		},
 		watch() {
 			if (params.webpack) {
-				runWebpack(Object.assign({}, getWebpackConfig(project.env.dev), { watch: true }));
+				runWebpack(getWebpackConfig(params.webpack.entry, 'bundle.js', true, project.env.dev, true));
+				if (params.webpack.htmlTemplate) {
+					runWebpack(getWebpackConfig(params.webpack.htmlTemplate, 'html.js', false, project.env.dev, true), getHtmlTemplateDelegate(devOutPath));
+				}
 			}
 			if (params.scss) {
 				buildScss({

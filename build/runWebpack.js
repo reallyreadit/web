@@ -11,7 +11,7 @@ function runWebpack(config, onComplete) {
 			colors: true
 		}));
 		if (onComplete) {
-			onComplete();
+			onComplete(config);
 		}
 	});
 }
