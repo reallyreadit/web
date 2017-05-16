@@ -14,7 +14,7 @@ export default class BrowserExtension extends Extension {
         }
     }
     private pingExtension() {
-        chrome.runtime.sendMessage(this._extensionId, 'ping', response => {
+        window.chrome.runtime.sendMessage(this._extensionId, 'ping', response => {
             const isInstalled = !!response;
             if (isInstalled !== this._isInstalled) {
                 this._isInstalled = isInstalled;
@@ -26,7 +26,7 @@ export default class BrowserExtension extends Extension {
         return this._isInstalled;
     }
     public isBrowserCompatible() {
-        return window.navigator.userAgent.indexOf('Chrome') !== -1;
+        return !!(window.chrome && window.chrome.runtime);
     }
     public getExtensionId() {
         return this._extensionId;
