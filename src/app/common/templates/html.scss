@@ -3,12 +3,6 @@
 	src: url('./fonts/Adler.ttf');
 }
 
-html,
-body {
-	margin: 0;
+html, body, #root {
   height: 100%;
-}
-
-#root {
-	height: 100%;
 }

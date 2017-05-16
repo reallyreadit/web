@@ -6,6 +6,8 @@ import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
+import Icon from '../../../common/components/Icon';
+import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 
 interface Props {
 	article: Article,
@@ -54,11 +56,11 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 					<CommentsActionLink commentCount={article.commentCount} onClick={this._goToComments} />
 					{article.percentComplete ? <span> - </span> : null}
 					{article.percentComplete ?
-						<span className={className('percent-complete', { unlocked: article.percentComplete >= readingParameters.articleUnlockThreshold })}>Percent Complete: {article.percentComplete}%</span> : null}
+						<PercentCompleteIndicator percentComplete={article.percentComplete} /> : null}
 				</div>
 				{this.props.showControls ?
 					<div className="controls" title="Delete" onClick={this._deleteArticle}>
-						<svg className="icon"><use xlinkHref="#icon-cancel"></use></svg>
+						<Icon name="cancel" />
 					</div> : null}
 			</div>
 		);

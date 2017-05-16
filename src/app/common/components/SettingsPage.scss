@@ -1,14 +1,18 @@
-.settings-page > ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
 .settings-page > ul > li {
 	padding: 10px 0;
 }
 .settings-page > ul > li > label {
 	display: block;
 }
-.settings-page > ul > li > label:first-child {
-	font-weight: bold;
+.settings-page > ul > li > .email-confirmation-status {
+	display: block;
+}
+.settings-page > ul > li > .email-confirmation-status.confirmed {
+	color: green;
+}
+.settings-page > ul > li > .email-confirmation-status.unconfirmed {
+	color: orange;
+}
+.settings-page > ul > li > .email-confirmation-status > .icon {
+	position: relative;
 }

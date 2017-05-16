@@ -9,8 +9,8 @@ const build = createBuild({
 		entry: path.posix.join(project.srcDir, 'app/browser/main.ts')
 	},
 	scss: [
-		`${project.srcDir}/app/{browser,common}/**/*.scss`,
-		`${project.srcDir}/common/**/*.scss`
+		`${project.srcDir}/app/{browser,common}/**/*.{css,scss}`,
+		`${project.srcDir}/common/**/*.{css,scss}`
 	],
 	staticAssets: `${project.srcDir}/app/{browser,common}/**/*.{ico,ttf}`,
 	path: 'app/browser'

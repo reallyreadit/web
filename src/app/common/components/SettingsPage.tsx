@@ -1,5 +1,8 @@
 import * as React from 'react';
 import PureContextComponent from '../PureContextComponent';
+import Separator from './Separator';
+import ActionLink from '../../../common/components/ActionLink';
+import Icon from '../../../common/components/Icon';
 
 export default class SettingsPage extends PureContextComponent<{}, {}> {
 	private _redirectToHomepage = () => this.context.router.push('/');
@@ -34,21 +37,50 @@ export default class SettingsPage extends PureContextComponent<{}, {}> {
 			<div className="settings-page">
 				<ul>
 					<li>
-						<label>Username</label>
-						<span>{user.name}</span>
+						<label>
+							<strong>Username</strong>
+							<Separator />
+							<ActionLink text="Change Password" iconLeft="write" />
+						</label>
+						{user.name}
 					</li>
 					<li>
-						<label>Password</label>
-						<span>[Change Password]</span>
+						<label>
+							<strong>Email Address</strong>
+							<Separator />
+							<ActionLink text="Change" iconLeft="write" />
+						</label>
+						{user.email}
+						{user.isEmailConfirmed ?
+							<span className="email-confirmation-status confirmed">
+								<Icon name="checkmark" />
+								Confirmed
+							</span> :
+							<span className="email-confirmation-status unconfirmed">
+								<Icon name="exclamation" />
+								Not Confirmed
+								<Separator />
+								<ActionLink text="Resend confirmation email" iconLeft="refresh2" />
+							</span>}
 					</li>
 					<li>
-						<label>Email</label>
-						<span>{user.email}</span>
-					</li>
-					<li>
-						<label>Reply Notifications</label>
-						<label><input type="checkbox" checked={user.receiveReplyEmailNotifications} /> Send Email</label>
-						<label><input type="checkbox" checked={user.receiveReplyDesktopNotifications} /> Show Desktop Notification</label>
+						<label>
+							<strong>Notifications</strong>
+						</label>
+						When someone replies to my comment
+						<ul>
+							<li>
+								<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
+								Send me an email
+							</li>
+							<li>
+								<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
+								Show a desktop notification
+							</li>
+							<li>
+								<ActionLink text="Change Preferences" iconLeft="write" />
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</div>

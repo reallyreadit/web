@@ -1,9 +1,10 @@
 import * as React from 'react';
 import * as className from 'classnames';
+import Icon, { IconName } from '../../../common/components/Icon';
 
 export default class Button extends React.PureComponent<{
 	text: string,
-	iconLeft?: string,
+	iconLeft?: IconName,
 	style?: 'normal' | 'preferred',
 	state?: 'normal' | 'disabled' | 'busy',
 	showIndicator?: boolean,
@@ -30,7 +31,7 @@ export default class Button extends React.PureComponent<{
 					<div className="inner-wrap">
 						<div className="content">
 							{this.props.iconLeft ?
-								<span className={className('icon-wrapper', { 'indicator': this.props.showIndicator })}><svg className="icon"><use xlinkHref={`#icon-${this.props.iconLeft}`}></use></svg></span> :
+								<span className={className('icon-wrapper', { 'indicator': this.props.showIndicator })}><Icon name={this.props.iconLeft} /></span> :
 								null}
 							<span className={className('text', { 'error': this.props.textStyle === 'error' })}>{this.props.text}</span>
 							<div className="loading"></div>

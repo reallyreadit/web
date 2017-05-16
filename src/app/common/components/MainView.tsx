@@ -5,6 +5,7 @@ import PureContextComponent from '../PureContextComponent';
 import DialogManager from './DialogManager';
 import AccountManager from './AccountManager';
 import ReadReadinessBar from './ReadReadinessBar';
+import Icon from '../../../common/components/Icon';
 
 export default class MainView extends PureContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
@@ -44,7 +45,7 @@ export default class MainView extends PureContextComponent<{}, {}> {
 					<h2 className={this.context.page.isLoading ? 'loading' : null}>
 						<div className="spacer"></div>
 						<span className="text">{this.context.page.title}</span>
-						<svg className="icon" onClick={this._reloadPage}><use xlinkHref="#icon-refresh"></use></svg>
+						<Icon name="refresh" onClick={this._reloadPage} />
 					</h2>
 				</header>
 				<main>

@@ -11,8 +11,8 @@ const build = createBuild({
 		htmlTemplate: path.posix.join(project.srcDir, 'extension/browser-action/templates/html.ts')
 	},
 	scss: [
-		`${project.srcDir}/extension/browser-action/**/*.scss`,
-		`${project.srcDir}/common/**/*.scss`
+		`${project.srcDir}/extension/browser-action/**/*.{css,scss}`,
+		`${project.srcDir}/common/**/*.{css,scss}`
 	],
 	staticAssets: `${project.srcDir}/extension/browser-action/**/*.ttf`,
 	path: 'extension/browser-action'

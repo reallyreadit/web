@@ -1,9 +1,8 @@
 import * as React from 'react';
 import EventPageApi from '../EventPageApi';
-import readingParameters from '../../../common/readingParameters';
 import UserArticle from '../../common/UserArticle';
-import * as className from 'classnames';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
+import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 
 export default class App extends React.Component<{}, {
 	isAuthenticated?: boolean,
@@ -34,9 +33,7 @@ export default class App extends React.Component<{}, {
 								this.state.userArticle.title.substr(0, 48).trim() + '...' :
 								this.state.userArticle.title}
 						</h2>
-						<label id="percent-complete" className={className({ 'unlocked': this.state.userArticle.percentComplete >= readingParameters.articleUnlockThreshold })}>
-							Percent Complete: <span>{this.state.userArticle.percentComplete.toFixed() + '%'}</span>
-						</label>
+						<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
 						<span> - </span>
 						<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
 					</div> :

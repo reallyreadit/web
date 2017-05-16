@@ -35,11 +35,6 @@
 	font-style: italic;
    color: #666;
 }
-.main-view > nav > .left-col > .info-box > .real-time {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
 .main-view > nav > .left-col > .info-box > .real-time > li > .stat {
 	color: deepskyblue;
 	text-decoration: underline;
@@ -54,7 +49,6 @@
 	font-family: 'Adler';
 	font-size: 36px;
 	text-align: center;
-	margin: 0;
 }
 .main-view > header > h1 > a {
 	text-decoration: none;
@@ -66,7 +60,6 @@
 	font-size: 22px;
 	height: 30px;
    line-height: 30px;
-	margin: 0;
 }
 .main-view > header > h2 > .spacer {
 	flex: 1 1 auto;
