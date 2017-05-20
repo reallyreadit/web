@@ -24,13 +24,13 @@ abstract class Dialog<P, S extends Partial<DialogState>> extends PureContextComp
 				.catch(reason => {});
 		}
 	};
-	private handleCancel = () => this.context.dialog.close();
+	private handleCancel = () => this.context.page.closeDialog();
 	protected abstract title: string;
 	protected abstract className: string;
 	protected abstract submitButtonText: string;
 	constructor(props: P, state: S, context: Context) {
 		super(props, context);
-		this.state = Object.assign(state, {
+		this.state = Object.assign({}, state, {
 			isLoading: false,
 			showErrors: false
 		});

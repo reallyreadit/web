@@ -22,7 +22,7 @@ export default class SignInDialog extends Dialog<{}, Partial<DialogState> & {
 			.signIn(this.name.value, this.password.value)
 			.then(userAccount => {
 				this.context.user.signIn(userAccount);
-				this.context.dialog.close();
+				this.context.page.closeDialog();
 			})
 			.catch((errors: string[]) => {
 				if (errors.some(error => error === 'UserAccountNotFound')) {

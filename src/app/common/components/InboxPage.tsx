@@ -7,9 +7,12 @@ import CommentList from './CommentList';
 
 export default class InboxPage extends ContextComponent<{}, { replies: Fetchable<Comment[]> }> {
 	private _redirectToHomepage = () => this.context.router.push('/');
-	private _goToThread = (comment: Comment) => {
+	private _readReply = (comment: Comment) => {
 		const slugParts = comment.articleSlug.split('_');
-		this.context.router.push(`/articles/${slugParts[0]}/${slugParts[1]}`);
+		if (!comment.dateRead) {
+			this.context.api.readReply(comment.id);
+		}
+		this.context.router.push(`/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
 	};
 	private _loadReplies = () => this.context.api.listReplies(replies => this.setState({ replies }, () => this.context.page.setState({ isLoading: false })));
 	private _reload = () => {
@@ -41,7 +44,7 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 					{!this.state.replies.isLoading ?
 						this.state.replies.value ?
 							this.state.replies.value.length ?
-								<CommentList comments={this.state.replies.value} mode="link" onViewThread={this._goToThread} /> :
+								<CommentList comments={this.state.replies.value} mode="link" onViewThread={this._readReply} /> :
 								<span>No replies found! (No one likes you!)</span> :
 							<span>Error loading comments.</span> :
 						null}

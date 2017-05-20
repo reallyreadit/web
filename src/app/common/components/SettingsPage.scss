@@ -1,5 +1,9 @@
 .settings-page > ul > li {
-	padding: 10px 0;
+	padding-bottom: 10px;
+	line-height: 1.35em;
+}
+.settings-page > ul > li:last-child {
+	padding-bottom: 0;
 }
 .settings-page > ul > li > label {
 	display: block;
@@ -14,5 +18,30 @@
 	color: orange;
 }
 .settings-page > ul > li > .email-confirmation-status > .icon {
-	position: relative;
+	margin-right: 3px;
+}
+.settings-page > ul > li > .notification-channels {
+	padding-left: 10px;
+}
+.settings-page > ul > li > .notification-channels > .channel {
+	color: gray;
+}
+.settings-page > ul > li > .notification-channels > .channel {
+	margin-bottom: 3px;
+}
+.settings-page > ul > li > .notification-channels > .channel:last-child {
+	margin-bottom: 0;
+}
+.settings-page > ul > li > .notification-channels > .channel.enabled {
+	color: green;
+}
+.settings-page > ul > li > .notification-channels > .channel > .icon {
+	margin-right: 3px;
+}
+.settings-page > ul > li > .notification-channels > .channel > .notice {
+	display: block;
+	color: orange;
+}
+.settings-page > ul > li > .notification-channels > .channel > .notice > .icon {
+	margin-right: 3px;
 }

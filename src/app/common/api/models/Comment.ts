@@ -7,6 +7,7 @@ interface Comment {
 	articleSlug: string,
 	userAccountId: string,
 	userAccount: string,
-	children: Comment[]
+	children: Comment[],
+	dateRead: string
 }
 export default Comment;

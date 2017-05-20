@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-export type IconName = 'plus' | 'refresh2' | 'checkmark' | 'cancel' | 'backward' |
-	'in-alt' | 'exclamation' | 'forbid' | 'spinner' | 'chat' | 'comments' |
+export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
+	'cancel' | 'backward' | 'exclamation' | 'forbid' | 'spinner' | 'comments' |
 	'write' | 'envelope' | 'user' | 'cog' | 'book' | 'refresh';
 export default (props: {
 	name: IconName,

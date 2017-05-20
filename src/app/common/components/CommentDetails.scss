@@ -1,33 +1,45 @@
 .comment-details {
-    margin: 5px 0;
+	margin: 5px 0;
+}
+.comment-details.unread {
+	border-left: 4px solid gold;
+	padding-left: 6px;
+}
+.comment-details.highlight {
+	outline: 4px solid gold;
 }
 .comment-details > .article-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: bold;
-    font-style: italic;
-    color: darkviolet;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: bold;
+	font-style: italic;
+	color: darkviolet;
 }
 .comment-details > .article-title::before {
-    content: "Re: ";
+	content: "Re: ";
 }
 .comment-details > .title {
-    color: dimgray;
-    border-bottom: 1px dashed lightgray;
+	color: dimgray;
+	border-bottom: 1px dashed lightgray;
 }
 .comment-details > .text {
-    font-family: serif;
-    font-size: 16px;
-    margin: 3px 0 0 0;
-    max-width: 600px;
+	font-family: serif;
+	font-size: 16px;
+	margin: 3px 0 0 0;
+	max-width: 600px;
+}
+.comment-details > .text.preview {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .comment-details > .action-link {
-    color: darkgray;
+	color: darkgray;
 }
 .comment-details > .action-link:hover {
-    color: black;
+	color: black;
 }
 .comment-details > .comment-list {
-    padding-left: 20px;
+	padding-left: 20px;
 }

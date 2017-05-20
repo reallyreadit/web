@@ -9,8 +9,8 @@ import Separator from './Separator';
 import * as className from 'classnames';
 
 export default class AccountManager extends PureContextComponent<{}, { isSigningOut: boolean }> {
-	private showSignInDialog = () => this.context.dialog.show(React.createElement(SignInDialog));
-	private showCreateAccountDialog = () => this.context.dialog.show(React.createElement(CreateAccountDialog));
+	private showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
+	private showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
 	private goToInbox = () => this.context.router.push('/inbox');
 	private goToReadingList = () => this.context.router.push('/list');
 	private goToSettings = () => this.context.router.push('/settings');
@@ -43,7 +43,7 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 						<div>
 							<span>{this.state.isSigningOut ? 'Later' : 'Sup'}, <strong>{currentUser.name}</strong></span>
 							<Separator />
-							<ActionLink text="Sign Out" iconLeft="in-alt" onClick={this.signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
+							<ActionLink text="Sign Out" iconLeft="switch" onClick={this.signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
 						</div>
 					</div>
 					<div className="buttons">

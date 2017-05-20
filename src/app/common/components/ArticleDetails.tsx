@@ -27,7 +27,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 		}
 		if (reason) {
 			e.preventDefault();
-			this.context.dialog.show(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
+			this.context.page.openDialog(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
 		}
 	};
 	private _goToComments = () => this.context.router.push(`/articles/${this.slugParts[0]}/${this.slugParts[1]}`);

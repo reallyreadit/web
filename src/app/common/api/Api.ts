@@ -24,6 +24,15 @@ abstract class Api {
 			{ name, email, password }
 		));
 	}
+	public resendConfirmationEmail() {
+		return this.post(new Request('/UserAccounts/ResendConfirmationEmail'));
+	}
+	public updateNotificationPreferences(receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) {
+		return this.post<UserAccount>(new Request(
+			'/UserAccounts/UpdateNotificationPreferences',
+			{ receiveEmailNotifications, receiveDesktopNotifications }
+		));
+	}
 	public getUserAccount(callback: (userAccount: Fetchable<UserAccount>) => void) {
 		return this.get<UserAccount>(new Request('/UserAccounts/GetUserAccount'), callback);
 	}
@@ -44,6 +53,9 @@ abstract class Api {
 	}
 	public postComment(text: string, articleId: string, parentCommentId?: string) {
 		return this.post<Comment>(new Request('/Articles/PostComment', { text, articleId, parentCommentId }));
+	}
+	public readReply(commentId: string) {
+		return this.post(new Request('/Articles/ReadReply', { commentId }));
 	}
 	public deleteUserArticle(articleId: string) {
 		return this.post(new Request('/Articles/UserDelete', { articleId }));

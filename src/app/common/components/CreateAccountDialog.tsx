@@ -4,6 +4,7 @@ import InputField from './InputField';
 import InputFieldState from './InputFieldState';
 import Dialog, { DialogState } from './Dialog';
 import CancelablePromise from '../CancelablePromise';
+import { Intent } from '../Page';
 
 export default class CreateAccountDialog extends Dialog<{}, Partial<DialogState> & {
 	nameError?: string,
@@ -23,7 +24,8 @@ export default class CreateAccountDialog extends Dialog<{}, Partial<DialogState>
 			.createUserAccount(this.name.value, this.email.value, this.password.value)
 			.then(userAccount => {
 				this.context.user.signIn(userAccount);
-				this.context.dialog.close();
+				this.context.page.showToast('Welcome to reallyread.it!', Intent.Success);
+				this.context.page.closeDialog();
 			})
 			.catch((errors: string[]) => {
 				if (errors.some(error => error === 'DuplicateName')) {

@@ -13,8 +13,9 @@ import { State as PageState } from '../Page';
 
 interface Props {
 	params: {
-		source: string,
-		article: string,
+		sourceSlug: string,
+		articleSlug: string,
+		commentId: string
 	}
 }
 export default class ArticlePage extends ContextComponent<Props, {
@@ -50,7 +51,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
-		this._slug = this.props.params.source + '_' + this.props.params.article;
+		this._slug = this.props.params.sourceSlug + '_' + this.props.params.articleSlug;
 		this.state = {
 			article: this._loadArticle(),
 			comments: this._loadComments()
@@ -85,7 +86,13 @@ export default class ArticlePage extends ContextComponent<Props, {
 				{!this.state.comments.isLoading ?
 					this.state.comments.value ?
 						this.state.comments.value.length ?
-							<CommentList comments={this.state.comments.value} mode="reply" isAllowedToPost={isAllowedToPost} onCommentAdded={this._reloadArticle} /> :
+							<CommentList
+								comments={this.state.comments.value}
+								mode="reply"
+								isAllowedToPost={isAllowedToPost}
+								onCommentAdded={this._reloadArticle}
+								highlightedCommentId={this.props.params.commentId}
+								/> :
 							<span>No comments found! (Post one!)</span> :
 						<span>Error loading comments.</span> :
 					null}

@@ -4,12 +4,24 @@ export interface State {
 	title: string,
 	isLoading: boolean
 }
+export enum Intent {
+	Success,
+	Danger
+}
+export interface ToastEvent {
+	text: string,
+	intent: Intent
+}
 abstract class Page extends EventEmitter<{
 	'change': State,
-	'reload': void
+	'reload': void,
+	'openDialog': React.ReactElement<any>,
+	'closeDialog': React.ReactElement<any>,
+	'showToast': ToastEvent
 }> {
 	protected _title: string;
 	private _isLoading: boolean;
+	private _activeDialog?: React.ReactElement<any>;
 	public setState(state: Partial<State>) {
 		if ('title' in state) {
 			this._title = state.title;
@@ -25,11 +37,26 @@ abstract class Page extends EventEmitter<{
 	public reload() {
 		this.emitEvent('reload', null);
 	}
+	public openDialog(dialog: React.ReactElement<any>) {
+		this._activeDialog = dialog;
+		this.emitEvent('openDialog', dialog);
+	}
+	public closeDialog() {
+		const dialog = this._activeDialog;
+		this._activeDialog = null;
+		this.emitEvent('closeDialog', dialog);
+	}
+	public showToast(text: string, intent: Intent) {
+		this.emitEvent('showToast', { text, intent });
+	}
 	public get title() {
 		return this._title;
 	}
 	public get isLoading() {
 		return this._isLoading;
+	}
+	public get activeDialog() {
+		return this._activeDialog;
 	}
 }
 export default Page;

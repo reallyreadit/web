@@ -7,11 +7,11 @@ export default class ReadReadinessDialog extends PureContextComponent<{
     reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut',
     articleUrl: string
 }, {}> {
-    private _closeDialog = () => this.context.dialog.close();
+    private _closeDialog = () => this.context.page.closeDialog();
     private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
     private _showSignInDialog = () => {
         this._closeDialog();
-        this.context.dialog.show(React.createElement(SignInDialog));
+        this.context.page.openDialog(React.createElement(SignInDialog));
     };
     public render() {
         let message: JSX.Element;

@@ -6,20 +6,19 @@ import * as className from 'classnames';
 export default class DialogManager extends PureContextComponent<{}, {}> {
 	constructor(props: {}, context: Context) {
 		super(props, context);
-		context.dialog
-			.addListener('show', this.forceUpdate)
-			.addListener('close', this.forceUpdate);
+		context.page
+			.addListener('openDialog', this.forceUpdate)
+			.addListener('closeDialog', this.forceUpdate);
 	}
 	public componentWillUnmount() {
-		this.context.dialog
-			.removeListener('show', this.forceUpdate)
-			.removeListener('close', this.forceUpdate);
+		this.context.page
+			.removeListener('openDialog', this.forceUpdate)
+			.removeListener('closeDialog', this.forceUpdate);
 	}
 	public render() {
-		const activeDialog = this.context.dialog.getActiveDialog();
 		return (
-			<div className={className('dialog-manager', { hidden: activeDialog === undefined })}>
-				{activeDialog}
+			<div className={className('dialog-manager', { hidden: !this.context.page.activeDialog })}>
+				{this.context.page.activeDialog}
 			</div>
 		);
 	}

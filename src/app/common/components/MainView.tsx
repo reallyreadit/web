@@ -6,6 +6,7 @@ import DialogManager from './DialogManager';
 import AccountManager from './AccountManager';
 import ReadReadinessBar from './ReadReadinessBar';
 import Icon from '../../../common/components/Icon';
+import Toaster from './Toaster';
 
 export default class MainView extends PureContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
@@ -19,6 +20,7 @@ export default class MainView extends PureContextComponent<{}, {}> {
 		return (
 			<div className="main-view">
 				<ReadReadinessBar />
+				<Toaster />
 				<nav>
 					<div className="left-col">
 						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logo }}></Link>

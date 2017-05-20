@@ -1,0 +1,35 @@
+.toaster {
+	position: fixed;
+	z-index: 2;
+	left: 50%;
+	transform: translateX(-50%);
+}
+.toaster > .toast {
+	padding: 10px;
+	border: 5px ridge gainsboro;
+	margin-top: 10px;
+	text-align: center;
+	font-weight: bold;
+	animation: toaster-pop-in 250ms;
+}
+.toaster > .toast.remove {
+	animation: toaster-pop-out 250ms;
+}
+.toaster > .toast.success {
+	color: green;
+	background-color: greenyellow;
+}
+.toaster > .toast.danger {
+	color: white;
+	background-color: red;
+}
+
+@keyframes toaster-pop-in {
+	0% { transform: scale(0, 0); }
+	75% { transform: scale(1.25, 1.25); }
+	100% { transform: scale(1, 1); }
+}
+@keyframes toaster-pop-out {
+	0% { transform: scale(1, 1); }
+	100% { transform: scale(0, 0); }
+}

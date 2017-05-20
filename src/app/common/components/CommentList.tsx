@@ -8,7 +8,8 @@ export default class CommentList extends React.Component<{
     isAllowedToPost?: boolean,
     parentCommentId?: string,
     onCommentAdded?: (comment: Comment) => void,
-    onViewThread?: (comment: Comment) => void
+    onViewThread?: (comment: Comment) => void,
+    highlightedCommentId?: string
 }, {}> {
     public render() {
         return (
@@ -21,6 +22,7 @@ export default class CommentList extends React.Component<{
                         parentCommentId={this.props.parentCommentId}
                         onCommentAdded={this.props.onCommentAdded}
                         onViewThread={this.props.onViewThread}
+                        highlightedCommentId={this.props.highlightedCommentId}
                     />)}
             </ul>
         );
