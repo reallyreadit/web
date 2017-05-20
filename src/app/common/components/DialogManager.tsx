@@ -1,19 +1,17 @@
 import * as React from 'react';
 import PureContextComponent from '../PureContextComponent';
-import Context from '../Context';
 import * as className from 'classnames';
 
 export default class DialogManager extends PureContextComponent<{}, {}> {
-	constructor(props: {}, context: Context) {
-		super(props, context);
-		context.page
-			.addListener('openDialog', this.forceUpdate)
-			.addListener('closeDialog', this.forceUpdate);
+	public componentDidMount() {
+		this.context.page
+			.addListener('openDialog', this._forceUpdate)
+			.addListener('closeDialog', this._forceUpdate);
 	}
 	public componentWillUnmount() {
 		this.context.page
-			.removeListener('openDialog', this.forceUpdate)
-			.removeListener('closeDialog', this.forceUpdate);
+			.removeListener('openDialog', this._forceUpdate)
+			.removeListener('closeDialog', this._forceUpdate);
 	}
 	public render() {
 		return (

@@ -60,14 +60,14 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 	public componentDidMount() {
 		this.context.user
 			.addListener('signOut', this._redirectToHomepage)
-			.addListener('update', this.forceUpdate);
+			.addListener('update', this._forceUpdate);
 		this.context.page.addListener('reload', this._reload);
 		this.context.extension.addListener('change', this._reload);
 	}
 	public componentWillUnmount() {
 		this.context.user
 			.removeListener('signOut', this._redirectToHomepage)
-			.removeListener('update', this.forceUpdate);
+			.removeListener('update', this._forceUpdate);
 		this.context.page.removeListener('reload', this._reload);
 		this.context.extension.addListener('change', this._reload);
 	}

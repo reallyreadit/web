@@ -9,12 +9,12 @@ import Separator from './Separator';
 import * as className from 'classnames';
 
 export default class AccountManager extends PureContextComponent<{}, { isSigningOut: boolean }> {
-	private showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
-	private showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
-	private goToInbox = () => this.context.router.push('/inbox');
-	private goToReadingList = () => this.context.router.push('/list');
-	private goToSettings = () => this.context.router.push('/settings');
-	private signOut = () => {
+	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
+	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
+	private _goToInbox = () => this.context.router.push('/inbox');
+	private _goToReadingList = () => this.context.router.push('/list');
+	private _goToSettings = () => this.context.router.push('/settings');
+	private _signOut = () => {
 		this.setState({ isSigningOut: true });
 		this.context.api.signOut().then(() => {
 			this.setState({ isSigningOut: false });
@@ -24,14 +24,16 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		this.state = { isSigningOut: false };
-		context.user
-			.addListener('signIn', this.forceUpdate)
-			.addListener('signOut', this.forceUpdate);
+	}
+	public componentWillMount() {
+		this.context.user
+			.addListener('signIn', this._forceUpdate)
+			.addListener('signOut', this._forceUpdate);
 	}
 	public componentWillUnmount() {
 		this.context.user
-			.removeListener('signIn', this.forceUpdate)
-			.removeListener('signOut', this.forceUpdate);
+			.removeListener('signIn', this._forceUpdate)
+			.removeListener('signOut', this._forceUpdate);
 	}
 	public render() {
 		const currentUser = this.context.user.getUserAccount();
@@ -43,19 +45,19 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 						<div>
 							<span>{this.state.isSigningOut ? 'Later' : 'Sup'}, <strong>{currentUser.name}</strong></span>
 							<Separator />
-							<ActionLink text="Sign Out" iconLeft="switch" onClick={this.signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
+							<ActionLink text="Sign Out" iconLeft="switch" onClick={this._signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
 						</div>
 					</div>
 					<div className="buttons">
-						<Button text="Inbox" iconLeft="envelope" onClick={this.goToInbox} state={buttonState} />
-						<Button text="Reading List" iconLeft="book" onClick={this.goToReadingList} state={buttonState} />
-						<Button text="Settings" iconLeft="cog" onClick={this.goToSettings} state={buttonState} />
+						<Button text="Inbox" iconLeft="envelope" onClick={this._goToInbox} state={buttonState} />
+						<Button text="Reading List" iconLeft="book" onClick={this._goToReadingList} state={buttonState} />
+						<Button text="Settings" iconLeft="cog" onClick={this._goToSettings} state={buttonState} />
 					</div>
 				</div> :
 				<div className="account-manager">
 					<div className="buttons">
-						<Button text="Sign In" iconLeft="user" onClick={this.showSignInDialog} />
-						<Button text="Create Account" iconLeft="plus" onClick={this.showCreateAccountDialog} style="preferred" />
+						<Button text="Sign In" iconLeft="user" onClick={this._showSignInDialog} />
+						<Button text="Create Account" iconLeft="plus" onClick={this._showCreateAccountDialog} style="preferred" />
 					</div>
 				</div>
 		);

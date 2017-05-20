@@ -11,10 +11,10 @@ import Toaster from './Toaster';
 export default class MainView extends PureContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
 	public componentDidMount() {
-		this.context.page.addListener('change', this.forceUpdate);
+		this.context.page.addListener('change', this._forceUpdate);
 	}
 	public componentWillUnmount() {
-		this.context.page.removeListener('change', this.forceUpdate);
+		this.context.page.removeListener('change', this._forceUpdate);
 	}
 	public render() {
 		return (
