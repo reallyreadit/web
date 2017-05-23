@@ -22,7 +22,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 			reason = 'incompatibleBrowser';
 		} else if (!this.context.extension.isInstalled()) {
 			reason = 'extensionNotInstalled';
-		} else if (!this.context.user.isSignedIn()) {
+		} else if (!this.context.user.isSignedIn) {
 			reason = 'signedOut';
 		}
 		if (reason) {

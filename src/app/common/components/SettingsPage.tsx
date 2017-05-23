@@ -38,7 +38,7 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 			))
 	);
 	private _showEditNotificationsDialog = () => {
-		const user = this.context.user.getUserAccount();
+		const user = this.context.user.userAccount;
 		this.context.page.openDialog(
 			<EditNotificationsDialog
 				receiveEmailNotifications={user.receiveReplyEmailNotifications}
@@ -72,7 +72,7 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 		this.context.extension.addListener('change', this._reload);
 	}
 	public render() {
-		const user = this.context.user.getUserAccount();
+		const user = this.context.user.userAccount;
 		return (
 			<div className="settings-page">
 				<ul>

@@ -72,7 +72,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
-		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn() && this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
+		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn && this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
 		return (
 			<div className="article-page">
 				<ArticleList>

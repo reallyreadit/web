@@ -15,9 +15,6 @@ export default class User extends EventEmitter<{
 		super();
 		this._userAccount = userAccount;
 	}
-	public isSignedIn() {
-		return !!this._userAccount;
-	}
 	public signIn(userAccount: UserAccount) {
 		this._userAccount = userAccount;
 		this.emitEvent('signIn', userAccount);
@@ -28,12 +25,15 @@ export default class User extends EventEmitter<{
 		this.emitEvent('signOut', null);
 		this.emitEvent('authChange', null);
 	}
-	public getUserAccount() {
-		return this._userAccount;
-	}
 	public update(userAccount: UserAccount) {
 		const prevUserAccount = this._userAccount;
 		this._userAccount = userAccount;
 		this.emitEvent('update', { prevUserAccount, currUserAccount: userAccount });
+	}
+	public get userAccount() {
+		return this._userAccount;
+	}
+	public get isSignedIn() {
+		return !!this._userAccount;
 	}
 }
