@@ -20,6 +20,7 @@ const port = 5000;
 
 http.createServer((req, res) => {
 		if (/\.(js|css|map|ttf|ico)$/.test(req.url)) {
+			// serve static content
 			fs.readFile(`.${req.url}`, (error, content) => {
 				if (error) {
 					res.writeHead(500);
@@ -48,19 +49,23 @@ http.createServer((req, res) => {
 				}
 			});
 		} else {
+			// match route
 			match({ routes, location: req.url }, (error, nextLocation, nextState) => {
+				// setup api and page context components
 				const api = new ServerApi({
 						scheme: 'http',
 						host: 'localhost',
 						port: 4001
 					}, req.headers['cookie']),
 					page = new ServerPage();
+				// get user account if session key cookie is present
 				new Promise<UserAccount>((resolve, reject) => {
 						if (api.hasSessionKey()) {
 							api.getJson(new Request('/UserAccounts/GetUserAccount'))
 								.then((userAccount: UserAccount) => {
+									// clear the cookie if it's invalid
 									if (!userAccount) {
-										res.setHeader('Set-Cookie', 'sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=dev.reallyread.it; path=/');
+										res.setHeader('Set-Cookie', `sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${config.cookieDomain}; path=/`);
 									}
 									resolve(userAccount);
 								});
@@ -69,15 +74,17 @@ http.createServer((req, res) => {
 						}
 					})
 					.then(userAccount => {
-						if (!userAccount && [
-								'/list',
-								'/inbox',
-								'/settings'
-							].indexOf(url.parse(req.url).pathname) !== -1
-						) {
+						const reqPath = url.parse(req.url).pathname;
+						// redirect to home page if requesting a section that requires authentication without authentication
+						if (!userAccount && ['/list', '/inbox', '/settings'].indexOf(reqPath) !== -1) {
 							res.writeHead(302, { 'Location': '/' });
 							res.end();
 						} else {
+							// ack new reply notification if a logged in user is hitting the inbox
+							if (userAccount && reqPath === '/inbox') {
+								// TODO: need to implement POST in ServerApi
+							}
+							// render the app
 							const user = new ServerUser(userAccount),
 								appElement = React.createElement(
 										App,
@@ -102,7 +109,7 @@ http.createServer((req, res) => {
 								res.setHeader('content-type', 'text/html');
 								res.end(renderHtml({
 									content,
-									title: page.title,
+									pageInitData: page.getInitData(),
 									contentRootPath: config.contentRootPath,
 									apiEndpoint: {
 										scheme: config.api.protocol,

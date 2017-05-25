@@ -9,7 +9,7 @@ import BrowserUser from './BrowserUser';
 import BrowserExtension from './BrowserExtension';
 
 const api = new BrowserApi(window._apiEndpoint, window._apiInitData),
-	page = new BrowserPage(document.title);
+	page = new BrowserPage(window._pageInitData);
 
 ReactDOM.render(
 	React.createElement(

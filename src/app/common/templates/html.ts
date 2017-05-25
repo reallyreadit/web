@@ -2,9 +2,10 @@ import Request from '../api/Request';
 import UserAccount from '../api/models/UserAccount';
 import Endpoint from '../api/Endpoint';
 import icons from '../../../common/svg/icons';
+import { InitData as PageInitData } from '../Page';
 
 export default (model: {
-	title: string,
+	pageInitData: PageInitData,
 	content: string,
 	contentRootPath: string,
 	apiEndpoint: Endpoint,
@@ -20,12 +21,13 @@ export default (model: {
 		<link rel="icon" type="image/x-icon" href="${model.contentRootPath}/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="${model.contentRootPath}/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
-		<title>${model.title}</title>
+		<title>${model.pageInitData.title}</title>
 	</head>
 	<body>
 		${icons}
 		<div id="root">${model.content}</div>
 		<script type="text/javascript">
+			window._pageInitData = ${JSON.stringify(model.pageInitData)};
 			window._apiEndpoint = ${JSON.stringify(model.apiEndpoint)};
 			window._apiInitData = ${JSON.stringify(model.apiInitData)};
 			window._userInitData = ${JSON.stringify(model.userInitData)};

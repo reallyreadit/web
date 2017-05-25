@@ -6,4 +6,10 @@ export default class ServerPage extends Page {
 			this._title = state.title;
 		}
 	}
+	public getInitData() {
+		return {
+			title: this._title,
+			newReplyNotification: this._newReplyNotification
+		};
+	}
 }

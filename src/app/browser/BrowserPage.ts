@@ -1,10 +1,11 @@
-import Page, { State } from '../common/Page';
+import Page, { InitData, State } from '../common/Page';
 
 export default class BrowserPage extends Page {
 	private _isInitialized = false;
-	constructor(title: string) {
+	constructor(initData: InitData) {
 		super();
-		this._title = title;
+		this._title = initData.title;
+		this._newReplyNotification = initData.newReplyNotification;
 	}
 	public setState(state: Partial<State>) {
 		if (this._isInitialized) {

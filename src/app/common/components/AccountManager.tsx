@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PureContextComponent from '../PureContextComponent';
-import Context from '../Context';
 import Button from './Button';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
@@ -21,35 +20,35 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 			this.context.user.signOut();
 		});
 	};
-	constructor(props: {}, context: Context) {
-		super(props, context);
-		this.state = { isSigningOut: false };
-	}
-	public componentWillMount() {
-		this.context.user
-			.addListener('signIn', this._forceUpdate)
-			.addListener('signOut', this._forceUpdate);
+	public state = { isSigningOut: false };
+	public componentDidMount() {
+		this.context.user.addListener('authChange', this._forceUpdate);
+		this.context.page.addListener('newReplyNotificationChange', this._forceUpdate);
 	}
 	public componentWillUnmount() {
-		this.context.user
-			.removeListener('signIn', this._forceUpdate)
-			.removeListener('signOut', this._forceUpdate);
+		this.context.user.removeListener('authChange', this._forceUpdate);
+		this.context.page.removeListener('newReplyNotificationChange', this._forceUpdate);
 	}
 	public render() {
-		const currentUser = this.context.user.getUserAccount();
 		const buttonState = this.state.isSigningOut ? 'disabled' : 'normal';
+		const newReplyNotification = this.context.page.newReplyNotification;
 		return (
-			currentUser ? 
+			this.context.user.isSignedIn ? 
 				<div className="account-manager">
 					<div className={className('user-name', { 'signing-out': this.state.isSigningOut })}>
 						<div>
-							<span>{this.state.isSigningOut ? 'Later' : 'Sup'}, <strong>{currentUser.name}</strong></span>
+							<span>{this.state.isSigningOut ? 'Later' : 'Sup'}, <strong>{this.context.user.userAccount.name}</strong></span>
 							<Separator />
 							<ActionLink text="Sign Out" iconLeft="switch" onClick={this._signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
 						</div>
 					</div>
 					<div className="buttons">
-						<Button text="Inbox" iconLeft="envelope" onClick={this._goToInbox} state={buttonState} />
+						<Button
+							text="Inbox"
+							iconLeft="envelope"
+							onClick={this._goToInbox}
+							state={buttonState}
+							showIndicator={newReplyNotification.lastReply > newReplyNotification.lastNewReplyAck} />
 						<Button text="Reading List" iconLeft="book" onClick={this._goToReadingList} state={buttonState} />
 						<Button text="Settings" iconLeft="cog" onClick={this._goToSettings} state={buttonState} />
 					</div>

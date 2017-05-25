@@ -5,6 +5,7 @@ import UserAccount from './models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
 import Endpoint from './Endpoint';
+import NewReplyNotification from './models/NewReplyNotification';
 
 abstract class Api {
 	protected reqStore: RequestStore;
@@ -62,6 +63,12 @@ abstract class Api {
 	}
 	public listReplies(callback: (comments: Fetchable<Comment[]>) => void) {
 		return this.get<Comment[]>(new Request('/Articles/ListReplies'), callback);
+	}
+	public checkNewReplyNotification(callback: (states: Fetchable<NewReplyNotification>) => void) {
+		return this.get<NewReplyNotification>(new Request('/UserAccounts/CheckNewReplyNotification'), callback);
+	}
+	public ackNewReply() {
+		return this.post(new Request('/UserAccounts/AckNewReply'));
 	}
 }
 export default Api;

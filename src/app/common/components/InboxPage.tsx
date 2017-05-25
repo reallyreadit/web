@@ -28,6 +28,7 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 			title: 'Inbox',
 			isLoading: this.state.replies.isLoading
 		});
+		this.context.page.ackNewReply();
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
