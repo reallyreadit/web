@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
-import Separator from './Separator';
+import Separator from '../../../common/components/Separator';
 import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
 import * as className from 'classnames';

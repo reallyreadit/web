@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as className from 'classnames';
-import Icon, { IconName } from '../../../common/components/Icon';
+import Icon, { IconName } from './Icon';
 
 export default class Button extends React.PureComponent<{
 	text: string,

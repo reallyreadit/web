@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as className from 'classnames';
-import Button from './Button';
+import Button from '../../../common/components/Button';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import CancelablePromise from '../CancelablePromise';
