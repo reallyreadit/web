@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as url from 'url';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
-import App from '../common/App';
+import App from '../common/components/App';
 import ServerApi from './ServerApi';
 import ServerPage from './ServerPage';
 import renderHtml from '../common/templates/html';

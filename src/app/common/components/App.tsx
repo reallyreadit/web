@@ -1,11 +1,11 @@
 import * as React from 'react';
-import Api from './api/Api';
-import contextTypes from './contextTypes';
-import Page from './Page';
-import User from './User';
-import Extension from './Extension';
-import NewReplyNotification from './api/models/NewReplyNotification';
-import Fetchable from './api/Fetchable';
+import Api from '../api/Api';
+import contextTypes from '../contextTypes';
+import Page from '../Page';
+import User from '../User';
+import Extension from '../Extension';
+import NewReplyNotification from '../api/models/NewReplyNotification';
+import Fetchable from '../api/Fetchable';
 
 export default class App extends React.Component<{
 	api: Api,
