@@ -1,0 +1,29 @@
+.app {
+	font-family: monospace;
+	font-size: 13px;
+}
+.app > h1 {
+	font-family: 'Adler';
+	font-size: 20px;
+	text-align: center;
+	padding: 5px 0;
+}
+.app > h1 > a {
+	color: inherit;
+	text-decoration: none;
+}
+.app > .article-info {
+	padding: 5px;
+}
+.app > .article-info > h2 {
+	font-size: 12px;
+   margin: 5px 0;
+	font-style: italic;
+   color: darkviolet;
+}
+.app > .article-placeholder {
+	padding: 15px 0;
+   color: #999;
+   font-style: italic;
+	text-align: center;
+}

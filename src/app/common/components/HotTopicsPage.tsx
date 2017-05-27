@@ -38,7 +38,7 @@ export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetc
 						this.state.articles.value ?
 							this.state.articles.value.length ?
 								this.state.articles.value.map(article => <li key={article.id}><ArticleDetails article={article} /></li>) :
-								<li>No articles found! (Go comment on one you read!)</li> :
+								<li>No articles found.</li> :
 							<li>Error loading articles.</li> :
 						null}
 				</ArticleList>

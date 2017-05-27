@@ -2,41 +2,6 @@
 	font-family: 'Adler';
 	src: url('./Adler.ttf');
 }
-body {
-	font-family: monospace;
-	font-size: 12px;
-	white-space: nowrap;
-}
-h1 {
-	font-family: 'Adler';
-	font-size: 14pt;
-	text-align: center;
-	padding: 12px 0 0 0;
-}
-#home-link {
-	color: inherit;
-	text-decoration: none;
-}
-#article-info {
+#root {
 	padding: 5px;
-}
-#article-title {
-	font-size: 12px;
-   margin: 5px 0;
-	font-style: italic;
-   color: darkviolet;
-}
-#article-placeholder {
-	padding: 15px;
-   color: #999;
-   font-style: italic;
-}
-#settings {
-	margin: 5px;
-   padding: 5px;
-   border: 1px solid #999;
-}
-#settings > label > input,
-#settings > label > span {
-	vertical-align: middle;
 }

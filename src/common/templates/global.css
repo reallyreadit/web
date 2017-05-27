@@ -503,3 +503,6 @@ table {
 html {
   line-height: 1.2;
 }
+button {
+  font-family: inherit;
+}

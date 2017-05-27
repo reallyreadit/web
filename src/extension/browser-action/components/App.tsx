@@ -3,32 +3,45 @@ import EventPageApi from '../EventPageApi';
 import UserArticle from '../../common/UserArticle';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
+import BrowserActionAccountManager from './BrowserActionAccountManager';
 
 export default class App extends React.Component<{}, {
 	isAuthenticated?: boolean,
 	userArticle?: UserArticle,
-	showOverlay: boolean
+	isSigningOut: boolean
 }> {
+	private _signOut = () => {
+		this.setState({ isSigningOut: true });
+	};
 	private _goToComments = () => {
 		const slugParts = this.state.userArticle.slug.split('_');
 		window.open(`${config.web.protocol}://${config.web.host}/articles/${slugParts[0]}/${slugParts[1]}`, '_blank');
 	};
-	private _toggleOverlay = (e: React.ChangeEvent<HTMLInputElement>) => {
-		EventPageApi.updateShowOverlay(e.currentTarget.checked);
-		this.setState({ showOverlay: e.currentTarget.checked });
-	};
 	constructor() {
 		super();
-		this.state = { showOverlay: false };
-		EventPageApi.getState().then(state => this.setState(state));
+		this.state = { isSigningOut: false };
+		EventPageApi
+			.getState()
+			.then(state => this.setState({
+				isAuthenticated: state.isAuthenticated,
+				userArticle: state.userArticle
+			}));
 	}
 	public render() {
 		return (
 			<div className="app">
-				<h1><a id="home-link" href={`${config.web.protocol}://${config.web.host}`} target="_blank">reallyread.it</a></h1>
+				<h1>
+					<a href={`${config.web.protocol}://${config.web.host}`} target="_blank">reallyread.it</a>
+				</h1>
+				<BrowserActionAccountManager
+					userName={this.state.isAuthenticated ? '[user name]' : null}
+					showNewReplyIndicator={false}
+					onSignOut={this._signOut}
+					isSigningOut={this.state.isSigningOut}
+					/>
 				{this.state.userArticle ?
-					<div id="article-info">
-						<h2 id="article-title">
+					<div className="article-info">
+						<h2>
 							{this.state.userArticle.title.length > 48 ?
 								this.state.userArticle.title.substr(0, 48).trim() + '...' :
 								this.state.userArticle.title}
@@ -37,13 +50,9 @@ export default class App extends React.Component<{}, {
 						<span> - </span>
 						<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
 					</div> :
-					<div id="article-placeholder">
+					<div className="article-placeholder">
 						No article found on page
 					</div>}
-				<fieldset id="settings">
-					<legend>Settings</legend>
-					<label><input id="show-overlay" type="checkbox" checked={this.state.showOverlay} onChange={this._toggleOverlay} />Show overlay</label>
-				</fieldset>
 			</div>
 		);
 	}

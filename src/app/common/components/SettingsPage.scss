@@ -10,6 +10,7 @@
 }
 .settings-page > ul > li > .email-confirmation-status {
 	display: block;
+	text-indent: 15px;
 }
 .settings-page > ul > li > .email-confirmation-status.confirmed {
 	color: green;
@@ -39,6 +40,7 @@
 	margin-right: 3px;
 }
 .settings-page > ul > li > .notification-channels > .channel > .notice {
+	text-indent: 15px;
 	display: block;
 	color: orange;
 }

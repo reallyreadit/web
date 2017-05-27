@@ -46,8 +46,8 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 						this.state.replies.value ?
 							this.state.replies.value.length ?
 								<CommentList comments={this.state.replies.value} mode="link" onViewThread={this._readReply} /> :
-								<span>No replies found! (No one likes you!)</span> :
-							<span>Error loading comments.</span> :
+								<span>No replies found.</span> :
+							<span>Error loading replies.</span> :
 						null}
 				</div>
 			</div>
