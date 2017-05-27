@@ -47,7 +47,7 @@ export default class App extends React.Component<{
 			.addListener('signIn', this._startPolling)
 			.addListener('signOut', this._stopPolling);
 		if (this.props.user.isSignedIn) {
-			this._pollingHandle = window.setInterval(() => this.props.api.checkNewReplyNotification(this._setNotificationState), 3000);
+			this._pollingHandle = window.setInterval(() => this.props.api.checkNewReplyNotification(this._setNotificationState), 10000);
 		}
 	}
 	public componentWillUnmount() {

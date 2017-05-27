@@ -8,7 +8,7 @@ export default class BrowserExtension extends Extension {
         this._extensionId = extensionId;
         if (this.isBrowserCompatible()) {
             this.pingExtension();
-            window.setInterval(() => this.pingExtension(), 1000);
+            window.setInterval(() => this.pingExtension(), 2000);
         } else {
             this._isInstalled = false;
         }
