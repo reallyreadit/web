@@ -52,7 +52,8 @@ function createBuild(params) {
 					src: params.scss,
 					dest: outPath,
 					base: srcPath,
-					onComplete: resolve
+					onComplete: resolve,
+					sourceMaps: env === project.env.dev
 				})));
 			}
 			if (params.staticAssets) {
