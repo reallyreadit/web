@@ -25,15 +25,7 @@ export default class MainView extends PureContextComponent<{}, {}> {
 					<div className="left-col">
 						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logo }}></Link>
 						<div className="info-box">
-							<span>Read the f'in article!©™</span>
-							<ul className="real-time">
-								<li>
-									<span className="stat">12 people reading right now</span>
-								</li>
-								<li>
-									<span className="stat">8 people commenting right now</span>
-								</li>
-							</ul>
+							<span>A community of readers</span>
 						</div>
 					</div>
 					<div className="right-col">

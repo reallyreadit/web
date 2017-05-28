@@ -74,13 +74,13 @@
 	margin-left: 8px;
 	cursor: pointer;
 	color: #666;
+	transition: transform 250ms;
 }
 .main-view > header > h2.loading > .icon {
 	animation: main-view-page-loading 1000ms linear infinite;
 }
 .main-view > header > h2 > .icon:hover {
 	transform: rotate(-22deg);
-	transition: transform 250ms;
 }
 .main-view > footer {
 	text-align: center;
