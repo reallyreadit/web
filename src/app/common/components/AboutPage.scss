@@ -1,3 +1,14 @@
 .about-page {
-	text-align: center;
+	max-width: 600px;
+	margin: 0 auto;
+	font-family: serif;
+	font-size: 16px;
+}
+.about-page > p {
+	margin: 15px 0;
+}
+.about-page > ul {
+	list-style: disc;
+	padding-left: 1.5em;
+	margin-top: 5px;
 }
