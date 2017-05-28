@@ -20,7 +20,7 @@ const port = 5000;
 http.createServer((req, res) => {
 		if (/\.(js|css|map|ttf|ico)$/.test(req.url)) {
 			// serve static content
-			fs.readFile(`.${req.url}`, (error, content) => {
+			fs.readFile(`.${config.contentRootPath}/${req.url}`, (error, content) => {
 				if (error) {
 					res.writeHead(500);
 					res.end('Server Error');
@@ -117,7 +117,6 @@ http.createServer((req, res) => {
 								res.end(renderHtml({
 									content,
 									pageInitData: page.getInitData(),
-									contentRootPath: config.contentRootPath,
 									apiEndpoint: {
 										scheme: config.api.protocol,
 										host: config.api.host,

@@ -7,7 +7,6 @@ import { InitData as PageInitData } from '../Page';
 export default (model: {
 	pageInitData: PageInitData,
 	content: string,
-	contentRootPath: string,
 	apiEndpoint: Endpoint,
 	apiInitData: Request[],
 	userInitData: UserAccount,
@@ -18,8 +17,8 @@ export default (model: {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, user-scalable=no">
-		<link rel="icon" type="image/x-icon" href="${model.contentRootPath}/images/favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="${model.contentRootPath}/bundle.css" />
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
 		<title>${model.pageInitData.title}</title>
 	</head>
@@ -33,6 +32,6 @@ export default (model: {
 			window._userInitData = ${JSON.stringify(model.userInitData)};
 			window._extensionId = ${JSON.stringify(model.extensionId)};
 		</script>
-		<script type="text/javascript" src="${model.contentRootPath}/bundle.js"></script>
+		<script type="text/javascript" src="/bundle.js"></script>
 	</body>
 </html>`
