@@ -2,9 +2,12 @@ import * as React from 'react';
 import PureContextComponent from '../PureContextComponent';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
-import AccountManager from '../../../common/components/AccountManager';
+import NavBar from '../../../common/components/NavBar';
+import ActionLink from '../../../common/components/ActionLink';
+import Separator from '../../../common/components/Separator';
+import * as className from 'classnames';
 
-export default class AppAccountManager extends PureContextComponent<{}, { isSigningOut: boolean }> {
+export default class AccountManager extends PureContextComponent<{}, { isSigningOut: boolean }> {
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
 	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
 	private _goToInbox = () => this.context.router.push('/inbox');
@@ -29,17 +32,25 @@ export default class AppAccountManager extends PureContextComponent<{}, { isSign
 	public render() {
 		const newReplyNotification = this.context.page.newReplyNotification;
 		return (
-			<AccountManager
-				userName={this.context.user.isSignedIn ? this.context.user.userAccount.name : null}
-				showNewReplyIndicator={newReplyNotification.lastReply > newReplyNotification.lastNewReplyAck}
-				isSigningOut={this.state.isSigningOut}
-				onSignIn={this._showSignInDialog}
-				onSignOut={this._signOut}
-				onCreateAccount={this._showCreateAccountDialog}
-				onGoToInbox={this._goToInbox}
-				onGoToReadingList={this._goToReadingList}
-				onGoToSettings={this._goToSettings}
-				/>
+			<div className="account-manager">
+				{this.context.user.isSignedIn ?
+					<div className={className('user-name', { 'signing-out': this.state.isSigningOut })}>
+						<span>{this.state.isSigningOut ? 'Later' : 'Sup'}, <strong>{this.context.user.userAccount.name}</strong></span>
+						<Separator />
+						<ActionLink text="Sign Out" iconLeft="switch" onClick={this._signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
+					</div> :
+					null}
+				<NavBar
+					isSignedIn={this.context.user.isSignedIn}
+					showNewReplyIndicator={newReplyNotification.lastReply > newReplyNotification.lastNewReplyAck}
+					state={this.state.isSigningOut ? 'disabled' : 'normal'}
+					onSignIn={this._showSignInDialog}
+					onCreateAccount={this._showCreateAccountDialog}
+					onGoToInbox={this._goToInbox}
+					onGoToReadingList={this._goToReadingList}
+					onGoToSettings={this._goToSettings}
+					/>
+			</div>
 		);
 	}
 }

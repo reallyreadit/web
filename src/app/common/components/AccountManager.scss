@@ -1,0 +1,7 @@
+.account-manager > .user-name {
+	height: 18px;
+	text-align: right;
+}
+.account-manager > .user-name.signing-out {
+	color: #ccc;
+}

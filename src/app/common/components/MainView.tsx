@@ -3,7 +3,7 @@ import logo from '../svg/logo';
 import { Link } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import DialogManager from './DialogManager';
-import AppAccountManager from './AppAccountManager';
+import AccountManager from './AccountManager';
 import ReadReadinessBar from './ReadReadinessBar';
 import Icon from '../../../common/components/Icon';
 import Toaster from './Toaster';
@@ -29,7 +29,7 @@ export default class MainView extends PureContextComponent<{}, {}> {
 						</div>
 					</div>
 					<div className="right-col">
-						<AppAccountManager />
+						<AccountManager />
 					</div>
 				</nav>
 				<header>
