@@ -60,7 +60,8 @@ export default class ArticlePage extends ContextComponent<Props, {
 	public componentWillMount() {
 		this.context.page.setState({
 			title: this.state.article.isLoading ? 'Loading...' : this.state.article.value.title,
-			isLoading: this.state.article.isLoading || this.state.comments.isLoading
+			isLoading: this.state.article.isLoading || this.state.comments.isLoading,
+			isReloadable: true
 		});
 	}
 	public componentDidMount() {

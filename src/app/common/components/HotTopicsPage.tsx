@@ -19,7 +19,8 @@ export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetc
 	public componentWillMount() {
 		this.context.page.setState({
 			title: '🔥 Hot Topics 🔥',
-			isLoading: this.state.articles.isLoading
+			isLoading: this.state.articles.isLoading,
+			isReloadable: true
 		});
 	}
 	public componentDidMount() {

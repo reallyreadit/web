@@ -3,11 +3,13 @@ import NewReplyNotification from './api/models/NewReplyNotification';
 
 export interface InitData {
 	title: string,
+	isReloadable: boolean,
 	newReplyNotification: NewReplyNotification
 }
 export interface State {
 	title: string,
-	isLoading: boolean
+	isLoading: boolean,
+	isReloadable: boolean
 }
 export enum Intent {
 	Success,
@@ -28,6 +30,7 @@ abstract class Page extends EventEmitter<{
 }> {
 	protected _title: string;
 	private _isLoading: boolean;
+	protected _isReloadable: boolean;
 	private _activeDialog?: React.ReactElement<any>;
 	protected _newReplyNotification = {
 		lastReply: 0,
@@ -41,9 +44,13 @@ abstract class Page extends EventEmitter<{
 		if ('isLoading' in state) {
 			this._isLoading = state.isLoading;
 		}
+		if ('isReloadable' in state) {
+			this._isReloadable = state.isReloadable;
+		}
 		this.emitEvent('change', {
 			title: this._title,
-			isLoading: this._isLoading
+			isLoading: this._isLoading,
+			isReloadable: this._isReloadable
 		});
 	}
 	public reload() {
@@ -77,6 +84,9 @@ abstract class Page extends EventEmitter<{
 	}
 	public get isLoading() {
 		return this._isLoading;
+	}
+	public get isReloadable() {
+		return this._isReloadable;
 	}
 	public get activeDialog() {
 		return this._activeDialog;

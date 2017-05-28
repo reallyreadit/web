@@ -60,7 +60,8 @@
 	font-size: 22px;
 	height: 30px;
 }
-.main-view > header > h2 > .spacer {
+.main-view > header > h2.reloadable::before {
+	content: "";
 	flex: 1 1 auto;
 	max-width: 28px;
 }

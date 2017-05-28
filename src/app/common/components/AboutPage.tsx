@@ -5,7 +5,8 @@ export default class AboutPage extends PureContextComponent<{}, {}> {
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'About reallyread.it',
-			isLoading: false
+			isLoading: false,
+			isReloadable: false
 		});
 	}
 	public render() {

@@ -5,6 +5,7 @@ export default class BrowserPage extends Page {
 	constructor(initData: InitData) {
 		super();
 		this._title = initData.title;
+		this._isReloadable = initData.isReloadable;
 		this._newReplyNotification = initData.newReplyNotification;
 	}
 	public setState(state: Partial<State>) {

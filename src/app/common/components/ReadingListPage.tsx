@@ -26,7 +26,8 @@ export default class ReadingListPage extends ContextComponent<{}, { articles: Fe
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Reading List',
-			isLoading: this.state.articles.isLoading
+			isLoading: this.state.articles.isLoading,
+			isReloadable: true
 		});
 	}
 	public componentDidMount() {

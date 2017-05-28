@@ -50,7 +50,8 @@ export default class EmailPage extends PureContextComponent<Props, {}> {
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Email ' + (this.props.params.action === 'confirm' ? 'Confirmation' : 'Notifications'),
-			isLoading: false
+			isLoading: false,
+			isReloadable: false
 		});
 	}
 	public render() {

@@ -5,10 +5,14 @@ export default class ServerPage extends Page {
 		if ('title' in state) {
 			this._title = state.title;
 		}
+		if ('isReloadable' in state) {
+			this._isReloadable = state.isReloadable;
+		}
 	}
 	public getInitData() {
 		return {
 			title: this._title,
+			isReloadable: this._isReloadable,
 			newReplyNotification: this._newReplyNotification
 		};
 	}

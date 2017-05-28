@@ -54,7 +54,8 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Settings',
-			isLoading: false
+			isLoading: false,
+			isReloadable: true
 		});
 	}
 	public componentDidMount() {

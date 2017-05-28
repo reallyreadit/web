@@ -26,7 +26,8 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Inbox',
-			isLoading: this.state.replies.isLoading
+			isLoading: this.state.replies.isLoading,
+			isReloadable: true
 		});
 		this.context.page.ackNewReply();
 	}
