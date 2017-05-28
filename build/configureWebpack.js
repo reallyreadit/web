@@ -4,6 +4,13 @@ const path = require('path'),
 
 const project = require('./project');
 
+// empty plugins array causes build to fail
+function addPlugin(webpackConfig, plugin) {
+	if (!webpackConfig.plugins) {
+		webpackConfig.plugins = [];
+	}
+	webpackConfig.plugins.push(plugin);
+}
 function configureWebpack(params) {
 	const tsConfig = {
 			configFileName: params.configFileName,
@@ -45,7 +52,10 @@ function configureWebpack(params) {
 		config.api.host = JSON.stringify(config.api.host);
 		config.web.protocol = JSON.stringify(config.web.protocol);
 		config.web.host = JSON.stringify(config.web.host);
-		webpackConfig.plugins = [new webpack.DefinePlugin({ config })];
+		addPlugin(webpackConfig, new webpack.DefinePlugin({ config }));
+	}
+	if (params.env !== project.env.dev) {
+		addPlugin(webpackConfig, new webpack.optimize.UglifyJsPlugin());
 	}
 	return webpackConfig;
 }
