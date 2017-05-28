@@ -53,7 +53,7 @@ function createBuild(params) {
 					dest: outPath,
 					base: srcPath,
 					onComplete: resolve,
-					sourceMaps: env === project.env.dev
+					env
 				})));
 			}
 			if (params.staticAssets) {
@@ -78,10 +78,12 @@ function createBuild(params) {
 					src: params.scss,
 					dest: devOutPath,
 					base: srcPath,
+               env: project.env.dev,
 					onComplete: () => delayedWatch(params.scss, () => buildScss({
 						src: params.scss,
 						dest: devOutPath,
-						base: srcPath
+						base: srcPath,
+						env: project.env.dev
 					}))
 				});
 			}
@@ -90,10 +92,12 @@ function createBuild(params) {
 					src: params.staticAssets,
 					dest: devOutPath,
 					base: srcPath,
+               env: project.env.dev,
 					onComplete: () => delayedWatch(params.staticAssets, () => buildStaticAssets({
 						src: params.staticAssets,
 						dest: devOutPath,
-						base: srcPath
+						base: srcPath,
+                  env: project.env.dev
 					}))
 				});
 			}
