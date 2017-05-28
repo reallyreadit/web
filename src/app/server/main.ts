@@ -17,7 +17,6 @@ import config from './config';
 import ServerExtension from './ServerExtension';
 
 const port = 5000;
-
 http.createServer((req, res) => {
 		if (/\.(js|css|map|ttf|ico)$/.test(req.url)) {
 			// serve static content
@@ -63,11 +62,19 @@ http.createServer((req, res) => {
 						if (api.hasSessionKey()) {
 							api.getJson(new Request('/UserAccounts/GetUserAccount'))
 								.then((userAccount: UserAccount) => {
-									// clear the cookie if it's invalid
 									if (!userAccount) {
-										res.setHeader('Set-Cookie', `sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${config.cookieDomain}; path=/`);
+										throw new Error('AccountNotFound');
 									}
 									resolve(userAccount);
+								})
+								.catch((reason: string[] | Error) => {
+									if (
+										(reason instanceof Array && reason.includes('Unauthenticated')) ||
+										(reason instanceof Error && reason.message === 'AccountNotFound')
+									) {
+										res.setHeader('Set-Cookie', `sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${config.cookieDomain}; path=/`);
+									}
+									resolve();
 								});
 						} else {
 							resolve();
@@ -76,7 +83,7 @@ http.createServer((req, res) => {
 					.then(userAccount => {
 						const reqPath = url.parse(req.url).pathname;
 						// redirect to home page if requesting a section that requires authentication without authentication
-						if (!userAccount && ['/list', '/inbox', '/settings'].indexOf(reqPath) !== -1) {
+						if (!userAccount && ['/list', '/inbox', '/settings'].includes(reqPath)) {
 							res.writeHead(302, { 'Location': '/' });
 							res.end();
 						} else {
