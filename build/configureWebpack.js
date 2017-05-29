@@ -36,6 +36,7 @@ function configureWebpack(params) {
 			},
 			watch: params.watch
 		};
+	let define;
 	if (params.sourceMaps) {
 		tsConfig.compilerOptions.sourceMap = true;
 		webpackConfig.devtool = 'source-map';
@@ -52,10 +53,19 @@ function configureWebpack(params) {
 		config.api.host = JSON.stringify(config.api.host);
 		config.web.protocol = JSON.stringify(config.web.protocol);
 		config.web.host = JSON.stringify(config.web.host);
-		addPlugin(webpackConfig, new webpack.DefinePlugin({ config }));
+		define = Object.assign(define || {}, { config });
 	}
 	if (params.env !== project.env.dev) {
 		addPlugin(webpackConfig, new webpack.optimize.UglifyJsPlugin());
+		// https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
+		define = Object.assign(define || {}, {
+			'process.env': {
+				NODE_ENV: JSON.stringify('production')
+			}
+		});
+	}
+	if (define) {
+		addPlugin(webpackConfig, new webpack.DefinePlugin(define));
 	}
 	return webpackConfig;
 }
