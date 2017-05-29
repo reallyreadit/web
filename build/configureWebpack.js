@@ -55,8 +55,10 @@ function configureWebpack(params) {
 		config.web.host = JSON.stringify(config.web.host);
 		define = Object.assign(define || {}, { config });
 	}
-	if (params.env !== project.env.dev) {
+	if (params.minify) {
 		addPlugin(webpackConfig, new webpack.optimize.UglifyJsPlugin());
+	}
+	if (params.env !== project.env.dev) {
 		// https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
 		define = Object.assign(define || {}, {
 			'process.env': {

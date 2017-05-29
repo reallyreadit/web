@@ -12,16 +12,17 @@ const project = require('./project'),
 function createBuild(params) {
 	const srcPath = path.posix.join(project.srcDir, params.path),
 		  devOutPath = project.getOutPath(params.path, project.env.dev);
-	function getWebpackConfig(entry, fileName, sourceMaps, env, watch) {
+	function getWebpackConfig(opts) {
 		return configureWebpack({
 			configFileName: params.webpack.configFileName,
-			entry: './' + entry,
+			entry: './' + opts.entry,
 			appConfig: params.webpack.appConfig,
 			path: params.path,
-			fileName,
-			sourceMaps,
-			env,
-			watch
+			fileName: opts.fileName,
+			sourceMaps: opts.sourceMaps,
+			minify: opts.minify,
+			env: opts.env,
+			watch: opts.watch
 		});
 	}
 	function getHtmlTemplateDelegate(outPath, resolve) {
@@ -42,9 +43,21 @@ function createBuild(params) {
 			const outPath = project.getOutPath(params.path, env),
 				  tasks = [];
 			if (params.webpack) {
-				tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig(params.webpack.entry, 'bundle.js', env === project.env.dev, env), resolve)));
+				tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig({
+						entry: params.webpack.entry,
+						fileName: 'bundle.js',
+						sourceMaps: env === project.env.dev,
+						minify: env !== project.env.dev,
+						env
+					}), resolve)));
 				if (params.webpack.htmlTemplate) {
-					tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig(params.webpack.htmlTemplate, 'html.js', false, env), getHtmlTemplateDelegate(outPath, resolve))));
+					tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig({
+							entry: params.webpack.htmlTemplate, 
+							fileName: 'html.js',
+							sourceMaps: false,
+							minify: false,
+							env
+						}), getHtmlTemplateDelegate(outPath, resolve))));
 				}
 			}
 			if (params.scss) {
@@ -68,9 +81,23 @@ function createBuild(params) {
 		},
 		watch() {
 			if (params.webpack) {
-				runWebpack(getWebpackConfig(params.webpack.entry, 'bundle.js', true, project.env.dev, true));
+				runWebpack(getWebpackConfig({
+					entry: params.webpack.entry,
+					fileName: 'bundle.js',
+					sourceMaps: true,
+					minify: false,
+					env: project.env.dev,
+					watch: true
+				}));
 				if (params.webpack.htmlTemplate) {
-					runWebpack(getWebpackConfig(params.webpack.htmlTemplate, 'html.js', false, project.env.dev, true), getHtmlTemplateDelegate(devOutPath));
+					runWebpack(getWebpackConfig({
+						entry: params.webpack.htmlTemplate,
+						fileName: 'html.js',
+						sourceMaps: false,
+						minify: false,
+						env: project.env.dev,
+						watch: true
+					}), getHtmlTemplateDelegate(devOutPath));
 				}
 			}
 			if (params.scss) {
