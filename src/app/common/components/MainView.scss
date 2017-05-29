@@ -19,7 +19,7 @@
 }
 .main-view > nav > .left-col > .logo {
 	flex: 0 0 auto;
-	margin-right: 10px;
+	margin-right: 20px;
 	text-decoration: none;
 	color: #000;
 }
@@ -27,32 +27,20 @@
 	display: block;
 	width: 44px;
 }
-.main-view > nav > .left-col > .info-box {
+.main-view > nav > .left-col > h1 {
 	flex: 0 0 auto;
-	font-size: 11px;
+	font-family: 'Adler';
+   font-size: 25px;
 }
-.main-view > nav > .left-col > .info-box > span {
-	font-style: italic;
-   color: #666;
-}
-.main-view > nav > .left-col > .info-box > .real-time > li > .stat {
-	color: deepskyblue;
-	text-decoration: underline;
+.main-view > nav > .left-col > h1 > a {
+	text-decoration: none;
+	color: #000;
 }
 .main-view > nav > .right-col {
 	flex: 0 0 auto;
 }
 .main-view > header {
 	margin: 7px 0;
-}
-.main-view > header > h1 {
-	font-family: 'Adler';
-	font-size: 36px;
-	text-align: center;
-}
-.main-view > header > h1 > a {
-	text-decoration: none;
-	color: #000;
 }
 .main-view > header > h2 {
 	display: flex;

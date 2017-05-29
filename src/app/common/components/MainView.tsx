@@ -25,18 +25,15 @@ export default class MainView extends PureContextComponent<{}, {}> {
 				<nav>
 					<div className="left-col">
 						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logo }}></Link>
-						<div className="info-box">
-							<span>A community of readers</span>
-						</div>
+						<h1>
+							<Link to="/">reallyread.it</Link>
+						</h1>
 					</div>
 					<div className="right-col">
 						<AccountManager />
 					</div>
 				</nav>
 				<header>
-					<h1>
-						<Link to="/">reallyread.it</Link>
-					</h1>
 					<h2 className={className({
 						'reloadable': this.context.page.isReloadable,
 						'loading': this.context.page.isLoading
