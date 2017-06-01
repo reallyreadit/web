@@ -2,6 +2,12 @@
   "name": "rrit-web",
   "version": "0.0.1",
   "private": true,
+  "it.reallyread": {
+    "version": {
+      "app": "0.10",
+      "extension": "0.22"
+    }
+  },
   "devDependencies": {
     "@types/chrome": "0.0.37",
     "@types/classnames": "0.0.32",
