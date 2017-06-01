@@ -1,7 +1,4 @@
-import * as http from 'http';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as url from 'url';
+import * as express from 'express';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import App from '../common/components/App';
@@ -16,122 +13,101 @@ import Request from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';
 
-const port = 5000;
-http.createServer((req, res) => {
-		if (/\.(js|css|map|ttf|ico)$/.test(req.url)) {
-			// serve static content
-			fs.readFile(`.${config.contentRootPath}/${req.url}`, (error, content) => {
-				if (error) {
-					res.writeHead(500);
-					res.end('Server Error');
-				} else {
-					let contentType: string;
-					switch (path.extname(url.parse(req.url).pathname)) {
-						case '.js':
-							contentType = 'text/javascript';
-							break;
-						case '.css':
-							contentType = 'text/css';
-							break;
-						case '.map':
-							contentType = 'application/json';
-							break;
-						case '.ttf':
-							contentType = 'application/x-font-ttf';
-							break;
-						case '.ico':
-							contentType = 'image/x-icon';
-							break;
+express()
+	// attempt to serve static files first
+	.use(express.static(config.contentRootPath))
+	// render matched route or return 404
+	.use((req, res, next) => {
+		match({ routes, location: req.url }, (error, nextLocation, nextState) => {
+			if (!nextState) {
+				res.sendStatus(404);
+			} else {
+				req.nextState = nextState;
+				next();
+			}
+		});
+	})
+	// authenticate
+	.use((req, res, next) => {
+		const api = new ServerApi({
+			scheme: 'http',
+			host: 'localhost',
+			port: 4001
+		}, req.headers['cookie']);
+		req.api = api;
+		if (api.hasSessionKey()) {
+			api.getJson(new Request('/UserAccounts/GetUserAccount'))
+				.then((userAccount: UserAccount) => {
+					if (!userAccount) {
+						throw new Error('AccountNotFound');
 					}
-					res.setHeader('content-type', contentType);
-					res.end(content, 'utf-8');
-				}
-			});
+					req.userAccount = userAccount;
+					next();
+				})
+				.catch((reason: string[] | Error) => {
+					if (
+						(reason instanceof Array && reason.includes('Unauthenticated')) ||
+						(reason instanceof Error && reason.message === 'AccountNotFound')
+					) {
+						res.clearCookie('sessionKey', { domain: config.cookieDomain });
+					}
+					next();
+				});
 		} else {
-			// match route
-			match({ routes, location: req.url }, (error, nextLocation, nextState) => {
-				// setup api and page context components
-				const api = new ServerApi({
-						scheme: 'http',
-						host: 'localhost',
-						port: 4001
-					}, req.headers['cookie']),
-					page = new ServerPage();
-				// get user account if session key cookie is present
-				new Promise<UserAccount>((resolve, reject) => {
-						if (api.hasSessionKey()) {
-							api.getJson(new Request('/UserAccounts/GetUserAccount'))
-								.then((userAccount: UserAccount) => {
-									if (!userAccount) {
-										throw new Error('AccountNotFound');
-									}
-									resolve(userAccount);
-								})
-								.catch((reason: string[] | Error) => {
-									if (
-										(reason instanceof Array && reason.includes('Unauthenticated')) ||
-										(reason instanceof Error && reason.message === 'AccountNotFound')
-									) {
-										res.setHeader('Set-Cookie', `sessionKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${config.cookieDomain}; path=/`);
-									}
-									resolve();
-								});
-						} else {
-							resolve();
-						}
-					})
-					.then(userAccount => {
-						const reqPath = url.parse(req.url).pathname;
-						// redirect to home page if requesting a section that requires authentication without authentication
-						if (!userAccount && ['/list', '/inbox', '/settings'].includes(reqPath)) {
-							res.writeHead(302, { 'Location': '/' });
-							res.end();
-						} else {
-							// ack new reply notification if a logged in user is hitting the inbox
-							if (userAccount && reqPath === '/inbox') {
-								// TODO: need to implement POST in ServerApi
-							}
-							// render the app
-							const user = new ServerUser(userAccount),
-								appElement = React.createElement(
-										App,
-										{
-											api,
-											page,
-											user,
-											extension: new ServerExtension(),
-											environment: 'server'
-										},
-										React.createElement(RouterContext, nextState)
-									);
-							// call renderToString first to capture all the api requests
-							ReactDOMServer.renderToString(appElement);
-							api.processRequests().then(() => {
-								// call renderToString again to render with api request results
-								ReactDOMServer.renderToString(appElement);
-								// one more call is needed since the page title renders before
-								// the pages which in turn set the page title in any async manner
-								const content = ReactDOMServer.renderToString(appElement);
-								// return the content and init data
-								res.setHeader('content-type', 'text/html');
-								res.end(renderHtml({
-									content,
-									pageInitData: page.getInitData(),
-									apiEndpoint: {
-										scheme: config.api.protocol,
-										host: config.api.host,
-										port: config.api.port
-									},
-									apiInitData: api.getInitData(),
-									userInitData: user.getInitData(),
-									extensionId: config.extensionId
-								}));
-							});
-						}
-					});
-			});
+			next();
 		}
 	})
-	.listen(port);
-
-console.log(`listening on port ${port}`);
+	// authorize
+	.get(['/list', '/inbox', '/settings'], (req, res, next) => {
+		if (!req.userAccount) {
+			res.redirect('/');
+		} else {
+			next();
+		}
+	})
+	// ack new reply notification
+	.get('/inbox', (req, res, next) => {
+		// TODO: implement POST in ServerApi and ack new reply notification
+		next();
+	})
+	// render the app
+	.get('/*', (req, res) => {
+		const user = new ServerUser(req.userAccount),
+			page = new ServerPage(),
+			appElement = React.createElement(
+				App,
+				{
+					api: req.api,
+					page,
+					user,
+					extension: new ServerExtension(),
+					environment: 'server'
+				},
+				React.createElement(RouterContext, req.nextState)
+			);
+		// call renderToString first to capture all the api requests
+		ReactDOMServer.renderToString(appElement);
+		req.api.processRequests().then(() => {
+			// call renderToString again to render with api request results
+			ReactDOMServer.renderToString(appElement);
+			// one more call is needed since the page title renders before
+			// the pages which in turn set the page title in any async manner
+			const content = ReactDOMServer.renderToString(appElement);
+			// return the content and init data
+			res.send(renderHtml({
+				content,
+				pageInitData: page.getInitData(),
+				apiEndpoint: {
+					scheme: config.api.protocol,
+					host: config.api.host,
+					port: config.api.port
+				},
+				apiInitData: req.api.getInitData(),
+				userInitData: user.getInitData(),
+				extensionId: config.extensionId
+			}));
+		});
+	})
+	.listen(config.port, () => {
+		console.log(`listening on port ${config.port}`);
+	});
