@@ -24,7 +24,7 @@ const serverApi = new ServerApi({
 		}
 	},
 	onRequestChanged: type => {
-		if (type & (RequestType.FindSource | RequestType.GetUserArticle)) {
+		if (type & (RequestType.FindSource | RequestType.FindUserArticle)) {
 			console.log('serverApi.onRequestChanged');
 			updateIcon();
 		}
@@ -127,9 +127,11 @@ function getState() {
 				  focusedChromeTab = values[1];
 			let focusedTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
-				return new Promise(resolve => serverApi
-					.getUserArticle(focusedTab.articleId)
-					.then(userArticle => resolve({ isAuthenticated: true, focusedTab, userArticle })));
+				return Promise.resolve({
+					isAuthenticated: true,
+					focusedTab,
+					userArticle: serverApi.getUserArticle(focusedTab.articleId)
+				});
 			} else {
 				return Promise.resolve({ isAuthenticated });
 			}
@@ -150,7 +152,7 @@ function updateIcon() {
 					state.userArticle ? state.userArticle.percentComplete : 0,
 					state.userArticle && state.userArticle.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked'
 				);
-				browserActionBadgeApi.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.GetUserArticle))) ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
+				browserActionBadgeApi.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.FindUserArticle))) ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
 			} else {
 				// not one of our tabs
 				drawBrowserActionIcon('signedIn', 0, 'locked');

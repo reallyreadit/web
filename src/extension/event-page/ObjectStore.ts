@@ -17,48 +17,51 @@ export default class ObjectStore<K, V> {
 		// clear the storage in case it's uninitialized/corrupted
 		// JSON.parse can throw an exception
 		try {
-			if (!this.readItems()) {
+			if (!this._readItems()) {
 				this.clear();
 			}
 		} catch (ex) {
 			this.clear();
 		}
 	}
-	private readItems() {
+	private _readItems() {
 		return JSON.parse(this._storage.getItem(this._name)) as V[];
 	}
-	private writeItems(items: V[]) {
+	private _writeItems(items: V[]) {
 		this._storage.setItem(this._name, JSON.stringify(items));
 	}
-	private getItemByKey(key: K, items: V[]) {
+	private _getItemByKey(key: K, items: V[]) {
 		return items.filter(item => this._getKey(item) === key)[0];
 	}
+	private _removeItem(item: V, items: V[]) {
+		items.splice(items.indexOf(item), 1);
+	}
 	public get(key: K) {
-		return this.getItemByKey(key, this.readItems());
+		return this._getItemByKey(key, this._readItems());
 	}
 	public getAll() {
-		return this.readItems();
+		return this._readItems();
 	}
 	public set(item: V) {
-		const items = this.readItems();
-		const existingItem = this.getItemByKey(this._getKey(item), items);
+		const items = this._readItems();
+		const existingItem = this._getItemByKey(this._getKey(item), items);
 		if (existingItem) {
-			items.splice(items.indexOf(existingItem), 1);
+			this._removeItem(existingItem, items);
 		}
 		items.push(item);
-		this.writeItems(items);
+		this._writeItems(items);
 		return item;
 	}
 	public remove(key: K) {
-		const items = this.readItems();
-		const item = this.getItemByKey(key, items);
+		const items = this._readItems();
+		const item = this._getItemByKey(key, items);
 		if (item) {
-			items.splice(items.indexOf(item), 1);
-			this.writeItems(items);
+			this._removeItem(item, items);
+			this._writeItems(items);
 		}
 		return item;
 	}
 	public clear() {
-		this.writeItems([]);
+		this._writeItems([]);
 	}
 }

@@ -10,6 +10,7 @@ import Request from './Request';
 import RequestType from './RequestType';
 import ContentScriptTab from './ContentScriptTab';
 import readingParameters from '../../common/readingParameters';
+import { Cached, cache, isExpired } from './Cached';
 
 export default class ServerApi {
 	private static getUrl(path: string) {
@@ -17,7 +18,7 @@ export default class ServerApi {
 	}
 	private _eventPageConfig: EventPageConfig;
 	private _contentScriptConfig: ContentScriptConfig;
-	private _articles = new ObjectStore<string, UserArticle>('articles', 'local', a => a.id);
+	private _articles = new ObjectStore<string, Cached<UserArticle>>('articles', 'local', a => a.value.id);
 	private _requests: Request[] = [];
 	private _onRequestChanged: (type: RequestType) => void;
 	private _onCacheUpdated: () => void;
@@ -50,7 +51,11 @@ export default class ServerApi {
 		// cache update handler
 		this._onCacheUpdated = handlers.onCacheUpdated;
 	}
-	private fetchJson<T>(request: Request) {
+	private _cache(userArticle: UserArticle) {
+		this._articles.set(cache(userArticle, 60000));
+		this._onCacheUpdated();
+	}
+	private _fetchJson<T>(request: Request) {
 		const removeRequest = () => {
 			this._requests.splice(this._requests.indexOf(request), 1)
 			this._onRequestChanged(request.type);
@@ -104,28 +109,29 @@ export default class ServerApi {
 		});
 	}
 	public findSource(tabId: number, hostname: string) {
-		return this.fetchJson<Source>(new Request(RequestType.FindSource, tabId, null, 'GET', '/Extension/FindSource', { hostname }));
+		return this._fetchJson<Source>(new Request(RequestType.FindSource, tabId, null, 'GET', '/Extension/FindSource', { hostname }));
 	}
 	public registerPage(tabId: number, data: ParseResult) {
-		return this
-			.fetchJson<{
+		return this._fetchJson<{
 				userArticle: UserArticle,
 				userPage: UserPage
-			}>(new Request(RequestType.GetUserArticle, tabId, null, 'POST', '/Extension/GetUserArticle', data))
+			}>(new Request(RequestType.FindUserArticle, tabId, null, 'POST', '/Extension/GetUserArticle', data))
 			.then(result => {
-				this._articles.set(result.userArticle)
+				this._cache(result.userArticle);
 				return result;
 			});
 	}
 	public getUserArticle(id: string) {
-		return Promise.resolve(this._articles.get(id));
+		const userArticle = this._articles.get(id);
+		if (userArticle && isExpired(userArticle) && !this._requests.some(r => r.articleId === id)) {
+			this._fetchJson<UserArticle>(new Request(RequestType.CacheRefresh, null, id, 'GET', '/Extension/UserArticle', { id }))
+				.then(userArticle => this._cache(userArticle));
+		}
+		return userArticle && userArticle.value;
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
-		this.fetchJson<UserArticle>(new Request(RequestType.CommitReadState, tabId, null, 'POST', '/Extension/CommitReadState', data))
-			.then(userArticle => {
-				this._articles.set(userArticle);
-				this._onCacheUpdated();
-			});
+		this._fetchJson<UserArticle>(new Request(RequestType.CommitReadState, tabId, null, 'POST', '/Extension/CommitReadState', data))
+			.then(userArticle => this._cache(userArticle));
 	}
 	public getRequests(tab: ContentScriptTab) {
 		return this._requests.filter(r => r.tabId === tab.id || (tab.articleId ? r.articleId === tab.articleId : false));
