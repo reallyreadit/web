@@ -21,7 +21,7 @@ export default class App extends React.Component<{
 	};
 	private _ackNewReply = () => this.props.api.ackNewReply();
 	private _pollingHandle: number;
-	private _startPolling = () => this._pollingHandle = window.setInterval(() => this.props.api.checkNewReplyNotification(this._setNotificationState), 3000);
+	private _startPolling = () => this._pollingHandle = window.setInterval(() => this.props.api.checkNewReplyNotification(this._setNotificationState), 10000);
 	private _stopPolling = () => window.clearInterval(this._pollingHandle);
 	public static childContextTypes = contextTypes;
 	public getChildContext() {
@@ -47,7 +47,7 @@ export default class App extends React.Component<{
 			.addListener('signIn', this._startPolling)
 			.addListener('signOut', this._stopPolling);
 		if (this.props.user.isSignedIn) {
-			this._pollingHandle = window.setInterval(() => this.props.api.checkNewReplyNotification(this._setNotificationState), 10000);
+			this._startPolling();
 		}
 	}
 	public componentWillUnmount() {
@@ -56,7 +56,7 @@ export default class App extends React.Component<{
 			.removeListener('signIn', this._startPolling)
 			.removeListener('signOut', this._stopPolling);
 		if (this.props.user.isSignedIn) {
-			window.clearInterval(this._pollingHandle);
+			this._stopPolling();
 		}
 	}
 	public render () {
