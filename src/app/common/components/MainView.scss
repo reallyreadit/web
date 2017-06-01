@@ -16,6 +16,19 @@
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
+	position: relative;
+}
+.main-view > nav > .left-col::after {
+	content: "Beta";
+	font-size: 11px;
+	position: absolute;
+	border: 1px solid forestgreen;
+	padding: 0 4px;
+	left: 35px;
+	top: -4px;
+	border-radius: 7px;
+	background: lightseagreen;
+	color: white;
 }
 .main-view > nav > .left-col > .logo {
 	flex: 0 0 auto;
