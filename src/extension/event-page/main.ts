@@ -204,3 +204,4 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
 	}
 });
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => sendResponse(true));
+chrome.runtime.onUpdateAvailable.addListener(chrome.runtime.reload);
