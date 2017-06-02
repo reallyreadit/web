@@ -3,6 +3,29 @@
 	font-family: monospace;
 	font-size: 13px;
 }
+.app > .ready-indicator {
+	border: 5px solid green;
+	padding: 12px 4px;
+	border-radius: 12px;
+	background: palegreen;
+}
+.app > .ready-indicator > h1 {
+	text-align: center;
+	font-size: 17px;
+	color: green;
+}
+.app > .ready-indicator > h1 > span {
+	vertical-align: middle;
+}
+.app > .ready-indicator > h1 > .ready-circle {
+	display: inline-block;
+	border: 2px solid green;
+	border-radius: 14px;
+	width: 14px;
+	height: 14px;
+	font-size: 12px;
+	margin-right: 4px;
+}
 .app > h1 {
 	font-family: 'Adler';
 	font-size: 20px;

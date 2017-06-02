@@ -40,17 +40,7 @@ const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'local', t => t.i
 
 // browser action
 new BrowserActionApi({
-	onGetState: () => getState().then(state => ({
-		isAuthenticated: state.isAuthenticated,
-		userArticle: state.userArticle,
-		showOverlay: JSON.parse(localStorage.getItem('showOverlay'))
-	})),
-	onUpdateShowOverlay: showOverlay => {
-		// update settings
-		localStorage.setItem('showOverlay', JSON.stringify(showOverlay));
-		// update tabs
-		tabs.getAll().forEach(tab => contentScriptApi.showOverlay(tab.id, showOverlay));
-	}
+	onGetState: getState
 });
 
 // content script
@@ -120,20 +110,23 @@ function getState() {
 		])
 		.then<{
 			isAuthenticated: boolean,
+			isOnHomePage: boolean,
 			focusedTab: ContentScriptTab,
 			userArticle: UserArticle
 		}>(values => {
 			const isAuthenticated = values[0],
-				  focusedChromeTab = values[1];
+				  focusedChromeTab = values[1],
+				  isOnHomePage = focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === config.web.host;
 			let focusedTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
 				return Promise.resolve({
 					isAuthenticated: true,
+					isOnHomePage,
 					focusedTab,
 					userArticle: serverApi.getUserArticle(focusedTab.articleId)
 				});
 			} else {
-				return Promise.resolve({ isAuthenticated });
+				return Promise.resolve({ isAuthenticated, isOnHomePage });
 			}
 		});
 }

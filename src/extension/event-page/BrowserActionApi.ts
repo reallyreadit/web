@@ -4,10 +4,9 @@ export default class BrowserActionApi {
 	constructor(handlers: {
 		onGetState: () => Promise<{
 			isAuthenticated: boolean,
-			userArticle: UserArticle,
-			showOverlay: boolean
-		}>,
-		onUpdateShowOverlay: (showOverlay: boolean) => void
+			isOnHomePage: boolean,
+			userArticle: UserArticle
+		}>
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage') {
@@ -17,9 +16,6 @@ export default class BrowserActionApi {
 							.onGetState()
 							.then(sendResponse);
 						return true;
-					case 'updateShowOverlay':
-						handlers.onUpdateShowOverlay(message.data);
-						break;
 				}
 			}
 			return undefined;
