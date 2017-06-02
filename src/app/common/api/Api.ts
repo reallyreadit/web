@@ -37,8 +37,8 @@ abstract class Api {
 	public getUserAccount(callback: (userAccount: Fetchable<UserAccount>) => void) {
 		return this.get<UserAccount>(new Request('/UserAccounts/GetUserAccount'), callback);
 	}
-	public signIn(name: string, password: string) {
-		return this.post<UserAccount>(new Request('/UserAccounts/SignIn', { name, password }));
+	public signIn(email: string, password: string) {
+		return this.post<UserAccount>(new Request('/UserAccounts/SignIn', { email, password }));
 	}
 	public signOut() {
 		return this.post(new Request('/UserAccounts/SignOut'));
