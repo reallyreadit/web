@@ -10,7 +10,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-top: 7px;
+	padding-top: 7px;
 }
 .main-view > nav > .left-col {
 	flex: 0 0 auto;
@@ -53,7 +53,7 @@
 	flex: 0 0 auto;
 }
 .main-view > header {
-	margin: 7px 0;
+	padding: 7px 0;
 }
 .main-view > header > h2 {
 	display: flex;
