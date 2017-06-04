@@ -1,5 +1,6 @@
 type ArticleStatus = 'locked' | 'unlocked';
 // drawing helpers
+const padding = 0.5;
 function drawText(ctx: CanvasRenderingContext2D) {
 	ctx.save();
 	ctx.fillStyle = 'rgb(50,50,50)';
@@ -12,7 +13,6 @@ function drawText(ctx: CanvasRenderingContext2D) {
 function setSpeechBubblePath(ctx: CanvasRenderingContext2D) {
 	const width = ctx.canvas.width,
 		  height = ctx.canvas.height,
-		  padding = 0.5,
 		  bubbleWidth = width - (padding * 2),
 		  bubbleHeight = (height - padding * 2) * 0.78,
 		  cornerRadius = bubbleWidth * 0.11,
@@ -53,6 +53,24 @@ function drawProgressBar(percentComplete: number, articleStatus: ArticleStatus, 
 	ctx.fillRect(0, ctx.canvas.height - barHeight, ctx.canvas.width, barHeight);
 	ctx.restore();
 }
+function drawNewReplyIndicator(ctx: CanvasRenderingContext2D) {
+	const width = ctx.canvas.width,
+		indicatorSize = (width - (padding * 2)) * 0.45;
+	ctx.save();
+	// clip to speech bubble path
+	setSpeechBubblePath(ctx);
+	ctx.clip();
+	// draw indicator path
+	ctx.beginPath();
+	ctx.moveTo(width - padding - indicatorSize, padding);
+	ctx.lineTo(width - padding, padding);
+	ctx.lineTo(width - padding, padding + indicatorSize);
+	ctx.closePath();
+	// fill indicator path
+	ctx.fillStyle = 'red';
+	ctx.fill();
+	ctx.restore();
+}
 // contexts
 const contexts = [16,32].map(size => {
 	const canvas = document.createElement('canvas');
@@ -60,7 +78,7 @@ const contexts = [16,32].map(size => {
 	canvas.height = size;
 	return canvas.getContext('2d');
 });
-export default function (accountStatus: 'signedIn' | 'signedOut', percentComplete: number, articleStatus: ArticleStatus) {
+export default function (accountStatus: 'signedIn' | 'signedOut', percentComplete: number, articleStatus: ArticleStatus, showNewReplyIndicator: boolean) {
 	chrome.browserAction.setIcon({
 		imageData: contexts.reduce<{ [index: number]: ImageData }>((imageData, ctx) => {
 			// get size
@@ -75,6 +93,10 @@ export default function (accountStatus: 'signedIn' | 'signedOut', percentComplet
 			drawSpeechBubble(ctx);
 			// draw text
 			drawText(ctx);
+			// draw new reply indicator
+			if (showNewReplyIndicator) {
+				drawNewReplyIndicator(ctx);
+			}
 			// get data
 			imageData[size] = ctx.getImageData(0, 0, size, size);
 			return imageData;
