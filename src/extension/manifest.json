@@ -41,6 +41,7 @@
   "permissions": [
     "*://*.reallyread.it/*",
     "cookies",
-    "webNavigation"
+    "webNavigation",
+    "alarms"
   ]
 }

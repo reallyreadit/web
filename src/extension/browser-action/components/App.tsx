@@ -1,31 +1,36 @@
 import * as React from 'react';
 import EventPageApi from '../EventPageApi';
-import UserArticle from '../../common/UserArticle';
+import ExtensionState from '../../common/ExtensionState';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 import NavBar from '../../../common/components/NavBar';
 import Icon from '../../../common/components/Icon';
 
-export default class App extends React.Component<{}, {
-	isAuthenticated?: boolean,
-	isOnHomePage?: boolean,
-	userArticle?: UserArticle
-}> {
+export default class App extends React.Component<{}, ExtensionState> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
 	private _showSignInDialog = () => this._openInNewTab('');
 	private _showCreateAccountDialog = () => this._openInNewTab('');
-	private _goToInbox = () => this._openInNewTab('/inbox');
+	private _goToInbox = () => this._eventPageApi
+		.ackNewReply()
+		.then(() => this._openInNewTab('/inbox'));
 	private _goToReadingList = () => this._openInNewTab('/list');
 	private _goToSettings = () => this._openInNewTab('/settings');
 	private _goToComments = () => {
 		const slugParts = this.state.userArticle.slug.split('_');
 		this._openInNewTab(`/articles/${slugParts[0]}/${slugParts[1]}`);
 	};
+	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
 	constructor() {
 		super();
-		this.state = {};
-		EventPageApi
-			.getState()
+		this.state = {
+			isAuthenticated: false,
+			isOnHomePage: false,
+			showNewReplyIndicator: false,
+			focusedTab: null,
+			userArticle: null
+		};
+		this._eventPageApi
+			.load()
 			.then(state => this.setState(state));
 	}
 	public render() {
@@ -37,7 +42,7 @@ export default class App extends React.Component<{}, {
 							<span className="ready-circle">
 								<Icon name="checkmark" />
 							</span>
-							<span>Ready to read!</span>
+							<span>Go read something!</span>
 						</h1>
 					</div>
 				</div> :
@@ -47,7 +52,7 @@ export default class App extends React.Component<{}, {
 					</h1>
 					<NavBar
 						isSignedIn={this.state.isAuthenticated}
-						showNewReplyIndicator={false}
+						showNewReplyIndicator={this.state.showNewReplyIndicator}
 						state={'normal'}
 						onSignIn={this._showSignInDialog}
 						onCreateAccount={this._showCreateAccountDialog}

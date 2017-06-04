@@ -1,25 +1,43 @@
-import EventPageConfig from './EvetPageConfig';
-import ContentScriptConfig from '../common/ContentScriptConfig';
 import Source from './Source';
 import UserArticle from '../common/UserArticle';
 import UserPage from '../common/UserPage';
+import NewReplyNotification from '../../common/models/NewReplyNotification';
+import SetStore from './SetStore';
 import ObjectStore from './ObjectStore';
 import ParseResult from '../common/ParseResult';
 import ReadStateCommitData from '../common/ReadStateCommitData';
 import Request from './Request';
 import RequestType from './RequestType';
-import ContentScriptTab from './ContentScriptTab';
+import ContentScriptTab from '../common/ContentScriptTab';
 import readingParameters from '../../common/readingParameters';
 import { Cached, cache, isExpired } from './Cached';
 
 export default class ServerApi {
-	private static getUrl(path: string) {
-		return `${config.api.protocol}://${config.api.host}` + path;
-	}
-	private _eventPageConfig: EventPageConfig;
-	private _contentScriptConfig: ContentScriptConfig;
-	private _articles = new ObjectStore<string, Cached<UserArticle>>('articles', 'local', a => a.value.id);
+	private static _newReplyNotificationAlarmName = 'ServerApi.checkNewReplyNotification';
+	// static config parameters
+	private _eventPageConfig = {
+		articleUnlockThreshold: readingParameters.articleUnlockThreshold
+	};
+	private _contentScriptConfig = {
+		readWordRate: 100,
+		idleReadRate: 1000,
+		pageOffsetUpdateRate: 3000,
+		readStateCommitRate: 3000
+	};
+	// cached local storage
+	private _newReplyNotification = new ObjectStore<Cached<NewReplyNotification>>('newReplyNotification', 'local', {
+		value: {
+			lastReply: 0,
+			lastNewReplyAck: 0,
+			lastNewReplyDesktopNotification: 0
+		},
+		timestamp: 0,
+		expirationTimespan: 0
+	});
+	private _articles = new SetStore<string, Cached<UserArticle>>('articles', 'local', a => a.value.id);
+	// ephemeral requests store
 	private _requests: Request[] = [];
+	// handlers
 	private _onRequestChanged: (type: RequestType) => void;
 	private _onCacheUpdated: () => void;
 	constructor(handlers: {
@@ -27,35 +45,46 @@ export default class ServerApi {
 		onRequestChanged: (type: RequestType) => void,
 		onCacheUpdated: () => void
 	}) {
-		// configs
-		this._eventPageConfig = {
-			articleUnlockThreshold: readingParameters.articleUnlockThreshold
-		};
-		this._contentScriptConfig = {
-			readWordRate: 100,
-			idleReadRate: 1000,
-			pageOffsetUpdateRate: 3000,
-			readStateCommitRate: 3000
-		};
-		// authentication
+		// extension install
+		chrome.runtime.onInstalled.addListener(details => this.clearCache());
+		// cookie change
 		chrome.cookies.onChanged.addListener(changeInfo => {
 			if (changeInfo.cookie.name === 'sessionKey') {
-				// clear cache
-				this._articles.clear();
-				// fire handler
-				handlers.onAuthenticationStatusChanged(!changeInfo.removed);
+				const isAuthenticated = !changeInfo.removed;
+				this.clearCache();
+				if (isAuthenticated) {
+					this.checkNewReplyNotification();
+				}
+				handlers.onAuthenticationStatusChanged(isAuthenticated);
 			}
 		});
-		// requests handler
+		// notifications
+		chrome.alarms.onAlarm.addListener(alarm => {
+			if (alarm.name === ServerApi._newReplyNotificationAlarmName) {
+				this.getAuthStatus().then(isAuthenticated => {
+					if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
+						this.checkNewReplyNotification();
+					}
+				});
+			}
+		});
+		chrome.alarms.create(ServerApi._newReplyNotificationAlarmName, {
+			when: Date.now(),
+			periodInMinutes: 1
+		});
+		// handlers
 		this._onRequestChanged = handlers.onRequestChanged;
-		// cache update handler
 		this._onCacheUpdated = handlers.onCacheUpdated;
 	}
-	private _cache(userArticle: UserArticle) {
+	private clearCache() {
+		this._newReplyNotification.clear();
+		this._articles.clear();
+	}
+	private cacheArticle(userArticle: UserArticle) {
 		this._articles.set(cache(userArticle, 60000));
 		this._onCacheUpdated();
 	}
-	private _fetchJson<T>(request: Request) {
+	private fetchJson<T>(request: Request) {
 		const removeRequest = () => {
 			this._requests.splice(this._requests.indexOf(request), 1)
 			this._onRequestChanged(request.type);
@@ -63,7 +92,8 @@ export default class ServerApi {
 		this._requests.push(request);
 		this._onRequestChanged(request.type);
 		return new Promise<T>((resolve, reject) => {
-			const req = new XMLHttpRequest();
+			const req = new XMLHttpRequest(),
+				url = `${config.api.protocol}://${config.api.host}` + request.path;
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
 				removeRequest();
@@ -99,62 +129,73 @@ export default class ServerApi {
 				reject([]);
 			});
 			if (request.method === 'POST') {
-				req.open(request.method, ServerApi.getUrl(request.path));
+				req.open(request.method, url);
 				req.setRequestHeader('Content-Type', 'application/json');
 				req.send(JSON.stringify(request.query));
 			} else {
-				req.open(request.method, ServerApi.getUrl(request.path + request.getQueryString()));
+				req.open(request.method, url + request.getQueryString());
 				req.send();
 			}
 		});
 	}
 	public findSource(tabId: number, hostname: string) {
-		return this._fetchJson<Source>(new Request(RequestType.FindSource, tabId, null, 'GET', '/Extension/FindSource', { hostname }));
+		return this.fetchJson<Source>(new Request(RequestType.FindSource, tabId, null, 'GET', '/Extension/FindSource', { hostname }));
 	}
 	public registerPage(tabId: number, data: ParseResult) {
-		return this._fetchJson<{
+		return this.fetchJson<{
 				userArticle: UserArticle,
 				userPage: UserPage
 			}>(new Request(RequestType.FindUserArticle, tabId, null, 'POST', '/Extension/GetUserArticle', data))
 			.then(result => {
-				this._cache(result.userArticle);
+				this.cacheArticle(result.userArticle);
 				return result;
 			});
 	}
 	public getUserArticle(id: string) {
 		const userArticle = this._articles.get(id);
 		if (userArticle && isExpired(userArticle) && !this._requests.some(r => r.articleId === id)) {
-			this._fetchJson<UserArticle>(new Request(RequestType.CacheRefresh, null, id, 'GET', '/Extension/UserArticle', { id }))
-				.then(userArticle => this._cache(userArticle));
+			this.fetchJson<UserArticle>(new Request(RequestType.CacheRefresh, null, id, 'GET', '/Extension/UserArticle', { id }))
+				.then(userArticle => this.cacheArticle(userArticle));
 		}
 		return userArticle && userArticle.value;
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
-		this._fetchJson<UserArticle>(new Request(RequestType.CommitReadState, tabId, null, 'POST', '/Extension/CommitReadState', data))
-			.then(userArticle => this._cache(userArticle));
+		this.fetchJson<UserArticle>(new Request(RequestType.CommitReadState, tabId, null, 'POST', '/Extension/CommitReadState', data))
+			.then(userArticle => this.cacheArticle(userArticle));
 	}
 	public getRequests(tab: ContentScriptTab) {
 		return this._requests.filter(r => r.tabId === tab.id || (tab.articleId ? r.articleId === tab.articleId : false));
+	}
+	public getAuthStatus() {
+		return new Promise(resolve => chrome.cookies.get({
+			url: `${config.api.protocol}://${config.api.host}`,
+			name: 'sessionKey'
+		}, cookie => resolve(!!cookie)));
+	}
+	public hasNewReply() {
+		const notif = this._newReplyNotification.get().value;
+		return notif.lastReply > notif.lastNewReplyAck;
+	}
+	public checkNewReplyNotification() {
+		this.fetchJson<NewReplyNotification>(new Request(RequestType.CacheRefresh, null, null, 'GET', '/UserAccounts/CheckNewReplyNotification'))
+			.then(notification => {
+				this._newReplyNotification.set(cache(notification, 50000));
+				this._onCacheUpdated();
+			});
+	}
+	public ackNewReply() {
+		const notif = this._newReplyNotification.get(),
+			now = Date.now();
+		notif.timestamp = now;
+		notif.value.lastNewReplyAck = now;
+		this._newReplyNotification.set(notif);
+		this._onCacheUpdated();
+		this.fetchJson(new Request(RequestType.NotificationAck, null, null, 'POST', '/UserAccounts/AckNewReply'));
 	}
 	public get eventPageConfig() {
 		return this._eventPageConfig;
 	}
 	public get contentScriptConfig() {
 		return this._contentScriptConfig;
-	}
-	public getAuthStatus() {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				chrome.cookies.get({
-					url: `${config.api.protocol}://${config.api.host}`,
-					name: 'sessionKey'
-				}, cookie => resolve(!!cookie));
-			} catch (ex) {
-				reject();
-			}
-		});
-	}
-	public clearCache() {
-		this._articles.clear();
 	}
 }

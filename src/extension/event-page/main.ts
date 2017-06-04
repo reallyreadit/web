@@ -1,12 +1,12 @@
 import drawBrowserActionIcon from './drawBrowserActionIcon';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
-import ObjectStore from './ObjectStore';
-import ContentScriptTab from './ContentScriptTab';
+import SetStore from './SetStore';
+import ContentScriptTab from '../common/ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
 import RequestType from './RequestType';
 import BrowserActionApi from './BrowserActionApi';
-import UserArticle from '../common/UserArticle';
+import ExtensionState from '../common/ExtensionState';
 
 console.log('loading main.ts...');
 
@@ -15,7 +15,7 @@ const serverApi = new ServerApi({
 	onAuthenticationStatusChanged: isAuthenticated => {
 		console.log('serverApi.onAuthenticationStatusChanged');
 		// update icon
-		updateIcon();
+		getState().then(updateIcon);
 		// signal content scripts
 		if (isAuthenticated) {
 			tabs.getAll().forEach(tab => contentScriptApi.loadPage(tab.id));
@@ -26,21 +26,28 @@ const serverApi = new ServerApi({
 	onRequestChanged: type => {
 		if (type & (RequestType.FindSource | RequestType.FindUserArticle)) {
 			console.log('serverApi.onRequestChanged');
-			updateIcon();
+			getState().then(updateIcon);
 		}
 	},
 	onCacheUpdated: () => {
 		console.log('serverApi.onCacheUpdated');
-		updateIcon();
+		getState().then(state => {
+			updateIcon(state);
+			browserActionApi.pushState(state);
+		});
 	}
 });
 
 // tabs
-const tabs = new ObjectStore<number, ContentScriptTab>('tabs', 'local', t => t.id);
+const tabs = new SetStore<number, ContentScriptTab>('tabs', 'local', t => t.id);
 
 // browser action
-new BrowserActionApi({
-	onGetState: getState
+const browserActionApi = new BrowserActionApi({
+	onLoad: () => {
+		serverApi.checkNewReplyNotification();
+		return getState();
+	},
+	onAckNewReply: () => serverApi.ackNewReply()
 });
 
 // content script
@@ -50,8 +57,8 @@ const contentScriptApi = new ContentScriptApi({
 		// update tabs
 		tabs.set({ id: tabId });
 		// update icon
-		updateIcon();
-		// return source and config
+		getState().then(updateIcon);
+		// return config
 		return serverApi
 			.getAuthStatus()
 			.then(isAuthenticated => ({
@@ -72,7 +79,7 @@ const contentScriptApi = new ContentScriptApi({
 					articleId: result.userArticle.id
 				})
 				// update icon
-				updateIcon();
+				getState().then(updateIcon);
 				// return page init data
 				return result.userPage;
 			});
@@ -87,76 +94,73 @@ const contentScriptApi = new ContentScriptApi({
 		// update tabs
 		tabs.set({ id: tabId });
 		// update icon
-		updateIcon();
+		getState().then(updateIcon);
 	},
 	onUnregisterContentScript: tabId => {
 		console.log(`contentScriptApi.onUnregisterContentScript (tabId: ${tabId})`);
 		// update tabs
 		tabs.remove(tabId)
 		// update icon
-		updateIcon();
+		getState().then(updateIcon);
 	}
 });
 
 // query current state
 function getState() {
-	return Promise
-		.all([
-			serverApi.getAuthStatus(),
-			new Promise<chrome.tabs.Tab>(resolve => chrome.tabs.query({
-				active: true,
-				currentWindow: true
-			}, result => resolve(result[0])))
+	return Promise.all<chrome.tabs.Tab, boolean>([
+			new Promise<chrome.tabs.Tab>(resolve => {
+				chrome.tabs.query({
+					active: true,
+					currentWindow: true
+				}, result => resolve(result[0]))
+			}),
+			serverApi.getAuthStatus()
 		])
-		.then<{
-			isAuthenticated: boolean,
-			isOnHomePage: boolean,
-			focusedTab: ContentScriptTab,
-			userArticle: UserArticle
-		}>(values => {
-			const isAuthenticated = values[0],
-				  focusedChromeTab = values[1],
-				  isOnHomePage = focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === config.web.host;
+		.then(result => {
+			const focusedChromeTab = result[0],
+				isAuthenticated = result[1],
+				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === config.web.host,
+				showNewReplyIndicator = serverApi.hasNewReply();
 			let focusedTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
 				return Promise.resolve({
-					isAuthenticated: true,
+					isAuthenticated,
 					isOnHomePage,
+					showNewReplyIndicator,
 					focusedTab,
 					userArticle: serverApi.getUserArticle(focusedTab.articleId)
 				});
 			} else {
-				return Promise.resolve({ isAuthenticated, isOnHomePage });
+				return Promise.resolve({ isAuthenticated, isOnHomePage, showNewReplyIndicator });
 			}
 		});
 }
 
 // icon interface
 const browserActionBadgeApi = new BrowserActionBadgeApi();
-function updateIcon() {
+function updateIcon(state: ExtensionState) {
 	console.log('\tupdateIcon');
-	getState().then(state => {
-		if (state.isAuthenticated) {
-			if (state.focusedTab) {
-				// get pending requests
-				const pendingRequests = serverApi.getRequests(state.focusedTab);
-				drawBrowserActionIcon(
-					'signedIn',
-					state.userArticle ? state.userArticle.percentComplete : 0,
-					state.userArticle && state.userArticle.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked'
-				);
-				browserActionBadgeApi.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.FindUserArticle))) ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
-			} else {
-				// not one of our tabs
-				drawBrowserActionIcon('signedIn', 0, 'locked');
-				browserActionBadgeApi.set();
-			}
+	if (state.isAuthenticated) {
+		if (state.focusedTab) {
+			// get pending requests
+			const pendingRequests = serverApi.getRequests(state.focusedTab);
+			drawBrowserActionIcon(
+				'signedIn',
+				state.userArticle ? state.userArticle.percentComplete : 0,
+				state.userArticle && state.userArticle.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked',
+				state.showNewReplyIndicator
+			);
+			browserActionBadgeApi.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.FindUserArticle))) ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
 		} else {
-			// signed out
-			drawBrowserActionIcon('signedOut', 0, 'locked');
+			// not one of our tabs
+			drawBrowserActionIcon('signedIn', 0, 'locked', state.showNewReplyIndicator);
 			browserActionBadgeApi.set();
 		}
-	});
+	} else {
+		// signed out
+		drawBrowserActionIcon('signedOut', 0, 'locked', false);
+		browserActionBadgeApi.set();
+	}
 }
 
 // chrome event handlers
@@ -165,29 +169,28 @@ chrome.runtime.onInstalled.addListener(details => {
 	// initialize settings
 	localStorage.setItem('showOverlay', JSON.stringify(false));
 	// clear storage
-	serverApi.clearCache();
 	tabs.clear();
 	// update icon
-	updateIcon();
+	getState().then(updateIcon);
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
 	// clear tabs
 	tabs.clear();
 	// update icon
-	updateIcon();
+	getState().then(updateIcon);
 });
 chrome.tabs.onActivated.addListener(activeInfo => {
 	console.log('chrome.tabs.onActivated (tabId: ' + activeInfo.tabId + ')');
 	// update icon
-	updateIcon();
+	getState().then(updateIcon);
 });
 chrome.windows.onFocusChanged.addListener(
 	windowId => {
 		if (windowId !== chrome.windows.WINDOW_ID_NONE) {
 			console.log('chrome.windows.onFocusChanged (windowId: ' + windowId + ')');
 			// update icon
-			updateIcon();
+			getState().then(updateIcon);
 		}
 	},
 	{ windowTypes: ['normal'] }
@@ -199,4 +202,3 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
 	}
 });
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => sendResponse(true));
-chrome.runtime.onUpdateAvailable.addListener(chrome.runtime.reload);
