@@ -1,5 +1,5 @@
 import EventEmitter from './EventEmitter';
-import NewReplyNotification from './api/models/NewReplyNotification';
+import NewReplyNotification from '../../common/models/NewReplyNotification';
 
 export interface InitData {
 	title: string,

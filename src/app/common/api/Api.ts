@@ -5,7 +5,7 @@ import UserAccount from './models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
 import Endpoint from './Endpoint';
-import NewReplyNotification from './models/NewReplyNotification';
+import NewReplyNotification from '../../../common/models/NewReplyNotification';
 
 abstract class Api {
 	protected reqStore: RequestStore;
