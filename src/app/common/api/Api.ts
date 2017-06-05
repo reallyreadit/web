@@ -7,14 +7,21 @@ import RequestStore from './RequestStore';
 import Endpoint from './Endpoint';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 
-abstract class Api {
-	protected reqStore: RequestStore;
-	protected isInitialized = false;
-	constructor(protected readonly endpoint: Endpoint) { }
+export interface InitData {
+	endpoint: Endpoint,
+	requests: Request[]
+}
+export default abstract class Api {
+	protected readonly _endpoint: Endpoint;
+	protected _reqStore: RequestStore;
+	protected _isInitialized = false;
+	constructor(endpoint: Endpoint) {
+		this._endpoint = endpoint;
+	}
 	protected abstract get<T>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T>(request: Request) : Promise<T>;
 	protected getUrl(path: string) {
-		return `${this.endpoint.scheme}://${this.endpoint.host}:${this.endpoint.port}${path}`;
+		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
 	public listArticles(callback: (articles: Fetchable<Article[]>) => void) {
 		return this.get<Article[]>(new Request('/Articles/List'), callback);
@@ -71,4 +78,3 @@ abstract class Api {
 		return this.post(new Request('/UserAccounts/AckNewReply'));
 	}
 }
-export default Api;

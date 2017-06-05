@@ -4,6 +4,7 @@ import Context from '../Context';
 import Fetchable from '../api/Fetchable';
 import Comment from '../api/models/Comment';
 import CommentList from './CommentList';
+import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 
 export default class InboxPage extends ContextComponent<{}, { replies: Fetchable<Comment[]> }> {
 	private _redirectToHomepage = () => this.context.router.push('/');
@@ -24,12 +25,19 @@ export default class InboxPage extends ContextComponent<{}, { replies: Fetchable
 		this.state = { replies: this._loadReplies() };
 	}
 	public componentWillMount() {
+		if (hasNewUnreadReply(this.context.page.newReplyNotification)) {
+			const now = Date.now();
+			this.context.page.setNewReplyNotification({
+				...this.context.page.newReplyNotification,
+				lastNewReplyAck: now,
+				timestamp: now
+			});
+		}
 		this.context.page.setState({
 			title: 'Inbox',
 			isLoading: this.state.replies.isLoading,
 			isReloadable: true
 		});
-		this.context.page.ackNewReply();
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);

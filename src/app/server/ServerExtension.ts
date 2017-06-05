@@ -1,4 +1,5 @@
 import Extension from '../common/Extension';
+import NewReplyNotification from '../../common/models/NewReplyNotification';
 
 export default class ServerExtension extends Extension {
     public isInstalled() {
@@ -7,7 +8,10 @@ export default class ServerExtension extends Extension {
     public isBrowserCompatible() {
         return false;
     }
-    public getExtensionId() {
-        return '';
+    public updateNewReplyNotification(notification: NewReplyNotification) {
+        throw new Error('Operation not supported in server environment');
+    }
+    public getInitData() {
+        return this._extensionId;
     }
 }

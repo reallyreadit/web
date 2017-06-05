@@ -3,10 +3,9 @@ import Page, { InitData, State } from '../common/Page';
 export default class BrowserPage extends Page {
 	private _isInitialized = false;
 	constructor(initData: InitData) {
-		super();
+		super(initData.newReplyNotification);
 		this._title = initData.title;
 		this._isReloadable = initData.isReloadable;
-		this._newReplyNotification = initData.newReplyNotification;
 	}
 	public setState(state: Partial<State>) {
 		if (this._isInitialized) {

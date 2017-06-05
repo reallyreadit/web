@@ -1,14 +1,12 @@
-import Api from '../common/api/Api';
+import Api, { InitData } from '../common/api/Api';
 import Request from '../common/api/Request';
-import RequestData from '../common/api/RequestData';
 import Fetchable from '../common/api/Fetchable';
 import RequestStore from '../common/api/RequestStore';
-import Endpoint from '../common/api/Endpoint';
 
 export default class BrowserApi extends Api {
-	constructor(endpoint: Endpoint, requestData: RequestData[]) {
-		super(endpoint);
-		this.reqStore = new RequestStore(requestData);
+	constructor(initData: InitData) {
+		super(initData.endpoint);
+		this._reqStore = new RequestStore(initData.requests);
 	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
@@ -55,11 +53,11 @@ export default class BrowserApi extends Api {
 		});
 	} 
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
-		if (!this.isInitialized) {
+		if (!this._isInitialized) {
 			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
-				value: this.reqStore.getData(request)
+				value: this._reqStore.getData(request)
 			};
 		} else {
 			console.log('Api: fetch[sync/loading, async/value]');
@@ -73,6 +71,6 @@ export default class BrowserApi extends Api {
 		return this.fetchJson<T>('POST', request);
 	}
 	public initialize() : void {
-		this.isInitialized = true;
+		this._isInitialized = true;
 	}
 }

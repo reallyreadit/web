@@ -6,11 +6,17 @@ import NavBar from '../../../common/components/NavBar';
 import ActionLink from '../../../common/components/ActionLink';
 import Separator from '../../../common/components/Separator';
 import * as className from 'classnames';
+import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 
 export default class AccountManager extends PureContextComponent<{}, { isSigningOut: boolean }> {
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
 	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
-	private _goToInbox = () => this.context.router.push('/inbox');
+	private _goToInbox = () => {
+		if (hasNewUnreadReply(this.context.page.newReplyNotification)) {
+			this.context.api.ackNewReply();
+		}
+		this.context.router.push('/inbox')
+	};
 	private _goToReadingList = () => this.context.router.push('/list');
 	private _goToSettings = () => this.context.router.push('/settings');
 	private _signOut = () => {
@@ -30,7 +36,6 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 		this.context.page.removeListener('newReplyNotificationChange', this._forceUpdate);
 	}
 	public render() {
-		const newReplyNotification = this.context.page.newReplyNotification;
 		return (
 			<div className="account-manager">
 				{this.context.user.isSignedIn ?
@@ -42,7 +47,7 @@ export default class AccountManager extends PureContextComponent<{}, { isSigning
 					null}
 				<NavBar
 					isSignedIn={this.context.user.isSignedIn}
-					showNewReplyIndicator={newReplyNotification.lastReply > newReplyNotification.lastNewReplyAck}
+					showNewReplyIndicator={hasNewUnreadReply(this.context.page.newReplyNotification)}
 					state={this.state.isSigningOut ? 'disabled' : 'normal'}
 					onSignIn={this._showSignInDialog}
 					onCreateAccount={this._showCreateAccountDialog}

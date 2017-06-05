@@ -1,4 +1,4 @@
-import UserAccount from '../common/api/models/UserAccount';
+import SessionState from '../common/api/models/SessionState';
 import { MatchState } from "@types/react-router/lib/match";
 import ServerApi from "./ServerApi";
 
@@ -7,7 +7,7 @@ declare global {
 		export interface Request {
 			nextState: MatchState,
 			api: ServerApi,
-			userAccount: UserAccount
+			sessionState: SessionState
 		}
 	}
 }

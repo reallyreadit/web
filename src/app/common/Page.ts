@@ -1,5 +1,5 @@
 import EventEmitter from './EventEmitter';
-import NewReplyNotification from '../../common/models/NewReplyNotification';
+import NewReplyNotification, { isStateEqual as isNotificationStateEqual } from '../../common/models/NewReplyNotification';
 
 export interface InitData {
 	title: string,
@@ -28,15 +28,18 @@ abstract class Page extends EventEmitter<{
 	'newReplyNotificationChange': NewReplyNotification,
 	'ackNewReply': void
 }> {
+	// title
 	protected _title: string;
 	private _isLoading: boolean;
 	protected _isReloadable: boolean;
+	// dialog
 	private _activeDialog?: React.ReactElement<any>;
-	protected _newReplyNotification = {
-		lastReply: 0,
-		lastNewReplyAck: 0,
-		lastNewReplyDesktopNotification: 0
-	};
+	// new reply notification
+	protected _newReplyNotification: NewReplyNotification;
+	constructor(newReplyNotification: NewReplyNotification) {
+		super();
+		this._newReplyNotification = newReplyNotification;
+	}
 	public setState(state: Partial<State>) {
 		if ('title' in state) {
 			this._title = state.title;
@@ -68,16 +71,14 @@ abstract class Page extends EventEmitter<{
 	public showToast(text: string, intent: Intent) {
 		this.emitEvent('showToast', { text, intent });
 	}
-	public setNewReplyNotificationState(state: NewReplyNotification) {
-		if (state.lastNewReplyAck >= this._newReplyNotification.lastNewReplyAck) {
-			this._newReplyNotification = state;
-			this.emitEvent('newReplyNotificationChange', this._newReplyNotification);
+	public setNewReplyNotification(notification: NewReplyNotification) {
+		if (notification.timestamp > this._newReplyNotification.timestamp) {
+			const hasStateChanged = !isNotificationStateEqual(this._newReplyNotification, notification);
+			this._newReplyNotification = notification;
+			if (hasStateChanged) {
+				this.emitEvent('newReplyNotificationChange', this._newReplyNotification);
+			}
 		}
-	}
-	public ackNewReply() {
-		this._newReplyNotification.lastNewReplyAck = Date.now();
-		this.emitEvent('newReplyNotificationChange', this._newReplyNotification);
-		this.emitEvent('ackNewReply', null);
 	}
 	public get title() {
 		return this._title;

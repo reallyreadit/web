@@ -10,8 +10,7 @@ export default class App extends React.Component<{}, ExtensionState> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
 	private _showSignInDialog = () => this._openInNewTab('');
 	private _showCreateAccountDialog = () => this._openInNewTab('');
-	private _goToInbox = () => this._eventPageApi
-		.ackNewReply()
+	private _goToInbox = () => (this.state.showNewReplyIndicator ? this._eventPageApi.ackNewReply() : Promise.resolve({}))
 		.then(() => this._openInNewTab('/inbox'));
 	private _goToReadingList = () => this._openInNewTab('/list');
 	private _goToSettings = () => this._openInNewTab('/settings');

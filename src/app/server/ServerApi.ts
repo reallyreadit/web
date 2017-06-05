@@ -10,13 +10,13 @@ export default class ServerApi extends Api {
 	constructor(endpoint: Endpoint, cookie: string) {
 		super(endpoint);
 		this._cookie = cookie;
-		this.reqStore = new RequestStore();
+		this._reqStore = new RequestStore();
 	}
 	public getJson(params: Request) {
 		return new Promise((resolve, reject) => http.get({
-				protocol: this.endpoint.scheme + ':',
-				hostname: this.endpoint.host,
-				port: this.endpoint.port,
+				protocol: this._endpoint.scheme + ':',
+				hostname: this._endpoint.host,
+				port: this._endpoint.port,
 				path: params.path + params.getQueryString(),
 				...(this._cookie ? { headers: { 'Cookie': this._cookie } } : {})
 			}, res => {
@@ -47,15 +47,15 @@ export default class ServerApi extends Api {
 			.on('error', () => reject([])));
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
-		if (this.isInitialized) {
+		if (this._isInitialized) {
 			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
-				value: this.reqStore.getData(request)
+				value: this._reqStore.getData(request)
 			};
 		} else {
 			console.log('Api: fetch[sync/loading, async/na]');
-			this.reqStore.add(request);
+			this._reqStore.add(request);
 			return { isLoading: true };
 		}
 	}
@@ -65,13 +65,16 @@ export default class ServerApi extends Api {
 	public processRequests() {
 		// TODO: support catching errors and assigning to RequestData
 		return Promise
-			.all(this.reqStore.requests.map(req => this
+			.all(this._reqStore.requests.map(req => this
 				.getJson(req)
 				.then(value => req.responseData = value)))
-			.then(() => this.isInitialized = true);
+			.then(() => this._isInitialized = true);
 	}
 	public getInitData() {
-		return this.reqStore.requests;
+		return {
+			endpoint: this._endpoint,
+			requests: this._reqStore.requests
+		};
 	}
 	public hasSessionKey() {
 		return this._cookie != null;

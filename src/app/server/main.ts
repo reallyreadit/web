@@ -8,7 +8,7 @@ import renderHtml from '../common/templates/html';
 import { RouterContext, match } from 'react-router';
 import routes from '../common/routes';
 import ServerUser from './ServerUser';
-import UserAccount from '../common/api/models/UserAccount';
+import SessionState from '../common/api/models/SessionState';
 import Request from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';
@@ -30,24 +30,24 @@ express()
 	// authenticate
 	.use((req, res, next) => {
 		const api = new ServerApi({
-			scheme: 'http',
-			host: 'localhost',
-			port: 4001
+			scheme: config.api.protocol,
+			host: config.api.host,
+			port: config.api.port
 		}, req.headers['cookie']);
 		req.api = api;
 		if (api.hasSessionKey()) {
-			api.getJson(new Request('/UserAccounts/GetUserAccount'))
-				.then((userAccount: UserAccount) => {
-					if (!userAccount) {
-						throw new Error('AccountNotFound');
+			api.getJson(new Request('/UserAccounts/GetSessionState'))
+				.then((sessionState: SessionState) => {
+					if (!sessionState) {
+						throw new Error('InvalidSessionKey');
 					}
-					req.userAccount = userAccount;
+					req.sessionState = sessionState;
 					next();
 				})
 				.catch((reason: string[] | Error) => {
 					if (
 						(reason instanceof Array && reason.includes('Unauthenticated')) ||
-						(reason instanceof Error && reason.message === 'AccountNotFound')
+						(reason instanceof Error && reason.message === 'InvalidSessionKey')
 					) {
 						res.clearCookie('sessionKey', { domain: config.cookieDomain });
 					}
@@ -59,7 +59,7 @@ express()
 	})
 	// authorize
 	.get(['/list', '/inbox', '/settings'], (req, res, next) => {
-		if (!req.userAccount) {
+		if (!req.sessionState) {
 			res.redirect('/');
 		} else {
 			next();
@@ -72,16 +72,17 @@ express()
 	})
 	// render the app
 	.get('/*', (req, res) => {
-		const user = new ServerUser(req.userAccount),
-			page = new ServerPage(),
+		const user = new ServerUser(req.sessionState.userAccount),
+			page = new ServerPage(req.sessionState.newReplyNotification),
+			extension = new ServerExtension(config.extensionId),
 			appElement = React.createElement(
 				App,
 				{
 					api: req.api,
+					environment: 'server',
+					extension,
 					page,
-					user,
-					extension: new ServerExtension(),
-					environment: 'server'
+					user
 				},
 				React.createElement(RouterContext, req.nextState)
 			);
@@ -95,16 +96,15 @@ express()
 			const content = ReactDOMServer.renderToString(appElement);
 			// return the content and init data
 			res.send(renderHtml({
+				title: page.title,
 				content,
-				pageInitData: page.getInitData(),
-				apiEndpoint: {
-					scheme: config.api.protocol,
-					host: config.api.host,
-					port: config.api.port
-				},
-				apiInitData: req.api.getInitData(),
-				userInitData: user.getInitData(),
-				extensionId: config.extensionId
+				extensionId: config.extensionId,
+				contextInitData: {
+					api: req.api.getInitData(),
+					extension: extension.getInitData(),
+					page: page.getInitData(),
+					user: user.getInitData()
+				}
 			}));
 		});
 	})

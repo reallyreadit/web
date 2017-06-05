@@ -43,10 +43,7 @@ const tabs = new SetStore<number, ContentScriptTab>('tabs', 'local', t => t.id);
 
 // browser action
 const browserActionApi = new BrowserActionApi({
-	onLoad: () => {
-		serverApi.checkNewReplyNotification();
-		return getState();
-	},
+	onLoad: () => getState(),
 	onAckNewReply: () => serverApi.ackNewReply()
 });
 
@@ -172,6 +169,16 @@ chrome.runtime.onInstalled.addListener(details => {
 	tabs.clear();
 	// update icon
 	getState().then(updateIcon);
+	// message rrit tabs
+	chrome.tabs.query(
+		{},
+		tabs => tabs
+			.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
+			.forEach(tab => chrome.tabs.executeScript(
+				tab.id,
+				{ code: 'window.postMessage({ type: \'extensionInstalled\' }, \'*\')' }
+			))
+	);
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
@@ -201,4 +208,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
 		contentScriptApi.updateHistoryState(details.tabId, details.url);
 	}
 });
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => sendResponse(true));
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+	switch (message.type) {
+		case 'ping':
+			sendResponse(true)
+			break;
+	}
+});

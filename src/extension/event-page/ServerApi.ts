@@ -1,7 +1,7 @@
 import Source from './Source';
 import UserArticle from '../common/UserArticle';
 import UserPage from '../common/UserPage';
-import NewReplyNotification from '../../common/models/NewReplyNotification';
+import NewReplyNotification, { isStateEqual as isNotificationStateEqual } from '../../common/models/NewReplyNotification';
 import SetStore from './SetStore';
 import ObjectStore from './ObjectStore';
 import ParseResult from '../common/ParseResult';
@@ -29,7 +29,8 @@ export default class ServerApi {
 		value: {
 			lastReply: 0,
 			lastNewReplyAck: 0,
-			lastNewReplyDesktopNotification: 0
+			lastNewReplyDesktopNotification: 0,
+			timestamp: 0
 		},
 		timestamp: 0,
 		expirationTimespan: 0
@@ -50,20 +51,22 @@ export default class ServerApi {
 		// cookie change
 		chrome.cookies.onChanged.addListener(changeInfo => {
 			if (changeInfo.cookie.name === 'sessionKey') {
-				const isAuthenticated = !changeInfo.removed;
 				this.clearCache();
-				if (isAuthenticated) {
-					this.checkNewReplyNotification();
-				}
-				handlers.onAuthenticationStatusChanged(isAuthenticated);
+				handlers.onAuthenticationStatusChanged(!changeInfo.removed);
 			}
 		});
 		// notifications
+		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+			if (message.type === 'updateNewReplyNotification') {
+				this.cacheNewReplyNotification(message.data);
+			}
+		});
 		chrome.alarms.onAlarm.addListener(alarm => {
 			if (alarm.name === ServerApi._newReplyNotificationAlarmName) {
 				this.getAuthStatus().then(isAuthenticated => {
 					if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
-						this.checkNewReplyNotification();
+						this.fetchJson<NewReplyNotification>(new Request(RequestType.CacheRefresh, null, null, 'GET', '/UserAccounts/CheckNewReplyNotification'))
+							.then(notification => this.cacheNewReplyNotification(notification));
 					}
 				});
 			}
@@ -83,6 +86,15 @@ export default class ServerApi {
 	private cacheArticle(userArticle: UserArticle) {
 		this._articles.set(cache(userArticle, 60000));
 		this._onCacheUpdated();
+	}
+	private cacheNewReplyNotification(notification: NewReplyNotification) {
+		const current = this._newReplyNotification.get();
+		if (notification.timestamp > current.value.timestamp) {
+			this._newReplyNotification.set(cache(notification, 50000));
+			if (!isNotificationStateEqual(current.value, notification)) {
+				this._onCacheUpdated();
+			}
+		}
 	}
 	private fetchJson<T>(request: Request) {
 		const removeRequest = () => {
@@ -176,20 +188,13 @@ export default class ServerApi {
 		const notif = this._newReplyNotification.get().value;
 		return notif.lastReply > notif.lastNewReplyAck;
 	}
-	public checkNewReplyNotification() {
-		this.fetchJson<NewReplyNotification>(new Request(RequestType.CacheRefresh, null, null, 'GET', '/UserAccounts/CheckNewReplyNotification'))
-			.then(notification => {
-				this._newReplyNotification.set(cache(notification, 50000));
-				this._onCacheUpdated();
-			});
-	}
 	public ackNewReply() {
-		const notif = this._newReplyNotification.get(),
-			now = Date.now();
-		notif.timestamp = now;
-		notif.value.lastNewReplyAck = now;
-		this._newReplyNotification.set(notif);
-		this._onCacheUpdated();
+		const now = Date.now();
+		this.cacheNewReplyNotification({
+			...this._newReplyNotification.get().value,
+			lastNewReplyAck: now,
+			timestamp: now
+		})
 		this.fetchJson(new Request(RequestType.NotificationAck, null, null, 'POST', '/UserAccounts/AckNewReply'));
 	}
 	public get eventPageConfig() {

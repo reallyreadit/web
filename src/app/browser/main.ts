@@ -8,18 +8,18 @@ import routes from '../common/routes';
 import BrowserUser from './BrowserUser';
 import BrowserExtension from './BrowserExtension';
 
-const api = new BrowserApi(window._apiEndpoint, window._apiInitData),
-	page = new BrowserPage(window._pageInitData);
+const api = new BrowserApi(window._contextInitData.api),
+	page = new BrowserPage(window._contextInitData.page);
 
 ReactDOM.render(
 	React.createElement(
 		App,
 		{
 			api,
+			environment: 'browser',
+			extension: new BrowserExtension(window._contextInitData.extension),
 			page,
-			user: new BrowserUser(window._userInitData),
-			extension: new BrowserExtension(window._extensionId),
-			environment: 'browser'
+			user: new BrowserUser(window._contextInitData.user)
 		},
 		React.createElement(
 			Router,
