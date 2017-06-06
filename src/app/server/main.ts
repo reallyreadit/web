@@ -51,9 +51,17 @@ express()
 					) {
 						res.clearCookie('sessionKey', { domain: config.cookieDomain });
 					}
+					req.sessionState = {
+						userAccount: null,
+						newReplyNotification: null
+					};
 					next();
 				});
 		} else {
+			req.sessionState = {
+				userAccount: null,
+				newReplyNotification: null
+			};
 			next();
 		}
 	})

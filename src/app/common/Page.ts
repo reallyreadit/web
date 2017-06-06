@@ -38,7 +38,12 @@ abstract class Page extends EventEmitter<{
 	protected _newReplyNotification: NewReplyNotification;
 	constructor(newReplyNotification: NewReplyNotification) {
 		super();
-		this._newReplyNotification = newReplyNotification;
+		this._newReplyNotification = newReplyNotification || {
+			lastReply: 0,
+			lastNewReplyAck: 0,
+			lastNewReplyDesktopNotification: 0,
+			timestamp: 0
+		};
 	}
 	public setState(state: Partial<State>) {
 		if ('title' in state) {
