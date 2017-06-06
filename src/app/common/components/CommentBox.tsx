@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '../../../common/components/Button';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
-import Comment from '../api/models/Comment';
+import Comment from '../../../common/models/Comment';
 
 interface Props {
     articleId: string,

@@ -3,7 +3,7 @@ import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import Fetchable from '../api/Fetchable';
 import Article from '../api/models/Article';
-import Comment from '../api/models/Comment';
+import Comment from '../../../common/models/Comment';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
 import readingParameters from '../../../common/readingParameters';

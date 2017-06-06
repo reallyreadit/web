@@ -1,6 +1,6 @@
 import Fetchable from './Fetchable';
 import Article from './models/Article';
-import Comment from './models/Comment';
+import Comment from '../../../common/models/Comment';
 import UserAccount from './models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';

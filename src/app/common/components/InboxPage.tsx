@@ -2,7 +2,7 @@ import * as React from 'react';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import Fetchable from '../api/Fetchable';
-import Comment from '../api/models/Comment';
+import Comment from '../../../common/models/Comment';
 import CommentList from './CommentList';
 import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 

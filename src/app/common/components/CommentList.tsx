@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Comment from '../api/models/Comment';
+import Comment from '../../../common/models/Comment';
 import CommentDetails from './CommentDetails';
 
 export default class CommentList extends React.Component<{
