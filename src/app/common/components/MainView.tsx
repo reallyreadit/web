@@ -1,5 +1,6 @@
 import * as React from 'react';
-import logo from '../svg/logo';
+import logoIcon from '../svg/logoIcon';
+import logoText from '../../../common/svg/logoText';
 import { Link } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import DialogManager from './DialogManager';
@@ -24,9 +25,9 @@ export default class MainView extends PureContextComponent<{}, {}> {
 				<Toaster />
 				<nav>
 					<div className="left-col">
-						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logo }}></Link>
+						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logoIcon }}></Link>
 						<h1>
-							<Link to="/">reallyread.it</Link>
+							<Link to="/" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
 						</h1>
 					</div>
 					<div className="right-col">

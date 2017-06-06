@@ -27,14 +27,15 @@
 	margin-right: 4px;
 }
 .app > h1 {
-	font-family: 'Adler';
-	font-size: 20px;
-	text-align: center;
 	padding: 5px 0;
+	text-align: center;
 }
 .app > h1 > a {
-	color: inherit;
-	text-decoration: none;
+	display: inline-block;
+}
+.app > h1 > a > svg {
+	display: block;
+	width: 170px;
 }
 .app > .nav-bar {
 	text-align: center;

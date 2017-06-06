@@ -24,30 +24,25 @@
 	position: absolute;
 	border: 1px solid forestgreen;
 	padding: 0 4px;
-	left: 35px;
+	left: 36px;
 	top: -4px;
 	border-radius: 7px;
 	background: lightseagreen;
 	color: white;
 }
 .main-view > nav > .left-col > .logo {
-	flex: 0 0 auto;
 	margin-right: 20px;
-	text-decoration: none;
-	color: #000;
 }
 .main-view > nav > .left-col > .logo > svg {
 	display: block;
 	width: 44px;
 }
-.main-view > nav > .left-col > h1 {
-	flex: 0 0 auto;
-	font-family: 'Adler';
-   font-size: 25px;
-}
 .main-view > nav > .left-col > h1 > a {
-	text-decoration: none;
-	color: #000;
+	display: block;
+}
+.main-view > nav > .left-col > h1 > a > svg {
+	display: block;
+	width: 210px;
 }
 .main-view > nav > .right-col {
 	flex: 0 0 auto;

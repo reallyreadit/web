@@ -5,6 +5,7 @@ import CommentsActionLink from '../../../common/components/CommentsActionLink';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 import NavBar from '../../../common/components/NavBar';
 import Icon from '../../../common/components/Icon';
+import logoText from '../../../common/svg/logoText';
 
 export default class App extends React.Component<{}, ExtensionState> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
@@ -47,7 +48,7 @@ export default class App extends React.Component<{}, ExtensionState> {
 				</div> :
 				<div className="app">
 					<h1>
-						<a href={`${config.web.protocol}://${config.web.host}`} target="_blank">reallyread.it</a>
+						<a href={`${config.web.protocol}://${config.web.host}`} target="_blank" dangerouslySetInnerHTML={{ __html: logoText }}></a>
 					</h1>
 					<NavBar
 						isSignedIn={this.state.isAuthenticated}
