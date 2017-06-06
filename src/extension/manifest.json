@@ -42,6 +42,7 @@
     "*://*.reallyread.it/*",
     "cookies",
     "webNavigation",
-    "alarms"
+    "alarms",
+    "notifications"
   ]
 }

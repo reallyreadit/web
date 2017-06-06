@@ -1,7 +1,7 @@
 import Source from './Source';
 import UserArticle from '../common/UserArticle';
 import UserPage from '../common/UserPage';
-import NewReplyNotification, { isStateEqual as isNotificationStateEqual } from '../../common/models/NewReplyNotification';
+import NewReplyNotification, { isStateEqual as isNotificationStateEqual, shouldShowDesktopNotification } from '../../common/models/NewReplyNotification';
 import SetStore from './SetStore';
 import ObjectStore from './ObjectStore';
 import ParseResult from '../common/ParseResult';
@@ -11,6 +11,7 @@ import RequestType from './RequestType';
 import ContentScriptTab from '../common/ContentScriptTab';
 import readingParameters from '../../common/readingParameters';
 import { Cached, cache, isExpired } from './Cached';
+import Comment from '../../common/models/Comment';
 
 export default class ServerApi {
 	private static _newReplyNotificationAlarmName = 'ServerApi.checkNewReplyNotification';
@@ -58,7 +59,7 @@ export default class ServerApi {
 		// notifications
 		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
 			if (message.type === 'updateNewReplyNotification') {
-				this.cacheNewReplyNotification(message.data);
+				this.processNewReplyNotification(message.data);
 			}
 		});
 		chrome.alarms.onAlarm.addListener(alarm => {
@@ -66,7 +67,7 @@ export default class ServerApi {
 				this.getAuthStatus().then(isAuthenticated => {
 					if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
 						this.fetchJson<NewReplyNotification>(new Request(RequestType.CacheRefresh, null, null, 'GET', '/UserAccounts/CheckNewReplyNotification'))
-							.then(notification => this.cacheNewReplyNotification(notification));
+							.then(notification => this.processNewReplyNotification(notification));
 					}
 				});
 			}
@@ -75,6 +76,7 @@ export default class ServerApi {
 			when: Date.now(),
 			periodInMinutes: 1
 		});
+		chrome.notifications.onClicked.addListener(url => window.open(url));
 		// handlers
 		this._onRequestChanged = handlers.onRequestChanged;
 		this._onCacheUpdated = handlers.onCacheUpdated;
@@ -87,11 +89,35 @@ export default class ServerApi {
 		this._articles.set(cache(userArticle, 60000));
 		this._onCacheUpdated();
 	}
-	private cacheNewReplyNotification(notification: NewReplyNotification) {
+	private processNewReplyNotification(notification: NewReplyNotification) {
 		const current = this._newReplyNotification.get();
 		if (notification.timestamp > current.value.timestamp) {
 			this._newReplyNotification.set(cache(notification, 50000));
 			if (!isNotificationStateEqual(current.value, notification)) {
+				if (shouldShowDesktopNotification(notification)) {
+					this.fetchJson<Comment>(new Request(RequestType.DesktopNotification, null, null, 'POST', '/UserAccounts/CreateDesktopNotification'))
+						.then(reply => {
+							if (reply) {
+								const now = Date.now();
+								this.processNewReplyNotification({
+									...this._newReplyNotification.get().value,
+									lastNewReplyDesktopNotification: now,
+									timestamp: now
+								});
+								chrome.notifications.create(
+									`${config.api.protocol}://${config.api.host}/UserAccounts/ViewReplyFromDesktopNotification/${reply.id}`,
+									{
+										type: 'basic',
+										iconUrl: '../icons/desktop-notification-icon.svg',
+										title: `${reply.userAccount} just replied to your comment re: ${reply.articleTitle}`,
+										message: 'Click here to view the reply in the comment thread.',
+										isClickable: true
+									}
+								);
+							}
+						})
+						.catch(() => {});
+				}
 				this._onCacheUpdated();
 			}
 		}
@@ -190,11 +216,11 @@ export default class ServerApi {
 	}
 	public ackNewReply() {
 		const now = Date.now();
-		this.cacheNewReplyNotification({
+		this.processNewReplyNotification({
 			...this._newReplyNotification.get().value,
 			lastNewReplyAck: now,
 			timestamp: now
-		})
+		});
 		this.fetchJson(new Request(RequestType.NotificationAck, null, null, 'POST', '/UserAccounts/AckNewReply'));
 	}
 	public get eventPageConfig() {
