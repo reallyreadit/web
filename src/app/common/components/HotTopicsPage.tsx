@@ -1,12 +1,12 @@
 import * as React from 'react';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
-import Article from '../api/models/Article';
+import UserArticle from '../../../common/models/UserArticle';
 import Fetchable from '../api/Fetchable';
 import ArticleDetails from './ArticleDetails';
 import ArticleList from './ArticleList';
 
-export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
+export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetchable<UserArticle[]> }> {
 	private _loadArticles = () => this.context.api.listArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })));
 	private _reload = () => {
 		this.context.page.setState({ isLoading: true });

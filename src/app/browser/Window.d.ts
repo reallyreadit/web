@@ -1,4 +1,4 @@
-import UserAccount from '../common/api/models/UserAccount';
+import UserAccount from '../../common/models/UserAccount';
 import { InitData as PageInitData } from '../common/Page';
 import { InitData as ApiInitData } from '../common/api/Api';
 

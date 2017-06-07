@@ -1,5 +1,5 @@
 import UserAccount from './UserAccount';
-import NewReplyNotification from '../../../../common/models/NewReplyNotification';
+import NewReplyNotification from './NewReplyNotification';
 
 interface SessionState {
 	userAccount: UserAccount,

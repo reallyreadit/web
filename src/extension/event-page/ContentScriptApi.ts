@@ -1,7 +1,7 @@
 import ContentScriptInitData from '../common/ContentScriptInitData';
 import ReadStateCommitData from '../common/ReadStateCommitData';
 import ParseResult from '../common/ParseResult';
-import UserPage from '../common/UserPage';
+import UserPage from '../../common/models/UserPage';
 
 export default class ContentScriptApi {
 	private static sendMessage<T>(tabId: number, type: string, data?: {}) {

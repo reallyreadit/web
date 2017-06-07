@@ -1,6 +1,6 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
-import UserPage from '../common/UserPage';
+import UserPage from '../../common/models/UserPage';
 
 export default class Page {
 	private _contentEls: ContentElement[];

@@ -6,7 +6,7 @@ import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
 import * as className from 'classnames';
 import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
-import UserAccount from '../api/models/UserAccount';
+import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 
 export default class SettingsPage extends PureContextComponent<{}, { isResendingConfirmationEmail: boolean }> {

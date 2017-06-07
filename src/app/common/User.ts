@@ -1,4 +1,4 @@
-import UserAccount from './api/models/UserAccount';
+import UserAccount from '../../common/models/UserAccount';
 import EventEmitter from './EventEmitter';
 
 export default class User extends EventEmitter<{

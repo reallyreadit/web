@@ -1,14 +1,14 @@
 import * as React from 'react';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
-import Article from '../api/models/Article';
+import UserArticle from '../../../common/models/UserArticle';
 import Fetchable from '../api/Fetchable';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
 
-export default class ReadingListPage extends ContextComponent<{}, { articles: Fetchable<Article[]> }> {
+export default class ReadingListPage extends ContextComponent<{}, { articles: Fetchable<UserArticle[]> }> {
 	private _redirectToHomepage = () => this.context.router.push('/');
-	private _deleteArticle = (article: Article) => {
+	private _deleteArticle = (article: UserArticle) => {
 		const articles = this.state.articles.value.slice();
 		articles.splice(articles.indexOf(article), 1);
 		this.setState({ articles: { ...this.state.articles, value: articles }});

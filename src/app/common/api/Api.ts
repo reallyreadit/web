@@ -1,7 +1,7 @@
 import Fetchable from './Fetchable';
-import Article from './models/Article';
+import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
-import UserAccount from './models/UserAccount';
+import UserAccount from '../../../common/models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
 import Endpoint from './Endpoint';
@@ -23,8 +23,8 @@ export default abstract class Api {
 	protected getUrl(path: string) {
 		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
-	public listArticles(callback: (articles: Fetchable<Article[]>) => void) {
-		return this.get<Article[]>(new Request('/Articles/List'), callback);
+	public listArticles(callback: (articles: Fetchable<UserArticle[]>) => void) {
+		return this.get<UserArticle[]>(new Request('/Articles/List'), callback);
 	}
 	public createUserAccount(name: string, email: string, password: string) {
 		return this.post<UserAccount>(new Request(
@@ -50,11 +50,11 @@ export default abstract class Api {
 	public signOut() {
 		return this.post(new Request('/UserAccounts/SignOut'));
 	}
-	public listUserArticles(callback: (articles: Fetchable<Article[]>) => void) {
-		return this.get<Article[]>(new Request('/Articles/UserList'), callback);
+	public listUserArticles(callback: (articles: Fetchable<UserArticle[]>) => void) {
+		return this.get<UserArticle[]>(new Request('/Articles/UserList'), callback);
 	}
-	public getArticleDetails(slug: string, callback: (article: Fetchable<Article>) => void) {
-		return this.get<Article>(new Request('/Articles/Details', { slug }), callback);
+	public getArticleDetails(slug: string, callback: (article: Fetchable<UserArticle>) => void) {
+		return this.get<UserArticle>(new Request('/Articles/Details', { slug }), callback);
 	}
 	public listComments(slug: string, callback: (comments: Fetchable<Comment[]>) => void) {
 		return this.get<Comment[]>(new Request('/Articles/ListComments', { slug }), callback);

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Article from '../api/models/Article';
+import UserArticle from '../../../common/models/UserArticle';
 import * as className from 'classnames';
 import readingParameters from '../../../common/readingParameters';
 import PureContextComponent from '../PureContextComponent';
@@ -10,9 +10,9 @@ import Icon from '../../../common/components/Icon';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 
 interface Props {
-	article: Article,
+	article: UserArticle,
 	showControls?: boolean,
-	onDelete?: (article: Article) => void
+	onDelete?: (article: UserArticle) => void
 }
 export default class ArticleDetails extends PureContextComponent<Props, {}> {
 	private _slugParts: string[];

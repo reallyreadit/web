@@ -1,4 +1,4 @@
-import UserAccount from '../api/models/UserAccount';
+import UserAccount from '../../../common/models/UserAccount';
 import icons from '../../../common/svg/icons';
 import { InitData as PageInitData } from '../Page';
 import { InitData as ApiInitData } from '../api/Api';

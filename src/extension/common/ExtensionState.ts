@@ -1,5 +1,5 @@
 import ContentScriptTab from './ContentScriptTab';
-import UserArticle from './UserArticle';
+import UserArticle from '../../common/models/UserArticle';
 
 interface ExtensionState {
 	isAuthenticated: boolean,

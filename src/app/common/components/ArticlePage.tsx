@@ -2,7 +2,7 @@ import * as React from 'react';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import Fetchable from '../api/Fetchable';
-import Article from '../api/models/Article';
+import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
@@ -19,7 +19,7 @@ interface Props {
 	}
 }
 export default class ArticlePage extends ContextComponent<Props, {
-	article: Fetchable<Article>,
+	article: Fetchable<UserArticle>,
 	comments: Fetchable<Comment[]>
 }> {
 	private _slug: string;

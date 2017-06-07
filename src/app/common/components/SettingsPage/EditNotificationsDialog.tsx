@@ -2,7 +2,7 @@ import * as React from 'react';
 import Dialog, { DialogState } from '../Dialog';
 import Context from '../../Context';
 import CancelablePromise from '../../CancelablePromise';
-import UserAccount from '../../api/models/UserAccount';
+import UserAccount from '../../../../common/models/UserAccount';
 
 interface Values {
 	receiveEmailNotifications: boolean,

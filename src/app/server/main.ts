@@ -8,7 +8,7 @@ import renderHtml from '../common/templates/html';
 import { RouterContext, match } from 'react-router';
 import routes from '../common/routes';
 import ServerUser from './ServerUser';
-import SessionState from '../common/api/models/SessionState';
+import SessionState from '../../common/models/SessionState';
 import Request from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';

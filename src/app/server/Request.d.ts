@@ -1,4 +1,4 @@
-import SessionState from '../common/api/models/SessionState';
+import SessionState from '../../common/models/SessionState';
 import { MatchState } from "@types/react-router/lib/match";
 import ServerApi from "./ServerApi";
 

@@ -1,6 +1,6 @@
-import Source from './Source';
-import UserArticle from '../common/UserArticle';
-import UserPage from '../common/UserPage';
+import Source from '../../common/models/Source';
+import UserArticle from '../../common/models/UserArticle';
+import UserPage from '../../common/models/UserPage';
 import NewReplyNotification, { isStateEqual as isNotificationStateEqual, shouldShowDesktopNotification } from '../../common/models/NewReplyNotification';
 import SetStore from './SetStore';
 import ObjectStore from './ObjectStore';
