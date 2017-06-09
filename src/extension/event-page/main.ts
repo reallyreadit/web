@@ -4,7 +4,6 @@ import SetStore from './SetStore';
 import ContentScriptTab from '../common/ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
-import RequestType from './RequestType';
 import BrowserActionApi from './BrowserActionApi';
 import ExtensionState from '../common/ExtensionState';
 
@@ -23,11 +22,9 @@ const serverApi = new ServerApi({
 			tabs.getAll().forEach(tab => contentScriptApi.unloadPage(tab.id));
 		}
 	},
-	onRequestChanged: type => {
-		if (type & (RequestType.FindSource | RequestType.FindUserArticle)) {
-			console.log('serverApi.onRequestChanged');
-			getState().then(updateIcon);
-		}
+	onArticleLookupRequestChanged: () => {
+		console.log('serverApi.onArticleLookupRequestChanged');
+		getState().then(updateIcon);
 	},
 	onCacheUpdated: () => {
 		console.log('serverApi.onCacheUpdated');
@@ -60,6 +57,7 @@ const contentScriptApi = new ContentScriptApi({
 			.getAuthStatus()
 			.then(isAuthenticated => ({
 				config: serverApi.contentScriptConfig,
+				sourceRules: serverApi.getSourceRules(new URL(url).hostname),
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
 				loadPage: isAuthenticated
 			}));
@@ -139,15 +137,14 @@ function updateIcon(state: ExtensionState) {
 	console.log('\tupdateIcon');
 	if (state.isAuthenticated) {
 		if (state.focusedTab) {
-			// get pending requests
-			const pendingRequests = serverApi.getRequests(state.focusedTab);
+			// content script tab
 			drawBrowserActionIcon(
 				'signedIn',
 				state.userArticle ? state.userArticle.percentComplete : 0,
 				state.userArticle && state.userArticle.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked',
 				state.showNewReplyIndicator
 			);
-			browserActionBadgeApi.set(pendingRequests.some(r => !!(r.type & (RequestType.FindSource | RequestType.FindUserArticle))) ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
+			browserActionBadgeApi.set(serverApi.getArticleLookupRequests(state.focusedTab.id).length ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
 		} else {
 			// not one of our tabs
 			drawBrowserActionIcon('signedIn', 0, 'locked', state.showNewReplyIndicator);
@@ -202,16 +199,8 @@ chrome.windows.onFocusChanged.addListener(
 	},
 	{ windowTypes: ['normal'] }
 );
-chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
-	if (details.transitionType === 'link') {
-		console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
-		contentScriptApi.updateHistoryState(details.tabId, details.url);
-	}
-});
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-	switch (message.type) {
-		case 'ping':
-			sendResponse(true)
-			break;
+	if (message.type === 'ping') {
+		sendResponse(true);
 	}
 });

@@ -20,6 +20,7 @@ export default class ContentScriptApi {
 		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void
 	}) {
+		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage') {
 				switch (message.type) {
@@ -46,6 +47,13 @@ export default class ContentScriptApi {
 			}
 			return undefined;
 		});
+		// history state
+		chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
+			if (details.transitionType === 'link') {
+				console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
+				ContentScriptApi.sendMessage<void>(details.tabId, 'updateHistoryState', details.url);
+			}
+		});
 	}
 	public loadPage(tabId: number) {
 		return ContentScriptApi.sendMessage<void>(tabId, 'loadPage');
@@ -55,8 +63,5 @@ export default class ContentScriptApi {
 	}
 	public showOverlay(tabId: number, value: boolean) {
 		return ContentScriptApi.sendMessage<void>(tabId, 'showOverlay', value);
-	}
-	public updateHistoryState(tabId: number, url: string) {
-		return ContentScriptApi.sendMessage<void>(tabId, 'updateHistoryState', url);
 	}
 }

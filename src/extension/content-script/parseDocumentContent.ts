@@ -48,8 +48,8 @@ export default function () {
 	if (words) {
 		getContentElements(parseResult.rootEl, elements);
 		console.log(`[rrit] ${elements.size} content elements found`);
-		return { elements, wordCount: words.length };
+		return { ...parseResult, elements, wordCount: words.length };
 	}
 	console.log('[rrit] no content elements found');
-	return { elements, wordCount: 0 };
+	return { ...parseResult, elements, wordCount: 0 };
 }
