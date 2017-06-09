@@ -30,9 +30,9 @@ express()
 	// authenticate
 	.use((req, res, next) => {
 		const api = new ServerApi({
-			scheme: config.api.protocol,
-			host: config.api.host,
-			port: config.api.port
+			scheme: 'http',
+			host: 'localhost',
+			port: 4001
 		}, req.headers['cookie']);
 		req.api = api;
 		if (api.hasSessionKey()) {
@@ -108,7 +108,14 @@ express()
 				content,
 				extensionId: config.extensionId,
 				contextInitData: {
-					api: req.api.getInitData(),
+					api: {
+						...req.api.getInitData(),
+						endpoint: {
+							scheme: config.api.protocol,
+							host: config.api.host,
+							port: config.api.port
+						}
+					},
 					extension: extension.getInitData(),
 					page: page.getInitData(),
 					user: user.getInitData()
