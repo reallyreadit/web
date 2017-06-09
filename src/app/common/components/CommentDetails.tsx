@@ -4,6 +4,7 @@ import CommentList from './CommentList';
 import CommentBox from './CommentBox';
 import ActionLink from '../../../common/components/ActionLink';
 import * as className from 'classnames';
+import timeago from 'timeago.js';
 
 interface Props {
 	comment: Comment,
@@ -42,7 +43,9 @@ export default class CommentDetails extends React.Component<Props, {
 					{ highlight: this.props.comment.id === this.props.highlightedCommentId }
 				)}>
 				{this.props.mode === 'link' ? <div className="article-title">{this.props.comment.articleTitle}</div> : null}
-				<div className="title">Posted by <strong>{this.props.comment.userAccount}</strong> on {this.props.comment.dateCreated}</div>
+				<div className="title">
+					<strong>{this.props.comment.userAccount}</strong> <span>-</span> {timeago().format(this.props.comment.dateCreated + 'Z')}
+				</div>
 				<div className={className('text', { 'preview': this.props.mode === 'link' })} dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}></div>
 				{this.state.showCommentBox ? 
 					<CommentBox articleId={this.props.comment.articleId} parentCommentId={this.props.comment.id} isAllowedToPost={this.props.isAllowedToPost} onCommentPosted={this._addComment} onCancel={this._hideCommentBox} /> :
