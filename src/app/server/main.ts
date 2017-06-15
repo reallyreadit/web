@@ -12,6 +12,7 @@ import SessionState from '../../common/models/SessionState';
 import Request from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';
+import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 
 express()
 	// attempt to serve static files first
@@ -30,13 +31,13 @@ express()
 	// authenticate
 	.use((req, res, next) => {
 		const api = new ServerApi({
-			scheme: 'http',
-			host: 'localhost',
-			port: 4001
+			scheme: config.api.protocol,
+			host: config.api.host,
+			port: config.api.port
 		}, req.headers['cookie']);
 		req.api = api;
 		if (api.hasSessionKey()) {
-			api.getJson(new Request('/UserAccounts/GetSessionState'))
+			api.fetchJson('GET', new Request('/UserAccounts/GetSessionState'))
 				.then((sessionState: SessionState) => {
 					if (!sessionState) {
 						throw new Error('InvalidSessionKey');
@@ -75,8 +76,13 @@ express()
 	})
 	// ack new reply notification
 	.get('/inbox', (req, res, next) => {
-		// TODO: implement POST in ServerApi and ack new reply notification
-		next();
+		if (req.sessionState.newReplyNotification && hasNewUnreadReply(req.sessionState.newReplyNotification)) {
+			req.api
+				.ackNewReply()
+				.then(next);
+		} else {
+			next();
+		}
 	})
 	// render the app
 	.get('/*', (req, res) => {
@@ -108,14 +114,7 @@ express()
 				content,
 				extensionId: config.extensionId,
 				contextInitData: {
-					api: {
-						...req.api.getInitData(),
-						endpoint: {
-							scheme: config.api.protocol,
-							host: config.api.host,
-							port: config.api.port
-						}
-					},
+					api: req.api.getInitData(),
 					extension: extension.getInitData(),
 					page: page.getInitData(),
 					user: user.getInitData()

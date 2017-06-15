@@ -1,4 +1,4 @@
-import * as http from 'http';
+import * as request from 'request';
 import Api from '../common/api/Api';
 import Fetchable from '../common/api/Fetchable';
 import Request from '../common/api/Request';
@@ -12,29 +12,19 @@ export default class ServerApi extends Api {
 		this._cookie = cookie;
 		this._reqStore = new RequestStore();
 	}
-	public getJson(params: Request) {
-		return new Promise((resolve, reject) => http.get({
-				protocol: this._endpoint.scheme + ':',
-				hostname: this._endpoint.host,
-				port: this._endpoint.port,
-				path: params.path + params.getQueryString(),
-				...(this._cookie ? { headers: { 'Cookie': this._cookie } } : {})
-			}, res => {
+	public fetchJson(method: 'GET' | 'POST', params: Request) {
+		return new Promise((resolve, reject) => request({
+			method,
+			uri: this._endpoint.scheme + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path + params.getQueryString(),
+			headers: this._cookie ? { 'Cookie': this._cookie } : {},
+			json: true,
+			callback: (error, res, body) => {
 				switch (res.statusCode) {
 					case 200:
-						let body = '';
-						res.on('data', chunk => body += chunk)
-							.on('end', () => resolve(JSON.parse(body)));
+						resolve(body);
 						break;
 					case 400:
-						// TODO: update api server to always return JSON on bad request response
-						if (res.headers['content-type'] && res.headers['content-type'].startsWith('application/json')) {
-							let body = '';
-							res.on('data', chunk => body += chunk)
-								.on('end', () => reject(JSON.parse(body)));
-						} else {
-							reject([]);
-						}
+						reject(body);
 						break;
 					case 401:
 						reject(['Unauthenticated']);
@@ -43,8 +33,8 @@ export default class ServerApi extends Api {
 						reject([]);
 						break;
 				}
-			})
-			.on('error', () => reject([])));
+			}
+		}));
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (this._isInitialized) {
@@ -60,13 +50,13 @@ export default class ServerApi extends Api {
 		}
 	}
 	protected post<T>(request: Request) : Promise<T> {
-		throw new Error('Cannot POST in server environment');
+		return this.fetchJson('POST', request);
 	}
 	public processRequests() {
 		// TODO: support catching errors and assigning to RequestData
 		return Promise
 			.all(this._reqStore.requests.map(req => this
-				.getJson(req)
+				.fetchJson('GET', req)
 				.then(value => req.responseData = value)))
 			.then(() => this._isInitialized = true);
 	}
