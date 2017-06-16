@@ -2,7 +2,8 @@ import * as React from 'react';
 
 export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'cancel' | 'backward' | 'exclamation' | 'forbid' | 'spinner' | 'comments' |
-	'write' | 'envelope' | 'user' | 'cog' | 'book' | 'refresh';
+	'write' | 'envelope' | 'user' | 'cog' | 'book' | 'refresh' | 'lightbulb' |
+	'question' | 'hyperlink' | 'gallery';
 export default (props: {
 	name: IconName,
 	onClick?: () => void
