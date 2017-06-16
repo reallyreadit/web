@@ -10,8 +10,11 @@ import Icon from '../../../common/components/Icon';
 import Toaster from './Toaster';
 import * as className from 'classnames';
 import Button from '../../../common/components/Button';
+import Separator from '../../../common/components/Separator';
 
 export default class MainView extends PureContextComponent<{}, {}> {
+	private _goToAbout = () => this.context.router.push('/about');
+	private _goToHowItWorks = () => this.context.router.push('/how-it-works');
 	private _reloadPage = () => this.context.page.reload();
 	public componentDidMount() {
 		this.context.page.addListener('change', this._forceUpdate);
@@ -33,8 +36,8 @@ export default class MainView extends PureContextComponent<{}, {}> {
 							</h1>
 						</div>
 						<div className="left-nav">
-							<Button text="About" iconLeft="lightbulb" />
-							<Button text="How it Works" iconLeft="question" />
+							<Button text="About" iconLeft="lightbulb" onClick={this._goToAbout} />
+							<Button text="How it Works" iconLeft="question" onClick={this._goToHowItWorks} />
 						</div>
 					</div>
 					<AccountManager />
@@ -52,7 +55,9 @@ export default class MainView extends PureContextComponent<{}, {}> {
 					{this.props.children}
 				</main>
 				<footer>
-					<Link to="/about">About reallyread.it</Link>
+					<Link to="/privacy">Privacy Policy</Link>
+					<Separator />
+					<a href="mailto:support@reallyread.it">support@reallyread.it</a>
 				</footer>
 				<DialogManager />
 			</div>
