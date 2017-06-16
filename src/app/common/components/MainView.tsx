@@ -9,6 +9,7 @@ import ReadReadinessBar from './ReadReadinessBar';
 import Icon from '../../../common/components/Icon';
 import Toaster from './Toaster';
 import * as className from 'classnames';
+import Button from '../../../common/components/Button';
 
 export default class MainView extends PureContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
@@ -23,28 +24,30 @@ export default class MainView extends PureContextComponent<{}, {}> {
 			<div className="main-view">
 				<ReadReadinessBar />
 				<Toaster />
-				<nav>
-					<div className="left-col">
-						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logoIcon }}></Link>
-						<h1>
-							<Link to="/" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
-						</h1>
-					</div>
-					<div className="right-col">
-						<AccountManager />
-					</div>
-				</nav>
 				<header>
-					<h2 className={className({
-						'reloadable': this.context.page.isReloadable,
-						'loading': this.context.page.isLoading
-					})}>
-						<span className="text">{this.context.page.title}</span>
-						{this.context.page.isReloadable ?
-							<Icon name="refresh" onClick={this._reloadPage} /> :
-							null}
-					</h2>
+					<div className="left-col">
+						<div className="title">
+							<Link to="/" className="logo-icon" dangerouslySetInnerHTML={{ __html: logoIcon }}></Link>
+							<h1>
+								<Link to="/" className="logo-text" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
+							</h1>
+						</div>
+						<div className="left-nav">
+							<Button text="About" iconLeft="lightbulb" />
+							<Button text="How it Works" iconLeft="question" />
+						</div>
+					</div>
+					<AccountManager />
 				</header>
+				<h2 className={className({
+					'reloadable': this.context.page.isReloadable,
+					'loading': this.context.page.isLoading
+				})}>
+					<span className="text">{this.context.page.title}</span>
+					{this.context.page.isReloadable ?
+						<Icon name="refresh" onClick={this._reloadPage} /> :
+						null}
+				</h2>
 				<main>
 					{this.props.children}
 				</main>

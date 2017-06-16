@@ -6,12 +6,54 @@
 	margin: 0 auto;
 	position: relative;
 }
-.main-view > nav {
+.main-view > header {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
 	padding-top: 7px;
 }
+.main-view > header > .left-col > .title {
+	display: flex;
+	align-items: center;
+}
+.main-view > header > .left-col > .title > .logo-icon {
+	position: relative;
+}
+.main-view > header > .left-col > .title > .logo-icon::after {
+	content: "Beta";
+	font-size: 11px;
+	position: absolute;
+	border: 1px solid forestgreen;
+	padding: 0 4px;
+	left: 32px;
+	top: -4px;
+	border-radius: 7px;
+	background: lightseagreen;
+	color: white;
+}
+.main-view > header > .left-col > .title > .logo-icon > svg {
+	display: block;
+	width: 40px;
+}
+.main-view > header > .left-col > .title > h1 {
+	margin-left: 14px;
+}
+.main-view > header > .left-col > .title > h1 > .logo-text {
+	display: block;
+}
+.main-view > header > .left-col > .title > h1 > .logo-text > svg {
+	display: block;
+	width: 200px;
+}
+.main-view > header > .left-col > .left-nav {
+	display: flex;
+	height: 30px;
+	align-items: center;
+	padding-top: 3px;
+}
+.main-view > header > .left-col > .left-nav > .button:not(:first-child) {
+	margin-left: (4 + 6) + px;
+}
+
 .main-view > nav > .left-col {
 	flex: 0 0 auto;
 	display: flex;
@@ -48,35 +90,36 @@
 	flex: 0 0 auto;
 }
 .main-view > header {
-	padding: 7px 0;
+	
 }
-.main-view > header > h2 {
+.main-view > h2 {
 	display: flex;
 	justify-content: center;
+	padding: 7px 0;
 	font-size: 22px;
 	height: 30px;
 }
-.main-view > header > h2.reloadable::before {
+.main-view > h2.reloadable::before {
 	content: "";
 	flex: 1 1 auto;
 	max-width: 28px;
 }
-.main-view > header > h2 > .text {
+.main-view > h2 > .text {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.main-view > header > h2 > .icon {
+.main-view > h2 > .icon {
 	flex: 0 0 auto;
 	margin-left: 8px;
 	cursor: pointer;
 	color: #666;
 	transition: transform 250ms;
 }
-.main-view > header > h2.loading > .icon {
+.main-view > h2.loading > .icon {
 	animation: main-view-page-loading 1000ms linear infinite;
 }
-.main-view > header > h2 > .icon:hover {
+.main-view > h2 > .icon:hover {
 	transform: rotate(-22deg);
 }
 .main-view > footer {

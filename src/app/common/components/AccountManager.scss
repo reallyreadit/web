@@ -1,7 +1,17 @@
+.account-manager {
+	display: flex;
+	flex-flow: column;
+	justify-content: flex-end;
+}
 .account-manager > .user-name {
-	height: 18px;
 	text-align: right;
 }
 .account-manager > .user-name.signing-out {
 	color: #ccc;
+}
+.account-manager > .nav-bar {
+	display: flex;
+	height: 30px;
+	align-items: center;
+	padding-top: 3px;
 }
