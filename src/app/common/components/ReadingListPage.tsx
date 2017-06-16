@@ -48,7 +48,7 @@ export default class ReadingListPage extends ContextComponent<{}, { articles: Fe
 								this.state.articles.value.map(article => <li key={article.id}><ArticleDetails article={article} showControls={true} onDelete={this._deleteArticle} /></li>) :
 								<li>No articles found.</li> :
 							<li>Error loading articles.</li> :
-						null}
+						<li>Loading...</li>}
 				</ArticleList>
 			</div>
 		);

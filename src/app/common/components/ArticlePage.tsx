@@ -81,7 +81,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 						this.state.article.value ?
 							<li><ArticleDetails article={this.state.article.value} /></li> :
 							<li>Error loading article.</li> :
-						null}
+						<li>Loading...</li>}
 				</ArticleList>
 				<h3>Comments</h3>
 				{!this.state.comments.isLoading ?
@@ -96,7 +96,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 								/> :
 							<span>No comments found! (Post one!)</span> :
 						<span>Error loading comments.</span> :
-					null}
+					<span>Loading...</span>}
 				<hr />
 				<div className="comment-box-wrapper">
 					<CommentBox articleId={this.state.article.value ? this.state.article.value.id : null} isAllowedToPost={isAllowedToPost} onCommentPosted={this._addComment} />
