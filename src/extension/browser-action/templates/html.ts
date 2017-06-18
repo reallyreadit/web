@@ -2,9 +2,11 @@ import icons from '../../../common/svg/icons';
 
 export default
 `<!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<meta charset="UTF-8" />
 		<link rel="stylesheet" type="text/css" href="./bundle.css" />
+		<title>browser-action</title>
 	</head>
 	<body>
 		${icons}
