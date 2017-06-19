@@ -31,6 +31,10 @@ function configureWebpack(params) {
 						test: /\.tsx?$/,
 						loader: 'ts-loader',
 						options: tsConfig
+					},
+					{
+						test: require.resolve('snapsvg'),
+						loader: 'imports-loader?this=>window,fix=>module.exports=0'
 					}
 				]
 			},

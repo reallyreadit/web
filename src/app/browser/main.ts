@@ -7,6 +7,7 @@ import { Router, browserHistory } from 'react-router';
 import routes from '../common/routes';
 import BrowserUser from './BrowserUser';
 import BrowserExtension from './BrowserExtension';
+require('snapsvg');
 
 const api = new BrowserApi(window._contextInitData.api),
 	page = new BrowserPage(window._contextInitData.page);
