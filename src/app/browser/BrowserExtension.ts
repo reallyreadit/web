@@ -11,7 +11,10 @@ export default class BrowserExtension extends Extension {
                 this._isInstalled = isInstalled;
                 this.emitEvent('change', isInstalled);
             })
-            .catch(() => { });
+            .catch(() => {
+                this._isInstalled = false;
+                this.emitEvent('change', false);
+            });
         window.addEventListener('message', e => {
             if (e.source === window) {
                 switch (e.data.type) {
