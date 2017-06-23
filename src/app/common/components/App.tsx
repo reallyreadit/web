@@ -21,7 +21,7 @@ export default class App extends React.Component<{
 	private _pollingHandle: number;
 	private _startPolling = () => {
 		if (this._pollingHandle == null) {
-			this._pollingHandle = window.setInterval(this._checkNewReplyNotification, 10000);
+			this._pollingHandle = window.setInterval(this._checkNewReplyNotification, 60000);
 		}
 	};
 	private _stopPolling = () => {
