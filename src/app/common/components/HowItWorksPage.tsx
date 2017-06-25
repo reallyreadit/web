@@ -27,8 +27,8 @@ export default class HowItWorksPage extends PureContextComponent<{}, {}> {
 		return (
 			<div className="how-it-works-page copy-page">
 				{this.context.extension.isInstalled() ?
-					<p>First, add the Chrome extension. You only have to do this once.</p> :
-					<p>First, <a onClick={this._installExtension}>add the Chrome extension</a>. You only have to do this once.</p>}
+					<p>First, add the Chrome extension. (You only have to do this once.)</p> :
+					<p>First, <a onClick={this._installExtension}>add the Chrome extension</a>. (You only have to do this once.)</p>}
 				{this.context.user.isSignedIn ?
 					<p>Next, sign in or create an account.</p> :
 					<p>Next, <a onClick={this._showSignInDialog}>sign in</a> or <a onClick={this._showCreateAccountDialog}>create an account</a>.</p>}
