@@ -47,3 +47,7 @@
 .settings-page > ul > li > .notification-channels > .channel > .notice > .icon {
 	margin-right: 3px;
 }
+.settings-page > ul > li > .notification-channels > .channel > .notice > a {
+	cursor: pointer;
+	text-decoration: underline;
+}

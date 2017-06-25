@@ -47,6 +47,7 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 				/>
 		);
 	};
+	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		this.state = { isResendingConfirmationEmail: false };
@@ -63,14 +64,14 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 			.addListener('signOut', this._redirectToHomepage)
 			.addListener('update', this._forceUpdate);
 		this.context.page.addListener('reload', this._reload);
-		this.context.extension.addListener('change', this._reload);
+		this.context.extension.addListener('change', this._forceUpdate);
 	}
 	public componentWillUnmount() {
 		this.context.user
 			.removeListener('signOut', this._redirectToHomepage)
 			.removeListener('update', this._forceUpdate);
 		this.context.page.removeListener('reload', this._reload);
-		this.context.extension.addListener('change', this._reload);
+		this.context.extension.addListener('change', this._forceUpdate);
 	}
 	public render() {
 		const user = this.context.user.userAccount;
@@ -133,7 +134,7 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 								{user.receiveReplyDesktopNotifications && !this.context.extension.isInstalled() ?
 									<span className="notice">
 										<Icon name="exclamation" />
-										Only active when extension is installed
+										To get notifications you must <a onClick={this._installExtension}>add the Chrome extension</a>.
 									</span> :
 									null}
 							</li>

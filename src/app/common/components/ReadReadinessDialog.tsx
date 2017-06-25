@@ -2,6 +2,7 @@ import * as React from 'react';
 import Button from '../../../common/components/Button';
 import PureContextComponent from '../PureContextComponent';
 import SignInDialog from './SignInDialog';
+import CreateAccountDialog from './CreateAccountDialog';
 
 export default class ReadReadinessDialog extends PureContextComponent<{
     reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut',
@@ -13,23 +14,26 @@ export default class ReadReadinessDialog extends PureContextComponent<{
         this._closeDialog();
         this.context.page.openDialog(React.createElement(SignInDialog));
     };
+    private _showCreateAccountDialog = () => {
+        this._closeDialog();
+        this.context.page.openDialog(React.createElement(CreateAccountDialog));
+    };
     public render() {
         let message: JSX.Element;
         switch (this.props.reason) {
             case 'incompatibleBrowser':
-                message = <span>You gotta use Chrome to install our extension!</span>;
+                message = <span>You must use Chrome (on Mac or PC) to get credit for really reading.</span>;
                 break;
             case 'extensionNotInstalled':
-                message = <span>Click <a onClick={this._installExtension}>here</a> to install the Chrome extension!</span>;
+                message = <span>You won't get credit for really reading until you <a onClick={this._installExtension}>add the Chrome extension</a>.</span>;
                 break;
             case 'signedOut':
-                message = <span>Click <a onClick={this._showSignInDialog}>here</a> to sign in!</span>;
+                message = <span>You won't get credit for really reading until you <a onClick={this._showSignInDialog}>sign in</a> or <a onClick={this._showCreateAccountDialog}>create an account</a>.</span>;
                 break;    
         }
         return (
             <div className="read-readiness-dialog">
-                <h3>One sec!</h3>
-                <h3>Make sure you're ready to read before continuing:</h3>
+                <h3>Wait!</h3>
                 {message}
                 <div className="continue">
                     <a href={this.props.articleUrl} onClick={this._closeDialog} target="_blank">That's OK, take me to the article anyway.</a>   
