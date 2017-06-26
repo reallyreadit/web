@@ -27,6 +27,9 @@ export default class HowItWorksPage extends PureContextComponent<{}, {}> {
 		const s = Snap('#reading-illustration');
 		// - snap
 		const bubbleGradient = s.gradient('l(0.5, 0, 0.5, 1)white:100-pink:100');
+		const bubbleGradientStops = bubbleGradient
+			.stops()
+			.attr({ offset: 1 });
 		// - svg
 		const badges = s.selectAll('.badge');
 		const bubbles = s.selectAll('.bubble');
@@ -37,41 +40,38 @@ export default class HowItWorksPage extends PureContextComponent<{}, {}> {
 		const self = this;
 		function animateReading() {
 			(Snap as any)
-				.set(viewPort, scrollHandle, content, bubbleGradient)
+				.set(viewPort, scrollHandle, content, bubbleGradientStops)
 				.animate(
-				[{ transform: 't0,220' }, 4000],
-				[{ transform: 't0,151' }, 4000],
-				[{ transform: 't0,-220' }, 4000],
-				[
-					{ y2: 0 },
-					4000,
-					() => {
-						// final state
-						bubbles.attr({ fill: 'palegreen' });
-						// pause
-						self._animationTimeout = window.setTimeout(
-							() => {
-								// reset
-								viewPort.attr({ transform: 't0,0' });
-								scrollHandle.attr({ transform: 't0,0' });
-								content.attr({ transform: 't0,0' });
-								bubbleGradient.attr({ y2: 1 });
-								bubbles.attr({ fill: bubbleGradient });
-								// go again
-								self._animationResetTimeout = window.setTimeout(animateReading, 1000);
-							},
-							3000
-						);
-					}
-				]
+					[{ transform: 't0,220' }, 4000],
+					[{ transform: 't0,151' }, 4000],
+					[{ transform: 't0,-220' }, 4000],
+					[
+						{ offset: 0 },
+						4000,
+						() => {
+							// final state
+							bubbles.attr({ fill: 'palegreen' });
+							// pause
+							self._animationTimeout = window.setTimeout(
+								() => {
+									// reset
+									viewPort.attr({ transform: 't0,0' });
+									scrollHandle.attr({ transform: 't0,0' });
+									content.attr({ transform: 't0,0' });
+									bubbleGradientStops.attr({ offset: 1 });
+									bubbles.attr({ fill: bubbleGradient });
+									// go again
+									self._animationResetTimeout = window.setTimeout(animateReading, 1000);
+								},
+								3000
+							);
+						}
+					]
 				);
 		}
 		bubbles.attr({ fill: bubbleGradient });
 		badges
-			.attr({
-				transform: 's0,0',
-				display: ''
-			})
+			.attr({ transform: 's0,0' })
 			.animate(
 				{ transform: 's1.25,1.25' },
 				400,
@@ -88,6 +88,7 @@ export default class HowItWorksPage extends PureContextComponent<{}, {}> {
 		this.context.extension.removeListener('change', this._forceUpdate);
 		// animation
 		window.clearTimeout(this._animationTimeout);
+		window.clearTimeout(this._animationResetTimeout);
 	}
 	public render() {
 		return (
