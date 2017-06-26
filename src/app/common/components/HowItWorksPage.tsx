@@ -104,11 +104,13 @@ export default class HowItWorksPage extends PureContextComponent<{}, {}> {
 				</p>
 				<div className="animated-illustration" dangerouslySetInnerHTML={{ __html: readingIllustration }}></div>
 				<p>
-					The little icon is also a button. Use it to join conversations on reallyread.it. 
-					</p> <p>
-						Your {this.context.user.isSignedIn ? <Link to="/list">Reading List</Link> : <span>Reading List</span>} shows what you have read. (Nobody else can see this.) 
-						</p><p>
-							Remember, you can only comment on the articles you've really read. <b>Have fun!</b>
+					The icon is also a button. Use it to jump to the comments on reallyread.it. 
+				</p>
+				<p>
+					Your {this.context.user.isSignedIn ? <Link to="/list">Reading List</Link> : <span>Reading List</span>} is private, nobody else can see it. It shows what you've really read and where you merely skimmed. 
+				</p>
+				<p>
+					<strong>Take the plunge. Make some comments. Have fun!</strong>
 				</p>
 			</div>
 		);
