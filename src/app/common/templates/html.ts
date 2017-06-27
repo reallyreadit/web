@@ -18,7 +18,7 @@ export default (model: {
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">

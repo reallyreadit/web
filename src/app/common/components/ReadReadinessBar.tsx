@@ -11,9 +11,11 @@ export default class ReadReadinessBar extends PureContextComponent<{}, {}> {
 			this.context.environment === 'browser' ?
 				this.context.extension.isInstalled() === false ?
 					<div className="read-readiness-bar">
-						{this.context.extension.isBrowserCompatible() ?
-							<span>Click <a onClick={this._installExtension}>here</a> to add the Chrome extension.</span> :
-							<span>You must use Chrome (on Mac or PC) to get credit for really reading.</span>}
+						<div className="content">
+							{this.context.extension.isBrowserCompatible() ?
+								<span>Click <a onClick={this._installExtension}>here</a> to add the Chrome extension.</span> :
+								<span>You must use Chrome (on Mac or PC) to get credit for really reading.</span>}
+						</div>
 					</div> :
 					null :
 				null

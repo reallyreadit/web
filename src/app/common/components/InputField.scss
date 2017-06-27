@@ -51,3 +51,12 @@
 		left: 6px;
 	}
 }
+
+@media (max-width: 499px) {
+	.input-field {
+		text-align: left;
+	}
+	.input-field > .field-container {
+		width: 100%;
+	}
+}
