@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import UserArticle from '../../../common/models/UserArticle';
@@ -6,8 +7,8 @@ import Fetchable from '../api/Fetchable';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
 
-export default class ReadingListPage extends ContextComponent<{}, { articles: Fetchable<UserArticle[]> }> {
-	private _redirectToHomepage = () => this.context.router.push('/');
+export default class ReadingListPage extends ContextComponent<RouteComponentProps<{}>, { articles: Fetchable<UserArticle[]> }> {
+	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _deleteArticle = (article: UserArticle) => {
 		const articles = this.state.articles.value.slice();
 		articles.splice(articles.indexOf(article), 1);
@@ -19,7 +20,7 @@ export default class ReadingListPage extends ContextComponent<{}, { articles: Fe
 		this.context.page.setState({ isLoading: true });
 		this._loadArticles();
 	};
-	constructor(props: {}, context: Context) {
+	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { articles: this._loadArticles() };
 	}

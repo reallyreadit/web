@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import UserArticle from '../../../common/models/UserArticle';
@@ -6,13 +7,13 @@ import Fetchable from '../api/Fetchable';
 import ArticleDetails from './ArticleDetails';
 import ArticleList from './ArticleList';
 
-export default class HotTopicsPage extends ContextComponent<{}, { articles: Fetchable<UserArticle[]> }> {
+export default class HotTopicsPage extends ContextComponent<RouteComponentProps<{}>, { articles: Fetchable<UserArticle[]> }> {
 	private _loadArticles = () => this.context.api.listArticles(articles => this.setState({ articles }, () => this.context.page.setState({ isLoading: false })));
 	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
 		this._loadArticles();
 	};
-	constructor(props: {}, context: Context) {
+	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { articles: this._loadArticles() };
 	}

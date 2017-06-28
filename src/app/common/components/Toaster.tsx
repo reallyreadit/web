@@ -25,7 +25,7 @@ export default class Toaster extends ContextComponent<{}, { toasts: Toast[] }> {
 		};
 		this.setState({ toasts: [...this.state.toasts, toast] });
 	};
-	private _removeToast = (e: React.AnimationEvent) => {
+	private _removeToast = (e: React.AnimationEvent<{}>) => {
 		if (e.animationName === 'toaster-pop-out') {
 			this.setState({
 				toasts: this.state.toasts.filter(toast => toast.timeoutHandle !== parseInt((e.currentTarget as Element).getAttribute('data-timeout-handle')))

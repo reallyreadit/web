@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import ContextComponent from '../ContextComponent';
 import Context from '../Context';
 import Fetchable from '../api/Fetchable';
@@ -6,21 +7,21 @@ import Comment from '../../../common/models/Comment';
 import CommentList from './CommentList';
 import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 
-export default class InboxPage extends ContextComponent<{}, { replies: Fetchable<Comment[]> }> {
-	private _redirectToHomepage = () => this.context.router.push('/');
+export default class InboxPage extends ContextComponent<RouteComponentProps<{}>, { replies: Fetchable<Comment[]> }> {
+	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _readReply = (comment: Comment) => {
 		const slugParts = comment.articleSlug.split('_');
 		if (!comment.dateRead) {
 			this.context.api.readReply(comment.id);
 		}
-		this.context.router.push(`/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
+		this.context.router.history.push(`/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
 	};
 	private _loadReplies = () => this.context.api.listReplies(replies => this.setState({ replies }, () => this.context.page.setState({ isLoading: false })));
 	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
 		this._loadReplies();
 	};
-	constructor(props: {}, context: Context) {
+	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { replies: this._loadReplies() };
 	}

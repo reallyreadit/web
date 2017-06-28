@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 
-export default class PrivacyPolicyPage extends PureContextComponent<{}, {}> {
+export default class PrivacyPolicyPage extends PureContextComponent<RouteComponentProps<{}>, {}> {
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Privacy Policy',

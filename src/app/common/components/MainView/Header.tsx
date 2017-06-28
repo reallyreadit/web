@@ -10,7 +10,7 @@ import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotificatio
 import logoIcon from '../../svg/logoIcon';
 import logoText from '../../../../common/svg/logoText';
 import Button from '../../../../common/components/Button';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default class Header extends PureContextComponent<{}, { isSigningOut: boolean }> {
 	// account dialogs
@@ -21,10 +21,10 @@ export default class Header extends PureContextComponent<{}, { isSigningOut: boo
 		if (hasNewUnreadReply(this.context.page.newReplyNotification)) {
 			this.context.api.ackNewReply();
 		}
-		this.context.router.push('/inbox')
+		this.context.router.history.push('/inbox')
 	};
-	private _goToReadingList = () => this.context.router.push('/list');
-	private _goToSettings = () => this.context.router.push('/settings');
+	private _goToReadingList = () => this.context.router.history.push('/list');
+	private _goToSettings = () => this.context.router.history.push('/settings');
 	private _signOut = () => {
 		this.setState({ isSigningOut: true });
 		this.context.api.signOut().then(() => {
@@ -33,8 +33,8 @@ export default class Header extends PureContextComponent<{}, { isSigningOut: boo
 		});
 	};
 	// regular nav
-	private _goToAbout = () => this.context.router.push('/about');
-	private _goToHowItWorks = () => this.context.router.push('/how-it-works');
+	private _goToAbout = () => this.context.router.history.push('/about');
+	private _goToHowItWorks = () => this.context.router.history.push('/how-it-works');
 	public state = { isSigningOut: false };
 	public componentDidMount() {
 		this.context.user.addListener('authChange', this._forceUpdate);

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Link } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
+import { Route } from 'react-router';
+import { Link } from 'react-router-dom';
+import ContextComponent from '../ContextComponent';
 import DialogManager from './DialogManager';
 import ReadReadinessBar from './ReadReadinessBar';
 import Icon from '../../../common/components/Icon';
@@ -8,11 +9,16 @@ import Toaster from './Toaster';
 import * as className from 'classnames';
 import Separator from '../../../common/components/Separator';
 import Header from './MainView/Header';
+import routes from '../routes';
 
-export default class MainView extends PureContextComponent<{}, {}> {
+export default class MainView extends ContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
 	public componentDidMount() {
 		this.context.page.addListener('change', this._forceUpdate);
+		this.context.router.history.listen(location => {
+			ga('set', 'page', location.pathname);
+			ga('send', 'pageview');
+		});
 	}
 	public componentWillUnmount() {
 		this.context.page.removeListener('change', this._forceUpdate);
@@ -33,9 +39,11 @@ export default class MainView extends PureContextComponent<{}, {}> {
 						null}
 				</h2>
 				<main>
-					{this.props.children}
+					{routes.map((route, i) => <Route key={i} {...route} />)}
 				</main>
 				<footer>
+					<a href="http://blog.reallyread.it">Blog</a>
+					<Separator />
 					<Link to="/privacy">Privacy Policy</Link>
 					<Separator />
 					<a href="mailto:support@reallyread.it">support@reallyread.it</a>

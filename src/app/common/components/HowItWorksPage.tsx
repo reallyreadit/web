@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import readingIllustration from '../svg/readingIllustration';
 
-export default class HowItWorksPage extends PureContextComponent<{}, {}> {
+export default class HowItWorksPage extends PureContextComponent<RouteComponentProps<{}>, {}> {
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
 	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));

@@ -12,13 +12,20 @@ export default (model: {
 		extension: string,
 		page: PageInitData,
 		user: UserAccount
-	}
+	},
+	enableAnalytics: boolean
 }) => 
 `<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+		<!-- Google Analytics -->
+		<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;</script>
+		${model.enableAnalytics ?
+			`<script async src='https://www.google-analytics.com/analytics.js'></script>` :
+			`<!-- disabled in dev mode -->`}
+		<!-- End Google Analytics -->
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">

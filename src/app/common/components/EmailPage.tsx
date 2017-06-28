@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import * as className from 'classnames';
 import { Intent } from '../Page';
@@ -40,16 +41,13 @@ const resultMessages: {
 		}
 	}
 };
-interface Props {
-	params: {
-		action: string,
-		result: string
-	}
-}
-export default class EmailPage extends PureContextComponent<Props, {}> {
+export default class EmailPage extends PureContextComponent<RouteComponentProps<{
+	action: string,
+	result: string
+}>, {}> {
 	public componentWillMount() {
 		this.context.page.setState({
-			title: 'Email ' + (this.props.params.action === 'confirm' ? 'Confirmation' : 'Notifications'),
+			title: 'Email ' + (this.props.match.params.action === 'confirm' ? 'Confirmation' : 'Notifications'),
 			isLoading: false,
 			isReloadable: false
 		});
@@ -57,8 +55,8 @@ export default class EmailPage extends PureContextComponent<Props, {}> {
 	public render() {
 		return (
 			<div className="email-page">
-				<strong className={className({ 'success': resultMessages[this.props.params.action][this.props.params.result].intent === Intent.Success })}>
-					{resultMessages[this.props.params.action][this.props.params.result].text}
+				<strong className={className({ 'success': resultMessages[this.props.match.params.action][this.props.match.params.result].intent === Intent.Success })}>
+					{resultMessages[this.props.match.params.action][this.props.match.params.result].text}
 				</strong>
 			</div>
 		);

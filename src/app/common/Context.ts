@@ -1,14 +1,13 @@
 import Api from './api/Api';
 import Page from './Page';
 import User from './User';
-import Router from 'react-router';
+import { RouterChildContext } from 'react-router';
 import Extension from './Extension';
 
-interface Context {
+interface Context extends RouterChildContext<{}> {
 	api: Api,
 	page: Page,
 	user: User,
-	router: Router.InjectedRouter,
 	extension: Extension,
 	environment: 'server' | 'browser'
 }

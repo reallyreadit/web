@@ -30,7 +30,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 			this.context.page.openDialog(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
 		}
 	};
-	private _goToComments = () => this.context.router.push(`/articles/${this._slugParts[0]}/${this._slugParts[1]}`);
+	private _goToComments = () => this.context.router.history.push(`/articles/${this._slugParts[0]}/${this._slugParts[1]}`);
 	private _deleteArticle = (e: React.MouseEvent<HTMLDivElement>) => this.props.onDelete(this.props.article);
 	constructor(props: Props, context: Context) {
 		super(props, context);

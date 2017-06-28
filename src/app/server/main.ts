@@ -5,28 +5,27 @@ import App from '../common/components/App';
 import ServerApi from './ServerApi';
 import ServerPage from './ServerPage';
 import renderHtml from '../common/templates/html';
-import { RouterContext, match } from 'react-router';
-import routes from '../common/routes';
+import { StaticRouter, matchPath } from 'react-router';
+import MainView from '../common/components/MainView';
 import ServerUser from './ServerUser';
 import SessionState from '../../common/models/SessionState';
 import Request from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
+import routes from '../common/routes';
 
 express()
 	// attempt to serve static files first
 	.use(express.static(config.contentRootPath))
 	// render matched route or return 404
 	.use((req, res, next) => {
-		match({ routes, location: req.url }, (error, nextLocation, nextState) => {
-			if (!nextState) {
-				res.sendStatus(404);
-			} else {
-				req.nextState = nextState;
-				next();
-			}
-		});
+		const match = matchPath(req.url, routes);
+		if (match) {
+			next();
+		} else {
+			res.sendStatus(404);
+		}
 	})
 	// authenticate
 	.use((req, res, next) => {
@@ -98,7 +97,14 @@ express()
 					page,
 					user
 				},
-				React.createElement(RouterContext, req.nextState)
+				React.createElement(
+					StaticRouter,
+					{
+						location: req.url,
+						context: {}
+					},
+					React.createElement(MainView)
+				)
 			);
 		// call renderToString first to capture all the api requests
 		ReactDOMServer.renderToString(appElement);
@@ -118,7 +124,8 @@ express()
 					extension: extension.getInitData(),
 					page: page.getInitData(),
 					user: user.getInitData()
-				}
+				},
+				enableAnalytics: config.enableAnalytics
 			}));
 		});
 	})

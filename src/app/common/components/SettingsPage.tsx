@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import Separator from '../../../common/components/Separator';
@@ -9,8 +10,8 @@ import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 
-export default class SettingsPage extends PureContextComponent<{}, { isResendingConfirmationEmail: boolean }> {
-	private _redirectToHomepage = () => this.context.router.push('/');
+export default class SettingsPage extends PureContextComponent<RouteComponentProps<{}>, { isResendingConfirmationEmail: boolean }> {
+	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _updateUserAccount = (userAccount: UserAccount) => this.context.user.update(userAccount);
 	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
@@ -48,7 +49,7 @@ export default class SettingsPage extends PureContextComponent<{}, { isResending
 		);
 	};
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
-	constructor(props: {}, context: Context) {
+	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { isResendingConfirmationEmail: false };
 	}
