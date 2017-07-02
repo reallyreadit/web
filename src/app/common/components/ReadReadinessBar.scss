@@ -15,7 +15,7 @@
 	transform-origin: top;
 	animation: read-readiness-bar-swing 1.5s ease-in-out 110ms 1 alternate;
 }
-.read-readiness-bar > .content > a {
+.read-readiness-bar > .content > span > a {
 	text-decoration: underline;
 	cursor: pointer;
 }
