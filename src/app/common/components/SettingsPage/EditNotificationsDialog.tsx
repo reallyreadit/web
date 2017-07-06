@@ -17,7 +17,8 @@ export default class EditNotificationsDialog extends Dialog<UserAccount, Props, 
 		super(
 			{
 				title: 'Edit Notifications',
-				submitButtonText: 'Save Changes'
+				submitButtonText: 'Save Changes',
+				successMessage: 'Notification preferences updated'
 			},
 			props,
 			context
