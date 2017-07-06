@@ -1,52 +1,90 @@
 import * as React from 'react';
 import Context from '../Context';
 import InputField from './InputField';
-import InputFieldState from './InputFieldState';
-import Dialog, { DialogState } from './Dialog';
-import CancelablePromise from '../CancelablePromise';
-import { Intent } from '../Page';
+import Dialog, { State } from './Dialog';
+import UserAccount from '../../../common/models/UserAccount';
 
-export default class CreateAccountDialog extends Dialog<{}, Partial<DialogState> & {
+export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial<State> & {
+	name?: string,
 	nameError?: string,
-	emailError?: string
+	email?: string,
+	emailError?: string,
+	password?: string,
+	passwordError?: string
 }> {
-	private name = new InputFieldState().addListener('change', () => this.setState({ nameError: undefined }));
-	private email = new InputFieldState().addListener('change', () => this.setState({ emailError: undefined }));
-	private password = new InputFieldState();
-	protected title = 'Create Account';
-	protected className = 'create-account-dialog';
-	protected submitButtonText = 'Create Account';
+	private _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
+	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
+	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
 	constructor(props: {}, context: Context) {
-		super(props, {}, context);
-	}
-	protected onSubmit() {
-		return new CancelablePromise(this.context.api
-			.createUserAccount(this.name.value, this.email.value, this.password.value)
-			.then(userAccount => {
-				this.context.user.signIn(userAccount);
-				this.context.page.showToast('Welcome to reallyread.it!', Intent.Success);
-				this.context.page.closeDialog();
-			})
-			.catch((errors: string[]) => {
-				if (errors.some(error => error === 'DuplicateName')) {
-					this.setState({ nameError: 'Username already in use.' });
-				}
-				if (errors.some(error => error === 'DuplicateEmail')) {
-					this.setState({ emailError: 'Email address already in use.' });
-				}
-		}));
-	}
-	protected validate() {
-		return [this.name, this.email, this.password].every(state => state.isValid) &&
-			[this.state.nameError, this.state.emailError].every(error => error === undefined);
+		super(
+			{
+				title: 'Create Account',
+				submitButtonText: 'Create Account',
+				successMessage: 'Welcome to reallyread.it!'
+			},
+			props,
+			context
+		);
 	}
 	protected renderFields() {
-		return (
-			<div>
-				<InputField type="text" label="Username" autoFocus required minLength={3} maxLength={30} error={this.state.nameError} showError={this.state.showErrors} onChange={this.name.handleChange} />
-				<InputField type="email" label="Email Address" required maxLength={256} error={this.state.emailError} showError={this.state.showErrors} onChange={this.email.handleChange} />
-				<InputField type="password" label="Password" required minLength={8} maxLength={256} showError={this.state.showErrors} onChange={this.password.handleChange} />
-			</div>
-		);
+		return [
+			<InputField
+				key="username"
+				type="text"
+				label="Username"
+				value={this.state.name}
+				autoFocus
+				required
+				minLength={3}
+				maxLength={30}
+				error={this.state.nameError}
+				showError={this.state.showErrors}
+				onChange={this._handleNameChange}
+			/>,
+			<InputField
+				key="emailAddress"
+				type="email"
+				label="Email Address"
+				value={this.state.email}
+				required
+				maxLength={256}
+				error={this.state.emailError}
+				showError={this.state.showErrors}
+				onChange={this._handleEmailChange}
+			/>,
+			<InputField
+				key="password"
+				type="password"
+				label="Password"
+				value={this.state.password}
+				required
+				minLength={8}
+				maxLength={256}
+				error={this.state.passwordError}
+				showError={this.state.showErrors}
+				onChange={this._handlePasswordChange}
+			/>
+		];
+	}
+	protected getClientErrors() {
+		return [{
+			name: this.state.nameError,
+			email: this.state.emailError,
+			password: this.state.passwordError
+		}];
+	}
+	protected submitForm() {
+		return this.context.api.createUserAccount(this.state.name, this.state.email, this.state.password);
+	}
+	protected onSuccess(userAccount: UserAccount) {
+		this.context.user.signIn(userAccount);
+	}
+	protected onError(errors: string[]) {
+		if (errors.some(error => error === 'DuplicateName')) {
+			this.setState({ nameError: 'Username already in use.' });
+		}
+		if (errors.some(error => error === 'DuplicateEmail')) {
+			this.setState({ emailError: 'Email address already in use.' });
+		}
 	}
 }

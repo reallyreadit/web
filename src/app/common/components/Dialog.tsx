@@ -1,60 +1,100 @@
 import * as React from 'react';
-import * as className from 'classnames';
 import Button from '../../../common/components/Button';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
-import CancelablePromise from '../CancelablePromise';
+import { IconName } from '../../../common/components/Icon';
+import { Intent } from '../Page';
 
-interface DialogState {
+interface State {
+	showErrors: boolean,
 	isLoading: boolean,
-	showErrors: boolean
+	isSubmitting: boolean
 }
-abstract class Dialog<P, S extends Partial<DialogState>> extends PureContextComponent<P, S> {
-	private submitPromise: CancelablePromise<any>;
-	private handleSubmit = () => {
+export { State };
+export default abstract class Dialog<T, P, S extends Partial<State>> extends PureContextComponent<P, S> {
+	private readonly _title: string;
+	private readonly _submitButtonIcon: IconName;
+	private readonly _submitButtonText: string;
+	private readonly _successMessage: string;
+	private readonly _submit = () => {
 		this.setState({ showErrors: true });
-		if (this.validate()) {
-			this.setState({ isLoading: true });
-			this.submitPromise = this.onSubmit();
-			this.submitPromise.promise
-				.then(() => {
-					this.submitPromise = undefined;
-					this.setState({ isLoading: false });
-				})
-				.catch(reason => {});
+		if (
+			!this
+				.getClientErrors()
+				.some(errors => Object.keys(errors).some(key => !!(errors as { [key: string]: string })[key]))
+		) {
+			this.clearServerErrors();
+			this.setState(
+				{ isSubmitting: true },
+				() => this
+					.submitForm()
+					.then(result => {
+						this._close();
+						if (this._successMessage) {
+							this.context.page.showToast(this._successMessage, Intent.Success);
+						}
+						this.onSuccess(result);
+					})
+					.catch(errors => {
+						this.setState({ isSubmitting: false });
+						this.onError(errors);
+					})
+			);
 		}
 	};
-	private handleCancel = () => this.context.page.closeDialog();
-	protected abstract title: string;
-	protected abstract className: string;
-	protected abstract submitButtonText: string;
-	constructor(props: P, state: S, context: Context) {
+	private _close = () => this.context.page.closeDialog();
+	constructor(params: {
+		title: string,
+		submitButtonIcon?: IconName,
+		submitButtonText: string,
+		successMessage?: string
+	},
+		props: P,
+		context: Context
+	) {
 		super(props, context);
-		this.state = Object.assign({}, state, {
+		this._title = params.title;
+		this._submitButtonIcon = params.submitButtonIcon || 'checkmark';
+		this._submitButtonText = params.submitButtonText;
+		this._successMessage = params.successMessage;
+		this.state = {
+			showErrors: false,
 			isLoading: false,
-			showErrors: false
-		});
+			isSubmitting: false
+		} as S;
 	}
-	protected abstract onSubmit() : CancelablePromise<void>;
-	protected abstract validate() : boolean;
-	protected abstract renderFields() : JSX.Element;
-	public componentWillUnmount() {
-		if (this.submitPromise !== undefined) {
-			this.submitPromise.cancel();
-		}
-	}
+	protected abstract renderFields(): JSX.Element | JSX.Element[];
+	protected getClientErrors(): { [key: string]: string }[] {
+		return [];
+	};
+	protected clearServerErrors() { }
+	protected abstract submitForm(): Promise<T>;
+	protected onSuccess(result: T) { }
+	protected onError(errors: string[]) { }
 	public render() {
 		return (
-			<div className={className('dialog', this.className)}>
-				<h3>{this.title}</h3>
+			<div className="dialog">
+				<h3>{this._title}</h3>
 				{this.renderFields()}
 				<div className="buttons">
-					<Button text="Cancel" iconLeft="forbid" onClick={this.handleCancel} state={this.state.isLoading ? 'disabled' : 'normal'} />
-					<Button text={this.submitButtonText} iconLeft="checkmark" onClick={this.handleSubmit} style="preferred" state={this.state.isLoading ? 'busy' : 'normal'} />
+					<Button
+						text="Cancel"
+						iconLeft="forbid"
+						onClick={this._close}
+						state={(this.state.isLoading || this.state.isSubmitting) ? 'disabled' : 'normal'} />
+					<Button
+						text={this._submitButtonText}
+						iconLeft={this._submitButtonIcon}
+						onClick={this._submit}
+						style="preferred"
+						state={
+							this.state.isLoading ? 'disabled' :
+								this.state.isSubmitting ? 'busy' :
+								'normal'
+						}
+					/>
 				</div>
 			</div>
 		);
 	}
 }
-export { DialogState };
-export default Dialog;
