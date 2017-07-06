@@ -117,7 +117,7 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 							<Separator />
 							<ActionLink text="Edit" iconLeft="write" onClick={this._showEditNotificationsDialog} />
 						</label>
-						When someone replies to my comment
+						When someone replies to my comment:
 						<ul className="notification-channels">
 							<li className={className('channel', { enabled: user.receiveReplyEmailNotifications })}>
 								<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
@@ -132,10 +132,12 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 							<li className={className('channel', { enabled: user.receiveReplyDesktopNotifications })}>
 								<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
 								Show a desktop notification
-								{user.receiveReplyDesktopNotifications && !this.context.extension.isInstalled() ?
+								{user.receiveReplyDesktopNotifications && this.context.environment === 'browser' && this.context.extension.isInstalled() === false ?
 									<span className="notice">
 										<Icon name="exclamation" />
-										To get notifications you must <a onClick={this._installExtension}>add the Chrome extension</a>.
+										To get notifications you must {this.context.extension.isBrowserCompatible() ?
+											<a onClick={this._installExtension}>add the Chrome extension</a> :
+											<span>add the Chrome extension</span>}.
 									</span> :
 									null}
 							</li>
