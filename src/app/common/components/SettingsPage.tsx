@@ -26,7 +26,7 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 			.resendConfirmationEmail()
 			.then(() => this.setState(
 				{ isResendingConfirmationEmail: false },
-				() => this.context.page.showToast('Confirmation email sent!', Intent.Success)
+				() => this.context.page.showToast('Confirmation email sent', Intent.Success)
 			))
 			.catch((errors: string[]) => this.setState(
 				{ isResendingConfirmationEmail: false },
