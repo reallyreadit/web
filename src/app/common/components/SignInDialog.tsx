@@ -36,6 +36,7 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 				onChange={this._handleEmailChange}
 			/>,
 			<InputField
+				key="password"
 				type="password"
 				label="Password"
 				value={this.state.password}
