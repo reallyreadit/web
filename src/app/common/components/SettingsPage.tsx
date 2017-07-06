@@ -7,6 +7,7 @@ import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
 import * as className from 'classnames';
 import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
+import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 
@@ -19,6 +20,9 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 			this._updateUserAccount(user.value);
 			this.context.page.setState({ isLoading: false });
 		});
+	};
+	private _openChangePasswordDialog = () => {
+		this.context.page.openDialog(<ChangePasswordDialog />);
 	};
 	private _resendConfirmationEmail = () => this.setState(
 		{ isResendingConfirmationEmail: true },
@@ -38,7 +42,7 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 				)
 			))
 	);
-	private _showEditNotificationsDialog = () => {
+	private _openEditNotificationsDialog = () => {
 		const user = this.context.user.userAccount;
 		this.context.page.openDialog(
 			<EditNotificationsDialog
@@ -83,7 +87,7 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 						<label>
 							<strong>Username</strong>
 							<Separator />
-							<ActionLink text="Change Password" iconLeft="locked" />
+							<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} />
 						</label>
 						{user.name}
 					</li>
@@ -115,7 +119,7 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 						<label>
 							<strong>Notifications</strong>
 							<Separator />
-							<ActionLink text="Edit" iconLeft="write" onClick={this._showEditNotificationsDialog} />
+							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditNotificationsDialog} />
 						</label>
 						When someone replies to my comment:
 						<ul className="notification-channels">

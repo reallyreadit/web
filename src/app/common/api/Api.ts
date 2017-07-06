@@ -35,6 +35,9 @@ export default abstract class Api {
 	public resendConfirmationEmail() {
 		return this.post(new Request('/UserAccounts/ResendConfirmationEmail'));
 	}
+	public changePassword(currentPassword: string, newPassword: string) {
+		return this.post(new Request('/UserAccounts/ChangePassword', { currentPassword, newPassword }));
+	}
 	public updateNotificationPreferences(receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/UpdateNotificationPreferences',
