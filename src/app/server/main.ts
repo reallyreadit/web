@@ -67,7 +67,7 @@ express()
 	})
 	// authorize
 	.get(['/list', '/inbox', '/settings'], (req, res, next) => {
-		if (!req.sessionState) {
+		if (!req.sessionState.userAccount) {
 			res.redirect('/');
 		} else {
 			next();
