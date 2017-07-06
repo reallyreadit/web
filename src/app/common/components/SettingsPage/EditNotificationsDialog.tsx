@@ -32,7 +32,7 @@ export default class EditNotificationsDialog extends Dialog<UserAccount, Props, 
 	protected renderFields() {
 		return (
 			<div className="edit-notifications-dialog">
-				When someone replies to my comment
+				When someone replies to my comment:
 				<ul>
 					<li>
 						<label>
