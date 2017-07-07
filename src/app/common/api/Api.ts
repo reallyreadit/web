@@ -38,6 +38,9 @@ export default abstract class Api {
 	public changePassword(currentPassword: string, newPassword: string) {
 		return this.post(new Request('/UserAccounts/ChangePassword', { currentPassword, newPassword }));
 	}
+	public changeEmailAddress(email: string) {
+		return this.post(new Request('/UserAccounts/ChangeEmailAddress', { email }));
+	}
 	public updateNotificationPreferences(receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/UpdateNotificationPreferences',

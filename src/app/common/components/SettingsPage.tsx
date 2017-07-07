@@ -8,6 +8,7 @@ import Icon from '../../../common/components/Icon';
 import * as className from 'classnames';
 import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
+import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 
@@ -23,6 +24,9 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 	};
 	private _openChangePasswordDialog = () => {
 		this.context.page.openDialog(<ChangePasswordDialog />);
+	};
+	private _openChangeEmailAddressDialog = () => {
+		this.context.page.openDialog(<ChangeEmailAddressDialog />);
 	};
 	private _resendConfirmationEmail = () => this.setState(
 		{ isResendingConfirmationEmail: true },
@@ -95,7 +99,7 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 						<label>
 							<strong>Email Address</strong>
 							<Separator />
-							<ActionLink text="Edit" iconLeft="write" />
+							<ActionLink text="Change" iconLeft="write" onClick={this._openChangeEmailAddressDialog} />
 						</label>
 						{user.email}
 						{user.isEmailConfirmed ?
