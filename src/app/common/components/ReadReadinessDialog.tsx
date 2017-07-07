@@ -36,7 +36,7 @@ export default class ReadReadinessDialog extends PureContextComponent<{
                 <h3>Wait!</h3>
                 {message}
                 <div className="continue">
-                    <a href={this.props.articleUrl} onClick={this._closeDialog} target="_blank">That's OK, take me to the article anyway.</a>   
+                    <a href={this.props.articleUrl} onClick={this._closeDialog}>That's OK, take me to the article anyway.</a>   
                 </div>
                 <div className="buttons">
                     <Button text="Cancel" onClick={this._closeDialog} />

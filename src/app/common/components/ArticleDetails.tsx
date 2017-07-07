@@ -43,7 +43,7 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 				<div className={className('content', { 'with-controls': this.props.showControls })}>
 					<div className="top-row">
 						<div className="title">
-							<a href={article.url} target="_blank" onClick={this._checkReadReadiness}>{article.title}</a>
+							<a href={article.url} onClick={this._checkReadReadiness}>{article.title}</a>
 							<span className="word-count">({Math.round(article.wordCount / readingParameters.averageWordsPerMinute)} min. read)</span>
 							{article.tags.length ? article.tags.map(tag => <span key={tag} className="tag">{tag}</span>) : null}
 						</div>
