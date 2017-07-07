@@ -10,10 +10,25 @@ import * as className from 'classnames';
 import Separator from '../../../common/components/Separator';
 import Header from './MainView/Header';
 import routes from '../routes';
+import SignInDialog from './SignInDialog';
+import CreateAccountDialog from './CreateAccountDialog';
 
 export default class MainView extends ContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
+	public componentWillMount() {
+		switch (this.context.router.route.location.search) {
+			case '?sign-in':
+				this.context.page.openDialog(<SignInDialog />);
+				break;
+			case '?create-account':
+				this.context.page.openDialog(<CreateAccountDialog />);
+				break;
+		}
+	}
 	public componentDidMount() {
+		if (this.context.router.route.location.search) {
+			this.context.router.history.push(this.context.router.route.location.pathname);
+		}
 		this.context.page.addListener('change', this._forceUpdate);
 		this.context.router.history.listen(location => {
 			ga('set', 'page', location.pathname);
