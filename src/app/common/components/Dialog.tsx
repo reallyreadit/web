@@ -6,6 +6,7 @@ import { IconName } from '../../../common/components/Icon';
 import { Intent } from '../Page';
 
 interface State {
+	errorMessage: string,
 	showErrors: boolean,
 	isLoading: boolean,
 	isSubmitting: boolean
@@ -23,9 +24,11 @@ export default abstract class Dialog<T, P, S extends Partial<State>> extends Pur
 				.getClientErrors()
 				.some(errors => Object.keys(errors).some(key => !!(errors as { [key: string]: string })[key]))
 		) {
-			this.clearServerErrors();
 			this.setState(
-				{ isSubmitting: true },
+				{
+					errorMessage: null,
+					isSubmitting: true
+				},
 				() => this
 					.submitForm()
 					.then(result => {
@@ -58,6 +61,7 @@ export default abstract class Dialog<T, P, S extends Partial<State>> extends Pur
 		this._submitButtonText = params.submitButtonText;
 		this._successMessage = params.successMessage;
 		this.state = {
+			errorMessage: null,
 			showErrors: false,
 			isLoading: false,
 			isSubmitting: false
@@ -67,7 +71,6 @@ export default abstract class Dialog<T, P, S extends Partial<State>> extends Pur
 	protected getClientErrors(): { [key: string]: string }[] {
 		return [];
 	};
-	protected clearServerErrors() { }
 	protected abstract submitForm(): Promise<T>;
 	protected onSuccess(result: T) { }
 	protected onError(errors: string[]) { }
@@ -75,6 +78,13 @@ export default abstract class Dialog<T, P, S extends Partial<State>> extends Pur
 		return (
 			<div className="dialog">
 				<h3>{this._title}</h3>
+				{this.state.errorMessage ?
+					<div
+						className="error-message"
+						dangerouslySetInnerHTML={{ __html: this.state.errorMessage.replace(/\n/g, '<br />') }}
+					>
+					</div> :
+					null}
 				{this.renderFields()}
 				<div className="buttons">
 					<Button

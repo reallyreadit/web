@@ -38,8 +38,14 @@ export default abstract class Api {
 	public changePassword(currentPassword: string, newPassword: string) {
 		return this.post(new Request('/UserAccounts/ChangePassword', { currentPassword, newPassword }));
 	}
+	public resetPassword(token: string, password: string) {
+		return this.post(new Request('/UserAccounts/ResetPassword', { token, password }));
+	}
 	public changeEmailAddress(email: string) {
 		return this.post(new Request('/UserAccounts/ChangeEmailAddress', { email }));
+	}
+	public requestPasswordReset(email: string) {
+		return this.post(new Request('/UserAccounts/RequestPasswordReset', { email }));
 	}
 	public updateNotificationPreferences(receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) {
 		return this.post<UserAccount>(new Request(

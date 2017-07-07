@@ -7,6 +7,7 @@ import InboxPage from './components/InboxPage';
 import SettingsPage from './components/SettingsPage';
 import EmailPage from './components/EmailPage';
 import HowItWorksPage from './components/HowItWorksPage';
+import PasswordPage from './components/PasswordPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 
 export default [
@@ -38,6 +39,10 @@ export default [
 	{
 		path: '/inbox',
 		component: InboxPage
+	},
+	{
+		path: '/password/:action/:result',
+		component: PasswordPage
 	},
 	{
 		path: '/privacy',

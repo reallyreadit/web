@@ -6,10 +6,9 @@ import UserAccount from '../../../../common/models/UserAccount';
 
 export default class ChangeEmailAddressDialog extends Dialog<UserAccount, {}, Partial<State> & {
 	email?: string,
-	clientError?: string,
-	serverError?: string
+	emailError?: string
 }> {
-	private _handleEmailChange = (email: string, clientError: string) => this.setState({ email, clientError });
+	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	constructor(props: {}, context: Context) {
 		super(
 			{
@@ -23,37 +22,26 @@ export default class ChangeEmailAddressDialog extends Dialog<UserAccount, {}, Pa
 	}
 	protected renderFields() {
 		return (
-			<div className="change-email-address-dialog">
-				{this.state.serverError ?
-					<div
-						className="server-error"
-						dangerouslySetInnerHTML={{ __html: this.state.serverError.replace(/\n/g, '<br />') }}
-					>
-					</div> :
-					null}
-				<InputField
-					type="email"
-					label="Email Address"
-					value={this.state.email}
-					required
-					maxLength={256}
-					error={this.state.clientError}
-					showError={this.state.showErrors}
-					onChange={this._handleEmailChange}
-				/>
-			</div>
+			<InputField
+				type="email"
+				label="Email Address"
+				value={this.state.email}
+				autoFocus
+				required
+				maxLength={256}
+				error={this.state.emailError}
+				showError={this.state.showErrors}
+				onChange={this._handleEmailChange}
+			/>
 		);
 	}
 	protected getClientErrors() {
-		const errors = { email: this.state.clientError };
+		const errors = { email: this.state.emailError };
 		if (!errors.email && this.state.email === this.context.user.userAccount.email) {
 			errors.email = 'Email address already set.';
-			this.setState({ clientError: errors.email });
+			this.setState({ emailError: errors.email });
 		}
 		return [errors];
-	}
-	protected clearServerErrors() {
-		this.setState({ serverError: null });
 	}
 	protected submitForm() {
 		return this.context.api.changeEmailAddress(this.state.email);
@@ -63,10 +51,10 @@ export default class ChangeEmailAddressDialog extends Dialog<UserAccount, {}, Pa
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'ResendLimitExceeded')) {
-			this.setState({ serverError: 'Email confirmation rate limit exceeded.\nPlease try again later.' });
+			this.setState({ errorMessage: 'Email confirmation rate limit exceeded.\nPlease try again later.' });
 		}
 		if (errors.some(error => error === 'DuplicateEmail')) {
-			this.setState({ clientError: 'Email address already in use.' });
+			this.setState({ emailError: 'Email address already in use.' });
 		}
 	}
 }

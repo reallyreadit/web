@@ -13,7 +13,7 @@ const resultMessages: {
 	}
 } = {
 	'confirm': {
-		'notFound': {
+		'not-found': {
 			text: 'The email confirmation id apprears to be invalid.',
 			intent: Intent.Danger
 		},
@@ -21,7 +21,7 @@ const resultMessages: {
 			text: 'This email confirmation has expired. Please check your inbox for a more recent confirmation.',
 			intent: Intent.Danger
 		},
-		'alreadyConfirmed': {
+		'already-confirmed': {
 			text: 'This email address has already been confirmed.',
 			intent: Intent.Success
 		},
@@ -31,7 +31,7 @@ const resultMessages: {
 		}
 	},
 	'unsubscribe': {
-		'alreadyUnsubscribed': {
+		'already-unsubscribed': {
 			text: 'This email address has already been unsubscribed.',
 			intent: Intent.Success
 		},

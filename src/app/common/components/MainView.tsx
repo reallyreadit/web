@@ -12,6 +12,7 @@ import Header from './MainView/Header';
 import routes from '../routes';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
+import ResetPasswordDialog from './ResetPasswordDialog';
 
 export default class MainView extends ContextComponent<{}, {}> {
 	private _reloadPage = () => this.context.page.reload();
@@ -22,6 +23,17 @@ export default class MainView extends ContextComponent<{}, {}> {
 				break;
 			case '?create-account':
 				this.context.page.openDialog(<CreateAccountDialog />);
+				break;
+			default:
+				if (this.context.router.route.location.search.startsWith('?reset-password')) {
+					const kvps = this.context.router.route.location.search.split('&');
+					this.context.page.openDialog(
+						<ResetPasswordDialog
+							email={decodeURIComponent(kvps[1].split('=')[1])}
+							token={decodeURIComponent(kvps[2].split('=')[1])}
+						/>
+					);
+				}
 				break;
 		}
 	}
