@@ -57,7 +57,7 @@ export default class BrowserApi extends Api {
 			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
-				value: this._reqStore.getData(request)
+				value: this._reqStore.getData(request) as T
 			};
 		} else {
 			console.log('Api: fetch[sync/loading, async/value]');

@@ -42,7 +42,7 @@ export default abstract class Api {
 		return this.post(new Request('/UserAccounts/ResetPassword', { token, password }));
 	}
 	public changeEmailAddress(email: string) {
-		return this.post(new Request('/UserAccounts/ChangeEmailAddress', { email }));
+		return this.post<UserAccount>(new Request('/UserAccounts/ChangeEmailAddress', { email }));
 	}
 	public requestPasswordReset(email: string) {
 		return this.post(new Request('/UserAccounts/RequestPasswordReset', { email }));

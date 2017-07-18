@@ -5,7 +5,7 @@ interface ExtensionState {
 	isAuthenticated: boolean,
 	isOnHomePage: boolean,
 	showNewReplyIndicator: boolean,
-	focusedTab: ContentScriptTab,
-	userArticle: UserArticle
+	focusedTab?: ContentScriptTab,
+	userArticle?: UserArticle
 }
 export default ExtensionState;

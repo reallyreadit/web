@@ -253,7 +253,7 @@ export default class ServerApi {
 		return this._articleLookupRequests.filter(r => r.id === tabId);
 	}
 	public getAuthStatus() {
-		return new Promise(resolve => chrome.cookies.get({
+		return new Promise<boolean>(resolve => chrome.cookies.get({
 			url: `${config.api.protocol}://${config.api.host}`,
 			name: 'sessionKey'
 		}, cookie => resolve(!!cookie)));

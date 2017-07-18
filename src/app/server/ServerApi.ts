@@ -12,8 +12,8 @@ export default class ServerApi extends Api {
 		this._cookie = cookie;
 		this._reqStore = new RequestStore();
 	}
-	public fetchJson(method: 'GET' | 'POST', params: Request) {
-		return new Promise((resolve, reject) => request({
+	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
+		return new Promise<T>((resolve, reject) => request({
 			method,
 			uri: this._endpoint.scheme + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path + params.getQueryString(),
 			headers: this._cookie ? { 'Cookie': this._cookie } : {},
@@ -41,7 +41,7 @@ export default class ServerApi extends Api {
 			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
-				value: this._reqStore.getData(request)
+				value: this._reqStore.getData(request) as T
 			};
 		} else {
 			console.log('Api: fetch[sync/loading, async/na]');
@@ -50,7 +50,7 @@ export default class ServerApi extends Api {
 		}
 	}
 	protected post<T>(request: Request) : Promise<T> {
-		return this.fetchJson('POST', request);
+		return this.fetchJson<T>('POST', request);
 	}
 	public processRequests() {
 		// TODO: support catching errors and assigning to RequestData
