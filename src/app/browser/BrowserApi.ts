@@ -13,30 +13,25 @@ export default class BrowserApi extends Api {
 			const req = new XMLHttpRequest();
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
-				switch (this.status) {
-					case 200:
-						if (parseInt(this.getResponseHeader('Content-Length'))) {
-							resolve(JSON.parse(this.responseText));
+				if (this.status === 200 || this.status === 400) {
+					const contentType = this.getResponseHeader('Content-Type');
+					let object: any;
+					if (contentType && contentType.startsWith('application/json')) {
+						object = JSON.parse(this.responseText);
+					}
+					if (this.status === 200) {
+						if (object) {
+							resolve(object);
 						} else {
 							resolve();
 						}
-						break;
-					case 400:
-						// TODO: update api server to always return JSON on bad request response
-						const contentType = this.getResponseHeader('Content-Type');
-						if (contentType && contentType.startsWith('application/json')) {
-							reject(JSON.parse(this.responseText));
-						} else {
-							reject([]);
-						}
-						break;
-					case 401:
-						// TODO: should probably notify user, sign out and redirect if applicable
-						reject(['Unauthenticated']);
-						break;
-					default:
-						reject([]);
-						break;
+					} else {
+						reject(object || []);
+					}
+				} else if (this.status === 401) {
+					reject(['Unauthenticated']);
+				} else {
+					reject([]);
 				}
 			});
 			req.addEventListener('error', function () {
