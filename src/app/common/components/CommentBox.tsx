@@ -25,7 +25,13 @@ export default class CommentBox extends ContextComponent<Props, {
 					commentText: '',
 					isPosting: false
 				});
-				this.props.onCommentPosted(comment);
+                this.props.onCommentPosted(comment);
+                ga('send', {
+                    hitType: 'event',
+                    eventCategory: 'Comment',
+                    eventAction: comment.parentCommentId ? 'reply' : 'post',
+                    eventValue: comment.text.length
+                });
 			});
 	};
     constructor(props: Props, context: Context) {
