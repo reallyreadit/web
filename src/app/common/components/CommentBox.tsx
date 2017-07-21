@@ -30,6 +30,7 @@ export default class CommentBox extends ContextComponent<Props, {
                     hitType: 'event',
                     eventCategory: 'Comment',
                     eventAction: comment.parentCommentId ? 'reply' : 'post',
+                    eventLabel: comment.articleTitle,
                     eventValue: comment.text.length
                 });
 			});
