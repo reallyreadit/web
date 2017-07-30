@@ -6,6 +6,7 @@ import Request from './Request';
 import RequestStore from './RequestStore';
 import Endpoint from './Endpoint';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
+import PageResult from '../../../common/models/PageResult';
 
 export interface InitData {
 	endpoint: Endpoint,
@@ -23,8 +24,8 @@ export default abstract class Api {
 	protected getUrl(path: string) {
 		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
-	public listArticles(callback: (articles: Fetchable<UserArticle[]>) => void) {
-		return this.get<UserArticle[]>(new Request('/Articles/List'), callback);
+	public listHotTopics(pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) {
+		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListHotTopics', { pageNumber }), callback);
 	}
 	public createUserAccount(name: string, email: string, password: string) {
 		return this.post<UserAccount>(new Request(
