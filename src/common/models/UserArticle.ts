@@ -3,18 +3,23 @@ interface UserArticle {
 	title: string,
 	slug: string,
 	sourceId: string,
+	source: string,
 	datePublished: string,
 	dateModified: string,
 	section: string,
 	description: string,
-	source: string,
 	url: string,
 	authors: string[],
 	tags: string[],
 	wordCount: number,
 	readableWordCount: number,
 	pageCount: number,
-	percentComplete: number,
-	commentCount: number
+	commentCount: number,
+	latestCommentDate: string,
+	userAccountId: string,
+	wordsRead: number,
+	dateCreated: string,
+	dateStarred: string,
+	percentComplete: number
 }
 export default UserArticle;
