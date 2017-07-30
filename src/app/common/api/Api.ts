@@ -81,8 +81,8 @@ export default abstract class Api {
 	public deleteUserArticle(articleId: string) {
 		return this.post(new Request('/Articles/UserDelete', { articleId }));
 	}
-	public listReplies(callback: (comments: Fetchable<Comment[]>) => void) {
-		return this.get<Comment[]>(new Request('/Articles/ListReplies'), callback);
+	public listReplies(pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) {
+		return this.get<PageResult<Comment>>(new Request('/Articles/ListReplies', { pageNumber }), callback);
 	}
 	public checkNewReplyNotification(callback: (states: Fetchable<NewReplyNotification>) => void) {
 		return this.get<NewReplyNotification>(new Request('/UserAccounts/CheckNewReplyNotification'), callback);
