@@ -6,15 +6,15 @@ import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
-import Icon from '../../../common/components/Icon';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
+import Star from '../../../common/components/Star';
 
 interface Props {
 	article: UserArticle,
-	showControls?: boolean,
-	onDelete?: (article: UserArticle) => void
+	showControls: boolean,
+	onChange: (article: UserArticle) => void
 }
-export default class ArticleDetails extends PureContextComponent<Props, {}> {
+export default class ArticleDetails extends PureContextComponent<Props, { isStarring: boolean }> {
 	private _slugParts: string[];
 	private _checkReadReadiness = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		let reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut';
@@ -31,16 +31,35 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 		}
 	};
 	private _goToComments = () => this.context.router.history.push(`/articles/${this._slugParts[0]}/${this._slugParts[1]}`);
-	private _deleteArticle = (e: React.MouseEvent<HTMLDivElement>) => this.props.onDelete(this.props.article);
+	private _toggleStar = () => {
+		this.setState({ isStarring: true });
+		(this.props.article.dateStarred ?
+			this.context.api.unstarArticle(this.props.article.id) :
+			this.context.api.starArticle(this.props.article.id))
+				.then(() => {
+					this.setState({ isStarring: false });
+					this.props.onChange({
+						...this.props.article,
+						dateStarred: this.props.article.dateStarred ? null : new Date().toISOString()
+					});
+				});
+	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
-		this._slugParts = props.article.slug.split('_')
+		this.state = { isStarring: false };
+		this.setSlugParts(props.article.slug);
+	}
+	private setSlugParts(slug: string) {
+		this._slugParts = slug.split('_');
+	}
+	public componentWillReceiveProps(nextProps: Props) {
+		this.setSlugParts(nextProps.article.slug);
 	}
 	public render() {
 		const article = this.props.article;
 		return (
-			<div className="article-details">
-				<div className={className('content', { 'with-controls': this.props.showControls })}>
+			<div className={className('article-details', { 'controls-visible': this.props.showControls })}>
+				<div className="content">
 					<div className="top-row">
 						<div className="title">
 							<a href={article.url} onClick={this._checkReadReadiness}>{article.title}</a>
@@ -58,10 +77,9 @@ export default class ArticleDetails extends PureContextComponent<Props, {}> {
 					{article.percentComplete ?
 						<PercentCompleteIndicator percentComplete={article.percentComplete} /> : null}
 				</div>
-				{this.props.showControls ?
-					<div className="controls" title="Delete" onClick={this._deleteArticle}>
-						<Icon name="cancel" />
-					</div> : null}
+				<div className="controls">
+					<Star starred={!!article.dateStarred} busy={this.state.isStarring} onClick={this._toggleStar} />
+				</div>
 			</div>
 		);
 	}

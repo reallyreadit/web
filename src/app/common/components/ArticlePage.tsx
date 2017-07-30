@@ -43,6 +43,12 @@ export default class ArticlePage extends ContextComponent<Props, {
 			this.context.page.setState(state);
 		}
 	};
+	private _updateArticle = (article: UserArticle) => this.setState({
+		article: {
+			...this.state.article,
+			value: article
+		}
+	});
 	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
 		this._loadArticle();
@@ -78,7 +84,9 @@ export default class ArticlePage extends ContextComponent<Props, {
 				<ArticleList>
 					{!this.state.article.isLoading ?
 						this.state.article.value ?
-							<li><ArticleDetails article={this.state.article.value} /></li> :
+							<li>
+								<ArticleDetails article={this.state.article.value} showControls={this.context.user.isSignedIn} onChange={this._updateArticle} />
+							</li> :
 							<li>Error loading article.</li> :
 						<li>Loading...</li>}
 				</ArticleList>

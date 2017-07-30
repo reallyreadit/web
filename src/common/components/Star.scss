@@ -1,0 +1,20 @@
+.star > .icon {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	stroke-width: 1px;
+	fill: transparent;
+	stroke: darkgray;
+}
+.star.starred > .icon {
+	fill: gold;
+	stroke: darkgoldenrod;
+}
+.star.busy > .icon {
+	animation: star-spinner 1000ms linear infinite;
+}
+
+@keyframes star-spinner {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}

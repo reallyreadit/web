@@ -63,8 +63,8 @@ export default abstract class Api {
 	public signOut() {
 		return this.post(new Request('/UserAccounts/SignOut'));
 	}
-	public listUserArticles(callback: (articles: Fetchable<UserArticle[]>) => void) {
-		return this.get<UserArticle[]>(new Request('/Articles/UserList'), callback);
+	public listStarredArticles(pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) {
+		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListStarred', { pageNumber }), callback);
 	}
 	public getArticleDetails(slug: string, callback: (article: Fetchable<UserArticle>) => void) {
 		return this.get<UserArticle>(new Request('/Articles/Details', { slug }), callback);
@@ -80,6 +80,12 @@ export default abstract class Api {
 	}
 	public deleteUserArticle(articleId: string) {
 		return this.post(new Request('/Articles/UserDelete', { articleId }));
+	}
+	public starArticle(articleId: string) {
+		return this.post(new Request('/Articles/Star', { articleId }));
+	}
+	public unstarArticle(articleId: string) {
+		return this.post(new Request('/Articles/Unstar', { articleId }));
 	}
 	public listReplies(pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) {
 		return this.get<PageResult<Comment>>(new Request('/Articles/ListReplies', { pageNumber }), callback);

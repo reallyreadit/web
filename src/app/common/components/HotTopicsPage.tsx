@@ -34,6 +34,16 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 		);
 		this.context.page.setState({ isLoading: true });
 	};
+	private _updateArticle = (article: UserArticle) => {
+		const items = this.state.articles.value.items.slice();
+		items.splice(items.findIndex(a => a.id === article.id), 1, article);
+		this.setState({
+			articles: {
+				...this.state.articles,
+				value: { ...this.state.articles.value, items }
+			}
+		});
+	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { articles: this._loadArticles() };
@@ -63,7 +73,11 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 					{!this.state.articles.isLoading ?
 						this.state.articles.value ?
 							this.state.articles.value.items.length ?
-								this.state.articles.value.items.map(article => <li key={article.id}><ArticleDetails article={article} /></li>) :
+								this.state.articles.value.items.map(article =>
+									<li key={article.id}>
+										<ArticleDetails article={article} showControls={this.context.user.isSignedIn} onChange={this._updateArticle} />
+									</li>
+								) :
 								<li>No articles found.</li> :
 							<li>Error loading articles.</li> :
 						<li>Loading...</li>}
