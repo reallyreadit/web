@@ -74,7 +74,8 @@ $disabled-border-color: #ccc;
 	outline: none;
 	text-decoration: underline;
 }
-.button:not(.disabled):active {
+.button:not(.disabled):active,
+.button:not(.disabled).active {
 	.content {
 		background-color: #000;
 		color: #fff;
@@ -111,7 +112,8 @@ $disabled-border-color: #ccc;
 .button.preferred::after { @include end-cap($bevel-height + 2); }
 .button.preferred::before { @include end-cap-left($bevel-width + 2, $border-color); }
 .button.preferred::after { @include end-cap-right($bevel-width + 2, $border-color); }
-.button.preferred:not(.disabled):active {
+.button.preferred:not(.disabled):active,
+.button.preferred:not(.disabled).active {
 	.outer-wrap { background-color: #000; }
 	.outer-wrap::before,
 	.outer-wrap::after { @include end-cap($bevel-height + 1); }

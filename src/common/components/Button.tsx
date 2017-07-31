@@ -6,7 +6,7 @@ export default class Button extends React.PureComponent<{
 	text: string,
 	iconLeft?: IconName,
 	style?: 'normal' | 'preferred',
-	state?: 'normal' | 'disabled' | 'busy',
+	state?: 'normal' | 'active' | 'disabled' | 'busy',
 	showIndicator?: boolean,
 	textStyle?: 'normal' | 'error'
 	onClick?: () => void
@@ -23,7 +23,8 @@ export default class Button extends React.PureComponent<{
 		const classList = {
 			preferred: this.props.style === 'preferred',
 			disabled: this.props.state === 'disabled' || this.props.state === 'busy',
-			busy: this.props.state === 'busy'
+			busy: this.props.state === 'busy',
+			active: this.props.state === 'active'
 		};
 		return (
 			<button className={className('button', classList)} onClick={this.handleClick}>
