@@ -1,7 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../../../common/models/UserArticle';
 import * as className from 'classnames';
-import readingParameters from '../../../common/readingParameters';
 import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
@@ -9,6 +8,7 @@ import CommentsActionLink from '../../../common/components/CommentsActionLink';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 import Star from '../../../common/components/Star';
 import Icon from '../../../common/components/Icon';
+import ArticleLengthIndicator from '../../../common/components/ArticleLengthIndicator';
 
 interface Props {
 	article: UserArticle,
@@ -82,8 +82,10 @@ export default class ArticleDetails extends PureContextComponent<Props, { isStar
 					<div className="top-row">
 						<div className="title">
 							<a href={article.url} onClick={this._checkReadReadiness}>{article.title}</a>
-							<span className="word-count">({Math.round(article.wordCount / readingParameters.averageWordsPerMinute)} min. read)</span>
-							{article.tags.length ? article.tags.map(tag => <span key={tag} className="tag">{tag}</span>) : null}
+							<ArticleLengthIndicator wordCount={article.wordCount} />
+							<div className="tags">
+								{article.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
+							</div>
 						</div>
 						{article.description ? <span className="description">{article.description}</span> : null}
 					</div>

@@ -14,30 +14,35 @@
 	padding-right: 0;
 }
 .article-details > .content > .top-row > .title {
+	display: flex;
+	align-items: center;
 	white-space: nowrap;
 	overflow: hidden;
 }
 .article-details > .content > .top-row > .title > a {
 	color: blue;
 	text-decoration: underline;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
-.article-details > .content > .top-row > .title > .word-count {
-	color: darkgray;
-	font-size: 12px;
-	margin: 0 3px;
-	white-space: nowrap;
+.article-details > .content > .top-row > .title > .article-length-indicator {
+	margin-left: 3px;
+	flex: 0 0 auto;
 }
-.article-details > .content > .top-row > .title > .tag {
-	display: inline-block;
-	white-space: nowrap;
+.article-details > .content > .top-row > .title > .tags {
+	flex: 1 1 0;
+	overflow: hidden;
+	display: flex;
+}
+.article-details > .content > .top-row > .title > .tags > .tag {
 	margin: 0 1px;
 	color: lightgray;
 	border: 1px dotted lightgray;
 	border-radius: 3px;
 	padding: 0 1px;
 }
-.article-details > .content > .top-row > .title > .tag:first-of-type {
-	margin-left: 3px;
+.article-details > .content > .top-row > .title > .tags > .tag:first-child {
+	margin-left: 4px;
 }
 .article-details > .content > .top-row > .description {
 	display: block;
