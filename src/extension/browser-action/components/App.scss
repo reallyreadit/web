@@ -1,5 +1,5 @@
 .app {
-	width: 350px;
+	width: 375px;
 	font-family: monospace;
 	font-size: 13px;
 }
@@ -53,13 +53,21 @@
 	white-space: nowrap;
 	overflow: hidden;
 }
-.app > .article-info > .content > h2 {
+.app > .article-info > .content > .top-row {
+	display: flex;
+	align-items: center;
+	padding-bottom: 3px;
+}
+.app > .article-info > .content > .top-row > h2 {
 	font-size: 12px;
-   margin: 5px 0;
 	font-style: italic;
    color: darkviolet;
 	overflow: hidden;
    text-overflow: ellipsis;
+}
+.app > .article-info > .content > .top-row > .article-length-indicator {
+	flex: 0 0 auto;
+	margin-left: 3px;
 }
 .app > .article-info > .controls {
 	flex: 0 0 auto;

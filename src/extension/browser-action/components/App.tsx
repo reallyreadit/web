@@ -7,6 +7,7 @@ import NavBar from '../../../common/components/NavBar';
 import Icon from '../../../common/components/Icon';
 import logoText from '../../../common/svg/logoText';
 import Star from '../../../common/components/Star';
+import ArticleLengthIndicator from '../../../common/components/ArticleLengthIndicator';
 
 export default class App extends React.Component<{}, ExtensionState & { isStarring: boolean }> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
@@ -81,7 +82,10 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 									<Star starred={!!this.state.userArticle.dateStarred} busy={this.state.isStarring} onClick={this._toggleStar} />
 								</div>
 								<div className="content">
-									<h2>{this.state.userArticle.title}</h2>
+									<div className="top-row">
+										<h2>{this.state.userArticle.title}</h2>
+										<ArticleLengthIndicator wordCount={this.state.userArticle.wordCount} />
+									</div>
 									<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
 									<span> - </span>
 									<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
