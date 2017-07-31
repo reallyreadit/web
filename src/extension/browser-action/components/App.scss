@@ -1,5 +1,5 @@
 .app {
-	width: 325px;
+	width: 350px;
 	font-family: monospace;
 	font-size: 13px;
 }
@@ -41,16 +41,33 @@
 	text-align: center;
 }
 .app > .article-info {
-	padding: 5px;
-	white-space: nowrap;
+	display: flex;
+	border: 1px solid gray;
+	border-radius: 5px;
+	margin: 5px;
+	overflow: hidden;
 }
-.app > .article-info > h2 {
+.app > .article-info > .content {
+	flex: 1 1 auto;
+	padding: 5px 0 5px 5px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.app > .article-info > .content > h2 {
 	font-size: 12px;
    margin: 5px 0;
 	font-style: italic;
    color: darkviolet;
 	overflow: hidden;
    text-overflow: ellipsis;
+}
+.app > .article-info > .controls {
+	flex: 0 0 auto;
+	width: 35px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-left: 3px double gray;
 }
 .app > .article-placeholder {
 	padding: 15px 0;

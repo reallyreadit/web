@@ -41,7 +41,8 @@ const tabs = new SetStore<number, ContentScriptTab>('tabs', 'local', t => t.id);
 // browser action
 const browserActionApi = new BrowserActionApi({
 	onLoad: () => getState(),
-	onAckNewReply: () => serverApi.ackNewReply()
+	onAckNewReply: () => serverApi.ackNewReply(),
+	onSetStarred: (articleId, isStarred) => serverApi.setStarred(articleId, isStarred)
 });
 
 // content script

@@ -268,6 +268,11 @@ export default class ServerApi {
 	public getSourceRules(hostname: string) {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
 	}
+	public setStarred(articleId: string, isStarred: boolean) {
+		return ServerApi
+			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
+			.then(userArticle => this.cacheArticle(userArticle));
+	}
 	public get eventPageConfig() {
 		return this._eventPageConfig;
 	}

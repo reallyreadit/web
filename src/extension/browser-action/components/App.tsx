@@ -6,8 +6,9 @@ import PercentCompleteIndicator from '../../../common/components/PercentComplete
 import NavBar from '../../../common/components/NavBar';
 import Icon from '../../../common/components/Icon';
 import logoText from '../../../common/svg/logoText';
+import Star from '../../../common/components/Star';
 
-export default class App extends React.Component<{}, ExtensionState> {
+export default class App extends React.Component<{}, ExtensionState & { isStarring: boolean }> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
 	private _showSignInDialog = () => this._openInNewTab('/?sign-in');
 	private _showCreateAccountDialog = () => this._openInNewTab('/?create-account');
@@ -19,6 +20,18 @@ export default class App extends React.Component<{}, ExtensionState> {
 		const slugParts = this.state.userArticle.slug.split('_');
 		this._openInNewTab(`/articles/${slugParts[0]}/${slugParts[1]}`);
 	};
+	private _toggleStar = () => {
+		this.setState({ isStarring: true });
+		this._eventPageApi
+			.setStarred(this.state.userArticle.id, !this.state.userArticle.dateStarred)
+			.then(() => this.setState({
+				userArticle: {
+					...this.state.userArticle,
+					dateStarred: this.state.userArticle.dateStarred ? null : new Date().toISOString()
+				},
+				isStarring: false
+			}));
+	};
 	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
 	constructor() {
 		super();
@@ -27,7 +40,8 @@ export default class App extends React.Component<{}, ExtensionState> {
 			isOnHomePage: false,
 			showNewReplyIndicator: false,
 			focusedTab: null,
-			userArticle: null
+			userArticle: null,
+			isStarring: false
 		};
 		this._eventPageApi
 			.load()
@@ -63,10 +77,15 @@ export default class App extends React.Component<{}, ExtensionState> {
 					{this.state.isAuthenticated ?
 						this.state.userArticle ?
 							<div className="article-info">
-								<h2>{this.state.userArticle.title}</h2>
-								<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
-								<span> - </span>
-								<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
+								<div className="content">
+									<h2>{this.state.userArticle.title}</h2>
+									<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
+									<span> - </span>
+									<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
+								</div>
+								<div className="controls">
+									<Star starred={!!this.state.userArticle.dateStarred} busy={this.state.isStarring} onClick={this._toggleStar} />
+								</div>
 							</div> :
 							<div className="article-placeholder">
 								No article found on page

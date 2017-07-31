@@ -12,7 +12,8 @@ export default class BrowserActionApi {
 	}
 	constructor(handlers: {
 		onLoad: () => Promise<ExtensionState>,
-		onAckNewReply: () => void
+		onAckNewReply: () => void,
+		onSetStarred: (articleId: string, isStarred: boolean) => Promise<void>
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage') {
@@ -25,6 +26,11 @@ export default class BrowserActionApi {
 					case 'ackNewReply':
 						handlers.onAckNewReply();
 						break;
+					case 'setStarred':
+						handlers
+							.onSetStarred(message.data.articleId, message.data.isStarred)
+							.then(sendResponse);
+						return true;
 				}
 			}
 			return false;
