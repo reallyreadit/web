@@ -54,7 +54,7 @@ export default class ReadingListPage extends ContextComponent<RouteComponentProp
 		this.context.page.setState({ isLoading: true });
 	};
 	private _updateArticle = (article: UserArticle) => {
-		if (article.dateStarred || article.dateCreated) {
+		if (article.dateStarred || (this.state.view === 'history' && article.dateCreated)) {
 			const items = this.state.articles.value.items.slice();
 			items.splice(items.findIndex(a => a.id === article.id), 1, article);
 			this.setState({
