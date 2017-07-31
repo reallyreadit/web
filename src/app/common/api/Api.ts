@@ -66,6 +66,9 @@ export default abstract class Api {
 	public listStarredArticles(pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) {
 		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListStarred', { pageNumber }), callback);
 	}
+	public listUserArticleHistory(pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) {
+		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListHistory', { pageNumber }), callback);
+	}
 	public getArticleDetails(slug: string, callback: (article: Fetchable<UserArticle>) => void) {
 		return this.get<UserArticle>(new Request('/Articles/Details', { slug }), callback);
 	}
