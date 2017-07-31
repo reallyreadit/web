@@ -75,7 +75,11 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 							this.state.articles.value.items.length ?
 								this.state.articles.value.items.map(article =>
 									<li key={article.id}>
-										<ArticleDetails article={article} showControls={this.context.user.isSignedIn} onChange={this._updateArticle} />
+										<ArticleDetails
+											article={article}
+											showStarControl={this.context.user.isSignedIn}
+											onChange={this._updateArticle}
+										/>
 									</li>
 								) :
 								<li>No articles found.</li> :

@@ -35,15 +35,23 @@ export default class ReadingListPage extends ContextComponent<RouteComponentProp
 		);
 		this.context.page.setState({ isLoading: true });
 	};
-	private _removeArticle = (article: UserArticle) => {
-		const items = this.state.articles.value.items.slice();
-		items.splice(items.findIndex(a => a.id === article.id), 1);
-		this.setState({
-			articles: {
-				...this.state.articles,
-				value: { ...this.state.articles.value, items }
-			}
-		});
+	private _updateArticle = (article: UserArticle) => {
+		if (article.dateStarred) {
+			const items = this.state.articles.value.items.slice();
+			items.splice(items.findIndex(a => a.id === article.id), 1, article);
+			this.setState({
+				articles: {
+					...this.state.articles,
+					value: { ...this.state.articles.value, items }
+				}
+			});
+		} else {
+			this.removeArticle(article.id);
+		}
+	};
+	private _deleteArticle = (article: UserArticle) => {
+		this.context.api.deleteUserArticle(article.id);
+		this.removeArticle(article.id);
 	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
@@ -51,6 +59,16 @@ export default class ReadingListPage extends ContextComponent<RouteComponentProp
 	}
 	private getCurrentPage() {
 		return (this.state && this.state.articles && this.state.articles.value && this.state.articles.value.pageNumber) || 1;
+	}
+	private removeArticle(articleId: string) {
+		const items = this.state.articles.value.items.slice();
+		items.splice(items.findIndex(a => a.id === articleId), 1);
+		this.setState({
+			articles: {
+				...this.state.articles,
+				value: { ...this.state.articles.value, items }
+			}
+		});
 	}
 	public componentWillMount() {
 		this.context.page.setState({
@@ -76,7 +94,13 @@ export default class ReadingListPage extends ContextComponent<RouteComponentProp
 							this.state.articles.value.items.length ?
 								this.state.articles.value.items.map(article =>
 									<li key={article.id}>
-										<ArticleDetails article={article} showControls={true} onChange={this._removeArticle} />
+										<ArticleDetails
+											article={article}
+											showStarControl={true}
+											showDeleteControl={true}
+											onChange={this._updateArticle}
+											onDelete={this._deleteArticle}
+										/>
 									</li>
 								) :
 								<li>No articles found. Click on the star next to an article to add it to this list.</li> :

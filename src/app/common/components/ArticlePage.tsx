@@ -85,7 +85,11 @@ export default class ArticlePage extends ContextComponent<Props, {
 					{!this.state.article.isLoading ?
 						this.state.article.value ?
 							<li>
-								<ArticleDetails article={this.state.article.value} showControls={this.context.user.isSignedIn} onChange={this._updateArticle} />
+								<ArticleDetails
+									article={this.state.article.value}
+									showStarControl={this.context.user.isSignedIn}
+									onChange={this._updateArticle}
+								/>
 							</li> :
 							<li>Error loading article.</li> :
 						<li>Loading...</li>}

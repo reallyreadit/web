@@ -8,11 +8,14 @@ import ReadReadinessDialog from './ReadReadinessDialog';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 import Star from '../../../common/components/Star';
+import Icon from '../../../common/components/Icon';
 
 interface Props {
 	article: UserArticle,
-	showControls: boolean,
-	onChange: (article: UserArticle) => void
+	showStarControl: boolean,
+	showDeleteControl?: boolean,
+	onChange: (article: UserArticle) => void,
+	onDelete?: (article: UserArticle) => void
 }
 export default class ArticleDetails extends PureContextComponent<Props, { isStarring: boolean }> {
 	private _slugParts: string[];
@@ -44,6 +47,7 @@ export default class ArticleDetails extends PureContextComponent<Props, { isStar
 					});
 				});
 	};
+	private _delete = () => this.props.onDelete(this.props.article);
 	constructor(props: Props, context: Context) {
 		super(props, context);
 		this.state = { isStarring: false };
@@ -58,7 +62,22 @@ export default class ArticleDetails extends PureContextComponent<Props, { isStar
 	public render() {
 		const article = this.props.article;
 		return (
-			<div className={className('article-details', { 'controls-visible': this.props.showControls })}>
+			<div className={
+				className(
+					'article-details', {
+						'left-controls-visible': this.props.showStarControl,
+						'right-controls-visible': this.props.showDeleteControl
+					}
+				)
+			}>
+				<div className="controls left">
+					<Star
+						className="control"
+						starred={!!article.dateStarred}
+						busy={this.state.isStarring}
+						onClick={this._toggleStar}
+					/>
+				</div>
 				<div className="content">
 					<div className="top-row">
 						<div className="title">
@@ -77,8 +96,10 @@ export default class ArticleDetails extends PureContextComponent<Props, { isStar
 					{article.percentComplete ?
 						<PercentCompleteIndicator percentComplete={article.percentComplete} /> : null}
 				</div>
-				<div className="controls">
-					<Star starred={!!article.dateStarred} busy={this.state.isStarring} onClick={this._toggleStar} />
+				<div className="controls right">
+					<div className="control" title="Delete Article">
+						<Icon name="cancel" onClick={this._delete} />
+					</div>
 				</div>
 			</div>
 		);

@@ -10,7 +10,7 @@
 	overflow: hidden;
 	transition: padding-right 500ms;
 }
-.article-details.controls-visible > .content {
+.article-details.right-controls-visible > .content {
 	padding-right: 0;
 }
 .article-details > .content > .top-row > .title {
@@ -56,21 +56,40 @@
 }
 .article-details > .controls {
 	flex: 0 0 auto;
+	position: relative;
 	width: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-left: 0 double gray;
-	transition: width 500ms, border-left-width 500ms;
+	border-style: solid;
+	border-color: gray;
+	overflow: hidden;
+	transition: width 500ms;
 }
-.article-details.controls-visible > .controls {
-	width: 35px;
-	border-left-width: 3px;
+.article-details > .controls.left {
+	border-right-width: 1px;
+	left: -1px;
 }
-.article-details > .controls > .star {
+.article-details > .controls.right {
+	border-left-width: 1px;
+	right: -1px;
+}
+.article-details.left-controls-visible > .controls.left {
+	width: 28px;
+	left: 0;
+}
+.article-details.right-controls-visible > .controls.right {
+	width: 28px;
+	right: 0;
+}
+.article-details > .controls > .control {
 	opacity: 0;
-	transition: opacity 500ms;
+	cursor: pointer;
+	transition: opacity 250ms;
 }
-.article-details.controls-visible > .controls > .star {
+.article-details.left-controls-visible > .controls.left > .control {
+	opacity: 1;
+}
+.article-details.right-controls-visible > .controls.right > .control {
 	opacity: 1;
 }
