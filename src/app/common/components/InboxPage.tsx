@@ -80,7 +80,7 @@ export default class InboxPage extends ContextComponent<RouteComponentProps<{}>,
 						this.state.replies.value ?
 							this.state.replies.value.items.length ?
 								<CommentList comments={this.state.replies.value.items} mode="link" onViewThread={this._readReply} /> :
-								<span>No replies found.</span> :
+								<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
 							<span>Error loading replies.</span> :
 						<span>Loading...</span>}
 				</div>
