@@ -14,19 +14,16 @@ export default class AboutPage extends PureContextComponent<RouteComponentProps<
 		return (
 			<div className="about-page copy-page">
 				<p>
-					<strong>We built a better comments section.</strong> It keeps people from commenting on stuff they haven't read. Because who wants their opinion? Not us.
+					<strong>The problem with the internet is that nobody <em>really</em> reads.</strong>
 				</p>
 				<p>
-					<strong>We believe that commenting should be a privilege, not a right.</strong>
+					<strong>We are a community of people who believe that real reading matters.</strong> We don't allow skimming, scanning, or any other type of pseudo-reading. Reading happens when you take in <em>all</em> the words, in a row, from top to bottom. It's a lot harder than bouncing from headline to headline, but it's also a lot more rewarding.
 				</p>
 				<p>
-					<strong>Join the community.</strong> Our beta is open to the public. Using the Chrome extension, community members get credit for things they read from start to finish. You can read anything, anywhere on the internet. Everyone wins when everyone has really read.
+					<strong>We believe that commenting should be a privilege, not a right.</strong> So we built a better comments section. It prevents people from commenting on stuff they haven't really read.
 				</p>
 				<p>
-					<strong>Turn off the noise.</strong> Bloggers and publishers can easily embed our technology on their own site. Email us for more information.
-				</p>
-				<p>
-					-Bill &amp; Jeff
+					<strong>Give it a try.</strong> Anybody can use our technology and join our community. We'll see you in the comments section! Sincerely, Bill &amp; Jeff
 				</p>
 			</div>
 		);

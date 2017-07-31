@@ -3,7 +3,6 @@ import { RouteComponentProps } from 'react-router';
 import PureContextComponent from '../PureContextComponent';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
-import { Link } from 'react-router-dom';
 import readingIllustration from '../svg/readingIllustration';
 
 export default class HowItWorksPage extends PureContextComponent<RouteComponentProps<{}>, {}> {
@@ -101,17 +100,20 @@ export default class HowItWorksPage extends PureContextComponent<RouteComponentP
 					<p>Next, sign in or create an account.</p> :
 					<p>Next, <a onClick={this._showSignInDialog}>sign in</a> or <a onClick={this._showCreateAccountDialog}>create an account</a>.</p>}
 				<p>
-					Great! Now you can read anything, anywhere on the internet and get credit for finishing articles. Track your reading progress with our handy browser icon.
+					Great! Now you can read anything, anywhere on the internet and get credit for articles and stories you finish.
 				</p>
 				<div className="animated-illustration" dangerouslySetInnerHTML={{ __html: readingIllustration }}></div>
 				<p>
-					The icon is also a button. Use it to jump to the comments on reallyread.it. 
+					Track your reading progress with our handy browser icon.
 				</p>
 				<p>
-					Your {this.context.user.isSignedIn ? <Link to="/list">Reading List</Link> : <span>Reading List</span>} is private, nobody else can see it. It shows what you've really read and where you merely skimmed. 
+					Don't skim or skip ahead - you won't get credit. 
 				</p>
 				<p>
-					<strong>Take the plunge. Make some comments. Have fun!</strong>
+					The icon is also a button. Use it to star articles for later and to navigate between articles and their comments sections on our site.
+				</p>
+				<p>
+					More questions? Check out the <a href="http://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>.
 				</p>
 			</div>
 		);
