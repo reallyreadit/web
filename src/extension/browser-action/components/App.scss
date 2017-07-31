@@ -44,12 +44,12 @@
 	display: flex;
 	border: 1px solid gray;
 	border-radius: 5px;
-	margin: 5px;
+	margin-top: 10px;
 	overflow: hidden;
 }
 .app > .article-info > .content {
 	flex: 1 1 auto;
-	padding: 5px 0 5px 5px;
+	padding: 5px;
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -63,11 +63,11 @@
 }
 .app > .article-info > .controls {
 	flex: 0 0 auto;
-	width: 35px;
+	width: 28px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-left: 3px double gray;
+	border-right: 1px solid gray;
 }
 .app > .article-placeholder {
 	padding: 15px 0;

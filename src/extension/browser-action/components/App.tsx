@@ -77,14 +77,14 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 					{this.state.isAuthenticated ?
 						this.state.userArticle ?
 							<div className="article-info">
-								<div className="content">
-									<h2>{this.state.userArticle.title}</h2>
-									<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
-									<span> - </span>
-									<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
-								</div>
 								<div className="controls">
 									<Star starred={!!this.state.userArticle.dateStarred} busy={this.state.isStarring} onClick={this._toggleStar} />
+								</div>
+								<div className="content">
+									<h2>{this.state.userArticle.title}</h2>
+									<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
+									<span> - </span>
+									<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
 								</div>
 							</div> :
 							<div className="article-placeholder">
