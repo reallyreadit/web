@@ -17,23 +17,25 @@ export default class CommentBox extends ContextComponent<Props, {
 }> {
 	private _updateCommentText = (event: React.FormEvent<HTMLTextAreaElement>) => this.setState({ commentText: (event.target as HTMLTextAreaElement).value });
 	private _postComment = () => {
-		this.setState({ isPosting: true });
-		this.context.api
-			.postComment(this.state.commentText, this.props.articleId, this.props.parentCommentId)
-			.then(comment => {
-				this.setState({
-					commentText: '',
-					isPosting: false
-				});
-                this.props.onCommentPosted(comment);
-                ga('send', {
-                    hitType: 'event',
-                    eventCategory: 'Comment',
-                    eventAction: comment.parentCommentId ? 'reply' : 'post',
-                    eventLabel: comment.articleTitle,
-                    eventValue: comment.text.length
+        if (this.state.commentText.trim() !== '') {
+            this.setState({ isPosting: true });
+            this.context.api
+                .postComment(this.state.commentText, this.props.articleId, this.props.parentCommentId)
+                .then(comment => {
+                    this.setState({
+                        commentText: '',
+                        isPosting: false
+                    });
+                    this.props.onCommentPosted(comment);
+                    ga('send', {
+                        hitType: 'event',
+                        eventCategory: 'Comment',
+                        eventAction: comment.parentCommentId ? 'reply' : 'post',
+                        eventLabel: comment.articleTitle,
+                        eventValue: comment.text.length
+                    });
                 });
-			});
+        }
 	};
     constructor(props: Props, context: Context) {
         super(props, context);
