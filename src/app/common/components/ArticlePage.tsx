@@ -21,18 +21,36 @@ export default class ArticlePage extends ContextComponent<Props, {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<Comment[]>
 }> {
+	private static findComment(id: string, comment: Comment) {
+		if (comment.id === id) {
+			return comment;
+		}
+		let match: Comment = null;
+		for (let i = 0; match == null && i < comment.children.length; i++) {
+			match = ArticlePage.findComment(id, comment.children[i]);
+		}
+		return match;
+	}
 	private _slug: string;
 	private _loadArticle = () => this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState));
 	private _loadComments = () => this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState));
-	private _reloadArticle = () => {
-		this.context.page.setState({ isLoading: true });
-		this._loadArticle();
-	};
 	private _addComment = (comment: Comment) => {
+		this.setState({ comments: { ...this.state.comments, value: [comment, ...this.state.comments.value] }});
+		this.incrementCommentCount();
+	};
+	private _addReply = (comment: Comment) => {
 		const comments = this.state.comments.value.slice();
-		comments.splice(Math.max(comments.findIndex(c => c.dateCreated < comment.dateCreated), 0), 0, comment);
-		this.setState({ comments: { ...this.state.comments, value: comments }});
-		this._reloadArticle();
+		let parent: Comment = null;
+		for (let i = 0; parent == null && i < comments.length; i++) {
+			if (comments[i].id === comment.parentCommentId) {
+				parent = comments[i];
+			} else {
+				parent = ArticlePage.findComment(comment.parentCommentId, comments[i]);
+			}
+		}
+		parent.children.push(comment);
+		this.setState({ comments: { ...this.state.comments, value: comments } });
+		this.incrementCommentCount();
 	};
 	private _updatePageState = () => {
 		if (!this.state.article.isLoading) {
@@ -62,6 +80,14 @@ export default class ArticlePage extends ContextComponent<Props, {
 			comments: this._loadComments()
 		};
 	}
+	private incrementCommentCount() {
+		this.setState({
+			article: {
+				...this.state.article,
+				value: { ...this.state.article.value, commentCount: this.state.article.value.commentCount + 1 }
+			}
+		});
+	}
 	public componentWillMount() {
 		this.context.page.setState({
 			title: this.state.article.isLoading ? 'Loading...' : this.state.article.value.title,
@@ -78,7 +104,9 @@ export default class ArticlePage extends ContextComponent<Props, {
 		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
-		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn && this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
+		const isAllowedToPost = this.state.article.value &&
+			this.context.user.isSignedIn &&
+			this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
 		return (
 			<div className="article-page">
 				<ArticleList>
@@ -95,6 +123,11 @@ export default class ArticlePage extends ContextComponent<Props, {
 						<li>Loading...</li>}
 				</ArticleList>
 				<h3>Comments</h3>
+				<CommentBox
+					articleId={(this.state.article.value && this.state.article.value.id) || null}
+					isAllowedToPost={isAllowedToPost}
+					onCommentPosted={this._addComment}
+				/>
 				{!this.state.comments.isLoading ?
 					this.state.comments.value ?
 						this.state.comments.value.length ?
@@ -102,16 +135,12 @@ export default class ArticlePage extends ContextComponent<Props, {
 								comments={this.state.comments.value}
 								mode="reply"
 								isAllowedToPost={isAllowedToPost}
-								onCommentAdded={this._reloadArticle}
+								onCommentAdded={this._addReply}
 								highlightedCommentId={this.props.match.params.commentId}
-								/> :
+							/> :
 							<span>No comments found! (Post one!)</span> :
 						<span>Error loading comments.</span> :
 					<span>Loading...</span>}
-				<hr />
-				<div className="comment-box-wrapper">
-					<CommentBox articleId={this.state.article.value ? this.state.article.value.id : null} isAllowedToPost={isAllowedToPost} onCommentPosted={this._addComment} />
-				</div>
 			</div>
 		);
 	}

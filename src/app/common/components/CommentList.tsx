@@ -14,7 +14,8 @@ export default class CommentList extends React.Component<{
     public render() {
         return (
             <ul className="comment-list">
-                {this.props.comments.map(comment => <CommentDetails
+                {this.props.comments.map(comment =>
+                    <CommentDetails
                         key={comment.id}
                         comment={comment}
                         mode={this.props.mode}
