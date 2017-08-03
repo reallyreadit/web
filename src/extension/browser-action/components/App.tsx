@@ -4,7 +4,6 @@ import ExtensionState from '../../common/ExtensionState';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
 import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 import NavBar from '../../../common/components/NavBar';
-import Icon from '../../../common/components/Icon';
 import logoText from '../../../common/svg/logoText';
 import Star from '../../../common/components/Star';
 import ArticleLengthIndicator from '../../../common/components/ArticleLengthIndicator';
@@ -55,12 +54,7 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 			this.state.isAuthenticated && this.state.isOnHomePage ?
 				<div className="app">
 					<div className="ready-indicator">
-						<h1>
-							<span className="ready-circle">
-								<Icon name="checkmark" />
-							</span>
-							<span>Go read something!</span>
-						</h1>
+						<h1>Go read something!</h1>
 					</div>
 				</div> :
 				<div className="app">
