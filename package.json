@@ -5,7 +5,7 @@
   "it.reallyread": {
     "version": {
       "app": "0.35",
-      "extension": "0.28"
+      "extension": "0.29"
     }
   },
   "devDependencies": {
