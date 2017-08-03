@@ -38,6 +38,10 @@ export default class ServerApi {
 						reject(object || []);
 					}
 				} else if (this.status === 401) {
+					chrome.cookies.remove({
+						url: `${config.api.protocol}://${config.api.host}`,
+						name: 'sessionKey'
+					});
 					reject(['Unauthenticated']);
 				} else {
 					reject([]);
