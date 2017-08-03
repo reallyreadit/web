@@ -37,6 +37,29 @@
 	display: block;
 	width: 170px;
 }
+.app > .signed-out-warning {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	border: 1px dashed gray;
+	padding: 5px;
+}
+.app > .signed-out-warning > i {
+	display: block;
+	width: 28px;
+	flex: 0 0 auto;
+}
+.app > .signed-out-warning > i > svg {
+	display: block;
+}
+.app > .signed-out-warning > span {
+	font-size: 12px;
+	padding-left: 8px;
+}
+.app > .signed-out-warning > span > span {
+	text-decoration: underline;
+	cursor: pointer;
+}
 .app > .nav-bar {
 	text-align: center;
 }

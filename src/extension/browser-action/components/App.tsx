@@ -8,9 +8,11 @@ import Icon from '../../../common/components/Icon';
 import logoText from '../../../common/svg/logoText';
 import Star from '../../../common/components/Star';
 import ArticleLengthIndicator from '../../../common/components/ArticleLengthIndicator';
+import warningTriangle from '../../../common/svg/warningTriangle';
 
 export default class App extends React.Component<{}, ExtensionState & { isStarring: boolean }> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
+	private _goToHowItWorks = () => this._openInNewTab('/how-it-works');
 	private _showSignInDialog = () => this._openInNewTab('/?sign-in');
 	private _showCreateAccountDialog = () => this._openInNewTab('/?create-account');
 	private _goToInbox = () => (this.state.showNewReplyIndicator ? this._eventPageApi.ackNewReply() : Promise.resolve({}))
@@ -65,6 +67,12 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 					<h1>
 						<a href={`${config.web.protocol}://${config.web.host}`} target="_blank" dangerouslySetInnerHTML={{ __html: logoText }}></a>
 					</h1>
+					{!this.state.isAuthenticated ?
+						<div className="signed-out-warning">
+							<i dangerouslySetInnerHTML={{ __html: warningTriangle }}></i>
+							<span>You won't get credit for <span onClick={this._goToHowItWorks}>really reading</span> until you sign in or create an account.</span>
+						</div> :
+						null}
 					<NavBar
 						isSignedIn={this.state.isAuthenticated}
 						showNewReplyIndicator={this.state.showNewReplyIndicator}
