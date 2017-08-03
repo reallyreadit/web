@@ -128,8 +128,10 @@ export default class ServerApi {
 				case ServerApi._alarms.checkNewReplyNotification:
 					this.getAuthStatus().then(isAuthenticated => {
 						if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
-							ServerApi.fetchJson<NewReplyNotification>(new Request('GET', '/UserAccounts/CheckNewReplyNotification'))
-								.then(notification => this.processNewReplyNotification(notification));
+							ServerApi
+								.fetchJson<NewReplyNotification>(new Request('GET', '/UserAccounts/CheckNewReplyNotification'))
+								.then(notification => this.processNewReplyNotification(notification))
+								.catch(() => {});
 						}
 					});
 					break;
@@ -166,7 +168,8 @@ export default class ServerApi {
 			this._newReplyNotification.set(cache(notification, 50000));
 			if (!isNotificationStateEqual(current.value, notification)) {
 				if (shouldShowDesktopNotification(notification)) {
-					ServerApi.fetchJson<Comment>(new Request('POST', '/UserAccounts/CreateDesktopNotification'))
+					ServerApi
+						.fetchJson<Comment>(new Request('POST', '/UserAccounts/CreateDesktopNotification'))
 						.then(reply => {
 							if (reply) {
 								const now = Date.now();
@@ -195,8 +198,10 @@ export default class ServerApi {
 	}
 	private checkSourceRulesCache() {
 		if (isExpired(this._sourceRules.get())) {
-			ServerApi.fetchJson<SourceRule[]>(new Request('GET', '/Extension/GetSourceRules'))
-				.then(rules => this._sourceRules.set(cache(rules, 719000)));
+			ServerApi
+				.fetchJson<SourceRule[]>(new Request('GET', '/Extension/GetSourceRules'))
+				.then(rules => this._sourceRules.set(cache(rules, 719000)))
+				.catch(() => {});
 		}
 	}
 	private logRequest<T>(request: Request, store: Request[]) {
@@ -204,7 +209,8 @@ export default class ServerApi {
 			store.splice(store.indexOf(request), 1)
 		};
 		store.push(request);
-		return ServerApi.fetchJson<T>(request)
+		return ServerApi
+			.fetchJson<T>(request)
 			.then(res => {
 				removeRequest();
 				return res;
@@ -234,14 +240,18 @@ export default class ServerApi {
 	public getUserArticle(id: string) {
 		const userArticle = this._articles.get(id);
 		if (userArticle && isExpired(userArticle) && !this._articleCacheRequets.some(r => r.id === id)) {
-			this.logRequest<UserArticle>(new Request(id, 'GET', '/Extension/UserArticle', { id }), this._articleCacheRequets)
-				.then(userArticle => this.cacheArticle(userArticle));
+			this
+				.logRequest<UserArticle>(new Request(id, 'GET', '/Extension/UserArticle', { id }), this._articleCacheRequets)
+				.then(userArticle => this.cacheArticle(userArticle))
+				.catch(() => {});
 		}
 		return userArticle && userArticle.value;
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
-		ServerApi.fetchJson<UserArticle>(new Request('POST', '/Extension/CommitReadState', data))
-			.then(userArticle => this.cacheArticle(userArticle));
+		ServerApi
+			.fetchJson<UserArticle>(new Request('POST', '/Extension/CommitReadState', data))
+			.then(userArticle => this.cacheArticle(userArticle))
+			.catch(() => {});
 	}
 	public getArticleLookupRequests(tabId: number) {
 		return this._articleLookupRequests.filter(r => r.id === tabId);
@@ -263,7 +273,9 @@ export default class ServerApi {
 			lastNewReplyAck: now,
 			timestamp: now
 		});
-		ServerApi.fetchJson(new Request('POST', '/UserAccounts/AckNewReply'));
+		ServerApi
+			.fetchJson(new Request('POST', '/UserAccounts/AckNewReply'))
+			.catch(() => {});
 	}
 	public getSourceRules(hostname: string) {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
@@ -271,7 +283,8 @@ export default class ServerApi {
 	public setStarred(articleId: string, isStarred: boolean) {
 		return ServerApi
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
-			.then(userArticle => this.cacheArticle(userArticle));
+			.then(userArticle => this.cacheArticle(userArticle))
+			.catch(() => {});
 	}
 	public get eventPageConfig() {
 		return this._eventPageConfig;
