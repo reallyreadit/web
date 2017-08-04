@@ -5,6 +5,7 @@ const path = require('path'),
 const project = require('../project'),
 	  delayedWatch = require('../delayedWatch'),
 	  buildTypescript = require('../buildTypescript'),
+	  buildStaticAssets = require('../buildStaticAssets'),
 	  tsConfig = require('../../tsconfig.json');
 
 const srcGlob = [
@@ -24,12 +25,24 @@ class Server {
 		return del(project.getOutPath(targetPath, env) + '/*');
 	}
 	build(env) {
-		return buildTypescript({
-			src: srcGlob,
-			dest: project.getOutPath(targetPath, env),
-			sourceMaps: env === project.env.dev,
-			compilerOptions: tsConfig.compilerOptions
-		});
+		const tasks = [
+			new Promise((resolve, reject) => buildTypescript({
+				src: srcGlob,
+				dest: project.getOutPath(targetPath, env),
+				sourceMaps: env === project.env.dev,
+				compilerOptions: tsConfig.compilerOptions,
+				onComplete: resolve
+			}))
+		];
+		if (env === project.env.prod) {
+			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
+				src: `${project.srcDir}/app/server/web.config`,
+				dest: project.getOutPath(targetPath, env),
+				base: `${project.srcDir}/app/server`,
+				onComplete: resolve
+			})));
+		}
+		return Promise.all(tasks);
 	}
 	run() {
 		this.process = childProcess

@@ -21,7 +21,9 @@ function buildTypescript(params) {
 			sourceRoot: path.relative(params.dest, project.srcDir)
 		}));
 	}
-	return task.pipe(gulp.dest(params.dest));
+	return task
+		.pipe(gulp.dest(params.dest))
+		.on('end', params.onComplete || function() {});
 }
 
 module.exports = buildTypescript;
