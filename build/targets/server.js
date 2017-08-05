@@ -36,9 +36,9 @@ class Server {
 		];
 		if (env === project.env.prod) {
 			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-				src: `${project.srcDir}/app/server/web.config`,
-				dest: project.getOutPath(targetPath, env),
-				base: `${project.srcDir}/app/server`,
+				src: `${project.srcDir}/app/web.config`,
+				dest: project.getOutPath('app', env),
+				base: `${project.srcDir}/app`,
 				onComplete: resolve
 			})));
 		}
@@ -56,7 +56,12 @@ class Server {
 		return delayedWatch(
 			srcGlob, 
 			() => this.process
-				.on('exit', () => this.build(project.env.dev).on('end', this.run))
+				.on(
+					'exit',
+					() => this
+						.build(project.env.dev)
+						.then(() => this.run())
+				)
 				.kill()
 		);
 	}
