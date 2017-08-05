@@ -20,8 +20,7 @@ express()
 	.use(express.static(config.contentRootPath))
 	// render matched route or return 404
 	.use((req, res, next) => {
-		const match = matchPath(req.url, routes);
-		if (match) {
+		if (routes.find(route => !!matchPath(req.path, route))) {
 			next();
 		} else {
 			res.sendStatus(404);
