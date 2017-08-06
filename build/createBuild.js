@@ -65,7 +65,7 @@ function createBuild(params) {
 	}
 	return {
 		clean(env) {
-			return del(project.getOutPath(params.path, env) + '/*');
+			return del(project.getOutPath(params.path, env));
 		},
 		build(env) {
 			const outPath = project.getOutPath(params.path, env),

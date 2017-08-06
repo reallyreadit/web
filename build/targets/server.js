@@ -22,7 +22,11 @@ class Server {
 		this.watch = this.watch.bind(this);
 	}
 	clean(env) {
-		return del(project.getOutPath(targetPath, env) + '/*');
+		return del([
+			project.getOutPath(targetPath, env),
+			path.posix.join(project.getOutPath('app', env), 'web.config'),
+			path.posix.join(project.getOutPath('app', env), 'npm-shrinkwrap.json')
+		]);
 	}
 	build(env) {
 		const tasks = [
@@ -39,6 +43,11 @@ class Server {
 				src: `${project.srcDir}/app/web.config`,
 				dest: project.getOutPath('app', env),
 				base: `${project.srcDir}/app`,
+				onComplete: resolve
+			})));
+			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
+				src: 'npm-shrinkwrap.json',
+				dest: project.getOutPath('app', env),
 				onComplete: resolve
 			})));
 		}
