@@ -15,9 +15,13 @@ import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 import routes from '../common/routes';
 
-express()
+// create server
+let server = express();
+if (config.contentRootPath) {
 	// attempt to serve static files first
-	.use(express.static(config.contentRootPath))
+	server = server.use(express.static(config.contentRootPath));
+}
+server
 	// render matched route or return 404
 	.use((req, res, next) => {
 		if (routes.find(route => !!matchPath(req.path, route))) {
