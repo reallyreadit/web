@@ -5,6 +5,8 @@ import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import readingIllustration from '../svg/readingIllustration';
 
+declare var Snap: any;
+
 export default class HowItWorksPage extends PureContextComponent<RouteComponentProps<{}>, {}> {
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
@@ -39,7 +41,7 @@ export default class HowItWorksPage extends PureContextComponent<RouteComponentP
 		// - loop
 		const self = this;
 		function animateReading() {
-			(Snap as any)
+			Snap
 				.set(viewPort, scrollHandle, content, bubbleGradientStops)
 				.animate(
 					[{ transform: 't0,220' }, 4000],
