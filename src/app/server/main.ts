@@ -117,6 +117,10 @@ server
 			// one more call is needed since the page title renders before
 			// the pages which in turn set the page title in any async manner
 			const content = ReactDOMServer.renderToString(appElement);
+			// set the cache header
+			if (config.cacheEnabled && !req.sessionState.userAccount) {
+				res.setHeader('Cache-Control', 'max-age=5');
+			}
 			// return the content and init data
 			res.send(renderHtml({
 				title: page.title,
