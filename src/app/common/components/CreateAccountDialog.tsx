@@ -78,6 +78,12 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 	}
 	protected onSuccess(userAccount: UserAccount) {
 		this.context.user.signIn(userAccount);
+		ga('send', {
+			hitType: 'event',
+			eventCategory: 'UserAccount',
+			eventAction: 'create',
+			eventLabel: userAccount.name
+		});
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'DuplicateName')) {
