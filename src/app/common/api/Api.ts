@@ -48,6 +48,12 @@ export default abstract class Api {
 	public requestPasswordReset(email: string) {
 		return this.post(new Request('/UserAccounts/RequestPasswordReset', { email }));
 	}
+	public updateContactPreferences(receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) {
+		return this.post<UserAccount>(new Request(
+			'/UserAccounts/UpdateContactPreferences',
+			{ receiveWebsiteUpdates, receiveSuggestedReadings }
+		));
+	}
 	public updateNotificationPreferences(receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/UpdateNotificationPreferences',

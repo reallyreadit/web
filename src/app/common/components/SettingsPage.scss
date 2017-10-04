@@ -8,46 +8,32 @@
 .settings-page > ul > li > label {
 	display: block;
 }
-.settings-page > ul > li > .email-confirmation-status {
-	display: block;
+.settings-page > ul > li > .setting {
 	padding-left: 15px;
 }
-.settings-page > ul > li > .email-confirmation-status.confirmed {
+.settings-page > ul > li > .setting.on {
 	color: green;
 }
-.settings-page > ul > li > .email-confirmation-status.unconfirmed {
-	color: orange;
-}
-.settings-page > ul > li > .email-confirmation-status > .icon {
-	margin-right: 3px;
-}
-.settings-page > ul > li > .notification-channels {
-	padding-left: 10px;
-}
-.settings-page > ul > li > .notification-channels > .channel {
+.settings-page > ul > li > .setting.off {
 	color: gray;
 }
-.settings-page > ul > li > .notification-channels > .channel {
-	margin-bottom: 3px;
-}
-.settings-page > ul > li > .notification-channels > .channel:last-child {
-	margin-bottom: 0;
-}
-.settings-page > ul > li > .notification-channels > .channel.enabled {
-	color: green;
-}
-.settings-page > ul > li > .notification-channels > .channel > .icon {
-	margin-right: 3px;
-}
-.settings-page > ul > li > .notification-channels > .channel > .notice {
-	padding-left: 15px;
-	display: block;
+.settings-page > ul > li > .setting.warn {
 	color: orange;
 }
-.settings-page > ul > li > .notification-channels > .channel > .notice > .icon {
+.settings-page > ul > li > .setting + .setting {
+	margin-top: 3px;
+}
+.settings-page > ul > li > .setting > .icon {
 	margin-right: 3px;
 }
-.settings-page > ul > li > .notification-channels > .channel > .notice > a {
+.settings-page > ul > li > .setting > .notice {
+	padding-left: 15px;
+	color: orange;
+}
+.settings-page > ul > li > .setting > .notice > .icon {
+	margin-right: 3px;
+}
+.settings-page > ul > li > .setting > .notice > a {
 	cursor: pointer;
 	text-decoration: underline;
 }

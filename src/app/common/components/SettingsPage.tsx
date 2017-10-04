@@ -6,6 +6,7 @@ import Separator from '../../../common/components/Separator';
 import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
 import * as className from 'classnames';
+import EditContactPreferencesDialog from './SettingsPage/EditContactPreferencesDialog';
 import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
@@ -53,7 +54,17 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 				receiveEmailNotifications={user.receiveReplyEmailNotifications}
 				receiveDesktopNotifications={user.receiveReplyDesktopNotifications}
 				onSuccess={this._updateUserAccount}
-				/>
+			/>
+		);
+	};
+	private _openEditContactPreferencesDialog = () => {
+		const user = this.context.user.userAccount;
+		this.context.page.openDialog(
+			<EditContactPreferencesDialog
+				receiveWebsiteUpdates={user.receiveWebsiteUpdates}
+				receiveSuggestedReadings={user.receiveSuggestedReadings}
+				onSuccess={this._updateUserAccount}
+			/>
 		);
 	};
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
@@ -103,11 +114,11 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 						</label>
 						{user.email}
 						{user.isEmailConfirmed ?
-							<span className="email-confirmation-status confirmed">
+							<div className="setting on">
 								<Icon name="checkmark" />
 								Confirmed
-							</span> :
-							<span className="email-confirmation-status unconfirmed">
+							</div> :
+							<div className="setting off">
 								<Icon name="exclamation" />
 								Not Confirmed
 								<Separator />
@@ -116,8 +127,8 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 									iconLeft="refresh2"
 									state={this.state.isResendingConfirmationEmail ? 'busy' : 'normal'}
 									onClick={this._resendConfirmationEmail}
-									/>
-							</span>}
+								/>
+							</div>}
 					</li>
 					<li>
 						<label>
@@ -126,30 +137,38 @@ export default class SettingsPage extends PureContextComponent<RouteComponentPro
 							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditNotificationsDialog} />
 						</label>
 						When someone replies to my comment:
-						<ul className="notification-channels">
-							<li className={className('channel', { enabled: user.receiveReplyEmailNotifications })}>
-								<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
-								Send me an email
-								{user.receiveReplyEmailNotifications && !user.isEmailConfirmed ?
-									<span className="notice">
-										<Icon name="exclamation" />
-										Disabled until your address is confirmed
-									</span> :
-									null}
-							</li>
-							<li className={className('channel', { enabled: user.receiveReplyDesktopNotifications })}>
-								<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
-								Show a desktop notification
-								{user.receiveReplyDesktopNotifications && this.context.environment === 'browser' && this.context.extension.isInstalled() === false ?
-									<span className="notice">
-										<Icon name="exclamation" />
-										To get notifications you must {this.context.extension.isBrowserCompatible() ?
-											<a onClick={this._installExtension}>add the Chrome extension</a> :
-											<span>add the Chrome extension</span>}.
-									</span> :
-									null}
-							</li>
-						</ul>
+						<div className={className('setting', user.receiveReplyEmailNotifications ? 'on' : 'off')}>
+							<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
+							Send me an email
+						</div>
+						<div className={className('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
+							<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
+							Show a desktop notification
+							{user.receiveReplyDesktopNotifications && this.context.environment === 'browser' && this.context.extension.isInstalled() === false ?
+								<div className="notice">
+									<Icon name="exclamation" />
+									To get notifications you must {this.context.extension.isBrowserCompatible() ?
+										<a onClick={this._installExtension}>add the Chrome extension</a> :
+										<span>add the Chrome extension</span>}.
+								</div> :
+								null}
+						</div>
+					</li>
+					<li>
+						<label>
+							<strong>Contact Preferences</strong>
+							<Separator />
+							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditContactPreferencesDialog} />
+						</label>
+						Feel free to occasionally email me about the following:
+						<div className={className('setting', user.receiveWebsiteUpdates ? 'on' : 'off')}>
+							<Icon name={user.receiveWebsiteUpdates ? 'checkmark' : 'cancel'} />
+							Website updates
+						</div>
+						<div className={className('setting', user.receiveSuggestedReadings ? 'on' : 'off')}>
+							<Icon name={user.receiveSuggestedReadings ? 'checkmark' : 'cancel'} />
+							Suggested readings
+						</div>
 					</li>
 				</ul>
 			</div>
