@@ -1,6 +1,7 @@
 import { RouteProps } from 'react-router';
 import HotTopicsPage from './components/HotTopicsPage';
 import AboutPage from './components/AboutPage';
+import AdminPage from './components/AdminPage';
 import ReadingListPage from './components/ReadingListPage';
 import ArticlePage from './components/ArticlePage';
 import InboxPage from './components/InboxPage';
@@ -19,6 +20,10 @@ export default [
 	{
 		path: '/about',
 		component: AboutPage
+	},
+	{
+		path: '/admin',
+		component: AdminPage
 	},
 	{
 		path: '/articles/:sourceSlug/:articleSlug/:commentId?',

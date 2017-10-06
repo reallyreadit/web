@@ -8,6 +8,7 @@ import renderHtml from '../common/templates/html';
 import { StaticRouter, matchPath } from 'react-router';
 import MainView from '../common/components/MainView';
 import ServerUser from './ServerUser';
+import UserAccountRole from '../../common/models/UserAccountRole';
 import SessionState from '../../common/models/SessionState';
 import Request from '../common/api/Request';
 import config from './config';
@@ -72,6 +73,16 @@ server
 	.get(['/list', '/inbox', '/settings'], (req, res, next) => {
 		if (!req.sessionState.userAccount) {
 			res.redirect('/');
+		} else {
+			next();
+		}
+	})
+	.get('/admin', (req, res, next) => {
+		if (
+			!req.sessionState.userAccount ||
+			req.sessionState.userAccount.role !== UserAccountRole.Admin
+		) {
+			res.sendStatus(404);
 		} else {
 			next();
 		}
