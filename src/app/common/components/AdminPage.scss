@@ -1,0 +1,24 @@
+.admin-page {
+	padding-top: 5px;
+}
+.admin-page > table {
+	width: 100%;
+}
+.admin-page > table > caption > div {
+	border-width: 1px 1px 0 1px;
+	border-style: solid;
+	border-color: gray;
+}
+.admin-page > table > caption > .content {
+	display: flex;
+	justify-content: space-between;
+	padding: 5px;
+}
+.admin-page > table > thead > tr > th,
+.admin-page > table > tbody > tr > td {
+	padding: 5px;
+	border: 1px solid gray;
+}
+.admin-page > table > tbody > tr > td[colspan] {
+	text-align: center;
+}

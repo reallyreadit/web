@@ -1,5 +1,6 @@
 import Fetchable from './Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
+import BulkMailing from '../../../common/models/BulkMailing';
 import Comment from '../../../common/models/Comment';
 import UserAccount from '../../../common/models/UserAccount';
 import Request from './Request';
@@ -104,5 +105,8 @@ export default abstract class Api {
 	}
 	public ackNewReply() {
 		return this.post(new Request('/UserAccounts/AckNewReply'));
+	}
+	public getBulkMailings(callback: (mailings: Fetchable<BulkMailing[]>) => void) {
+		return this.get<BulkMailing[]>(new Request('/BulkMailings/List'), callback);
 	}
 }
