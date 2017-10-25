@@ -7,6 +7,7 @@ import ActionLink from '../../../../common/components/ActionLink';
 import Separator from '../../../../common/components/Separator';
 import * as className from 'classnames';
 import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotification';
+import UserAccountRole from '../../../../common/models/UserAccountRole';
 import logoIcon from '../../svg/logoIcon';
 import logoText from '../../../../common/svg/logoText';
 import Button from '../../../../common/components/Button';
@@ -25,6 +26,7 @@ export default class Header extends PureContextComponent<{}, { isSigningOut: boo
 	};
 	private _goToReadingList = () => this.context.router.history.push('/list');
 	private _goToSettings = () => this.context.router.history.push('/settings');
+	private _goToAdmin = () => this.context.router.history.push('/admin');
 	private _signOut = () => {
 		this.setState({ isSigningOut: true });
 		this.context.api.signOut().then(() => {
@@ -57,6 +59,12 @@ export default class Header extends PureContextComponent<{}, { isSigningOut: boo
 					{this.context.user.isSignedIn ?
 						<div className={className('user-name', { 'signing-out': this.state.isSigningOut })}>
 							<span>{this.state.isSigningOut ? 'Bye' : 'Hi'}, <strong>{this.context.user.userAccount.name}</strong></span>
+							{this.context.user.userAccount.role === UserAccountRole.Admin ?
+								[
+									<Separator key="0" />,
+									<ActionLink key="1" text="Admin" iconLeft="key" onClick={this._goToAdmin} />
+								] :
+								null}
 							<Separator />
 							<ActionLink text="Sign Out" iconLeft="switch" onClick={this._signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
 						</div> :
