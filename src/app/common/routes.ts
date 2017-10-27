@@ -6,7 +6,7 @@ import ReadingListPage from './components/ReadingListPage';
 import ArticlePage from './components/ArticlePage';
 import InboxPage from './components/InboxPage';
 import SettingsPage from './components/SettingsPage';
-import EmailPage from './components/EmailPage';
+import EmailConfirmationPage from './components/EmailConfirmationPage';
 import HowItWorksPage from './components/HowItWorksPage';
 import PasswordPage from './components/PasswordPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
@@ -30,8 +30,8 @@ export default [
 		component: ArticlePage
 	},
 	{
-		path: '/email/:action/:result',
-		component: EmailPage
+		path: '/email/confirm/:result',
+		component: EmailConfirmationPage
 	},
 	{
 		path: '/how-it-works',
