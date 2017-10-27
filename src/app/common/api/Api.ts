@@ -109,4 +109,13 @@ export default abstract class Api {
 	public getBulkMailings(callback: (mailings: Fetchable<BulkMailing[]>) => void) {
 		return this.get<BulkMailing[]>(new Request('/BulkMailings/List'), callback);
 	}
+	public getBulkMailingLists(callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) {
+		return this.get<{ key: string, value: string }[]>(new Request('/BulkMailings/Lists'), callback);
+	}
+	public sendTestBulkMailing(list: string, subject: string, body: string, emailAddress: string) {
+		return this.post(new Request('/BulkMailings/SendTest', { list, subject, body, emailAddress }));
+	}
+	public sendBulkMailing(list: string, subject: string, body: string) {
+		return this.post(new Request('/BulkMailings/Send', { list, subject, body }));
+	}
 }

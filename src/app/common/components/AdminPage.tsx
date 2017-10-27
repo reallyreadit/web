@@ -5,6 +5,7 @@ import Context from '../Context';
 import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../api/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
+import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 
 export default class extends ContextComponent<
 	RouteComponentProps<{}>,
@@ -18,6 +19,9 @@ export default class extends ContextComponent<
 			this.context.page.setState({ isLoading: false });
 		});
 	};
+	private readonly _openCreateDialog = () => this.context.page.openDialog(
+		<CreateBulkMailingDialog onSend={this._reload} />
+	);
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = {
@@ -49,7 +53,7 @@ export default class extends ContextComponent<
 					<caption>
 						<div className="content">
 							<strong>Bulk Mailings</strong>
-							<ActionLink iconLeft="plus" text="Add" />
+							<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateDialog} />
 						</div>
 					</caption>
 					<thead>
