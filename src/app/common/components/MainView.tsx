@@ -38,7 +38,15 @@ export default class MainView extends ContextComponent<{}, {}> {
 		}
 	}
 	public componentDidMount() {
-		if (this.context.router.route.location.search) {
+		const search = this.context.router.route.location.search;
+		if (
+			search &&
+			(
+				search === '?sign-in' ||
+				search === '?create-account' ||
+				search.startsWith('?reset-password')
+			)
+		) {
 			this.context.router.history.push(this.context.router.route.location.pathname);
 		}
 		this.context.page.addListener('change', this._forceUpdate);
