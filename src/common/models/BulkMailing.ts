@@ -5,5 +5,6 @@ export default interface BulkMailing {
 	body: string,
 	list: string,
 	userAccount: string,
-	recipientCount: number
+	recipientCount: number,
+	errorCount: number
 }
