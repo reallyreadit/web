@@ -77,7 +77,7 @@ export default class extends ContextComponent<
 											<td>{m.body}</td>
 											<td>{m.list}</td>
 											<td>{m.userAccount}</td>
-											<td>{m.recipientCount}</td>
+											<td>{m.recipientCount - m.errorCount}/{m.recipientCount}</td>
 										</tr>
 									)) :
 									<tr>
