@@ -8,6 +8,8 @@ import RequestStore from './RequestStore';
 import Endpoint from './Endpoint';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import PageResult from '../../../common/models/PageResult';
+import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
+import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 
 export interface InitData {
 	endpoint: Endpoint,
@@ -117,5 +119,11 @@ export default abstract class Api {
 	}
 	public sendBulkMailing(list: string, subject: string, body: string) {
 		return this.post(new Request('/BulkMailings/Send', { list, subject, body }));
+	}
+	public getEmailSubscriptions(token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) {
+		return this.get(new Request('/UserAccounts/EmailSubscriptions', { token }), callback);
+	}
+	public updateEmailSubscriptions(token: string, subscriptions: EmailSubscriptions) {
+		return this.post(new Request('/UserAccounts/UpdateEmailSubscriptions', { token, ...subscriptions }));
 	}
 }

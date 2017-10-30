@@ -7,6 +7,7 @@ import ArticlePage from './components/ArticlePage';
 import InboxPage from './components/InboxPage';
 import SettingsPage from './components/SettingsPage';
 import EmailConfirmationPage from './components/EmailConfirmationPage';
+import EmailSubscriptionsPage from './components/EmailSubscriptionsPage';
 import HowItWorksPage from './components/HowItWorksPage';
 import PasswordPage from './components/PasswordPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
@@ -32,6 +33,10 @@ export default [
 	{
 		path: '/email/confirm/:result',
 		component: EmailConfirmationPage
+	},
+	{
+		path: '/email/subscriptions',
+		component: EmailSubscriptionsPage
 	},
 	{
 		path: '/how-it-works',
