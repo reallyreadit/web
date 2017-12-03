@@ -197,8 +197,7 @@ chrome.windows.onFocusChanged.addListener(
 			// update icon
 			getState().then(updateIcon);
 		}
-	},
-	{ windowTypes: ['normal'] }
+	}
 );
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
 	if (message.type === 'ping') {
