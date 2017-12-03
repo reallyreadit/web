@@ -90,7 +90,7 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 									</div>
 									<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
 									<span> - </span>
-									<PercentCompleteIndicator percentComplete={this.state.userArticle.percentComplete} />
+									<PercentCompleteIndicator article={this.state.userArticle} />
 								</div>
 							</div> :
 							<div className="article-placeholder">

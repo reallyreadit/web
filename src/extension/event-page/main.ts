@@ -142,7 +142,7 @@ function updateIcon(state: ExtensionState) {
 			drawBrowserActionIcon(
 				'signedIn',
 				state.userArticle ? state.userArticle.percentComplete : 0,
-				state.userArticle && state.userArticle.percentComplete >= serverApi.eventPageConfig.articleUnlockThreshold ? 'unlocked' : 'locked',
+				state.userArticle && state.userArticle.isRead ? 'unlocked' : 'locked',
 				state.showNewReplyIndicator
 			);
 			browserActionBadgeApi.set(serverApi.getArticleLookupRequests(state.focusedTab.id).length ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);

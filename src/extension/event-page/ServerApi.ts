@@ -6,7 +6,6 @@ import ObjectStore from './ObjectStore';
 import ParseResult from '../common/ParseResult';
 import ReadStateCommitData from '../common/ReadStateCommitData';
 import Request from './Request';
-import readingParameters from '../../common/readingParameters';
 import { Cached, cache, isExpired } from './Cached';
 import Comment from '../../common/models/Comment';
 import SourceRule from '../../common/models/SourceRule';
@@ -61,9 +60,6 @@ export default class ServerApi {
 		});
 	}
 	// static config parameters
-	private _eventPageConfig = {
-		articleUnlockThreshold: readingParameters.articleUnlockThreshold
-	};
 	private _contentScriptConfig = {
 		readWordRate: 100,
 		idleReadRate: 500,
@@ -289,9 +285,6 @@ export default class ServerApi {
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
 			.then(userArticle => this.cacheArticle(userArticle))
 			.catch(() => {});
-	}
-	public get eventPageConfig() {
-		return this._eventPageConfig;
 	}
 	public get contentScriptConfig() {
 		return this._contentScriptConfig;

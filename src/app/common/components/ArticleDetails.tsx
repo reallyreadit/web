@@ -96,7 +96,7 @@ export default class ArticleDetails extends PureContextComponent<Props, { isStar
 					<CommentsActionLink commentCount={article.commentCount} onClick={this._goToComments} />
 					{article.percentComplete ? <span> - </span> : null}
 					{article.percentComplete ?
-						<PercentCompleteIndicator percentComplete={article.percentComplete} /> : null}
+						<PercentCompleteIndicator article={article} /> : null}
 				</div>
 				<div className="controls right">
 					<div className="control" title="Delete Article">

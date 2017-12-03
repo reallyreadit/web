@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as className from 'classnames';
-import readingParameters from '../readingParameters';
+import UserArticle from '../models/UserArticle';
 
-export default (props: { percentComplete: number }) =>
-	<span className={className('percent-complete-indicator', { 'unlocked': props.percentComplete >= readingParameters.articleUnlockThreshold })}>
-		Percent Complete: {props.percentComplete.toFixed() + '%'}
+export default (props: { article: UserArticle }) =>
+	<span className={className('percent-complete-indicator', { 'unlocked': props.article.isRead })}>
+		Percent Complete: {props.article.percentComplete.toFixed() + '%'}
 	</span>;

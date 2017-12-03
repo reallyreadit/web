@@ -7,7 +7,6 @@ import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
 import ArticleList from './ArticleList';
 import ArticleDetails from './ArticleDetails';
-import readingParameters from '../../../common/readingParameters';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
 import { State as PageState } from '../Page';
@@ -104,9 +103,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
-		const isAllowedToPost = this.state.article.value &&
-			this.context.user.isSignedIn &&
-			this.state.article.value.percentComplete >= readingParameters.articleUnlockThreshold;
+		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn && this.state.article.value.isRead;
 		return (
 			<div className="article-page">
 				<ArticleList>
