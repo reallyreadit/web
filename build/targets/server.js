@@ -56,7 +56,7 @@ class Server {
 	run() {
 		this.process = childProcess
 			.spawn('node', [
-				'--debug',
+				'--inspect',
 				'--no-lazy',
 				path.join(project.getOutPath(targetPath, project.env.dev), 'app/server/main.js')
 			], { stdio: 'inherit' });
