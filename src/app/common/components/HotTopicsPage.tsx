@@ -86,11 +86,13 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 						<div className="hot-topics">
 							<div className="aotd">
 								<h3>Article of the Day</h3>
-								<ArticleDetails
-									article={this.state.hotTopics.value.aotd}
-									showStarControl={this.context.user.isSignedIn}
-									onChange={this._updateArticle}
-								/>
+								{this.state.hotTopics.value.aotd ?
+									<ArticleDetails
+										article={this.state.hotTopics.value.aotd}
+										showStarControl={this.context.user.isSignedIn}
+										onChange={this._updateArticle}
+									/> :
+									<span>No article of the day found!</span>}
 							</div>
 							{this.state.hotTopics.value.articles.items.length ?
 								<ArticleList>
