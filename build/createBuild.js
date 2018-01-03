@@ -42,7 +42,7 @@ function createBuild(params) {
 	}
 	function getWebpackConfig(opts) {
 		return configureWebpack({
-			configFileName: params.webpack.configFileName,
+			configFile: params.webpack.configFile,
 			entry: './' + opts.entry,
 			appConfig: params.webpack.appConfig,
 			path: params.path,

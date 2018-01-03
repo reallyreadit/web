@@ -13,7 +13,7 @@ function addPlugin(webpackConfig, plugin) {
 }
 function configureWebpack(params) {
 	const tsConfig = {
-			configFileName: params.configFileName,
+			configFile: params.configFile,
 			compilerOptions: {}
 		},
 		webpackConfig = {

@@ -5,7 +5,7 @@ const project = require('../../project'),
 
 const build = createBuild({
 	webpack: {
-		configFileName: 'tsconfig.extension.browser-action.json',
+		configFile: 'tsconfig.extension.browser-action.json',
 		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts'),
 		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 		htmlTemplate: path.posix.join(project.srcDir, 'extension/browser-action/templates/html.ts')
