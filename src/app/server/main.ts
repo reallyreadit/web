@@ -53,7 +53,7 @@ server
 						(reason instanceof Array && reason.includes('Unauthenticated')) ||
 						(reason instanceof Error && reason.message === 'InvalidSessionKey')
 					) {
-						res.clearCookie('sessionKey', { domain: config.cookieDomain });
+						res.clearCookie(config.cookieName, { domain: config.cookieDomain });
 					}
 					req.sessionState = {
 						userAccount: null,

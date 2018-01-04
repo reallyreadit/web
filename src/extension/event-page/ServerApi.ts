@@ -39,7 +39,7 @@ export default class ServerApi {
 				} else if (this.status === 401) {
 					chrome.cookies.remove({
 						url: `${config.api.protocol}://${config.api.host}`,
-						name: 'sessionKey'
+						name: config.cookieName
 					});
 					reject(['Unauthenticated']);
 				} else {
@@ -103,7 +103,7 @@ export default class ServerApi {
 		});
 		// cookie change
 		chrome.cookies.onChanged.addListener(changeInfo => {
-			if (changeInfo.cookie.name === 'sessionKey') {
+			if (changeInfo.cookie.name === config.cookieName) {
 				const isAuthenticated = !changeInfo.removed;
 				// clear user specific cache
 				this._newReplyNotification.clear();
@@ -259,7 +259,7 @@ export default class ServerApi {
 	public getAuthStatus() {
 		return new Promise<boolean>(resolve => chrome.cookies.get({
 			url: `${config.api.protocol}://${config.api.host}`,
-			name: 'sessionKey'
+			name: config.cookieName
 		}, cookie => resolve(!!cookie)));
 	}
 	public hasNewReply() {
