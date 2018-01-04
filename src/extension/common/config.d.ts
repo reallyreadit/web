@@ -3,6 +3,7 @@ declare const config: {
 		protocol: string,
 		host: string
 	},
+	cookieName: string,
 	web: {
 		protocol: string,
 		host: string
