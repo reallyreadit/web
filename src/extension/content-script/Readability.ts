@@ -88,7 +88,7 @@ export default class Readability {
 
 	private _uri: UriDescriptor;
 	private _doc: Document;
-	private _biggestFrame: boolean;
+	//private _biggestFrame: boolean;
 	private _articleTitle: string;
 	private _articleByline: string;
 	private _articleDir: string;
@@ -119,7 +119,7 @@ export default class Readability {
 		// rrit: use clone
 		//this._doc = doc;
 		this._doc = this._cloneNodeWithRef(doc);
-		this._biggestFrame = false;
+		//this._biggestFrame = false;
 		this._articleTitle = null;
 		this._articleByline = null;
 		this._articleDir = null;
@@ -146,11 +146,11 @@ export default class Readability {
 		// Make an AJAX request for each page and append it to the document.
 		this._curPageNum = 1;
 
-		var logEl;
+		//var logEl;
 
 		// Control whether log messages are sent to the console
 		if (this._debug) {
-			logEl = function(e: Element) {
+			/*logEl = function(e: Element) {
 				var rv = e.nodeName + " ";
 				if (e.nodeType == e.TEXT_NODE) {
 					return rv + '("' + e.textContent + '")';
@@ -162,7 +162,7 @@ export default class Readability {
 				else if (classDesc)
 					elDesc = "(" + classDesc + ")";
 				return rv + elDesc;
-			};
+			};*/
 			this.log = function (...args: string[]) {
 				if (typeof console !== "undefined") {
 					var args = ["Reader: (Readability) "].concat(args);
@@ -516,7 +516,7 @@ export default class Readability {
 		// Clean out elements have "share" in their id/class combinations from final top candidates,
 		// which means we don't remove the top candidates even they have "share".
 		this._forEachNode(articleContent.children, function(this: Readability, topCandidate) {
-			this._cleanMatchedNodes(topCandidate, /share/);
+			this._cleanMatchedNodes(topCandidate as Element, /share/);
 		});
 
 		// If there is only one h2 and its text content substantially equals article title,
@@ -1117,7 +1117,7 @@ export default class Readability {
 	 * This verifies that the input is a string, and that the length
 	 * is less than 100 chars.
 	 */
-	private _isValidByline(byline: string) {
+	private _isValidByline(byline: any) {
 		if (typeof byline == 'string' || byline instanceof String) {
 			byline = byline.trim();
 			return (byline.length > 0) && (byline.length < 100);
