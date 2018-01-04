@@ -1,4 +1,6 @@
 /.vscode/settings.json
 /bin
 /node_modules
-/src/common/config.ts
+/src/app/server/config.ts
+/src/extension/common/config.d.ts
+/src/extension/common/config.*.json
