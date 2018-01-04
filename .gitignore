@@ -1,4 +1,4 @@
 /.vscode/settings.json
 /bin
 /node_modules
-/src/app/server/config.ts
+/src/common/config.ts
