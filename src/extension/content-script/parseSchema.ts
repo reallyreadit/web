@@ -9,7 +9,11 @@ function many(value: any, map?: (value: any) => any) {
 	return map ? retValue.map(map) : retValue;
 }
 function parseSchema(topLevelTypes: any[]): ParseResult {
-	const data = topLevelTypes.find(type => type.hasOwnProperty('@type') && type['@type'].endsWith('Article'));
+	const data = topLevelTypes.find(
+		type =>
+			type.hasOwnProperty('@type') &&
+			(type['@type'].endsWith('Article') || type['@type'] === 'BlogPosting')
+	);
 	if (data) {
 		console.log('[rrit] metadata found: schema.org');
 		return {
