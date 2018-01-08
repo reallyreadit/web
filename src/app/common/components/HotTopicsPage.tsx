@@ -41,20 +41,32 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 		this.context.page.setState({ isLoading: true });
 	};
 	private _updateArticle = (article: UserArticle) => {
-		const items = this.state.hotTopics.value.articles.items.slice();
-		items.splice(items.findIndex(a => a.id === article.id), 1, article);
-		this.setState({
-			hotTopics: {
-				...this.state.hotTopics,
-				value: {
-					...this.state.hotTopics.value,
-					articles: {
-						...this.state.hotTopics.value.articles,
-						items
+		if (article.id === this.state.hotTopics.value.aotd.id) {
+			this.setState({
+				hotTopics: {
+					...this.state.hotTopics,
+					value: {
+						...this.state.hotTopics.value,
+						aotd: article
 					}
 				}
-			}
-		});
+			});
+		} else {
+			const items = this.state.hotTopics.value.articles.items.slice();
+			items.splice(items.findIndex(a => a.id === article.id), 1, article);
+			this.setState({
+				hotTopics: {
+					...this.state.hotTopics,
+					value: {
+						...this.state.hotTopics.value,
+						articles: {
+							...this.state.hotTopics.value.articles,
+							items
+						}
+					}
+				}
+			});
+		}
 	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
