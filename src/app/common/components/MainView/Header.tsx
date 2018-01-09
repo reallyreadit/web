@@ -51,7 +51,7 @@ export default class Header extends PureContextComponent<{}, { isSigningOut: boo
 			<header className="main-view_header">
 				<div className="title">
 					<div className="logos">
-						<Link to="/" className="logo-icon" dangerouslySetInnerHTML={{ __html: logoIcon }}></Link>
+						<Link to="/" className="logo-icon">{logoIcon()}</Link>
 						<h1>
 							<Link to="/" className="logo-text" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
 						</h1>
