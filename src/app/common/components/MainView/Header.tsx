@@ -8,7 +8,7 @@ import Separator from '../../../../common/components/Separator';
 import * as className from 'classnames';
 import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotification';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
-import logoIcon from '../../svg/logoIcon';
+import LogoIcon from '../../svg/LogoIcon';
 import logoText from '../../../../common/svg/logoText';
 import Button from '../../../../common/components/Button';
 import { Link } from 'react-router-dom';
@@ -51,7 +51,9 @@ export default class Header extends PureContextComponent<{}, { isSigningOut: boo
 			<header className="main-view_header">
 				<div className="title">
 					<div className="logos">
-						<Link to="/" className="logo-icon">{logoIcon()}</Link>
+						<Link to="/" className="logo-icon">
+							<LogoIcon />
+						</Link>
 						<h1>
 							<Link to="/" className="logo-text" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
 						</h1>
