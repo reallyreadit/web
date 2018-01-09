@@ -217,7 +217,7 @@ export default
 			<g id="layer3">
 				<text id="text4986" y="179" x="272" style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:Adler;-inkscape-font-specification:Adler;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
 				 xml:space="preserve">
-					<tspan style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#666666;fill-opacity:1"
+					<tspan style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;font-family:monospace;-inkscape-font-specification:monospace;fill:#666666;fill-opacity:1"
 					 y="179" x="272" id="tspan4984"># of comments</tspan>
 				</text>
 				<path id="path6328" d="m 365.95296,163.80153 c -0.13551,-0.18728 -0.16544,-1.41998 -0.0665,-2.73934 1.00536,-13.40579 -0.53723,-25.50528 -4.36348,-34.22557 -0.86385,-1.96877 -1.008,-2.15067 -1.37897,-1.74001 -0.22786,0.25223 -0.65901,0.45288 -0.95812,0.44589 -1.14929,-0.0268 -1.71503,-4.77334 -0.68165,-5.71891 0.23124,-0.21158 0.76664,-0.14637 1.7324,0.21104 2.36091,0.87369 4.5076,1.94017 4.57408,2.27239 0.11253,0.5624 -1.47492,1.42058 -2.22206,1.20125 -0.59815,-0.17561 -0.62449,-0.12575 -0.27613,0.52285 4.04767,7.53613 6.15748,19.26467 5.79667,32.22389 -0.17435,6.26211 -0.36709,7.50468 -1.19594,7.71009 -0.39778,0.0985 -0.82302,0.0261 -0.96031,-0.16357 z"
