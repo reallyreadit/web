@@ -4,7 +4,7 @@ import * as className from 'classnames';
 export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'cancel' | 'backward' | 'exclamation' | 'forbid' | 'spinner' | 'comments' |
 	'write' | 'envelope' | 'user' | 'cog' | 'book' | 'refresh' | 'lightbulb' |
-	'question' | 'hyperlink' | 'gallery' | 'star' | 'clock' | 'key';
+	'question' | 'hyperlink' | 'gallery' | 'star' | 'clock' | 'key' | 'trophy';
 export default (props: {
 	name: IconName,
 	className?: ClassValue,
