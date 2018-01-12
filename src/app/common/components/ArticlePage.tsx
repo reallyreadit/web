@@ -112,7 +112,7 @@ export default class ArticlePage extends ContextComponent<Props, {
 							<li>
 								<ArticleDetails
 									article={this.state.article.value}
-									showStarControl={this.context.user.isSignedIn}
+									isUserSignedIn={this.context.user.isSignedIn}
 									onChange={this._updateArticle}
 								/>
 							</li> :

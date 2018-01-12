@@ -1,13 +1,10 @@
 import * as React from 'react';
 import EventPageApi from '../EventPageApi';
 import ExtensionState from '../../common/ExtensionState';
-import CommentsActionLink from '../../../common/components/CommentsActionLink';
-import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
 import NavBar from '../../../common/components/NavBar';
 import logoText from '../../../common/svg/logoText';
-import Star from '../../../common/components/Star';
-import ArticleLengthIndicator from '../../../common/components/ArticleLengthIndicator';
 import warningTriangle from '../../../common/svg/warningTriangle';
+import ArticleDetails from '../../../common/components/ArticleDetails';
 
 export default class App extends React.Component<{}, ExtensionState & { isStarring: boolean }> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
@@ -33,6 +30,9 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 				},
 				isStarring: false
 			}));
+	};
+	private _preventDefault = (e: React.MouseEvent<HTMLAnchorElement>) => {
+		e.preventDefault();
 	};
 	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
 	constructor() {
@@ -79,20 +79,14 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 						/>
 					{this.state.isAuthenticated ?
 						this.state.userArticle ?
-							<div className="article-info">
-								<div className="controls">
-									<Star starred={!!this.state.userArticle.dateStarred} busy={this.state.isStarring} onClick={this._toggleStar} />
-								</div>
-								<div className="content">
-									<div className="top-row">
-										<h2>{this.state.userArticle.title}</h2>
-										<ArticleLengthIndicator wordCount={this.state.userArticle.wordCount} />
-									</div>
-									<CommentsActionLink commentCount={this.state.userArticle.commentCount} onClick={this._goToComments} />
-									<span> - </span>
-									<PercentCompleteIndicator article={this.state.userArticle} />
-								</div>
-							</div> :
+							<ArticleDetails
+								article={this.state.userArticle}
+								isUserSignedIn={true}
+								isStarring={this.state.isStarring}
+								onStar={this._toggleStar}
+								onTitleClick={this._preventDefault}
+								onCommentsClick={this._goToComments}
+							/> :
 							<div className="article-placeholder">
 								No article found on page
 							</div> :

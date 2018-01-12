@@ -145,7 +145,7 @@ export default class ReadingListPage extends ContextComponent<RouteComponentProp
 									<li key={article.id}>
 										<ArticleDetails
 											article={article}
-											showStarControl={true}
+											isUserSignedIn={true}
 											showDeleteControl={true}
 											onChange={this._updateArticle}
 											onDelete={this._deleteArticle}

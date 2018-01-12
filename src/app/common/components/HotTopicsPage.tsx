@@ -102,7 +102,7 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 								{this.state.hotTopics.value.aotd ?
 									<ArticleDetails
 										article={this.state.hotTopics.value.aotd}
-										showStarControl={this.context.user.isSignedIn}
+										isUserSignedIn={this.context.user.isSignedIn}
 										onChange={this._updateArticle}
 									/> :
 									<span>No article of the day found!</span>}
@@ -113,7 +113,7 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 										<li key={article.id}>
 											<ArticleDetails
 												article={article}
-												showStarControl={this.context.user.isSignedIn}
+												isUserSignedIn={this.context.user.isSignedIn}
 												onChange={this._updateArticle}
 											/>
 										</li>

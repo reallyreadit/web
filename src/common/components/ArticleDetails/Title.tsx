@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as className from 'classnames';
-import UserArticle from '../../../../common/models/UserArticle';
-import Star from '../../../../common/components/Star';
+import UserArticle from '../../models/UserArticle';
+import Star from '../../components/Star';
 
 export default (props: {
 	article: UserArticle,
