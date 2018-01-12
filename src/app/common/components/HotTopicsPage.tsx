@@ -8,6 +8,7 @@ import Fetchable from '../api/Fetchable';
 import ArticleDetails from './ArticleDetails';
 import ArticleList from './ArticleList';
 import PageSelector from './PageSelector';
+import Icon from '../../../common/components/Icon';
 
 export default class HotTopicsPage extends ContextComponent<RouteComponentProps<{}>, { hotTopics: Fetchable<HotTopics> }> {
 	private _loadHotTopics = () => this.context.api.listHotTopics(
@@ -97,7 +98,7 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 					this.state.hotTopics.value ?
 						<div className="hot-topics">
 							<div className="aotd">
-								<h3>Article of the Day</h3>
+								<h3><Icon name="trophy" />Article of the Day<Icon name="trophy" /></h3>
 								{this.state.hotTopics.value.aotd ?
 									<ArticleDetails
 										article={this.state.hotTopics.value.aotd}
