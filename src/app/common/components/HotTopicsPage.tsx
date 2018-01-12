@@ -78,7 +78,7 @@ export default class HotTopicsPage extends ContextComponent<RouteComponentProps<
 	}
 	public componentWillMount() {
 		this.context.page.setState({
-			title: '🔥 Hot Topics 🔥',
+			title: 'What We\'re Reading',
 			isLoading: this.state.hotTopics.isLoading,
 			isReloadable: true
 		});
