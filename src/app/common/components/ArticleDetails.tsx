@@ -5,10 +5,11 @@ import PureContextComponent from '../PureContextComponent';
 import Context from '../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
 import CommentsActionLink from '../../../common/components/CommentsActionLink';
-import PercentCompleteIndicator from '../../../common/components/PercentCompleteIndicator';
-import Star from '../../../common/components/Star';
+import SpeechBubble from './Logo/SpeechBubble';
+import DoubleRPathGroup from './Logo/DoubleRPathGroup';
+import Title from './ArticleDetails/Title';
 import Icon from '../../../common/components/Icon';
-import ArticleLengthIndicator from '../../../common/components/ArticleLengthIndicator';
+import readingParameters from '../../../common/readingParameters';
 
 interface Props {
 	article: UserArticle,
@@ -62,44 +63,73 @@ export default class ArticleDetails extends PureContextComponent<Props, { isStar
 	public render() {
 		const article = this.props.article;
 		return (
-			<div className={
-				className(
-					'article-details', {
-						'left-controls-visible': this.props.showStarControl,
-						'right-controls-visible': this.props.showDeleteControl
-					}
-				)
-			}>
-				<div className="controls left">
-					<Star
-						className="control"
-						starred={!!article.dateStarred}
-						busy={this.state.isStarring}
-						onClick={this._toggleStar}
-					/>
-				</div>
+			<div className="article-details">
 				<div className="content">
-					<div className="top-row">
-						<div className="title">
-							<a href={article.url} onClick={this._checkReadReadiness}>{article.title}</a>
-							<ArticleLengthIndicator wordCount={article.wordCount} />
-							<div className="tags">
-								{article.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
+					<Title
+						article={article}
+						showStar={this.props.showStarControl}
+						isStarring={this.state.isStarring}
+						onStar={this._toggleStar}
+						onClick={this._checkReadReadiness}
+					/>
+					{article.tags.length ?
+						<div className="tags">
+							{article.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
+						</div> :
+						null}
+					<div className="columns">
+						<div className="left">
+							<div className="length">
+								{Math.round(article.wordCount / readingParameters.averageWordsPerMinute)} min
+							</div>
+							<div className="speech-bubble-container">
+								<SpeechBubble
+									percentComplete={article.percentComplete}
+									isRead={article.isRead}
+									uuid={`article-details-${article.id}`}
+								>
+									{!this.props.showStarControl ?
+										<DoubleRPathGroup /> :
+										null}
+								</SpeechBubble>
+								{this.props.showStarControl ?
+									<div className="percent-complete-label">{article.percentComplete.toFixed() + '%'}</div> :
+									null}
 							</div>
 						</div>
-						{article.description ? <span className="description">{article.description}</span> : null}
+						<div className="right">
+							<Title
+								article={article}
+								showStar={this.props.showStarControl}
+								isStarring={this.state.isStarring}
+								onStar={this._toggleStar}
+								onClick={this._checkReadReadiness}
+							/>
+							{article.description ?
+								<div className="description">{article.description}</div> :
+								null}
+							<div className="s-r-c">
+								<div className="source">
+									{
+										article.source +
+										(article.section ? ' >> ' + article.section : '') +
+										(article.authors.length ? ' - ' + article.authors.join(', ') : '')
+									}
+								</div>
+								<span className="reads">
+									<Icon name="book" />
+									{article.readCount + ' ' + (article.readCount === 1 ? 'read' : 'reads')}
+								</span>
+								<CommentsActionLink commentCount={article.commentCount} onClick={this._goToComments} />
+								{article.aotdTimestamp ?
+									<Icon className="aotd" name="trophy" /> :
+									null}
+							</div>
+						</div>
 					</div>
-					<span className="date-published">{article.datePublished ? article.datePublished.substring(0, 10) : ''}</span>
-					{article.datePublished ? <span> - </span> : null}
-					<span className="source">[{article.source}{article.section ? ' >> ' + article.section : ''}{article.authors.length ? ' - ' + article.authors.join(', ') : ''}]</span>
-					<span> - </span>
-					<CommentsActionLink commentCount={article.commentCount} onClick={this._goToComments} />
-					{article.percentComplete ? <span> - </span> : null}
-					{article.percentComplete ?
-						<PercentCompleteIndicator article={article} /> : null}
 				</div>
-				<div className="controls right">
-					<div className="control" title="Delete Article">
+				<div className={className('controls', { hidden: !this.props.showDeleteControl })}>
+					<div className="delete-control" title="Delete Article">
 						<Icon name="cancel" onClick={this._delete} />
 					</div>
 				</div>

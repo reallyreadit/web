@@ -1,0 +1,52 @@
+%ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+%hideable-container {
+	flex: 0 0 auto;
+	overflow: hidden;
+	transition: width 500ms, margin 500ms;
+}
+%hideable-container-hidden {
+	width: 0;
+}
+%hideable-content {
+	transition: opacity 250ms;
+}
+%hideable-content-hidden {
+	opacity: 0;
+}
+
+.title {
+	display: flex;
+	align-items: center;
+}
+.title > .star-container {
+	@extend %hideable-container;
+	width: 19px;
+}
+.title > .star-container.hidden {
+	@extend %hideable-container-hidden;
+}
+.title > .star-container > .star {
+	@extend %hideable-content;
+}
+.title > .star-container.hidden > .star {
+	@extend %hideable-content-hidden;
+}
+.title > .title-date > a {
+	color: blue;
+	text-decoration: underline;
+}
+.title > .title-date > .date-published {
+	color: steelblue;
+	display: inline;
+	margin-left: 3px;
+}
+.title > .title-date > .date-published::before {
+	content: "(";
+}
+.title > .title-date > .date-published::after {
+	content: ")";
+}
