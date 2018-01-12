@@ -12,10 +12,10 @@
 	display: flex;
 	align-items: center;
 }
-.main-view_header > .title > .logos > .logo-icon {
+.main-view_header > .title > .logos > .speech-bubble-link {
 	position: relative;
 }
-.main-view_header > .title > .logos > .logo-icon::after {
+.main-view_header > .title > .logos > .speech-bubble-link::after {
 	content: "Beta";
 	font-size: 11px;
 	position: absolute;
@@ -27,7 +27,7 @@
 	background: lightseagreen;
 	color: white;
 }
-.main-view_header > .title > .logos > .logo-icon > svg {
+.main-view_header > .title > .logos > .speech-bubble-link > .speech-bubble {
 	display: block;
 	width: 40px;
 }
