@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PureContextComponent from '../../PureContextComponent';
+import Context, { contextTypes } from '../../Context';
 import CreateAccountDialog from '../CreateAccountDialog';
 import SignInDialog from '../SignInDialog';
 import NavBar from '../../../../common/components/NavBar';
@@ -14,7 +14,10 @@ import logoText from '../../../../common/svg/logoText';
 import Button from '../../../../common/components/Button';
 import { Link } from 'react-router-dom';
 
-export default class Header extends PureContextComponent<{}, { isSigningOut: boolean }> {
+export default class Header extends React.PureComponent<{}, { isSigningOut: boolean }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
+	private readonly _forceUpdate = () => this.forceUpdate();
 	// account dialogs
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
 	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));

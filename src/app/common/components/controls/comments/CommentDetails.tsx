@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Comment from '../../../common/models/Comment';
+import Comment from '../../../../../common/models/Comment';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
-import ActionLink from '../../../common/components/ActionLink';
+import ActionLink from '../../../../../common/components/ActionLink';
 import * as className from 'classnames';
 import timeago from 'timeago.js';
 

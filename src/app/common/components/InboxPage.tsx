@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import Fetchable from '../api/Fetchable';
 import Comment from '../../../common/models/Comment';
 import PageResult from '../../../common/models/PageResult';
-import CommentList from './CommentList';
+import CommentList from './controls/comments/CommentList';
 import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
-import PageSelector from './PageSelector';
+import PageSelector from './controls/PageSelector';
 
-export default class InboxPage extends ContextComponent<RouteComponentProps<{}>, { replies: Fetchable<PageResult<Comment>> }> {
+export default class InboxPage extends React.Component<RouteComponentProps<{}>, { replies: Fetchable<PageResult<Comment>> }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _readReply = (comment: Comment) => {
 		const slugParts = comment.articleSlug.split('_');

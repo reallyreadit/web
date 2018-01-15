@@ -1,16 +1,17 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../api/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 
-export default class extends ContextComponent<
+export default class extends React.Component<
 	RouteComponentProps<{}>,
 	{ mailings: Fetchable<BulkMailing[]> }
 > {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private readonly _goToHome = () => this.context.router.history.push('/');
 	private readonly _reload = () => {
 		this.context.page.setState({ isLoading: true });

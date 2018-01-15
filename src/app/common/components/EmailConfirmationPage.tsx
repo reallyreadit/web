@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
+import Context, { contextTypes } from '../Context';
 import * as className from 'classnames';
 import { Intent } from '../Page';
 
@@ -27,7 +27,9 @@ const resultMessages: {
 		intent: Intent.Success
 	}
 };
-export default class extends PureContextComponent<RouteComponentProps<{ result: string }>, {}> {
+export default class extends React.PureComponent<RouteComponentProps<{ result: string }>, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Email Confirmation',

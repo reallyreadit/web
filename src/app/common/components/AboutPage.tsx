@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
+import Context, { contextTypes } from '../Context';
 
-export default class AboutPage extends PureContextComponent<RouteComponentProps<{}>, {}> {
+export default class AboutPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'About',

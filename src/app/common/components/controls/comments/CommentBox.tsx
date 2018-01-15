@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Button from '../../../common/components/Button';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
-import Comment from '../../../common/models/Comment';
+import Button from '../../../../../common/components/Button';
+import Context, { contextTypes } from '../../../Context';
+import Comment from '../../../../../common/models/Comment';
 import { Link } from 'react-router-dom';
 import * as className from 'classnames';
 
@@ -13,7 +12,7 @@ interface Props {
 	onCommentPosted: (comment: Comment) => void,
 	onCancel?: () => void
 }
-export default class CommentBox extends ContextComponent<Props, {
+export default class CommentBox extends React.Component<Props, {
 	commentText: string,
 	hasContent: boolean,
 	hasFocus: boolean,
@@ -21,6 +20,8 @@ export default class CommentBox extends ContextComponent<Props, {
 	isResizing: boolean,
 	isPosting: boolean
 }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private _updateCommentText = (e: React.FormEvent<HTMLTextAreaElement>) => this.setState({
 		commentText: e.currentTarget.value,
 		hasContent: e.currentTarget.value.trim() !== ''

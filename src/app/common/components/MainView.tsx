@@ -1,20 +1,23 @@
 import * as React from 'react';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
-import ContextComponent from '../ContextComponent';
-import DialogManager from './DialogManager';
-import ReadReadinessBar from './ReadReadinessBar';
+import Context, { contextTypes } from '../Context';
+import DialogManager from './MainView/DialogManager';
+import ReadReadinessBar from './MainView/ReadReadinessBar';
 import Icon from '../../../common/components/Icon';
-import Toaster from './Toaster';
+import Toaster from './MainView/Toaster';
 import * as className from 'classnames';
 import Separator from '../../../common/components/Separator';
 import Header from './MainView/Header';
 import routes from '../routes';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
-import ResetPasswordDialog from './ResetPasswordDialog';
+import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 
-export default class MainView extends ContextComponent<{}, {}> {
+export default class MainView extends React.Component<{}, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
+	private readonly _forceUpdate = () => this.forceUpdate();
 	private _reloadPage = () => this.context.page.reload();
 	public componentWillMount() {
 		switch (this.context.router.route.location.search) {

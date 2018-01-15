@@ -1,9 +1,8 @@
 import * as React from 'react';
-import Button from '../../../common/components/Button';
-import PureContextComponent from '../PureContextComponent';
-import Context from '../Context';
-import { IconName } from '../../../common/components/Icon';
-import { Intent } from '../Page';
+import Button from '../../../../common/components/Button';
+import Context, { contextTypes } from '../../Context';
+import { IconName } from '../../../../common/components/Icon';
+import { Intent } from '../../Page';
 
 interface State {
 	errorMessage: string,
@@ -12,7 +11,9 @@ interface State {
 	isSubmitting: boolean
 }
 export { State };
-export default abstract class Dialog<T, P, S extends Partial<State>> extends PureContextComponent<P, S> {
+export default abstract class Dialog<T, P, S extends Partial<State>> extends React.PureComponent<P, S> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private readonly _title: string;
 	private readonly _submitButtonIcon: IconName;
 	private readonly _submitButtonText: string;

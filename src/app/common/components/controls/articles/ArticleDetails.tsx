@@ -1,9 +1,8 @@
 import * as React from 'react';
-import UserArticle from '../../../common/models/UserArticle';
-import PureContextComponent from '../PureContextComponent';
-import Context from '../Context';
+import UserArticle from '../../../../../common/models/UserArticle';
+import Context, { contextTypes } from '../../../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
-import ArticleDetails from '../../../common/components/ArticleDetails';
+import ArticleDetails from '../../../../../common/components/ArticleDetails';
 
 interface Props {
 	article: UserArticle,
@@ -12,7 +11,9 @@ interface Props {
 	onChange: (article: UserArticle) => void,
 	onDelete?: (article: UserArticle) => void
 }
-export default class extends PureContextComponent<Props, { isStarring: boolean }> {
+export default class extends React.PureComponent<Props, { isStarring: boolean }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private _slugParts: string[];
 	private _checkReadReadiness = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		let reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut';

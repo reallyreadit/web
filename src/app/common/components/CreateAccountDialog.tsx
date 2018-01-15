@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Context from '../Context';
-import InputField from './InputField';
-import Dialog, { State } from './Dialog';
+import InputField from './controls/InputField';
+import Dialog, { State } from './controls/Dialog';
 import UserAccount from '../../../common/models/UserAccount';
 
 export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial<State> & {

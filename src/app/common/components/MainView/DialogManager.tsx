@@ -1,8 +1,11 @@
 import * as React from 'react';
-import PureContextComponent from '../PureContextComponent';
 import * as className from 'classnames';
+import Context, { contextTypes } from '../../Context';
 
-export default class DialogManager extends PureContextComponent<{}, {}> {
+export default class DialogManager extends React.PureComponent<{}, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
+	private readonly _forceUpdate = () => this.forceUpdate();
 	public componentDidMount() {
 		this.context.page
 			.addListener('openDialog', this._forceUpdate)

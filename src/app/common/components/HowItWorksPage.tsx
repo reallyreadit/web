@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
+import Context, { contextTypes } from '../Context';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import readingIllustration from '../svg/readingIllustration';
 
 declare var Snap: any;
 
-export default class HowItWorksPage extends PureContextComponent<RouteComponentProps<{}>, {}> {
+export default class HowItWorksPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
+	private readonly _forceUpdate = () => this.forceUpdate();
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
 	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));

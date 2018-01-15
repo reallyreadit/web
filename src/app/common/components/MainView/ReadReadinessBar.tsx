@@ -1,7 +1,10 @@
 import * as React from 'react';
-import PureContextComponent from '../PureContextComponent';
+import Context, { contextTypes } from '../../Context';;
 
-export default class ReadReadinessBar extends PureContextComponent<{}, {}> {
+export default class ReadReadinessBar extends React.PureComponent<{}, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
+	private readonly _forceUpdate = () => this.forceUpdate();
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	public componentDidMount() {
 		this.context.extension.addListener('change', this._forceUpdate);

@@ -1,7 +1,6 @@
 import * as React from 'react';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
-import { Intent, ToastEvent } from '../Page';
+import Context, { contextTypes } from '../../Context';
+import { Intent, ToastEvent } from '../../Page';
 import * as className from 'classnames';
 
 const intentClassMap = {
@@ -12,7 +11,9 @@ interface Toast extends ToastEvent {
 	timeoutHandle: number,
 	remove: boolean
 }
-export default class Toaster extends ContextComponent<{}, { toasts: Toast[] }> {
+export default class Toaster extends React.Component<{}, { toasts: Toast[] }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private _addToast = (toastEvent: ToastEvent) => {
 		const toast: Toast = {
 			...toastEvent,

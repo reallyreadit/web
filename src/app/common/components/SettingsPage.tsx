@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import Separator from '../../../common/components/Separator';
 import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
@@ -13,7 +12,10 @@ import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 
-export default class SettingsPage extends PureContextComponent<RouteComponentProps<{}>, { isResendingConfirmationEmail: boolean }> {
+export default class SettingsPage extends React.PureComponent<RouteComponentProps<{}>, { isResendingConfirmationEmail: boolean }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
+	private readonly _forceUpdate = () => this.forceUpdate();
 	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _updateUserAccount = (userAccount: UserAccount) => this.context.user.update(userAccount);
 	private _reload = () => {

@@ -1,19 +1,20 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import UserArticle from '../../../common/models/UserArticle';
 import Fetchable from '../api/Fetchable';
 import PageResult from '../../../common/models/PageResult';
-import ArticleList from './ArticleList';
-import ArticleDetails from './ArticleDetails';
-import PageSelector from './PageSelector';
+import ArticleList from './controls/articles/ArticleList';
+import ArticleDetails from './controls/articles/ArticleDetails';
+import PageSelector from './controls/PageSelector';
 import Button from '../../../common/components/Button';
 
-export default class ReadingListPage extends ContextComponent<RouteComponentProps<{}>, {
+export default class ReadingListPage extends React.Component<RouteComponentProps<{}>, {
 	view: 'starred' | 'history',
 	articles: Fetchable<PageResult<UserArticle>>
 }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _loadArticles = () => {
 		if (((this.state && this.state.view) || 'starred') === 'starred') {

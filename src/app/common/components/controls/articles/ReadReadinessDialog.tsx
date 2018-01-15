@@ -1,13 +1,15 @@
 import * as React from 'react';
-import Button from '../../../common/components/Button';
-import PureContextComponent from '../PureContextComponent';
-import SignInDialog from './SignInDialog';
-import CreateAccountDialog from './CreateAccountDialog';
+import Button from '../../../../../common/components/Button';
+import SignInDialog from '../../SignInDialog';
+import CreateAccountDialog from '../../CreateAccountDialog';
+import Context, { contextTypes } from '../../../Context';
 
-export default class ReadReadinessDialog extends PureContextComponent<{
+export default class ReadReadinessDialog extends React.PureComponent<{
     reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut',
     articleUrl: string
 }, {}> {
+    public static contextTypes = contextTypes;
+    public context: Context;
     private _closeDialog = () => this.context.page.closeDialog();
     private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
     private _showSignInDialog = () => {

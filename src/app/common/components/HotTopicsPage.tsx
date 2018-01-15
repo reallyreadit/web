@@ -1,16 +1,17 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import UserArticle from '../../../common/models/UserArticle';
 import HotTopics from '../../../common/models/HotTopics';
 import Fetchable from '../api/Fetchable';
-import ArticleDetails from './ArticleDetails';
-import ArticleList from './ArticleList';
-import PageSelector from './PageSelector';
+import ArticleDetails from './controls/articles/ArticleDetails';
+import ArticleList from './controls/articles/ArticleList';
+import PageSelector from './controls/PageSelector';
 import Icon from '../../../common/components/Icon';
 
-export default class HotTopicsPage extends ContextComponent<RouteComponentProps<{}>, { hotTopics: Fetchable<HotTopics> }> {
+export default class HotTopicsPage extends React.Component<RouteComponentProps<{}>, { hotTopics: Fetchable<HotTopics> }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private _loadHotTopics = () => this.context.api.listHotTopics(
 		this.getCurrentPage(),
 		hotTopics => {

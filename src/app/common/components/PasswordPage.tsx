@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
+import Context, { contextTypes } from '../Context';
 
 const resultMessages: {
 	[key: string]: {
@@ -12,10 +12,12 @@ const resultMessages: {
 		'expired': 'This password reset request has expired. Please generate a new request.'
 	}
 };
-export default class PasswordPage extends PureContextComponent<RouteComponentProps<{
+export default class PasswordPage extends React.PureComponent<RouteComponentProps<{
 	action: string,
 	result: string
 }>, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Password Reset Request',

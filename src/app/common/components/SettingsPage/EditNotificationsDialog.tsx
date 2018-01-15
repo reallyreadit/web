@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { State } from '../Dialog';
+import Dialog, { State } from '../controls/Dialog';
 import Context from '../../Context';
 import UserAccount from '../../../../common/models/UserAccount';
 

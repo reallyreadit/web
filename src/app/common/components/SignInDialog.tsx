@@ -1,9 +1,9 @@
 import * as React from 'react';
 import Context from '../Context';
-import InputField from './InputField';
-import Dialog, { State } from './Dialog';
+import InputField from './controls/InputField';
+import Dialog, { State } from './controls/Dialog';
 import UserAccount from '../../../common/models/UserAccount';
-import RequestPasswordResetDialog from './RequestPasswordResetDialog';
+import RequestPasswordResetDialog from './SignInDialog/RequestPasswordResetDialog';
 
 export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State> & {
 	email?: string,

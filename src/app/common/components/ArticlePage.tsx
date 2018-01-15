@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import ContextComponent from '../ContextComponent';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import Fetchable from '../api/Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
-import ArticleList from './ArticleList';
-import ArticleDetails from './ArticleDetails';
-import CommentList from './CommentList';
-import CommentBox from './CommentBox';
+import ArticleList from './controls/articles/ArticleList';
+import ArticleDetails from './controls/articles/ArticleDetails';
+import CommentList from './controls/comments/CommentList';
+import CommentBox from './controls/comments/CommentBox';
 import { State as PageState } from '../Page';
 
 type Props = RouteComponentProps<{
@@ -16,10 +15,12 @@ type Props = RouteComponentProps<{
 	articleSlug: string,
 	commentId: string
 }>;
-export default class ArticlePage extends ContextComponent<Props, {
+export default class ArticlePage extends React.Component<Props, {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<Comment[]>
 }> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private static findComment(id: string, comment: Comment) {
 		if (comment.id === id) {
 			return comment;

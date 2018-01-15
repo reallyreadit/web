@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Api from '../api/Api';
-import contextTypes from '../contextTypes';
+import { contextTypes } from '../Context';
 import Page from '../Page';
 import User from '../User';
 import Extension from '../Extension';

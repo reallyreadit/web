@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import PureContextComponent from '../PureContextComponent';
-//import * as className from 'classnames';
-import Context from '../Context';
+import Context, { contextTypes } from '../Context';
 import Fetchable from '../api/Fetchable';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
 
 type Props = RouteComponentProps<{}>;
-export default class extends PureContextComponent<
+export default class extends React.PureComponent<
 	Props,
 	{
 		request: Fetchable<EmailSubscriptionsRequest>,
@@ -18,6 +16,8 @@ export default class extends PureContextComponent<
 		isUpdated: boolean
 	}
 > {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	private readonly _changeCommentReplyNotification = (e: React.ChangeEvent<HTMLInputElement>) =>
 		this.setState({ values: { ...this.state.values, commentReplyNotifications: e.currentTarget.checked } });
 	private readonly _changeWebsiteUpdates = (e: React.ChangeEvent<HTMLInputElement>) =>
