@@ -1,16 +1,17 @@
 .main-view_header {
 	display: flex;
 	flex-flow: column;
-	padding-top: 7px;
 }
 .main-view_header > .title {
 	display: flex;
-	align-items: flex-end;
 	justify-content: space-between;
+	flex-wrap: wrap-reverse;
 }
 .main-view_header > .title > .logos {
 	display: flex;
 	align-items: center;
+	padding-top: 10px;
+	flex: 1 0 0;
 }
 .main-view_header > .title > .logos > .speech-bubble-link {
 	position: relative;
@@ -41,41 +42,39 @@
 	display: block;
 	width: 200px;
 }
+.main-view_header > .title > .user-name {
+	flex: 2 0 auto;
+	padding-top: 10px;
+	display: flex;
+	max-width: 100%;
+	white-space: nowrap;
+	justify-content: flex-end;
+}
 .main-view_header > .title > .user-name.signing-out {
 	color: #ccc;
+}
+.main-view_header > .title > .user-name > .greeting {
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .main-view_header > nav {
 	display: flex;
 	justify-content: space-between;
 	height: 30px;
 	align-items: center;
-	padding-top: 3px;
+	padding-top: 5px;
 }
 .main-view_header > nav > .left-nav > .button:not(:first-child) {
 	margin-left: (4 + 6) + px;
 }
 
-@media (max-width: 499px) {
-	.main-view_header > .title {
-		flex-flow: column;
-	}
-	.main-view_header > .title > .logos  {
-		order: 2;
-		width: 100%;
-		justify-content: center;
-	}
-	.main-view_header > .title > .user-name  {
-		order: 1;
-	}
+@media (max-width: 509px) {
 	.main-view_header > nav {
 		flex-flow: column;
-		height: 60px;
-		padding: 5px 0;
+		height: 62px;
+		padding-top: 10px;
 	}
-	.main-view_header > nav > .left-nav {
-		order: 2;
-	}
-	.main-view_header > nav > .right-nav {
-		order: 1;
+	.main-view_header > .title > .logos {
+		justify-content: center;
 	}
 }

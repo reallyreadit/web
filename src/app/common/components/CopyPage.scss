@@ -15,6 +15,14 @@
 .copy-page > section > p {
 	margin: 15px 0;
 }
+.copy-page > p:first-of-type,
+.copy-page > section:first-of-type > p {
+	margin-top: 0;
+}
+.copy-page > p:last-of-type,
+.copy-page > section:last-of-type > p {
+	margin-bottom: 0;
+}
 .copy-page > ul,
 .copy-page > section > ul {
 	list-style: disc;
