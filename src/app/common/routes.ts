@@ -2,7 +2,8 @@ import { RouteProps } from 'react-router';
 import HotTopicsPage from './components/HotTopicsPage';
 import AboutPage from './components/AboutPage';
 import AdminPage from './components/AdminPage';
-import ReadingListPage from './components/ReadingListPage';
+import StarredPage from './components/StarredPage';
+import HistoryPage from './components/HistoryPage';
 import ArticlePage from './components/ArticlePage';
 import InboxPage from './components/InboxPage';
 import SettingsPage from './components/SettingsPage';
@@ -39,12 +40,12 @@ export default [
 		component: EmailSubscriptionsPage
 	},
 	{
-		path: '/how-it-works',
-		component: HowItWorksPage
+		path: '/history',
+		component: HistoryPage
 	},
 	{
-		path: '/list',
-		component: ReadingListPage
+		path: '/how-it-works',
+		component: HowItWorksPage
 	},
 	{
 		path: '/inbox',
@@ -61,5 +62,9 @@ export default [
 	{
 		path: '/settings',
 		component: SettingsPage
+	},
+	{
+		path: '/starred',
+		component: StarredPage
 	}
 ] as RouteProps[];

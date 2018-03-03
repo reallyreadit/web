@@ -8,19 +8,19 @@ export default (props: {
 	onSignIn: () => void,
 	onCreateAccount: () => void,
 	onGoToInbox: () => void,
-	onGoToReadingList: () => void,
-	onGoToSettings: () => void
+	onGoToStarred: () => void,
+	onGoToHistory: () => void
 }) =>
 	props.isSignedIn ?
 		<div className="nav-bar">
 			<Button
 				text="Inbox"
-				iconLeft="envelope"
+				iconLeft="box"
 				onClick={props.onGoToInbox}
 				state={props.state}
 				showIndicator={props.showNewReplyIndicator} />
-			<Button text="Reading List" iconLeft="book" onClick={props.onGoToReadingList} state={props.state} />
-			<Button text="Settings" iconLeft="cog" onClick={props.onGoToSettings} state={props.state} />
+			<Button text="Starred" iconLeft="star-empty" onClick={props.onGoToStarred} state={props.state} />
+			<Button text="History" iconLeft="clock" onClick={props.onGoToHistory} state={props.state} />
 		</div> :
 		<div className="nav-bar">
 			<Button text="Sign In" iconLeft="user" onClick={props.onSignIn} />

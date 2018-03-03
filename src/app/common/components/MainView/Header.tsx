@@ -22,13 +22,15 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
 	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
 	// account nav
+	private _goToHome = () => this.context.router.history.push('/');
 	private _goToInbox = () => {
 		if (hasNewUnreadReply(this.context.page.newReplyNotification)) {
 			this.context.api.ackNewReply();
 		}
 		this.context.router.history.push('/inbox')
 	};
-	private _goToReadingList = () => this.context.router.history.push('/list');
+	private _goToStarred = () => this.context.router.history.push('/starred');
+	private _goToHistory = () => this.context.router.history.push('/history');
 	private _goToSettings = () => this.context.router.history.push('/settings');
 	private _goToAdmin = () => this.context.router.history.push('/admin');
 	private _signOut = () => {
@@ -74,12 +76,15 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 								] :
 								null}
 							<Separator />
+							<ActionLink text="Settings" iconLeft="cog" onClick={this._goToSettings} />
+							<Separator />
 							<ActionLink text="Sign Out" iconLeft="switch" onClick={this._signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
 						</div> :
 						null}
 				</div>
 				<nav>
 					<div className="left-nav">
+						<Button text="Home" iconLeft="home" onClick={this._goToHome} />
 						<Button text="About" iconLeft="lightbulb" onClick={this._goToAbout} />
 						<Button text="How it Works" iconLeft="question" onClick={this._goToHowItWorks} />
 					</div>
@@ -91,8 +96,8 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 							onSignIn={this._showSignInDialog}
 							onCreateAccount={this._showCreateAccountDialog}
 							onGoToInbox={this._goToInbox}
-							onGoToReadingList={this._goToReadingList}
-							onGoToSettings={this._goToSettings}
+							onGoToStarred={this._goToStarred}
+							onGoToHistory={this._goToHistory}
 						/>
 					</div>
 				</nav>
