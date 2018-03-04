@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as className from 'classnames';
 import UserArticle from '../../models/UserArticle';
 import Star from '../../components/Star';
+import { truncateText, formatTimestamp } from '../../format';
 
 export default (props: {
 	article: UserArticle,
@@ -20,17 +21,11 @@ export default (props: {
 		</div>
 		<div className="title-date">
 			<a href={props.article.url} onClick={props.onClick}>
-				{props.article.title.length > 80 ?
-					props.article.title.substring(0, 80) + '...' :
-					props.article.title}
+				{truncateText(props.article.title, 80)}
 			</a>
 			{props.article.datePublished ?
 				<div className="date-published">
-					{
-						parseInt(props.article.datePublished.substr(5, 2)) + '/' +
-						parseInt(props.article.datePublished.substr(8, 2)) + '/' +
-						props.article.datePublished.substr(2, 2)
-					}
+					{formatTimestamp(props.article.datePublished)}
 				</div> :
 				null}
 		</div>
