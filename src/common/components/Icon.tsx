@@ -8,11 +8,16 @@ export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'home' | 'box' | 'star-empty' | 'email' | 'share';
 export default (props: {
 	name: IconName,
+	title?: string,
 	className?: ClassValue,
 	onClick?: () => void
 }) =>
 	<svg
 		className={className('icon', props.className)}
-		onClick={props.onClick}>
-			<use xlinkHref={`#icon-${props.name}`}></use>
+		onClick={props.onClick}
+	>
+		{props.title ?
+			<title>{props.title}</title> :
+			null}
+		<use xlinkHref={`#icon-${props.name}`}></use>
 	</svg>;
