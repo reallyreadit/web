@@ -7,6 +7,7 @@ import DoubleRPathGroup from './Logo/DoubleRPathGroup';
 import * as className from 'classnames';
 import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
+import { formatTimestamp } from '../format';
 
 interface Props {
 	article: UserArticle,
@@ -81,13 +82,18 @@ const render: React.SFC<Props> = (props: Props) => (
 							onClick={props.onCommentsClick}
 						/>
 						{props.article.aotdTimestamp ?
-							<Icon className="aotd" name="trophy" /> :
+							<Icon
+								name="trophy"
+								title={`Article of the Day on ${formatTimestamp(props.article.aotdTimestamp)}`}
+								className="aotd"
+							/> :
 							null}
 					</div>
 				</div>
 				<div className="right">
 					<Icon
 						name="share"
+						title="Share Article"
 						className={className({ enabled: props.article.isRead })}
 						onClick={props.onDelete}
 					/>
