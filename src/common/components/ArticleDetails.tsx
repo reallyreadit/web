@@ -53,7 +53,7 @@ const render: React.SFC<Props> = (props: Props) => (
 							null}
 					</div>
 				</div>
-				<div className="right">
+				<div className="middle">
 					<Title
 						article={props.article}
 						showStar={props.isUserSignedIn}
@@ -84,6 +84,13 @@ const render: React.SFC<Props> = (props: Props) => (
 							<Icon className="aotd" name="trophy" /> :
 							null}
 					</div>
+				</div>
+				<div className="right">
+					<Icon
+						name="share"
+						className={className({ enabled: props.article.isRead })}
+						onClick={props.onDelete}
+					/>
 				</div>
 			</div>
 		</div>

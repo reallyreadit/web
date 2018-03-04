@@ -1,6 +1,17 @@
 export default
 `<svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <defs>
+<radialGradient id="shimmer" cx="0" cy="1" r="2">
+	<stop offset="-0.5" stop-color="MediumSlateBlue">
+		<animate attributeName="offset" from="-0.5" to="1" dur="2500ms" repeatCount="indefinite" />
+	</stop>
+	<stop offset="-0.25" stop-color="DeepSkyBlue">
+		<animate attributeName="offset" from="-0.25" to="1.25" dur="2500ms" repeatCount="indefinite" />
+	</stop>
+	<stop offset="0" stop-color="MediumSlateBlue">
+		<animate attributeName="offset" from="0" to="2.5" dur="2500ms" repeatCount="indefinite" />
+	</stop>
+</radialGradient>
 <symbol id="icon-locked" viewBox="0 0 16 16">
 <path d="M14.5 16h-13c-0.276 0-0.5-0.223-0.5-0.5v-8c0-0.277 0.224-0.5 0.5-0.5h1.5v-2c0-2.761 2.239-5 5-5s5 2.239 5 5v2h1.5c0.277 0 0.5 0.223 0.5 0.5v8c0 0.277-0.223 0.5-0.5 0.5zM11 4.75c0-1.519-1.344-2.75-3-2.75s-3 1.231-3 2.75v2.25h6v-2.25z"></path>
 </symbol>
@@ -92,6 +103,14 @@ export default
 <symbol id="icon-star-empty" viewBox="0 0 32 32">
 <title>star-empty</title>
 <path d="M32 12.408l-11.056-1.607-4.944-10.018-4.944 10.018-11.056 1.607 8 7.798-1.889 11.011 9.889-5.199 9.889 5.199-1.889-11.011 8-7.798zM16 23.547l-6.983 3.671 1.334-7.776-5.65-5.507 7.808-1.134 3.492-7.075 3.492 7.075 7.807 1.134-5.65 5.507 1.334 7.776-6.983-3.671z"></path>
+</symbol>
+<symbol id="icon-email" viewBox="0 0 32 32">
+<title>email</title>
+<path d="M14.375 19.032l-1.041 10.301 6.36-7.857 6.085 2.747 6.221-21.556-17.625 16.365zM32 2.667l-32 13.153 7.555 1.513 5.779 12-4.167-12 22.833-14.667z"></path>
+</symbol>
+<symbol id="icon-share" viewBox="0 0 32 32">
+<title>share</title>
+<path d="M8 20c0 0 1.838-6 12-6v6l12-8-12-8v6c-8 0-12 4.99-12 10zM22 24h-18v-12h3.934c0.315-0.372 0.654-0.729 1.015-1.068 1.374-1.287 3.018-2.27 4.879-2.932h-13.827v20h26v-8.395l-4 2.667v1.728z"></path>
 </symbol>
 </defs>
 </svg>

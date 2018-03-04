@@ -5,7 +5,7 @@ export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'cancel' | 'backward' | 'exclamation' | 'forbid' | 'spinner' | 'comments' |
 	'write' | 'envelope' | 'user' | 'cog' | 'book' | 'refresh' | 'lightbulb' |
 	'question' | 'hyperlink' | 'gallery' | 'star' | 'clock' | 'key' | 'trophy' |
-	'home' | 'box' | 'star-empty';
+	'home' | 'box' | 'star-empty' | 'email' | 'share';
 export default (props: {
 	name: IconName,
 	className?: ClassValue,
