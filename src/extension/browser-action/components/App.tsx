@@ -13,8 +13,8 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 	private _showCreateAccountDialog = () => this._openInNewTab('/?create-account');
 	private _goToInbox = () => (this.state.showNewReplyIndicator ? this._eventPageApi.ackNewReply() : Promise.resolve({}))
 		.then(() => this._openInNewTab('/inbox'));
-	private _goToReadingList = () => this._openInNewTab('/list');
-	private _goToSettings = () => this._openInNewTab('/settings');
+	private _goToStarred = () => this._openInNewTab('/starred');
+	private _goToHistory = () => this._openInNewTab('/history');
 	private _goToComments = () => {
 		const slugParts = this.state.userArticle.slug.split('_');
 		this._openInNewTab(`/articles/${slugParts[0]}/${slugParts[1]}`);
@@ -74,8 +74,8 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 						onSignIn={this._showSignInDialog}
 						onCreateAccount={this._showCreateAccountDialog}
 						onGoToInbox={this._goToInbox}
-						onGoToReadingList={this._goToReadingList}
-						onGoToSettings={this._goToSettings}
+						onGoToStarred={this._goToStarred}
+						onGoToHistory={this._goToHistory}
 						/>
 					{this.state.isAuthenticated ?
 						this.state.userArticle ?
