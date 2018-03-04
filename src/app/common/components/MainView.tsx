@@ -73,7 +73,11 @@ export default class MainView extends React.Component<{}, {}> {
 				})}>
 					<span className="text">{this.context.page.title}</span>
 					{this.context.page.isReloadable ?
-						<Icon name="refresh" onClick={this._reloadPage} /> :
+						<Icon
+							name="refresh"
+							title="Refresh"
+							onClick={this._reloadPage}
+						/> :
 						null}
 				</h2>
 				<main>
