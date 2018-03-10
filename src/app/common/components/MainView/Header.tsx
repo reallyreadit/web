@@ -67,8 +67,8 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 						</h1>
 					</div>
 					{this.context.user.isSignedIn ?
-						<div className={className('user-name', { 'signing-out': this.state.isSigningOut })}>
-							<span>{this.state.isSigningOut ? 'Bye' : 'Hi'}, <strong>{this.context.user.userAccount.name}</strong></span>
+						<div className={className('user-controls', { 'signing-out': this.state.isSigningOut })}>
+							<span className="user-name">{this.state.isSigningOut ? 'Bye' : 'Hi'}, <strong>{this.context.user.userAccount.name}</strong></span>
 							{this.context.user.userAccount.role === UserAccountRole.Admin ?
 								[
 									<Separator key="0" />,
