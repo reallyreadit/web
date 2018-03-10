@@ -9,7 +9,7 @@ export default
 		<animate attributeName="offset" from="-0.25" to="1.25" dur="2500ms" repeatCount="indefinite" />
 	</stop>
 	<stop offset="0" stop-color="MediumSlateBlue">
-		<animate attributeName="offset" from="0" to="2.5" dur="2500ms" repeatCount="indefinite" />
+		<animate attributeName="offset" from="0" to="1.5" dur="2500ms" repeatCount="indefinite" />
 	</stop>
 </radialGradient>
 <symbol id="icon-locked" viewBox="0 0 16 16">
