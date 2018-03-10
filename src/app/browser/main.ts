@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import MainView from '../common/components/MainView';
 import BrowserUser from './BrowserUser';
 import BrowserExtension from './BrowserExtension';
+import browserLogger from './BrowserLogger';
 require('snapsvg');
 
 // analytics
@@ -29,7 +30,8 @@ ReactDOM.render(
 			environment: 'browser',
 			extension: new BrowserExtension(window._contextInitData.extension),
 			page,
-			user: new BrowserUser(window._contextInitData.user)
+			user: new BrowserUser(window._contextInitData.user),
+			log: browserLogger
 		},
 		React.createElement(BrowserRouter, {}, React.createElement(MainView))
 	),

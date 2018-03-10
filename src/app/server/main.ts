@@ -10,7 +10,7 @@ import MainView from '../common/components/MainView';
 import ServerUser from './ServerUser';
 import UserAccountRole from '../../common/models/UserAccountRole';
 import SessionState from '../../common/models/SessionState';
-import Request from '../common/api/Request';
+import ApiRequest from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
@@ -20,7 +20,13 @@ import * as bunyan from 'bunyan';
 // set up logger
 const log = bunyan.createLogger({
 	name: 'app',
-	serializers: bunyan.stdSerializers
+	serializers: {
+		err: bunyan.stdSerializers.err,
+		req: (req: Request) => ({
+			method: req.method,
+			url: req.url
+		})
+	}
 });
 if (config.logStream) {
 	log.addStream(config.logStream);
@@ -54,7 +60,7 @@ server = server.use((req, res, next) => {
 	}, req.headers['cookie']);
 	req.api = api;
 	if (api.hasSessionKey()) {
-		api.fetchJson('GET', new Request('/UserAccounts/GetSessionState'))
+		api.fetchJson('GET', new ApiRequest('/UserAccounts/GetSessionState'))
 			.then((sessionState: SessionState) => {
 				if (!sessionState) {
 					throw new Error('InvalidSessionKey');
@@ -123,7 +129,8 @@ server = server.get('/*', (req, res) => {
 				environment: 'server',
 				extension,
 				page,
-				user
+				user,
+				log
 			},
 			React.createElement(
 				StaticRouter,

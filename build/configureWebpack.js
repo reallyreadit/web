@@ -38,8 +38,6 @@ function configureWebpack(params) {
 					}
 				]
 			},
-			// ignore node requires from bunyan.js module
-			externals: ['dtrace-provider', 'fs', 'mv', 'os', 'source-map-support'],
 			watch: params.watch
 		};
 	let define;

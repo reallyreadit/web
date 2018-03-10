@@ -5,13 +5,15 @@ import Page from '../Page';
 import User from '../User';
 import Extension from '../Extension';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
+import Logger from '../../../common/Logger';
 
 export default class App extends React.Component<{
 	api: Api,
 	page: Page,
 	user: User,
 	extension: Extension,
-	environment: 'server' | 'browser'
+	environment: 'server' | 'browser',
+	log: Logger
 }, {}> {
 	private _checkNewReplyNotification = () => this.props.api.checkNewReplyNotification(notification => {
 		if (!notification.errors) {
@@ -86,7 +88,8 @@ export default class App extends React.Component<{
 			page: this.props.page,
 			user: this.props.user,
 			extension: this.props.extension,
-			environment: this.props.environment
+			environment: this.props.environment,
+			log: this.props.log
 		};
 	}
 	public render () {
