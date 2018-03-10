@@ -17,98 +17,107 @@ interface Props {
 	onStar: () => void,
 	onTitleClick: (e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onCommentsClick: () => void,
-	onDelete?: () => void
+	onDelete?: () => void,
+	onShare: () => void
 }
-const render: React.SFC<Props> = (props: Props) => (
-	<div className="article-details">
-		<div className="content">
-			<Title
-				article={props.article}
-				showStar={props.isUserSignedIn}
-				isStarring={props.isStarring}
-				onStar={props.onStar}
-				onClick={props.onTitleClick}
-			/>
-			{props.article.tags.length ?
-				<div className="tags">
-						{props.article.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
-				</div> :
-				null}
-			<div className="columns">
-				<div className="left">
-					<div className="length">
-							{Math.round(props.article.wordCount / readingParameters.averageWordsPerMinute)} min
-						</div>
-					<div className="speech-bubble-container">
-						<SpeechBubble
-							percentComplete={props.article.percentComplete}
-							isRead={props.article.isRead}
-							uuid={`article-details-${props.article.id}`}
-						>
-							{!props.isUserSignedIn ?
-								<DoubleRPathGroup /> :
-								null}
-						</SpeechBubble>
-						{props.isUserSignedIn ?
-							<div className="percent-complete-label">{props.article.percentComplete.toFixed() + '%'}</div> :
-							null}
-					</div>
-				</div>
-				<div className="middle">
+export default class extends React.PureComponent<Props, {}> {
+	public static defaultProps = {
+		showDeleteControl: false,
+		onDelete: () => { }
+	};
+	private readonly _share = () => {
+		if (this.props.article.isRead) {
+			this.props.onShare();
+		}
+	};
+	public render() {
+		return (
+			<div className="article-details">
+				<div className="content">
 					<Title
-						article={props.article}
-						showStar={props.isUserSignedIn}
-						isStarring={props.isStarring}
-						onStar={props.onStar}
-						onClick={props.onTitleClick}
+						article={this.props.article}
+						showStar={this.props.isUserSignedIn}
+						isStarring={this.props.isStarring}
+						onStar={this.props.onStar}
+						onClick={this.props.onTitleClick}
 					/>
-					{props.article.description ?
-						<div className="description">{props.article.description}</div> :
+					{this.props.article.tags.length ?
+						<div className="tags">
+							{this.props.article.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
+						</div> :
 						null}
-					<div className="s-r-c">
-						<div className="source">
-							{
-								props.article.source +
-								(props.article.section ? ' >> ' + props.article.section : '') +
-								(props.article.authors.length ? ' - ' + props.article.authors.join(', ') : '')
-							}
+					<div className="columns">
+						<div className="left">
+							<div className="length">
+								{Math.round(this.props.article.wordCount / readingParameters.averageWordsPerMinute)} min
 						</div>
-						<span className="reads">
-							<Icon name="book" />
-							{props.article.readCount + ' ' + (props.article.readCount === 1 ? 'read' : 'reads')}
-						</span>
-						<CommentsActionLink
-							commentCount={props.article.commentCount}
-							onClick={props.onCommentsClick}
-						/>
-						{props.article.aotdTimestamp ?
+							<div className="speech-bubble-container">
+								<SpeechBubble
+									percentComplete={this.props.article.percentComplete}
+									isRead={this.props.article.isRead}
+									uuid={`article-details-${this.props.article.id}`}
+								>
+									{!this.props.isUserSignedIn ?
+										<DoubleRPathGroup /> :
+										null}
+								</SpeechBubble>
+								{this.props.isUserSignedIn ?
+									<div className="percent-complete-label">{this.props.article.percentComplete.toFixed() + '%'}</div> :
+									null}
+							</div>
+						</div>
+						<div className="middle">
+							<Title
+								article={this.props.article}
+								showStar={this.props.isUserSignedIn}
+								isStarring={this.props.isStarring}
+								onStar={this.props.onStar}
+								onClick={this.props.onTitleClick}
+							/>
+							{this.props.article.description ?
+								<div className="description">{this.props.article.description}</div> :
+								null}
+							<div className="s-r-c">
+								<div className="source">
+									{
+										this.props.article.source +
+										(this.props.article.section ? ' >> ' + this.props.article.section : '') +
+										(this.props.article.authors.length ? ' - ' + this.props.article.authors.join(', ') : '')
+									}
+								</div>
+								<span className="reads">
+									<Icon name="book" />
+									{this.props.article.readCount + ' ' + (this.props.article.readCount === 1 ? 'read' : 'reads')}
+								</span>
+								<CommentsActionLink
+									commentCount={this.props.article.commentCount}
+									onClick={this.props.onCommentsClick}
+								/>
+								{this.props.article.aotdTimestamp ?
+									<Icon
+										name="trophy"
+										title={`Article of the Day on ${formatTimestamp(this.props.article.aotdTimestamp)}`}
+										className="aotd"
+									/> :
+									null}
+							</div>
+						</div>
+						<div className="right">
 							<Icon
-								name="trophy"
-								title={`Article of the Day on ${formatTimestamp(props.article.aotdTimestamp)}`}
-								className="aotd"
-							/> :
-							null}
+								name="share"
+								title="Share Article"
+								className={className({ enabled: this.props.article.isRead })}
+								onClick={this._share}
+							/>
+						</div>
 					</div>
 				</div>
-				<div className="right">
-					<Icon
-						name="share"
-						title="Share Article"
-						className={className({ enabled: props.article.isRead })}
-						onClick={props.onDelete}
-					/>
+				<div className={className('controls', { hidden: !this.props.showDeleteControl })}>
+					<div className="delete-control" title="Delete Article">
+						<Icon name="cancel" onClick={this.props.onDelete} />
+					</div>
 				</div>
 			</div>
-		</div>
-		<div className={className('controls', { hidden: !props.showDeleteControl })}>
-			<div className="delete-control" title="Delete Article">
-				<Icon name="cancel" onClick={props.onDelete} />
-			</div>
-		</div>
-	</div>
-);
-render.defaultProps = {
-	showDeleteControl: false,
-	onDelete: () => {}
-};
-export default render;
+		);
+	}
+}

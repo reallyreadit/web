@@ -14,3 +14,10 @@ export function formatTimestamp(timestamp: string) {
 		timestamp.substr(2, 2)
 	);
 }
+export function getArticleUrlPath(slug: string) {
+	if (!slug) {
+		return slug;
+	}
+	const slugParts = slug.split('_');
+	return `/articles/${slugParts[0]}/${slugParts[1]}`;
+}

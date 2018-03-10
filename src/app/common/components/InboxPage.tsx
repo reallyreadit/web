@@ -7,17 +7,17 @@ import PageResult from '../../../common/models/PageResult';
 import CommentList from './controls/comments/CommentList';
 import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import PageSelector from './controls/PageSelector';
+import { getArticleUrlPath } from '../../../common/format';
 
 export default class InboxPage extends React.Component<RouteComponentProps<{}>, { replies: Fetchable<PageResult<Comment>> }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _readReply = (comment: Comment) => {
-		const slugParts = comment.articleSlug.split('_');
 		if (!comment.dateRead) {
 			this.context.api.readReply(comment.id);
 		}
-		this.context.router.history.push(`/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
+		this.context.router.history.push(getArticleUrlPath(comment.articleSlug) + `/${comment.id}`);
 	};
 	private _loadReplies = () => this.context.api.listReplies(
 		this.getCurrentPage(),

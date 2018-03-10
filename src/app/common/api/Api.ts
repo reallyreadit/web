@@ -127,4 +127,7 @@ export default abstract class Api {
 	public updateEmailSubscriptions(token: string, subscriptions: EmailSubscriptions) {
 		return this.post(new Request('/UserAccounts/UpdateEmailSubscriptions', { token, ...subscriptions }));
 	}
+	public shareArticle(articleId: string, emailAddresses: string[], message: string) {
+		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message }));
+	}
 }

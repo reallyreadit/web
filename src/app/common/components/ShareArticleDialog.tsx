@@ -1,0 +1,160 @@
+import * as React from 'react';
+import Context from '../Context';
+import Dialog, { State } from './controls/Dialog';
+import InputControl from './controls/InputControl';
+import InputField from './controls/InputField';
+import FormField from './controls/FormField';
+import ActionLink from '../../../common/components/ActionLink';
+import Icon from '../../../common/components/Icon';
+import UserArticle from '../../../common/models/UserArticle';
+import { Intent } from '../Page';
+
+interface Props {
+	article: UserArticle
+}
+interface EmailField {
+	id: number,
+	value: string,
+	error: string | null,
+	onChange: (value: string, error: string | null) => void,
+	remove: () => void
+}
+export default class extends Dialog<{}, Props, Partial<State> & {
+	addresses: EmailField[],
+	message: string
+}> {
+	private _emailFieldId = 0;
+	private _handleMessageChange = (message: string) => this.setState({ message });
+	private _addEmailAddress = () => {
+		const addresses = this.state.addresses.slice();
+		addresses.push(this.createEmailField());
+		this.setState({
+			...this.state,
+			addresses
+		});
+	};
+	constructor(props: Props, context: Context) {
+		super(
+			{
+				title: 'Share Article',
+				submitButtonText: 'Send',
+				successMessage: 'Share email sent!'
+			},
+			props,
+			context
+		);
+		this.state = {
+			...this.state,
+			addresses: [
+				this.createEmailField()
+			],
+			message: ''
+		};
+	}
+	private createEmailField(): EmailField {
+		const id = this._emailFieldId++;
+		return {
+			id,
+			value: '',
+			error: null,
+			onChange: (value: string, error: string | null) => {
+				const addresses = this.state.addresses.slice();
+				let field = addresses.find(field => field.id === id);
+				field.value = value;
+				field.error = error;
+				this.setState({
+					...this.state,
+					addresses
+				});
+			},
+			remove: () => {
+				const addresses = this.state.addresses.slice();
+				addresses.splice(
+					addresses.findIndex(field => field.id === id),
+					1
+				);
+				this.setState({
+					...this.state,
+					addresses
+				});
+			}
+		};
+	}
+	protected renderFields() {
+		return (
+			<div className="share-article-dialog">
+				<h3>{this.props.article.title}</h3>
+				<FormField
+					label={`Email Address${this.state.addresses.length > 1 ? 'es (bcc\'d)' : ''}`}
+					className="email-fields"
+				>
+					{this.state.addresses.map((field, index) => (
+						<div key={field.id} className="email-field">
+							<InputControl
+								type="email"
+								label="Email Address"
+								value={field.value}
+								autoFocus
+								required
+								minLength={3}
+								maxLength={30}
+								error={field.error}
+								showError={this.state.showErrors}
+								onChange={field.onChange}
+							/>
+							{index !== 0 ?
+								<div
+									className="delete-button"
+									title="Remove Address"
+									onClick={field.remove}
+								>
+									<Icon name="cancel" />
+								</div> :
+								null}
+						</div>
+					))}
+					{this.state.addresses.length < 5 ?
+						<ActionLink
+							iconLeft="plus"
+							text="Add Another Address"
+							onClick={this._addEmailAddress}
+						/> :
+						null}
+				</FormField>
+				<InputField
+					className="message-field"
+					type="multiline"
+					label="Message (optional)"
+					value={this.state.message}
+					onChange={this._handleMessageChange}
+				/>
+			</div>
+		);
+	}
+	protected getClientErrors() {
+		return [
+			this.state.addresses.reduce(
+				(errors, field, index) => {
+					if (field.error) {
+						errors['Email' + index] = field.error;
+					}
+					return errors;
+				},
+				{} as { [key: string]: string }
+			)
+		];
+	}
+	protected submitForm() {
+		return this.context.api.shareArticle(
+			this.props.article.id,
+			this.state.addresses.map(field => field.value),
+			this.state.message
+		);
+	}
+	protected onError(errors: string[]) {
+		this.context.page.showToast(
+			errors && errors.length ? errors[0] : 'Error sending email.\nPlease check the addresses.',
+			Intent.Danger
+		);
+	}
+}

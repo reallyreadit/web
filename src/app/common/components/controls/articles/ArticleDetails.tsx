@@ -3,6 +3,8 @@ import UserArticle from '../../../../../common/models/UserArticle';
 import Context, { contextTypes } from '../../../Context';
 import ReadReadinessDialog from './ReadReadinessDialog';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
+import { getArticleUrlPath } from '../../../../../common/format';
+import ShareArticleDialog from '../../ShareArticleDialog';
 
 interface Props {
 	article: UserArticle,
@@ -14,7 +16,6 @@ interface Props {
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
-	private _slugParts: string[];
 	private _checkReadReadiness = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		let reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut';
 		if (!this.context.extension.isBrowserCompatible()) {
@@ -29,7 +30,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			this.context.page.openDialog(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
 		}
 	};
-	private _goToComments = () => this.context.router.history.push(`/articles/${this._slugParts[0]}/${this._slugParts[1]}`);
+	private _goToComments = () => {
+		this.context.router.history.push(getArticleUrlPath(this.props.article.slug));
+	};
 	private _toggleStar = () => {
 		this.setState({ isStarring: true });
 		(this.props.article.dateStarred ?
@@ -44,16 +47,17 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				});
 	};
 	private _delete = () => this.props.onDelete(this.props.article);
+	private _share = () => {
+		this.context.page.openDialog(
+			React.createElement(
+				ShareArticleDialog,
+				{ article: this.props.article }
+			)
+		);
+	};
 	constructor(props: Props, context: Context) {
 		super(props, context);
 		this.state = { isStarring: false };
-		this.setSlugParts(props.article.slug);
-	}
-	private setSlugParts(slug: string) {
-		this._slugParts = slug.split('_');
-	}
-	public componentWillReceiveProps(nextProps: Props) {
-		this.setSlugParts(nextProps.article.slug);
 	}
 	public render() {
 		return (
@@ -66,6 +70,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onTitleClick={this._checkReadReadiness}
 				onCommentsClick={this._goToComments}
 				onDelete={this._delete}
+				onShare={this._share}
 			/>
 		);
 	}

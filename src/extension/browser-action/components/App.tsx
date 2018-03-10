@@ -5,6 +5,7 @@ import NavBar from '../../../common/components/NavBar';
 import logoText from '../../../common/svg/logoText';
 import warningTriangle from '../../../common/svg/warningTriangle';
 import ArticleDetails from '../../../common/components/ArticleDetails';
+import { getArticleUrlPath } from '../../../common/format';
 
 export default class App extends React.Component<{}, ExtensionState & { isStarring: boolean }> {
 	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
@@ -16,8 +17,7 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 	private _goToStarred = () => this._openInNewTab('/starred');
 	private _goToHistory = () => this._openInNewTab('/history');
 	private _goToComments = () => {
-		const slugParts = this.state.userArticle.slug.split('_');
-		this._openInNewTab(`/articles/${slugParts[0]}/${slugParts[1]}`);
+		this._openInNewTab(getArticleUrlPath(this.state.userArticle.slug));
 	};
 	private _toggleStar = () => {
 		this.setState({ isStarring: true });
@@ -30,6 +30,9 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 				},
 				isStarring: false
 			}));
+	};
+	private _showShareDialog = () => {
+		this._openInNewTab(getArticleUrlPath(this.state.userArticle.slug) + '?share');
 	};
 	private _preventDefault = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
@@ -86,6 +89,7 @@ export default class App extends React.Component<{}, ExtensionState & { isStarri
 								onStar={this._toggleStar}
 								onTitleClick={this._preventDefault}
 								onCommentsClick={this._goToComments}
+								onShare={this._showShareDialog}
 							/> :
 							<div className="article-placeholder">
 								No article found on page

@@ -9,6 +9,7 @@ import ArticleDetails from './controls/articles/ArticleDetails';
 import CommentList from './controls/comments/CommentList';
 import CommentBox from './controls/comments/CommentBox';
 import { State as PageState } from '../Page';
+import ShareArticleDialog from './ShareArticleDialog';
 
 type Props = RouteComponentProps<{
 	sourceSlug: string,
@@ -89,6 +90,17 @@ export default class ArticlePage extends React.Component<Props, {
 		});
 	}
 	public componentWillMount() {
+		if (
+			this.context.router.route.location.search === '?share' &&
+			!this.state.article.isLoading
+		) {
+			this.context.page.openDialog(
+				React.createElement(
+					ShareArticleDialog,
+					{ article: this.state.article.value }
+				)
+			);
+		}
 		this.context.page.setState({
 			title: this.state.article.isLoading ? 'Loading...' : this.state.article.value.title,
 			isLoading: this.state.article.isLoading || this.state.comments.isLoading,
@@ -96,6 +108,9 @@ export default class ArticlePage extends React.Component<Props, {
 		});
 	}
 	public componentDidMount() {
+		if (this.context.router.route.location.search) {
+			this.context.router.history.push(this.context.router.route.location.pathname);
+		}
 		this.context.user.addListener('authChange', this._reload);
 		this.context.page.addListener('reload', this._reload);
 	}

@@ -3,7 +3,9 @@
 	z-index: 1;
 	background: #fff;
     border: 7px double #000;
-    border-radius: 10px;
+	border-radius: 10px;
+	max-width: 100%;
+	box-sizing: border-box;
 }
 .dialog > h3 {
 	margin-bottom: 15px;

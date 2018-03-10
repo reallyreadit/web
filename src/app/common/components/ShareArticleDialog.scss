@@ -1,0 +1,37 @@
+.share-article-dialog > h3 {
+	margin-bottom: 10px;
+	max-width: 375px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+}
+.share-article-dialog > .email-fields {
+	margin-bottom: 6px;
+}
+.share-article-dialog > .email-fields > .field-container > .email-field {
+	display: flex;
+	margin-bottom: 6px;
+}
+.share-article-dialog > .email-fields > .field-container > .email-field:last-of-type {
+	margin-bottom: 3px;
+}
+.share-article-dialog > .email-fields > .field-container > .email-field > .input-control {
+	flex: 1 1 auto;
+}
+.share-article-dialog > .email-fields > .field-container > .email-field > .delete-button {
+	flex: 0 0 auto;
+	width: 22px;
+	height: 22px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+}
+.share-article-dialog > .message-field > .field-container > .input-control > textarea {
+	width: 100%;
+	height: 70px;
+	box-sizing: border-box;
+	font-family: serif;
+	font-size: 16px;
+}

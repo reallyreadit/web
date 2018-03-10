@@ -1,0 +1,27 @@
+.form-field {
+	display: block;	
+	text-align: right;
+}
+.form-field > strong {
+	display: inline-block;
+	height: 22px;
+	line-height: 22px;
+	margin-right: 6px;
+	vertical-align: top;
+}
+.form-field > .field-container {
+	display: inline-block;
+	width: 200px;
+	min-height: 30px;
+	text-align: left;
+	vertical-align: top;
+}
+
+@media (max-width: 499px) {
+	.form-field {
+		text-align: left;
+	}
+	.form-field > .field-container {
+		width: 100%;
+	}
+}
