@@ -50,6 +50,11 @@ class Server {
 				dest: project.getOutPath('app', env),
 				onComplete: resolve
 			})));
+			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
+				src: 'package.json',
+				dest: project.getOutPath('app', env),
+				onComplete: resolve
+			})));
 		}
 		return Promise.all(tasks);
 	}
