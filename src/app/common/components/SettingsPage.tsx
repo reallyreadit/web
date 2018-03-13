@@ -165,7 +165,7 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 						Feel free to occasionally email me about the following:
 						<div className={className('setting', user.receiveWebsiteUpdates ? 'on' : 'off')}>
 							<Icon name={user.receiveWebsiteUpdates ? 'checkmark' : 'cancel'} />
-							Website updates
+							Community updates
 						</div>
 						<div className={className('setting', user.receiveSuggestedReadings ? 'on' : 'off')}>
 							<Icon name={user.receiveSuggestedReadings ? 'checkmark' : 'cancel'} />

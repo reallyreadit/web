@@ -128,7 +128,7 @@ export default class extends React.PureComponent<
 										disabled={this.state.isSubmitting}
 										onChange={this._changeWebsiteUpdates}
 									/>
-									<span>Website updates</span>
+									<span>Community updates</span>
 								</label>
 								<label>
 									<input

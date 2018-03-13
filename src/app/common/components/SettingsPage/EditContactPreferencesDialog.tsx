@@ -37,7 +37,7 @@ export default class extends Dialog<UserAccount, Props, Partial<State> & Values>
 					<li>
 						<label>
 							<input type="checkbox" checked={this.state.receiveWebsiteUpdates} onChange={this._changeWebsiteUpdates} />
-							<span>Website updates</span>
+							<span>Community updates</span>
 						</label>
 					</li>
 					<li>
