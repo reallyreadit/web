@@ -1,9 +1,9 @@
 import Store from './Store';
 
-export default class SetStore<K, V> extends Store<V[]> {
+export default class <K, V> extends Store<V[]> {
 	private _getKey: (item: V) => K;
-	constructor(name: string, type: 'local' | 'session', getKey: (item: V) => K) {
-		super(name, type);
+	constructor(key: string, getKey: (item: V) => K) {
+		super(key);
 		this._getKey = getKey;
 	}
 	private _getItemByKey(key: K, items: V[]) {

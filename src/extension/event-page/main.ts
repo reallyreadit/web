@@ -1,6 +1,6 @@
 import drawBrowserActionIcon from './drawBrowserActionIcon';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
-import SetStore from './SetStore';
+import SetStore from '../../common/webStorage/SetStore';
 import ContentScriptTab from '../common/ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
@@ -36,7 +36,7 @@ const serverApi = new ServerApi({
 });
 
 // tabs
-const tabs = new SetStore<number, ContentScriptTab>('tabs', 'local', t => t.id);
+const tabs = new SetStore<number, ContentScriptTab>('tabs', t => t.id);
 
 // browser action
 const browserActionApi = new BrowserActionApi({

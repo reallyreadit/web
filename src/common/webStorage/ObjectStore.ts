@@ -1,9 +1,9 @@
 import Store from './Store';
 
-export default class ObjectStore<T> extends Store<T> {
+export default class <T> extends Store<T> {
 	private _defaultValue: T;
-	constructor(name: string, type: 'local' | 'session', defaultValue: T) {
-		super(name, type);
+	constructor(name: string, defaultValue: T) {
+		super(name);
 		this._defaultValue = defaultValue;
 	}
 	public get() {

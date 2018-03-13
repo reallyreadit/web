@@ -1,8 +1,8 @@
 import UserArticle from '../../common/models/UserArticle';
 import UserPage from '../../common/models/UserPage';
 import NewReplyNotification, { isStateEqual as isNotificationStateEqual, shouldShowDesktopNotification } from '../../common/models/NewReplyNotification';
-import SetStore from './SetStore';
-import ObjectStore from './ObjectStore';
+import SetStore from '../../common/webStorage/SetStore';
+import ObjectStore from '../../common/webStorage/ObjectStore';
 import ParseResult from '../common/ParseResult';
 import ReadStateCommitData from '../common/ReadStateCommitData';
 import Request from './Request';
@@ -67,7 +67,7 @@ export default class ServerApi {
 		readStateCommitRate: 3000
 	};
 	// cached local storage
-	private _newReplyNotification = new ObjectStore<Cached<NewReplyNotification>>('newReplyNotification', 'local', {
+	private _newReplyNotification = new ObjectStore<Cached<NewReplyNotification>>('newReplyNotification', {
 		value: {
 			lastReply: 0,
 			lastNewReplyAck: 0,
@@ -77,8 +77,8 @@ export default class ServerApi {
 		timestamp: 0,
 		expirationTimespan: 0
 	});
-	private _articles = new SetStore<string, Cached<UserArticle>>('articles', 'local', a => a.value.id);
-	private _sourceRules = new ObjectStore<Cached<SourceRule[]>>('sourceRules', 'local', {
+	private _articles = new SetStore<string, Cached<UserArticle>>('articles', a => a.value.id);
+	private _sourceRules = new ObjectStore<Cached<SourceRule[]>>('sourceRules', {
 		value: [],
 		timestamp: 0,
 		expirationTimespan: 0
