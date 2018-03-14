@@ -20,7 +20,7 @@ export default class extends React.PureComponent<{}, {
 				{ isSending: false },
 				() => this.context.page.showToast(
 					errors.includes('ResendLimitExceeded') ?
-						'Only one resend allowed per 24 hours.\nPlease try again later.' :
+						'Error sending email.\nPlease try again in a few minutes.' :
 						'Error sending email.\nPlease try again later.',
 					Intent.Danger
 				)
