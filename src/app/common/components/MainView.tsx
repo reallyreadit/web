@@ -13,6 +13,7 @@ import routes from '../routes';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import ResetPasswordDialog from './MainView/ResetPasswordDialog';
+import EmailConfirmationBar from './MainView/EmailConfirmationBar';
 
 export default class MainView extends React.Component<{}, {}> {
 	public static contextTypes = contextTypes;
@@ -66,6 +67,7 @@ export default class MainView extends React.Component<{}, {}> {
 			<div className="main-view">
 				<ReadReadinessBar />
 				<Toaster />
+				<EmailConfirmationBar />
 				<Header />
 				<h2 className={className({
 					'reloadable': this.context.page.isReloadable,

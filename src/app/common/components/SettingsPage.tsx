@@ -10,9 +10,9 @@ import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
-import { Intent } from '../Page';
+import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 
-export default class SettingsPage extends React.PureComponent<RouteComponentProps<{}>, { isResendingConfirmationEmail: boolean }> {
+export default class SettingsPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private readonly _forceUpdate = () => this.forceUpdate();
@@ -31,24 +31,6 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 	private _openChangeEmailAddressDialog = () => {
 		this.context.page.openDialog(<ChangeEmailAddressDialog />);
 	};
-	private _resendConfirmationEmail = () => this.setState(
-		{ isResendingConfirmationEmail: true },
-		() => this.context.api
-			.resendConfirmationEmail()
-			.then(() => this.setState(
-				{ isResendingConfirmationEmail: false },
-				() => this.context.page.showToast('Confirmation email sent', Intent.Success)
-			))
-			.catch((errors: string[]) => this.setState(
-				{ isResendingConfirmationEmail: false },
-				() => this.context.page.showToast(
-					errors.includes('ResendLimitExceeded') ?
-						'Only one resend allowed per 24 hours.\nPlease try again later.' :
-						'Error sending email.\nPlease try again later.',
-					Intent.Danger
-				)
-			))
-	);
 	private _openEditNotificationsDialog = () => {
 		const user = this.context.user.userAccount;
 		this.context.page.openDialog(
@@ -70,10 +52,6 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 		);
 	};
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
-	constructor(props: RouteComponentProps<{}>, context: Context) {
-		super(props, context);
-		this.state = { isResendingConfirmationEmail: false };
-	}
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Settings',
@@ -124,12 +102,7 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 								<Icon name="exclamation" />
 								Not Confirmed
 								<Separator />
-								<ActionLink
-									text="Resend confirmation email"
-									iconLeft="refresh2"
-									state={this.state.isResendingConfirmationEmail ? 'busy' : 'normal'}
-									onClick={this._resendConfirmationEmail}
-								/>
+								<ResendConfirmationEmailActionLink />
 							</div>}
 					</li>
 					<li>

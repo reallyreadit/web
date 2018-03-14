@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Context, { contextTypes } from '../../Context';;
+import Context, { contextTypes } from '../../Context';
 
-export default class ReadReadinessBar extends React.PureComponent<{}, {}> {
+export default class extends React.PureComponent<{}, {}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private readonly _forceUpdate = () => this.forceUpdate();

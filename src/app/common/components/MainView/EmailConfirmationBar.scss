@@ -1,0 +1,11 @@
+.email-confirmation-bar {
+	background-color: palevioletred;
+	border: 1px solid darkred;
+	color: white;
+	padding: 5px;
+	text-align: center;
+	margin-top: 10px;
+}
+.email-confirmation-bar > .action-link {
+	white-space: nowrap;
+}
