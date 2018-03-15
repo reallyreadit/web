@@ -10,14 +10,22 @@ export default (props: {
 	name: IconName,
 	title?: string,
 	className?: ClassValue,
-	onClick?: () => void
-}) =>
+	onClick?: () => void,
+	defs?: React.ReactNode,
+	fill?: string
+}) => (
 	<svg
 		className={className('icon', props.className)}
 		onClick={props.onClick}
 	>
+		{props.defs ?
+			<defs>
+				{props.defs}
+			</defs> :
+			null}
 		{props.title ?
 			<title>{props.title}</title> :
 			null}
-		<use xlinkHref={`#icon-${props.name}`}></use>
-	</svg>;
+		<use xlinkHref={'#icon-' + props.name} fill={props.fill}></use>
+	</svg>
+);

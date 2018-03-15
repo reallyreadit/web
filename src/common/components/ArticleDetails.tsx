@@ -7,6 +7,7 @@ import DoubleRPathGroup from './Logo/DoubleRPathGroup';
 import * as className from 'classnames';
 import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
+import ShimmerGradient from '../svg/ShimmerGradient';
 import { formatTimestamp } from '../format';
 
 interface Props {
@@ -31,6 +32,7 @@ export default class extends React.PureComponent<Props, {}> {
 		}
 	};
 	public render() {
+		const shareGradientUuid = `article-details-share-${this.props.article.id}`;
 		return (
 			<div className="article-details">
 				<div className="content">
@@ -55,7 +57,7 @@ export default class extends React.PureComponent<Props, {}> {
 								<SpeechBubble
 									percentComplete={this.props.article.percentComplete}
 									isRead={this.props.article.isRead}
-									uuid={`article-details-${this.props.article.id}`}
+									uuid={`article-details-speech-bubble-${this.props.article.id}`}
 								>
 									{!this.props.isUserSignedIn ?
 										<DoubleRPathGroup /> :
@@ -108,6 +110,8 @@ export default class extends React.PureComponent<Props, {}> {
 								title="Share Article"
 								className={className({ enabled: this.props.article.isRead })}
 								onClick={this._share}
+								defs={<ShimmerGradient uuid={shareGradientUuid} />}
+								fill={this.props.article.isRead ? `url(#${shareGradientUuid}-shimmer-gradient)` : null}
 							/>
 						</div>
 					</div>

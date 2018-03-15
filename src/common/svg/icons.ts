@@ -1,17 +1,6 @@
 export default
 `<svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <defs>
-<radialGradient id="shimmer" cx="0" cy="1" r="2">
-	<stop offset="-0.5" stop-color="MediumSlateBlue">
-		<animate attributeName="offset" from="-0.5" to="1" dur="2500ms" repeatCount="indefinite" />
-	</stop>
-	<stop offset="-0.25" stop-color="DeepSkyBlue">
-		<animate attributeName="offset" from="-0.25" to="1.25" dur="2500ms" repeatCount="indefinite" />
-	</stop>
-	<stop offset="0" stop-color="MediumSlateBlue">
-		<animate attributeName="offset" from="0" to="1.5" dur="2500ms" repeatCount="indefinite" />
-	</stop>
-</radialGradient>
 <symbol id="icon-locked" viewBox="0 0 16 16">
 <path d="M14.5 16h-13c-0.276 0-0.5-0.223-0.5-0.5v-8c0-0.277 0.224-0.5 0.5-0.5h1.5v-2c0-2.761 2.239-5 5-5s5 2.239 5 5v2h1.5c0.277 0 0.5 0.223 0.5 0.5v8c0 0.277-0.223 0.5-0.5 0.5zM11 4.75c0-1.519-1.344-2.75-3-2.75s-3 1.231-3 2.75v2.25h6v-2.25z"></path>
 </symbol>
