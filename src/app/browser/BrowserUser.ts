@@ -5,7 +5,7 @@ import ObjectStore from '../../common/webStorage/ObjectStore';
 export default class extends User {
 	private readonly _userStore: ObjectStore<UserAccount | null>;
 	constructor(userAccount: UserAccount) {
-		super(userAccount);
+		super();
 		this._userStore = new ObjectStore<UserAccount | null>('userAccount', null);
 		this._userStore.addEventListener((prevUserAccount, currUserAccount) => {
 			if (prevUserAccount && currUserAccount) {

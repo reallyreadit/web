@@ -10,9 +10,6 @@ export default abstract class extends EventEmitter<{
 		currUserAccount: UserAccount
 	}
 }> {
-	constructor(userAccount: UserAccount) {
-		super();
-	}
 	protected abstract getUserAccount(): UserAccount;
 	protected abstract setUserAccount(userAccount: UserAccount): void;
 	protected abstract clearUserAccount(): void;

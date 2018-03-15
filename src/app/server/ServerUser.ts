@@ -4,7 +4,7 @@ import UserAccount from '../../common/models/UserAccount';
 export default class extends User {
 	private _userAccount: UserAccount;
 	constructor(userAccount: UserAccount) {
-		super(userAccount);
+		super();
 		this.setUserAccount(userAccount);
 	}
 	protected getUserAccount() {
