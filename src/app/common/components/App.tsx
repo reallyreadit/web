@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Api from '../api/Api';
 import { contextTypes } from '../Context';
-import Page from '../Page';
+import Page, { EventType } from '../Page';
 import User from '../User';
 import Extension from '../Extension';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
@@ -56,11 +56,23 @@ export default class App extends React.Component<{
 			}
 		}
 	};
-	private _updateExtension = (notification: NewReplyNotification) => this.props.extension.updateNewReplyNotification(notification);
+	private _updateExtension = (
+		data: {
+			notification: NewReplyNotification,
+			eventType: EventType
+		}
+	) => {
+		if (data.eventType === EventType.Original) {
+			this.props.extension.updateNewReplyNotification(data.notification);
+		}
+	};
 	public static childContextTypes = contextTypes;
 	public componentDidMount() {
 		// update extension since we just loaded with a fresh notification state
-		this.props.extension.updateNewReplyNotification(this.props.page.newReplyNotification);
+		this._updateExtension({
+			notification: this.props.page.newReplyNotification,
+			eventType: EventType.Original
+		});
 		// set up event handlers
 		this.props.user
 			.addListener('signIn', this._handleSignIn)

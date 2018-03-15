@@ -19,14 +19,20 @@ export interface ToastEvent {
 	text: string,
 	intent: Intent
 }
-abstract class Page extends EventEmitter<{
+export enum EventType {
+	Original,
+	Sync
+}
+export default abstract class extends EventEmitter<{
 	'change': State,
 	'reload': void,
 	'openDialog': React.ReactElement<any>,
 	'closeDialog': React.ReactElement<any>,
 	'showToast': ToastEvent,
-	'newReplyNotificationChange': NewReplyNotification,
-	'ackNewReply': void
+	'newReplyNotificationChange': {
+		notification: NewReplyNotification,
+		eventType: EventType
+	}
 }> {
 	// title
 	protected _title: string;
@@ -35,16 +41,8 @@ abstract class Page extends EventEmitter<{
 	// dialog
 	private _activeDialog?: React.ReactElement<any>;
 	// new reply notification
-	protected _newReplyNotification: NewReplyNotification;
-	constructor(newReplyNotification: NewReplyNotification) {
-		super();
-		this._newReplyNotification = newReplyNotification || {
-			lastReply: 0,
-			lastNewReplyAck: 0,
-			lastNewReplyDesktopNotification: 0,
-			timestamp: 0
-		};
-	}
+	protected abstract _getNewReplyNotification(): NewReplyNotification;
+	protected abstract _setNewReplyNotification(notification: NewReplyNotification): void;
 	public setState(state: Partial<State>) {
 		if ('title' in state) {
 			this._title = state.title;
@@ -77,11 +75,17 @@ abstract class Page extends EventEmitter<{
 		this.emitEvent('showToast', { text, intent });
 	}
 	public setNewReplyNotification(notification: NewReplyNotification) {
-		if (notification.timestamp > this._newReplyNotification.timestamp) {
-			const hasStateChanged = !isNotificationStateEqual(this._newReplyNotification, notification);
-			this._newReplyNotification = notification;
+		if (notification.timestamp > this._getNewReplyNotification().timestamp) {
+			const hasStateChanged = !isNotificationStateEqual(this._getNewReplyNotification(), notification);
+			this._setNewReplyNotification(notification);
 			if (hasStateChanged) {
-				this.emitEvent('newReplyNotificationChange', this._newReplyNotification);
+				this.emitEvent(
+					'newReplyNotificationChange',
+					{
+						notification: this._getNewReplyNotification(),
+						eventType: EventType.Original
+					}
+				);
 			}
 		}
 	}
@@ -98,7 +102,6 @@ abstract class Page extends EventEmitter<{
 		return this._activeDialog;
 	}
 	public get newReplyNotification() {
-		return this._newReplyNotification;
+		return this._getNewReplyNotification();
 	}
 }
-export default Page;

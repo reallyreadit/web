@@ -10,10 +10,15 @@ export function shouldShowDesktopNotification(notification: NewReplyNotification
 	return hasNewUnreadReply(notification) &&
 		notification.lastReply > notification.lastNewReplyDesktopNotification;
 }
-interface NewReplyNotification {
+export const empty = {
+	lastReply: 0,
+	lastNewReplyAck: 0,
+	lastNewReplyDesktopNotification: 0,
+	timestamp: 0
+};
+export default interface NewReplyNotification {
 	lastReply: number,
 	lastNewReplyAck: number,
 	lastNewReplyDesktopNotification: number,
 	timestamp: number
 }
-export default NewReplyNotification;
