@@ -1,42 +1,57 @@
 .main-view {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	overflow: hidden;
 	font-family: monospace;
 	font-size: 13px;
-	max-width: 850px;
-	height: 100%;
-	margin: 0 auto;
-	position: relative;
 }
-.main-view > h2 {
+.main-view > .scroll-container {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	overflow: auto;
+	padding: 0 10px;
+}
+.main-view > .scroll-container > .scroll-content {
+	max-width: 850px;
+	margin: 0 auto;
+}
+.main-view > .scroll-container > .scroll-content > h2 {
 	display: flex;
 	justify-content: center;
 	padding: 10px 0;
 	font-size: 22px;
 	height: 30px;
 }
-.main-view > h2.reloadable::before {
+.main-view > .scroll-container > .scroll-content > h2.reloadable::before {
 	content: "";
 	flex: 1 1 auto;
 	max-width: 28px;
 }
-.main-view > h2 > .text {
+.main-view > .scroll-container > .scroll-content > h2 > .text {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.main-view > h2 > .icon {
+.main-view > .scroll-container > .scroll-content > h2 > .icon {
 	flex: 0 0 auto;
 	margin-left: 8px;
 	cursor: pointer;
 	color: #666;
 	transition: transform 250ms;
 }
-.main-view > h2.loading > .icon {
+.main-view > .scroll-container > .scroll-content > h2.loading > .icon {
 	animation: main-view-page-loading 1000ms linear infinite;
 }
-.main-view > h2 > .icon:hover {
+.main-view > .scroll-container > .scroll-content > h2 > .icon:hover {
 	transform: rotate(-22deg);
 }
-.main-view > footer {
+.main-view > .scroll-container > .scroll-content > footer {
 	text-align: center;
 	padding: 20px 0;
 }
