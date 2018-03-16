@@ -100,27 +100,37 @@
 	font-size: 11px;
 	color: lightslategray;
 }
-.article-details > .content > .columns > .middle > .s-r-c {
+.article-details > .content > .columns > .middle > .meta-groups {
 	display: flex;
 	flex-wrap: wrap;
 }
-.article-details > .content > .columns > .middle > .s-r-c > .source {
+.article-details > .content > .columns > .middle > .meta-groups > .source {
 	@extend %ellipsis;
 	width: 100%;
 	margin: 2px 0 3px 0;
 	color: mediumorchid;
 }
-.article-details > .content > .columns > .middle > .s-r-c > .reads {
+.article-details > .content > .columns > .middle > .meta-groups > .source + .flex-spacer {
+	display: none;
+}
+.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta {
+	display: flex;
+	overflow: hidden;
+}
+.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .reads {
 	color: teal;
 	white-space: nowrap;
-	margin-right: 6px;
 }
-.article-details > .content > .columns > .middle > .s-r-c > .reads > .icon {
+.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .reads > .icon {
 	margin-right: 3px;
 }
-.article-details > .content > .columns > .middle > .s-r-c > .aotd {
-	margin-left: 6px;
+.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .aotd {
+	flex: 0 0 auto;
 	color: darkturquoise;
+}
+.article-details > .content > .columns > .middle > .meta-groups > .flex-spacer,
+.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .flex-spacer {
+	width: 6px;
 }
 .article-details > .content > .columns > .right {
 	flex: 0 0 auto;
@@ -176,18 +186,21 @@
 		display: flex;
 		margin-bottom: 3px;
 	}
-	.article-details > .content > .columns > .middle > .s-r-c {
+	.article-details > .content > .columns > .middle > .meta-groups {
 		flex-wrap: nowrap;
 		margin-top: 2px;
 	}
-	.article-details > .content > .columns > .middle > .s-r-c > .source {
+	.article-details > .content > .columns > .middle > .meta-groups > .source {
 		width: auto;
-		margin: 0 12px 0 0;
+		margin: 0;
 	}
-	.article-details > .content > .columns > .middle > .s-r-c > .reads {
-		margin-right: 12px;
+	.article-details > .content > .columns > .middle > .meta-groups > .source + .flex-spacer {
+		display: block;
 	}
-	.article-details > .content > .columns > .middle > .s-r-c > .aotd {
-		margin-left: 12px;
+	.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta {
+		flex: 0 0 auto;
+	}
+	.article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .flex-spacer {
+		width: 12px;
 	}
 }

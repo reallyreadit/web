@@ -79,7 +79,7 @@ export default class extends React.PureComponent<Props, {}> {
 							{this.props.article.description ?
 								<div className="description">{this.props.article.description}</div> :
 								null}
-							<div className="s-r-c">
+							<div className="meta-groups">
 								<div className="source">
 									{
 										this.props.article.source +
@@ -87,21 +87,29 @@ export default class extends React.PureComponent<Props, {}> {
 										(this.props.article.authors.length ? ' - ' + this.props.article.authors.join(', ') : '')
 									}
 								</div>
-								<span className="reads">
-									<Icon name="book" />
-									{this.props.article.readCount + ' ' + (this.props.article.readCount === 1 ? 'read' : 'reads')}
-								</span>
-								<CommentsActionLink
-									commentCount={this.props.article.commentCount}
-									onClick={this.props.onCommentsClick}
-								/>
-								{this.props.article.aotdTimestamp ?
-									<Icon
-										name="trophy"
-										title={`Article of the Day on ${formatTimestamp(this.props.article.aotdTimestamp)}`}
-										className="aotd"
-									/> :
-									null}
+								<div className="flex-spacer"></div>
+								<div className="rrit-meta">
+									<span className="reads">
+										<Icon name="book" />
+										{this.props.article.readCount + ' ' + (this.props.article.readCount === 1 ? 'read' : 'reads')}
+									</span>
+									<div className="flex-spacer"></div>
+									<CommentsActionLink
+										commentCount={this.props.article.commentCount}
+										onClick={this.props.onCommentsClick}
+									/>
+									{this.props.article.aotdTimestamp ?
+										<div className="flex-spacer"></div> :
+										null}
+									{this.props.article.aotdTimestamp ?
+										<Icon
+											key="aotd"
+											name="trophy"
+											title={`Article of the Day on ${formatTimestamp(this.props.article.aotdTimestamp)}`}
+											className="aotd"
+										/> :
+										null}
+									</div>
 							</div>
 						</div>
 						<div className="right">
