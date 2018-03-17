@@ -16,6 +16,7 @@
 	left: 0;
 	overflow: auto;
 	padding: 0 10px;
+	-webkit-overflow-scrolling: touch;
 }
 .main-view > .scroll-container > .scroll-content {
 	max-width: 850px;
