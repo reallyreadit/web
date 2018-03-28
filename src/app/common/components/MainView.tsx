@@ -65,8 +65,6 @@ export default class MainView extends React.Component<{}, {}> {
 	public render() {
 		return (
 			<div className="main-view">
-				<DialogManager />
-				<Toaster />
 				<div className="scroll-container">
 					<div className="scroll-content">
 						<ReadReadinessBar />
@@ -97,6 +95,8 @@ export default class MainView extends React.Component<{}, {}> {
 						</footer>
 					</div>
 				</div>
+				<DialogManager />
+				<Toaster />
 			</div>
 		);
 	}
