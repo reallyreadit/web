@@ -65,35 +65,33 @@ export default class MainView extends React.Component<{}, {}> {
 	public render() {
 		return (
 			<div className="main-view">
-				<div className="scroll-container">
-					<div className="scroll-content">
-						<ReadReadinessBar />
-						<EmailConfirmationBar />
-						<Header />
-						<h2 className={className({
-							'reloadable': this.context.page.isReloadable,
-							'loading': this.context.page.isLoading
-						})}>
-							<span className="text">{this.context.page.title}</span>
-							{this.context.page.isReloadable ?
-								<Icon
-									name="refresh"
-									title="Refresh"
-									onClick={this._reloadPage}
-								/> :
-								null}
-						</h2>
-						<main>
-							{routes.map((route, i) => <Route key={i} {...route} />)}
-						</main>
-						<footer>
-							<a href="http://blog.reallyread.it">Blog</a>
-							<Separator />
-							<Link to="/privacy">Privacy Policy</Link>
-							<Separator />
-							<a href="mailto:support@reallyread.it">support@reallyread.it</a>
-						</footer>
-					</div>
+				<div className="content">
+					<ReadReadinessBar />
+					<EmailConfirmationBar />
+					<Header />
+					<h2 className={className({
+						'reloadable': this.context.page.isReloadable,
+						'loading': this.context.page.isLoading
+					})}>
+						<span className="text">{this.context.page.title}</span>
+						{this.context.page.isReloadable ?
+							<Icon
+								name="refresh"
+								title="Refresh"
+								onClick={this._reloadPage}
+							/> :
+							null}
+					</h2>
+					<main>
+						{routes.map((route, i) => <Route key={i} {...route} />)}
+					</main>
+					<footer>
+						<a href="http://blog.reallyread.it">Blog</a>
+						<Separator />
+						<Link to="/privacy">Privacy Policy</Link>
+						<Separator />
+						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
+					</footer>
 				</div>
 				<DialogManager />
 				<Toaster />
