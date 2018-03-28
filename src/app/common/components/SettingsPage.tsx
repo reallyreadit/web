@@ -98,7 +98,7 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 								<Icon name="checkmark" />
 								Confirmed
 							</div> :
-							<div className="setting off">
+							<div className="setting warn">
 								<Icon name="exclamation" />
 								Not Confirmed
 								<Separator />
