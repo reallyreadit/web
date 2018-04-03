@@ -5,10 +5,11 @@ import { RouterChildContext } from 'react-router';
 import Extension from './Extension';
 import Logger from '../../common/Logger';
 import * as PropTypes from 'prop-types';
+import Environment from './Environment';
 
 export const contextTypes = {
 	api: PropTypes.instanceOf(Api),
-	environment: PropTypes.string,
+	environment: PropTypes.number,
 	extension: PropTypes.instanceOf(Extension),
 	log: PropTypes.object,
 	page: PropTypes.instanceOf(Page),
@@ -17,7 +18,7 @@ export const contextTypes = {
 };
 export default interface Context extends RouterChildContext<{}> {
 	api: Api,
-	environment: 'server' | 'browser',
+	environment: Environment,
 	extension: Extension,
 	log: Logger,
 	page: Page,

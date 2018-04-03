@@ -16,6 +16,7 @@ import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 import routes from '../common/routes';
 import * as bunyan from 'bunyan';
+import Environment from '../common/Environment';
 
 // set up logger
 const log = bunyan.createLogger({
@@ -126,7 +127,7 @@ server = server.get('/*', (req, res) => {
 			App,
 			{
 				api: req.api,
-				environment: 'server',
+				environment: Environment.Server,
 				extension,
 				page,
 				user,
@@ -160,6 +161,7 @@ server = server.get('/*', (req, res) => {
 			extensionId: config.extensionId,
 			contextInitData: {
 				api: req.api.getInitData(),
+				environment: req.query.mode === 'app' ? Environment.App : Environment.Browser,
 				extension: extension.getInitData(),
 				page: page.getInitData(),
 				user: user.getInitData()

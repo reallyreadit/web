@@ -1,18 +1,11 @@
-import UserAccount from '../../../common/models/UserAccount';
 import icons from '../../../common/svg/icons';
-import { InitData as PageInitData } from '../Page';
-import { InitData as ApiInitData } from '../api/Api';
+import ContextInitData from '../ContextInitData';
 
 export default (model: {
 	title: string,
 	content: string,
 	extensionId: string,
-	contextInitData: {
-		api: ApiInitData,
-		extension: string,
-		page: PageInitData,
-		user: UserAccount
-	},
+	contextInitData: ContextInitData,
 	enableAnalytics: boolean
 }) => 
 `<!DOCTYPE html>

@@ -6,13 +6,14 @@ import User from '../User';
 import Extension from '../Extension';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import Logger from '../../../common/Logger';
+import Environment from '../Environment';
 
 export default class App extends React.Component<{
 	api: Api,
 	page: Page,
 	user: User,
 	extension: Extension,
-	environment: 'server' | 'browser',
+	environment: Environment,
 	log: Logger
 }, {}> {
 	private _checkNewReplyNotification = () => this.props.api.checkNewReplyNotification(notification => {

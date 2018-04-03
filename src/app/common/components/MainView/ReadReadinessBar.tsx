@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Context, { contextTypes } from '../../Context';
+import Environment from '../../Environment';
 
 export default class extends React.PureComponent<{}, {}> {
 	public static contextTypes = contextTypes;
@@ -11,7 +12,7 @@ export default class extends React.PureComponent<{}, {}> {
 	}
 	public render() {
 		return (
-			this.context.environment === 'browser' ?
+			this.context.environment === Environment.Browser ?
 				this.context.extension.isInstalled() === false ?
 					<div className="read-readiness-bar">
 						<div className="content">

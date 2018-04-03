@@ -19,7 +19,8 @@ ga('create', {
 ga('send', 'pageview');
 
 // app
-const api = new BrowserApi(window._contextInitData.api),
+const
+	api = new BrowserApi(window._contextInitData.api),
 	page = new BrowserPage(window._contextInitData.page);
 
 ReactDOM.render(
@@ -27,7 +28,7 @@ ReactDOM.render(
 		App,
 		{
 			api,
-			environment: 'browser',
+			environment: window._contextInitData.environment,
 			extension: new BrowserExtension(window._contextInitData.extension),
 			page,
 			user: new BrowserUser(window._contextInitData.user),
