@@ -7,9 +7,11 @@ import Extension from '../Extension';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import Logger from '../../../common/Logger';
 import Environment from '../Environment';
+import App from '../App';
 
-export default class App extends React.Component<{
+export default class extends React.Component<{
 	api: Api,
+	app: App,
 	page: Page,
 	user: User,
 	extension: Extension,
@@ -98,6 +100,7 @@ export default class App extends React.Component<{
 	public getChildContext() {
 		return {
 			api: this.props.api,
+			app: this.props.app,
 			page: this.props.page,
 			user: this.props.user,
 			extension: this.props.extension,
