@@ -1,10 +1,11 @@
 import * as React from 'react';
 import UserArticle from '../../../../../common/models/UserArticle';
 import Context, { contextTypes } from '../../../Context';
-import ReadReadinessDialog from './ReadReadinessDialog';
+import ReadReadinessDialog, { Error as ReadReadinessError } from './ReadReadinessDialog';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import { getArticleUrlPath } from '../../../../../common/format';
 import ShareArticleDialog from '../../ShareArticleDialog';
+import Environment from '../../../Environment';
 
 interface Props {
 	article: UserArticle,
@@ -16,18 +17,26 @@ interface Props {
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
-	private _checkReadReadiness = (e: React.MouseEvent<HTMLAnchorElement>) => {
-		let reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut';
-		if (!this.context.extension.isBrowserCompatible()) {
-			reason = 'incompatibleBrowser';
-		} else if (!this.context.extension.isInstalled()) {
-			reason = 'extensionNotInstalled';
-		} else if (!this.context.user.isSignedIn) {
-			reason = 'signedOut';
-		}
-		if (reason) {
-			e.preventDefault();
-			this.context.page.openDialog(React.createElement(ReadReadinessDialog, { reason, articleUrl: (e.target as HTMLAnchorElement).href }));
+	private _readArticle = (e: React.MouseEvent<HTMLAnchorElement>) => {
+		switch (this.context.environment) {
+			case Environment.Browser:
+				let error: ReadReadinessError | undefined;
+				if (!this.context.extension.isBrowserCompatible()) {
+					error = ReadReadinessError.IncompatibleBrowser;
+				} else if (!this.context.extension.isInstalled()) {
+					error = ReadReadinessError.ExtensionNotInstalled;
+				} else if (!this.context.user.isSignedIn) {
+					error = ReadReadinessError.SignedOut;
+				}
+				if (error) {
+					e.preventDefault();
+					this.context.page.openDialog(React.createElement(ReadReadinessDialog, { error, articleUrl: (e.target as HTMLAnchorElement).href }));
+				}
+				return;
+			case Environment.App:
+				e.preventDefault();
+				this.context.app.readArticle((e.target as HTMLAnchorElement).href);
+				return;
 		}
 	};
 	private _goToComments = () => {
@@ -67,7 +76,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				showDeleteControl={this.props.showDeleteControl}
 				isStarring={this.state.isStarring}
 				onStar={this._toggleStar}
-				onTitleClick={this._checkReadReadiness}
+				onTitleClick={this._readArticle}
 				onCommentsClick={this._goToComments}
 				onDelete={this._delete}
 				onShare={this._share}

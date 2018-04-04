@@ -4,8 +4,13 @@ import SignInDialog from '../../SignInDialog';
 import CreateAccountDialog from '../../CreateAccountDialog';
 import Context, { contextTypes } from '../../../Context';
 
+export enum Error {
+    IncompatibleBrowser,
+    ExtensionNotInstalled,
+    SignedOut
+}
 export default class ReadReadinessDialog extends React.PureComponent<{
-    reason: 'incompatibleBrowser' | 'extensionNotInstalled' | 'signedOut',
+    error: Error,
     articleUrl: string
 }, {}> {
     public static contextTypes = contextTypes;
@@ -22,14 +27,14 @@ export default class ReadReadinessDialog extends React.PureComponent<{
     };
     public render() {
         let message: JSX.Element;
-        switch (this.props.reason) {
-            case 'incompatibleBrowser':
+        switch (this.props.error) {
+            case Error.IncompatibleBrowser:
                 message = <span>You must use Chrome (on Mac or PC) to get credit for really reading.</span>;
                 break;
-            case 'extensionNotInstalled':
+            case Error.ExtensionNotInstalled:
                 message = <span>You won't get credit for really reading until you <a onClick={this._installExtension}>add the Chrome extension</a>.</span>;
                 break;
-            case 'signedOut':
+            case Error.SignedOut:
                 message = <span>You won't get credit for really reading until you <a onClick={this._showSignInDialog}>sign in</a> or <a onClick={this._showCreateAccountDialog}>create an account</a>.</span>;
                 break;    
         }
