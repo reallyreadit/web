@@ -1,6 +1,7 @@
 import App from '../common/App';
 import Environment from '../common/Environment';
 import WebViewMessagingContext from './WebViewMessagingContext';
+import UserArticle from '../../common/models/UserArticle';
 
 export default class extends App {
 	private readonly _app: WebViewMessagingContext | undefined;
@@ -10,10 +11,10 @@ export default class extends App {
 			this._app = new WebViewMessagingContext();
 		}
 	}
-	public readArticle(url: string) {
+	public readArticle(article: UserArticle) {
 		this._app.sendMessage({
 			type: 'readArticle',
-			data: url
+			data: article
 		});
 	}
 }

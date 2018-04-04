@@ -35,7 +35,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				return;
 			case Environment.App:
 				e.preventDefault();
-				this.context.app.readArticle((e.target as HTMLAnchorElement).href);
+				this.context.app.readArticle(this.props.article);
 				return;
 		}
 	};
