@@ -11,7 +11,8 @@ import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
-import Environment from '../Environment';
+import ClientType from '../ClientType';
+import EnvironmentType from '../EnvironmentType';
 
 export default class SettingsPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
 	public static contextTypes = contextTypes;
@@ -65,14 +66,14 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 			.addListener('signOut', this._redirectToHomepage)
 			.addListener('update', this._forceUpdate);
 		this.context.page.addListener('reload', this._reload);
-		this.context.extension.addListener('change', this._forceUpdate);
+		this.context.environment.extension.addListener('change', this._forceUpdate);
 	}
 	public componentWillUnmount() {
 		this.context.user
 			.removeListener('signOut', this._redirectToHomepage)
 			.removeListener('update', this._forceUpdate);
 		this.context.page.removeListener('reload', this._reload);
-		this.context.extension.addListener('change', this._forceUpdate);
+		this.context.environment.extension.addListener('change', this._forceUpdate);
 	}
 	public render() {
 		const user = this.context.user.userAccount;
@@ -120,10 +121,15 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 						<div className={className('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
 							<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
 							Show a desktop notification
-							{user.receiveReplyDesktopNotifications && this.context.environment === Environment.Browser && this.context.extension.isInstalled() === false ?
+							{(
+								user.receiveReplyDesktopNotifications &&
+								this.context.environment.type === EnvironmentType.Client &&
+								this.context.environment.clientType === ClientType.Browser &&
+								this.context.environment.extension.isInstalled() === false
+							) ?
 								<div className="notice">
 									<Icon name="exclamation" />
-									To get notifications you must {this.context.extension.isBrowserCompatible() ?
+									To get notifications you must {this.context.environment.extension.isBrowserCompatible() ?
 										<a onClick={this._installExtension}>add the Chrome extension</a> :
 										<span>add the Chrome extension</span>}.
 								</div> :

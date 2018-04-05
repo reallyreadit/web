@@ -26,7 +26,7 @@ export default class HowItWorksPage extends React.PureComponent<RouteComponentPr
 	public componentDidMount() {
 		// event handlers
 		this.context.user.addListener('authChange', this._forceUpdate);
-		this.context.extension.addListener('change', this._forceUpdate);
+		this.context.environment.extension.addListener('change', this._forceUpdate);
 		// animation
 		// - setup
 		const s = Snap('#reading-illustration');
@@ -90,7 +90,7 @@ export default class HowItWorksPage extends React.PureComponent<RouteComponentPr
 	public componentWillUnmount() {
 		// event handlers
 		this.context.user.removeListener('authChange', this._forceUpdate);
-		this.context.extension.removeListener('change', this._forceUpdate);
+		this.context.environment.extension.removeListener('change', this._forceUpdate);
 		// animation
 		window.clearTimeout(this._animationTimeout);
 		window.clearTimeout(this._animationResetTimeout);
@@ -98,7 +98,7 @@ export default class HowItWorksPage extends React.PureComponent<RouteComponentPr
 	public render() {
 		return (
 			<div className="how-it-works-page copy-page">
-				{this.context.extension.isInstalled() ?
+				{this.context.environment.extension.isInstalled() ?
 					<p>First, add the Chrome extension. (You only have to do this once.)</p> :
 					<p>First, <a onClick={this._installExtension}>add the Chrome extension</a>. (You only have to do this once.)</p>}
 				{this.context.user.isSignedIn ?

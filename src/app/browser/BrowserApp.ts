@@ -1,13 +1,13 @@
 import App from '../common/App';
-import Environment from '../common/Environment';
+import ClientType from '../common/ClientType';
 import WebViewMessagingContext from './WebViewMessagingContext';
 import UserArticle from '../../common/models/UserArticle';
 
 export default class extends App {
 	private readonly _app: WebViewMessagingContext | undefined;
-	constructor(environment: Environment) {
+	constructor(clientType: ClientType) {
 		super();
-		if (environment === Environment.App) {
+		if (clientType === ClientType.App) {
 			this._app = new WebViewMessagingContext();
 		}
 	}

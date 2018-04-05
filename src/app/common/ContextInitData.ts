@@ -1,12 +1,11 @@
 import UserAccount from '../../common/models/UserAccount';
 import { InitData as PageInitData } from './Page';
 import { InitData as ApiInitData } from './api/Api';
-import Environment from './Environment';
+import { InitData as EnvironmentInitData } from './Environment';
 
 export default interface ContextInitData {
 	api: ApiInitData,
-	environment: Environment,
-	extension: string,
+	environment: EnvironmentInitData,
 	page: PageInitData,
 	user: UserAccount
 }

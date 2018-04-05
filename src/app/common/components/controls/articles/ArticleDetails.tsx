@@ -5,7 +5,7 @@ import ReadReadinessDialog, { Error as ReadReadinessError } from './ReadReadines
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import { getArticleUrlPath } from '../../../../../common/format';
 import ShareArticleDialog from '../../ShareArticleDialog';
-import Environment from '../../../Environment';
+import ClientType from '../../../ClientType';
 
 interface Props {
 	article: UserArticle,
@@ -18,12 +18,12 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private _readArticle = (e: React.MouseEvent<HTMLAnchorElement>) => {
-		switch (this.context.environment) {
-			case Environment.Browser:
+		switch (this.context.environment.clientType) {
+			case ClientType.Browser:
 				let error: ReadReadinessError | undefined;
-				if (!this.context.extension.isBrowserCompatible()) {
+				if (!this.context.environment.extension.isBrowserCompatible()) {
 					error = ReadReadinessError.IncompatibleBrowser;
-				} else if (!this.context.extension.isInstalled()) {
+				} else if (!this.context.environment.extension.isInstalled()) {
 					error = ReadReadinessError.ExtensionNotInstalled;
 				} else if (!this.context.user.isSignedIn) {
 					error = ReadReadinessError.SignedOut;
@@ -33,9 +33,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					this.context.page.openDialog(React.createElement(ReadReadinessDialog, { error, articleUrl: (e.target as HTMLAnchorElement).href }));
 				}
 				return;
-			case Environment.App:
+			case ClientType.App:
 				e.preventDefault();
-				this.context.app.readArticle(this.props.article);
+				this.context.environment.app.readArticle(this.props.article);
 				return;
 		}
 	};

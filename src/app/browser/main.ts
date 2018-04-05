@@ -6,9 +6,8 @@ import BrowserPage from './BrowserPage';
 import { BrowserRouter } from 'react-router-dom';
 import MainView from '../common/components/MainView';
 import BrowserUser from './BrowserUser';
-import BrowserExtension from './BrowserExtension';
 import browserLogger from './BrowserLogger';
-import BrowserApp from './BrowserApp';
+import BrowserEnvironment from './BrowserEnvironment';
 require('snapsvg');
 
 // analytics
@@ -29,9 +28,7 @@ ReactDOM.render(
 		App,
 		{
 			api,
-			app: new BrowserApp(window._contextInitData.environment),
-			environment: window._contextInitData.environment,
-			extension: new BrowserExtension(window._contextInitData.extension),
+			environment: new BrowserEnvironment(window._contextInitData.environment),
 			page,
 			user: new BrowserUser(window._contextInitData.user),
 			log: browserLogger

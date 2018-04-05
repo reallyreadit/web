@@ -3,20 +3,19 @@ import Api from '../api/Api';
 import { contextTypes } from '../Context';
 import Page, { EventType } from '../Page';
 import User from '../User';
-import Extension from '../Extension';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import Logger from '../../../common/Logger';
 import Environment from '../Environment';
 import App from '../App';
+import Extension from '../Extension';
+import ClientType from '../ClientType';
 
 export default class extends React.Component<{
 	api: Api,
-	app: App,
+	environment: Environment<App, Extension>,
+	log: Logger,
 	page: Page,
-	user: User,
-	extension: Extension,
-	environment: Environment,
-	log: Logger
+	user: User
 }, {}> {
 	private _checkNewReplyNotification = () => this.props.api.checkNewReplyNotification(notification => {
 		if (!notification.errors) {
@@ -65,8 +64,11 @@ export default class extends React.Component<{
 			eventType: EventType
 		}
 	) => {
-		if (data.eventType === EventType.Original) {
-			this.props.extension.updateNewReplyNotification(data.notification);
+		if (
+			data.eventType === EventType.Original &&
+			this.props.environment.clientType === ClientType.Browser
+		) {
+			this.props.environment.extension.updateNewReplyNotification(data.notification);
 		}
 	};
 	public static childContextTypes = contextTypes;
@@ -100,10 +102,8 @@ export default class extends React.Component<{
 	public getChildContext() {
 		return {
 			api: this.props.api,
-			app: this.props.app,
 			page: this.props.page,
 			user: this.props.user,
-			extension: this.props.extension,
 			environment: this.props.environment,
 			log: this.props.log
 		};

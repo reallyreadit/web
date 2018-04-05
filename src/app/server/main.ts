@@ -16,8 +16,9 @@ import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 import routes from '../common/routes';
 import * as bunyan from 'bunyan';
-import Environment from '../common/Environment';
 import ServerApp from './ServerApp';
+import ServerEnvironment from './ServerEnvironment';
+import ClientType from '../common/ClientType';
 
 // set up logger
 const log = bunyan.createLogger({
@@ -121,16 +122,19 @@ server = server.get('/inbox', (req, res, next) => {
 });
 // render the app
 server = server.get('/*', (req, res) => {
-	const user = new ServerUser(req.sessionState.userAccount),
+	const
+		environment = new ServerEnvironment(
+			req.query.mode === 'app' ? ClientType.App : ClientType.Browser,
+			new ServerApp(),
+			new ServerExtension(config.extensionId)
+		),
+		user = new ServerUser(req.sessionState.userAccount),
 		page = new ServerPage(req.sessionState.newReplyNotification),
-		extension = new ServerExtension(config.extensionId),
 		appElement = React.createElement(
 			App,
 			{
 				api: req.api,
-				app: new ServerApp(),
-				environment: Environment.Server,
-				extension,
+				environment,
 				page,
 				user,
 				log
@@ -163,8 +167,7 @@ server = server.get('/*', (req, res) => {
 			extensionId: config.extensionId,
 			contextInitData: {
 				api: req.api.getInitData(),
-				environment: req.query.mode === 'app' ? Environment.App : Environment.Browser,
-				extension: extension.getInitData(),
+				environment: environment.getInitData(),
 				page: page.getInitData(),
 				user: user.getInitData()
 			},
