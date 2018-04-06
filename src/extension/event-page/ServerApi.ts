@@ -248,9 +248,12 @@ export default class ServerApi {
 		return userArticle && userArticle.value;
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
-		ServerApi
+		return ServerApi
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/CommitReadState', data))
-			.then(userArticle => this.cacheArticle(userArticle))
+			.then(userArticle => {
+				this.cacheArticle(userArticle);
+				return userArticle;
+			})
 			.catch(() => {});
 	}
 	public getArticleLookupRequests(tabId: number) {

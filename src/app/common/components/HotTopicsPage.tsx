@@ -54,20 +54,23 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 				}
 			});
 		} else {
-			const items = this.state.hotTopics.value.articles.items.slice();
-			items.splice(items.findIndex(a => a.id === article.id), 1, article);
-			this.setState({
-				hotTopics: {
-					...this.state.hotTopics,
-					value: {
-						...this.state.hotTopics.value,
-						articles: {
-							...this.state.hotTopics.value.articles,
-							items
+			const articleIndex = this.state.hotTopics.value.articles.items.findIndex(a => a.id === article.id);
+			if (articleIndex !== -1) {
+				const items = this.state.hotTopics.value.articles.items.slice();
+				items.splice(articleIndex, 1, article);
+				this.setState({
+					hotTopics: {
+						...this.state.hotTopics,
+						value: {
+							...this.state.hotTopics.value,
+							articles: {
+								...this.state.hotTopics.value.articles,
+								items
+							}
 						}
 					}
-				}
-			});
+				});
+			}
 		}
 	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
@@ -87,10 +90,12 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 	public componentDidMount() {
 		this.context.user.addListener('authChange', this._reload);
 		this.context.page.addListener('reload', this._reload);
+		this.context.environment.addListener('articleUpdated', this._updateArticle);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('authChange', this._reload);
 		this.context.page.removeListener('reload', this._reload);
+		this.context.environment.removeListener('articleUpdated', this._updateArticle);
 	}
 	public render() {
 		return (

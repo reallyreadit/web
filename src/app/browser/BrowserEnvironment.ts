@@ -8,8 +8,14 @@ export default class extends Environment<BrowserApp, BrowserExtension> {
 		super(
 			EnvironmentType.Client,
 			initData.clientType,
-			new BrowserApp(initData.clientType),
-			new BrowserExtension(initData.extension)
+			new BrowserApp(
+				initData.clientType,
+				article => this.emitEvent('articleUpdated', article)
+			),
+			new BrowserExtension(
+				initData.extension,
+				article => this.emitEvent('articleUpdated', article)
+			)
 		);
 	}
 }

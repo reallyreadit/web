@@ -1,9 +1,10 @@
 import Extension from '../common/Extension';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
+import UserArticle from '../../common/models/UserArticle';
 
 export default class BrowserExtension extends Extension {
     private _isInstalled: boolean = null;
-    constructor(extensionId: string) {
+    constructor(extensionId: string, onArticleUpdated: (article: UserArticle) => void) {
         super(extensionId);
         this.sendMessage('ping')
             .then(response => {
@@ -17,12 +18,16 @@ export default class BrowserExtension extends Extension {
             });
         window.addEventListener('message', e => {
             if (e.source === window) {
-                switch (e.data.type) {
+                const message = JSON.parse(e.data) as { type: string, data: any };
+                switch (message.type) {
                     case 'extensionInstalled':
                         if (!this._isInstalled) {
                             this._isInstalled = true;
                             this.emitEvent('change', true);
                         }
+                        break;
+                    case 'articleUpdated':
+                        onArticleUpdated(message.data);
                         break;
                 }
             }

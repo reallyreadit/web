@@ -37,9 +37,14 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 		this.context.page.setState({ isLoading: true });
 	};
 	private _updateArticle = (article: UserArticle) => {
-		if (!article.dateStarred) {
+		const articleIndex = this.state.articles.value.items.findIndex(a => a.id === article.id);
+		if (articleIndex !== -1) {
 			const items = this.state.articles.value.items.slice();
-			items.splice(items.findIndex(a => a.id === article.id), 1);
+			if (article.dateStarred) {
+				items.splice(articleIndex, 1, article);
+			} else {
+				items.splice(articleIndex, 1);
+			}
 			this.setState({
 				articles: {
 					...this.state.articles,
@@ -65,10 +70,12 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
 		this.context.page.addListener('reload', this._reload);
+		this.context.environment.addListener('articleUpdated', this._updateArticle);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
 		this.context.page.removeListener('reload', this._reload);
+		this.context.environment.removeListener('articleUpdated', this._updateArticle);
 	}
 	public render() {
 		return (

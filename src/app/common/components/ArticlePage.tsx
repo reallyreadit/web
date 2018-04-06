@@ -62,12 +62,16 @@ export default class ArticlePage extends React.Component<Props, {
 			this.context.page.setState(state);
 		}
 	};
-	private _updateArticle = (article: UserArticle) => this.setState({
-		article: {
-			...this.state.article,
-			value: article
+	private _updateArticle = (article: UserArticle) => {
+		if (article.id === this.state.article.value.id) {
+			this.setState({
+				article: {
+					...this.state.article,
+					value: article
+				}
+			});
 		}
-	});
+	};
 	private _reload = () => {
 		this.context.page.setState({ isLoading: true });
 		this._loadArticle();
@@ -113,10 +117,12 @@ export default class ArticlePage extends React.Component<Props, {
 		}
 		this.context.user.addListener('authChange', this._reload);
 		this.context.page.addListener('reload', this._reload);
+		this.context.environment.addListener('articleUpdated', this._updateArticle);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('authChange', this._reload);
 		this.context.page.removeListener('reload', this._reload);
+		this.context.environment.removeListener('articleUpdated', this._updateArticle);
 	}
 	public render() {
 		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn && this.state.article.value.isRead;

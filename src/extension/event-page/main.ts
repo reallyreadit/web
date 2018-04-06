@@ -6,6 +6,7 @@ import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
 import BrowserActionApi from './BrowserActionApi';
 import ExtensionState from '../common/ExtensionState';
+import WebAppApi from './WebAppApi';
 
 console.log('loading main.ts...');
 
@@ -83,7 +84,13 @@ const contentScriptApi = new ContentScriptApi({
 	onCommitReadState: (tabId, data) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
-		serverApi.commitReadState(tabId, data);
+		serverApi
+			.commitReadState(tabId, data)
+			.then(userArticle => {
+				if (userArticle) {
+					WebAppApi.updateArticle(userArticle);
+				}
+			});
 	},
 	onUnregisterPage: tabId => {
 		console.log(`contentScriptApi.onUnregisterPage (tabId: ${tabId})`);
@@ -168,15 +175,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	// update icon
 	getState().then(updateIcon);
 	// message rrit tabs
-	chrome.tabs.query(
-		{},
-		tabs => tabs
-			.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
-			.forEach(tab => chrome.tabs.executeScript(
-				tab.id,
-				{ code: 'window.postMessage({ type: \'extensionInstalled\' }, \'*\')' }
-			))
-	);
+	WebAppApi.notifyExtensionInstalled();
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');

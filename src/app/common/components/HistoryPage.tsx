@@ -37,14 +37,17 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 		this.context.page.setState({ isLoading: true });
 	};
 	private _updateArticle = (article: UserArticle) => {
-		const items = this.state.articles.value.items.slice();
-		items.splice(items.findIndex(a => a.id === article.id), 1, article);
-		this.setState({
-			articles: {
-				...this.state.articles,
-				value: { ...this.state.articles.value, items }
-			}
-		});
+		const articleIndex = this.state.articles.value.items.findIndex(a => a.id === article.id);
+		if (articleIndex !== -1) {
+			const items = this.state.articles.value.items.slice();
+			items.splice(items.findIndex(a => a.id === article.id), 1, article);
+			this.setState({
+				articles: {
+					...this.state.articles,
+					value: { ...this.state.articles.value, items }
+				}
+			});
+		}
 	};
 	private _deleteArticle = (article: UserArticle) => {
 		this.context.api.deleteUserArticle(article.id);
@@ -74,10 +77,12 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
 		this.context.page.addListener('reload', this._reload);
+		this.context.environment.addListener('articleUpdated', this._updateArticle);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
 		this.context.page.removeListener('reload', this._reload);
+		this.context.environment.removeListener('articleUpdated', this._updateArticle);
 	}
 	public render() {
 		return (
