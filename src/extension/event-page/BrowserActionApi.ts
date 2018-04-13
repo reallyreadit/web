@@ -13,7 +13,7 @@ export default class BrowserActionApi {
 	constructor(handlers: {
 		onLoad: () => Promise<ExtensionState>,
 		onAckNewReply: () => void,
-		onSetStarred: (articleId: string, isStarred: boolean) => Promise<void>
+		onSetStarred: (articleId: number, isStarred: boolean) => Promise<void>
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage') {

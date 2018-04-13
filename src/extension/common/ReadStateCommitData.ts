@@ -1,5 +1,4 @@
-interface ReadStateCommitData {
-	userPageId: string,
+export default interface ReadStateCommitData {
+	userPageId: number,
 	readState: number[]
 }
-export default ReadStateCommitData;

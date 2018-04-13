@@ -1,9 +1,8 @@
-interface Source {
-	id: string,
+export default interface Source {
+	id: number,
 	name: string,
 	slug: string,
 	url: string,
 	hostname: string,
 	parser: string
 }
-export default Source;

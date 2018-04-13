@@ -1,7 +1,7 @@
 import UserAccountRole from './UserAccountRole';
 
 export default interface UserAccount {
-	id: string,
+	id: number,
 	name: string,
 	email: string,
 	receiveReplyEmailNotifications: boolean,

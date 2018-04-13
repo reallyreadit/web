@@ -10,10 +10,10 @@ interface Props {
 	comment: Comment,
 	mode: 'reply' | 'link',
 	isAllowedToPost?: boolean,
-	parentCommentId?: string,
+	parentCommentId?: number,
 	onCommentAdded?: (comment: Comment) => void,
 	onViewThread?: (comment: Comment) => void,
-	highlightedCommentId?: string
+	highlightedCommentId?: number
 }
 export default class CommentDetails extends React.Component<Props, { showCommentBox: boolean }> {
 	private _showCommentBox = () => this.setState({ showCommentBox: true });

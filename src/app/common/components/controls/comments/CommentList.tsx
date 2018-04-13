@@ -6,10 +6,10 @@ export default class CommentList extends React.Component<{
     comments: Comment[],
     mode: 'reply' | 'link',
     isAllowedToPost?: boolean,
-    parentCommentId?: string,
+    parentCommentId?: number,
     onCommentAdded?: (comment: Comment) => void,
     onViewThread?: (comment: Comment) => void,
-    highlightedCommentId?: string
+    highlightedCommentId?: number
 }, {}> {
     public render() {
         return (

@@ -1,5 +1,4 @@
-interface ContentScriptTab {
+export default interface ContentScriptTab {
 	id: number,
-	articleId?: string
+	articleId?: number
 }
-export default ContentScriptTab;

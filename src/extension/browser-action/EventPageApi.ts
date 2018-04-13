@@ -29,7 +29,7 @@ export default class EventPageApi {
 	public load() {
 		return EventPageApi.sendMessage<ExtensionState>('load');
 	}
-	public setStarred(articleId: string, isStarred: boolean) {
+	public setStarred(articleId: number, isStarred: boolean) {
 		return EventPageApi.sendMessage('setStarred', { articleId, isStarred });
 	}
 }

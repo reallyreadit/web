@@ -1,14 +1,13 @@
-interface Comment {
-	id: string,
+export default interface Comment {
+	id: number,
 	dateCreated: string,
 	text: string,
-	articleId: string,
+	articleId: number,
 	articleTitle: string,
 	articleSlug: string,
-	userAccountId: string,
+	userAccountId: number,
 	userAccount: string,
 	children: Comment[],
 	dateRead: string,
-	parentCommentId: string
+	parentCommentId: number
 }
-export default Comment;

@@ -4,7 +4,7 @@ import UserPage from '../../common/models/UserPage';
 
 export default class Page {
 	private _contentEls: ContentElement[];
-	private _userPageId: string;
+	private _userPageId: number;
 	private _wordCount: number;
 	constructor(contentEls: Set<ContentElement>, showOverlay: boolean) {
 		// set up the content elements

@@ -1,5 +1,5 @@
 export default interface BulkMailing {
-	id: string,
+	id: number,
 	dateSent: string,
 	subject: string,
 	body: string,

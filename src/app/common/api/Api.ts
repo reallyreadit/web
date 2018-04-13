@@ -85,19 +85,19 @@ export default abstract class Api {
 	public listComments(slug: string, callback: (comments: Fetchable<Comment[]>) => void) {
 		return this.get<Comment[]>(new Request('/Articles/ListComments', { slug }), callback);
 	}
-	public postComment(text: string, articleId: string, parentCommentId?: string) {
+	public postComment(text: string, articleId: number, parentCommentId?: number) {
 		return this.post<Comment>(new Request('/Articles/PostComment', { text, articleId, parentCommentId }));
 	}
-	public readReply(commentId: string) {
+	public readReply(commentId: number) {
 		return this.post(new Request('/Articles/ReadReply', { commentId }));
 	}
-	public deleteUserArticle(articleId: string) {
+	public deleteUserArticle(articleId: number) {
 		return this.post(new Request('/Articles/UserDelete', { articleId }));
 	}
-	public starArticle(articleId: string) {
+	public starArticle(articleId: number) {
 		return this.post(new Request('/Articles/Star', { articleId }));
 	}
-	public unstarArticle(articleId: string) {
+	public unstarArticle(articleId: number) {
 		return this.post(new Request('/Articles/Unstar', { articleId }));
 	}
 	public listReplies(pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) {
@@ -127,7 +127,7 @@ export default abstract class Api {
 	public updateEmailSubscriptions(token: string, subscriptions: EmailSubscriptions) {
 		return this.post(new Request('/UserAccounts/UpdateEmailSubscriptions', { token, ...subscriptions }));
 	}
-	public shareArticle(articleId: string, emailAddresses: string[], message: string) {
+	public shareArticle(articleId: number, emailAddresses: string[], message: string) {
 		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message }));
 	}
 }

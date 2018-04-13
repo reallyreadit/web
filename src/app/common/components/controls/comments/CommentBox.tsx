@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import * as className from 'classnames';
 
 interface Props {
-	articleId: string,
-	parentCommentId?: string,
+	articleId: number,
+	parentCommentId?: number,
 	isAllowedToPost: boolean,
 	onCommentPosted: (comment: Comment) => void,
 	onCancel?: () => void

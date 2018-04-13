@@ -22,7 +22,7 @@ export default class ArticlePage extends React.Component<Props, {
 }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
-	private static findComment(id: string, comment: Comment) {
+	private static findComment(id: number, comment: Comment) {
 		if (comment.id === id) {
 			return comment;
 		}
@@ -155,7 +155,7 @@ export default class ArticlePage extends React.Component<Props, {
 								mode="reply"
 								isAllowedToPost={isAllowedToPost}
 								onCommentAdded={this._addReply}
-								highlightedCommentId={this.props.match.params.commentId}
+								highlightedCommentId={this.props.match.params.commentId ? parseInt(this.props.match.params.commentId) : null}
 							/> :
 							<span>No comments found! (Post one!)</span> :
 						<span>Error loading comments.</span> :

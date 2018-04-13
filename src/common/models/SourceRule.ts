@@ -4,11 +4,10 @@ export enum SourceRuleAction {
 	Ignore
 }
 
-interface SourceRule {
-	id: string,
+export default interface SourceRule {
+	id: number,
 	hostname: string,
 	path: string,
 	priority: number,
 	action: SourceRuleAction
 }
-export default SourceRule;

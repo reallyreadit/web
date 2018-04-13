@@ -77,7 +77,7 @@ export default class ServerApi {
 		timestamp: 0,
 		expirationTimespan: 0
 	});
-	private _articles = new SetStore<string, Cached<UserArticle>>('articles', a => a.value.id);
+	private _articles = new SetStore<number, Cached<UserArticle>>('articles', a => a.value.id);
 	private _sourceRules = new ObjectStore<Cached<SourceRule[]>>('sourceRules', {
 		value: [],
 		timestamp: 0,
@@ -224,7 +224,7 @@ export default class ServerApi {
 		const request = this.logRequest<{
 				userArticle: UserArticle,
 				userPage: UserPage
-			}>(new Request(tabId, 'POST', '/Extension/GetUserArticle', data), this._articleLookupRequests)
+			}>(new Request('POST', '/Extension/GetUserArticle', data, tabId), this._articleLookupRequests)
 			.then(result => {
 				this._onArticleLookupRequestChanged();
 				this.cacheArticle(result.userArticle);
@@ -237,11 +237,11 @@ export default class ServerApi {
 		this._onArticleLookupRequestChanged();
 		return request;
 	}
-	public getUserArticle(id: string) {
+	public getUserArticle(id: number) {
 		const userArticle = this._articles.get(id);
 		if (userArticle && isExpired(userArticle) && !this._articleCacheRequets.some(r => r.id === id)) {
 			this
-				.logRequest<UserArticle>(new Request(id, 'GET', '/Extension/UserArticle', { id }), this._articleCacheRequets)
+				.logRequest<UserArticle>(new Request('GET', '/Extension/UserArticle', { id }, id), this._articleCacheRequets)
 				.then(userArticle => this.cacheArticle(userArticle))
 				.catch(() => {});
 		}
@@ -283,7 +283,7 @@ export default class ServerApi {
 	public getSourceRules(hostname: string) {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
 	}
-	public setStarred(articleId: string, isStarred: boolean) {
+	public setStarred(articleId: number, isStarred: boolean) {
 		return ServerApi
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
 			.then(userArticle => this.cacheArticle(userArticle))
