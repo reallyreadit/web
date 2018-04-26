@@ -91,12 +91,6 @@
       "resolved": "https://registry.npmjs.org/@types/mime/-/mime-2.0.0.tgz",
       "dev": true
     },
-    "@types/mina": {
-      "version": "0.4.0",
-      "from": "@types/mina@0.4.0",
-      "resolved": "https://registry.npmjs.org/@types/mina/-/mina-0.4.0.tgz",
-      "dev": true
-    },
     "@types/node": {
       "version": "0.0.0",
       "from": "@types/node@0.0.0",
@@ -143,12 +137,6 @@
       "version": "1.13.1",
       "from": "@types/serve-static@1.13.1",
       "resolved": "https://registry.npmjs.org/@types/serve-static/-/serve-static-1.13.1.tgz",
-      "dev": true
-    },
-    "@types/snapsvg": {
-      "version": "0.4.29",
-      "from": "@types/snapsvg@0.4.29",
-      "resolved": "https://registry.npmjs.org/@types/snapsvg/-/snapsvg-0.4.29.tgz",
       "dev": true
     },
     "abbrev": {
@@ -1280,11 +1268,6 @@
       "version": "1.8.0",
       "from": "etag@1.8.0",
       "resolved": "https://registry.npmjs.org/etag/-/etag-1.8.0.tgz"
-    },
-    "eve": {
-      "version": "0.5.4",
-      "from": "eve@0.5.4",
-      "resolved": "https://registry.npmjs.org/eve/-/eve-0.5.4.tgz"
     },
     "events": {
       "version": "1.1.1",
@@ -3995,11 +3978,6 @@
           "dev": true
         }
       }
-    },
-    "snapsvg": {
-      "version": "0.5.1",
-      "from": "snapsvg@0.5.1",
-      "resolved": "https://registry.npmjs.org/snapsvg/-/snapsvg-0.5.1.tgz"
     },
     "sntp": {
       "version": "1.0.9",
