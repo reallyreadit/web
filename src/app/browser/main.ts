@@ -8,7 +8,6 @@ import MainView from '../common/components/MainView';
 import BrowserUser from './BrowserUser';
 import browserLogger from './BrowserLogger';
 import BrowserEnvironment from './BrowserEnvironment';
-require('snapsvg');
 
 // analytics
 ga('create', {
