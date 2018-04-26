@@ -12,7 +12,7 @@ const build = createBuild({
 		`${project.srcDir}/app/{browser,common}/**/*.{css,scss}`,
 		`${project.srcDir}/common/**/*.{css,scss}`
 	],
-	staticAssets: `${project.srcDir}/app/browser/images/favicon.ico`,
+	staticAssets: `${project.srcDir}/app/browser/images/*.{ico,jpg,png}`,
 	path: 'app/browser'
 });
 
