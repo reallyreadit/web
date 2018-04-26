@@ -2,7 +2,6 @@ import * as React from 'react';
 import Button from '../../../../../common/components/Button';
 import Context, { contextTypes } from '../../../Context';
 import Comment from '../../../../../common/models/Comment';
-import { Link } from 'react-router-dom';
 import * as className from 'classnames';
 
 interface Props {
@@ -100,7 +99,7 @@ export default class CommentBox extends React.Component<Props, {
 				/>
 				{this.props.articleId && !this.props.isAllowedToPost ?
 					<span className="comment-warning">
-						You must <Link to="/how-it-works">really read</Link> the article before you can comment
+						You must really read the article before you can comment
 					</span> :
 					null}
 				<Button
