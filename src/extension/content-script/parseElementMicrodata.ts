@@ -9,6 +9,7 @@ const valueMap: { [key: string]: string } = {
 	'object': 'data',
 	'time': 'datetime'
 };
+const itemTypeRegExp = /schema\.org\/(.+)/;
 function isScopeElement(element: Element) {
 	return element.hasAttribute('itemscope') || element.hasAttribute('itemtype');
 }
@@ -23,7 +24,7 @@ function getElementType(element: Element, isTopLevel?: boolean) {
 		if (isTopLevel) {
 			type['@context'] = 'http://schema.org';
 		}
-		type['@type'] = new URL(element.getAttribute('itemtype')).pathname.substring(1);
+		type['@type'] = element.getAttribute('itemtype').match(itemTypeRegExp)[1];
 	}
 	return type;
 }
