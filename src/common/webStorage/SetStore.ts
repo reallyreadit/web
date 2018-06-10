@@ -3,7 +3,7 @@ import Store from './Store';
 export default class <K, V> extends Store<V[]> {
 	private _getKey: (item: V) => K;
 	constructor(key: string, getKey: (item: V) => K) {
-		super(key);
+		super(key, []);
 		this._getKey = getKey;
 	}
 	private _getItemByKey(key: K, items: V[]) {
@@ -36,8 +36,5 @@ export default class <K, V> extends Store<V[]> {
 			this._write(items);
 		}
 		return item;
-	}
-	public clear() {
-		this._write([]);
 	}
 }

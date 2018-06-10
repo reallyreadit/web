@@ -30,7 +30,10 @@ export default abstract class <T> {
 	};
 	private readonly _onStorage: (e: StorageEvent) => void;
 	private readonly _eventListeners: ((oldValue: T, newValue: T) => void)[] = [];
-	constructor(key: string) {
+	private readonly _defaultValue: T;
+	constructor(key: string, defaultValue: T) {
+		// set default value
+		this._defaultValue = defaultValue;
 		// check if storage is available
 		if (storageAvailable('localStorage')) {
 			// use localStorage
@@ -53,9 +56,7 @@ export default abstract class <T> {
 			// clear the storage in case it's uninitialized/corrupted
 			// JSON.parse can throw an exception
 			try {
-				if (!this._read()) {
-					this.clear();
-				}
+				this._read();
 			} catch (ex) {
 				this.clear();
 			}
@@ -76,7 +77,9 @@ export default abstract class <T> {
 	protected _write(value: T) {
 		this._storage.write(value);
 	}
-	public abstract clear(): void;
+	public clear() {
+		this._write(this._defaultValue);
+	};
 	public addEventListener(listener: (oldValue: T, newValue: T) => void) {
 		if (this._eventListeners.length === 0) {
 			window.addEventListener('storage', this._onStorage);
