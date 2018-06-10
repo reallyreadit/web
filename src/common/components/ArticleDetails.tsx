@@ -51,8 +51,8 @@ export default class extends React.PureComponent<Props, {}> {
 					<div className="columns">
 						<div className="left">
 							<div className="length">
-								{Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)} min
-						</div>
+								{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))} min
+							</div>
 							<div className="speech-bubble-container">
 								<SpeechBubble
 									percentComplete={this.props.article.percentComplete}
