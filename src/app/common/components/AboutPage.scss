@@ -1,20 +1,18 @@
 .about-page {
-	font-family: serif;
 	text-align: center;
-	font-size: 16px;
 }
 .about-page > h3,
 .about-page > h4, {
 	padding: 20px 0 10px 0;
 }
 .about-page > h3 {
-	font-size: 24px;
+	font-size: 20px;
 }
 .about-page > h3:first-child {
 	padding-top: 0;
 }
 .about-page > h4 {
-	font-size: 22px;
+	font-size: 18px;
 }
 .about-page > .stack-group {
 	display: flex;
@@ -97,7 +95,7 @@
 }
 .about-page > .get-started {
 	padding: 35px 0 15px 0;
-	font-size: 24px;
+	font-size: 20px;
 	font-weight: bold;
 }
 .about-page > .get-started > a {

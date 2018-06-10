@@ -1,0 +1,27 @@
+.button-bar {
+	display: flex;
+	justify-content: center;
+	position: relative;
+}
+.button-bar > button[type="submit"] {
+	font-weight: bold;
+}
+.button-bar > button:not(:last-child) {
+	margin-right: 20px;
+}
+.button-bar > .busy-overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	justify-content: center;
+	align-items: center;
+}
+.button-bar.busy > button {
+	visibility: hidden;
+}
+.button-bar.busy > .busy-overlay {
+	display: flex;
+}

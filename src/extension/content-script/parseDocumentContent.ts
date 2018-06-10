@@ -47,9 +47,7 @@ export default function () {
 	const words = parseResult.content.match(wordRegEx);
 	if (words) {
 		getContentElements(parseResult.rootEl, elements);
-		console.log(`[rrit] ${elements.size} content elements found`);
 		return { ...parseResult, elements, wordCount: words.length };
 	}
-	console.log('[rrit] no content elements found');
 	return { ...parseResult, elements, wordCount: 0 };
 }

@@ -16,7 +16,7 @@ export default class ContentScriptApi {
 	constructor(handlers: {
 		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<UserPage>,
-		onCommitReadState: (tabId: number, data: ReadStateCommitData) => void,
+		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => void,
 		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void
 	}) {
@@ -35,7 +35,7 @@ export default class ContentScriptApi {
 							.then(sendResponse);
 						return true;
 					case 'commitReadState':
-						handlers.onCommitReadState(sender.tab.id, message.data);
+						handlers.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit);
 						break;
 					case 'unregisterPage':
 						handlers.onUnregisterPage(sender.tab.id);

@@ -5,6 +5,7 @@ import Icon, { IconName } from './Icon';
 export default class Button extends React.PureComponent<{
 	text: string,
 	iconLeft?: IconName,
+	contentLeft?: React.ReactNode,
 	style?: 'normal' | 'preferred',
 	state?: 'normal' | 'active' | 'disabled' | 'busy',
 	showIndicator?: boolean,
@@ -33,6 +34,9 @@ export default class Button extends React.PureComponent<{
 						<div className="content">
 							{this.props.iconLeft ?
 								<span className={className('icon-wrapper', { 'indicator': this.props.showIndicator })}><Icon name={this.props.iconLeft} /></span> :
+								null}
+							{this.props.contentLeft ?
+								<div className="content-left">{this.props.contentLeft}</div> :
 								null}
 							<span className={className('text', { 'error': this.props.textStyle === 'error' })}>{this.props.text}</span>
 							<div className="loading"></div>

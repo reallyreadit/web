@@ -1,0 +1,10 @@
+.enroll-screen {
+	display: flex;
+	flex-flow: column;
+}
+.enroll-screen > select {
+	margin: 10px 0;
+	font-family: monospace;
+	font-size: 11px;
+	padding: 1px 0;
+}

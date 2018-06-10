@@ -38,13 +38,11 @@ export default class ServerApi extends Api {
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (this._isInitialized) {
-			console.log('Api: fetch[sync/value, async/na]');
 			return {
 				isLoading: false,
 				value: this._reqStore.getData(request) as T
 			};
 		} else {
-			console.log('Api: fetch[sync/loading, async/na]');
 			this._reqStore.add(request);
 			return { isLoading: true };
 		}

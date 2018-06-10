@@ -10,7 +10,7 @@ export interface InitData {
 	extension: string
 }
 export default abstract class <TApp extends App, TExtension extends Extension> extends EventEmitter<{
-	'articleUpdated': UserArticle
+	'articleUpdated': { article: UserArticle, isCompletionCommit: boolean }
 }> {
 	protected readonly _type: EnvironmentType;
 	protected readonly _clientType: ClientType;

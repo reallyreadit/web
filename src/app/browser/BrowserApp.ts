@@ -5,7 +5,7 @@ import UserArticle from '../../common/models/UserArticle';
 
 export default class extends App {
 	private readonly _app: WebViewMessagingContext | undefined;
-	constructor(clientType: ClientType, onArticleUpdated: (article: UserArticle) => void) {
+	constructor(clientType: ClientType, onArticleUpdated: (data: { article: UserArticle, isCompletionCommit: boolean }) => void) {
 		super();
 		if (clientType === ClientType.App) {
 			this._app = new WebViewMessagingContext();

@@ -15,7 +15,6 @@ function parseSchema(topLevelTypes: any[]): ParseResult {
 			(type['@type'].endsWith('Article') || type['@type'] === 'BlogPosting')
 	);
 	if (data) {
-		console.log('[rrit] metadata found: schema.org');
 		return {
 			url: first(data.url),
 			article: {

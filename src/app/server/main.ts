@@ -19,6 +19,8 @@ import * as bunyan from 'bunyan';
 import ServerApp from './ServerApp';
 import ServerEnvironment from './ServerEnvironment';
 import ClientType from '../common/ClientType';
+import ChallengeState from '../../common/models/ChallengeState';
+import ServerChallenge from './ServerChallenge';
 
 // set up logger
 const log = bunyan.createLogger({
@@ -110,6 +112,24 @@ server = server.get('/admin', (req, res, next) => {
 		next();
 	}
 });
+// challenge
+server = server.use((req, res, next) => {
+	req
+		.api
+		.fetchJson('GET', new ApiRequest('/Challenges/State'))
+		.then((challengeState: ChallengeState) => {
+			req.challengeState = challengeState;
+			next();
+		})
+		.catch(() => {
+			req.challengeState = {
+				activeChallenge: null,
+				latestResponse: null,
+				score: null
+			};
+			next();
+		});
+});
 // ack new reply notification
 server = server.get('/inbox', (req, res, next) => {
 	if (req.sessionState.newReplyNotification && hasNewUnreadReply(req.sessionState.newReplyNotification)) {
@@ -123,6 +143,7 @@ server = server.get('/inbox', (req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	const
+		challenge = new ServerChallenge(req.challengeState),
 		environment = new ServerEnvironment(
 			req.query.mode === 'app' ? ClientType.App : ClientType.Browser,
 			new ServerApp(),
@@ -134,6 +155,7 @@ server = server.get('/*', (req, res) => {
 			App,
 			{
 				api: req.api,
+				challenge,
 				environment,
 				page,
 				user,
@@ -167,6 +189,7 @@ server = server.get('/*', (req, res) => {
 			extensionId: config.extensionId,
 			contextInitData: {
 				api: req.api.getInitData(),
+				challenge: challenge.getInitData(),
 				environment: environment.getInitData(),
 				page: page.getInitData(),
 				user: user.getInitData()

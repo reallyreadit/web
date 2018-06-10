@@ -1,0 +1,256 @@
+.game-scene {
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+}
+.game-scene > .content {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 14px;
+	left: 0;
+}
+.game-scene > .content > .layer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+.game-scene > .content > .background > .clouds {
+	position: absolute;
+	top: 12px;
+	width: 200%;
+	height: 48px;
+	display: flex;
+	justify-content: space-around;
+	align-items: flex-end;
+	animation: game-scene-clouds 60s linear infinite;
+}
+.game-scene > .content > .background > .clouds > .cloud {
+	position: relative;
+	background-size: contain;
+}
+.game-scene > .content > .background > .clouds > .cloud:nth-child(1),
+.game-scene > .content > .background > .clouds > .cloud:nth-child(5) {
+	bottom: 24px;
+	width: 44px;
+	height: 24px;
+	background-image: url('/images/game/cloud-1.svg');
+}
+.game-scene > .content > .background > .clouds > .cloud:nth-child(2),
+.game-scene > .content > .background > .clouds > .cloud:nth-child(6) {
+	width: 120px;
+	height: 36px;
+	background-image: url('/images/game/cloud-2.svg');
+}
+.game-scene > .content > .background > .clouds > .cloud:nth-child(3),
+.game-scene > .content > .background > .clouds > .cloud:nth-child(7) {
+	bottom: 24px;
+	width: 72px;
+	height: 24px;
+	background-image: url('/images/game/cloud-3.svg');
+}
+.game-scene > .content > .background > .clouds > .cloud:nth-child(4),
+.game-scene > .content > .background > .clouds > .cloud:nth-child(8) {
+	bottom: 8px;
+	width: 90px;
+	height: 36px;
+	background-image: url('/images/game/cloud-4.svg');
+}
+.game-scene > .content > .background > .water {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 32px;
+}
+.game-scene > .content > .background > .water > .water {
+	position: absolute;
+	width: 100%;
+	background-size: contain;
+}
+.game-scene > .content > .background > .water > .water:nth-child(1) {
+	bottom: 10px;
+	height: 14px;
+	background-image: url('/images/game/water-3.svg');
+	animation: game-scene-water-1 2s linear alternate-reverse infinite;
+}
+.game-scene > .content > .background > .water > .water:nth-child(2) {
+	bottom: 3px;
+	height: 14px;
+	background-color: #385080;
+	background-image: url('/images/game/water-2.svg');
+	animation: game-scene-water-2 2s linear alternate-reverse infinite;
+}
+.game-scene > .content > .background > .water > .water:nth-child(3) {
+	bottom: -2px;
+	height: 12px;
+	background-image: url('/images/game/water-1.svg');
+	animation: game-scene-water-1 2s linear alternate-reverse infinite;
+}
+.game-scene > .content > .platform {
+	display: flex;
+	align-items: flex-end;
+}
+.game-scene > .content > .platform > .land {
+	flex: 0 0 auto;
+	width: 64px;
+	display: flex;
+	flex-flow: column;
+	justify-content: flex-end;
+}
+.game-scene > .content > .platform > .land > .top-level {
+	flex: 0 0 auto;
+	display: flex;
+}
+.game-scene > .content > .platform > .land > .top-level > .grass {
+	width: 32px;
+	height: 32px;
+	background-image: url('/images/game/grass.svg');
+	background-size: contain;
+}
+.game-scene > .content > .platform > .land > .fill {
+	flex: 0 0 auto;
+	background-color: #231e2b;
+}
+.game-scene > .content > .platform > .land.left::before {
+	content: "";
+	display: block;
+	background-size: contain;
+	background-position: bottom center;
+	background-repeat: no-repeat;
+}
+.game-scene > .content > .platform[data-level="-1"] > .land.left::before {
+	height: 38px;
+	background-image: url(/images/game/cat-begin.svg);
+}
+.game-scene > .content > .platform[data-level="0"] > .land.left::before {
+	height: 28px;
+	background-image: url(/images/game/cat-jump.svg);
+}
+.game-scene > .content > .platform > .land.left > .top-level > .grass:last-child {
+	background-image: url('/images/game/grass-right.svg');
+}
+.game-scene > .content > .platform > .steps {
+	flex: 1 1 auto;
+   display: flex;
+	justify-content: space-evenly;
+}
+.game-scene > .content > .platform > .steps > .step {
+	display: flex;
+	flex-flow: column;
+	position: relative;
+	width: 36px;
+}
+.game-scene > .content > .platform > .steps > .step::before {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100%;
+	bottom: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: bottom center;
+}
+.game-scene > .content > .platform > .steps > .step.bubble::before {
+	height: 18px;
+	margin-bottom: 14px;
+	background-image: url(/images/game/bubble.svg);
+}
+.game-scene > .content > .platform > .steps > .step.rest::before {
+	left: 5px;
+	height: 36px;
+	background-image: url(/images/game/cat-rest.svg);
+}
+.game-scene > .content > .platform > .steps > .step.jump::before {
+	left: -6px;
+	width: 48px;
+	height: 28px;
+	background-image: url(/images/game/cat-jump.svg);
+}
+.game-scene > .content > .platform > .steps > .step::after {
+	content: "";
+	display: block;
+	height: 32px;
+	background-image: url('/images/game/grass-island.svg');
+	background-size: contain;
+}
+.game-scene > .content > .platform > .land.right::before {
+	content: "";
+	display: block;
+	background-size: contain;
+	background-position: bottom center;
+	background-repeat: no-repeat;
+}
+.game-scene > .content > .platform:not([data-level="10"]) > .land.right::before {
+	position: relative;
+	bottom: 2px;
+	height: 38px;
+	background-image: url(/images/game/pizza.svg);
+}
+.game-scene > .content > .platform[data-level="10"] > .land.right::before {
+	height: 24px;
+	background-image: url(/images/game/cat-end.svg);
+}
+.game-scene > .content > .platform > .land.right > .top-level > .grass:first-child {
+	background-image: url('/images/game/grass-left.svg');
+}
+.game-scene > .content > .platform > .land.right > .fill {
+	width: 64px;
+	height: 64px;
+}
+.game-scene > .content > .text > .message-box {
+	font-family: 'Press Start 2P';
+	font-size: 9px;
+	max-width: 50%;
+	border: 1px solid black;
+	border-radius: 5px;
+	padding: 3px;
+	position: relative;
+	top: 3px;
+	left: 3px;
+	background-color: aliceblue;
+}
+.game-scene > .content > .text > .message-box.win {
+	background-color: gold;
+}
+.game-scene > .status-bar {
+	font-family: 'Press Start 2P';
+	font-size: 9px;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 14px;
+	color: white;
+	background-color: black;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding-right: 3px;
+}
+
+@keyframes game-scene-clouds {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@keyframes game-scene-water-1 {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-8px);
+	}
+}
+
+@keyframes game-scene-water-2 {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(8px);
+	}
+}

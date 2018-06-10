@@ -85,6 +85,12 @@
       "from": "@types/jquery@2.0.46",
       "resolved": "https://registry.npmjs.org/@types/jquery/-/jquery-2.0.46.tgz"
     },
+    "@types/luxon": {
+      "version": "0.5.2",
+      "from": "@types/luxon@latest",
+      "resolved": "https://registry.npmjs.org/@types/luxon/-/luxon-0.5.2.tgz",
+      "dev": true
+    },
     "@types/mime": {
       "version": "2.0.0",
       "from": "@types/mime@2.0.0",
@@ -2719,6 +2725,11 @@
       "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.7.3.tgz",
       "dev": true
     },
+    "luxon": {
+      "version": "1.2.1",
+      "from": "luxon@latest",
+      "resolved": "https://registry.npmjs.org/luxon/-/luxon-1.2.1.tgz"
+    },
     "make-iterator": {
       "version": "1.0.0",
       "from": "make-iterator@1.0.0",
@@ -2927,9 +2938,9 @@
       }
     },
     "moment": {
-      "version": "2.20.1",
-      "from": "moment@^2.10.6",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.20.1.tgz",
+      "version": "2.22.2",
+      "from": "moment@>=2.10.6 <3.0.0",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.22.2.tgz",
       "optional": true
     },
     "ms": {

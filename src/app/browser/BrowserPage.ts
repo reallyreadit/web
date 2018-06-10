@@ -1,6 +1,7 @@
-import Page, { InitData, State, EventType } from '../common/Page';
+import Page, { InitData, State } from '../common/Page';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import NewReplyNotification, { empty as emptyNewReplyNotification } from '../../common/models/NewReplyNotification';
+import EventType from '../common/EventType';
 
 export default class extends Page {
 	private readonly _notificationStore: ObjectStore<NewReplyNotification>;

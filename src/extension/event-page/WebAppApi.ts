@@ -8,14 +8,14 @@ export default class {
 				.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
 				.forEach(tab => chrome.tabs.executeScript(
 					tab.id,
-					{ code: `window.postMessage('${JSON.stringify({ type, data })}', '*');` }
+					{ code: `window.postMessage('${JSON.stringify({ type, data }).replace(/'/g, '\\\'')}', '*');` }
 				))
 		);
 	}
 	public static notifyExtensionInstalled() {
 		this.sendMessage('extensionInstalled');
 	}
-	public static updateArticle(userArticle: UserArticle) {
-		this.sendMessage('articleUpdated', userArticle);
+	public static updateArticle(article: UserArticle, isCompletionCommit: boolean) {
+		this.sendMessage('articleUpdated', { article, isCompletionCommit });
 	}
 }

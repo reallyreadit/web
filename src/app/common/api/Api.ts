@@ -11,6 +11,12 @@ import PageResult from '../../../common/models/PageResult';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import HotTopics from '../../../common/models/HotTopics';
+import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
+import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
+import ChallengeResponse from '../../../common/models/ChallengeResponse';
+import ChallengeScore from '../../../common/models/ChallengeScore';
+import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
+import ChallengeState from '../../../common/models/ChallengeState';
 
 export interface InitData {
 	endpoint: Endpoint,
@@ -129,5 +135,23 @@ export default abstract class Api {
 	}
 	public shareArticle(articleId: number, emailAddresses: string[], message: string) {
 		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message }));
+	}
+	public getTimeZones(callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) {
+		return this.get<TimeZoneSelectListItem[]>(new Request('/UserAccounts/TimeZones'), callback);
+	}
+	public createChallengeResponse(challengeId: number, action: ChallengeResponseAction, timeZoneId: number | null = null) {
+		return this.post<{
+			response: ChallengeResponse,
+			score: ChallengeScore
+		}>(new Request('/Challenges/Respond', { challengeId, action, timeZoneId }));
+	}
+	public getChallengeScore(challengeId: number, callback: (score: Fetchable<ChallengeScore>) => void) {
+		return this.get<ChallengeScore>(new Request('/Challenges/Score', { challengeId }), callback);
+	}
+	public getChallengeLeaderboard(challengeId: number, callback: (leaderboard: Fetchable<ChallengeLeaderboard>) => void) {
+		return this.get<ChallengeLeaderboard>(new Request('/Challenges/Leaderboard', { challengeId }), callback);
+	}
+	public getChallengeState(callback: (state: Fetchable<ChallengeState>) => void) {
+		return this.get<ChallengeState>(new Request('/Challenges/State'), callback);
 	}
 }

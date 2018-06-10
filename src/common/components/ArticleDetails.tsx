@@ -51,7 +51,7 @@ export default class extends React.PureComponent<Props, {}> {
 					<div className="columns">
 						<div className="left">
 							<div className="length">
-								{Math.round(this.props.article.wordCount / readingParameters.averageWordsPerMinute)} min
+								{Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)} min
 						</div>
 							<div className="speech-bubble-container">
 								<SpeechBubble

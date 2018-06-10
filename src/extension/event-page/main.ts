@@ -81,14 +81,14 @@ const contentScriptApi = new ContentScriptApi({
 				return result.userPage;
 			});
 	},
-	onCommitReadState: (tabId, data) => {
+	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
 		serverApi
-			.commitReadState(tabId, data)
+			.commitReadState(tabId, commitData)
 			.then(userArticle => {
 				if (userArticle) {
-					WebAppApi.updateArticle(userArticle);
+					WebAppApi.updateArticle(userArticle, isCompletionCommit);
 				}
 			});
 	},

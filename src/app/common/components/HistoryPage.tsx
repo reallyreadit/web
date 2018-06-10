@@ -49,6 +49,9 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 			});
 		}
 	};
+	private _updateArticleFromEnvironment = (data: { article: UserArticle, isCompletionCommit: boolean }) => {
+		this._updateArticle(data.article);
+	};
 	private _deleteArticle = (article: UserArticle) => {
 		this.context.api.deleteUserArticle(article.id);
 		const items = this.state.articles.value.items.slice();
@@ -77,12 +80,12 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
 		this.context.page.addListener('reload', this._reload);
-		this.context.environment.addListener('articleUpdated', this._updateArticle);
+		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
 		this.context.page.removeListener('reload', this._reload);
-		this.context.environment.removeListener('articleUpdated', this._updateArticle);
+		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public render() {
 		return (

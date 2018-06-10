@@ -8,6 +8,7 @@ import MainView from '../common/components/MainView';
 import BrowserUser from './BrowserUser';
 import browserLogger from './BrowserLogger';
 import BrowserEnvironment from './BrowserEnvironment';
+import BrowserChallenge from './BrowserChallenge';
 
 // analytics
 ga('create', {
@@ -27,6 +28,7 @@ ReactDOM.render(
 		App,
 		{
 			api,
+			challenge: new BrowserChallenge(window._contextInitData.challenge),
 			environment: new BrowserEnvironment(window._contextInitData.environment),
 			page,
 			user: new BrowserUser(window._contextInitData.user),

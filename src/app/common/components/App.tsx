@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Api from '../api/Api';
 import { contextTypes } from '../Context';
-import Page, { EventType } from '../Page';
+import Page from '../Page';
 import User from '../User';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import Logger from '../../../common/Logger';
@@ -9,9 +9,12 @@ import Environment from '../Environment';
 import App from '../App';
 import Extension from '../Extension';
 import ClientType from '../ClientType';
+import Challenge from '../Challenge';
+import EventType from '../EventType';
 
 export default class extends React.Component<{
 	api: Api,
+	challenge: Challenge,
 	environment: Environment<App, Extension>,
 	log: Logger,
 	page: Page,
@@ -34,10 +37,15 @@ export default class extends React.Component<{
 			this._pollingHandle = null;
 		}
 	};
-	private _handleSignIn = () => {
+	private _handleSignIn = (event: { eventType: EventType }) => {
 		if (!window.document.hidden) {
 			this._checkNewReplyNotification();
 			this._startPolling();
+		}
+		if (event.eventType === EventType.Original) {
+			this.props.api.getChallengeState(state => {
+				this.props.challenge.update(state.value);
+			});
 		}
 	};
 	private _handleSignOut = () => {
@@ -46,6 +54,10 @@ export default class extends React.Component<{
 			lastNewReplyAck: 0,
 			lastNewReplyDesktopNotification: 0,
 			timestamp: Date.now()
+		});
+		this.props.challenge.update({
+			latestResponse: null,
+			score: null
 		});
 		this._stopPolling();
 	};
@@ -102,10 +114,11 @@ export default class extends React.Component<{
 	public getChildContext() {
 		return {
 			api: this.props.api,
-			page: this.props.page,
-			user: this.props.user,
+			challenge: this.props.challenge,
 			environment: this.props.environment,
-			log: this.props.log
+			log: this.props.log,
+			page: this.props.page,
+			user: this.props.user
 		};
 	}
 	public render () {

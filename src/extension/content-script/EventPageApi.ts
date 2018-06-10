@@ -42,8 +42,8 @@ export default class EventPageApi {
 	public registerPage(data: ParseResult) {
 		return EventPageApi.sendMessage<UserPage>('registerPage', data);
 	}
-	public commitReadState(data: ReadStateCommitData) {
-		return EventPageApi.sendMessage<void>('commitReadState', data);
+	public commitReadState(commitData: ReadStateCommitData, isCompletionCommit: boolean) {
+		return EventPageApi.sendMessage<void>('commitReadState', { commitData, isCompletionCommit });
 	}
 	public unregisterPage() {
 		return EventPageApi.sendMessage<void>('unregisterPage');

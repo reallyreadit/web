@@ -1,5 +1,5 @@
 import ParseResult from '../common/ParseResult';
-import { getElementAttribute } from './elementUtils';
+import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 
 function findMetaElementContent(property: string, elements: Element[]) {
 	return getElementAttribute<HTMLMetaElement>(elements.find(e => e.getAttribute('property') === property), e => e.content);
@@ -7,7 +7,6 @@ function findMetaElementContent(property: string, elements: Element[]) {
 function parseOpenGraph(): ParseResult {
 	const elements = Array.from(document.getElementsByTagName('meta'));
 	if (findMetaElementContent('og:type', elements) === 'article') {
-		console.log('[rrit] metadata found: OpenGraph');
 		return {
 			url: findMetaElementContent('og:url', elements),
 			article: {
@@ -19,7 +18,10 @@ function parseOpenGraph(): ParseResult {
 				dateModified: findMetaElementContent('article:modified_time', elements),
 				authors: elements
 					.filter(e => e.getAttribute('property') === 'article:author')
-					.map(e => e.content.match(/^https?:\/\//) ? ({ url: e.content }) : ({ name: e.content })),
+					.map(e => {
+						const url = matchGetAbsoluteUrl(e.content);
+						return url ? { url } : { name: e.content };
+					}),
 				section: findMetaElementContent('article:section', elements),
 				description: findMetaElementContent('og:description', elements),
 				tags: elements

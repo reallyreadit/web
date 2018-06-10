@@ -1,6 +1,7 @@
 import User from '../common/User';
 import UserAccount from '../../common/models/UserAccount';
 import ObjectStore from '../../common/webStorage/ObjectStore';
+import EventType from '../common/EventType';
 
 export default class extends User {
 	private readonly _userStore: ObjectStore<UserAccount | null>;
@@ -9,13 +10,22 @@ export default class extends User {
 		this._userStore = new ObjectStore<UserAccount | null>('userAccount', null);
 		this._userStore.addEventListener((prevUserAccount, currUserAccount) => {
 			if (prevUserAccount && currUserAccount) {
-				this.emitEvent('update', { prevUserAccount, currUserAccount });
+				this.emitEvent('update', { prevUserAccount, currUserAccount, eventType: EventType.Sync });
 			} else if (!prevUserAccount) {
-				this.emitEvent('signIn', currUserAccount);
-				this.emitEvent('authChange', currUserAccount);
+				this.emitEvent('signIn', {
+					userAccount: currUserAccount,
+					eventType: EventType.Sync
+				});
+				this.emitEvent('authChange', {
+					userAccount: currUserAccount,
+					eventType: EventType.Sync
+				});
 			} else {
-				this.emitEvent('signOut', null);
-				this.emitEvent('authChange', null);
+				this.emitEvent('signOut', { eventType: EventType.Sync });
+				this.emitEvent('authChange', {
+					userAccount: null,
+					eventType: EventType.Sync
+				});
 			}
 		});
 		this.setUserAccount(userAccount);

@@ -4,7 +4,7 @@ import UserArticle from '../../common/models/UserArticle';
 
 export default class BrowserExtension extends Extension {
     private _isInstalled: boolean = null;
-    constructor(extensionId: string, onArticleUpdated: (article: UserArticle) => void) {
+    constructor(extensionId: string, onArticleUpdated: (data: { article: UserArticle, isCompletionCommit: boolean }) => void) {
         super(extensionId);
         this.sendMessage('ping')
             .then(response => {

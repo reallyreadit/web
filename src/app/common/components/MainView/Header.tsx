@@ -42,6 +42,7 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 	};
 	// regular nav
 	private _goToAbout = () => this.context.router.history.push('/about');
+	private _goToPizza = () => this.context.router.history.push('/pizza');
 	public state = { isSigningOut: false };
 	public componentDidMount() {
 		this.context.user.addListener('authChange', this._forceUpdate);
@@ -85,6 +86,13 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 					<div className="left-nav">
 						<Button text="Home" iconLeft="home" onClick={this._goToHome} />
 						<Button text="About" iconLeft="lightbulb" onClick={this._goToAbout} />
+						{this.context.challenge.activeChallenge ?
+							<Button
+								text="Pizza Challenge"
+								contentLeft={'🍕'}
+								onClick={this._goToPizza}
+							/> :
+							null}
 					</div>
 					<div className="right-nav">
 						<NavBar

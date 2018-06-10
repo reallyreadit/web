@@ -13,4 +13,7 @@ export default interface UserAccount {
 	receiveWebsiteUpdates: boolean,
 	receiveSuggestedReadings: boolean,
 	isEmailConfirmed: boolean,
+	timeZoneId: number | null,
+	timeZoneName: string | null,
+	timeZoneDisplayName: string | null
 }

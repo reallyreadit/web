@@ -62,6 +62,10 @@ $disabled-border-color: #ccc;
 	.icon {
 		margin-right: 3px;
 	}
+	.content-left {
+		display: inline;
+		margin-right: 3px;
+	}
 	.text.error {
 		text-decoration: underline dotted red;
 	}
@@ -72,7 +76,11 @@ $disabled-border-color: #ccc;
 .button::after { @include end-cap-right($bevel-width, $border-color); }
 .button:focus {
 	outline: none;
-	text-decoration: underline;
+}
+.button:focus {
+	.text {
+		text-decoration: underline;
+	}
 }
 .button:not(.disabled):active,
 .button:not(.disabled).active {

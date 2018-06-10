@@ -1,4 +1,10 @@
 export default interface UserPage {
 	id: number,
-	readState: number[]
+	pageId: number,
+	userAccountId: number,
+	dateCreated: string,
+	lastModified: string | null,
+	readState: number[],
+	wordsRead: number,
+	dateCompleted: string | null
 }

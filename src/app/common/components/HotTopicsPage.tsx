@@ -73,6 +73,9 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 			}
 		}
 	};
+	private _updateArticleFromEnvironment = (data: { article: UserArticle, isCompletionCommit: boolean }) => {
+		this._updateArticle(data.article);
+	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { hotTopics: this._loadHotTopics() };
@@ -90,12 +93,12 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 	public componentDidMount() {
 		this.context.user.addListener('authChange', this._reload);
 		this.context.page.addListener('reload', this._reload);
-		this.context.environment.addListener('articleUpdated', this._updateArticle);
+		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('authChange', this._reload);
 		this.context.page.removeListener('reload', this._reload);
-		this.context.environment.removeListener('articleUpdated', this._updateArticle);
+		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public render() {
 		return (

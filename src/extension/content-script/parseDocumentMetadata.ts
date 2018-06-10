@@ -3,6 +3,7 @@ import parseElementMicrodata from './parseElementMicrodata';
 import parseSchema from './parseSchema';
 import parseMiscMetadata from './parseMiscMetadata';
 import parseOpenGraph from './parseOpenGraph';
+import { matchGetAbsoluteUrl } from './utils';
 
 const emptyResult: ParseResult = {
 	url: null,
@@ -44,7 +45,7 @@ function most<T>(propSelector: (result: ParseResult) => T[], filterOrResults: ((
 function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): ParseResult {
 	const orderedResults = [schema, openGraph, misc];
 	return {
-		url: first(x => x.url, orderedResults),
+		url: first(x => matchGetAbsoluteUrl(x.url), orderedResults),
 		article: {
 			title: first(x => x.article.title, orderedResults),
 			source: first(x => x.article.source, x => !!x.name, orderedResults),
@@ -58,21 +59,18 @@ function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): 
 		}
 	};
 }
-function parseDocumentMetadata() {
-	// parse misc. and OpenGraph metadata
-	let misc = parseMiscMetadata(),
-		openGraph = parseOpenGraph();
-	// log misc metadata
-	console.log('[rrit] misc metadata:')
-	console.log(misc);
-	// log OpenGraph metadata or assign empty result
+export default function parseDocumentMetadata() {
+	let isArticle = false;
+	// misc
+	const misc = parseMiscMetadata();
+	// OpenGraph
+	let openGraph = parseOpenGraph();
 	if (openGraph) {
-		console.log('[rrit] OpenGraph metadata:');
-		console.log(openGraph);
+		isArticle = true;
 	} else {
 		openGraph = emptyResult;
 	}
-	// parse schema.org metadata
+	// schema.org
 	let schema: ParseResult;
 	// first check for an LD+JSON script
 	const script = document.querySelector('script[type="application/ld+json"]');
@@ -85,21 +83,20 @@ function parseDocumentMetadata() {
 				schema = parseSchema([JSON.parse(script.textContent)]);
 			}
 		} catch (ex) {
-			console.error('[rrit] LD+JSON parse error');
+			// LD+JSON parse error
 		}
 	}
 	// log or parse document microdata
 	if (schema) {
-		console.log('[rrit] schema.org metadata found (LD+JSON):');
-		console.log(schema);
+		isArticle = true;
 	} else if (schema = parseSchema(parseElementMicrodata(document.documentElement))) {
-		console.log('[rrit] schema.org metadata found (Microdata):');
-		console.log(schema);
+		isArticle = true;
 	} else {
 		schema = emptyResult;
 	}
 	// merge metadata objects
-	return merge(schema, misc, openGraph);
+	if (isArticle) {
+		return merge(schema, misc, openGraph);
+	}
+	return null;
 }
-
-export default parseDocumentMetadata;

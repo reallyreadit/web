@@ -13,9 +13,6 @@ export default class Page {
 		// cache the word count
 		this._wordCount = this.getReadState().wordCount;
 	}
-	private getReadState() {
-		return new ReadState(this._contentEls.map(b => b.getReadState()));
-	}
 	private setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
 		const readState = new ReadState(readStateArray);
@@ -33,15 +30,12 @@ export default class Page {
 		});
 		return this;
 	}
+	public getReadState() {
+		return new ReadState(this._contentEls.map(b => b.getReadState()));
+	}
 	public initialize(userPage: UserPage) {
 		this._userPageId = userPage.id;
 		this.setReadState(userPage.readState);
-	}
-	public getReadStateCommitData() {
-		return {
-			userPageId: this._userPageId,
-			readState: this.getReadState().readStateArray
-		};
 	}
 	public updateOffset() {
 		this._contentEls.forEach(block => block.updateOffset());
@@ -61,6 +55,9 @@ export default class Page {
 	}
 	public remove() {
 		this._contentEls.forEach(block => block.showOverlay(false));
+	}
+	public get userPageId() {
+		return this._userPageId;
 	}
 	public get wordCount() {
 		return this._wordCount;

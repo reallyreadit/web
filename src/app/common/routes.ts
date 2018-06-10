@@ -11,6 +11,7 @@ import EmailConfirmationPage from './components/EmailConfirmationPage';
 import EmailSubscriptionsPage from './components/EmailSubscriptionsPage';
 import PasswordPage from './components/PasswordPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import PizzaPage from './components/PizzaPage';
 
 export default [
 	{
@@ -49,6 +50,10 @@ export default [
 	{
 		path: '/password/:action/:result',
 		component: PasswordPage
+	},
+	{
+		path: '/pizza',
+		component: PizzaPage
 	},
 	{
 		path: '/privacy',

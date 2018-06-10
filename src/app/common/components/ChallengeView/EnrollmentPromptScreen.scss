@@ -1,0 +1,16 @@
+.enrollment-prompt-screen {
+	display: flex;
+	flex-flow: column;
+}
+.enrollment-prompt-screen > .text {
+	margin-bottom: 10px;
+}
+.enrollment-prompt-screen > .text > .pizza {
+	color: red;
+}
+.enrollment-prompt-screen > .auth-notice {
+	margin-top: 10px;
+}
+.enrollment-prompt-screen > .auth-notice > .text {
+	background-color: yellow;
+}

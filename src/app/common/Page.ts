@@ -1,5 +1,6 @@
 import EventEmitter from './EventEmitter';
 import NewReplyNotification, { isStateEqual as isNotificationStateEqual } from '../../common/models/NewReplyNotification';
+import EventType from './EventType';
 
 export interface InitData {
 	title: string,
@@ -18,10 +19,6 @@ export enum Intent {
 export interface ToastEvent {
 	text: string,
 	intent: Intent
-}
-export enum EventType {
-	Original,
-	Sync
 }
 export default abstract class extends EventEmitter<{
 	'change': State,

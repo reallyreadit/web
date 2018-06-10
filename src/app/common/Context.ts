@@ -7,9 +7,11 @@ import * as PropTypes from 'prop-types';
 import Environment from './Environment';
 import App from './App';
 import Extension from './Extension';
+import Challenge from './Challenge';
 
 export const contextTypes = {
 	api: PropTypes.instanceOf(Api),
+	challenge: PropTypes.instanceOf(Challenge),
 	environment: PropTypes.instanceOf(Environment),
 	log: PropTypes.object,
 	page: PropTypes.instanceOf(Page),
@@ -18,6 +20,7 @@ export const contextTypes = {
 };
 export default interface Context extends RouterChildContext<{}> {
 	api: Api,
+	challenge: Challenge,
 	environment: Environment<App, Extension>,
 	log: Logger,
 	page: Page,
