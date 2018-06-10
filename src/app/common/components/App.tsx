@@ -11,9 +11,11 @@ import Extension from '../Extension';
 import ClientType from '../ClientType';
 import Challenge from '../Challenge';
 import EventType from '../EventType';
+import Captcha from '../Captcha';
 
 export default class extends React.Component<{
 	api: Api,
+	captcha: Captcha,
 	challenge: Challenge,
 	environment: Environment<App, Extension>,
 	log: Logger,
@@ -114,6 +116,7 @@ export default class extends React.Component<{
 	public getChildContext() {
 		return {
 			api: this.props.api,
+			captcha: this.props.captcha,
 			challenge: this.props.challenge,
 			environment: this.props.environment,
 			log: this.props.log,

@@ -21,6 +21,7 @@ import ServerEnvironment from './ServerEnvironment';
 import ClientType from '../common/ClientType';
 import ChallengeState from '../../common/models/ChallengeState';
 import ServerChallenge from './ServerChallenge';
+import ServerCaptcha from './ServerCaptcha';
 
 // set up logger
 const log = bunyan.createLogger({
@@ -155,6 +156,7 @@ server = server.get('/*', (req, res) => {
 			App,
 			{
 				api: req.api,
+				captcha: new ServerCaptcha(),
 				challenge,
 				environment,
 				page,
@@ -189,12 +191,14 @@ server = server.get('/*', (req, res) => {
 			extensionId: config.extensionId,
 			contextInitData: {
 				api: req.api.getInitData(),
+				captcha: config.enableCaptcha,
 				challenge: challenge.getInitData(),
 				environment: environment.getInitData(),
 				page: page.getInitData(),
 				user: user.getInitData()
 			},
-			enableAnalytics: config.enableAnalytics
+			enableAnalytics: config.enableAnalytics,
+			enableCaptcha: config.enableCaptcha
 		}));
 	});
 });

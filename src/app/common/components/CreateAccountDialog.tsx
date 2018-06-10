@@ -3,6 +3,7 @@ import Context from '../Context';
 import InputField from './controls/InputField';
 import Dialog, { State } from './controls/Dialog';
 import UserAccount from '../../../common/models/UserAccount';
+import { Intent } from '../Page';
 
 export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial<State> & {
 	name?: string,
@@ -15,6 +16,11 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 	private _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
+	private _captchaElement: HTMLDivElement | null = null;
+	private readonly _setCaptchaElement = (ref: HTMLDivElement) => {
+		this._captchaElement = ref;
+	};
+	private _captchaId: number | null = null;
 	constructor(props: {}, context: Context) {
 		super(
 			{
@@ -63,7 +69,11 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 				error={this.state.passwordError}
 				showError={this.state.showErrors}
 				onChange={this._handlePasswordChange}
-			/>
+			/>,
+			<div
+				key="captcha"
+				ref={this._setCaptchaElement}
+			></div>
 		];
 	}
 	protected getClientErrors() {
@@ -74,7 +84,12 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 		}];
 	}
 	protected submitForm() {
-		return this.context.api.createUserAccount(this.state.name, this.state.email, this.state.password);
+		return this.context.api.createUserAccount(
+			this.state.name,
+			this.state.email,
+			this.state.password,
+			this.context.captcha.getResponse(this._captchaId)
+		);
 	}
 	protected onSuccess(userAccount: UserAccount) {
 		this.context.user.signIn(userAccount);
@@ -92,5 +107,14 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 		if (errors.some(error => error === 'DuplicateEmail')) {
 			this.setState({ emailError: 'Email address already in use.' });
 		}
+		if (errors.some(error => error === 'InvalidCaptcha')) {
+			this.context.page.showToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
+		}
+		this.context.captcha.reset(this._captchaId);
+	}
+	public componentDidMount() {
+		this.context.captcha.onReady().then(captcha => {
+			this._captchaId = captcha.render(this._captchaElement, '6LcxOV4UAAAAAGZTappGq7UwQ7EXSBUxAGMJNLQM');
+		});
 	}
 }

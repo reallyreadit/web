@@ -37,10 +37,10 @@ export default abstract class Api {
 	public listHotTopics(pageNumber: number, callback: (articles: Fetchable<HotTopics>) => void) {
 		return this.get<HotTopics>(new Request('/Articles/ListHotTopics', { pageNumber }), callback);
 	}
-	public createUserAccount(name: string, email: string, password: string) {
+	public createUserAccount(name: string, email: string, password: string, captchaResponse: string) {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/CreateAccount',
-			{ name, email, password }
+			{ name, email, password, captchaResponse }
 		));
 	}
 	public resendConfirmationEmail() {
@@ -55,8 +55,8 @@ export default abstract class Api {
 	public changeEmailAddress(email: string) {
 		return this.post<UserAccount>(new Request('/UserAccounts/ChangeEmailAddress', { email }));
 	}
-	public requestPasswordReset(email: string) {
-		return this.post(new Request('/UserAccounts/RequestPasswordReset', { email }));
+	public requestPasswordReset(email: string, captchaResponse: string) {
+		return this.post(new Request('/UserAccounts/RequestPasswordReset', { email, captchaResponse }));
 	}
 	public updateContactPreferences(receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) {
 		return this.post<UserAccount>(new Request(
@@ -133,8 +133,8 @@ export default abstract class Api {
 	public updateEmailSubscriptions(token: string, subscriptions: EmailSubscriptions) {
 		return this.post(new Request('/UserAccounts/UpdateEmailSubscriptions', { token, ...subscriptions }));
 	}
-	public shareArticle(articleId: number, emailAddresses: string[], message: string) {
-		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message }));
+	public shareArticle(articleId: number, emailAddresses: string[], message: string, captchaResponse: string) {
+		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message, captchaResponse }));
 	}
 	public getTimeZones(callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) {
 		return this.get<TimeZoneSelectListItem[]>(new Request('/UserAccounts/TimeZones'), callback);

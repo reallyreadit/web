@@ -33,6 +33,11 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 			addresses
 		});
 	};
+	private _captchaElement: HTMLDivElement | null = null;
+	private readonly _setCaptchaElement = (ref: HTMLDivElement) => {
+		this._captchaElement = ref;
+	};
+	private _captchaId: number | null = null;
 	constructor(props: Props, context: Context) {
 		super(
 			{
@@ -128,6 +133,10 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 					value={this.state.message}
 					onChange={this._handleMessageChange}
 				/>
+				<div
+					className="captcha"
+					ref={this._setCaptchaElement}
+				></div>
 			</div>
 		);
 	}
@@ -148,13 +157,25 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 		return this.context.api.shareArticle(
 			this.props.article.id,
 			this.state.addresses.map(field => field.value),
-			this.state.message
+			this.state.message,
+			this.context.captcha.getResponse(this._captchaId)
 		);
 	}
 	protected onError(errors: string[]) {
-		this.context.page.showToast(
-			errors && errors.length ? errors[0] : 'Error sending email.\nPlease check the addresses.',
-			Intent.Danger
-		);
+		let errorMessage: string;
+		if (errors.some(error => error === 'UnconfirmedEmail')) {
+			errorMessage = 'You must confirm your email before you can share.';
+		} else if (errors.some(error => error === 'InvalidCaptcha')) {
+			errorMessage = 'Invalid Captcha\nPlease Try Again';
+		} else {
+			errorMessage = 'Error sending email.\nPlease check the addresses.';
+		}
+		this.context.page.showToast(errorMessage, Intent.Danger);
+		this.context.captcha.reset(this._captchaId);
+	}
+	public componentDidMount() {
+		this.context.captcha.onReady().then(captcha => {
+			this._captchaId = captcha.render(this._captchaElement, '6LegNF4UAAAAAMLjq6Q-L7-hvfP7kKaTIdMUtg9h');
+		});
 	}
 }

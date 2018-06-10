@@ -6,7 +6,8 @@ export default (model: {
 	content: string,
 	extensionId: string,
 	contextInitData: ContextInitData,
-	enableAnalytics: boolean
+	enableAnalytics: boolean,
+	enableCaptcha: boolean
 }) => 
 `<!DOCTYPE html>
 <html lang="en">
@@ -31,5 +32,8 @@ export default (model: {
 			window._contextInitData = ${JSON.stringify(model.contextInitData)};
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
+		${model.enableCaptcha ?
+			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=explicit'></script>` :
+			`<!-- captcha disabled in dev mode -->`}
 	</body>
 </html>`

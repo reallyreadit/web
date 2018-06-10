@@ -9,6 +9,7 @@ import BrowserUser from './BrowserUser';
 import browserLogger from './BrowserLogger';
 import BrowserEnvironment from './BrowserEnvironment';
 import BrowserChallenge from './BrowserChallenge';
+import BrowserCaptcha from './BrowserCaptcha';
 
 // analytics
 ga('create', {
@@ -28,6 +29,14 @@ ReactDOM.render(
 		App,
 		{
 			api,
+			captcha: new BrowserCaptcha(
+				window._contextInitData.captcha,
+				onLoadHandler => {
+					window.onReCaptchaLoaded = () => {
+						onLoadHandler(grecaptcha);
+					};
+				}
+			),
 			challenge: new BrowserChallenge(window._contextInitData.challenge),
 			environment: new BrowserEnvironment(window._contextInitData.environment),
 			page,

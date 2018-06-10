@@ -8,9 +8,11 @@ import Environment from './Environment';
 import App from './App';
 import Extension from './Extension';
 import Challenge from './Challenge';
+import Captcha from './Captcha';
 
 export const contextTypes = {
 	api: PropTypes.instanceOf(Api),
+	captcha: PropTypes.instanceOf(Captcha),
 	challenge: PropTypes.instanceOf(Challenge),
 	environment: PropTypes.instanceOf(Environment),
 	log: PropTypes.object,
@@ -20,6 +22,7 @@ export const contextTypes = {
 };
 export default interface Context extends RouterChildContext<{}> {
 	api: Api,
+	captcha: Captcha,
 	challenge: Challenge,
 	environment: Environment<App, Extension>,
 	log: Logger,

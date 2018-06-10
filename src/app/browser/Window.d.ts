@@ -4,6 +4,7 @@ import { AppApi } from './WebViewMessagingContext';
 declare global {
 	interface Window {
 		_contextInitData: ContextInitData,
-		reallyreadit: AppApi
+		reallyreadit: AppApi,
+		onReCaptchaLoaded: () => void
 	}
 }

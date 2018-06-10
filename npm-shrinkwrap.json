@@ -74,6 +74,12 @@
       "resolved": "https://registry.npmjs.org/@types/google.analytics/-/google.analytics-0.0.33.tgz",
       "dev": true
     },
+    "@types/grecaptcha": {
+      "version": "2.0.34",
+      "from": "@types/grecaptcha@latest",
+      "resolved": "https://registry.npmjs.org/@types/grecaptcha/-/grecaptcha-2.0.34.tgz",
+      "dev": true
+    },
     "@types/history": {
       "version": "4.6.2",
       "from": "@types/history@4.6.2",
