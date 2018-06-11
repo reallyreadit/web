@@ -90,6 +90,8 @@ export default class MainView extends React.Component<{}, {}> {
 					<footer>
 						<a href="http://blog.reallyread.it">Blog</a>
 						<Separator />
+						<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
+						<Separator />
 						<Link to="/privacy">Privacy Policy</Link>
 						<Separator />
 						<a href="mailto:support@reallyread.it">support@reallyread.it</a>

@@ -1,21 +1,19 @@
 .pizza-page > h3 {
 	font-size: 20px;
-	padding: 20px 0 10px 0;
-	text-align: center;
-}
-.pizza-page > h4 {
-	font-size: 18px;
-	padding: 18px 0 8px 0;
+	margin: 10px 0;
 	text-align: center;
 }
 .pizza-page > h3:first-child {
-	padding-top: 0;
+	margin-top: 0;
+}
+.pizza-page > h4 {
+	font-size: 18px;
+	margin: 10px 0;
+	text-align: center;
 }
 .pizza-page > p {
-	margin-bottom: 5px;
-}
-.pizza-page > p:last-of-type {
-	margin-bottom: 0;
+	text-align: center;
+	margin: 5px 0;
 }
 .pizza-page > .prompt-wrapper {
 	display: flex;
@@ -39,7 +37,7 @@
 .pizza-page > .leaderboards > .leaderboard {
 	width: 100%;
 	border: 1px solid black;
-	margin-bottom: 10px;
+	margin: 10px 0;
 }
 .pizza-page > .leaderboards > .leaderboard > caption {
 	font-weight: bold;
@@ -68,30 +66,6 @@
 }
 .pizza-page > .leaderboards > .leaderboard.contenders > caption {
 	background: violet;
-}
-.pizza-page > .faq > li {
-	margin-bottom: 5px;
-}
-.pizza-page > .faq > li:last-child {
-	margin-bottom: 0;
-}
-.pizza-page > .faq > li > span {
-	display: flex;
-}
-.pizza-page > .faq > li > span:first-child {
-	font-weight: bold;
-	margin-bottom: 2px;
-}
-.pizza-page > .faq > li > span:first-child::before,
-.pizza-page > .faq > li > span:last-child::before {
-	display: block;
-	margin-right: 3px;
-}
-.pizza-page > .faq > li > span:first-child::before {
-	content: "Q:";
-}
-.pizza-page > .faq > li > span:last-child::before {
-	content: "A:";
 }
 .pizza-page > .disenroll-prompt {
 	margin-top: 20px;

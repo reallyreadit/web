@@ -110,6 +110,11 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</div>
 					</div> :
 					null}
+				<h3>We're giving away free pizza to the first 100 people who read at least one article* per day for 10 days in a row!</h3>
+				<p>*The article must be at least five minutes long.</p>
+				<h4>
+					<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
+				</h4>
 				<h3>Leaderboards</h3>
 				<div className="leaderboards">
 					<table className="leaderboard winners">
@@ -157,49 +162,6 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</tbody>
 					</table>
 				</div>
-				<h3>Challenge Details</h3>
-				<p>
-					We're giving away free pizzas to the first 100 users who read at least one
-					article per day for 10 days in a row!
-				</p>
-				<p>
-					The article must be at least five minutes long.
-				</p>
-				<p>
-					If you read more than one five minute article in a given day the extra reads
-					do not carry over to the next day.
-				</p>
-				<p>
-					If you miss a day you have to start all over again from the beginning!
-				</p>
-				<p>
-					<strong>Protip:</strong> Make sure you are getting credit for the articles you are
-					reading! We're still in beta and while our tracker works on most articles it is not
-					perfect!
-				</p>
-				<h4>FAQ</h4>
-				<ol className="faq">
-					<li>
-						<span>How do I know I'm getting credit for the articles I'm reading?</span>
-						<span>
-							When the Chrome extension detects an article it displays the reallyread.it
-							comment counter over the extension icon. Click on the extension icon and you
-							should see the article details along with your progress.
-						</span>
-					</li>
-					<li>
-						<span>How do I claim my pizza?</span>
-						<span>We'll reach out to you within 24 hours of your win in order to make arrangements.</span>
-					</li>
-					<li>
-						<span>What kind of pizza do I get?</span>
-						<span>
-							Winning the challenge gets you $15 towards the pizza of your choice.
-							We can either send you an e-gift certificate for a major pizza chain or
-							make arrangements with your favorite local pizza place.
-						</span>
-					</li>
-				</ol>
 				{showDisenrollPrompt ?
 					<div className="disenroll-prompt prompt-wrapper">
 						<div className="prompt">
