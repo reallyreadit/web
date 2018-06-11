@@ -14,7 +14,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 	private readonly _forceUpdate = () => {
 		this.forceUpdate();
 	};
-	private readonly _showEnrollPrompt = () => {
+	private readonly _showStartPrompt = () => {
 		this.context.challenge.update({
 			latestResponse: null
 		});
@@ -25,18 +25,21 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 		});
 		this.context.page.setState({ isLoading: true });
 	};
-	private readonly _disenroll = () => {
-		this.context.api
-			.createChallengeResponse(
-				this.context.challenge.activeChallenge.id,
-				ChallengeResponseAction.Disenroll
-			)
-			.then(data => {
-				this.context.challenge.update({
-					latestResponse: data.response,
-					score: null
+	private readonly _quit = () => {
+		if (
+			this.context.challenge.isUserEnrolled ?
+				window.confirm('Are you sure? You\'ll lose any progress you\'ve made so far!') :
+				true
+		) {
+			this.context.api
+				.quitChallenge(this.context.challenge.activeChallenge.id)
+				.then(latestResponse => {
+					this.context.challenge.update({
+						latestResponse,
+						score: null
+					});
 				});
-			});
+		}
 	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
@@ -93,20 +96,22 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 	}
 	public render() {
 		const
-			showEnrollPrompt = (
+			showStartPrompt = (
 				this.context.challenge.latestResponse &&
 				this.context.challenge.latestResponse.action !== ChallengeResponseAction.Enroll
 			),
-			showDisenrollPrompt = (
-				this.context.challenge.latestResponse &&
-				this.context.challenge.latestResponse.action === ChallengeResponseAction.Enroll
+			showQuitPrompt = (
+				this.context.user.isSignedIn && (
+					!this.context.challenge.latestResponse ||
+					this.context.challenge.latestResponse.action === ChallengeResponseAction.Enroll
+				)
 			);
 		return (
 			<div className="pizza-page">
-				{showEnrollPrompt ?
-					<div className="enroll-prompt prompt-wrapper">
+				{showStartPrompt ?
+					<div className="start-prompt prompt-wrapper">
 						<div className="prompt">
-							Want to join the challenge? Click <span onClick={this._showEnrollPrompt}>here</span> to get back in the game!
+							Want to join the challenge? Click <span onClick={this._showStartPrompt}>here</span> to get back in the game!
 						</div>
 					</div> :
 					null}
@@ -162,10 +167,10 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</tbody>
 					</table>
 				</div>
-				{showDisenrollPrompt ?
-					<div className="disenroll-prompt prompt-wrapper">
+				{showQuitPrompt ?
+					<div className="quit-prompt prompt-wrapper">
 						<div className="prompt">
-							Want to quit the challenge? Click <span onClick={this._disenroll}>here</span> to leave the game.
+							Want to quit the challenge? Click <span onClick={this._quit}>here</span> to leave the game.
 						</div>
 					</div> :
 					null}

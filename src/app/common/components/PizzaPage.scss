@@ -26,7 +26,7 @@
 	text-decoration: underline;
 	cursor: pointer;
 }
-.pizza-page > .enroll-prompt > .prompt {
+.pizza-page > .start-prompt > .prompt {
 	background: chartreuse;
 	border: 1px solid green;
 }
@@ -67,10 +67,10 @@
 .pizza-page > .leaderboards > .leaderboard.contenders > caption {
 	background: violet;
 }
-.pizza-page > .disenroll-prompt {
+.pizza-page > .quit-prompt {
 	margin-top: 20px;
 }
-.pizza-page > .disenroll-prompt > .prompt {
+.pizza-page > .quit-prompt > .prompt {
 	color: gray;
 	background: antiquewhite;
 	border: 1px solid burlywood;

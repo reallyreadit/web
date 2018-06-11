@@ -2,7 +2,6 @@ import * as React from 'react';
 import Context, { contextTypes } from '../../Context';
 import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../api/Fetchable';
-import ChallengeResponseAction from '../../../../common/models/ChallengeResponseAction';
 import { DateTime } from 'luxon';
 import ButtonBar from './ButtonBar';
 
@@ -38,9 +37,8 @@ export default class extends React.Component<
 	private readonly _enroll = () => {
 		this.setState({ isSubmitting: true });
 		this.context.api
-			.createChallengeResponse(
+			.startChallenge(
 				this.context.challenge.activeChallenge.id,
-				ChallengeResponseAction.Enroll,
 				this.state.timeZoneSelection.id
 			)
 			.then(data => {

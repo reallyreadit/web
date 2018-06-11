@@ -19,16 +19,16 @@ export default class extends React.PureComponent<Props> {
 			}
 		}
 		let message: string;
-		if (score.day !== -1) {
-			if (score.level === 0) {
-				message = 'Climb the steps by reading at least one 5 min. long article per day!';
-			} else if (score.level === 10) {
-				message = 'You win! We\'ll contact you within 24 hrs to deliver your pizza!';
-			} else if (score.day === score.level) {
-				message = `Good job! Only ${10 - score.day} more days to go!`;
-			} else {
-				message = 'If you don\'t read an article by the end of the day you\'ll have to start over!';
-			}
+		if (score.day === -1) {
+			message = 'Take the challenge! Win pizza!';
+		} else if (score.level === 0) {
+			message = 'Climb the steps by reading at least one 5 min. long article per day!';
+		} else if (score.level === 10) {
+			message = 'You win! We\'ll contact you within 24 hrs to deliver your pizza!';
+		} else if (score.day === score.level) {
+			message = `Good job! Only ${10 - score.day} more days to go!`;
+		} else {
+			message = 'If you don\'t read an article by the end of the day you\'ll have to start over!';
 		}
 		return (
 			<div className="game-scene">

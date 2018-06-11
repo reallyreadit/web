@@ -12,7 +12,6 @@ import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import HotTopics from '../../../common/models/HotTopics';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
-import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
 import ChallengeResponse from '../../../common/models/ChallengeResponse';
 import ChallengeScore from '../../../common/models/ChallengeScore';
 import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
@@ -139,12 +138,6 @@ export default abstract class Api {
 	public getTimeZones(callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) {
 		return this.get<TimeZoneSelectListItem[]>(new Request('/UserAccounts/TimeZones'), callback);
 	}
-	public createChallengeResponse(challengeId: number, action: ChallengeResponseAction, timeZoneId: number | null = null) {
-		return this.post<{
-			response: ChallengeResponse,
-			score: ChallengeScore
-		}>(new Request('/Challenges/Respond', { challengeId, action, timeZoneId }));
-	}
 	public getChallengeScore(challengeId: number, callback: (score: Fetchable<ChallengeScore>) => void) {
 		return this.get<ChallengeScore>(new Request('/Challenges/Score', { challengeId }), callback);
 	}
@@ -153,5 +146,14 @@ export default abstract class Api {
 	}
 	public getChallengeState(callback: (state: Fetchable<ChallengeState>) => void) {
 		return this.get<ChallengeState>(new Request('/Challenges/State'), callback);
+	}
+	public startChallenge(challengeId: number, timeZoneId: number) {
+		return this.post<{
+			response: ChallengeResponse,
+			score: ChallengeScore
+		}>(new Request('/Challenges/Start', { challengeId, timeZoneId }));
+	}
+	public quitChallenge(challengeId: number) {
+		return this.post<ChallengeResponse>(new Request('/Challenges/Quit', { challengeId }));
 	}
 }

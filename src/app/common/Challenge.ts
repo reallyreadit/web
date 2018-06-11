@@ -1,6 +1,7 @@
 import ChallengeState from '../../common/models/ChallengeState';
 import EventEmitter from './EventEmitter';
 import EventType from './EventType';
+import ChallengeResponseAction from '../../common/models/ChallengeResponseAction';
 
 export default abstract class extends EventEmitter<{
 	'change': {
@@ -26,5 +27,8 @@ export default abstract class extends EventEmitter<{
 	}
 	public get score() {
 		return this.getState().score;
+	}
+	public get isUserEnrolled() {
+		return this.latestResponse && this.latestResponse.action === ChallengeResponseAction.Enroll;
 	}
 }
