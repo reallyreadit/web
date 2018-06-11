@@ -88,7 +88,7 @@ export default class MainView extends React.Component<{}, {}> {
 						{routes.map((route, i) => <Route key={i} {...route} />)}
 					</main>
 					<footer>
-						<a href="http://blog.reallyread.it">Blog</a>
+						<a href="https://blog.reallyread.it">Blog</a>
 						<Separator />
 						<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
 						<Separator />
