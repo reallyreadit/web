@@ -120,7 +120,10 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 				<h4>
 					<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
 				</h4>
-				<h3>Leaderboards</h3>
+				<h3>
+					Leaderboards
+					<small>Updated every 5 min.</small>
+				</h3>
 				<div className="leaderboards">
 					<table className="leaderboard winners">
 						<caption>Winners</caption>
