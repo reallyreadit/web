@@ -24,7 +24,14 @@ function getElementType(element: Element, isTopLevel?: boolean) {
 		if (isTopLevel) {
 			type['@context'] = 'http://schema.org';
 		}
-		type['@type'] = element.getAttribute('itemtype').match(itemTypeRegExp)[1];
+		const
+			itemType = element.getAttribute('itemtype'),
+			match = itemType.match(itemTypeRegExp);
+		if (match && match.length === 2) {
+			type['@type'] = match[1];
+		} else {
+			type['@type'] = itemType;
+		}
 	}
 	return type;
 }
