@@ -60,6 +60,9 @@
 	border: 1px solid black;
 	padding: 2px;
 }
+.pizza-page > .leaderboards > .leaderboard > tbody> tr.highlight > td {
+	background-color: aqua;
+}
 .pizza-page > .leaderboards > .leaderboard.winners {
 	margin-left: 5px;
 }

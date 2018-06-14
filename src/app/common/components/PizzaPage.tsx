@@ -5,6 +5,7 @@ import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
 import Fetchable from '../api/Fetchable';
 import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
 import { DateTime } from 'luxon';
+import * as className from 'classnames';
 
 export default class extends React.Component<RouteComponentProps<{}>, {
 	leaderboard: Fetchable<ChallengeLeaderboard>
@@ -105,7 +106,8 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 					!this.context.challenge.latestResponse ||
 					this.context.challenge.latestResponse.action === ChallengeResponseAction.Enroll
 				)
-			);
+			),
+			userName = this.context.user.isSignedIn ? this.context.user.userAccount.name : null;
 		return (
 			<div className="pizza-page">
 				{showStartPrompt ?
@@ -137,7 +139,10 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						<tbody>
 							{this.getRows(
 								board => board.winners.map((winner, index) => (
-									<tr key={winner.name}>
+									<tr
+										key={winner.name}
+										className={className({ 'highlight': winner.name === userName })}	
+									>
 										<td>{winner.name}</td>
 										<td style={{ textAlign: 'center' }}>{index + 1}</td>
 										<td style={{ textAlign: 'right' }}>{DateTime.fromISO(winner.dateAwarded).toFormat('MMM d')}</td>
@@ -151,6 +156,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						<caption>Contenders</caption>
 						<thead>
 							<tr>
+								<th>#</th>
 								<th>Name</th>
 								<th>Day #</th>
 								<th>Level #</th>
@@ -158,8 +164,12 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</thead>
 						<tbody>
 							{this.getRows(
-								board => board.contenders.map(contender => (
-									<tr key={contender.name}>
+								board => board.contenders.map((contender, index) => (
+									<tr
+										key={contender.name}
+										className={className({ 'highlight': contender.name === userName })}
+									>
+										<td style={{ textAlign: 'center' }}>{index + 1}</td>
 										<td>{contender.name}</td>
 										<td style={{ textAlign: 'center' }}>{contender.day}</td>
 										<td style={{ textAlign: 'center' }}>{contender.level}</td>
