@@ -22,45 +22,52 @@ export default class extends React.Component<{
 	page: Page,
 	user: User
 }, {}> {
-	private _checkNewReplyNotification = () => this.props.api.checkNewReplyNotification(notification => {
-		if (!notification.errors) {
-			this.props.page.setNewReplyNotification(notification.value);
+	private _checkNewReplyNotification = () => {
+		this.props.api.checkNewReplyNotification(response => {
+			if (!response.errors) {
+				this.props.page.setNewReplyNotification(response.value);
+			}
+		});
+	};
+	private _checkChallengeScore = () => {
+		if (this.props.challenge.isUserEnrolled) {
+			this.props.api.getChallengeScore(
+				this.props.challenge.activeChallenge.id,
+				response => {
+					if (!response.errors) {
+						this.props.challenge.update({ score: response.value });
+					}
+				}
+			)
 		}
-	});
-	private _pollingHandle: number;
+	};
+	private _pollingHandles: number[] = [];
 	private _startPolling = () => {
-		if (this._pollingHandle == null) {
-			this._pollingHandle = window.setInterval(this._checkNewReplyNotification, 60000);
+		if (!this._pollingHandles.length) {
+			this._pollingHandles.push(window.setInterval(this._checkNewReplyNotification, 1 * 60 * 1000));
+			this._pollingHandles.push(window.setInterval(this._checkChallengeScore, 15 * 60 * 1000));
 		}
 	};
 	private _stopPolling = () => {
-		if (this._pollingHandle != null) {
-			window.clearInterval(this._pollingHandle);
-			this._pollingHandle = null;
+		while (this._pollingHandles.length) {
+			window.clearInterval(this._pollingHandles.splice(0, 1)[0]);
 		}
 	};
 	private _handleSignIn = (event: { eventType: EventType }) => {
-		if (!window.document.hidden) {
+		if (event.eventType === EventType.Original) {
 			this._checkNewReplyNotification();
 			this._startPolling();
 		}
+	};
+	private _handleSignOut = (event: { eventType: EventType }) => {
 		if (event.eventType === EventType.Original) {
-			this.props.api.getChallengeState(state => {
-				this.props.challenge.update(state.value);
+			this.props.page.setNewReplyNotification({
+				lastReply: 0,
+				lastNewReplyAck: 0,
+				lastNewReplyDesktopNotification: 0,
+				timestamp: Date.now()
 			});
 		}
-	};
-	private _handleSignOut = () => {
-		this.props.page.setNewReplyNotification({
-			lastReply: 0,
-			lastNewReplyAck: 0,
-			lastNewReplyDesktopNotification: 0,
-			timestamp: Date.now()
-		});
-		this.props.challenge.update({
-			latestResponse: null,
-			score: null
-		});
 		this._stopPolling();
 	};
 	private _handleVisibilityChange = () => {
