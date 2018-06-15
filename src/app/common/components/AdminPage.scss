@@ -1,5 +1,9 @@
 .admin-page > table {
 	width: 100%;
+	margin-top: 10px;
+}
+.admin-page > table:first-child {
+	margin-top: 0;
 }
 .admin-page > table > caption > div {
 	border-width: 1px 1px 0 1px;
@@ -12,9 +16,13 @@
 	padding: 5px;
 }
 .admin-page > table > thead > tr > th,
+.admin-page > table > tbody > tr > th,
 .admin-page > table > tbody > tr > td {
 	padding: 5px;
 	border: 1px solid gray;
+}
+.admin-page > table > tbody > tr > th {
+	text-align: left;
 }
 .admin-page > table > tbody > tr > td[colspan] {
 	text-align: center;

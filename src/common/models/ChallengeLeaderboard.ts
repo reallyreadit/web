@@ -1,11 +1,7 @@
+import ChallengeWinner from './ChallengeWinner';
+import ChallengeContender from './ChallengeContender';
+
 export default interface ChallengeLeaderboard {
-	winners: {
-		name: string,
-		dateAwarded: string
-	}[],
-	contenders: {
-		name: string,
-		day: number,
-		level: number
-	}[]
+	winners: ChallengeWinner[],
+	contenders: ChallengeContender[]
 }

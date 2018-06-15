@@ -16,6 +16,9 @@ import ChallengeResponse from '../../../common/models/ChallengeResponse';
 import ChallengeScore from '../../../common/models/ChallengeScore';
 import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
 import ChallengeState from '../../../common/models/ChallengeState';
+import UserStats from '../../../common/models/UserStats';
+import ChallengeWinner from '../../../common/models/ChallengeWinner';
+import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
 
 export interface InitData {
 	endpoint: Endpoint,
@@ -155,5 +158,14 @@ export default abstract class Api {
 	}
 	public quitChallenge(challengeId: number) {
 		return this.post<ChallengeResponse>(new Request('/Challenges/Quit', { challengeId }));
+	}
+	public getUserStats(callback: (state: Fetchable<UserStats>) => void) {
+		return this.get<UserStats>(new Request('/UserAccounts/Stats'), callback);
+	}
+	public getChallengeWinners(challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) {
+		return this.get<ChallengeWinner[]>(new Request('/Challenges/Winners', { challengeId }), callback);
+	}
+	public getChallengeResponseActionTotals(challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) {
+		return this.get<ChallengeResponseTotal[]>(new Request('/Challenges/ResponseActionTotals', { challengeId }), callback);
 	}
 }

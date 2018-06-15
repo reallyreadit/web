@@ -5,47 +5,77 @@ import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../api/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
+import UserStats from '../../../common/models/UserStats';
+import ChallengeWinner from '../../../common/models/ChallengeWinner';
+import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
+import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
 
 export default class extends React.Component<
 	RouteComponentProps<{}>,
-	{ mailings: Fetchable<BulkMailing[]> }
+	{
+		userStats: Fetchable<UserStats>,
+		challengeResponseTotals: Fetchable<ChallengeResponseTotal[]>,
+		challengeWinners: Fetchable<ChallengeWinner[]>,
+		mailings: Fetchable<BulkMailing[]>
+	}
 > {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private readonly _goToHome = () => this.context.router.history.push('/');
-	private readonly _reload = () => {
-		this.context.page.setState({ isLoading: true });
-		this.context.api.getBulkMailings(mailings => {
-			this.setState({ mailings });
-			this.context.page.setState({ isLoading: false });
+	private readonly _reloadMailings = () => {
+		this.setState({
+			mailings: this.context.api.getBulkMailings(mailings => {
+				this.setState({ mailings });
+			})
 		});
 	};
-	private readonly _openCreateDialog = () => this.context.page.openDialog(
-		<CreateBulkMailingDialog onSend={this._reload} />
+	private readonly _openCreateMailingDialog = () => this.context.page.openDialog(
+		<CreateBulkMailingDialog onSend={this._reloadMailings} />
 	);
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
+		const isActiveChallenge = this.context.challenge.isActiveChallenge;
 		this.state = {
+			userStats: context.api.getUserStats(userStats => {
+				this.setState({ userStats });
+			}),
+			challengeResponseTotals: (
+				isActiveChallenge ?
+					this.context.api.getChallengeResponseActionTotals(
+						this.context.challenge.activeChallenge.id,
+						challengeResponseTotals => {
+							this.setState({ challengeResponseTotals });
+						}
+					) :
+					{ isLoading: false, value: [] }
+			),
+			challengeWinners: (
+				isActiveChallenge ?
+					this.context.api.getChallengeWinners(
+						this.context.challenge.activeChallenge.id,
+						challengeWinners => {
+							this.setState({ challengeWinners });
+						}
+					) :
+					{ isLoading: false, value: [] }
+			),
 			mailings: context.api.getBulkMailings(mailings => {
 				this.setState({ mailings });
-				this.context.page.setState({ isLoading: false });
 			})
 		};
 	}
 	public componentWillMount() {
 		this.context.page.setState({
 			title: 'Admin',
-			isLoading: this.state.mailings.isLoading,
-			isReloadable: true
+			isLoading: false,
+			isReloadable: false
 		});
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._goToHome);
-		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._goToHome);
-		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		return (
@@ -53,8 +83,103 @@ export default class extends React.Component<
 				<table>
 					<caption>
 						<div className="content">
+							<strong>User Stats</strong>
+						</div>
+					</caption>
+					<tbody>
+						{!this.state.userStats.isLoading ?
+							this.state.userStats.value ?
+								[
+									<tr key="total">
+										<th>Total Count</th>
+										<td>{this.state.userStats.value.totalCount}</td>
+									</tr>,
+									<tr key="confirmed">
+										<th>Confirmed Count</th>
+										<td>{this.state.userStats.value.confirmedCount}</td>
+									</tr>
+								] :
+								<tr>
+									<td>Error loading stats.</td>
+								</tr> :
+							<tr>
+								<td>Loading...</td>
+							</tr>}
+					</tbody>
+				</table>
+				<table>
+					<caption>
+						<div className="content">
+							<strong>Challenge Response Action Totals</strong>
+						</div>
+					</caption>
+					<thead>
+						<tr>
+							<th>Action</th>
+							<th>Count</th>
+						</tr>
+					</thead>
+					<tbody>
+						{!this.state.challengeResponseTotals.isLoading ?
+							this.state.challengeResponseTotals.value ?
+								this.state.challengeResponseTotals.value.length ?
+									this.state.challengeResponseTotals.value.map(t => (
+										<tr key={t.action}>
+											<td>{challengeResponseActionStringMap[t.action]}</td>
+											<td>{t.count}</td>
+										</tr>
+									)) :
+									<tr>
+										<td colSpan={2}>No responses found.</td>
+									</tr> :
+								<tr>
+									<td colSpan={2}>Error loading responses.</td>
+								</tr> :
+							<tr>
+								<td colSpan={2}>Loading...</td>
+							</tr>}
+					</tbody>
+				</table>
+				<table>
+					<caption>
+						<div className="content">
+							<strong>Challenge Winners</strong>
+						</div>
+					</caption>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Date Awarded</th>
+						</tr>
+					</thead>
+					<tbody>
+						{!this.state.challengeWinners.isLoading ?
+							this.state.challengeWinners.value ?
+								this.state.challengeWinners.value.length ?
+									this.state.challengeWinners.value.map(w => (
+										<tr key={w.name}>
+											<td>{w.name}</td>
+											<td>{w.email}</td>
+											<td>{w.dateAwarded}</td>
+										</tr>
+									)) :
+									<tr>
+										<td colSpan={3}>No winners found.</td>
+									</tr> :
+								<tr>
+									<td colSpan={3}>Error loading winners.</td>
+								</tr> :
+							<tr>
+								<td colSpan={3}>Loading...</td>
+							</tr>}
+					</tbody>
+				</table>
+				<table>
+					<caption>
+						<div className="content">
 							<strong>Bulk Mailings</strong>
-							<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateDialog} />
+							<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
 						</div>
 					</caption>
 					<thead>

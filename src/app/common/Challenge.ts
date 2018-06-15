@@ -28,6 +28,9 @@ export default abstract class extends EventEmitter<{
 	public get score() {
 		return this.getState().score;
 	}
+	public get isActiveChallenge() {
+		return !!this.activeChallenge;
+	}
 	public get isUserEnrolled() {
 		return this.latestResponse && this.latestResponse.action === ChallengeResponseAction.Enroll;
 	}
