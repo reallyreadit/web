@@ -59,7 +59,8 @@ function parseElementMicrodata(element: Element, topLevelTypes: ItemType[] = [],
 		if (isScopeElement(element)) {
 			// value is a type
 			scope = mergeValue(properties, getElementType(element), scope);
-		} else {
+		// guard against non-scope elements with an itemid attribute
+		} else if (!element.hasAttribute('itemid')) {
 			// value is a primitive
 			mergeValue(properties, getElementValue(element), scope);
 		}
