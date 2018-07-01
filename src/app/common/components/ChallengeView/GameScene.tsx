@@ -26,7 +26,8 @@ export default class extends React.PureComponent<Props> {
 		} else if (score.level === 10) {
 			message = 'You win! We\'ll contact you within 24 hrs to deliver your pizza!';
 		} else if (score.day === score.level) {
-			message = `Good job! Only ${10 - score.day} more days to go!`;
+			const daysRemaining = 10 - score.day;
+			message = `Good job! Only ${daysRemaining} more ${daysRemaining > 1 ? 'days' : 'day'} to go!`;
 		} else {
 			message = 'If you don\'t read an article by the end of the day you\'ll have to start over!';
 		}
