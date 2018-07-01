@@ -59,7 +59,8 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 	}
 	private getRows(
 		delegate: (leaderboard: ChallengeLeaderboard) => React.ReactNode[],
-		emptyMessage: string
+		emptyMessage: string,
+		columnCount: number
 	) {
 		let message: string;
 		if (this.state.leaderboard.isLoading) {
@@ -76,7 +77,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 		}
 		return (
 			<tr>
-				<td colSpan={3} style={{ textAlign: 'center' }}>{message}</td>
+				<td colSpan={columnCount} style={{ textAlign: 'center' }}>{message}</td>
 			</tr>
 		);
 	}
@@ -148,7 +149,8 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 										<td style={{ textAlign: 'right' }}>{DateTime.fromISO(winner.dateAwarded).toFormat('MMM d')}</td>
 									</tr>
 								)),
-								'No winners yet!'
+								'No winners yet!',
+								3
 							)}
 						</tbody>
 					</table>
@@ -175,7 +177,8 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 										<td style={{ textAlign: 'center' }}>{contender.level}</td>
 									</tr>
 								)),
-								'Be the first to get on the board!'
+								'Be the first to get on the board!',
+								4
 							)}
 						</tbody>
 					</table>
