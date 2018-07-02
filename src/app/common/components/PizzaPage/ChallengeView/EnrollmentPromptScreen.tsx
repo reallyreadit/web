@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ButtonBar from './ButtonBar';
-import Context, { contextTypes } from '../../Context';
+import Context, { contextTypes } from '../../../Context';
 
 interface Props {
 	isUserSignedIn: boolean,

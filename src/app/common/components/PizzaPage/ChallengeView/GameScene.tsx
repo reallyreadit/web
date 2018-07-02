@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ChallengeScore from '../../../../common/models/ChallengeScore';
+import ChallengeScore from '../../../../../common/models/ChallengeScore';
 import * as className from 'classnames';
 import CountdownTimer from './CountdownTimer';
 

@@ -14,7 +14,6 @@ import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
-import ChallengeView from './ChallengeView';
 
 export default class MainView extends React.Component<{}, {}> {
 	public static contextTypes = contextTypes;
@@ -70,7 +69,6 @@ export default class MainView extends React.Component<{}, {}> {
 					<ReadReadinessBar />
 					<EmailConfirmationBar />
 					<Header />
-					<ChallengeView />
 					<h2 className={className({
 						'reloadable': this.context.page.isReloadable,
 						'loading': this.context.page.isLoading

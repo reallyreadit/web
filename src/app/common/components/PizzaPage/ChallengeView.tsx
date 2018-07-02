@@ -1,12 +1,12 @@
 import * as React from 'react';
-import Context, { contextTypes } from '../Context';
-import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
+import Context, { contextTypes } from '../../Context';
+import ChallengeResponseAction from '../../../../common/models/ChallengeResponseAction';
 import EnrollmentPromptScreen from './ChallengeView/EnrollmentPromptScreen';
 import EnrollScreen from './ChallengeView/EnrollScreen';
 import GameScene from './ChallengeView/GameScene';
-import UserArticle from '../../../common/models/UserArticle';
-import UserAccount from '../../../common/models/UserAccount';
-import EventType from '../EventType';
+import UserArticle from '../../../../common/models/UserArticle';
+import UserAccount from '../../../../common/models/UserAccount';
+import EventType from '../../EventType';
 import LoadingScreen from './ChallengeView/LoadingScreen';
 
 enum Screen {

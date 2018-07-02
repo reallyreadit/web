@@ -6,6 +6,7 @@ import Fetchable from '../api/Fetchable';
 import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
 import { DateTime } from 'luxon';
 import * as className from 'classnames';
+import ChallengeView from './PizzaPage/ChallengeView';
 
 export default class extends React.Component<RouteComponentProps<{}>, {
 	leaderboard: Fetchable<ChallengeLeaderboard>
@@ -118,6 +119,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</div>
 					</div> :
 					null}
+				<ChallengeView />
 				<h3>We're giving away free pizza to the first 100 people who read at least one article* per day for 10 days in a row!</h3>
 				<p>*The article must be at least five minutes long.</p>
 				<h4>

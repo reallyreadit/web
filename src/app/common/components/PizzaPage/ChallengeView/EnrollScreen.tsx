@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Context, { contextTypes } from '../../Context';
-import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
-import Fetchable from '../../api/Fetchable';
+import Context, { contextTypes } from '../../../Context';
+import TimeZoneSelectListItem from '../../../../../common/models/TimeZoneSelectListItem';
+import Fetchable from '../../../api/Fetchable';
 import { DateTime } from 'luxon';
 import ButtonBar from './ButtonBar';
 
