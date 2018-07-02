@@ -130,60 +130,64 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 					<small>Updated every 5 min.</small>
 				</h3>
 				<div className="leaderboards">
-					<table className="leaderboard winners">
-						<caption>Winners</caption>
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Name</th>
-								<th>Date Won</th>
-							</tr>
-						</thead>
-						<tbody>
-							{this.getRows(
-								board => board.winners.map((winner, index) => (
-									<tr
-										key={winner.name}
-										className={className({ 'highlight': winner.name === userName })}	
-									>
-										<td style={{ textAlign: 'center' }}>{index + 1}</td>
-										<td>{winner.name}</td>
-										<td style={{ textAlign: 'right' }}>{DateTime.fromISO(winner.dateAwarded).toFormat('MMM d')}</td>
-									</tr>
-								)),
-								'No winners yet!',
-								3
-							)}
-						</tbody>
-					</table>
-					<table className="leaderboard contenders">
-						<caption>Contenders</caption>
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Name</th>
-								<th>Day #</th>
-								<th>Level #</th>
-							</tr>
-						</thead>
-						<tbody>
-							{this.getRows(
-								board => board.contenders.map((contender, index) => (
-									<tr
-										key={contender.name}
-										className={className({ 'highlight': contender.name === userName })}
-									>
-										<td style={{ textAlign: 'center' }}>{index + 1}</td>
-										<td>{contender.name}</td>
-										<td style={{ textAlign: 'center' }}>{contender.day}</td>
-										<td style={{ textAlign: 'center' }}>{contender.level}</td>
-									</tr>
-								)),
-								'Be the first to get on the board!',
-								4
-							)}
-						</tbody>
-					</table>
+					<div className="container">
+						<table className="leaderboard winners">
+							<caption>Winners</caption>
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Name</th>
+									<th>Date Won</th>
+								</tr>
+							</thead>
+							<tbody>
+								{this.getRows(
+									board => board.winners.map((winner, index) => (
+										<tr
+											key={winner.name}
+											className={className({ 'highlight': winner.name === userName })}	
+										>
+											<td style={{ textAlign: 'center' }}>{index + 1}</td>
+											<td>{winner.name}</td>
+											<td style={{ textAlign: 'right' }}>{DateTime.fromISO(winner.dateAwarded).toFormat('MMM d')}</td>
+										</tr>
+									)),
+									'No winners yet!',
+									3
+								)}
+							</tbody>
+						</table>
+					</div>
+					<div className="container">
+						<table className="leaderboard contenders">
+							<caption>Contenders</caption>
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Name</th>
+									<th>Day #</th>
+									<th>Level #</th>
+								</tr>
+							</thead>
+							<tbody>
+								{this.getRows(
+									board => board.contenders.map((contender, index) => (
+										<tr
+											key={contender.name}
+											className={className({ 'highlight': contender.name === userName })}
+										>
+											<td style={{ textAlign: 'center' }}>{index + 1}</td>
+											<td>{contender.name}</td>
+											<td style={{ textAlign: 'center' }}>{contender.day}</td>
+											<td style={{ textAlign: 'center' }}>{contender.level}</td>
+										</tr>
+									)),
+									'Be the first to get on the board!',
+									4
+								)}
+							</tbody>
+						</table>
+					</div>
 				</div>
 				{showQuitPrompt ?
 					<div className="quit-prompt prompt-wrapper">

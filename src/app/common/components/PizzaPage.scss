@@ -39,40 +39,43 @@
 	display: flex;
 	flex-direction: row-reverse;
 }
-.pizza-page > .leaderboards > .leaderboard {
+.pizza-page > .leaderboards > .container {
+	width: 50%;
+}
+.pizza-page > .leaderboards > .container:first-child {
+	padding-left: 5px;
+}
+.pizza-page > .leaderboards > .container:last-child {
+	padding-right: 5px;
+}
+.pizza-page > .leaderboards > .container > .leaderboard {
 	width: 100%;
 	border: 1px solid black;
 	margin: 10px 0;
 }
-.pizza-page > .leaderboards > .leaderboard > caption {
+.pizza-page > .leaderboards > .container > .leaderboard > caption {
 	font-weight: bold;
 	border-width: 1px 1px 0 1px;
 	border-style: solid;
 	border-color: black;
 	padding: 2px;
 }
-.pizza-page > .leaderboards > .leaderboard > thead> tr > th {
+.pizza-page > .leaderboards > .container > .leaderboard > thead> tr > th {
 	border: 1px solid black;
 	background-color: beige;
 	padding: 2px;
 }
-.pizza-page > .leaderboards > .leaderboard > tbody> tr > td {
+.pizza-page > .leaderboards > .container > .leaderboard > tbody> tr > td {
 	border: 1px solid black;
 	padding: 2px;
 }
-.pizza-page > .leaderboards > .leaderboard > tbody> tr.highlight > td {
+.pizza-page > .leaderboards > .container > .leaderboard > tbody> tr.highlight > td {
 	background-color: aqua;
 }
-.pizza-page > .leaderboards > .leaderboard.winners {
-	margin-left: 5px;
-}
-.pizza-page > .leaderboards > .leaderboard.contenders {
-	margin-right: 5px;
-}
-.pizza-page > .leaderboards > .leaderboard.winners > caption {
+.pizza-page > .leaderboards > .container > .leaderboard.winners > caption {
 	background: palegreen;
 }
-.pizza-page > .leaderboards > .leaderboard.contenders > caption {
+.pizza-page > .leaderboards > .container > .leaderboard.contenders > caption {
 	background: violet;
 }
 .pizza-page > .quit-prompt {
@@ -88,10 +91,13 @@
 	.pizza-page > .leaderboards {
 		flex-direction: column;
 	}
-	.pizza-page > .leaderboards > .leaderboard.winners {
-		margin-left: 0;
+	.pizza-page > .leaderboards > .container {
+		width: auto;
 	}
-	.pizza-page > .leaderboards > .leaderboard.contenders {
-		margin-right: 0;
+	.pizza-page > .leaderboards > .container:first-child {
+		padding-left: 0;
+	}
+	.pizza-page > .leaderboards > .container:last-child {
+		padding-right: 0;
 	}
 }
