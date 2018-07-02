@@ -132,8 +132,8 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						<caption>Winners</caption>
 						<thead>
 							<tr>
+								<th>#</th>
 								<th>Name</th>
-								<th>Winner #</th>
 								<th>Date Won</th>
 							</tr>
 						</thead>
@@ -144,8 +144,8 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 										key={winner.name}
 										className={className({ 'highlight': winner.name === userName })}	
 									>
-										<td>{winner.name}</td>
 										<td style={{ textAlign: 'center' }}>{index + 1}</td>
+										<td>{winner.name}</td>
 										<td style={{ textAlign: 'right' }}>{DateTime.fromISO(winner.dateAwarded).toFormat('MMM d')}</td>
 									</tr>
 								)),
