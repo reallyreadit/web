@@ -84,7 +84,7 @@ export default class Header extends React.PureComponent<{}, { isSigningOut: bool
 				</div>
 				<nav>
 					<div className="left-nav">
-						<Button text="Home" iconLeft="home" onClick={this._goToHome} />
+						<Button text="What We're Reading" iconLeft="book" onClick={this._goToHome} />
 						<Button text="About" iconLeft="lightbulb" onClick={this._goToAbout} />
 						{this.context.challenge.activeChallenge ?
 							<Button

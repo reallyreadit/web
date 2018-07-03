@@ -60,19 +60,25 @@
 .main-view_header > nav {
 	display: flex;
 	justify-content: space-between;
-	height: 30px;
 	align-items: center;
 	padding-top: 5px;
+}
+.main-view_header > nav > .left-nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.main-view_header > nav > .left-nav > .button,
+.main-view_header > nav > .right-nav > .nav-bar {
+	margin-top: 5px;
 }
 .main-view_header > nav > .left-nav > .button:not(:first-child) {
 	margin-left: (4 + 6) + px;
 }
 
-@media (max-width: 509px) {
+@media (max-width: 619px) {
 	.main-view_header > nav {
 		flex-flow: column;
-		height: 62px;
-		padding-top: 10px;
 	}
 	.main-view_header > .title > .logos {
 		justify-content: center;
