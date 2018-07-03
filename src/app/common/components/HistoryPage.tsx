@@ -53,15 +53,17 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 		this._updateArticle(data.article);
 	};
 	private _deleteArticle = (article: UserArticle) => {
-		this.context.api.deleteUserArticle(article.id);
-		const items = this.state.articles.value.items.slice();
-		items.splice(items.findIndex(a => a.id === article.id), 1);
-		this.setState({
-			articles: {
-				...this.state.articles,
-				value: { ...this.state.articles.value, items }
-			}
-		});
+		if (window.confirm('Are you sure you want to delete this article?')) {
+			this.context.api.deleteUserArticle(article.id);
+			const items = this.state.articles.value.items.slice();
+			items.splice(items.findIndex(a => a.id === article.id), 1);
+			this.setState({
+				articles: {
+					...this.state.articles,
+					value: { ...this.state.articles.value, items }
+				}
+			});
+		}
 	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
