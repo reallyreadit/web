@@ -6,10 +6,8 @@
 .pizza-page > h3:first-child {
 	margin-top: 0;
 }
-.pizza-page > h3 > small {
-	display: block;
-	color: gray;
-	font-size: 11px;
+.pizza-page > h3 > .refresh-button {
+	margin-left: 5px;
 }
 .pizza-page > h4 {
 	font-size: 18px;
