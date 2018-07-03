@@ -24,25 +24,11 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.main-view > .content > h2 > .icon {
+.main-view > .content > h2 > .refresh-button {
 	flex: 0 0 auto;
 	margin-left: 8px;
-	cursor: pointer;
-	color: #666;
-	transition: transform 250ms;
-}
-.main-view > .content > h2.loading > .icon {
-	animation: main-view-page-loading 1000ms linear infinite;
-}
-.main-view > .content > h2 > .icon:hover {
-	transform: rotate(-22deg);
 }
 .main-view > .content > footer {
 	text-align: center;
 	padding: 20px 0;
-}
-
-@keyframes main-view-page-loading {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
 }

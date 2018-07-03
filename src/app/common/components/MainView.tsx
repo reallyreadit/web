@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import Context, { contextTypes } from '../Context';
 import DialogManager from './MainView/DialogManager';
 import ReadReadinessBar from './MainView/ReadReadinessBar';
-import Icon from '../../../common/components/Icon';
 import Toaster from './MainView/Toaster';
 import * as className from 'classnames';
 import Separator from '../../../common/components/Separator';
@@ -14,6 +13,7 @@ import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
+import RefreshButton from './controls/RefreshButton';
 
 export default class MainView extends React.Component<{}, {}> {
 	public static contextTypes = contextTypes;
@@ -70,14 +70,12 @@ export default class MainView extends React.Component<{}, {}> {
 					<EmailConfirmationBar />
 					<Header />
 					<h2 className={className({
-						'reloadable': this.context.page.isReloadable,
-						'loading': this.context.page.isLoading
+						'reloadable': this.context.page.isReloadable
 					})}>
 						<span className="text">{this.context.page.title}</span>
 						{this.context.page.isReloadable ?
-							<Icon
-								name="refresh"
-								title="Refresh"
+							<RefreshButton
+								isLoading={this.context.page.isLoading}
 								onClick={this._reloadPage}
 							/> :
 							null}

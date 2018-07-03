@@ -1,0 +1,16 @@
+.refresh-button {
+	cursor: pointer;
+	color: #666;
+	transition: transform 250ms;
+}
+.refresh-button.loading {
+	animation: refresh-button-loading 1000ms linear infinite;
+}
+.refresh-button:hover {
+	transform: rotate(-22deg);
+}
+
+@keyframes refresh-button-loading {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
