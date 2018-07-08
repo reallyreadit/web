@@ -8,7 +8,7 @@ export default class {
 				.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
 				.forEach(tab => chrome.tabs.executeScript(
 					tab.id,
-					{ code: `window.postMessage('${JSON.stringify({ type, data }).replace(/'/g, '\\\'')}', '*');` }
+					{ code: `window.postMessage('${JSON.stringify({ type, data }).replace(/(['"])/g, '\\\$1')}', '*');` }
 				))
 		);
 	}
