@@ -24,8 +24,8 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 	constructor(props: {}, context: Context) {
 		super(
 			{
-				title: 'Create Account',
-				submitButtonText: 'Create Account',
+				title: 'Sign Up',
+				submitButtonText: 'Sign Up',
 				successMessage: 'Welcome to reallyread.it!\nPlease check your email and confirm your address.'
 			},
 			props,

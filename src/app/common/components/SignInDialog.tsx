@@ -20,8 +20,8 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 	constructor(props: {}, context: Context) {
 		super(
 			{
-				title: 'Sign In',
-				submitButtonText: 'Sign In'
+				title: 'Log In',
+				submitButtonText: 'Log In'
 			},
 			props,
 			context
