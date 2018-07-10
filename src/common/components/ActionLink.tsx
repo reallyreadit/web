@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as className from 'classnames';
 import Icon, { IconName } from './Icon';
+import Spinner from './Spinner';
 
 export default class ActionLink extends React.PureComponent<{
 	text: string,
@@ -20,7 +21,9 @@ export default class ActionLink extends React.PureComponent<{
 		}
 		return (
 			<span className={className('action-link', classList)} onClick={this._handleClick}>
-				<Icon name={this.props.state === 'busy' ? 'spinner' : this.props.iconLeft} />
+				{this.props.state === 'busy' ?
+					<Spinner /> :
+					<Icon name={this.props.iconLeft} />}
 				<span>{this.props.text}</span>
 			</span>
 		);

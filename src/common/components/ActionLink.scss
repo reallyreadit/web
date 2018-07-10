@@ -9,11 +9,3 @@
 .action-link > .icon {
 	margin-right: 3px;
 }
-.action-link.busy > .icon {
-	animation: action-link-spinner 1000ms linear infinite;
-}
-
-@keyframes action-link-spinner {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
-}
