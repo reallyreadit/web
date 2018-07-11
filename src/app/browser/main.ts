@@ -49,4 +49,3 @@ ReactDOM.render(
 );
 
 api.initialize();
-page.initialize();
