@@ -8,8 +8,8 @@ import ArticleList from './controls/articles/ArticleList';
 import ArticleDetails from './controls/articles/ArticleDetails';
 import CommentList from './controls/comments/CommentList';
 import CommentBox from './controls/comments/CommentBox';
-import { State as PageState } from '../Page';
 import ShareArticleDialog from './ShareArticleDialog';
+import Page from './Page';
 
 type Props = RouteComponentProps<{
 	sourceSlug: string,
@@ -33,8 +33,10 @@ export default class ArticlePage extends React.Component<Props, {
 		return match;
 	}
 	private _slug: string;
-	private _loadArticle = () => this.context.api.getArticleDetails(this._slug, article => this.setState({ article }, this._updatePageState));
-	private _loadComments = () => this.context.api.listComments(this._slug, comments => this.setState({ comments }, this._updatePageState));
+	private _loadArticle = () => this.context.api.getArticleDetails(this._slug, article => {
+		this.setState({ article }, () => this.setDocumentTitle());
+	});
+	private _loadComments = () => this.context.api.listComments(this._slug, comments => this.setState({ comments }));
 	private _addComment = (comment: Comment) => {
 		this.setState({ comments: { ...this.state.comments, value: [comment, ...this.state.comments.value] }});
 		this.incrementCommentCount();
@@ -53,15 +55,6 @@ export default class ArticlePage extends React.Component<Props, {
 		this.setState({ comments: { ...this.state.comments, value: comments } });
 		this.incrementCommentCount();
 	};
-	private _updatePageState = () => {
-		if (!this.state.article.isLoading) {
-			const state: Partial<PageState> = { title: this.state.article.value.title };
-			if (!this.state.comments.isLoading) {
-				state.isLoading = false;
-			}
-			this.context.page.setState(state);
-		}
-	};
 	private _updateArticle = (article: UserArticle) => {
 		if (article.id === this.state.article.value.id) {
 			this.setState({
@@ -76,7 +69,6 @@ export default class ArticlePage extends React.Component<Props, {
 		this._updateArticle(data.article);
 	};
 	private _reload = () => {
-		this.context.page.setState({ isLoading: true });
 		this._loadArticle();
 		this._loadComments();
 	};
@@ -87,6 +79,17 @@ export default class ArticlePage extends React.Component<Props, {
 			article: this._loadArticle(),
 			comments: this._loadComments()
 		};
+	}
+	private setDocumentTitle() {
+		let title: string;
+		if (this.state.article.isLoading) {
+			title = 'Loading...';
+		} else if (!this.state.article.errors) {
+			title = this.state.article.value.title;
+		} else {
+			title = 'Error';
+		}
+		this.context.page.setTitle(title);
 	}
 	private incrementCommentCount() {
 		this.setState({
@@ -108,29 +111,23 @@ export default class ArticlePage extends React.Component<Props, {
 				)
 			);
 		}
-		this.context.page.setState({
-			title: this.state.article.isLoading ? 'Loading...' : this.state.article.value.title,
-			isLoading: this.state.article.isLoading || this.state.comments.isLoading,
-			isReloadable: true
-		});
+		this.setDocumentTitle();
 	}
 	public componentDidMount() {
 		if (this.context.router.route.location.search) {
 			this.context.router.history.push(this.context.router.route.location.pathname);
 		}
 		this.context.user.addListener('authChange', this._reload);
-		this.context.page.addListener('reload', this._reload);
 		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('authChange', this._reload);
-		this.context.page.removeListener('reload', this._reload);
 		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public render() {
 		const isAllowedToPost = this.state.article.value && this.context.user.isSignedIn && this.state.article.value.isRead;
 		return (
-			<div className="article-page">
+			<Page className="article-page">
 				<ArticleList>
 					{!this.state.article.isLoading ?
 						this.state.article.value ?
@@ -163,7 +160,7 @@ export default class ArticlePage extends React.Component<Props, {
 							<span>No comments found! (Post one!)</span> :
 						<span>Error loading comments.</span> :
 					<span>Loading...</span>}
-			</div>
+			</Page>
 		);
 	}
 }

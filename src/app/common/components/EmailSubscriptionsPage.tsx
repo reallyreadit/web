@@ -5,8 +5,10 @@ import Fetchable from '../api/Fetchable';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
+import Page from './Page';
 
 type Props = RouteComponentProps<{}>;
+const title = 'Email Subscriptions';
 export default class extends React.PureComponent<
 	Props,
 	{
@@ -93,15 +95,11 @@ export default class extends React.PureComponent<
 		);
 	}
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Email Subscriptions',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle(title);
 	}
 	public render() {
 		return (
-			<div className="email-subscriptions-page">
+			<Page className="email-subscriptions-page" title={title}>
 				{this.state.request ?
 					this.state.request.isLoading ?
 						<span>Loading...</span> :
@@ -156,7 +154,7 @@ export default class extends React.PureComponent<
 							</div> :
 							<strong>Invalid token</strong> :
 					<strong>Invalid token</strong>}
-			</div>
+			</Page>
 		);
 	}
 }

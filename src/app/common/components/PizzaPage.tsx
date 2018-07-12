@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 import * as className from 'classnames';
 import ChallengeView from './PizzaPage/ChallengeView';
 import RefreshButton from './controls/RefreshButton';
+import Page from './Page';
 
 export default class extends React.Component<RouteComponentProps<{}>, {
 	leaderboard: Fetchable<ChallengeLeaderboard>
@@ -153,11 +154,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 		);
 	}
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Pizza Challenge',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle('Pizza Challenge');
 	}
 	public componentDidMount() {
 		this.context.challenge.addListener('change', this._forceUpdate);
@@ -180,7 +177,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 			userName = this.context.user.isSignedIn ? this.context.user.userAccount.name : null,
 			mergedLeaderboard = this.mergeLeaderboard(this.state.leaderboard);
 		return (
-			<div className="pizza-page">
+			<Page className="pizza-page">
 				{showStartPrompt ?
 					<div className="start-prompt prompt-wrapper">
 						<div className="prompt">
@@ -270,7 +267,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</div>
 					</div> :
 					null}
-			</div>
+			</Page>
 		);
 	}
 }

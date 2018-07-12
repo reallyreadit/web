@@ -3,7 +3,9 @@ import { RouteComponentProps } from 'react-router';
 import Context, { contextTypes } from '../Context';
 import * as className from 'classnames';
 import { Intent } from '../Page';
+import Page from './Page';
 
+const title = 'Email Confirmation';
 const resultMessages: {
 	[key: string]: {
 		text: string,
@@ -31,19 +33,15 @@ export default class extends React.PureComponent<RouteComponentProps<{ result: s
 	public static contextTypes = contextTypes;
 	public context: Context;
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Email Confirmation',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle(title);
 	}
 	public render() {
 		return (
-			<div className="email-confirmation-page">
+			<Page className="email-confirmation-page" title={title}>
 				<strong className={className({ 'success': resultMessages[this.props.match.params.result].intent === Intent.Success })}>
 					{resultMessages[this.props.match.params.result].text}
 				</strong>
-			</div>
+			</Page>
 		);
 	}
 }

@@ -1,20 +1,18 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
+import Page from './Page';
 import Context, { contextTypes } from '../Context';
 
+const title = 'Privacy Policy';
 export default class PrivacyPolicyPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Privacy Policy',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle(title);
 	}
 	public render() {
 		return (
-			<div className="privacy-policy-page copy-page">
+			<Page className="privacy-policy-page copy-page" title={title}>
 				<section>
 					<p><strong>reallyread.it Privacy Policy</strong></p>
 					<p>Last Updated: Sunday, June 4, 2017</p>
@@ -67,7 +65,7 @@ export default class PrivacyPolicyPage extends React.PureComponent<RouteComponen
 				<section>
 					<p><strong>CONTACT INFORMATION.</strong> Our email address is <a href="mailto:support@reallyread.it">support@reallyread.it</a>.</p>
 				</section>
-			</div>
+			</Page>
 		);
 	}
 }

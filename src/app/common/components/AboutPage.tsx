@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import Context, { contextTypes } from '../Context';
 import CreateAccountDialog from './CreateAccountDialog';
+import Page from './Page';
 
 export default class AboutPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
 	public static contextTypes = contextTypes;
@@ -10,11 +11,7 @@ export default class AboutPage extends React.PureComponent<RouteComponentProps<{
 	private readonly _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	private readonly _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'About',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle('About');
 	}
 	public componentDidMount() {
 		this.context.user.addListener('authChange', this._forceUpdate);
@@ -29,7 +26,7 @@ export default class AboutPage extends React.PureComponent<RouteComponentProps<{
 			isSignedIn = this.context.user.isSignedIn,
 			isExtensionInstalled = this.context.environment.extension.isInstalled();
 		return (
-			<div className="about-page">
+			<Page className="about-page">
 				<h3>We are on a mission to get people reading on the internet.</h3>
 				<ul className="stack-group reading-benefits">
 					<li>
@@ -84,7 +81,7 @@ export default class AboutPage extends React.PureComponent<RouteComponentProps<{
 						Our pre-school teachers put us together because we didn’t get along with anyone else. We’ve been building products and businesses ever since. Bill studied English at Stanford then worked in startupland. Jeff taught himself how to code. We love pizza, reading, and technology, in that order.
 					</p>
 				</div>
-			</div>
+			</Page>
 		);
 	}
 }

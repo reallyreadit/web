@@ -9,7 +9,9 @@ import UserStats from '../../../common/models/UserStats';
 import ChallengeWinner from '../../../common/models/ChallengeWinner';
 import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
 import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
+import Page from './Page';
 
+const title = 'Admin';
 export default class extends React.Component<
 	RouteComponentProps<{}>,
 	{
@@ -65,11 +67,7 @@ export default class extends React.Component<
 		};
 	}
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Admin',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle(title);
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._goToHome);
@@ -79,7 +77,7 @@ export default class extends React.Component<
 	}
 	public render() {
 		return (
-			<div className="admin-page">
+			<Page className="admin-page" title={title}>
 				<table>
 					<caption>
 						<div className="content">
@@ -217,7 +215,7 @@ export default class extends React.Component<
 							</tr>}
 					</tbody>
 				</table>
-			</div>
+			</Page>
 		);
 	}
 }

@@ -8,7 +8,9 @@ import CommentList from './controls/comments/CommentList';
 import { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import PageSelector from './controls/PageSelector';
 import { getArticleUrlPath } from '../../../common/format';
+import Page from './Page';
 
+const title = 'Inbox';
 export default class InboxPage extends React.Component<RouteComponentProps<{}>, { replies: Fetchable<PageResult<Comment>> }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
@@ -23,13 +25,8 @@ export default class InboxPage extends React.Component<RouteComponentProps<{}>, 
 		this.getCurrentPage(),
 		replies => {
 			this.setState({ replies });
-			this.context.page.setState({ isLoading: false });
 		}
 	);
-	private _reload = () => {
-		this.context.page.setState({ isLoading: true });
-		this._loadReplies();
-	};
 	private _updatePageNumber = (pageNumber: number) => {
 		this.setState(
 			{
@@ -41,7 +38,6 @@ export default class InboxPage extends React.Component<RouteComponentProps<{}>, 
 			},
 			this._loadReplies
 		);
-		this.context.page.setState({ isLoading: true });
 	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
@@ -59,23 +55,17 @@ export default class InboxPage extends React.Component<RouteComponentProps<{}>, 
 				timestamp: now
 			});
 		}
-		this.context.page.setState({
-			title: 'Inbox',
-			isLoading: this.state.replies.isLoading,
-			isReloadable: true
-		});
+		this.context.page.setTitle(title);
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
-		this.context.page.addListener('reload', this._reload);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
-		this.context.page.removeListener('reload', this._reload);
 	}
 	public render() {
 		return (
-			<div className="inbox-page">
+			<Page className="inbox-page" title={title}>
 				<div className="replies">
 					{!this.state.replies.isLoading ?
 						this.state.replies.value ?
@@ -91,7 +81,7 @@ export default class InboxPage extends React.Component<RouteComponentProps<{}>, 
 					onChange={this._updatePageNumber}
 					disabled={this.state.replies.isLoading}
 				/>
-			</div>
+			</Page>
 		);
 	}
 }

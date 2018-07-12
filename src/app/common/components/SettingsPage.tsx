@@ -13,20 +13,15 @@ import UserAccount from '../../../common/models/UserAccount';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 import ClientType from '../ClientType';
 import EnvironmentType from '../EnvironmentType';
+import Page from './Page';
 
+const title = 'Settings';
 export default class SettingsPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private readonly _forceUpdate = () => this.forceUpdate();
 	private _redirectToHomepage = () => this.context.router.history.push('/');
 	private _updateUserAccount = (userAccount: UserAccount) => this.context.user.update(userAccount);
-	private _reload = () => {
-		this.context.page.setState({ isLoading: true });
-		this.context.api.getUserAccount(user => {
-			this._updateUserAccount(user.value);
-			this.context.page.setState({ isLoading: false });
-		});
-	};
 	private _openChangePasswordDialog = () => {
 		this.context.page.openDialog(<ChangePasswordDialog />);
 	};
@@ -55,30 +50,24 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 	};
 	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Settings',
-			isLoading: false,
-			isReloadable: true
-		});
+		this.context.page.setTitle(title);
 	}
 	public componentDidMount() {
 		this.context.user
 			.addListener('signOut', this._redirectToHomepage)
 			.addListener('update', this._forceUpdate);
-		this.context.page.addListener('reload', this._reload);
 		this.context.environment.extension.addListener('change', this._forceUpdate);
 	}
 	public componentWillUnmount() {
 		this.context.user
 			.removeListener('signOut', this._redirectToHomepage)
 			.removeListener('update', this._forceUpdate);
-		this.context.page.removeListener('reload', this._reload);
 		this.context.environment.extension.addListener('change', this._forceUpdate);
 	}
 	public render() {
 		const user = this.context.user.userAccount;
 		return (
-			<div className="settings-page">
+			<Page className="settings-page" title={title}>
 				<ul>
 					<li>
 						<label>
@@ -153,7 +142,7 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 						</div>
 					</li>
 				</ul>
-			</div>
+			</Page>
 		);
 	}
 }

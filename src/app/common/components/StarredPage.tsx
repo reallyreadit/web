@@ -7,6 +7,7 @@ import PageResult from '../../../common/models/PageResult';
 import ArticleList from './controls/articles/ArticleList';
 import ArticleDetails from './controls/articles/ArticleDetails';
 import PageSelector from './controls/PageSelector';
+import Page from './Page';
 
 export default class extends React.Component<RouteComponentProps<{}>, { articles: Fetchable<PageResult<UserArticle>> }> {
 	public static contextTypes = contextTypes;
@@ -16,13 +17,8 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 		this.getCurrentPage(),
 		articles => {
 			this.setState({ articles });
-			this.context.page.setState({ isLoading: false })
 		}
 	);
-	private _reload = () => {
-		this.context.page.setState({ isLoading: true });
-		this._loadArticles();
-	};
 	private _updatePageNumber = (pageNumber: number) => {
 		this.setState(
 			{
@@ -34,7 +30,6 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 			},
 			this._loadArticles
 		);
-		this.context.page.setState({ isLoading: true });
 	};
 	private _updateArticle = (article: UserArticle) => {
 		const articleIndex = this.state.articles.value.items.findIndex(a => a.id === article.id);
@@ -64,25 +59,19 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 		return (this.state && this.state.articles && this.state.articles.value && this.state.articles.value.pageNumber) || 1;
 	}
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Starred',
-			isLoading: this.state.articles.isLoading,
-			isReloadable: true
-		});
+		this.context.page.setTitle('Starred');
 	}
 	public componentDidMount() {
 		this.context.user.addListener('signOut', this._redirectToHomepage);
-		this.context.page.addListener('reload', this._reload);
 		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public componentWillUnmount() {
 		this.context.user.removeListener('signOut', this._redirectToHomepage);
-		this.context.page.removeListener('reload', this._reload);
 		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public render() {
 		return (
-			<div className="starred-page">
+			<Page className="starred-page">
 				<ArticleList>
 					{!this.state.articles.isLoading ?
 						this.state.articles.value ?
@@ -106,7 +95,7 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 					onChange={this._updatePageNumber}
 					disabled={this.state.articles.isLoading}
 				/>
-			</div>
+			</Page>
 		);
 	}
 }

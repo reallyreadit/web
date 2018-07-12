@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import Context, { contextTypes } from '../Context';
+import Page from './Page';
 
+const title = 'Password Reset Request';
 const resultMessages: {
 	[key: string]: {
 		[key: string]: string
@@ -19,19 +21,15 @@ export default class PasswordPage extends React.PureComponent<RouteComponentProp
 	public static contextTypes = contextTypes;
 	public context: Context;
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'Password Reset Request',
-			isLoading: false,
-			isReloadable: false
-		});
+		this.context.page.setTitle(title);
 	}
 	public render() {
 		return (
-			<div className="password-page">
+			<Page className="password-page" title={title}>
 				<strong>
 					{resultMessages[this.props.match.params.action][this.props.match.params.result]}
 				</strong>
-			</div>
+			</Page>
 		);
 	}
 }

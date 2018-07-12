@@ -8,6 +8,7 @@ import ArticleDetails from './controls/articles/ArticleDetails';
 import ArticleList from './controls/articles/ArticleList';
 import PageSelector from './controls/PageSelector';
 import Icon from '../../../common/components/Icon';
+import Page from './Page';
 
 export default class HotTopicsPage extends React.Component<RouteComponentProps<{}>, { hotTopics: Fetchable<HotTopics> }> {
 	public static contextTypes = contextTypes;
@@ -16,13 +17,8 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 		this.getCurrentPage(),
 		hotTopics => {
 			this.setState({ hotTopics });
-			this.context.page.setState({ isLoading: false });
 		}
 	);
-	private _reload = () => {
-		this.context.page.setState({ isLoading: true });
-		this._loadHotTopics();
-	};
 	private _updatePageNumber = (pageNumber: number) => {
 		this.setState(
 			{
@@ -40,7 +36,6 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 			},
 			this._loadHotTopics
 		);
-		this.context.page.setState({ isLoading: true });
 	};
 	private _updateArticle = (article: UserArticle) => {
 		if (article.id === this.state.hotTopics.value.aotd.id) {
@@ -84,25 +79,19 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 		return (this.state && this.state.hotTopics && this.state.hotTopics.value && this.state.hotTopics.value.articles.pageNumber) || 1;
 	}
 	public componentWillMount() {
-		this.context.page.setState({
-			title: 'What We\'re Reading',
-			isLoading: this.state.hotTopics.isLoading,
-			isReloadable: true
-		});
+		this.context.page.setTitle('Community');
 	}
 	public componentDidMount() {
-		this.context.user.addListener('authChange', this._reload);
-		this.context.page.addListener('reload', this._reload);
+		this.context.user.addListener('authChange', this._loadHotTopics);
 		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('authChange', this._reload);
-		this.context.page.removeListener('reload', this._reload);
+		this.context.user.removeListener('authChange', this._loadHotTopics);
 		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public render() {
 		return (
-			<div className="hot-topics-page">
+			<Page className="hot-topics-page">
 				{!this.state.hotTopics.isLoading ?
 					this.state.hotTopics.value ?
 						<div className="hot-topics">
@@ -138,7 +127,7 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 					onChange={this._updatePageNumber}
 					disabled={this.state.hotTopics.isLoading}
 				/>
-			</div>
+			</Page>
 		);
 	}
 }
