@@ -1,8 +1,6 @@
-.article-list {
-	li {
-		margin-bottom: 7px;
-	}
-	li:last-child {
-		margin-bottom: 0;
-	}
+.article-list > li {
+	margin-bottom: 10px;
+}
+.article-list > li:last-child {
+	margin-bottom: none;
 }
