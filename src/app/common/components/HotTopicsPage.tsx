@@ -91,20 +91,26 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 	}
 	public render() {
 		return (
-			<Page className="hot-topics-page">
+			<Page
+				className="hot-topics-page"
+				subTitle="The top articles and stories that our community is currently reading and commenting on."
+			>
 				{!this.state.hotTopics.isLoading ?
 					this.state.hotTopics.value ?
 						<div className="hot-topics">
-							<div className="aotd">
-								<h3><Icon name="trophy" />Article of the Day<Icon name="trophy" /></h3>
-								{this.state.hotTopics.value.aotd ?
+							{this.state.hotTopics.value.aotd ?
+								<div className="aotd">
+									<h3><Icon name="trophy" />Article of the Day<Icon name="trophy" /></h3>
 									<ArticleDetails
+										key="aotd"
 										article={this.state.hotTopics.value.aotd}
 										isUserSignedIn={this.context.user.isSignedIn}
 										onChange={this._updateArticle}
-									/> :
-									<span>No article of the day found!</span>}
-							</div>
+									/>
+									<hr />
+								</div> :
+								null
+							}
 							{this.state.hotTopics.value.articles.items.length ?
 								<ArticleList>
 									{this.state.hotTopics.value.articles.items.map(article =>

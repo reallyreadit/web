@@ -1,16 +1,9 @@
 .hot-topics-page > span {
 	margin: 7px 0 14px 0;
 }
-.hot-topics-page > .hot-topics > .aotd {
-	border: 4px solid darkturquoise;
-	margin: 0 0 10px 0;
-	background: darkturquoise;
-	border-radius: 5px;
-}
 .hot-topics-page > .hot-topics > .aotd > h3 {
 	text-align: center;
-	color: white;
-	padding-bottom: 3px;
+	padding-bottom: 5px;
 }
 .hot-topics-page > .hot-topics > .aotd > h3 > .icon:first-child {
 	margin-right: 9px;
@@ -18,7 +11,10 @@
 .hot-topics-page > .hot-topics > .aotd > h3 > .icon:last-child {
 	margin-left: 9px;
 }
-.hot-topics-page > .hot-topics > .aotd > .article-details {
-	margin: 2px;
-	background: white;
+.hot-topics-page > .hot-topics > .aotd > hr {
+	margin: 16px auto;
+	width: 75%;
+	border-width: 1px 0 0 0;
+	border-style: solid;
+	border-color: #aaa;
 }
