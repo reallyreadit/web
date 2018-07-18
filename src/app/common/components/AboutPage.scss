@@ -1,124 +1,23 @@
 .about-page {
-	text-align: center;
+	max-width: 600px;
+	margin: 0 auto;
 }
-.about-page > h3,
-.about-page > h4, {
-	padding: 20px 0 10px 0;
-}
-.about-page > h3 {
-	font-size: 20px;
-}
-.about-page > h3:first-child {
-	padding-top: 0;
-}
-.about-page > h4 {
-	font-size: 18px;
-}
-.about-page > .stack-group {
-	display: flex;
-}
-.about-page > .stack-group > li {
-	width: 33.33%;
-	box-sizing: border-box;
-	padding: 10px;
-	border-width: 1px 1px 1px 0;
-	border-style: solid;
-	border-color: black;
-}
-.about-page > .stack-group > li:first-child {
-	border-left-width: 1px;
-}
-.about-page > .stack-group > li > span {
-	display: block;
-	margin-top: 10px;
-}
-@media (max-width: 599px) {
-	.about-page > .stack-group {
-		flex-flow: column;
-	}
-	.about-page > .stack-group > li {
-		display: flex;
-		width: auto;
-		border-width: 0 1px 1px 1px;
-	}
-	.about-page > .stack-group > li:first-child {
-		border-top-width: 1px;
-	}
+.about-page > .heading {
+	font-size: 28px;
 }
 .about-page > p {
-	line-height: 24px;
+	margin: 15px 0;
+	overflow: hidden;
 }
-.about-page > .reading-benefits > li > .image {
-	height: 110px;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
+.about-page > p:last-child {
+	margin-bottom: none;
 }
-.about-page > .reading-benefits > li > .image.brain {
-	background-image: url('/images/brain.jpg');
+.about-page > p > img {
+	float: left;
+	width: 120px;
+	margin-right: 10px;
 }
-.about-page > .reading-benefits > li > .image.books {
-	background-image: url('/images/books.jpg');
-}
-.about-page > .reading-benefits > li > .image.computer {
-	background-image: url('/images/computer.png');
-}
-.about-page > .reading-benefits > li > span > strong {
-	text-transform: uppercase;
-}
-@media (max-width: 599px) {
-	.about-page > .reading-benefits {
-		text-align: left;
-	}
-	.about-page > .reading-benefits > li > .image {
-		flex: 0 0 auto;
-		width: 150px;
-		height: 60px;
-	}
-}
-@media (max-width: 359px) {
-	.about-page > .reading-benefits {
-		text-align: center;
-	}
-	.about-page > .reading-benefits > li {
-		flex-flow: column;
-		align-items: center;
-	}
-}
-.about-page > .features > li > strong {
-	text-transform: uppercase;
-}
-@media (max-width: 599px) {
-	.about-page > .features > li {
-		flex-flow: column;
-	}
-}
-.about-page > .get-started {
-	padding: 35px 0 15px 0;
-	font-size: 20px;
-	font-weight: bold;
-}
-.about-page > .get-started > a {
-	cursor: pointer;
-	text-decoration: underline;
-}
-.about-page > .our-story {
-	display: flex;
-}
-.about-page > .our-story > img {
-	height: 200px;
-}
-.about-page > .our-story > p {
-	text-align: left;
-	padding: 0 10px 10px 10px;
-	line-height: 24px;
-}
-@media (max-width: 599px) {
-	.about-page > .our-story {
-		flex-flow: column-reverse;
-		align-items: center;
-	}
-	.about-page > .our-story > p {
-		text-align: center;
-	}	
+.about-page > p > strong {
+	display: block;
+	margin-bottom: 5px;
 }
