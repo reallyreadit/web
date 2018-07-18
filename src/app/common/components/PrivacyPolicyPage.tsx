@@ -3,16 +3,15 @@ import { RouteComponentProps } from 'react-router';
 import Page from './Page';
 import Context, { contextTypes } from '../Context';
 
-const title = 'Privacy Policy';
 export default class PrivacyPolicyPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	public componentWillMount() {
-		this.context.page.setTitle(title);
+		this.context.page.setTitle('Privacy Policy');
 	}
 	public render() {
 		return (
-			<Page className="privacy-policy-page copy-page" title={title}>
+			<Page className="privacy-policy-page copy-page">
 				<section>
 					<p><strong>reallyread.it Privacy Policy</strong></p>
 					<p>Last Updated: Sunday, June 4, 2017</p>
