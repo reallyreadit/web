@@ -71,7 +71,10 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 	}
 	public render() {
 		return (
-			<Page className="starred-page">
+			<Page
+				className="starred-page"
+				subTitle="Add stars to things you want to save for later."
+			>
 				<ArticleList>
 					{!this.state.articles.isLoading ?
 						this.state.articles.value ?
