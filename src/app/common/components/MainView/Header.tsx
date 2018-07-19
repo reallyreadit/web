@@ -1,112 +1,208 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
+import logoText from '../../../../common/svg/logoText';
+import UserAccountRole from '../../../../common/models/UserAccountRole';
 import Context, { contextTypes } from '../../Context';
-import CreateAccountDialog from '../CreateAccountDialog';
+import Spinner from '../../../../common/components/Spinner';
+import Menu from './Header/Menu';
 import SignInDialog from '../SignInDialog';
-import NavBar from '../../../../common/components/NavBar';
-import ActionLink from '../../../../common/components/ActionLink';
-import Separator from '../../../../common/components/Separator';
+import CreateAccountDialog from '../CreateAccountDialog';
 import * as className from 'classnames';
 import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotification';
-import UserAccountRole from '../../../../common/models/UserAccountRole';
-import SpeechBubble from '../../../../common/components/Logo/SpeechBubble';
-import DoubleRPathGroup from '../../../../common/components/Logo/DoubleRPathGroup';
-import logoText from '../../../../common/svg/logoText';
-import Button from '../../../../common/components/Button';
-import { Link } from 'react-router-dom';
 
-export default class Header extends React.PureComponent<{}, { isSigningOut: boolean }> {
+type button = 'about' | 'community' | 'history' | 'pizza' | 'starred';
+const pathButtonMap: {
+	path: string,
+	button: button
+}[] = [
+	{
+		path: '/',
+		button: 'community'
+	},
+	{
+		path: '/starred',
+		button: 'starred'
+	},
+	{
+		path: '/history',
+		button: 'history'
+	},
+	{
+		path: '/pizza',
+		button: 'pizza'
+	},
+	{
+		path: '/about',
+		button: 'about'
+	}
+];
+function getSelectedButton(path: string) {
+	const match = pathButtonMap.find(entry => entry.path === path);
+	if (match) {
+		return match.button;
+	}
+	return null;
+}
+export default class extends React.PureComponent<{}, {
+	selectedButton: button | null,
+	isSigningOut: boolean
+}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
-	private readonly _forceUpdate = () => this.forceUpdate();
-	// account dialogs
-	private _showSignInDialog = () => this.context.page.openDialog(React.createElement(SignInDialog));
-	private _showCreateAccountDialog = () => this.context.page.openDialog(React.createElement(CreateAccountDialog));
-	// account nav
-	private _goToHome = () => this.context.router.history.push('/');
-	private _goToInbox = () => {
+	private readonly _forceUpdate = () => {
+		this.forceUpdate();
+	};
+	private readonly _preventFocus = (e: React.MouseEvent<HTMLElement>) => {
+		e.preventDefault();
+	};
+	private readonly _showSignInDialog = () => {
+		this.context.page.openDialog(<SignInDialog />);
+	};
+	private readonly _showCreateAccountDialog = () => {
+		this.context.page.openDialog(<CreateAccountDialog />);
+	};
+	private readonly _ackNewReplyNotification = () => {
 		if (hasNewUnreadReply(this.context.page.newReplyNotification)) {
 			this.context.api.ackNewReply();
 		}
-		this.context.router.history.push('/inbox')
 	};
-	private _goToStarred = () => this.context.router.history.push('/starred');
-	private _goToHistory = () => this.context.router.history.push('/history');
-	private _goToSettings = () => this.context.router.history.push('/settings');
-	private _goToAdmin = () => this.context.router.history.push('/admin');
-	private _signOut = () => {
+	private readonly _signOut = () => {
 		this.setState({ isSigningOut: true });
 		this.context.api.signOut().then(() => {
-			this.setState({ isSigningOut: false });
 			this.context.user.signOut();
+			this.setState({ isSigningOut: false });
 		});
 	};
-	// regular nav
-	private _goToAbout = () => this.context.router.history.push('/about');
-	private _goToPizza = () => this.context.router.history.push('/pizza');
-	public state = { isSigningOut: false };
+	private _unregisterHistoryListener: () => void | null = null;
+	constructor(props: {}, context: Context) {
+		super(props, context);
+		this.state = {
+			selectedButton: getSelectedButton(context.router.route.location.pathname),
+			isSigningOut: false
+		};
+	}
 	public componentDidMount() {
+		this._unregisterHistoryListener = this.context.router.history.listen(location => {
+			this.setState({ selectedButton: getSelectedButton(location.pathname) });
+		});
 		this.context.user.addListener('authChange', this._forceUpdate);
 		this.context.page.addListener('newReplyNotificationChange', this._forceUpdate);
 	}
 	public componentWillUnmount() {
+		if (this._unregisterHistoryListener) {
+			this._unregisterHistoryListener();
+		}
 		this.context.user.removeListener('authChange', this._forceUpdate);
 		this.context.page.removeListener('newReplyNotificationChange', this._forceUpdate);
 	}
 	public render() {
+		const showNewReplyIndicator = hasNewUnreadReply(this.context.page.newReplyNotification);
 		return (
-			<header className="main-view_header">
-				<div className="title">
-					<div className="logos">
-						<Link to="/" className="speech-bubble-link">
-							<SpeechBubble>
-								<DoubleRPathGroup />
-							</SpeechBubble>
-						</Link>
-						<h1>
-							<Link to="/" className="logo-text" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
-						</h1>
-					</div>
-					{this.context.user.isSignedIn ?
-						<div className={className('user-controls', { 'signing-out': this.state.isSigningOut })}>
-							<span className="user-name">{this.state.isSigningOut ? 'Bye' : 'Hi'}, <strong>{this.context.user.userAccount.name}</strong></span>
-							{this.context.user.userAccount.role === UserAccountRole.Admin ?
+			<header className="header">
+				<div className="row top">
+					<div className="content">
+						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
+						<div className="nav-section">
+							<Link
+								className={className('nav-button', { selected: this.state.selectedButton === 'about' })}
+								to="/about"
+							>
+								<label>About</label>
+							</Link>
+							<div className="nav-separator"></div>
+							{this.context.user.isSignedIn ?
+								<Menu
+									className={className('nav-button', { indicator: showNewReplyIndicator })}
+									buttonContent={[
+										this.state.isSigningOut ?
+											<Spinner key="spinner" /> :
+											null,
+										<label key="userName">{this.context.user.userAccount.name}</label>
+									]}
+									menuContent={[
+										this.context.user.userAccount.role === UserAccountRole.Admin ?
+											<li key="admin">
+												<Link to="/admin" onMouseDown={this._preventFocus}>
+													Admin
+												</Link>
+											</li> :
+											null,
+										<li key="inbox" className={className({ indicator: showNewReplyIndicator })}>
+											<Link to="/inbox" onMouseDown={this._preventFocus} onClick={this._ackNewReplyNotification}>
+												Inbox
+											</Link>
+										</li>,
+										<li key="settings">
+											<Link to="/settings" onMouseDown={this._preventFocus}>
+												Settings
+											</Link>
+										</li>,
+										<li
+											key="signOut"
+											onClick={this._signOut}
+										>
+											<span>Log Out</span>
+										</li>
+									]}
+								/> :
 								[
-									<Separator key="0" />,
-									<ActionLink key="1" text="Admin" iconLeft="key" onClick={this._goToAdmin} />
+									<div
+										key="signIn"
+										className="nav-button"
+										onClick={this._showSignInDialog}
+									>
+										<label>Log In</label>
+									</div>,
+									<div
+										key="createAccount"
+										className="nav-button loud"
+										onClick={this._showCreateAccountDialog}
+									>
+										<label>Sign Up</label>
+									</div>
+								]}
+						</div>
+					</div>
+				</div>
+				<div className="row bottom">
+					<div className="content">
+						<div className="section left">
+							<Link
+								className={className('nav-button', { selected: this.state.selectedButton === 'community' })}
+								to="/"
+							>
+								<label>Community</label>
+							</Link>
+							{this.context.user.isSignedIn ?
+								[
+									<Link
+										key="starred"
+										className={className('nav-button', { selected: this.state.selectedButton === 'starred' })}
+										to="/starred"
+									>
+										<label>Starred</label>
+									</Link>,
+									<Link
+										key="history"
+										className={className('nav-button', { selected: this.state.selectedButton === 'history' })}
+										to="/history"
+									>
+										<label>History</label>
+									</Link>
 								] :
 								null}
-							<Separator />
-							<ActionLink text="Settings" iconLeft="cog" onClick={this._goToSettings} />
-							<Separator />
-							<ActionLink text="Sign Out" iconLeft="switch" onClick={this._signOut} state={this.state.isSigningOut ? 'busy' : 'normal'} />
-						</div> :
-						null}
+						</div>
+						<div className="section right">
+							<Link
+								className={className('nav-button', { selected: this.state.selectedButton === 'pizza' })}
+								to="/pizza"
+							>
+								<span className="emoji">🍕</span>
+								<label>Pizza Challenge</label>
+							</Link>
+						</div>
+					</div>
 				</div>
-				<nav>
-					<div className="left-nav">
-						<Button text="What We're Reading" iconLeft="book" onClick={this._goToHome} />
-						<Button text="About" iconLeft="lightbulb" onClick={this._goToAbout} />
-						{this.context.challenge.activeChallenge ?
-							<Button
-								text="Pizza Challenge"
-								contentLeft={'🍕'}
-								onClick={this._goToPizza}
-							/> :
-							null}
-					</div>
-					<div className="right-nav">
-						<NavBar
-							isSignedIn={this.context.user.isSignedIn}
-							showNewReplyIndicator={hasNewUnreadReply(this.context.page.newReplyNotification)}
-							state={this.state.isSigningOut ? 'disabled' : 'normal'}
-							onSignIn={this._showSignInDialog}
-							onCreateAccount={this._showCreateAccountDialog}
-							onGoToInbox={this._goToInbox}
-							onGoToStarred={this._goToStarred}
-							onGoToHistory={this._goToHistory}
-						/>
-					</div>
-				</nav>
 			</header>
 		);
 	}

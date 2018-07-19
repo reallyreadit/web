@@ -1,86 +1,144 @@
-.main-view_header {
-	display: flex;
-	flex-flow: column;
+.header {
+	padding: 10px 0 15px 0;
 }
-.main-view_header > .title {
+.header > .row {
+	display: flex;
+}
+.header > .row > .content {
 	display: flex;
 	justify-content: space-between;
-	flex-wrap: wrap-reverse;
+	width: 100%;
+	max-width: 850px;
+	padding: 0 10px;
+	margin: 0 auto;
 }
-.main-view_header > .title > .logos {
+.header > .row.top > .content {
+	align-items: center;
+}
+.header > .row.top > .content > .logo {
+	padding-left: 10px;
+}
+.header > .row.top > .content > .logo > svg {
+	display: block;
+	width: 180px;
+}
+.header > .row.top > .content .nav-section {
 	display: flex;
 	align-items: center;
-	padding-top: 10px;
-	flex: 1 0 0;
 }
-.main-view_header > .title > .logos > .speech-bubble-link {
+.header > .row.top > .content > .nav-section > .nav-button {
+	display: flex;
+	position: relative;
+	box-sizing: border-box;
+	height: 40px;
+	align-items: center;
+	padding: 0 10px;
+	font-weight: bold;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
+	border-width: 2px 0;
+	border-style: solid;
+	border-color: transparent;
+	transition: border-color 250ms;
+}
+.header > .row.top > .content > .nav-section > .nav-button.selected {
+	border-bottom-color: black;
+}
+.header > .row.top > .content > .nav-section > .nav-button.loud {
+	color: white;
+	background-color: black;
+}
+.header > .row.top > .content > .nav-section > .nav-button > .icon {
+	top: 0;
+}
+.header > .row.top > .content > .nav-section > .nav-button > .spinner {
+	margin-right: 6px;
+}
+.header > .row.top > .content > .nav-section > .nav-button > label {
+	position: relative;
+	cursor: pointer;
+	letter-spacing: 0.05em;
+}
+.header > .row.top > .content > .nav-section > .nav-button.menu {
+	transition: none;
+}
+.header > .row.top > .content > .nav-section > .nav-button.menu:focus {
+	border-width: 1px 1px 0 1px;
+	border-style: solid;
+	border-color: black;
+	padding: 0 9px 1px 9px;
+	background-color: white;
+}
+.header > .row.top > .content > .nav-section > .nav-button.menu.indicator::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-width: 6px;
+	border-style: solid;
+	border-color: red red transparent transparent;
+}
+.header > .row.top > .content > .nav-section > .nav-button.menu > ol {
+	top: 39px;
+	right: -1px;
+	background-color: white;
+	border: 1px solid black;
+}
+.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li {
 	position: relative;
 }
-.main-view_header > .title > .logos > .speech-bubble-link::after {
-	content: "Beta";
-	font-size: 11px;
+.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li.indicator::after {
+	content: "";
 	position: absolute;
-	border: 1px solid forestgreen;
-	padding: 0 4px;
-	left: 32px;
-	top: -4px;
-	border-radius: 7px;
-	background: lightseagreen;
-	color: white;
+	top: 0;
+	right: 0;
+	border-width: 6px;
+	border-style: solid;
+	border-color: red red transparent transparent;
 }
-.main-view_header > .title > .logos > .speech-bubble-link > .speech-bubble {
+.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li > a,
+.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li > span {
 	display: block;
-	width: 40px;
+	text-decoration: none;
+	color: inherit;
+	padding: 5px 10px;
 }
-.main-view_header > .title > .logos > h1 {
-	margin-left: 14px;
+.header > .row.top > .content > .nav-section > .nav-separator {
+	width: 1px;
+	height: 17px;
+	background-color: #aaa;
+	margin: 0 6px;
 }
-.main-view_header > .title > .logos > h1 > .logo-text {
-	display: block;
-}
-.main-view_header > .title > .logos > h1 > .logo-text > svg {
-	display: block;
-	width: 200px;
-}
-.main-view_header > .title > .user-controls {
-	flex: 2 0 auto;
-	padding-top: 10px;
+.header > .row.bottom > .content > .section {
 	display: flex;
-	max-width: 100%;
-	white-space: nowrap;
-	justify-content: flex-end;
 }
-.main-view_header > .title > .user-controls.signing-out {
-	color: #ccc;
-}
-.main-view_header > .title > .user-controls > .user-name {
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.main-view_header > nav {
+.header > .row.bottom > .content > .section > .nav-button {
 	display: flex;
-	justify-content: space-between;
+	box-sizing: border-box;
+	height: 45px;
 	align-items: center;
-	padding-top: 5px;
+	padding: 0 10px;
+	font-weight: bold;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
+	border-width: 2px 0;
+	border-style: solid;
+	border-color: transparent;
+	transition: border-color 250ms;
 }
-.main-view_header > nav > .left-nav {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
+.header > .row.bottom > .content > .section > .nav-button.selected {
+	border-bottom-color: black;
 }
-.main-view_header > nav > .left-nav > .button,
-.main-view_header > nav > .right-nav > .nav-bar {
-	margin-top: 5px;
+.header > .row.bottom > .content > .section > .nav-button > .icon,
+.header > .row.bottom > .content > .section > .nav-button > .emoji {
+	top: 0;
+	margin-right: 6px;
 }
-.main-view_header > nav > .left-nav > .button:not(:first-child) {
-	margin-left: (4 + 6) + px;
-}
-
-@media (max-width: 619px) {
-	.main-view_header > nav {
-		flex-flow: column;
-	}
-	.main-view_header > .title > .logos {
-		justify-content: center;
-	}
+.header > .row.bottom > .content > .section > .nav-button > label {
+	cursor: pointer;
+	letter-spacing: 0.05em;
 }

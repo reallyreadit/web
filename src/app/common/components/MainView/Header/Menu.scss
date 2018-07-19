@@ -1,0 +1,27 @@
+.menu {
+	position: relative;
+}
+.menu:focus {
+	outline: none;
+}
+.menu > .icon {
+	margin-left: 3px;
+}
+.menu > .icon.opened {
+	display: none;
+}
+.menu:focus > .icon.opened {
+	display: inline;
+}
+.menu:focus > .icon.closed {
+	display: none;
+}
+.menu > ol {
+	display: none;
+	position: absolute;
+	z-index: 1;
+	white-space: nowrap;
+}
+.menu:focus > ol {
+	display: block;
+}

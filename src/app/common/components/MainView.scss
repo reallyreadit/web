@@ -1,32 +1,11 @@
 .main-view {
-	padding: 0 10px;
 	font-family: monospace;
 	font-size: 13px;
 }
 .main-view > .content {
 	max-width: 850px;
+	padding: 0 10px;
 	margin: 0 auto;
-}
-.main-view > .content > h2 {
-	display: flex;
-	justify-content: center;
-	padding: 10px 0;
-	font-size: 22px;
-	height: 30px;
-}
-.main-view > .content > h2.reloadable::before {
-	content: "";
-	flex: 1 1 auto;
-	max-width: 28px;
-}
-.main-view > .content > h2 > .text {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.main-view > .content > h2 > .refresh-button {
-	flex: 0 0 auto;
-	margin-left: 8px;
 }
 .main-view > .content > footer {
 	text-align: center;

@@ -5,7 +5,6 @@ import Context, { contextTypes } from '../Context';
 import DialogManager from './MainView/DialogManager';
 import ReadReadinessBar from './MainView/ReadReadinessBar';
 import Toaster from './MainView/Toaster';
-import * as className from 'classnames';
 import Separator from '../../../common/components/Separator';
 import Header from './MainView/Header';
 import routes from '../routes';
@@ -13,13 +12,14 @@ import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
-import RefreshButton from './controls/RefreshButton';
 
 export default class MainView extends React.Component<{}, {}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
-	private readonly _forceUpdate = () => this.forceUpdate();
-	private _reloadPage = () => this.context.page.reload();
+	private readonly _forceUpdate = () => {
+		this.forceUpdate()
+	};
+	private _unregisterHistoryListener: () => void;
 	public componentWillMount() {
 		switch (this.context.router.route.location.search) {
 			case '?sign-in':
@@ -53,33 +53,23 @@ export default class MainView extends React.Component<{}, {}> {
 		) {
 			this.context.router.history.push(this.context.router.route.location.pathname);
 		}
-		this.context.page.addListener('change', this._forceUpdate);
-		this.context.router.history.listen(location => {
+		this.context.user.addListener('authChange', this._forceUpdate);
+		this._unregisterHistoryListener = this.context.router.history.listen(location => {
 			ga('set', 'page', location.pathname);
 			ga('send', 'pageview');
 		});
 	}
 	public componentWillUnmount() {
-		this.context.page.removeListener('change', this._forceUpdate);
+		this.context.user.removeListener('authChange', this._forceUpdate);
+		this._unregisterHistoryListener();
 	}
 	public render() {
 		return (
 			<div className="main-view">
+				<Header />
 				<div className="content">
 					<ReadReadinessBar />
 					<EmailConfirmationBar />
-					<Header />
-					<h2 className={className({
-						'reloadable': this.context.page.isReloadable
-					})}>
-						<span className="text">{this.context.page.title}</span>
-						{this.context.page.isReloadable ?
-							<RefreshButton
-								isLoading={this.context.page.isLoading}
-								onClick={this._reloadPage}
-							/> :
-							null}
-					</h2>
 					<main>
 						{routes.map((route, i) => <Route key={i} {...route} />)}
 					</main>
