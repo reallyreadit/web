@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import Page from './Page';
+import Context, { contextTypes } from '../Context';
 
 export default class AboutPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
+	public static contextTypes = contextTypes;
+	public context: Context;
 	public componentWillMount() {
 		this.context.page.setTitle('About');
 	}
