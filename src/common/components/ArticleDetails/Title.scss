@@ -36,8 +36,7 @@
 	@extend %hideable-content-hidden;
 }
 .title > .title-date > a {
-	color: blue;
-	text-decoration: underline;
+	font-weight: bold;
 }
 .title > .title-date > .date-published {
 	color: steelblue;

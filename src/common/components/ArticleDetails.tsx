@@ -3,7 +3,6 @@ import UserArticle from '../models/UserArticle';
 import Title from './ArticleDetails/Title';
 import readingParameters from '../readingParameters';
 import SpeechBubble from './Logo/SpeechBubble';
-import DoubleRPathGroup from './Logo/DoubleRPathGroup';
 import * as className from 'classnames';
 import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
@@ -58,14 +57,8 @@ export default class extends React.PureComponent<Props, {}> {
 									percentComplete={this.props.article.percentComplete}
 									isRead={this.props.article.isRead}
 									uuid={`article-details-speech-bubble-${this.props.article.id}`}
-								>
-									{!this.props.isUserSignedIn ?
-										<DoubleRPathGroup /> :
-										null}
-								</SpeechBubble>
-								{this.props.isUserSignedIn ?
-									<div className="percent-complete-label">{this.props.article.percentComplete.toFixed() + '%'}</div> :
-									null}
+								/>
+								<div className="percent-complete-label">{this.props.article.percentComplete.toFixed() + '%'}</div>
 							</div>
 						</div>
 						<div className="middle">
@@ -77,7 +70,7 @@ export default class extends React.PureComponent<Props, {}> {
 								onClick={this.props.onTitleClick}
 							/>
 							{this.props.article.description ?
-								<div className="description">{this.props.article.description}</div> :
+								<div className="description" tabIndex={-1}>{this.props.article.description}</div> :
 								null}
 							<div className="meta-groups">
 								<div className="source">

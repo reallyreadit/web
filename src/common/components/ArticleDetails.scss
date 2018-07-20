@@ -20,7 +20,7 @@
 
 .article-details {
 	display: flex;
-	border: 1px solid gray;
+	border: 1px solid silver;
 	border-radius: 5px;
 	overflow: hidden;
 }
@@ -63,7 +63,7 @@
 	align-items: center;
 }
 .article-details > .content > .columns > .left > .length {
-	color: darkgray;
+	color: #333;
 	font-size: 11px;
 	margin-bottom: 2px;
 	white-space: nowrap;
@@ -76,9 +76,6 @@
 }
 .article-details > .content > .columns > .left > .speech-bubble-container > .speech-bubble {
 	width: 36px;
-}
-.article-details > .content > .columns > .left > .speech-bubble-container > .speech-bubble > .double-r-path-group {
-	fill: darkgray;
 }
 .article-details > .content > .columns > .left > .speech-bubble-container > .percent-complete-label {
 	color: gray;
@@ -99,6 +96,11 @@
 	@extend %ellipsis;
 	font-size: 11px;
 	color: lightslategray;
+}
+.article-details > .content > .columns > .middle > .description:focus {
+	white-space: normal;
+	outline: none;
+	border: 1px dashed lightslategray;
 }
 .article-details > .content > .columns > .middle > .meta-groups {
 	display: flex;
@@ -126,7 +128,7 @@
 }
 .article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .aotd {
 	flex: 0 0 auto;
-	color: darkturquoise;
+	color: #999;
 }
 .article-details > .content > .columns > .middle > .meta-groups > .flex-spacer,
 .article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .flex-spacer {
