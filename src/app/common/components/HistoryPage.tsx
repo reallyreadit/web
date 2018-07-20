@@ -80,10 +80,7 @@ export default class extends React.Component<RouteComponentProps<{}>, { articles
 	}
 	public render() {
 		return (
-			<Page
-				className="history-page"
-				subTitle="Your reading history is private."
-			>
+			<Page className="history-page">
 				<ArticleList>
 					{!this.state.articles.isLoading ?
 						this.state.articles.value ?

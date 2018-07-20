@@ -91,10 +91,7 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 	}
 	public render() {
 		return (
-			<Page
-				className="hot-topics-page"
-				subTitle="The top articles and stories that our community is currently reading and commenting on."
-			>
+			<Page className="hot-topics-page">
 				{!this.state.hotTopics.isLoading ?
 					this.state.hotTopics.value ?
 						<div className="hot-topics">

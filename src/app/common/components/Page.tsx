@@ -13,9 +13,6 @@ export default (props: {
 				<span>{props.title}</span>
 			</div> :
 			null}
-		{props.subTitle ?
-			<div className="sub-title">{props.subTitle}</div> :
-			null}
 		{props.children}
 	</div>
 );
