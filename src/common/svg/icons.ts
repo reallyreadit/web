@@ -108,6 +108,9 @@ export default
 <symbol id="icon-chevron-up" viewBox="0 0 10 16">
 <path d="M5 4l-5 5 2 2 3-3 3 3 2-2-5-5z"></path>
 </symbol>
+<symbol id="icon-three-bars" viewBox="0 0 12 16">
+<path d="M0 3v2h12v-2h-12zM0 9h12v-2h-12v2zM0 13h12v-2h-12v2z"></path>
+</symbol>
 </defs>
 </svg>
 `
