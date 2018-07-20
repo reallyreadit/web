@@ -1,3 +1,19 @@
+%nav-separator {
+	flex: 0 0 auto;
+	width: 1px;
+	background-color: silver;
+	margin: 0 6px;
+}
+%menu-flag {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-width: 6px;
+	border-style: solid;
+	border-color: red red transparent transparent;
+}
+
 .header {
 	padding: 10px 0 15px 0;
 }
@@ -6,9 +22,10 @@
 }
 .header > .row > .content {
 	display: flex;
+	box-sizing: border-box;
 	justify-content: space-between;
 	width: 100%;
-	max-width: 850px;
+	max-width: 870px;
 	padding: 0 10px;
 	margin: 0 auto;
 }
@@ -16,129 +33,151 @@
 	align-items: center;
 }
 .header > .row.top > .content > .logo {
+	flex: 0 0 auto;
 	padding-left: 10px;
 }
 .header > .row.top > .content > .logo > svg {
 	display: block;
 	width: 180px;
 }
-.header > .row.top > .content .nav-section {
+.header > .row.top > .content > .nav-section {
 	display: flex;
 	align-items: center;
+	min-width: 0;
+	margin-left: 20px;
 }
-.header > .row.top > .content > .nav-section > .nav-button {
-	display: flex;
-	position: relative;
+.header > .row.top > .content > .nav-section > .header-button {
+	height: 40px;
+}
+.header > .row.top > .content > .nav-section > .header-button.about {
+	flex: 0 0 auto;
+}
+.header > .row.top > .content > .nav-section > .menu {
 	box-sizing: border-box;
 	height: 40px;
+	min-width: 0;
 	align-items: center;
+	display: flex;
 	padding: 0 10px;
 	font-weight: bold;
 	text-transform: uppercase;
-	text-decoration: none;
-	color: inherit;
-	cursor: pointer;
-	border-width: 2px 0;
-	border-style: solid;
-	border-color: transparent;
-	transition: border-color 250ms;
 }
-.header > .row.top > .content > .nav-section > .nav-button.selected {
-	border-bottom-color: black;
-}
-.header > .row.top > .content > .nav-section > .nav-button.loud {
-	color: white;
-	background-color: black;
-}
-.header > .row.top > .content > .nav-section > .nav-button > .icon {
-	top: 0;
-}
-.header > .row.top > .content > .nav-section > .nav-button > .spinner {
-	margin-right: 6px;
-}
-.header > .row.top > .content > .nav-section > .nav-button > label {
-	position: relative;
-	cursor: pointer;
-	letter-spacing: 0.05em;
-}
-.header > .row.top > .content > .nav-section > .nav-button.menu {
-	transition: none;
-}
-.header > .row.top > .content > .nav-section > .nav-button.menu:focus {
-	border-width: 1px 1px 0 1px;
-	border-style: solid;
-	border-color: black;
-	padding: 0 9px 1px 9px;
+.header > .row.top > .content > .nav-section > .menu:focus {
+	border: 1px solid black;
+	padding: 0 9px;
 	background-color: white;
 }
-.header > .row.top > .content > .nav-section > .nav-button.menu.indicator::after {
-	content: "";
-	position: absolute;
-	top: 0;
-	right: 0;
-	border-width: 6px;
-	border-style: solid;
-	border-color: red red transparent transparent;
+.header > .row.top > .content > .nav-section > .menu.indicator::after {
+	@extend %menu-flag;
 }
-.header > .row.top > .content > .nav-section > .nav-button.menu > ol {
-	top: 39px;
+.header > .row.top > .content > .nav-section > .menu > label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.header > .row.top > .content > .nav-section > .menu > ol {
+	top: 38px;
 	right: -1px;
 	background-color: white;
 	border: 1px solid black;
 }
-.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li {
+.header > .row.top > .content > .nav-section > .menu > ol > li {
 	position: relative;
 }
-.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li.indicator::after {
-	content: "";
-	position: absolute;
-	top: 0;
-	right: 0;
-	border-width: 6px;
-	border-style: solid;
-	border-color: red red transparent transparent;
+.header > .row.top > .content > .nav-section > .menu > ol > li.indicator::after {
+	@extend %menu-flag;
 }
-.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li > a,
-.header > .row.top > .content > .nav-section > .nav-button.menu > ol > li > span {
+.header > .row.top > .content > .nav-section > .menu > ol > li > a,
+.header > .row.top > .content > .nav-section > .menu > ol > li > span {
 	display: block;
 	text-decoration: none;
 	color: inherit;
 	padding: 5px 10px;
 }
 .header > .row.top > .content > .nav-section > .nav-separator {
-	width: 1px;
+	@extend %nav-separator;
 	height: 17px;
-	background-color: #aaa;
-	margin: 0 6px;
 }
 .header > .row.bottom > .content > .section {
 	display: flex;
-}
-.header > .row.bottom > .content > .section > .nav-button {
-	display: flex;
-	box-sizing: border-box;
-	height: 45px;
 	align-items: center;
-	padding: 0 10px;
-	font-weight: bold;
-	text-transform: uppercase;
-	text-decoration: none;
-	color: inherit;
-	cursor: pointer;
-	border-width: 2px 0;
-	border-style: solid;
-	border-color: transparent;
-	transition: border-color 250ms;
 }
-.header > .row.bottom > .content > .section > .nav-button.selected {
-	border-bottom-color: black;
+.header > .row.bottom > .content > .section > .header-button {
+	height: 45px;
 }
-.header > .row.bottom > .content > .section > .nav-button > .icon,
-.header > .row.bottom > .content > .section > .nav-button > .emoji {
-	top: 0;
-	margin-right: 6px;
+.header > .row.bottom > .content > .section > .header-button.about {
+	display: none;
 }
-.header > .row.bottom > .content > .section > .nav-button > label {
-	cursor: pointer;
-	letter-spacing: 0.05em;
+.header > .row.bottom > .content > .section > .nav-separator {
+	@extend %nav-separator;
+	display: none;
+	height: 22px;
+}
+.header > .row.bottom > .content > .section.left > .subtitle {
+	display: none;
+	padding: 5px 5px 0 5px;
+	font-style: italic;
+	color: #333;
+	font-size: 12px;
+	text-align: center;
+}
+.header > .row.bottom > .content > .section.left > .nav-buttons {
+	display: flex;
+}
+.header > .row.bottom > .content > .section > .nav-buttons > .header-button {
+	height: 45px;
+}
+.header > .row.subtitle {
+	margin-top: 10px;
+}
+.header > .row.subtitle > .content {
+	justify-content: center;
+}
+.header > .row.subtitle > .content > span {
+	display: block;
+	text-align: center;
+	font-style: italic;
+	color: #333;
+}
+
+@media (max-width: 499px) {
+	.header > .row.top.unauthenticated > .content {
+		flex-direction: column;
+	}
+	.header > .row.top.unauthenticated > .content > .logo {
+		margin-bottom: 10px;
+		padding-left: 0;
+	}
+	.header > .row.top.unauthenticated > .content .nav-section {
+		margin-left: 0;
+	}
+	.header > .row.bottom > .content {
+		justify-content: center;
+	}
+	.header > .row.bottom > .content > .section.left {
+		position: fixed;
+		background-color: white;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 1;
+		display: flex;
+		justify-content: space-evenly;
+		border-top: 1px solid black;	
+		flex-direction: column;
+	}
+	.header > .row.bottom > .content > .section.left > .subtitle {
+		display: block;
+	}
+	.header > .row.top > .content > .nav-section > .header-button.about,
+	.header > .row.top > .content > .nav-section > .nav-separator {
+		display: none;
+	}
+	.header > .row.bottom > .content > .section > .header-button.about,
+	.header > .row.bottom > .content > .section > .nav-separator {
+		display: flex;
+	}
+	.header > .row.subtitle {
+		display: none;
+	}
 }

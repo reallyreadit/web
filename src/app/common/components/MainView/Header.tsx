@@ -9,23 +9,28 @@ import SignInDialog from '../SignInDialog';
 import CreateAccountDialog from '../CreateAccountDialog';
 import * as className from 'classnames';
 import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotification';
+import HeaderButton from './Header/HeaderButton';
 
 type button = 'about' | 'community' | 'history' | 'pizza' | 'starred';
-const pathButtonMap: {
+const pathStateMap: {
 	path: string,
-	button: button
+	button: button,
+	subtitle?: string
 }[] = [
 	{
 		path: '/',
-		button: 'community'
+		button: 'community',
+		subtitle: 'The top articles and stories that our community is reading and commenting on.'
 	},
 	{
 		path: '/starred',
-		button: 'starred'
+		button: 'starred',
+		subtitle: 'Add stars to things you want to save for later.'
 	},
 	{
 		path: '/history',
-		button: 'history'
+		button: 'history',
+		subtitle: 'Your reading history is private.'
 	},
 	{
 		path: '/pizza',
@@ -36,15 +41,22 @@ const pathButtonMap: {
 		button: 'about'
 	}
 ];
-function getSelectedButton(path: string) {
-	const match = pathButtonMap.find(entry => entry.path === path);
+function getPathState(path: string) {
+	const match = pathStateMap.find(entry => entry.path === path);
 	if (match) {
-		return match.button;
+		return {
+			selectedButton: match.button,
+			subtitle: match.subtitle
+		};
 	}
-	return null;
+	return {
+		selectedButton: null,
+		subtitle: null
+	};
 }
 export default class extends React.PureComponent<{}, {
 	selectedButton: button | null,
+	subtitle: string | null,
 	isSigningOut: boolean
 }> {
 	public static contextTypes = contextTypes;
@@ -77,13 +89,13 @@ export default class extends React.PureComponent<{}, {
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		this.state = {
-			selectedButton: getSelectedButton(context.router.route.location.pathname),
+			...getPathState(context.router.route.location.pathname),
 			isSigningOut: false
 		};
 	}
 	public componentDidMount() {
 		this._unregisterHistoryListener = this.context.router.history.listen(location => {
-			this.setState({ selectedButton: getSelectedButton(location.pathname) });
+			this.setState(getPathState(location.pathname));
 		});
 		this.context.user.addListener('authChange', this._forceUpdate);
 		this.context.page.addListener('newReplyNotificationChange', this._forceUpdate);
@@ -97,18 +109,22 @@ export default class extends React.PureComponent<{}, {
 	}
 	public render() {
 		const showNewReplyIndicator = hasNewUnreadReply(this.context.page.newReplyNotification);
+		const aboutButton = (
+			<HeaderButton
+				to="/about"
+				selected={this.state.selectedButton === 'about'}
+				className="about"
+			>
+				About
+			</HeaderButton>
+		);
 		return (
 			<header className="header">
-				<div className="row top">
+				<div className={className('row', 'top', { 'unauthenticated': !this.context.user.isSignedIn })}>
 					<div className="content">
 						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
 						<div className="nav-section">
-							<Link
-								className={className('nav-button', { selected: this.state.selectedButton === 'about' })}
-								to="/about"
-							>
-								<label>About</label>
-							</Link>
+							{aboutButton}
 							<div className="nav-separator"></div>
 							{this.context.user.isSignedIn ?
 								<Menu
@@ -146,20 +162,19 @@ export default class extends React.PureComponent<{}, {
 									]}
 								/> :
 								[
-									<div
+									<HeaderButton
 										key="signIn"
-										className="nav-button"
 										onClick={this._showSignInDialog}
 									>
-										<label>Log In</label>
-									</div>,
-									<div
+										Log In
+									</HeaderButton>,
+									<HeaderButton
 										key="createAccount"
-										className="nav-button loud"
 										onClick={this._showCreateAccountDialog}
+										loud
 									>
-										<label>Sign Up</label>
-									</div>
+										Sign Up
+									</HeaderButton>
 								]}
 						</div>
 					</div>
@@ -167,42 +182,47 @@ export default class extends React.PureComponent<{}, {
 				<div className="row bottom">
 					<div className="content">
 						<div className="section left">
-							<Link
-								className={className('nav-button', { selected: this.state.selectedButton === 'community' })}
-								to="/"
-							>
-								<label>Community</label>
-							</Link>
-							{this.context.user.isSignedIn ?
-								[
-									<Link
-										key="starred"
-										className={className('nav-button', { selected: this.state.selectedButton === 'starred' })}
-										to="/starred"
-									>
-										<label>Starred</label>
-									</Link>,
-									<Link
-										key="history"
-										className={className('nav-button', { selected: this.state.selectedButton === 'history' })}
-										to="/history"
-									>
-										<label>History</label>
-									</Link>
-								] :
+							{this.state.subtitle ?
+								<div className="subtitle">
+									{this.state.subtitle}
+								</div> :
 								null}
+							<div className="nav-buttons">
+								<HeaderButton to="/" selected={this.state.selectedButton === 'community'}>Community</HeaderButton>
+								{this.context.user.isSignedIn ?
+									[
+										<HeaderButton
+											key="starred"
+											to="/starred"
+											selected={this.state.selectedButton === 'starred'}
+										>
+											Starred
+										</HeaderButton>,
+										<HeaderButton
+											key="history"
+											to="/history"
+											selected={this.state.selectedButton === 'history'}
+										>
+											History
+										</HeaderButton>
+									] :
+									null}
+							</div>
 						</div>
 						<div className="section right">
-							<Link
-								className={className('nav-button', { selected: this.state.selectedButton === 'pizza' })}
-								to="/pizza"
-							>
-								<span className="emoji">🍕</span>
-								<label>Pizza Challenge</label>
-							</Link>
+							{aboutButton}
+							<div className="nav-separator"></div>
+							<HeaderButton to="/pizza" selected={this.state.selectedButton === 'pizza'}>🍕 Pizza Challenge</HeaderButton>
 						</div>
 					</div>
 				</div>
+				{this.state.subtitle ?
+					<div className="row subtitle">
+						<div className="content">
+							<span>{this.state.subtitle}</span>
+						</div>
+					</div> :
+					null}
 			</header>
 		);
 	}
