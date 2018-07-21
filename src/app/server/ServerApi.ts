@@ -4,19 +4,22 @@ import Fetchable from '../common/api/Fetchable';
 import Request from '../common/api/Request';
 import RequestStore from '../common/api/RequestStore';
 import Endpoint from '../common/api/Endpoint';
+import KeyValuePair from '../../common/KeyValuePair';
 
 export default class ServerApi extends Api {
-	private _cookie: string;
-	constructor(endpoint: Endpoint, cookie: string) {
+	private _authCookie: KeyValuePair<string, string | null>;
+	constructor(endpoint: Endpoint, authCookie: KeyValuePair<string, string | null>) {
 		super(endpoint);
-		this._cookie = cookie;
+		this._authCookie = authCookie;
 		this._reqStore = new RequestStore();
 	}
 	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => request({
 			method,
 			uri: this._endpoint.scheme + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path + params.getQueryString(),
-			headers: this._cookie ? { 'Cookie': this._cookie } : {},
+			headers: this.hasAuthCookie() ?
+				{ 'Cookie': this._authCookie.key + '=' + this._authCookie.value } :
+				{},
 			json: true,
 			callback: (error, res, body) => {
 				switch (res.statusCode) {
@@ -64,7 +67,7 @@ export default class ServerApi extends Api {
 			requests: this._reqStore.requests
 		};
 	}
-	public hasSessionKey() {
-		return this._cookie != null;
+	public hasAuthCookie() {
+		return !!this._authCookie.value;
 	}
 }

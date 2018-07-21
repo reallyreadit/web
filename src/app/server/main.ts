@@ -22,6 +22,7 @@ import ClientType from '../common/ClientType';
 import ChallengeState from '../../common/models/ChallengeState';
 import ServerChallenge from './ServerChallenge';
 import ServerCaptcha from './ServerCaptcha';
+import * as cookieParser from 'cookie-parser';
 
 // set up logger
 const log = bunyan.createLogger({
@@ -44,6 +45,8 @@ server = server.use((req, res, next) => {
 	log.info({ req });
 	next();
 });
+// configure cookie parser
+server = server.use(cookieParser());
 // configure static content
 if (config.contentRootPath) {
 	// attempt to serve static files first
@@ -63,9 +66,12 @@ server = server.use((req, res, next) => {
 		scheme: config.api.protocol,
 		host: config.api.host,
 		port: config.api.port
-	}, req.headers['cookie']);
+	}, {
+		key: config.cookieName,
+		value: req.cookies[config.cookieName]
+	});
 	req.api = api;
-	if (api.hasSessionKey()) {
+	if (api.hasAuthCookie()) {
 		api.fetchJson('GET', new ApiRequest('/UserAccounts/GetSessionState'))
 			.then((sessionState: SessionState) => {
 				if (!sessionState) {
@@ -151,7 +157,7 @@ server = server.get('/*', (req, res) => {
 			new ServerExtension(config.extensionId)
 		),
 		user = new ServerUser(req.sessionState.userAccount),
-		page = new ServerPage(req.sessionState.newReplyNotification),
+		page = new ServerPage(req.sessionState.newReplyNotification, !req.cookies['hideHero']),
 		appElement = React.createElement(
 			App,
 			{
