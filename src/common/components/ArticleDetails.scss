@@ -63,7 +63,7 @@
 	align-items: center;
 }
 .article-details > .content > .columns > .left > .length {
-	color: #333;
+	color: #666;
 	font-size: 11px;
 	margin-bottom: 2px;
 	white-space: nowrap;
@@ -87,12 +87,12 @@
 .article-details > .content > .columns > .middle > .description {
 	@extend %ellipsis;
 	font-size: 11px;
-	color: lightslategray;
+	color: #888;
 }
 .article-details > .content > .columns > .middle > .description:focus {
 	white-space: normal;
 	outline: none;
-	border: 1px dashed lightslategray;
+	border: 1px dashed #888;
 }
 .article-details > .content > .columns > .middle > .meta-groups {
 	display: flex;
@@ -102,7 +102,7 @@
 	@extend %ellipsis;
 	width: 100%;
 	margin: 2px 0 3px 0;
-	color: mediumorchid;
+	color: #666;
 }
 .article-details > .content > .columns > .middle > .meta-groups > .source + .flex-spacer {
 	display: none;
@@ -113,7 +113,7 @@
 }
 .article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .aotd {
 	flex: 0 0 auto;
-	color: #999;
+	color: #888;
 }
 .article-details > .content > .columns > .middle > .meta-groups > .flex-spacer,
 .article-details > .content > .columns > .middle > .meta-groups > .rrit-meta > .flex-spacer {
