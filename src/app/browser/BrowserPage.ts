@@ -2,6 +2,7 @@ import Page, { InitData } from '../common/Page';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import NewReplyNotification, { empty as emptyNewReplyNotification } from '../../common/models/NewReplyNotification';
 import EventType from '../common/EventType';
+import * as Cookies from 'js-cookie';
 
 export default class extends Page {
 	private readonly _notificationStore: ObjectStore<NewReplyNotification>;
@@ -30,5 +31,11 @@ export default class extends Page {
 	}
 	protected _setNewReplyNotification(notification: NewReplyNotification) {
 		this._notificationStore.set(notification);
+	}
+	public get isHeroVisible() {
+		return !Cookies.get('hideHero');
+	}
+	public hideHero() {
+		Cookies.set('hideHero', 'true');
 	}
 } 

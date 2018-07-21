@@ -65,4 +65,6 @@ export default abstract class extends EventEmitter<{
 	public get newReplyNotification() {
 		return this._getNewReplyNotification();
 	}
+	public abstract get isHeroVisible(): boolean;
+	public abstract hideHero(): void;
 }
