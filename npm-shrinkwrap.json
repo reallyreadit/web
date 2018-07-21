@@ -32,6 +32,12 @@
       "resolved": "https://registry.npmjs.org/@types/classnames/-/classnames-0.0.32.tgz",
       "dev": true
     },
+    "@types/cookie-parser": {
+      "version": "1.4.1",
+      "from": "@types/cookie-parser@latest",
+      "resolved": "https://registry.npmjs.org/@types/cookie-parser/-/cookie-parser-1.4.1.tgz",
+      "dev": true
+    },
     "@types/events": {
       "version": "1.1.0",
       "from": "@types/events@*",
@@ -90,6 +96,12 @@
       "version": "2.0.46",
       "from": "@types/jquery@2.0.46",
       "resolved": "https://registry.npmjs.org/@types/jquery/-/jquery-2.0.46.tgz"
+    },
+    "@types/js-cookie": {
+      "version": "2.1.0",
+      "from": "@types/js-cookie@latest",
+      "resolved": "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-2.1.0.tgz",
+      "dev": true
     },
     "@types/luxon": {
       "version": "0.5.2",
@@ -903,6 +915,11 @@
       "version": "0.3.1",
       "from": "cookie@0.3.1",
       "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.3.1.tgz"
+    },
+    "cookie-parser": {
+      "version": "1.4.3",
+      "from": "cookie-parser@latest",
+      "resolved": "https://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.3.tgz"
     },
     "cookie-signature": {
       "version": "1.0.6",
@@ -2438,6 +2455,11 @@
       "from": "js-base64@2.4.0",
       "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.0.tgz",
       "dev": true
+    },
+    "js-cookie": {
+      "version": "2.2.0",
+      "from": "js-cookie@latest",
+      "resolved": "https://registry.npmjs.org/js-cookie/-/js-cookie-2.2.0.tgz"
     },
     "js-tokens": {
       "version": "3.0.1",
