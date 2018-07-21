@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../models/UserArticle';
-import Title from './ArticleDetails/Title';
+import Title from './ArticleDetails/ArticleDetailsTitle';
 import readingParameters from '../readingParameters';
 import SpeechBubble from './Logo/SpeechBubble';
 import * as className from 'classnames';
@@ -8,6 +8,7 @@ import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
 import ShimmerGradient from '../svg/ShimmerGradient';
 import { formatTimestamp } from '../format';
+import ReadCountIndicator from './ReadCountIndicator';
 
 interface Props {
 	article: UserArticle,
@@ -52,14 +53,12 @@ export default class extends React.PureComponent<Props, {}> {
 							<div className="length">
 								{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))} min
 							</div>
-							<div className="speech-bubble-container">
-								<SpeechBubble
-									percentComplete={this.props.article.percentComplete}
-									isRead={this.props.article.isRead}
-									uuid={`article-details-speech-bubble-${this.props.article.id}`}
-								/>
-								<div className="percent-complete-label">{this.props.article.percentComplete.toFixed() + '%'}</div>
-							</div>
+							<SpeechBubble
+								percentComplete={this.props.article.percentComplete}
+								renderLabel
+								isRead={this.props.article.isRead}
+								uuid={`article-details-speech-bubble-${this.props.article.id}`}
+							/>
 						</div>
 						<div className="middle">
 							<Title
@@ -82,10 +81,7 @@ export default class extends React.PureComponent<Props, {}> {
 								</div>
 								<div className="flex-spacer"></div>
 								<div className="rrit-meta">
-									<span className="reads">
-										<Icon name="book" />
-										{this.props.article.readCount + ' ' + (this.props.article.readCount === 1 ? 'read' : 'reads')}
-									</span>
+									<ReadCountIndicator readCount={this.props.article.readCount} />
 									<div className="flex-spacer"></div>
 									<CommentsActionLink
 										commentCount={this.props.article.commentCount}
