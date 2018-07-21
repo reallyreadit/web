@@ -9,6 +9,7 @@ import ArticleList from './controls/articles/ArticleList';
 import PageSelector from './controls/PageSelector';
 import Icon from '../../../common/components/Icon';
 import Page from './Page';
+import Hero from './HotTopicsPage/Hero';
 
 export default class HotTopicsPage extends React.Component<RouteComponentProps<{}>, { hotTopics: Fetchable<HotTopics> }> {
 	public static contextTypes = contextTypes;
@@ -71,6 +72,14 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 	private _updateArticleFromEnvironment = (data: { article: UserArticle, isCompletionCommit: boolean }) => {
 		this._updateArticle(data.article);
 	};
+	private readonly _hideHero = () => {
+		this.context.page.hideHero();
+		this.forceUpdate();
+	};
+	private readonly _handleAuthChange = () => {
+		this._loadHotTopics();
+		this.forceUpdate();
+	};
 	constructor(props: RouteComponentProps<{}>, context: Context) {
 		super(props, context);
 		this.state = { hotTopics: this._loadHotTopics() };
@@ -82,16 +91,22 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 		this.context.page.setTitle('Community');
 	}
 	public componentDidMount() {
-		this.context.user.addListener('authChange', this._loadHotTopics);
+		this.context.user.addListener('authChange', this._handleAuthChange);
 		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('authChange', this._loadHotTopics);
+		this.context.user.removeListener('authChange', this._handleAuthChange);
 		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
 	}
 	public render() {
 		return (
 			<Page className="hot-topics-page">
+				{this.context.page.isHeroVisible ?
+					<Hero
+						onDismiss={this._hideHero}
+						showSignUpButton={!this.context.user.isSignedIn}
+						/> :
+					null}
 				{!this.state.hotTopics.isLoading ?
 					this.state.hotTopics.value ?
 						<div className="hot-topics">
