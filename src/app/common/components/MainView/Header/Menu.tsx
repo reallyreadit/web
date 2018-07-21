@@ -35,8 +35,8 @@ export default class extends React.Component<{
 				onClick={this._handleClick}
 			>
 				{this.props.buttonContent}
-				<Icon name="chevron-down" className="closed" />
-				<Icon name="chevron-up" className="opened" />
+				<Icon name="chevron-down" className="caret closed" />
+				<Icon name="chevron-up" className="caret opened" />
 				<ol>
 					{this.props.menuContent}
 				</ol>

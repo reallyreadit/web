@@ -10,6 +10,7 @@ import CreateAccountDialog from '../CreateAccountDialog';
 import * as className from 'classnames';
 import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotification';
 import HeaderButton from './Header/HeaderButton';
+import Icon from '../../../../common/components/Icon';
 
 type button = 'about' | 'community' | 'history' | 'pizza' | 'starred';
 const pathStateMap: {
@@ -109,22 +110,19 @@ export default class extends React.PureComponent<{}, {
 	}
 	public render() {
 		const showNewReplyIndicator = hasNewUnreadReply(this.context.page.newReplyNotification);
-		const aboutButton = (
-			<HeaderButton
-				to="/about"
-				selected={this.state.selectedButton === 'about'}
-				className="about"
-			>
-				About
-			</HeaderButton>
-		);
 		return (
 			<header className="header">
 				<div className={className('row', 'top', { 'unauthenticated': !this.context.user.isSignedIn })}>
 					<div className="content">
 						<Link to="/" className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></Link>
 						<div className="nav-section">
-							{aboutButton}
+							<HeaderButton
+								to="/about"
+								selected={this.state.selectedButton === 'about'}
+								className="about"
+							>
+								About
+							</HeaderButton>
 							<div className="nav-separator"></div>
 							{this.context.user.isSignedIn ?
 								<Menu
@@ -133,9 +131,15 @@ export default class extends React.PureComponent<{}, {
 										this.state.isSigningOut ?
 											<Spinner key="spinner" /> :
 											null,
-										<label key="userName">{this.context.user.userAccount.name}</label>
+										<label key="userName">{this.context.user.userAccount.name}</label>,
+										<Icon key="hamburger" className="hamburger" name="three-bars" />
 									]}
 									menuContent={[
+										<li key="about" className="about">
+											<Link to="/about" onMouseDown={this._preventFocus}>
+												About
+											</Link>
+										</li>,
 										this.context.user.userAccount.role === UserAccountRole.Admin ?
 											<li key="admin">
 												<Link to="/admin" onMouseDown={this._preventFocus}>
@@ -210,9 +214,18 @@ export default class extends React.PureComponent<{}, {
 							</div>
 						</div>
 						<div className="section right">
-							{aboutButton}
-							<div className="nav-separator"></div>
-							<HeaderButton to="/pizza" selected={this.state.selectedButton === 'pizza'}>🍕 Pizza Challenge</HeaderButton>
+							<Link
+								to="/pizza"
+								className="pizza-button"
+							>
+								<div className="live">
+									<Icon name="circle-full" /> LIVE
+								</div>
+								<div className="content">
+									<div className="title">🍕 Pizza Challenge</div>
+									<div className="subtitle">Read Articles <Icon name="arrow-right2" /> Win Pizza</div>
+								</div>
+							</Link>
 						</div>
 					</div>
 				</div>

@@ -1,19 +1,24 @@
 .menu {
 	position: relative;
+	cursor: pointer;
 }
 .menu:focus {
 	outline: none;
 }
-.menu > .icon {
-	margin-left: 3px;
+.menu > label {
+	cursor: pointer;
 }
-.menu > .icon.opened {
+.menu > .caret {
+	margin-left: 3px;
+	top: 0;
+}
+.menu > .caret.opened {
 	display: none;
 }
-.menu:focus > .icon.opened {
-	display: inline;
+.menu:focus > .caret.opened {
+	display: inline-block;
 }
-.menu:focus > .icon.closed {
+.menu:focus > .caret.closed {
 	display: none;
 }
 .menu > ol {
