@@ -4,8 +4,8 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "0.57",
-      "extension": "0.39"
+      "app": "0.58",
+      "extension": "0.40"
     }
   },
   "devDependencies": {
