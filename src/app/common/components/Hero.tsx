@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Icon from '../../../../common/components/Icon';
-import SpeechBubble from '../../../../common/components/Logo/SpeechBubble';
-import ReadCountIndicator from '../../../../common/components/ReadCountIndicator';
-import Button from '../../../../common/components/Button';
+import Icon from '../../../common/components/Icon';
+import SpeechBubble from '../../../common/components/Logo/SpeechBubble';
+import ReadCountIndicator from '../../../common/components/ReadCountIndicator';
+import Button from '../../../common/components/Button';
 
 const arrowRightSvg = `<svg
 	xmlns: dc="http://purl.org/dc/elements/1.1/"
@@ -37,12 +37,14 @@ const arrowRightSvg = `<svg
 </svg>`
 
 export default (props: {
-	onDismiss: () => void
+	onDismiss?: () => void
 }) => (
 	<div className="hero">
-		<div className="title-bar">
-			<Icon name="cancel" onClick={props.onDismiss} />
-		</div>
+		{props.onDismiss ?
+			<div className="title-bar">
+				<Icon name="cancel" onClick={props.onDismiss} />
+			</div> :
+			null}
 		<strong className="title-text">reallyread.it is a social media platform powered by reading.</strong>
 		<ol>
 			<li>

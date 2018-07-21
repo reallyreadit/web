@@ -1,23 +1,26 @@
-.about-page {
+.about-page > .hero {
+	margin-bottom: 15px;
+}
+.about-page > .copy {
 	max-width: 600px;
 	margin: 0 auto;
 }
-.about-page > .heading {
+.about-page > .copy > .heading {
 	font-size: 28px;
 }
-.about-page > p {
+.about-page > .copy > p {
 	margin: 15px 0;
 	overflow: hidden;
 }
-.about-page > p:last-child {
+.about-page > .copy > p:last-child {
 	margin-bottom: none;
 }
-.about-page > p > img {
+.about-page > .copy > p > img {
 	float: left;
 	width: 120px;
 	margin-right: 10px;
 }
-.about-page > p > strong {
+.about-page > .copy > p > strong {
 	display: block;
 	margin-bottom: 5px;
 }

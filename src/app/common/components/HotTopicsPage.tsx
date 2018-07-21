@@ -9,7 +9,7 @@ import ArticleList from './controls/articles/ArticleList';
 import PageSelector from './controls/PageSelector';
 import Icon from '../../../common/components/Icon';
 import Page from './Page';
-import Hero from './HotTopicsPage/Hero';
+import Hero from './Hero';
 
 export default class HotTopicsPage extends React.Component<RouteComponentProps<{}>, { hotTopics: Fetchable<HotTopics> }> {
 	public static contextTypes = contextTypes;
