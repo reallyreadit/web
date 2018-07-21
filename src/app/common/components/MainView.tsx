@@ -66,10 +66,12 @@ export default class MainView extends React.Component<{}, {}> {
 	public render() {
 		return (
 			<div className="main-view">
-				<Header />
 				<div className="content">
 					<ReadReadinessBar />
 					<EmailConfirmationBar />
+				</div>
+				<Header />
+				<div className="content">
 					<main>
 						{routes.map((route, i) => <Route key={i} {...route} />)}
 					</main>

@@ -29,13 +29,13 @@ export default class ReadReadinessDialog extends React.PureComponent<{
         let message: JSX.Element;
         switch (this.props.error) {
             case Error.IncompatibleBrowser:
-                message = <span>You must use Chrome (on Mac or PC) to get credit for really reading.</span>;
+                message = <span>You must use Chrome (on Mac or PC) to track your reading.</span>;
                 break;
             case Error.ExtensionNotInstalled:
-                message = <span>You won't get credit for really reading until you <a onClick={this._installExtension}>add the Chrome extension</a>.</span>;
+                message = <span>You won't be able to track your reading until you <a onClick={this._installExtension}>add the Chrome extension</a>.</span>;
                 break;
             case Error.SignedOut:
-                message = <span>You won't get credit for really reading until you <a onClick={this._showSignInDialog}>sign in</a> or <a onClick={this._showCreateAccountDialog}>create an account</a>.</span>;
+                message = <span>You won't be able to track your reading until you <a onClick={this._showSignInDialog}>sign in</a> or <a onClick={this._showCreateAccountDialog}>create an account</a>.</span>;
                 break;    
         }
         return (

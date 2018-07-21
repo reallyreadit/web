@@ -102,10 +102,7 @@ export default class HotTopicsPage extends React.Component<RouteComponentProps<{
 		return (
 			<Page className="hot-topics-page">
 				{this.context.page.isHeroVisible ?
-					<Hero
-						onDismiss={this._hideHero}
-						showSignUpButton={!this.context.user.isSignedIn}
-						/> :
+					<Hero onDismiss={this._hideHero} /> :
 					null}
 				{!this.state.hotTopics.isLoading ?
 					this.state.hotTopics.value ?
