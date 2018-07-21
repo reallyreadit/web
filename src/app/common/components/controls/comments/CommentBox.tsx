@@ -116,7 +116,7 @@ export default class CommentBox extends React.Component<Props, {
 				/>
 				<Button
 					text={`Post ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
-					iconLeft="checkmark"
+					iconLeft={this.props.isAllowedToPost ? 'checkmark' : 'locked'}
 					style="preferred"
 					state={
 						this.state.isPosting ?
