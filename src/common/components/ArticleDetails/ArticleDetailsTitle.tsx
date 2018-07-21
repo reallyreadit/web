@@ -11,7 +11,7 @@ export default (props: {
 	onStar: () => void,
 	onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }) => (
-	<div className="title">
+	<div className="article-details-title">
 		<div className={className('star-container', { hidden: !props.showStar })}>
 			<Star
 				starred={!!props.article.dateStarred}
