@@ -37,8 +37,7 @@ const arrowRightSvg = `<svg
 </svg>`
 
 export default (props: {
-	onDismiss: () => void,
-	showSignUpButton: boolean
+	onDismiss: () => void
 }) => (
 	<div className="hero">
 		<div className="title-bar">
@@ -97,8 +96,5 @@ export default (props: {
 				</div>
 			</li>
 		</ol>
-		{props.showSignUpButton ?
-			<strong className="sign-up">Sign up to get started.</strong> :
-			null}
 	</div>
 );
