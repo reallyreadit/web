@@ -4,6 +4,10 @@
 .about-page > .copy {
 	max-width: 600px;
 	margin: 0 auto;
+	background-color: rgba(255, 255, 255, 0.75);
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
 }
 .about-page > .copy > .heading {
 	font-size: 28px;
@@ -13,7 +17,7 @@
 	overflow: hidden;
 }
 .about-page > .copy > p:last-child {
-	margin-bottom: none;
+	margin-bottom: 0;
 }
 .about-page > .copy > p > img {
 	float: left;

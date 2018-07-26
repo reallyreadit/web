@@ -1,8 +1,8 @@
 .app {
 	width: 375px;
-	min-height: 171px;
-	font-family: monospace;
+	font-family: 'Bitter';
 	font-size: 13px;
+	letter-spacing: 0.02em;
 }
 .app > .ready-indicator {
 	border: 5px solid green;

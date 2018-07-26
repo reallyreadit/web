@@ -14,8 +14,12 @@
 .hot-topics-page > .hot-topics > .aotd > h3 > .icon:last-child {
 	margin-left: 9px;
 }
+.hot-topics-page > .hot-topics > .aotd > .article-details {
+	border-width: 3px;
+	border-color: #666;
+}
 .hot-topics-page > .hot-topics > .aotd > hr {
-	margin: 16px auto;
+	margin: 15px auto;
 	width: 75%;
 	border-width: 1px 0 0 0;
 	border-style: solid;

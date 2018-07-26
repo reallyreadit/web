@@ -1,9 +1,13 @@
 .admin-page > table {
 	width: 100%;
 	margin-top: 10px;
+	background-color: white;
 }
 .admin-page > table:first-child {
 	margin-top: 0;
+}
+.admin-page > table > caption {
+	background-color: white;
 }
 .admin-page > table > caption > div {
 	border-width: 1px 1px 0 1px;

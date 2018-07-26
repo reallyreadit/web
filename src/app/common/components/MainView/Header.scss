@@ -15,7 +15,7 @@
 }
 
 .header {
-	padding: 10px 0 15px 0;
+	padding: 25px 0;
 }
 .header > .row {
 	display: flex;
@@ -35,7 +35,6 @@
 }
 .header > .row.top > .content > .logo {
 	flex: 0 0 auto;
-	padding-left: 10px;
 }
 .header > .row.top > .content > .logo > svg {
 	display: block;
@@ -158,6 +157,7 @@
 	align-items: center;
 	border: 1px solid plum;
 	box-sizing: border-box;
+	background-color: white;
 }
 .header > .row.bottom > .content > .section > .pizza-button.selected > .content {
 	border-bottom-width: 3px;
@@ -167,11 +167,8 @@
 	font-weight: normal;
     font-size: 11px;
 }
-.header > .row.subtitle {
-	margin-top: 5px;
-}
 .header > .row.subtitle > .content {
-	justify-content: center;
+	justify-content: flex-start;
 }
 .header > .row.subtitle > .content > span {
 	display: block;
@@ -180,8 +177,12 @@
 	color: #333;
 }
 
-@media (max-width: 499px) {
-	.header > .row.top.unauthenticated {
+@media (max-width: 529px) {
+	.header {
+		padding-top: 10px;
+		padding-bottom: 15px;
+	}
+	.header > .row.top {
 		margin-bottom: 10px;
 	}
 	.header > .row.top.unauthenticated > .content {
@@ -206,6 +207,7 @@
 		display: inline-block;
 		width: 28px;
 		height: 28px;
+		top: 0;
 	}
 	.header > .row.top > .content > .nav-section > .menu > .caret {
 		display: none;
