@@ -56,8 +56,8 @@ export default (props: {
 					<SpeechBubble percentComplete={42} renderLabel uuid="hero-speech-bubble" />
 				</div>
 				<div className="text">
-					<strong>Check yourself.</strong>
-					<span>Use our reading tracker to spend less time scrolling and more time reading.</span>
+					<strong>Track yourself.</strong>
+					<span>Spend less time scrolling and more time reading.</span>
 				</div>
 			</li>
 			<li>
@@ -79,8 +79,8 @@ export default (props: {
 					</ol>
 				</div>
 				<div className="text">
-					<strong>Articles worth reading.</strong>
-					<span>We rank articles from across the internet based on what people are really reading.</span>
+					<strong>Smarter curation.</strong>
+					<span>We rank articles based on what people really read.</span>
 				</div>
 			</li>
 			<li>
