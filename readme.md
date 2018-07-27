@@ -24,7 +24,15 @@
     	cookieDomain: 'dev.reallyread.it',
     	cookieName: 'devSessionKey',
     	enableAnalytics: false,
+    	enableCaptcha: false,	    
     	extensionId: 'YOUR-LOCAL-EXTENSION-ID-HERE',
+    	logStream: null as {
+    		type: string,
+    		path: string,
+    		period: string,
+    		count: number,
+    		level: number
+    	},
     	port: 5001
     };
     ```
