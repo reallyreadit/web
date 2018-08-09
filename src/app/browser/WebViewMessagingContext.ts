@@ -1,11 +1,11 @@
-type OnMessageListener = (data: any) => void;
+type OnMessageListener = (data: any, messageSender: null, sendResponse: (data: any) => void) => void;
 export interface AppApi {
 	sendResponse: (jsonCallbackResponse: string) => void,
 	postMessage: (jsonMessage: string) => void
 }
 interface ResponseCallback {
 	id: number,
-	function: OnMessageListener
+	function: (data: any) => void
 }
 export default class {
 	private _responseCallbackId = 0;
@@ -23,7 +23,16 @@ export default class {
 					.function(callbackResponse.data);
 			},
 			postMessage: (jsonMessage: string) => {
-				this._onMessageListeners.forEach(listener => listener(JSON.parse(jsonMessage)));
+				const message = JSON.parse(jsonMessage);
+				let sendResponse: (data: any) => void;
+				if (message.callbackId != null) {
+					sendResponse = data => window.postMessage(JSON.stringify({ id: message.callbackId, data }), '*');
+				} else {
+					sendResponse = () => {};
+				}
+				this._onMessageListeners.forEach(listener => {
+					listener(message.data, null, sendResponse);
+				});
 			}
 		};
 	}
@@ -31,7 +40,7 @@ export default class {
 		this._onMessageListeners.push(listener);
 	}
 	public sendMessage(message: {}): void;
-	public sendMessage(message: {}, responseCallback: OnMessageListener | null = null) {
+	public sendMessage(message: {}, responseCallback: (data: any) => void | null = null) {
 		let callbackId: number | null = null;
 		if (responseCallback) {
 			this._responseCallbacks.push({
