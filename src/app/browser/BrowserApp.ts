@@ -9,12 +9,27 @@ export default class extends App {
 		super();
 		if (clientType === ClientType.App) {
 			this._app = new WebViewMessagingContext();
-			this._app.addListener((message: { type: string, data: any }) => {
+			this._app.addListener((message: { type: string, data: any }, sender, sendResponse) => {
 				switch (message.type) {
 					case 'articleUpdated':
 						onArticleUpdated(message.data);
-						return;
+						return false;
+					case 'fetch':
+						const init: RequestInit = {
+							method: message.data.method,
+							credentials: 'include'
+						};
+						if (message.data.data) {
+							init.headers = { 'Content-Type': 'application/json' };
+							init.body = JSON.stringify(message.data.data);
+						}
+						fetch(message.data.uri, init)
+							.then(res => res.json())
+							.then(data => sendResponse({ data }))
+							.catch(error => sendResponse({ error }));
+						return true;
 				}
+				return false;
 			});
 		}
 	}
