@@ -85,40 +85,41 @@ export default class extends React.Component<{
 			eventType: EventType
 		}
 	) => {
-		if (
-			data.eventType === EventType.Original &&
-			this.props.environment.clientType === ClientType.Browser
-		) {
+		if (data.eventType === EventType.Original) {
 			this.props.environment.extension.updateNewReplyNotification(data.notification);
 		}
 	};
 	public static childContextTypes = contextTypes;
 	public componentDidMount() {
-		// update extension since we just loaded with a fresh notification state
-		this._updateExtension({
-			notification: this.props.page.newReplyNotification,
-			eventType: EventType.Original
-		});
-		// set up event handlers
-		this.props.user
-			.addListener('signIn', this._handleSignIn)
-			.addListener('signOut', this._handleSignOut);
-		this.props.page.addListener('newReplyNotificationChange', this._updateExtension);
-		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
-		// start polling
-		if (this.props.user.isSignedIn && !window.document.hidden) {
-			this._startPolling();
+		if (this.props.environment.clientType === ClientType.Browser) {
+			// update extension since we just loaded with a fresh notification state
+			this._updateExtension({
+				notification: this.props.page.newReplyNotification,
+				eventType: EventType.Original
+			});
+			// set up event handlers
+			this.props.user
+				.addListener('signIn', this._handleSignIn)
+				.addListener('signOut', this._handleSignOut);
+			this.props.page.addListener('newReplyNotificationChange', this._updateExtension);
+			window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
+			// start polling
+			if (this.props.user.isSignedIn && !window.document.hidden) {
+				this._startPolling();
+			}
 		}
 	}
 	public componentWillUnmount() {
-		// remove event handlers
-		this.props.user
-			.removeListener('signIn', this._handleSignIn)
-			.removeListener('signOut', this._handleSignOut);
-		this.props.page.removeListener('newReplyNotificationChange', this._updateExtension);
-		window.document.removeEventListener('visibilitychange', this._handleVisibilityChange);
-		// stop polling
-		this._stopPolling();
+		if (this.props.environment.clientType === ClientType.Browser) {
+			// remove event handlers
+			this.props.user
+				.removeListener('signIn', this._handleSignIn)
+				.removeListener('signOut', this._handleSignOut);
+			this.props.page.removeListener('newReplyNotificationChange', this._updateExtension);
+			window.document.removeEventListener('visibilitychange', this._handleVisibilityChange);
+			// stop polling
+			this._stopPolling();
+		}
 	}
 	public getChildContext() {
 		return {
