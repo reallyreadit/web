@@ -6,7 +6,6 @@ import SpeechBubble from './Logo/SpeechBubble';
 import * as className from 'classnames';
 import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
-import ShimmerGradient from '../svg/ShimmerGradient';
 import { formatTimestamp } from '../format';
 import ReadCountIndicator from './ReadCountIndicator';
 
@@ -32,7 +31,6 @@ export default class extends React.PureComponent<Props, {}> {
 		}
 	};
 	public render() {
-		const shareGradientUuid = `article-details-share-${this.props.article.id}`;
 		return (
 			<div className="article-details">
 				<div className="content">
@@ -105,10 +103,8 @@ export default class extends React.PureComponent<Props, {}> {
 							<Icon
 								name="share"
 								title="Share Article"
-								className={className({ enabled: this.props.article.isRead })}
+								className={className('share', { enabled: this.props.article.isRead })}
 								onClick={this._share}
-								defs={<ShimmerGradient uuid={shareGradientUuid} />}
-								fill={this.props.article.isRead ? `url(#${shareGradientUuid}-shimmer-gradient)` : null}
 							/>
 						</div>
 					</div>

@@ -139,6 +139,9 @@
 	color: dimgray;
 	cursor: pointer;
 }
+.article-details > .content > .columns > .right > .icon.share.enabled {
+	color: mediumslateblue;
+}
 .article-details > .controls {
 	@extend %hideable-container;
 	display: flex;
