@@ -36,6 +36,6 @@ export default class extends Page {
 		return !Cookies.get('hideHero');
 	}
 	public hideHero() {
-		Cookies.set('hideHero', 'true');
+		Cookies.set('hideHero', 'true', { expires: 365 });
 	}
 } 
