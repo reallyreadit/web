@@ -1,9 +1,10 @@
 import * as React from 'react';
 import Context from '../Context';
-import InputField from './controls/InputField';
 import Dialog, { State } from './controls/Dialog';
 import UserAccount from '../../../common/models/UserAccount';
 import RequestPasswordResetDialog from './SignInDialog/RequestPasswordResetDialog';
+import EmailAddressField from './controls/authentication/EmailAddressField';
+import PasswordField from './controls/authentication/PasswordField';
 
 export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State> & {
 	email?: string,
@@ -30,21 +31,14 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 	protected renderFields() {
 		return (
 			<div className="sign-in-dialog">
-				<InputField
-					type="email"
-					label="Email Address"
+				<EmailAddressField
 					value={this.state.email}
-					autoFocus
-					required
 					error={this.state.emailError}
 					showError={this.state.showErrors}
 					onChange={this._handleEmailChange}
 				/>
-				<InputField
-					type="password"
-					label="Password"
+				<PasswordField
 					value={this.state.password}
-					required
 					error={this.state.passwordError}
 					showError={this.state.showErrors}
 					onChange={this._handlePasswordChange}

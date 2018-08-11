@@ -12,6 +12,8 @@ import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
+import ClientType from '../ClientType';
+import AppAuthScreen from './MainView/AppAuthScreen';
 
 export default class MainView extends React.Component<{}, {}> {
 	public static contextTypes = contextTypes;
@@ -65,29 +67,35 @@ export default class MainView extends React.Component<{}, {}> {
 	}
 	public render() {
 		return (
-			<div className="main-view">
-				<div className="content">
-					<ReadReadinessBar />
-					<EmailConfirmationBar />
+			this.context.environment.clientType === ClientType.Browser || this.context.user.isSignedIn ?
+				<div className="main-view">
+					<div className="content">
+						<ReadReadinessBar />
+						<EmailConfirmationBar />
+					</div>
+					<Header />
+					<div className="content">
+						<main>
+							{routes.map((route, i) => <Route key={i} {...route} />)}
+						</main>
+						<footer>
+							<a href="https://blog.reallyread.it">Blog</a>
+							<Separator />
+							<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
+							<Separator />
+							<Link to="/privacy">Privacy Policy</Link>
+							<Separator />
+							<a href="mailto:support@reallyread.it">support@reallyread.it</a>
+						</footer>
+					</div>
+					<DialogManager />
+					<Toaster />
+				</div> :
+				<div className="main-view">
+					<div className="content">
+						<AppAuthScreen />
+					</div>
 				</div>
-				<Header />
-				<div className="content">
-					<main>
-						{routes.map((route, i) => <Route key={i} {...route} />)}
-					</main>
-					<footer>
-						<a href="https://blog.reallyread.it">Blog</a>
-						<Separator />
-						<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
-						<Separator />
-						<Link to="/privacy">Privacy Policy</Link>
-						<Separator />
-						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
-					</footer>
-				</div>
-				<DialogManager />
-				<Toaster />
-			</div>
 		);
 	}
 }
