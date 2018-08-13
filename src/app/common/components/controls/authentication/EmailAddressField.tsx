@@ -1,15 +1,17 @@
 import * as React from 'react';
-import InputField from '../InputField';
+import InputField, { LabelPosition } from '../InputField';
 
 export default (props: {
-	value: string,
 	error: string,
+	labelPosition?: LabelPosition,
+	onChange: (value: string, error: string) => void,
 	showError: boolean,
-	onChange: (value: string, error: string) => void
+	value: string
 }) => (
 	<InputField
 		type="email"
 		label="Email Address"
+		labelPosition={props.labelPosition}
 		value={props.value}
 		autoFocus
 		required
