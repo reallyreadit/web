@@ -2,6 +2,9 @@
 	display: block;	
 	text-align: right;
 }
+.form-field[data-label-position="vertical"] {
+	text-align: left;
+}
 .form-field > strong {
 	display: inline-block;
 	height: 22px;
@@ -16,12 +19,15 @@
 	text-align: left;
 	vertical-align: top;
 }
+.form-field[data-label-position="vertical"] > .field-container {
+	width: 100%;
+}
 
 @media (max-width: 499px) {
-	.form-field {
+	.form-field:not([data-label-position="horizontal"]) {
 		text-align: left;
 	}
-	.form-field > .field-container {
+	.form-field:not([data-label-position="horizontal"]) > .field-container {
 		width: 100%;
 	}
 }
