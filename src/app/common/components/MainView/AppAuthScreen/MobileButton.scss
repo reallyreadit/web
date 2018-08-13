@@ -1,0 +1,26 @@
+.mobile-button {
+	background-color: white;
+	border: 1px solid black;
+	text-transform: uppercase;
+	font-weight: bold;
+	height: 32px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.mobile-button[disabled] {
+	color: silver;
+	border-color: silver;
+}
+.mobile-button.loud {
+	background-color: black;
+	color: white;
+}
+.mobile-button > .spinner {
+	top: 0;
+	margin: 0 5px;
+}
+.mobile-button > .spinner:last-child {
+	visibility: hidden;
+}
