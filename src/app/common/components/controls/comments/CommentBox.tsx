@@ -77,7 +77,7 @@ export default class CommentBox extends React.Component<Props, {
 		const textareaStyle: { [key: string]: string } = {};
 		if (!this.state.hasFocus && !this.state.hasContent) {
 			textareaStyle['width'] = '100%';
-			textareaStyle['height'] = this.props.parentCommentId ? '130px' : '26px';
+			textareaStyle['height'] = this.props.parentCommentId ? '130px' : '32px';
 		}
 		return (
 			<div className="comment-box">

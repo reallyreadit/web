@@ -5,9 +5,12 @@
 .comment-box > textarea {
 	box-sizing: border-box;
 	width: 100%;
-	height: 26px;
-	font-family: serif;
-	font-size: 16px;
+	height: 32px;
+	padding: 5px;
+	margin-bottom: 5px;
+	font-family: inherit;
+	border: 1px solid silver;
+	outline: none;
 	transition: width 250ms, height 250ms;
 }
 .comment-box > textarea.expanded {
@@ -21,8 +24,6 @@
 	top: 3px;
 	color: lightgray;
 	font-style: italic;
-	font-family: monospace;
-	font-size: 13px;
 	text-indent: 5px;
 }
 .comment-box > textarea:focus::placeholder {
