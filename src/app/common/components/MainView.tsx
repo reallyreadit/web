@@ -14,6 +14,7 @@ import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
 import ClientType from '../ClientType';
 import AppAuthScreen from './MainView/AppAuthScreen';
+import UserAccount from '../../../common/models/UserAccount';
 
 export default class MainView extends React.Component<{}, {}> {
 	public static contextTypes = contextTypes;
@@ -22,6 +23,13 @@ export default class MainView extends React.Component<{}, {}> {
 		this.forceUpdate()
 	};
 	private _unregisterHistoryListener: () => void;
+	private readonly _onSignIn = (userAccount: UserAccount) => {
+		this.context.user.signIn(userAccount);
+		this.forceUpdate();
+	};
+	private readonly _signIn = (email: string, password: string) => {
+		return this.context.api.signIn(email, password);
+	};
 	public componentWillMount() {
 		switch (this.context.router.route.location.search) {
 			case '?sign-in':
@@ -92,8 +100,11 @@ export default class MainView extends React.Component<{}, {}> {
 					<Toaster />
 				</div> :
 				<div className="main-view">
-					<div className="content">
-						<AppAuthScreen />
+					<div className="content app-content">
+						<AppAuthScreen
+							onSignIn={this._onSignIn}
+							signIn={this._signIn}
+						/>
 					</div>
 				</div>
 		);

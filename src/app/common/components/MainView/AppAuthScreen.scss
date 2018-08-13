@@ -1,0 +1,51 @@
+.app-auth-screen {
+	height: 100%;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+.app-auth-screen::before {
+	content: "";
+	height: 10%;
+	min-height: 10px;
+}
+.app-auth-screen::after {
+	content: "";
+	min-height: 10px;
+}
+.app-auth-screen > .content {
+	width: 100%;
+	max-width: 400px;
+}
+.app-auth-screen > .content > .logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 30px;
+}
+.app-auth-screen > .content > .logo > svg {
+	display: block;
+	width: 80%;
+	min-width: 240px;
+	max-width: 300px;
+}
+.app-auth-screen > .content > strong {
+	display: block;
+	margin-bottom: 15px;
+	text-align: center;
+	font-size: 14px;
+}
+.app-auth-screen > .content > .break {
+	display: flex;
+	align-items: center;
+	margin: 20px 0;
+	color: silver;
+}
+.app-auth-screen > .content > .break::before,
+.app-auth-screen > .content > .break::after {
+	content: "";
+	display: block;
+	flex: 1 1 auto;
+	border-bottom: 1px solid silver;
+	margin: 0 10px;
+}
