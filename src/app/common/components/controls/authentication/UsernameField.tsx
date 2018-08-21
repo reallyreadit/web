@@ -9,16 +9,16 @@ export default (props: {
 	showError: boolean,
 	value: string
 }) => (
-	<InputField
-		autoFocus={props.autoFocus}
-		error={props.error}
-		label="Email Address"
-		labelPosition={props.labelPosition}
-		maxLength={256}
-		onChange={props.onChange}
-		required
-		showError={props.showError}
-		type="email"
-		value={props.value}
-	/>
-);
+		<InputField
+			error={props.error}
+			label="Username"
+			labelPosition={props.labelPosition}
+			minLength={3}
+			maxLength={30}
+			onChange={props.onChange}
+			required
+			showError={props.showError}
+			type="text"
+			value={props.value}
+		/>
+	);

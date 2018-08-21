@@ -9,13 +9,15 @@ export default (props: {
 	value: string
 }) => (
 	<InputField
-		type="password"
+		error={props.error}
 		label="Password"
 		labelPosition={props.labelPosition}
-		value={props.value}
-		required
-		error={props.error}
-		showError={props.showError}
+		minLength={8}
+		maxLength={256}
 		onChange={props.onChange}
+		required
+		showError={props.showError}
+		type="password"
+		value={props.value}
 	/>
 );

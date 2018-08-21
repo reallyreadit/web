@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as className from 'classnames';
-import Spinner from '../../../../../common/components/Spinner';
+import Spinner from '../../../../common/components/Spinner';
 
 export default (props: {
 	busy?: boolean,
@@ -9,7 +9,7 @@ export default (props: {
 	text: string
 }) => (
 	<button
-		className={className('mobile-button', {
+		className={className('app-screen-button', {
 			'busy': props.busy,
 			'loud': props.style === 'loud'
 		})}

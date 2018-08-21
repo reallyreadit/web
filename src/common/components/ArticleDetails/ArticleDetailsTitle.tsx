@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as className from 'classnames';
 import UserArticle from '../../models/UserArticle';
-import Star from '../../components/Star';
+import Star from '../Star';
 import { truncateText, formatTimestamp } from '../../format';
 
 export default (props: {

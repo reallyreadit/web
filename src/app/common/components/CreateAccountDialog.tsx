@@ -1,9 +1,11 @@
 import * as React from 'react';
 import Context from '../Context';
-import InputField from './controls/InputField';
 import Dialog, { State } from './controls/Dialog';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
+import EmailAddressField from './controls/authentication/EmailAddressField';
+import PasswordField from './controls/authentication/PasswordField';
+import UsernameField from './controls/authentication/UsernameField';
 
 export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial<State> & {
 	name?: string,
@@ -34,41 +36,27 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 	}
 	protected renderFields() {
 		return [
-			<InputField
-				key="username"
-				type="text"
-				label="Username"
-				value={this.state.name}
+			<UsernameField
 				autoFocus
-				required
-				minLength={3}
-				maxLength={30}
 				error={this.state.nameError}
-				showError={this.state.showErrors}
+				key="username"
 				onChange={this._handleNameChange}
+				showError={this.state.showErrors}
+				value={this.state.name}
 			/>,
-			<InputField
-				key="emailAddress"
-				type="email"
-				label="Email Address"
-				value={this.state.email}
-				required
-				maxLength={256}
+			<EmailAddressField
 				error={this.state.emailError}
-				showError={this.state.showErrors}
+				key="emailAddress"
 				onChange={this._handleEmailChange}
-			/>,
-			<InputField
-				key="password"
-				type="password"
-				label="Password"
-				value={this.state.password}
-				required
-				minLength={8}
-				maxLength={256}
-				error={this.state.passwordError}
 				showError={this.state.showErrors}
+				value={this.state.email}
+			/>,
+			<PasswordField
+				error={this.state.passwordError}
+				key="password"
 				onChange={this._handlePasswordChange}
+				showError={this.state.showErrors}
+				value={this.state.password}
 			/>,
 			<div
 				key="captcha"
@@ -114,7 +102,7 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 	}
 	public componentDidMount() {
 		this.context.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, '6LcxOV4UAAAAAGZTappGq7UwQ7EXSBUxAGMJNLQM');
+			this._captchaId = captcha.render(this._captchaElement, this.context.captcha.siteKeys.createAccount);
 		});
 	}
 }

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Route } from 'react-router';
-import { Link } from 'react-router-dom';
 import Context, { contextTypes } from '../Context';
 import DialogManager from './MainView/DialogManager';
 import ReadReadinessBar from './MainView/ReadReadinessBar';
@@ -15,17 +14,40 @@ import EmailConfirmationBar from './MainView/EmailConfirmationBar';
 import ClientType from '../ClientType';
 import AppAuthScreen from './MainView/AppAuthScreen';
 import UserAccount from '../../../common/models/UserAccount';
+import { Intent } from '../Page';
+import Footer from './MainView/Footer';
 
-export default class MainView extends React.Component<{}, {}> {
+export default class MainView extends React.Component<{}, {
+	activeMobileScreen: React.Element
+}> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private readonly _forceUpdate = () => {
 		this.forceUpdate()
 	};
 	private _unregisterHistoryListener: () => void;
-	private readonly _onSignIn = (userAccount: UserAccount) => {
+	private readonly _contextCreateAccount = (userAccount: UserAccount) => {
+		this.context.user.signIn(userAccount);
+		ga('send', {
+			hitType: 'event',
+			eventCategory: 'UserAccount',
+			eventAction: 'create',
+			eventLabel: userAccount.name
+		});
+		this.forceUpdate();
+	};
+	private readonly _contextSignIn = (userAccount: UserAccount) => {
 		this.context.user.signIn(userAccount);
 		this.forceUpdate();
+	};
+	private readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
+		return this.context.api.createUserAccount(name, email, password, captchaResponse);
+	};
+	private readonly _setTitle = (title: string) => {
+		this.context.page.setTitle(title);
+	};
+	private readonly _showToast = (text: string, intent: Intent) => {
+		this.context.page.showToast(text, intent);
 	};
 	private readonly _signIn = (email: string, password: string) => {
 		return this.context.api.signIn(email, password);
@@ -75,38 +97,22 @@ export default class MainView extends React.Component<{}, {}> {
 	}
 	public render() {
 		return (
-			this.context.environment.clientType === ClientType.Browser || this.context.user.isSignedIn ?
-				<div className="main-view">
-					<div className="content">
-						<ReadReadinessBar />
-						<EmailConfirmationBar />
-					</div>
-					<Header />
-					<div className="content">
-						<main>
-							{routes.map((route, i) => <Route key={i} {...route} />)}
-						</main>
-						<footer>
-							<a href="https://blog.reallyread.it">Blog</a>
-							<Separator />
-							<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
-							<Separator />
-							<Link to="/privacy">Privacy Policy</Link>
-							<Separator />
-							<a href="mailto:support@reallyread.it">support@reallyread.it</a>
-						</footer>
-					</div>
-					<DialogManager />
-					<Toaster />
-				</div> :
-				<div className="main-view">
-					<div className="content app-content">
-						<AppAuthScreen
-							onSignIn={this._onSignIn}
-							signIn={this._signIn}
-						/>
-					</div>
+			<div className="main-view">
+				<div className="content">
+					<ReadReadinessBar />
+					<EmailConfirmationBar />
 				</div>
+				<Header />
+				<div className="content">
+					<main>
+						{routes.map((route, i) => <Route key={i} {...route} />)}
+					</main>
+					<Footer />
+				</div>
+				<AppScreenManager />
+				<DialogManager />
+				<Toaster />
+			</div>
 		);
 	}
 }

@@ -67,7 +67,7 @@ export default class RequestPasswordResetDialog extends Dialog<{}, {}, Partial<S
 	}
 	public componentDidMount() {
 		this.context.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, '6LeSR14UAAAAAHLt_KcHJTjOIZiy2txFnXf4UmUr');
+			this._captchaId = captcha.render(this._captchaElement, this.context.captcha.siteKeys.forgotPassword);
 		});
 	}
 }

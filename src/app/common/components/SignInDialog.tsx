@@ -32,10 +32,11 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 		return (
 			<div className="sign-in-dialog">
 				<EmailAddressField
-					value={this.state.email}
+					autoFocus
 					error={this.state.emailError}
-					showError={this.state.showErrors}
 					onChange={this._handleEmailChange}
+					showError={this.state.showErrors}
+					value={this.state.email}
 				/>
 				<PasswordField
 					value={this.state.password}

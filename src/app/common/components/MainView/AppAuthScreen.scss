@@ -1,21 +1,5 @@
 .app-auth-screen {
-	height: 100%;
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-}
-.app-auth-screen::before {
-	content: "";
-	height: 10%;
-	min-height: 10px;
-}
-.app-auth-screen::after {
-	content: "";
-	min-height: 10px;
-}
-.app-auth-screen > .content {
-	width: 100%;
-	max-width: 400px;
+	position: relative;
 }
 .app-auth-screen > .content > .logo {
 	display: flex;
@@ -48,4 +32,11 @@
 	flex: 1 1 auto;
 	border-bottom: 1px solid silver;
 	margin: 0 10px;
+}
+.app-auth-screen > .create-account-screen {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 }

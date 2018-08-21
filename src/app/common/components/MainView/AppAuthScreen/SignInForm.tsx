@@ -1,7 +1,7 @@
 import * as React from 'react';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
-import MobileButton from './MobileButton';
+import AppScreenButton from '../../controls/AppScreenButton';
 import UserAccount from '../../../../../common/models/UserAccount';
 
 export default class extends React.PureComponent<{
@@ -32,7 +32,8 @@ export default class extends React.PureComponent<{
 					this.setState({ isSubmitting: false });
 					if (errors.includes('UserAccountNotFound')) {
 						this.setState({ emailError: 'User account not found.' });
-					} else if (errors.includes('IncorrectPassword')) {
+					}
+					if (errors.includes('IncorrectPassword')) {
 						this.setState({ passwordError: 'Incorrect password.' });
 					}
 				});
@@ -53,6 +54,7 @@ export default class extends React.PureComponent<{
 		return (
 			<div className="sign-in-form">
 				<EmailAddressField
+					autoFocus
 					error={this.state.emailError}
 					labelPosition="vertical"
 					onChange={this._changeEmail}
@@ -66,7 +68,7 @@ export default class extends React.PureComponent<{
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
-				<MobileButton
+				<AppScreenButton
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
 					text="Log In"

@@ -175,7 +175,7 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 	}
 	public componentDidMount() {
 		this.context.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, '6LegNF4UAAAAAMLjq6Q-L7-hvfP7kKaTIdMUtg9h');
+			this._captchaId = captcha.render(this._captchaElement, this.context.captcha.siteKeys.shareArticle);
 		});
 	}
 }

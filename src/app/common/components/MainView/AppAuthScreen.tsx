@@ -1,42 +1,59 @@
 import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
 import SignInForm from './AppAuthScreen/SignInForm';
-import Context, { contextTypes } from '../../Context';
-import MobileButton from './AppAuthScreen/MobileButton';
+import AppScreenButton from '../controls/AppScreenButton';
 import UserAccount from '../../../../common/models/UserAccount';
+import AppScreen from './AppScreen';
+import CreateAccountScreen from './CreateAccountScreen';
+import Captcha from '../../Captcha';
+import { Intent } from '../../Page';
 
-export default class extends React.Component<{
+export default class extends React.PureComponent<{
+	captcha: Captcha,
+	createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<UserAccount>,
+	onCreateAccount: (userAccount: UserAccount) => void,
 	onSignIn: (userAccount: UserAccount) => void,
+	setTitle: (title: string) => void,
+	showToast: (text: string, intent: Intent) => void,
 	signIn: (email: string, password: string) => Promise<UserAccount>
+}, {
+	showCreateAccountScreen: boolean
 }> {
-	public static contextTypes = contextTypes;
-	private readonly _showSignUpForm = () => {
-
+	public state = {
+		showCreateAccountScreen: false
 	};
-	public context: Context;
+	private readonly _showCreateAccountScreen = () => {
+		this.setState({ showCreateAccountScreen: true });
+	};
 	public componentWillMount() {
-		this.context.page.setTitle('Log In');
+		this.props.setTitle('Log In');
 	}
 	public render() {
 		return (
-			<div className="app-auth-screen">
-				<div className="content">
-					<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
-					<strong>Already have an account?</strong>
-					<SignInForm
-						onSignIn={this.props.onSignIn}
-						signIn={this.props.signIn}
-					/>
-					<div className="break">
-						<span>or</span>
-					</div>
-					<MobileButton
-						onClick={this._showSignUpForm}
-						style="loud"
-						text="Sign Up"
-					/>
+			<AppScreen className="app-auth-screen">
+				<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
+				<strong>Already have an account?</strong>
+				<SignInForm
+					onSignIn={this.props.onSignIn}
+					signIn={this.props.signIn}
+				/>
+				<div className="break">
+					<span>or</span>
 				</div>
-			</div>
+				<AppScreenButton
+					onClick={this._showCreateAccountScreen}
+					style="loud"
+					text="Sign Up"
+				/>
+				{this.state.showCreateAccountScreen ?
+					<CreateAccountScreen
+						captcha={this.props.captcha}
+						createAccount={this.props.createAccount}
+						onCreateAccount={this.props.onCreateAccount}
+						showToast={this.props.showToast}
+					/> :
+					null}
+			</AppScreen>
 		);
 	}
 }

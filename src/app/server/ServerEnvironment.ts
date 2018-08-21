@@ -1,7 +1,7 @@
 import Environment from '../common/Environment';
 import EnvironmentType from '../common/EnvironmentType';
-import ServerApp from '../server/ServerApp';
-import ServerExtension from '../server/ServerExtension';
+import ServerApp from './ServerApp';
+import ServerExtension from './ServerExtension';
 import ClientType from '../common/ClientType';
 
 export default class extends Environment<ServerApp, ServerExtension> {

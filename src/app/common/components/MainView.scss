@@ -3,16 +3,13 @@
 	font-size: 13px;
 	letter-spacing: 0.02em;
 	height: 100%;
+	background-image: url('/images/marble.jpg');
+	background-attachment: fixed;
+	background-size: cover;
+	background-position: center;
 }
 .main-view > .content {
 	max-width: 850px;
 	padding: 0 10px;
 	margin: 0 auto;
-}
-.main-view > .app-content {
-	height: 100%;
-}
-.main-view > .content > footer {
-	text-align: center;
-	padding: 20px 0;
 }
