@@ -2,7 +2,10 @@ import ParseResult from '../common/ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 
 function findMetaElementContent(property: string, elements: Element[]) {
-	return getElementAttribute<HTMLMetaElement>(elements.find(e => e.getAttribute('property') === property), e => e.content);
+	return getElementAttribute<HTMLMetaElement>(
+		elements.find(e => e.getAttribute('property') === property),
+		e => e.content ? e.content.toLowerCase() : null
+	);
 }
 function parseOpenGraph(): ParseResult {
 	const elements = Array.from(document.getElementsByTagName('meta'));
