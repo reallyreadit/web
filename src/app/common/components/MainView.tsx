@@ -4,7 +4,6 @@ import Context, { contextTypes } from '../Context';
 import DialogManager from './MainView/DialogManager';
 import ReadReadinessBar from './MainView/ReadReadinessBar';
 import Toaster from './MainView/Toaster';
-import Separator from '../../../common/components/Separator';
 import Header from './MainView/Header';
 import routes from '../routes';
 import SignInDialog from './SignInDialog';
@@ -16,15 +15,13 @@ import AppAuthScreen from './MainView/AppAuthScreen';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 import Footer from './MainView/Footer';
+import AppScreenManager from './MainView/AppScreenManager';
 
 export default class MainView extends React.Component<{}, {
-	activeMobileScreen: React.Element
+	appScreens: React.ReactNode[]
 }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
-	private readonly _forceUpdate = () => {
-		this.forceUpdate()
-	};
 	private _unregisterHistoryListener: () => void;
 	private readonly _contextCreateAccount = (userAccount: UserAccount) => {
 		this.context.user.signIn(userAccount);
@@ -52,6 +49,39 @@ export default class MainView extends React.Component<{}, {
 	private readonly _signIn = (email: string, password: string) => {
 		return this.context.api.signIn(email, password);
 	};
+	private readonly _handleSignIn = () => {
+		if (this.state.appScreens.length) {
+			this.setState({ appScreens: [] });
+		}
+	};
+	private readonly _handleSignOut = () => {
+		if (this.context.environment.clientType === ClientType.App) {
+			this.setState({ appScreens: [this._appAuthScreen] });
+		}
+	};
+	private readonly _appAuthScreen = (
+		<AppAuthScreen
+			key="app-auth-screen"
+			captcha={this.context.captcha}
+			createAccount={this._createAccount}
+			onCreateAccount={this._contextCreateAccount}
+			onSignIn={this._contextSignIn}
+			setTitle={this._setTitle}
+			showToast={this._showToast}
+			signIn={this._signIn}
+		/>
+	);
+	constructor(props: {}, context: Context) {
+		super(props, context);
+		this.state = {
+			appScreens: (
+				context.environment.clientType === ClientType.App &&
+				!context.user.isSignedIn ?
+					[this._appAuthScreen] :
+					[]
+			)
+		};
+	}
 	public componentWillMount() {
 		switch (this.context.router.route.location.search) {
 			case '?sign-in':
@@ -85,31 +115,37 @@ export default class MainView extends React.Component<{}, {
 		) {
 			this.context.router.history.push(this.context.router.route.location.pathname);
 		}
-		this.context.user.addListener('authChange', this._forceUpdate);
+		this.context.user
+			.addListener('signIn', this._handleSignIn)
+			.addListener('signOut', this._handleSignOut);
 		this._unregisterHistoryListener = this.context.router.history.listen(location => {
 			ga('set', 'page', location.pathname);
 			ga('send', 'pageview');
 		});
 	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('authChange', this._forceUpdate);
+		this.context.user
+			.removeListener('signIn', this._handleSignIn)
+			.removeListener('signOut', this._handleSignOut);
 		this._unregisterHistoryListener();
 	}
 	public render() {
 		return (
 			<div className="main-view">
-				<div className="content">
+				<div className="column">
 					<ReadReadinessBar />
 					<EmailConfirmationBar />
 				</div>
 				<Header />
-				<div className="content">
+				<div className="column">
 					<main>
 						{routes.map((route, i) => <Route key={i} {...route} />)}
 					</main>
 					<Footer />
 				</div>
-				<AppScreenManager />
+				<AppScreenManager
+					screens={this.state.appScreens}
+				/>
 				<DialogManager />
 				<Toaster />
 			</div>
