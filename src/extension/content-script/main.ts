@@ -128,23 +128,23 @@ function loadPage() {
 			.sort((a, b) => b.priority - a.priority)[0];
 		// proceed if we're not ignoring the page
 		if (!rule || rule.action !== SourceRuleAction.Ignore) {
-			const metadata = parseDocumentMetadata();
+			const metaParseResult = parseDocumentMetadata();
 			// proceed if we have a positive metadata result or if we're following a read rule
 			if (
-				(metadata && metadata.url && metadata.article.title) ||
+				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
 				(rule && rule.action === SourceRuleAction.Read)
 			) {
 				const content = parseDocumentContent();
 				// prefer the metadata but fall back to content parse values in case none is present
-				const description = metadata.article.description || content.excerpt;
-				if (content.elements.size && metadata.url && metadata.article.title) {
+				const description = metaParseResult.metadata.article.description || content.excerpt;
+				if (content.elements.size && metaParseResult.metadata.url && metaParseResult.metadata.article.title) {
 					context.page = new Page(content.elements, showOverlay);
 					eventPageApi
 						.registerPage({
-							...metadata,
+							...metaParseResult.metadata,
 							wordCount: content.wordCount,
 							readableWordCount: context.page.wordCount,
-							article: { ...metadata.article, description }
+							article: { ...metaParseResult.metadata.article, description }
 						})
 						.then(userPage => {
 							context.page.initialize(userPage);

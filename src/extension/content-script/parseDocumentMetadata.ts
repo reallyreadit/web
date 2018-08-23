@@ -95,8 +95,5 @@ export default function parseDocumentMetadata() {
 		schema = emptyResult;
 	}
 	// merge metadata objects
-	if (isArticle) {
-		return merge(schema, misc, openGraph);
-	}
-	return null;
+	return { isArticle, metadata: merge(schema, misc, openGraph) };
 }
