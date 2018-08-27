@@ -46,17 +46,19 @@ export default class Toaster extends React.Component<{}, { toasts: Toast[] }> {
 	}
 	public render() {
 		return (
-			<ul className="toaster">
-				{this.state.toasts.map(toast =>
-					<li
-						className={className('toast', intentClassMap[toast.intent], { remove: toast.remove })}
-						key={toast.timeoutHandle}
-						dangerouslySetInnerHTML={{ __html: toast.text.replace(/\n/g, '<br />') }}
-						data-timeout-handle={toast.timeoutHandle}
-						onAnimationEnd={this._removeToast}
-						>
-					</li>)}
-			</ul>
+			<div className="toaster">
+				<ul className="toasts">
+					{this.state.toasts.map(toast =>
+						<li
+							className={className('toast', intentClassMap[toast.intent], { remove: toast.remove })}
+							key={toast.timeoutHandle}
+							dangerouslySetInnerHTML={{ __html: toast.text.replace(/\n/g, '<br />') }}
+							data-timeout-handle={toast.timeoutHandle}
+							onAnimationEnd={this._removeToast}
+							>
+						</li>)}
+				</ul>
+			</div>
 		);
 	}
 }

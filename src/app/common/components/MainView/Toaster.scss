@@ -2,10 +2,14 @@
 	position: fixed;
 	top: 0;
 	z-index: 200;
-	left: 50%;
-	transform: translateX(-50%);
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 0;
+	padding: 0 10px;
+	box-sizing: border-box;
 }
-.toaster > .toast {
+.toaster > .toasts > .toast {
 	padding: 10px;
 	border: 5px ridge gainsboro;
 	margin-top: 10px;
@@ -13,14 +17,14 @@
 	font-weight: bold;
 	animation: toaster-pop-in 250ms;
 }
-.toaster > .toast.remove {
+.toaster > .toasts > .toast.remove {
 	animation: toaster-pop-out 250ms;
 }
-.toaster > .toast.success {
+.toaster > .toasts > .toast.success {
 	color: green;
 	background-color: greenyellow;
 }
-.toaster > .toast.danger {
+.toaster > .toasts > .toast.danger {
 	color: white;
 	background-color: red;
 }
