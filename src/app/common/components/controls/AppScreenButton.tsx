@@ -1,9 +1,20 @@
 import * as React from 'react';
 import * as className from 'classnames';
 import Spinner from '../../../../common/components/Spinner';
+import Icon, { IconName } from '../../../../common/components/Icon';
 
+function createIconElement(icon: IconName, busy: boolean) {
+	return (
+		busy ?
+			<Spinner /> :
+			icon ?
+				<Icon name={icon} /> :
+				null
+	);
+}
 export default (props: {
 	busy?: boolean,
+	icon?: IconName,
 	onClick: () => void,
 	style?: 'loud',
 	text: string
@@ -16,12 +27,8 @@ export default (props: {
 		disabled={props.busy}
 		onClick={props.onClick}
 	>
-		{props.busy ?
-			<Spinner /> :
-			null}
+		{createIconElement(props.icon, props.busy)}
 		{props.text}
-		{props.busy ?
-			<Spinner /> :
-			null}
+		{createIconElement(props.icon, props.busy)}
 	</button>
 );
