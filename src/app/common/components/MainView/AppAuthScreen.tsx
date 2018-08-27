@@ -1,59 +1,58 @@
 import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
-import SignInForm from './AppAuthScreen/SignInForm';
-import AppScreenButton from '../controls/AppScreenButton';
-import UserAccount from '../../../../common/models/UserAccount';
-import AppScreen from './AppScreen';
-import CreateAccountScreen from './CreateAccountScreen';
+import SignInCard from './AppAuthScreen/SignInCard';
 import Captcha from '../../Captcha';
 import { Intent } from '../../Page';
+import * as className from 'classnames';
+import CreateAccountCard from './AppAuthScreen/CreateAccountCard';
 
-export default class extends React.PureComponent<{
+interface Props {
 	captcha: Captcha,
-	createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<UserAccount>,
-	onCreateAccount: (userAccount: UserAccount) => void,
-	onSignIn: (userAccount: UserAccount) => void,
-	setTitle: (title: string) => void,
-	showToast: (text: string, intent: Intent) => void,
-	signIn: (email: string, password: string) => Promise<UserAccount>
-}, {
-	showCreateAccountScreen: boolean
+	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
+	onShowToast: (text: string, intent: Intent) => void,
+	onSignIn: (email: string, password: string) => Promise<void>
+}
+enum Card { SignIn, CreateAccount }
+export default class extends React.PureComponent<Props, {
+	activeCard: Card
 }> {
-	public state = {
-		showCreateAccountScreen: false
+	private readonly _showCreateAccountCard = () => {
+		this.setState({ activeCard: Card.CreateAccount });
 	};
-	private readonly _showCreateAccountScreen = () => {
-		this.setState({ showCreateAccountScreen: true });
+	private readonly _showSignInCard = () => {
+		this.setState({ activeCard: Card.SignIn });
 	};
-	public componentWillMount() {
-		this.props.setTitle('Log In');
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			activeCard: Card.SignIn
+		};
 	}
 	public render() {
 		return (
-			<AppScreen className="app-auth-screen">
-				<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
-				<strong>Already have an account?</strong>
-				<SignInForm
-					onSignIn={this.props.onSignIn}
-					signIn={this.props.signIn}
-				/>
-				<div className="break">
-					<span>or</span>
+			<div className="app-auth-screen">
+				<div className="content">
+					<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
+					<div className="flip-container">
+						<div className={className('flipper', { 'flipped': this.state.activeCard === Card.CreateAccount })}>
+							<div className="front">
+								<SignInCard
+									onShowCreateAccountCard={this._showCreateAccountCard}
+									onSignIn={this.props.onSignIn}
+								/>
+							</div>
+							<div className="back">
+								<CreateAccountCard
+									captcha={this.props.captcha}
+									onCancel={this._showSignInCard}
+									onCreateAccount={this.props.onCreateAccount}
+									onShowToast={this.props.onShowToast}
+								/>
+							</div>
+						</div>
+					</div>
 				</div>
-				<AppScreenButton
-					onClick={this._showCreateAccountScreen}
-					style="loud"
-					text="Sign Up"
-				/>
-				{this.state.showCreateAccountScreen ?
-					<CreateAccountScreen
-						captcha={this.props.captcha}
-						createAccount={this.props.createAccount}
-						onCreateAccount={this.props.onCreateAccount}
-						showToast={this.props.showToast}
-					/> :
-					null}
-			</AppScreen>
+			</div>
 		);
 	}
 }

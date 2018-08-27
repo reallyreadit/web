@@ -1,20 +1,19 @@
 import * as React from 'react';
-import UserAccount from '../../../../common/models/UserAccount';
-import Captcha from '../../Captcha';
-import { Intent } from '../../Page';
-import EmailAddressField from '../controls/authentication/EmailAddressField';
-import PasswordField from '../controls/authentication/PasswordField';
-import AppScreenButton from '../controls/AppScreenButton';
-import UsernameField from '../controls/authentication/UsernameField';
-import AppScreen from './AppScreen';
+import Captcha from '../../../Captcha';
+import { Intent } from '../../../Page';
+import EmailAddressField from '../../controls/authentication/EmailAddressField';
+import PasswordField from '../../controls/authentication/PasswordField';
+import AppScreenButton from '../../controls/AppScreenButton';
+import UsernameField from '../../controls/authentication/UsernameField';
+import ActionLink from '../../../../../common/components/ActionLink';
 
 export interface Props {
 	captcha: Captcha,
-	createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<UserAccount>,
-	onCreateAccount: (userAccount: UserAccount) => void,
-	showToast: (text: string, intent: Intent) => void
+	onCancel: () => void,
+	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
+	onShowToast: (text: string, intent: Intent) => void
 }
-export default class extends React.PureComponent<Props, {
+interface State {
 	email: string,
 	emailError: string | null,
 	isSubmitting: boolean,
@@ -23,7 +22,18 @@ export default class extends React.PureComponent<Props, {
 	password: string,
 	passwordError: string | null,
 	showErrors: boolean
-}> {
+}
+const initialState: State = {
+	email: '',
+	emailError: null,
+	isSubmitting: false,
+	name: '',
+	nameError: null,
+	password: '',
+	passwordError: null,
+	showErrors: false
+};
+export default class extends React.PureComponent<Props, State> {
 	private readonly _changeName = (name: string, nameError: string) => {
 		this.setState({ name, nameError });
 	};
@@ -47,13 +57,12 @@ export default class extends React.PureComponent<Props, {
 		) {
 			this.setState({ isSubmitting: true });
 			this.props
-				.createAccount(
+				.onCreateAccount(
 					this.state.name,
 					this.state.email,
 					this.state.password,
 					this.props.captcha.getResponse(this._captchaId)
 				)
-				.then(this.props.onCreateAccount)
 				.catch((errors: string[]) => {
 					this.setState({ isSubmitting: false });
 					if (errors.includes('DuplicateName')) {
@@ -63,24 +72,18 @@ export default class extends React.PureComponent<Props, {
 						this.setState({ emailError: 'Email address already in use.' });
 					}
 					if (errors.includes('InvalidCaptcha')) {
-						this.props.showToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
+						this.props.onShowToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
 					}
 					this.props.captcha.reset(this._captchaId);
 				});
 		}
 	};
+	private readonly _cancel = () => {
+		this.setState(initialState, this.props.onCancel);
+	};
 	constructor() {
 		super();
-		this.state = {
-			email: '',
-			emailError: null,
-			isSubmitting: false,
-			name: '',
-			nameError: null,
-			password: '',
-			passwordError: null,
-			showErrors: false
-		};
+		this.state = initialState;
 	}
 	public componentDidMount() {
 		this.props.captcha.onReady().then(captcha => {
@@ -89,11 +92,13 @@ export default class extends React.PureComponent<Props, {
 	}
 	public render() {
 		return (
-			<AppScreen className="create-account-screen">
+			<div className="create-account-card">
+				<strong>Create a new account</strong>
 				<UsernameField
 					autoFocus
 					error={this.state.nameError}
 					key="username"
+					labelPosition="vertical"
 					onChange={this._changeName}
 					showError={this.state.showErrors}
 					value={this.state.name}
@@ -121,7 +126,10 @@ export default class extends React.PureComponent<Props, {
 					onClick={this._submit}
 					text="Sign Up"
 				/>
-			</AppScreen>
+				<div className="cancel-container">
+					<ActionLink onClick={this._cancel} text="Cancel" />
+				</div>
+			</div>
 		)
 	}
 }

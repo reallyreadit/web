@@ -1,5 +1,27 @@
 .app-auth-screen {
-	position: relative;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	padding: 0 10px;
+}
+.app-auth-screen::before {
+	content: "";
+	height: 10%;
+	min-height: 10px;
+}
+.app-auth-screen::after {
+	content: "";
+	min-height: 10px;
+}
+.app-auth-screen > .content {
+	width: 100%;
+	max-width: 400px;
 }
 .app-auth-screen > .content > .logo {
 	display: flex;
@@ -13,30 +35,29 @@
 	min-width: 240px;
 	max-width: 300px;
 }
-.app-auth-screen > .content > strong {
-	display: block;
-	margin-bottom: 15px;
-	text-align: center;
-	font-size: 14px;
+.app-auth-screen > .content > .flip-container {
+	perspective: 1000px;
 }
-.app-auth-screen > .content > .break {
-	display: flex;
-	align-items: center;
-	margin: 20px 0;
-	color: silver;
+.app-auth-screen > .content > .flip-container > .flipper {
+	transition: 500ms;
+	transform-style: preserve-3d;
+	position: relative;
 }
-.app-auth-screen > .content > .break::before,
-.app-auth-screen > .content > .break::after {
-	content: "";
-	display: block;
-	flex: 1 1 auto;
-	border-bottom: 1px solid silver;
-	margin: 0 10px;
+.app-auth-screen > .content > .flip-container > .flipper.flipped {
+	transform: rotateY(-180deg);
 }
-.app-auth-screen > .create-account-screen {
+.app-auth-screen > .content > .flip-container > .flipper > .front,
+.app-auth-screen > .content > .flip-container > .flipper > .back {
+	backface-visibility: hidden;
 	position: absolute;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
+}
+.app-auth-screen > .content > .flip-container > .flipper > .front {
+	z-index: 2;
+}
+.app-auth-screen > .content > .flip-container > .flipper > .back {
+	transform: rotateY(180deg);
 }

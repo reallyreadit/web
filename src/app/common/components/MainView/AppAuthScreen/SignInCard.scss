@@ -1,0 +1,23 @@
+.sign-in-card > strong {
+	display: block;
+	margin-bottom: 15px;
+	text-align: center;
+	font-size: 14px;
+}
+.sign-in-card > .app-screen-button:first-of-type {
+	margin-top: 10px;
+}
+.sign-in-card > .break {
+	display: flex;
+	align-items: center;
+	margin: 20px 0;
+	color: silver;
+}
+.sign-in-card > .break::before,
+.sign-in-card > .break::after {
+	content: "";
+	display: block;
+	flex: 1 1 auto;
+	border-bottom: 1px solid silver;
+	margin: 0 10px;
+}

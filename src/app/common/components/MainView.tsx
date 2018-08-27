@@ -12,73 +12,55 @@ import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
 import ClientType from '../ClientType';
 import AppAuthScreen from './MainView/AppAuthScreen';
-import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../Page';
 import Footer from './MainView/Footer';
-import AppScreenManager from './MainView/AppScreenManager';
 
 export default class MainView extends React.Component<{}, {
-	appScreens: React.ReactNode[]
+	showAppAuthScreen: boolean
 }> {
 	public static contextTypes = contextTypes;
 	public context: Context;
 	private _unregisterHistoryListener: () => void;
-	private readonly _contextCreateAccount = (userAccount: UserAccount) => {
-		this.context.user.signIn(userAccount);
-		ga('send', {
-			hitType: 'event',
-			eventCategory: 'UserAccount',
-			eventAction: 'create',
-			eventLabel: userAccount.name
-		});
-		this.forceUpdate();
-	};
-	private readonly _contextSignIn = (userAccount: UserAccount) => {
-		this.context.user.signIn(userAccount);
-		this.forceUpdate();
-	};
 	private readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
-		return this.context.api.createUserAccount(name, email, password, captchaResponse);
-	};
-	private readonly _setTitle = (title: string) => {
-		this.context.page.setTitle(title);
+		return this.context.api
+			.createUserAccount(name, email, password, captchaResponse)
+			.then(userAccount => {
+				this.context.user.signIn(userAccount);
+				this.context.page.showToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
+				ga('send', {
+					hitType: 'event',
+					eventCategory: 'UserAccount',
+					eventAction: 'create',
+					eventLabel: userAccount.name
+				});
+			});
 	};
 	private readonly _showToast = (text: string, intent: Intent) => {
 		this.context.page.showToast(text, intent);
 	};
 	private readonly _signIn = (email: string, password: string) => {
-		return this.context.api.signIn(email, password);
+		return this.context.api
+			.signIn(email, password)
+			.then(userAccount => {
+				this.context.user.signIn(userAccount);
+			});
 	};
 	private readonly _handleSignIn = () => {
-		if (this.state.appScreens.length) {
-			this.setState({ appScreens: [] });
+		if (this.state.showAppAuthScreen) {
+			this.setState({ showAppAuthScreen: false });
 		}
 	};
 	private readonly _handleSignOut = () => {
 		if (this.context.environment.clientType === ClientType.App) {
-			this.setState({ appScreens: [this._appAuthScreen] });
+			this.setState({ showAppAuthScreen: true });
 		}
 	};
-	private readonly _appAuthScreen = (
-		<AppAuthScreen
-			key="app-auth-screen"
-			captcha={this.context.captcha}
-			createAccount={this._createAccount}
-			onCreateAccount={this._contextCreateAccount}
-			onSignIn={this._contextSignIn}
-			setTitle={this._setTitle}
-			showToast={this._showToast}
-			signIn={this._signIn}
-		/>
-	);
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		this.state = {
-			appScreens: (
-				context.environment.clientType === ClientType.App &&
-				!context.user.isSignedIn ?
-					[this._appAuthScreen] :
-					[]
+			showAppAuthScreen: (
+				this.context.environment.clientType === ClientType.App &&
+				!this.context.user.isSignedIn
 			)
 		};
 	}
@@ -132,21 +114,27 @@ export default class MainView extends React.Component<{}, {
 	public render() {
 		return (
 			<div className="main-view">
-				<div className="column">
-					<ReadReadinessBar />
-					<EmailConfirmationBar />
-				</div>
-				<Header />
-				<div className="column">
-					<main>
-						{routes.map((route, i) => <Route key={i} {...route} />)}
-					</main>
-					<Footer />
-				</div>
-				<AppScreenManager
-					screens={this.state.appScreens}
-				/>
-				<DialogManager />
+				{this.state.showAppAuthScreen ?
+					<AppAuthScreen
+						captcha={this.context.captcha}
+						onCreateAccount={this._createAccount}
+						onShowToast={this._showToast}
+						onSignIn={this._signIn}
+					/> :
+					[
+						<div className="column" key="bars">
+							<ReadReadinessBar />
+							<EmailConfirmationBar />
+						</div>,
+						<Header key="header" />,
+						<div className="column" key="main">
+							<main>
+								{routes.map((route, i) => <Route key={i} {...route} />)}
+							</main>
+							<Footer />
+						</div>,
+						<DialogManager key="dialogs" />
+					]}
 				<Toaster />
 			</div>
 		);

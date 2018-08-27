@@ -2,11 +2,10 @@ import * as React from 'react';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
 import AppScreenButton from '../../controls/AppScreenButton';
-import UserAccount from '../../../../../common/models/UserAccount';
 
 export default class extends React.PureComponent<{
-	onSignIn: (userAccount: UserAccount) => void,
-	signIn: (email: string, password: string) => Promise<UserAccount>
+	onShowCreateAccountCard: () => void,
+	onSignIn: (email: string, password: string) => Promise<void>
 }, {
 	email: string,
 	emailError: string | null,
@@ -26,8 +25,7 @@ export default class extends React.PureComponent<{
 		if (!this.state.emailError && !this.state.passwordError) {
 			this.setState({ isSubmitting: true });
 			this.props
-				.signIn(this.state.email, this.state.password)
-				.then(this.props.onSignIn)
+				.onSignIn(this.state.email, this.state.password)
 				.catch((errors: string[]) => {
 					this.setState({ isSubmitting: false });
 					if (errors.includes('UserAccountNotFound')) {
@@ -52,7 +50,8 @@ export default class extends React.PureComponent<{
 	}
 	public render() {
 		return (
-			<div className="sign-in-form">
+			<div className="sign-in-card">
+				<strong>Already have an account?</strong>
 				<EmailAddressField
 					autoFocus
 					error={this.state.emailError}
@@ -72,6 +71,14 @@ export default class extends React.PureComponent<{
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
 					text="Log In"
+				/>
+				<div className="break">
+					<span>or</span>
+				</div>
+				<AppScreenButton
+					onClick={this.props.onShowCreateAccountCard}
+					style="loud"
+					text="Sign Up"
 				/>
 			</div>
 		);
