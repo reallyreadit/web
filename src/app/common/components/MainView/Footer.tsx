@@ -3,7 +3,7 @@ import Separator from '../../../../common/components/Separator';
 import { Link } from 'react-router-dom';
 
 export default () => (
-	<footer>
+	<footer className="footer">
 		<a href="https://blog.reallyread.it">Blog</a>
 		<Separator />
 		<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
