@@ -23,7 +23,9 @@ export default class ActionLink extends React.PureComponent<{
 			<span className={className('action-link', classList)} onClick={this._handleClick}>
 				{this.props.state === 'busy' ?
 					<Spinner /> :
-					<Icon name={this.props.iconLeft} />}
+					this.props.iconLeft ?
+						<Icon name={this.props.iconLeft} /> :
+						null}
 				<span>{this.props.text}</span>
 			</span>
 		);
