@@ -1,6 +1,7 @@
 import Readability, { ParseResult } from './Readability';
 import ContentElement from './ContentElement';
 import { cloneNodeWithReference } from './utils';
+import styleArticleDocument from './styleArticleDocument';
 
 export default function (mode: 'analyze' | 'mutate') {
 	let parseResult: ParseResult;
@@ -28,6 +29,7 @@ export default function (mode: 'analyze' | 'mutate') {
 			parseResult = new Readability(window.document).parse();
 			window.document.body.innerHTML = parseResult.content;
 			contentElements = Array.from(window.document.body.getElementsByTagName('p'));
+			styleArticleDocument(window.document, parseResult.title, parseResult.byline);
 			break;
 		default:
 			throw new Error('Unexpected value for mode');
