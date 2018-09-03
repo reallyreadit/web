@@ -19,6 +19,7 @@ let
 		priority: number,
 		action: SourceRuleAction
 	}[],
+	parseMode: 'analyze' | 'mutate',
 	showOverlay: boolean;
 
 // event page interface
@@ -134,10 +135,10 @@ function loadPage() {
 				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
 				(rule && rule.action === SourceRuleAction.Read)
 			) {
-				const content = parseDocumentContent();
+				const content = parseDocumentContent(parseMode);
 				// prefer the metadata but fall back to content parse values in case none is present
 				const description = metaParseResult.metadata.article.description || content.excerpt;
-				if (content.elements.size && metaParseResult.metadata.url && metaParseResult.metadata.article.title) {
+				if (content.elements.length && metaParseResult.metadata.url && metaParseResult.metadata.article.title) {
 					context.page = new Page(content.elements, showOverlay);
 					eventPageApi
 						.registerPage({
@@ -190,6 +191,7 @@ eventPageApi
 		// set up parameters
 		config = initData.config;
 		sourceRules = initData.sourceRules.map(rule => ({ ...rule, path: new RegExp(rule.path) }));
+		parseMode = initData.parseMode;
 		showOverlay = initData.showOverlay;
 		// load page
 		if (initData.loadPage) {

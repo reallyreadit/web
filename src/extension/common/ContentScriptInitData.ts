@@ -1,10 +1,10 @@
 import ContentScriptConfig from './ContentScriptConfig';
 import SourceRule from '../../common/models/SourceRule';
 
-interface ContentScriptInitData {
+export default interface ContentScriptInitData {
 	config: ContentScriptConfig,
 	sourceRules: SourceRule[],
-	showOverlay: boolean
+	showOverlay: boolean,
+	parseMode: 'analyze' | 'mutate',
 	loadPage: boolean
 }
-export default ContentScriptInitData;

@@ -60,6 +60,7 @@ const contentScriptApi = new ContentScriptApi({
 			.then(isAuthenticated => ({
 				config: serverApi.contentScriptConfig,
 				sourceRules: serverApi.getSourceRules(new URL(url).hostname),
+				parseMode: JSON.parse(localStorage.getItem('parseMode')),
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
 				loadPage: isAuthenticated
 			}));
@@ -169,6 +170,7 @@ function updateIcon(state: ExtensionState) {
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('chrome.runtime.onInstalled');
 	// initialize settings
+	localStorage.setItem('parseMode', JSON.stringify('analyze'));
 	localStorage.setItem('showOverlay', JSON.stringify(false));
 	// clear storage
 	tabs.clear();

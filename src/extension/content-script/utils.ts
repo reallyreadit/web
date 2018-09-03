@@ -15,3 +15,11 @@ export function matchGetAbsoluteUrl(url: string) {
 	}
 	return null;
 }
+export function cloneNodeWithReference<T extends Node>(node: T) {
+	const clone = node.cloneNode() as T;
+	clone.originalNode = node.originalNode || node;
+	for (let i = 0; i < node.childNodes.length; i++) {
+		clone.appendChild(cloneNodeWithReference(node.childNodes[i]));
+	}
+	return clone;
+}

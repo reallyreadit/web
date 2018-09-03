@@ -6,9 +6,9 @@ export default class Page {
 	private _contentEls: ContentElement[];
 	private _userPageId: number;
 	private _wordCount: number;
-	constructor(contentEls: Set<ContentElement>, showOverlay: boolean) {
+	constructor(contentEls: ContentElement[], showOverlay: boolean) {
 		// set up the content elements
-		this._contentEls = Array.from(contentEls).sort((a, b) => a.offsetTop - b.offsetTop);
+		this._contentEls = contentEls.sort((a, b) => a.offsetTop - b.offsetTop);
 		this._contentEls.forEach(el => el.showOverlay(showOverlay));
 		// cache the word count
 		this._wordCount = this.getReadState().wordCount;

@@ -1,3 +1,5 @@
+import { cloneNodeWithReference } from "./utils";
+
 /*eslint-env es6:false*/
 /*
  * Copyright (c) 2010 Arc90 Inc
@@ -20,21 +22,6 @@
  * available at: http://code.google.com/p/arc90labs-readability
  */
 
-declare global {
-	interface Document {
-		documentURI: string
-	}
-	interface Node {
-		// rrit: add ref property to Node interface
-		ref: Node,
-		readability: {
-			contentScore: number
-		}
-	}
-	interface HTMLTableElement {
-		_readabilityDataTable: boolean
-	}
-}
 interface JSDOMNode extends Node {
 	__JSDOMParser__: boolean,
 	localName: string,
@@ -50,6 +37,16 @@ interface Options {
 interface Attempt {
 	articleContent: HTMLElement,
 	textLength: number
+}
+export interface ParseResult {
+	title: string,
+	byline: string,
+	dir: string,
+	content: string,
+	textContent: string,
+	length: number,
+	excerpt: string,
+	rootElement: HTMLElement
 }
 
 export default class Readability {
@@ -132,9 +129,7 @@ export default class Readability {
 	constructor(doc: Document, options?: Options) {
 		options = options || {};
 
-		// rrit: use clone
-		//this._doc = doc;
-		this._doc = this._cloneNodeWithRef(doc);
+		this._doc = doc;
 		this._articleTitle = null;
 		this._articleByline = null;
 		this._articleDir = null;
@@ -302,9 +297,6 @@ export default class Readability {
 	/**
    * Converts each <a> and <img> uri in the given element to an absolute URI,
    * ignoring #ref URIs.
-   *
-   * @param Element
-   * @return void
    */
 	private _fixRelativeUris(articleContent: Element) {
 		var baseURI = this._doc.baseURI;
@@ -528,8 +520,8 @@ export default class Readability {
 			replacement.appendChild(node.firstChild);
 		}
 		node.parentNode.replaceChild(replacement, node);
-		// rrit: update node refs
-		replacement.ref = node.ref;
+		// rrit: maintain originalNode reference
+		replacement.originalNode = node.originalNode;
 		if (node.readability)
 			replacement.readability = node.readability;
 
@@ -734,19 +726,6 @@ export default class Readability {
 		return ancestors;
 	}
 
-	// rrit: clone with reference to original
-	/**
-	 * Create a deep clone of the node and add property 'ref' with reference to original node
-	 */
-	private _cloneNodeWithRef<T extends Node>(node: T) {
-		var clone = node.cloneNode() as T;
-		clone.ref = node.ref || node;
-		this._forEachNode(node.childNodes, function (this: Readability, node) {
-			clone.appendChild(this._cloneNodeWithRef(node));
-		});
-		return clone;
-	}
-
 	/***
 	 * grabArticle - Using a variety of metrics (content score, classname, element types), find the content that is
 	 *         most likely to be the stuff a user wants to read. Then return it wrapped up in a div.
@@ -763,9 +742,9 @@ export default class Readability {
 			return null;
 		}
 
-		// rrit: cache nodes instead
+		// rrit: maintain originalNode reference
 		//var pageCacheHtml = page.innerHTML;
-		var pageCache = this._cloneNodeWithRef(page);
+		var pageCache = cloneNodeWithReference(page);
 
 		while (true) {
 			var stripUnlikelyCandidates = this._flagIsActive(this.FLAG_STRIP_UNLIKELYS);
@@ -846,6 +825,8 @@ export default class Readability {
 					// algorithm with DIVs with are, in practice, paragraphs.
 					if (this._hasSingleTagInsideElement(node, "P") && this._getLinkDensity(node) < 0.25) {
 						var newNode = node.children[0];
+						// rrit: maintain originalNode reference
+						newNode.originalNode = node.originalNode;
 						node.parentNode.replaceChild(newNode, node);
 						node = newNode;
 						elementsToScore.push(node);
@@ -1132,11 +1113,11 @@ export default class Readability {
 			var textLength = this._getInnerText(articleContent, true).length;
 			if (textLength < this._charThreshold) {
 				parseSuccessful = false;
-				// rrit: use node cache instead
+				// rrit: maintain originalNode reference
 				//page.innerHTML = pageCacheHtml;
 				this._removeNodes(page.childNodes);
 				this._forEachNode(pageCache.childNodes, function (this: Readability, node) {
-					page.appendChild(this._cloneNodeWithRef(node));
+					page.appendChild(cloneNodeWithReference(node));
 				});
 
 				if (this._flagIsActive(this.FLAG_STRIP_UNLIKELYS)) {
@@ -1778,15 +1759,15 @@ export default class Readability {
 
 		var textContent = articleContent.textContent;
 		return {
-			// rrit: return articleContent
-			rootEl: articleContent,
 			title: this._articleTitle,
 			byline: metadata.byline || this._articleByline,
 			dir: this._articleDir,
 			content: articleContent.innerHTML,
 			textContent: textContent,
 			length: textContent.length,
-			excerpt: metadata.excerpt,
+			excerpt: metadata.excerpt
+			// rrit: return articleContent element
+			, rootElement: articleContent
 		};
 	}
 }
