@@ -48,6 +48,7 @@
 }
 .app-auth-screen > .content > .flip-container > .flipper > .front,
 .app-auth-screen > .content > .flip-container > .flipper > .back {
+	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
 	position: absolute;
 	top: 0;
@@ -57,6 +58,7 @@
 }
 .app-auth-screen > .content > .flip-container > .flipper > .front {
 	z-index: 2;
+	transform: translateZ(0);
 }
 .app-auth-screen > .content > .flip-container > .flipper > .back {
 	transform: rotateY(180deg);
