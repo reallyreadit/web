@@ -23,6 +23,19 @@ import ChallengeState from '../../common/models/ChallengeState';
 import ServerChallenge from './ServerChallenge';
 import ServerCaptcha from './ServerCaptcha';
 import * as cookieParser from 'cookie-parser';
+import * as url from 'url';
+import PasswordResetRequest from '../../common/models/PasswordResetRequest';
+
+// redirect helper function
+const nodeUrl = url;
+function redirect(req: express.Request, res: express.Response, url: string) {
+	if (req.query['mode']) {
+		const redirectUrl = nodeUrl.parse(url, true);
+		redirectUrl.query['mode'] = req.query['mode'];
+		url = nodeUrl.format(redirectUrl);
+	}
+	res.redirect(url);
+}
 
 // set up logger
 const log = bunyan.createLogger({
@@ -72,8 +85,8 @@ server = server.use((req, res, next) => {
 	});
 	req.api = api;
 	if (api.hasAuthCookie()) {
-		api.fetchJson('GET', new ApiRequest('/UserAccounts/GetSessionState'))
-			.then((sessionState: SessionState) => {
+		api.fetchJson<SessionState>('GET', new ApiRequest('/UserAccounts/GetSessionState'))
+			.then(sessionState => {
 				if (!sessionState) {
 					throw new Error('InvalidSessionKey');
 				}
@@ -104,7 +117,7 @@ server = server.use((req, res, next) => {
 // authorize
 server = server.get(['/list', '/inbox', '/settings'], (req, res, next) => {
 	if (!req.sessionState.userAccount) {
-		res.redirect('/');
+		redirect(req, res, '/');
 	} else {
 		next();
 	}
@@ -119,12 +132,70 @@ server = server.get('/admin', (req, res, next) => {
 		next();
 	}
 });
+// handle token links
+server = server.get(['/confirmEmail', '/resetPassword', '/viewReply'], (req, res, next) => {
+	const token = req.query['token'];
+	if (!token) {
+		res.sendStatus(400);
+	}
+	switch (req.path) {
+		case '/confirmEmail':
+			req.api
+				.fetchJson('POST', new ApiRequest('/UserAccounts/ConfirmEmail', { token }))
+				.then(() => {
+					redirect(req, res, '/email/confirm/success');
+				})
+				.catch((error: string) => {
+					const redirectUrl = ({
+						'AlreadyConfirmed': '/email/confirm/already-confirmed',
+						'Expired': '/email/confirm/expired',
+						'NotFound': '/email/confirm/not-found'
+					} as { [key: string]: string })[error];
+					if (redirectUrl) {
+						redirect(req, res, redirectUrl);
+					} else {
+						res.sendStatus(400);
+					}
+				});
+			return;
+		case '/resetPassword':
+			req.api
+				.fetchJson<PasswordResetRequest>('GET', new ApiRequest('/UserAccounts/PasswordResetRequest', { token }))
+				.then(resetRequest => {
+					redirect(req, res, url.format({
+						pathname: '/',
+						query: {
+							'reset-password': '',
+							'email': resetRequest.emailAddress,
+							'token': token
+						}
+					}));
+				})
+				.catch((error: string) => {
+					const redirectUrl = ({
+						'AlreadyConfirmed': '/email/confirm/already-confirmed',
+						'Expired': '/email/confirm/expired',
+						'NotFound': '/email/confirm/not-found'
+					} as { [key: string]: string })[error];
+					if (redirectUrl) {
+						redirect(req, res, redirectUrl);
+					} else {
+						res.sendStatus(400);
+					}
+				});
+			return;
+		case '/viewReply':
+			return;
+	}
+});
+// handle new reply desktop notification link
+
 // challenge
 server = server.use((req, res, next) => {
 	req
 		.api
-		.fetchJson('GET', new ApiRequest('/Challenges/State'))
-		.then((challengeState: ChallengeState) => {
+		.fetchJson<ChallengeState>('GET', new ApiRequest('/Challenges/State'))
+		.then(challengeState => {
 			req.challengeState = challengeState;
 			next();
 		})
