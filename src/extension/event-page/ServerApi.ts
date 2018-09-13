@@ -179,7 +179,7 @@ export default class ServerApi {
 									timestamp: now
 								});
 								chrome.notifications.create(
-									`${config.api.protocol}://${config.api.host}/UserAccounts/ViewReplyFromDesktopNotification/${reply.id}`,
+									`${config.web.protocol}://${config.web.host}/viewReply/${reply.id}`,
 									{
 										type: 'basic',
 										iconUrl: '../icons/desktop-notification-icon.svg',
