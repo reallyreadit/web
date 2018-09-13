@@ -69,10 +69,12 @@ if (config.contentRootPath) {
 // apple app site association
 server = server.get('/apple-app-site-association', (req, res) => {
 	res.json({
-		'webcredentials': {
-			'apps': [
-				'PRH8B2NRNT.it.reallyread.mobile'
-			]
+		'applinks': {
+			'apps': [],
+			'details': [{
+				'appID': 'PRH8B2NRNT.it.reallyread.mobile',
+				'paths': ['*']
+			}]
 		}
 	});
 });
