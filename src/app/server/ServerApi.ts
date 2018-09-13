@@ -14,30 +14,40 @@ export default class ServerApi extends Api {
 		this._reqStore = new RequestStore();
 	}
 	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
-		return new Promise<T>((resolve, reject) => request({
-			method,
-			uri: this._endpoint.scheme + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path + params.getQueryString(),
-			headers: this.hasAuthCookie() ?
-				{ 'Cookie': this._authCookie.key + '=' + this._authCookie.value } :
-				{},
-			json: true,
-			callback: (error, res, body) => {
-				switch (res.statusCode) {
-					case 200:
-						resolve(body);
-						break;
-					case 400:
-						reject(body);
-						break;
-					case 401:
-						reject(['Unauthenticated']);
-						break;
-					default:
-						reject([]);
-						break;
-				}
+		return new Promise<T>((resolve, reject) => {
+			let uri = this._endpoint.scheme + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path;
+			if (method === 'GET') {
+				uri += params.getQueryString();
 			}
-		}));
+			const options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions) = {
+				method,
+				uri,
+				json: true,
+				callback: (error, res, body) => {
+					switch (res.statusCode) {
+						case 200:
+							resolve(body);
+							break;
+						case 400:
+							reject(body);
+							break;
+						case 401:
+							reject(['Unauthenticated']);
+							break;
+						default:
+							reject([]);
+							break;
+					}
+				}
+			};
+			if (this.hasAuthCookie()) {
+				options.headers = { 'Cookie': this._authCookie.key + '=' + this._authCookie.value };
+			}
+			if (method === 'POST') {
+				options.body = params.query;
+			}
+			return request(options);
+		});
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (this._isInitialized) {
