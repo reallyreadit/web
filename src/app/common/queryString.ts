@@ -13,15 +13,3 @@ export function parseQueryString(queryString: string) {
 			return result;
 		}, {} as { [key: string]: string })
 }
-export function removeOptionalQueryStringParameters(path: string) {
-	if (!path || !path.includes('?')) {
-		return path;
-	}
-	const
-		parts = path.split('?'),
-		params = parseQueryString(parts[1]);
-	if (params['mode']) {
-		return parts[0] + '?mode=' + params['mode'];
-	}
-	return parts[0];
-}

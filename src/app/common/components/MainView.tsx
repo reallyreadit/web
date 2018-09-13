@@ -14,7 +14,7 @@ import ClientType from '../ClientType';
 import AppAuthScreen from './MainView/AppAuthScreen';
 import { Intent } from '../Page';
 import Footer from './MainView/Footer';
-import { parseQueryString, removeOptionalQueryStringParameters } from '../queryString';
+import { parseQueryString } from '../queryString';
 
 export default class MainView extends React.Component<{}, {
 	showAppAuthScreen: boolean
@@ -94,12 +94,7 @@ export default class MainView extends React.Component<{}, {
 				keys.includes('create-account') ||
 				keys.includes('reset-password')
 			) {
-				this.context.router.history.push(
-					removeOptionalQueryStringParameters(
-						this.context.router.route.location.pathname +
-						this.context.router.route.location.search
-					)
-				);
+				this.context.router.history.push(this.context.router.route.location.pathname);
 			}
 		}
 		this.context.user

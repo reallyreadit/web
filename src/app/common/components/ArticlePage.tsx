@@ -10,7 +10,7 @@ import CommentList from './controls/comments/CommentList';
 import CommentBox from './controls/comments/CommentBox';
 import ShareArticleDialog from './ShareArticleDialog';
 import Page from './Page';
-import { parseQueryString, removeOptionalQueryStringParameters } from '../queryString';
+import { parseQueryString } from '../queryString';
 
 type Props = RouteComponentProps<{
 	sourceSlug: string,
@@ -122,12 +122,7 @@ export default class ArticlePage extends React.Component<Props, {
 				.keys(parseQueryString(this.context.router.route.location.search))
 				.includes('share')
 		) {
-			this.context.router.history.push(
-				removeOptionalQueryStringParameters(
-					this.context.router.route.location.pathname +
-					this.context.router.route.location.search
-				)
-			);
+			this.context.router.history.push(this.context.router.route.location.pathname);
 		}
 		this.context.user.addListener('authChange', this._reload);
 		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
