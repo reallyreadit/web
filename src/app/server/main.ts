@@ -25,10 +25,11 @@ import ServerCaptcha from './ServerCaptcha';
 import * as cookieParser from 'cookie-parser';
 import * as url from 'url';
 import PasswordResetRequest from '../../common/models/PasswordResetRequest';
+import Comment from '../../common/models/Comment';
 
 // redirect helper function
 const nodeUrl = url;
-function redirect(req: express.Request, res: express.Response, url: string) {
+function redirectWithMode(req: express.Request, res: express.Response, url: string) {
 	if (req.query['mode']) {
 		const redirectUrl = nodeUrl.parse(url, true);
 		redirectUrl.query['mode'] = req.query['mode'];
@@ -65,14 +66,6 @@ if (config.contentRootPath) {
 	// attempt to serve static files first
 	server = server.use(express.static(config.contentRootPath));
 }
-// render matched route or return 404
-server = server.use((req, res, next) => {
-	if (routes.find(route => !!matchPath(req.path, route))) {
-		next();
-	} else {
-		res.sendStatus(404);
-	}
-});
 // authenticate
 server = server.use((req, res, next) => {
 	const api = new ServerApi({
@@ -117,7 +110,7 @@ server = server.use((req, res, next) => {
 // authorize
 server = server.get(['/list', '/inbox', '/settings'], (req, res, next) => {
 	if (!req.sessionState.userAccount) {
-		redirect(req, res, '/');
+		redirectWithMode(req, res, '/');
 	} else {
 		next();
 	}
@@ -132,64 +125,69 @@ server = server.get('/admin', (req, res, next) => {
 		next();
 	}
 });
-// handle token links
-server = server.get(['/confirmEmail', '/resetPassword', '/viewReply'], (req, res, next) => {
-	const token = req.query['token'];
-	if (!token) {
-		res.sendStatus(400);
-	}
-	switch (req.path) {
-		case '/confirmEmail':
-			req.api
-				.fetchJson('POST', new ApiRequest('/UserAccounts/ConfirmEmail', { token }))
-				.then(() => {
-					redirect(req, res, '/email/confirm/success');
-				})
-				.catch((error: string) => {
-					const redirectUrl = ({
-						'AlreadyConfirmed': '/email/confirm/already-confirmed',
-						'Expired': '/email/confirm/expired',
-						'NotFound': '/email/confirm/not-found'
-					} as { [key: string]: string })[error];
-					if (redirectUrl) {
-						redirect(req, res, redirectUrl);
-					} else {
-						res.sendStatus(400);
-					}
-				});
-			return;
-		case '/resetPassword':
-			req.api
-				.fetchJson<PasswordResetRequest>('GET', new ApiRequest('/UserAccounts/PasswordResetRequest', { token }))
-				.then(resetRequest => {
-					redirect(req, res, url.format({
-						pathname: '/',
-						query: {
-							'reset-password': '',
-							'email': resetRequest.emailAddress,
-							'token': token
-						}
-					}));
-				})
-				.catch((error: string) => {
-					const redirectUrl = ({
-						'AlreadyConfirmed': '/email/confirm/already-confirmed',
-						'Expired': '/email/confirm/expired',
-						'NotFound': '/email/confirm/not-found'
-					} as { [key: string]: string })[error];
-					if (redirectUrl) {
-						redirect(req, res, redirectUrl);
-					} else {
-						res.sendStatus(400);
-					}
-				});
-			return;
-		case '/viewReply':
-			return;
-	}
+// handle redirects
+server = server.get('/confirmEmail', (req, res) => {
+	req.api
+		.fetchJson('POST', new ApiRequest('/UserAccounts/ConfirmEmail2', { token: req.query['token'] }))
+		.then(() => {
+			redirectWithMode(req, res, '/email/confirm/success');
+		})
+		.catch((error: string) => {
+			const redirectUrl = ({
+				'AlreadyConfirmed': '/email/confirm/already-confirmed',
+				'Expired': '/email/confirm/expired',
+				'NotFound': '/email/confirm/not-found'
+			} as { [key: string]: string })[error];
+			if (redirectUrl) {
+				redirectWithMode(req, res, redirectUrl);
+			} else {
+				res.sendStatus(400);
+			}
+		});
 });
-// handle new reply desktop notification link
-
+server = server.get('/resetPassword', (req, res) => {
+	req.api
+		.fetchJson<PasswordResetRequest>('GET', new ApiRequest('/UserAccounts/PasswordResetRequest2', { token: req.query['token'] }))
+		.then(resetRequest => {
+			redirectWithMode(req, res, url.format({
+				pathname: '/',
+				query: {
+					'reset-password': '',
+					'email': resetRequest.emailAddress,
+					'token': req.query['token']
+				}
+			}));
+		})
+		.catch((error: string) => {
+			const redirectUrl = ({
+				'Expired': '/password/reset/expired',
+				'NotFound': '/password/reset/not-found'
+			} as { [key: string]: string })[error];
+			if (redirectUrl) {
+				redirectWithMode(req, res, redirectUrl);
+			} else {
+				res.sendStatus(400);
+			}
+		});
+});
+server = server.get('/viewReply/:id?', (req, res) => {
+	let path = '/UserAccounts/ViewReply2';
+	const params = {} as { [key: string]: string };
+	if (req.params['id']) {
+		params['id'] = req.params['id'];
+	} else if (req.query['token']) {
+		params['token'] = req.query['token'];
+	}
+	req.api
+		.fetchJson<Comment>('POST', new ApiRequest(path, params))
+		.then(comment => {
+			const slugParts = comment.articleSlug.split('_');
+			redirectWithMode(req, res, `/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
+		})
+		.catch(() => {
+			res.sendStatus(400);
+		});
+});
 // challenge
 server = server.use((req, res, next) => {
 	req
@@ -216,6 +214,14 @@ server = server.get('/inbox', (req, res, next) => {
 			.then(next);
 	} else {
 		next();
+	}
+});
+// render matched route or return 404
+server = server.use((req, res, next) => {
+	if (routes.find(route => !!matchPath(req.path, route))) {
+		next();
+	} else {
+		res.sendStatus(404);
 	}
 });
 // render the app
