@@ -66,6 +66,16 @@ if (config.contentRootPath) {
 	// attempt to serve static files first
 	server = server.use(express.static(config.contentRootPath));
 }
+// apple app site association
+server = server.get('/apple-app-site-association', (req, res) => {
+	res.json({
+		'webcredentials': {
+			'apps': [
+				'PRH8B2NRNT.it.reallyread.mobile'
+			]
+		}
+	});
+});
 // authenticate
 server = server.use((req, res, next) => {
 	const api = new ServerApi({
