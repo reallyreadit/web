@@ -6,6 +6,7 @@ import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
 import Page from './Page';
+import { parseQueryString } from '../queryString';
 
 type Props = RouteComponentProps<{}>;
 const title = 'Email Subscriptions';
@@ -50,9 +51,10 @@ export default class extends React.PureComponent<
 	private _token: string;
 	constructor(props: Props, context: Context) {
 		super(props, context);
-		if (context.router.route.location.search.startsWith('?token')) {
+		const queryStringParams = parseQueryString(context.router.route.location.search);
+		if (queryStringParams['token']) {
 			const
-				token = decodeURIComponent(context.router.route.location.search.split('=')[1]),
+				token = decodeURIComponent(queryStringParams['token']),
 				request = context.api.getEmailSubscriptions(
 					token,
 					request => this.setState({

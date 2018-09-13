@@ -14,6 +14,7 @@ import ClientType from '../ClientType';
 import AppAuthScreen from './MainView/AppAuthScreen';
 import { Intent } from '../Page';
 import Footer from './MainView/Footer';
+import { parseQueryString, removeOptionalQueryStringParameters } from '../queryString';
 
 export default class MainView extends React.Component<{}, {
 	showAppAuthScreen: boolean
@@ -65,37 +66,41 @@ export default class MainView extends React.Component<{}, {
 		};
 	}
 	public componentWillMount() {
-		switch (this.context.router.route.location.search) {
-			case '?sign-in':
+		if (this.context.router.route.location.search) {
+			const
+				kvps = parseQueryString(this.context.router.route.location.search),
+				keys = Object.keys(kvps);
+			if (keys.includes('sign-in')) {
 				this.context.page.openDialog(<SignInDialog />);
-				break;
-			case '?create-account':
+			} else if (keys.includes('create-account')) {
 				this.context.page.openDialog(<CreateAccountDialog />);
-				break;
-			default:
-				if (this.context.router.route.location.search.startsWith('?reset-password')) {
-					const kvps = this.context.router.route.location.search.split('&');
-					this.context.page.openDialog(
-						<ResetPasswordDialog
-							email={decodeURIComponent(kvps[1].split('=')[1])}
-							token={decodeURIComponent(kvps[2].split('=')[1])}
-						/>
-					);
-				}
-				break;
+			} else if (keys.includes('reset-password')) {
+				this.context.page.openDialog(
+					<ResetPasswordDialog
+						email={decodeURIComponent(kvps['email'])}
+						token={decodeURIComponent(kvps['token'])}
+					/>
+				);
+			}
 		}
 	}
 	public componentDidMount() {
-		const search = this.context.router.route.location.search;
-		if (
-			search &&
-			(
-				search === '?sign-in' ||
-				search === '?create-account' ||
-				search.startsWith('?reset-password')
-			)
-		) {
-			this.context.router.history.push(this.context.router.route.location.pathname);
+		if (this.context.router.route.location.search) {
+			const
+				kvps = parseQueryString(this.context.router.route.location.search),
+				keys = Object.keys(kvps);
+			if (
+				keys.includes('sign-in') ||
+				keys.includes('create-account') ||
+				keys.includes('reset-password')
+			) {
+				this.context.router.history.push(
+					removeOptionalQueryStringParameters(
+						this.context.router.route.location.pathname +
+						this.context.router.route.location.search
+					)
+				);
+			}
 		}
 		this.context.user
 			.addListener('signIn', this._handleSignIn)

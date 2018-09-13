@@ -10,6 +10,7 @@ import CommentList from './controls/comments/CommentList';
 import CommentBox from './controls/comments/CommentBox';
 import ShareArticleDialog from './ShareArticleDialog';
 import Page from './Page';
+import { parseQueryString, removeOptionalQueryStringParameters } from '../queryString';
 
 type Props = RouteComponentProps<{
 	sourceSlug: string,
@@ -101,7 +102,9 @@ export default class ArticlePage extends React.Component<Props, {
 	}
 	public componentWillMount() {
 		if (
-			this.context.router.route.location.search === '?share' &&
+			Object
+				.keys(parseQueryString(this.context.router.route.location.search))
+				.includes('share') &&
 			!this.state.article.isLoading
 		) {
 			this.context.page.openDialog(
@@ -114,8 +117,17 @@ export default class ArticlePage extends React.Component<Props, {
 		this.setDocumentTitle();
 	}
 	public componentDidMount() {
-		if (this.context.router.route.location.search) {
-			this.context.router.history.push(this.context.router.route.location.pathname);
+		if (
+			Object
+				.keys(parseQueryString(this.context.router.route.location.search))
+				.includes('share')
+		) {
+			this.context.router.history.push(
+				removeOptionalQueryStringParameters(
+					this.context.router.route.location.pathname +
+					this.context.router.route.location.search
+				)
+			);
 		}
 		this.context.user.addListener('authChange', this._reload);
 		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
