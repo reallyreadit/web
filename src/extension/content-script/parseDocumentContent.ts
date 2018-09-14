@@ -3,6 +3,11 @@ import ContentElement from './ContentElement';
 import { cloneNodeWithReference } from './utils';
 import styleArticleDocument from './styleArticleDocument';
 
+function getContentElements(rootElement: HTMLElement) {
+	return Array
+		.from<HTMLElement>(rootElement.getElementsByTagName('p'))
+		.concat(Array.from(rootElement.getElementsByTagName('li')));
+}
 export default function (mode: 'analyze' | 'mutate') {
 	let parseResult: ParseResult;
 	let contentElements: HTMLElement[];
@@ -10,16 +15,10 @@ export default function (mode: 'analyze' | 'mutate') {
 		case 'analyze':
 			const docClone = cloneNodeWithReference(window.document);
 			parseResult = new Readability(docClone).parse();
-			contentElements = Array
-				.from(parseResult.rootElement.getElementsByTagName('p'))
-				.map(p => {
-					if (p.originalNode) {
-						return p.originalNode as HTMLElement;
-					}
-					// no idea if checking the parentElement is necessary
-					// is even a good idea
-					if (p.parentElement.originalNode) {
-						return p.parentElement.originalNode as HTMLElement;
+			contentElements = getContentElements(parseResult.rootElement)
+				.map(element => {
+					if (element.originalNode) {
+						return element.originalNode as HTMLElement;
 					}
 					return null;
 				})
@@ -28,7 +27,7 @@ export default function (mode: 'analyze' | 'mutate') {
 		case 'mutate':
 			parseResult = new Readability(window.document).parse();
 			window.document.body.innerHTML = parseResult.content;
-			contentElements = Array.from(window.document.body.getElementsByTagName('p'));
+			contentElements = getContentElements(window.document.body);
 			styleArticleDocument(window.document, parseResult.title, parseResult.byline);
 			break;
 		default:
