@@ -3,10 +3,15 @@ html {
 	font-family: sans-serif;
 }
 body {
-	margin: 10px;
+	margin: 10px auto;
+	padding: 0 10px 120px 10px;
+	max-width: 600px;
 }
 body * {
 	max-width: 100%;
+}
+img {
+	height: auto !important;
 }
 #rrit-byline {
 	margin: 0.8em 0;
