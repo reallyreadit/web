@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import logoText from '../../../../common/svg/logoText';
-import UserAccountRole from '../../../../common/models/UserAccountRole';
-import Context, { contextTypes } from '../../Context';
-import Spinner from '../../../../common/components/Spinner';
+import logoText from '../../../../../common/svg/logoText';
+import UserAccountRole from '../../../../../common/models/UserAccountRole';
+import Context, { contextTypes } from '../../../Context';
+import Spinner from '../../../../../common/components/Spinner';
 import Menu from './Header/Menu';
-import SignInDialog from '../SignInDialog';
-import CreateAccountDialog from '../CreateAccountDialog';
+import SignInDialog from '../../SignInDialog';
+import CreateAccountDialog from '../../CreateAccountDialog';
 import * as className from 'classnames';
-import { hasNewUnreadReply } from '../../../../common/models/NewReplyNotification';
+import { hasNewUnreadReply } from '../../../../../common/models/NewReplyNotification';
 import HeaderButton from './Header/HeaderButton';
-import Icon from '../../../../common/components/Icon';
+import Icon from '../../../../../common/components/Icon';
 
 type button = 'about' | 'community' | 'history' | 'pizza' | 'starred';
 const pathStateMap: {

@@ -1,0 +1,27 @@
+.app-nav {
+	flex: 0 0 auto;
+	height: 60px;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	background-color: white;
+	border-top: 1px solid black;
+	width: 100%;
+	box-shadow: 0px 2px 2px 2px #ccc;
+	z-index: 1;
+}
+.app-nav > .nav-item {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	color: silver;
+	transition: color 250ms;
+}
+.app-nav > .nav-item.selected {
+	color: dodgerblue;
+	font-weight: bold;
+}
+.app-nav > .nav-item > .icon {
+	font-size: 24px;
+	margin-bottom: 8px;
+}

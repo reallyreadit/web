@@ -2,9 +2,9 @@ import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
 import SignInCard from './AppAuthScreen/SignInCard';
 import Captcha from '../../Captcha';
-import { Intent } from '../../Page';
 import * as className from 'classnames';
 import CreateAccountCard from './AppAuthScreen/CreateAccountCard';
+import { Intent } from '../Toaster';
 
 interface Props {
 	captcha: Captcha,

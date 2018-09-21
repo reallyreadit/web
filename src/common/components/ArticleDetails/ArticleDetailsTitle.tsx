@@ -6,17 +6,17 @@ import { truncateText, formatTimestamp } from '../../format';
 
 export default (props: {
 	article: UserArticle,
-	showStar: boolean,
 	isStarring: boolean,
-	onStar: () => void,
-	onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void
+	onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onToggleStar: () => void,
+	showStar: boolean
 }) => (
 	<div className="article-details-title">
 		<div className={className('star-container', { hidden: !props.showStar })}>
 			<Star
 				starred={!!props.article.dateStarred}
 				busy={props.isStarring}
-				onClick={props.onStar}
+				onClick={props.onToggleStar}
 			/>
 		</div>
 		<div className="title-date">

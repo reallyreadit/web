@@ -6,8 +6,7 @@ declare global {
 	namespace Express {
 		export interface Request {
 			api: ServerApi,
-			sessionState: SessionState,
-			challengeState: ChallengeState
+			sessionState: SessionState
 		}
 	}
 }

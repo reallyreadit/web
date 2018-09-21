@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../models/UserArticle';
-import Title from './ArticleDetails/ArticleDetailsTitle';
+import ArticleDetailsTitle from './ArticleDetails/ArticleDetailsTitle';
 import readingParameters from '../readingParameters';
 import SpeechBubble from './Logo/SpeechBubble';
 import * as className from 'classnames';
@@ -12,34 +12,53 @@ import ReadCountIndicator from './ReadCountIndicator';
 interface Props {
 	article: UserArticle,
 	isUserSignedIn: boolean,
-	showDeleteControl?: boolean,
-	isStarring: boolean,
-	onStar: () => void,
-	onTitleClick: (e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onCommentsClick: () => void,
-	onDelete?: () => void,
-	onShare: () => void
+	onDelete?: (article: UserArticle) => void,
+	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onShare: (article: UserArticle) => void,
+	onToggleStar: (article: UserArticle) => Promise<void>,
+	onViewComments: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	showDeleteControl?: boolean
 }
-export default class extends React.PureComponent<Props, {}> {
+export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps = {
-		showDeleteControl: false,
-		onDelete: () => { }
+		onDelete: () => {},
+		showDeleteControl: false
+	};
+	private readonly _delete = () => {
+		this.props.onDelete(this.props.article);
+	};
+	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
+		this.props.onRead(this.props.article, e);
 	};
 	private readonly _share = () => {
 		if (this.props.article.isRead) {
-			this.props.onShare();
+			this.props.onShare(this.props.article);
 		}
 	};
+	private readonly _toggleStar = () => {
+		this.setState({ isStarring: true });
+		this.props
+			.onToggleStar(this.props.article)
+			.then(() => { this.setState({ isStarring: false }); })
+			.catch(() => { this.setState({ isStarring: false }); })
+	};
+	private readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
+		this.props.onViewComments(this.props.article, e as React.MouseEvent<HTMLAnchorElement>);
+	};
+	constructor(props: Props) {
+		super(props);
+		this.state = { isStarring: false };
+	}
 	public render() {
 		return (
 			<div className="article-details">
 				<div className="content">
-					<Title
+					<ArticleDetailsTitle
 						article={this.props.article}
+						isStarring={this.state.isStarring}
+						onClick={this._read}
+						onToggleStar={this._toggleStar}
 						showStar={this.props.isUserSignedIn}
-						isStarring={this.props.isStarring}
-						onStar={this.props.onStar}
-						onClick={this.props.onTitleClick}
 					/>
 					{this.props.article.tags.length ?
 						<div className="tags">
@@ -59,12 +78,12 @@ export default class extends React.PureComponent<Props, {}> {
 							/>
 						</div>
 						<div className="middle">
-							<Title
+							<ArticleDetailsTitle
 								article={this.props.article}
+								isStarring={this.state.isStarring}
+								onClick={this._read}
+								onToggleStar={this._toggleStar}
 								showStar={this.props.isUserSignedIn}
-								isStarring={this.props.isStarring}
-								onStar={this.props.onStar}
-								onClick={this.props.onTitleClick}
 							/>
 							{this.props.article.description ?
 								<div className="description" tabIndex={-1}>{this.props.article.description}</div> :
@@ -82,8 +101,8 @@ export default class extends React.PureComponent<Props, {}> {
 									<ReadCountIndicator readCount={this.props.article.readCount} />
 									<div className="flex-spacer"></div>
 									<CommentsActionLink
-										commentCount={this.props.article.commentCount}
-										onClick={this.props.onCommentsClick}
+										article={this.props.article}
+										onClick={this._viewComments}
 									/>
 									{this.props.article.aotdTimestamp ?
 										<div className="flex-spacer"></div> :
@@ -111,7 +130,7 @@ export default class extends React.PureComponent<Props, {}> {
 				</div>
 				<div className={className('controls', { hidden: !this.props.showDeleteControl })}>
 					<div className="delete-control" title="Delete Article">
-						<Icon name="cancel" onClick={this.props.onDelete} />
+						<Icon name="cancel" onClick={this._delete} />
 					</div>
 				</div>
 			</div>

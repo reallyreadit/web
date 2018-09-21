@@ -10,8 +10,8 @@ import browserLogger from './BrowserLogger';
 import BrowserEnvironment from './BrowserEnvironment';
 import BrowserChallenge from './BrowserChallenge';
 import BrowserCaptcha from './BrowserCaptcha';
+import AppRoot from '../common/components/AppRoot';
 
-// analytics
 ga('create', {
 	trackingId: 'UA-101617933-1',
 	cookieDomain: 'auto',
@@ -19,14 +19,11 @@ ga('create', {
 });
 ga('send', 'pageview');
 
-// app
-const
-	api = new BrowserApi(window._contextInitData.api),
-	page = new BrowserPage(window._contextInitData.page);
+const api = new BrowserApi(window._contextInitData.api);
 
 ReactDOM.render(
 	React.createElement(
-		App,
+		AppRoot,
 		{
 			api,
 			captcha: new BrowserCaptcha(
@@ -37,13 +34,9 @@ ReactDOM.render(
 					};
 				}
 			),
-			challenge: new BrowserChallenge(window._contextInitData.challenge),
-			environment: new BrowserEnvironment(window._contextInitData.environment),
-			page,
-			user: new BrowserUser(window._contextInitData.user),
-			log: browserLogger
-		},
-		React.createElement(BrowserRouter, {}, React.createElement(MainView))
+			path: window.location.pathname,
+			user: new BrowserUser(window._contextInitData.user)
+		}
 	),
 	document.getElementById('root')
 );

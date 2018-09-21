@@ -1,15 +1,30 @@
+%max-width {
+	max-width: 850px;
+	padding: 0 10px;
+	margin: 0 auto;
+}
+
 .main-view {
 	font-family: 'Bitter';
 	font-size: 13px;
 	letter-spacing: 0.02em;
 	height: 100%;
-	background-image: url('/images/marble.jpg');
-	background-attachment: fixed;
-	background-size: cover;
-	background-position: center;
+	overflow: auto;
+	background-color: ghostwhite;
 }
-.main-view > .column {
-	max-width: 850px;
-	padding: 0 10px;
-	margin: 0 auto;
+.main-view.flex-flow {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+.main-view > .max-width {
+	@extend %max-width;
+}
+.main-view.flex-flow > .content {
+	flex: 1 1 auto;
+	width: 100%;
+	overflow: auto;
+}
+.main-view > .content > .max-width {
+	@extend %max-width;
 }

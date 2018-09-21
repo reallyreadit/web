@@ -3,31 +3,53 @@ import * as className from 'classnames';
 import Icon, { IconName } from './Icon';
 import Spinner from './Spinner';
 
-export default class ActionLink extends React.PureComponent<{
-	text: string,
+export default class extends React.PureComponent<{
+	href?: string,
 	iconLeft?: IconName,
+	onClick?: (e: React.MouseEvent<HTMLElement>, href?: string) => void,
 	state?: 'normal' | 'disabled' | 'busy',
-	onClick?: () => void
+	text: string,
 }, {}> {
-	private _handleClick = () => {
+	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
 		if ((this.props.state === 'normal' || !this.props.state) && !!this.props.onClick) {
-			this.props.onClick();
+			this.props.onClick(e, this.props.href);
 		}
 	};
 	public render() {
-		const classList = {
-			disabled: this.props.state === 'disabled' || this.props.state === 'busy',
-			busy: this.props.state === 'busy'
-		}
-		return (
-			<span className={className('action-link', classList)} onClick={this._handleClick}>
-				{this.props.state === 'busy' ?
-					<Spinner /> :
+		const
+			cssClass = className(
+				'action-link',
+				{
+					disabled: this.props.state === 'disabled' || this.props.state === 'busy',
+					busy: this.props.state === 'busy'
+				}
+			),
+			content = [
+				this.props.state === 'busy' ?
+					<Spinner key="spinner" /> :
 					this.props.iconLeft ?
-						<Icon name={this.props.iconLeft} /> :
-						null}
-				<span>{this.props.text}</span>
-			</span>
+						<Icon
+							key="icon"
+							name={this.props.iconLeft}
+						/> :
+						null,
+				<span key="text">{this.props.text}</span>
+			];
+		return (
+			this.props.href ?
+				<a
+					className={cssClass}
+					href={this.props.href}
+					onClick={this._handleClick}
+				>
+					{content}
+				</a> :
+				<span
+					className={cssClass}
+					onClick={this._handleClick}
+				>
+					{content}
+				</span>
 		);
 	}
 } 

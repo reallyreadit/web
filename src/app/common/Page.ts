@@ -5,19 +5,10 @@ import EventType from './EventType';
 export interface InitData {
 	newReplyNotification: NewReplyNotification
 }
-export enum Intent {
-	Success,
-	Danger
-}
-export interface ToastEvent {
-	text: string,
-	intent: Intent
-}
 export default abstract class extends EventEmitter<{
 	'reload': void,
 	'openDialog': React.ReactElement<any>,
 	'closeDialog': React.ReactElement<any>,
-	'showToast': ToastEvent,
 	'newReplyNotificationChange': {
 		notification: NewReplyNotification,
 		eventType: EventType
@@ -40,9 +31,6 @@ export default abstract class extends EventEmitter<{
 		const dialog = this._activeDialog;
 		this._activeDialog = null;
 		this.emitEvent('closeDialog', dialog);
-	}
-	public showToast(text: string, intent: Intent) {
-		this.emitEvent('showToast', { text, intent });
 	}
 	public setNewReplyNotification(notification: NewReplyNotification) {
 		if (notification.timestamp > this._getNewReplyNotification().timestamp) {

@@ -2,21 +2,73 @@ import * as React from 'react';
 import { Route } from 'react-router';
 import Context, { contextTypes } from '../Context';
 import DialogManager from './MainView/DialogManager';
-import ReadReadinessBar from './MainView/ReadReadinessBar';
-import Toaster from './MainView/Toaster';
-import Header from './MainView/Header';
+import Toaster from './Toaster';
+import Header from './MainView/BrowserView/Header';
 import routes from '../routes';
 import SignInDialog from './SignInDialog';
 import CreateAccountDialog from './CreateAccountDialog';
 import ResetPasswordDialog from './MainView/ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
 import ClientType from '../ClientType';
-import AppAuthScreen from './MainView/AppAuthScreen';
+import AppAuthScreen from './MainView/AppView/AppAuthScreen';
 import { Intent } from '../Page';
-import Footer from './MainView/Footer';
+import Footer from './MainView/BrowserView/Footer';
 import { parseQueryString } from '../queryString';
+import * as className from 'classnames';
+import AppHeader from './MainView/AppView/AppHeader';
+import AppNav from './MainView/AppView/AppNav';
+import { IconName } from '../../../common/components/Icon';
+import AppView from './AppRoot';
 
+export enum NavKey {
+	Home,
+	Starred,
+	History,
+	Stats
+};
+export interface NavItem {
+	key: NavKey,
+	path: string,
+	iconName: IconName,
+	label: string,
+	title?: string
+}
+const navItems: NavItem[] = [
+	{
+		key: NavKey.Home,
+		path: '/',
+		iconName: 'home',
+		label: 'Home'
+	},
+	{
+		key: NavKey.Starred,
+		path: '/starred',
+		iconName: 'star',
+		label: 'Starred',
+		title: 'Starred'
+	},
+	{
+		key: NavKey.History,
+		path: '/history',
+		iconName: 'clock',
+		label: 'History',
+		title: 'History'
+	},
+	{
+		key: NavKey.Stats,
+		path: '/stats',
+		iconName: 'line-chart',
+		label: 'Stats',
+		title: 'Stats'
+	}
+];
+
+function getSelectedNavKeyFromPath(path: string) {
+	const match = navItems.find(item => item.path === path);
+	return match ? match.key : null;
+}
 export default class MainView extends React.Component<{}, {
+	selectedNavKey: NavKey | null,
 	showAppAuthScreen: boolean
 }> {
 	public static contextTypes = contextTypes;
@@ -35,9 +87,6 @@ export default class MainView extends React.Component<{}, {
 					eventLabel: userAccount.name
 				});
 			});
-	};
-	private readonly _showToast = (text: string, intent: Intent) => {
-		this.context.page.showToast(text, intent);
 	};
 	private readonly _signIn = (email: string, password: string) => {
 		return this.context.api
@@ -59,6 +108,7 @@ export default class MainView extends React.Component<{}, {
 	constructor(props: {}, context: Context) {
 		super(props, context);
 		this.state = {
+			selectedNavKey: getSelectedNavKeyFromPath(context.router.route.location.pathname),
 			showAppAuthScreen: (
 				this.context.environment.clientType === ClientType.App &&
 				!this.context.user.isSignedIn
@@ -101,6 +151,7 @@ export default class MainView extends React.Component<{}, {
 			.addListener('signIn', this._handleSignIn)
 			.addListener('signOut', this._handleSignOut);
 		this._unregisterHistoryListener = this.context.router.history.listen(location => {
+			this.setState({ selectedNavKey: getSelectedNavKeyFromPath(location.pathname) });
 			ga('set', 'page', location.pathname);
 			ga('send', 'pageview');
 		});
@@ -113,29 +164,38 @@ export default class MainView extends React.Component<{}, {
 	}
 	public render() {
 		return (
-			<div className="main-view">
-				{this.state.showAppAuthScreen ?
-					<AppAuthScreen
-						captcha={this.context.captcha}
-						onCreateAccount={this._createAccount}
-						onShowToast={this._showToast}
-						onSignIn={this._signIn}
-					/> :
-					[
-						<div className="column" key="bars">
-							<ReadReadinessBar />
-							<EmailConfirmationBar />
-						</div>,
-						<Header key="header" />,
-						<div className="column" key="main">
-							<main>
-								{routes.map((route, i) => <Route key={i} {...route} />)}
-							</main>
-							<Footer />
-						</div>,
-						<DialogManager key="dialogs" />
-					]}
+			<div className={className(
+				'main-view',
+				{ 'flex-flow': inAppMode }
+			)}>
+				<div className="max-width">
+					<EmailConfirmationBar />
+				</div>
+				<DialogManager />
 				<Toaster />
+				{
+						(inAppMode ?
+							 :
+							<Header key="header" />),
+						<div className="content" key="main">
+							<div className="max-width">
+								<main>
+									{routes.map((route, i) => <Route key={i} {...route} />)}
+								</main>
+								{!inAppMode ?
+									<Footer /> :
+									null}
+							</div>
+						</div>,
+						(inAppMode ?
+							<AppNav
+								key="appNav"
+								navItems={navItems}
+								selectedNavKey={this.state.selectedNavKey}
+							/> :
+							null)
+					]}
+				
 			</div>
 		);
 	}

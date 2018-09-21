@@ -1,6 +1,5 @@
 import * as React from 'react';
 import UserArticle from '../../../../../common/models/UserArticle';
-import Context, { contextTypes } from '../../../Context';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './ReadReadinessDialog';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import { getArticleUrlPath } from '../../../../../common/format';
@@ -15,8 +14,6 @@ interface Props {
 	onDelete?: (article: UserArticle) => void
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
-	public static contextTypes = contextTypes;
-	public context: Context;
 	private _readArticle = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		switch (this.context.environment.clientType) {
 			case ClientType.Browser:

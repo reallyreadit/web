@@ -103,10 +103,10 @@ export default abstract class Api {
 		return this.post(new Request('/Articles/UserDelete', { articleId }));
 	}
 	public starArticle(articleId: number) {
-		return this.post(new Request('/Articles/Star', { articleId }));
+		return this.post<void>(new Request('/Articles/Star', { articleId }));
 	}
 	public unstarArticle(articleId: number) {
-		return this.post(new Request('/Articles/Unstar', { articleId }));
+		return this.post<void>(new Request('/Articles/Unstar', { articleId }));
 	}
 	public listReplies(pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) {
 		return this.get<PageResult<Comment>>(new Request('/Articles/ListReplies', { pageNumber }), callback);

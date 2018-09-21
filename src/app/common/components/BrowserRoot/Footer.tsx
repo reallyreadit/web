@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Separator from '../../../../common/components/Separator';
+import Separator from '../../../../../common/components/Separator';
 import { Link } from 'react-router-dom';
 
 export default () => (

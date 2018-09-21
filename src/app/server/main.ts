@@ -5,7 +5,7 @@ import App from '../common/components/App';
 import ServerApi from './ServerApi';
 import ServerPage from './ServerPage';
 import renderHtml from '../common/templates/html';
-import { StaticRouter, matchPath } from 'react-router';
+//import { StaticRouter, matchPath } from 'react-router';
 import MainView from '../common/components/MainView';
 import ServerUser from './ServerUser';
 import UserAccountRole from '../../common/models/UserAccountRole';
@@ -14,7 +14,7 @@ import ApiRequest from '../common/api/Request';
 import config from './config';
 import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
-import routes from '../common/routes';
+//import routes from '../common/routes';
 import * as bunyan from 'bunyan';
 import ServerApp from './ServerApp';
 import ServerEnvironment from './ServerEnvironment';
@@ -26,6 +26,7 @@ import * as cookieParser from 'cookie-parser';
 import * as url from 'url';
 import PasswordResetRequest from '../../common/models/PasswordResetRequest';
 import Comment from '../../common/models/Comment';
+import AppRoot from '../common/components/AppRoot';
 
 // redirect helper function
 const nodeUrl = url;
@@ -200,24 +201,6 @@ server = server.get('/viewReply/:id?', (req, res) => {
 			res.sendStatus(400);
 		});
 });
-// challenge
-server = server.use((req, res, next) => {
-	req
-		.api
-		.fetchJson<ChallengeState>('GET', new ApiRequest('/Challenges/State'))
-		.then(challengeState => {
-			req.challengeState = challengeState;
-			next();
-		})
-		.catch(() => {
-			req.challengeState = {
-				activeChallenge: null,
-				latestResponse: null,
-				score: null
-			};
-			next();
-		});
-});
 // ack new reply notification
 server = server.get('/inbox', (req, res, next) => {
 	if (req.sessionState.newReplyNotification && hasNewUnreadReply(req.sessionState.newReplyNotification)) {
@@ -229,43 +212,25 @@ server = server.get('/inbox', (req, res, next) => {
 	}
 });
 // render matched route or return 404
-server = server.use((req, res, next) => {
+/*server = server.use((req, res, next) => {
 	if (routes.find(route => !!matchPath(req.path, route))) {
 		next();
 	} else {
 		res.sendStatus(404);
 	}
-});
+});*/
 // render the app
 server = server.get('/*', (req, res) => {
-	const
-		challenge = new ServerChallenge(req.challengeState),
-		environment = new ServerEnvironment(
-			req.query.mode === 'app' ? ClientType.App : ClientType.Browser,
-			new ServerApp(),
-			new ServerExtension(config.extensionId)
-		),
+	const 
 		user = new ServerUser(req.sessionState.userAccount),
-		page = new ServerPage(req.sessionState.newReplyNotification, !req.cookies['hideHero']),
 		appElement = React.createElement(
-			App,
+			AppRoot,
 			{
 				api: req.api,
 				captcha: new ServerCaptcha(),
-				challenge,
-				environment,
-				page,
-				user,
-				log
-			},
-			React.createElement(
-				StaticRouter,
-				{
-					location: req.url,
-					context: {}
-				},
-				React.createElement(MainView)
-			)
+				path: req.path,
+				user
+			}
 		);
 	// call renderToString first to capture all the api requests
 	ReactDOMServer.renderToString(appElement);
@@ -278,15 +243,12 @@ server = server.get('/*', (req, res) => {
 		}
 		// return the content and init data
 		res.send(renderHtml({
-			title: page.title,
+			title: '',
 			content,
 			extensionId: config.extensionId,
 			contextInitData: {
 				api: req.api.getInitData(),
 				captcha: config.enableCaptcha,
-				challenge: challenge.getInitData(),
-				environment: environment.getInitData(),
-				page: page.getInitData(),
 				user: user.getInitData()
 			},
 			enableAnalytics: config.enableAnalytics,

@@ -7,8 +7,5 @@ import ChallengeState from '../../common/models/ChallengeState';
 export default interface ContextInitData {
 	api: ApiInitData,
 	captcha: boolean,
-	challenge: ChallengeState,
-	environment: EnvironmentInitData,
-	page: PageInitData,
 	user: UserAccount
 }
