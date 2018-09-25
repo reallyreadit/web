@@ -1,8 +1,12 @@
 import EventEmitter from './EventEmitter';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
+import UserArticle from '../../common/models/UserArticle';
 
-abstract class Extension extends EventEmitter<{ 'change': boolean }> {
-	protected _extensionId: string;
+export default abstract class extends EventEmitter<{
+	'articleUpdated': { article: UserArticle, isCompletionCommit: boolean },
+	'change': boolean
+}> {
+	protected readonly _extensionId: string;
 	constructor(extensionId: string) {
 		super();
 		this._extensionId = extensionId;
@@ -11,5 +15,3 @@ abstract class Extension extends EventEmitter<{ 'change': boolean }> {
 	public abstract isBrowserCompatible(): boolean;
 	public abstract updateNewReplyNotification(notification: NewReplyNotification): void;
 }
-
-export default Extension;

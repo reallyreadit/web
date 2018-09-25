@@ -1,9 +1,9 @@
-import Api, { InitData } from '../common/api/Api';
-import Request from '../common/api/Request';
-import Fetchable from '../common/api/Fetchable';
-import RequestStore from '../common/api/RequestStore';
+import ServerApi, { InitData } from '../common/serverApi/ServerApi';
+import Request from '../common/serverApi/Request';
+import Fetchable from '../common/serverApi/Fetchable';
+import RequestStore from '../common/serverApi/RequestStore';
 
-export default class BrowserApi extends Api {
+export default class extends ServerApi {
 	constructor(initData: InitData) {
 		super(initData.endpoint);
 		this._reqStore = new RequestStore(initData.requests);

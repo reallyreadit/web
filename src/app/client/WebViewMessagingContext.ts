@@ -1,4 +1,4 @@
-export interface AppApi {
+export interface WebViewMessagingListeners {
 	sendResponse: (jsonCallbackResponse: string) => void,
 	postMessage: (jsonMessage: string) => void
 }

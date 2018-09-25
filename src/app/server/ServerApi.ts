@@ -1,12 +1,12 @@
 import * as request from 'request';
-import Api from '../common/api/Api';
-import Fetchable from '../common/api/Fetchable';
-import Request from '../common/api/Request';
-import RequestStore from '../common/api/RequestStore';
-import Endpoint from '../common/api/Endpoint';
+import Fetchable from '../common/serverApi/Fetchable';
+import Request from '../common/serverApi/Request';
+import RequestStore from '../common/serverApi/RequestStore';
+import Endpoint from '../common/serverApi/Endpoint';
 import KeyValuePair from '../../common/KeyValuePair';
+import ServerApi from '../common/serverApi/ServerApi';
 
-export default class ServerApi extends Api {
+export default class extends ServerApi {
 	private _authCookie: KeyValuePair<string, string | null>;
 	constructor(endpoint: Endpoint, authCookie: KeyValuePair<string, string | null>) {
 		super(endpoint);

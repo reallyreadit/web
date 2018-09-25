@@ -1,58 +1,74 @@
 import * as React from 'react';
-import { Intent, Toast } from './Toaster';
-import UserAccount from '../../../common/models/UserAccount';
-import User from '../User';
-import Captcha from '../Captcha';
-import Api from '../api/Api';
+import BrowserHeader from './BrowserRoot/BrowserHeader';
+import Toaster from './Toaster';
+import EmailConfirmationBar from './EmailConfirmationBar';
+import BrowserNav from './BrowserRoot/BrowserNav';
+import Root, { Props as RootProps } from './Root';
+import LocalStorageApi from '../LocalStorageApi';
+import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 
 interface Props {
-	api: Api,
-	captcha: Captcha,
-	path: string,
-	user: User
+	localStorage: LocalStorageApi,
+	newReplyNotification: NewReplyNotification | null
 }
-export default class extends React.Component<Props, {
-	screens: Screen[],
-	toasts: Toast[],
-	user: UserAccount | null
-}> {
-	private readonly _addToast = (text: string, intent: Intent) => {
-		const toast = {
-			text,
-			intent,
-			timeoutHandle: window.setTimeout(() => {
-				const toasts = this.state.toasts.slice();
-				toasts[toasts.indexOf(toast)] = { ...toast, remove: true };
-				this.setState({ toasts });
-			}, 5000),
-			remove: false
+export default class extends Root<
+	Props,
+	{ showNewReplyIndicator: boolean }
+> {
+	private readonly _dismissNewReplyIndicator = () => {
+		
+	};
+	private readonly _showCreateAccountDialog = () => {
+
+	};
+	private readonly _showSignInDialog = () => {
+
+	};
+	constructor(props: Props & RootProps) {
+		super(props);
+		this.state = {
+			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
+			screens: [this.createScreen(props.path)],
+			toasts: [],
+			user: props.user
 		};
-		this.setState({ toasts: [...this.state.toasts, toast] });
-	};
-	private readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
-		return this.props.api
-			.createUserAccount(name, email, password, captchaResponse)
-			.then(userAccount => {
-				this.setState({ user: userAccount });
-				this.props.user.signIn(userAccount);
-				this._addToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
-				ga('send', {
-					hitType: 'event',
-					eventCategory: 'UserAccount',
-					eventAction: 'create',
-					eventLabel: userAccount.name
-				});
-			});
-	};
-	private readonly _removeToast = (timeoutHandle: number) => {
-		this.setState({
-			toasts: this.state.toasts.filter(toast => toast.timeoutHandle !== timeoutHandle)
+		props.localStorage.addListener('user', user => {
+			this.setState({ user });
 		});
-	};
+	}
+	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
+		return super
+			.createAccount(name, email, password, captchaResponse)
+			.then(userAccount => {
+				this.props.localStorage.updateUser(userAccount);
+				return userAccount;
+			});
+	}
+	protected signIn(email: string, password: string) {
+		return super
+			.signIn(email, password)
+			.then(userAccount => {
+				this.props.localStorage.updateUser(userAccount);
+				return userAccount;
+			});
+	}
 	public render() {
 		return (
 			<div className="browser-root">
-
+				<EmailConfirmationBar user={this.state.user} />
+				<BrowserHeader
+					onDismissNewReplyIndicator={this._dismissNewReplyIndicator}
+				/>
+				<main>
+					<BrowserNav />
+					<div className="screen">
+						{this.state.screens[0].render()}
+					</div>
+				</main>
+				<Toaster
+					onRemoveToast={this._removeToast}
+					toasts={this.state.toasts}
+				/>
 			</div>
 		);
 	}

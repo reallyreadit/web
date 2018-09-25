@@ -1,7 +1,7 @@
-import Extension from '../common/Extension';
+import ExtensionApi from '../common/ExtensionApi';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
 
-export default class ServerExtension extends Extension {
+export default class extends ExtensionApi {
     public isInstalled() {
         return false;
     }

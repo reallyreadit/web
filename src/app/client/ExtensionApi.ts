@@ -1,10 +1,9 @@
-import Extension from '../common/Extension';
+import ExtensionApi from '../common/ExtensionApi';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
-import UserArticle from '../../common/models/UserArticle';
 
-export default class BrowserExtension extends Extension {
+export default class extends ExtensionApi {
     private _isInstalled: boolean = null;
-    constructor(extensionId: string, onArticleUpdated: (data: { article: UserArticle, isCompletionCommit: boolean }) => void) {
+    constructor(extensionId: string) {
         super(extensionId);
         this.sendMessage('ping')
             .then(response => {
@@ -27,7 +26,7 @@ export default class BrowserExtension extends Extension {
                         }
                         break;
                     case 'articleUpdated':
-                        onArticleUpdated(message.data);
+                        this.emitEvent('articleUpdated', message.data);
                         break;
                 }
             }

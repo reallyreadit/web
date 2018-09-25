@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import App from '../common/components/App';
+import AppApi from '../common/components/AppApi';
 import BrowserApi from './BrowserApi';
 import BrowserPage from './BrowserPage';
 import { BrowserRouter } from 'react-router-dom';

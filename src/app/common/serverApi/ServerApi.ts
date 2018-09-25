@@ -24,7 +24,7 @@ export interface InitData {
 	endpoint: Endpoint,
 	requests: Request[]
 }
-export default abstract class Api {
+export default abstract class {
 	protected readonly _endpoint: Endpoint;
 	protected _reqStore: RequestStore;
 	protected _isInitialized = false;
