@@ -79,7 +79,7 @@ export default abstract class {
 		return this.post<UserAccount>(new Request('/UserAccounts/SignIn', { email, password }));
 	}
 	public signOut() {
-		return this.post(new Request('/UserAccounts/SignOut'));
+		return this.post<void>(new Request('/UserAccounts/SignOut'));
 	}
 	public listStarredArticles(pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) {
 		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListStarred', { pageNumber }), callback);

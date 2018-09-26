@@ -1,11 +1,11 @@
 import * as React from 'react';
 import Captcha from '../../../Captcha';
-import { Intent } from '../../../Page';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
 import AppScreenButton from '../../controls/AppScreenButton';
 import UsernameField from '../../controls/authentication/UsernameField';
 import ActionLink from '../../../../../common/components/ActionLink';
+import { Intent } from '../../Toaster';
 
 export interface Props {
 	captcha: Captcha,

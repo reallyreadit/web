@@ -6,6 +6,7 @@ import BrowserNav from './BrowserRoot/BrowserNav';
 import Root, { Props as RootProps } from './Root';
 import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
+import UserAccount from '../../../common/models/UserAccount';
 
 interface Props {
 	localStorage: LocalStorageApi,
@@ -15,9 +16,6 @@ export default class extends Root<
 	Props,
 	{ showNewReplyIndicator: boolean }
 > {
-	private readonly _dismissNewReplyIndicator = () => {
-		
-	};
 	private readonly _showCreateAccountDialog = () => {
 
 	};
@@ -36,11 +34,15 @@ export default class extends Root<
 			this.setState({ user });
 		});
 	}
+	private handleUserChange(userAccount: UserAccount) {
+		this.setState({ user: userAccount });
+		this.props.localStorage.updateUser(userAccount);
+	}
 	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
 		return super
 			.createAccount(name, email, password, captchaResponse)
 			.then(userAccount => {
-				this.props.localStorage.updateUser(userAccount);
+				this.handleUserChange(userAccount);
 				return userAccount;
 			});
 	}
@@ -48,19 +50,38 @@ export default class extends Root<
 		return super
 			.signIn(email, password)
 			.then(userAccount => {
-				this.props.localStorage.updateUser(userAccount);
+				this.handleUserChange(userAccount);
 				return userAccount;
+			});
+	}
+	protected signOut() {
+		return super
+			.signOut()
+			.then(() => {
+				this.handleUserChange(null);
 			});
 	}
 	public render() {
 		return (
 			<div className="browser-root">
-				<EmailConfirmationBar user={this.state.user} />
+				<EmailConfirmationBar
+					onResendConfirmationEmail={this._resendConfirmationEmail}
+					user={this.state.user}
+				/>
 				<BrowserHeader
-					onDismissNewReplyIndicator={this._dismissNewReplyIndicator}
+					onShowCreateAccountDialog={this._showCreateAccountDialog}
+					onShowSignInDialog={this._showSignInDialog}
+					onSignOut={this._signOut}
+					onViewAdminPage={this._viewAdminPage}
+					onViewInbox={this._viewInbox}
+					onViewSettings={this._viewSettings}
+					showNewReplyIndicator={this.state.showNewReplyIndicator}
+					user={this.state.user}
 				/>
 				<main>
-					<BrowserNav />
+					<BrowserNav
+						items={this.getNavItems()}
+					/>
 					<div className="screen">
 						{this.state.screens[0].render()}
 					</div>

@@ -1,44 +1,54 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import AppApi from '../common/components/AppApi';
-import BrowserApi from './BrowserApi';
-import BrowserPage from './BrowserPage';
-import { BrowserRouter } from 'react-router-dom';
-import MainView from '../common/components/MainView';
-import BrowserUser from './BrowserUser';
-import browserLogger from './BrowserLogger';
-import BrowserEnvironment from './BrowserEnvironment';
-import BrowserChallenge from './BrowserChallenge';
-import BrowserCaptcha from './BrowserCaptcha';
 import AppRoot from '../common/components/AppRoot';
+import ServerApi from './ServerApi';
+import Captcha from './Captcha';
+import Environment from '../common/Environment';
+import BrowserRoot from '../common/components/BrowserRoot';
+import LocalStorageApi from './LocalStorageApi';
 
 ga('create', {
 	trackingId: 'UA-101617933-1',
 	cookieDomain: 'auto',
-	userId: window._contextInitData.user ? window._contextInitData.user.id : null
+	userId: window.initData.userAccount ? window.initData.userAccount.id : null
 });
 ga('send', 'pageview');
 
-const api = new BrowserApi(window._contextInitData.api);
+const serverApi = new ServerApi(window.initData.serverApi);
 
-ReactDOM.render(
-	React.createElement(
-		AppRoot,
-		{
-			api,
-			captcha: new BrowserCaptcha(
-				window._contextInitData.captcha,
-				onLoadHandler => {
-					window.onReCaptchaLoaded = () => {
-						onLoadHandler(grecaptcha);
-					};
-				}
-			),
-			path: window.location.pathname,
-			user: new BrowserUser(window._contextInitData.user)
+let rootElement: React.ReactElement<any>;
+const rootProps = {
+	serverApi,
+	captcha: new Captcha(
+		window.initData.verifyCaptcha,
+		onLoadHandler => {
+			window.onReCaptchaLoaded = () => {
+				onLoadHandler(grecaptcha);
+			};
 		}
 	),
+	path: window.location.pathname,
+	user: window.initData.userAccount
+};
+if (window.initData.environment === Environment.App) {
+	rootElement = React.createElement(
+		AppRoot,
+		rootProps
+	);
+} else {
+	rootElement = React.createElement(
+		BrowserRoot,
+		{
+			...rootProps,
+			localStorage: new LocalStorageApi(),
+			newReplyNotification: window.initData.newReplyNotification
+		}
+	);
+}
+
+ReactDOM.render(
+	rootElement,
 	document.getElementById('root')
 );
 
-api.initialize();
+serverApi.initialize();

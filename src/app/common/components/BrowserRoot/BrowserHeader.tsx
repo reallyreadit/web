@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import logoText from '../../../../common/svg/logoText';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import Spinner from '../../../../common/components/Spinner';
@@ -9,10 +8,12 @@ import Icon from '../../../../common/components/Icon';
 import UserAccount from '../../../../common/models/UserAccount';
 
 interface Props {
-	onDismissNewReplyIndicator: () => void,
 	onShowCreateAccountDialog: () => void,
 	onShowSignInDialog: () => void,
 	onSignOut: () => Promise<void>,
+	onViewAdminPage: () => void,
+	onViewInbox: () => void,
+	onViewSettings: () => void,
 	showNewReplyIndicator: boolean,
 	user: UserAccount
 }
@@ -60,20 +61,29 @@ export default class extends React.PureComponent<Props, {
 							menuContent={[
 								this.props.user.role === UserAccountRole.Admin ?
 									<li key="admin">
-										<Link to="/admin" onMouseDown={this._preventFocus}>
+										<span
+											onClick={this.props.onViewAdminPage}
+											onMouseDown={this._preventFocus}
+										>
 											Admin
-										</Link>
+										</span>
 									</li> :
 									null,
 								<li key="inbox" className={className({ indicator: this.props.showNewReplyIndicator })}>
-									<Link to="/inbox" onMouseDown={this._preventFocus} onClick={this.props.onDismissNewReplyIndicator}>
+									<span
+										onClick={this.props.onViewInbox}
+										onMouseDown={this._preventFocus}
+									>
 										Inbox
-									</Link>
+									</span>
 								</li>,
 								<li key="settings">
-									<Link to="/settings" onMouseDown={this._preventFocus}>
+									<span
+										onClick={this.props.onViewSettings}
+										onMouseDown={this._preventFocus}
+									>
 										Settings
-									</Link>
+									</span>
 								</li>,
 								<li
 									key="signOut"

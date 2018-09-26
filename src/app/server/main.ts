@@ -1,32 +1,24 @@
 import * as express from 'express';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
-import App from '../common/components/App';
 import ServerApi from './ServerApi';
-import ServerPage from './ServerPage';
 import renderHtml from '../common/templates/html';
-//import { StaticRouter, matchPath } from 'react-router';
-import MainView from '../common/components/MainView';
-import ServerUser from './ServerUser';
 import UserAccountRole from '../../common/models/UserAccountRole';
 import SessionState from '../../common/models/SessionState';
-import ApiRequest from '../common/api/Request';
+import ApiRequest from '../common/serverApi/Request';
 import config from './config';
-import ServerExtension from './ServerExtension';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 //import routes from '../common/routes';
 import * as bunyan from 'bunyan';
-import ServerApp from './ServerApp';
-import ServerEnvironment from './ServerEnvironment';
-import ClientType from '../common/ClientType';
-import ChallengeState from '../../common/models/ChallengeState';
-import ServerChallenge from './ServerChallenge';
-import ServerCaptcha from './ServerCaptcha';
 import * as cookieParser from 'cookie-parser';
 import * as url from 'url';
 import PasswordResetRequest from '../../common/models/PasswordResetRequest';
 import Comment from '../../common/models/Comment';
 import AppRoot from '../common/components/AppRoot';
+import Captcha from './Captcha';
+import BrowserRoot from '../common/components/BrowserRoot';
+import LocalStorageApi from './LocalStorageApi';
+import Environment from '../common/Environment';
 
 // redirect helper function
 const nodeUrl = url;
@@ -121,7 +113,7 @@ server = server.use((req, res, next) => {
 	}
 });
 // authorize
-server = server.get(['/list', '/inbox', '/settings'], (req, res, next) => {
+server = server.get(['/history', '/inbox', '/settings', '/starred'], (req, res, next) => {
 	if (!req.sessionState.userAccount) {
 		redirectWithMode(req, res, '/');
 	} else {
@@ -203,7 +195,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 });
 // ack new reply notification
 server = server.get('/inbox', (req, res, next) => {
-	if (req.sessionState.newReplyNotification && hasNewUnreadReply(req.sessionState.newReplyNotification)) {
+	if (hasNewUnreadReply(req.sessionState.newReplyNotification)) {
 		req.api
 			.ackNewReply()
 			.then(next);
@@ -221,38 +213,58 @@ server = server.get('/inbox', (req, res, next) => {
 });*/
 // render the app
 server = server.get('/*', (req, res) => {
-	const 
-		user = new ServerUser(req.sessionState.userAccount),
-		appElement = React.createElement(
+	let environment: Environment;
+	if (req.query['mode'] === 'app') {
+		environment = Environment.App;
+	} else {
+		environment = Environment.Browser;
+	}
+	let rootElement: React.ReactElement<any>;
+	const rootProps = {
+		serverApi: req.api,
+		captcha: new Captcha(),
+		path: req.path,
+		user: req.sessionState.userAccount
+	};
+	if (environment === Environment.App) {
+		rootElement = React.createElement(
 			AppRoot,
+			rootProps
+		);
+	} else {
+		rootElement = React.createElement(
+			BrowserRoot,
 			{
-				api: req.api,
-				captcha: new ServerCaptcha(),
-				path: req.path,
-				user
+				...rootProps,
+				localStorage: new LocalStorageApi(),
+				newReplyNotification: req.sessionState.newReplyNotification
 			}
 		);
+	}
 	// call renderToString first to capture all the api requests
-	ReactDOMServer.renderToString(appElement);
+	ReactDOMServer.renderToString(rootElement);
 	req.api.processRequests().then(() => {
 		// call renderToString again to render with api request results
-		const content = ReactDOMServer.renderToString(appElement);
+		const content = ReactDOMServer.renderToString(rootElement);
 		// set the cache header
 		if (config.cacheEnabled && !req.sessionState.userAccount) {
 			res.setHeader('Cache-Control', 'max-age=5');
 		}
 		// return the content and init data
 		res.send(renderHtml({
-			title: '',
 			content,
-			extensionId: config.extensionId,
-			contextInitData: {
-				api: req.api.getInitData(),
-				captcha: config.enableCaptcha,
-				user: user.getInitData()
-			},
 			enableAnalytics: config.enableAnalytics,
-			enableCaptcha: config.enableCaptcha
+			enableCaptcha: config.enableCaptcha,
+			extensionId: config.extensionId,
+			initData: {
+				environment,
+				newReplyNotification: req.sessionState.newReplyNotification,
+				path: req.path,
+				serverApi: req.api.getInitData(),
+				userAccount: req.sessionState.userAccount,
+				verifyCaptcha: config.enableCaptcha
+			},
+			title: ''
 		}));
 	});
 });

@@ -1,8 +1,10 @@
 import { WebViewMessagingListeners } from './WebViewMessagingContext';
+import InitData from '../common/InitData';
 
 declare global {
 	interface Window {
-		reallyreadit: WebViewMessagingListeners,
-		onReCaptchaLoaded: () => void
+		initData: InitData,
+		onReCaptchaLoaded: () => void,
+		reallyreadit: WebViewMessagingListeners
 	}
 }

@@ -11,7 +11,7 @@ import PageResult from '../../../common/models/PageResult';
 import HotTopicsPage from './HotTopicsPage';
 
 export interface Props {
-	api: ServerApi,
+	serverApi: ServerApi,
 	captcha: Captcha,
 	path: string,
 	user: UserAccount
@@ -90,8 +90,20 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			toasts: this.state.toasts.filter(toast => toast.timeoutHandle !== timeoutHandle)
 		});
 	};
-	protected readonly _viewComments = (article: UserArticle) => {
-
+	protected readonly _resendConfirmationEmail = () => {
+		return this.props.serverApi
+			.resendConfirmationEmail()
+			.then(() => {
+				this._addToast('Confirmation email sent', Intent.Success);
+			})
+			.catch((errors: string[]) => {
+				this._addToast(
+					errors.includes('ResendLimitExceeded') ?
+						'Error sending email.\nPlease try again in a few minutes.' :
+						'Error sending email.\nPlease try again later.',
+					Intent.Danger
+				);
+			});
 	};
 	protected readonly _screenCreatorMap: { [P in ScreenKey]: () => Screen } = {
 		[ScreenKey.Home]: () => {
@@ -102,7 +114,7 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 				};
 			}
 			const load = (pageNumber: number) => {
-				return this.props.api.listHotTopics(
+				return this.props.serverApi.listHotTopics(
 					pageNumber,
 					hotTopics => this.setScreenState(
 						ScreenKey.Home,
@@ -154,15 +166,29 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 
 	};
 	protected readonly _signIn: (email: string, password: string) => Promise<void>;
+	protected readonly _signOut: () => Promise<void>;
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
 		return (article.dateStarred ?
-			this.props.api.unstarArticle :
-			this.props.api.starArticle)(article.id);
+			this.props.serverApi.unstarArticle :
+			this.props.serverApi.starArticle)(article.id);
+	};
+	protected readonly _viewAdminPage = () => {
+
+	};
+	protected readonly _viewComments = (article: UserArticle) => {
+
+	};
+	protected readonly _viewInbox = () => {
+
+	};
+	protected readonly _viewSettings = () => {
+
 	};
 	constructor(props: P & Props) {
 		super(props);
 		this._createAccount = this.createAccount.bind(this);
 		this._signIn = this.signIn.bind(this);
+		this._signOut = this.signOut.bind(this);
 	}
 	private getScreen(key: ScreenKey) {
 		return this.state.screens.find(screen => screen.key === key);
@@ -175,10 +201,9 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 		this.setState({ screens });
 	}
 	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
-		return this.props.api
+		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse)
 			.then(userAccount => {
-				this.setState({ user: userAccount });
 				this._addToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
 				ga('send', {
 					hitType: 'event',
@@ -201,12 +226,10 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			}));
 	}
 	protected signIn(email: string, password: string) {
-		return this.props.api
-			.signIn(email, password)
-			.then(userAccount => {
-				this.setState({ user: userAccount });
-				return userAccount;
-			});
+		return this.props.serverApi.signIn(email, password);
+	}
+	protected signOut() {
+		return this.props.serverApi.signOut();
 	}
 	public componentWillUnmount() {
 		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));

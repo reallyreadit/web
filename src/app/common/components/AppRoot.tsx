@@ -5,6 +5,7 @@ import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
 import AppNav from './AppRoot/AppNav';
 import Root, { Props as RootProps } from './Root';
+import UserAccount from '../../../common/models/UserAccount';
 
 export default class extends Root {
 	constructor(props: RootProps) {
@@ -17,6 +18,42 @@ export default class extends Root {
 			user: props.user
 		};
 	}
+	private handleUserChange(userAccount: UserAccount) {
+		if (userAccount) {
+			this.setState({
+				screens: [this.createScreen(window.location.pathname)],
+				user: userAccount
+			});
+		} else {
+			this.setState({
+				screens: [],
+				user: null
+			});
+		}
+	}
+	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
+		return super
+			.createAccount(name, email, password, captchaResponse)
+			.then(userAccount => {
+				this.handleUserChange(userAccount);
+				return userAccount;
+			});
+	}
+	protected signIn(email: string, password: string) {
+		return super
+			.signIn(email, password)
+			.then(userAccount => {
+				this.handleUserChange(userAccount);
+				return userAccount;
+			});
+	}
+	protected signOut() {
+		return super
+			.signOut()
+			.then(() => {
+				this.handleUserChange(null);
+			});
+	}
 	public render() {
 		const title = this.state.screens.length ?
 			this.state.screens[this.state.screens.length - 1].title :
@@ -27,6 +64,7 @@ export default class extends Root {
 					[
 						<EmailConfirmationBar
 							key="emailConfirmationBar"
+							onResendConfirmationEmail={this._resendConfirmationEmail}
 							user={this.state.user}
 						/>,
 						<AppHeader

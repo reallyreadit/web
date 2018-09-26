@@ -1,7 +1,7 @@
 const gulp = require('gulp'),
 	  project = require('./build/project'),
 	  Server = require('./build/targets/Server'),
-	  browser = require('./build/targets/browser'),
+	  client = require('./build/targets/client'),
 	  extension = require('./build/targets/extension');
 
 /**
@@ -30,15 +30,15 @@ gulp.task('build:stage:server', () => server.build(project.env.stage));
 gulp.task('clean:prod:server', () => server.clean(project.env.prod));
 gulp.task('build:prod:server', () => server.build(project.env.prod));
 
-gulp.task('clean:dev:browser', () => browser.clean(project.env.dev));
-gulp.task('build:dev:browser', () => browser.build(project.env.dev));
-gulp.task('watch:dev:browser', browser.watch);
+gulp.task('clean:dev:browser', () => client.clean(project.env.dev));
+gulp.task('build:dev:browser', () => client.build(project.env.dev));
+gulp.task('watch:dev:browser', client.watch);
 
-gulp.task('clean:stage:browser', () => browser.clean(project.env.stage));
-gulp.task('build:stage:browser', () => browser.build(project.env.stage));
+gulp.task('clean:stage:browser', () => client.clean(project.env.stage));
+gulp.task('build:stage:browser', () => client.build(project.env.stage));
 
-gulp.task('clean:prod:browser', () => browser.clean(project.env.prod));
-gulp.task('build:prod:browser', () => browser.build(project.env.prod));
+gulp.task('clean:prod:browser', () => client.clean(project.env.prod));
+gulp.task('build:prod:browser', () => client.build(project.env.prod));
 
 /**
  * extension

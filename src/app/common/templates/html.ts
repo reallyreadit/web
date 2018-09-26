@@ -1,13 +1,13 @@
 import icons from '../../../common/svg/icons';
-import ContextInitData from '../ContextInitData';
+import InitData from '../InitData';
 
 export default (model: {
-	title: string,
 	content: string,
-	extensionId: string,
-	contextInitData: ContextInitData,
 	enableAnalytics: boolean,
-	enableCaptcha: boolean
+	enableCaptcha: boolean,
+	extensionId: string,
+	initData: InitData,
+	title: string
 }) => 
 `<!DOCTYPE html>
 <html lang="en">
@@ -29,7 +29,7 @@ export default (model: {
 		${icons}
 		<div id="root">${model.content}</div>
 		<script type="text/javascript">
-			window._contextInitData = ${JSON.stringify(model.contextInitData)};
+			window.initData = ${JSON.stringify(model.initData)};
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
 		${model.enableCaptcha ?

@@ -5,6 +5,7 @@ import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmai
 import UserAccount from '../../../common/models/UserAccount';
 
 export default class extends React.PureComponent<{
+	onResendConfirmationEmail: () => Promise<void>,
 	user: UserAccount
 }, {}> {
 	public render() {
@@ -14,7 +15,9 @@ export default class extends React.PureComponent<{
 					<Icon name="exclamation" /> Please confirm your email address ({this.context.user.userAccount.email})<br />
 					Need a new confirmation email?
 					<Separator />
-					<ResendConfirmationEmailActionLink /> 
+					<ResendConfirmationEmailActionLink
+						onResend={this.props.onResendConfirmationEmail}
+					/> 
 				</div> :
 				null
 		);
