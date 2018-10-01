@@ -3,110 +3,23 @@ import UserAccount from '../../../common/models/UserAccount';
 import Captcha from '../Captcha';
 import { Toast, Intent } from './Toaster';
 import ServerApi from '../serverApi/ServerApi';
-import { IconName } from '../../../common/components/Icon';
 import Fetchable from '../serverApi/Fetchable';
 import HotTopics from '../../../common/models/HotTopics';
 import UserArticle from '../../../common/models/UserArticle';
 import PageResult from '../../../common/models/PageResult';
 import HotTopicsPage from './HotTopicsPage';
 import ResetPasswordDialog from './ResetPasswordDialog';
-import { parseQueryString, createQueryString, clientTypeKey as clientTypeQsKey } from '../queryString';
+import { parseQueryString, createQueryString, clientTypeQueryStringKey } from '../queryString';
 import Location from '../Location';
+import StarredPage from './StarredPage';
+import ScreenKey from '../ScreenKey';
+import DialogKey from '../DialogKey';
+import { findRouteByLocation } from '../Route';
+import routes from '../routes';
+import CreateAccountDialog from './BrowserRoot/CreateAccountDialog';
+import SignInDialog from './BrowserRoot/SignInDialog';
+import RequestPasswordResetDialog from './BrowserRoot/SignInDialog/RequestPasswordResetDialog';
 
-enum ScreenKey {
-	ArticleDetails,
-	History,
-	Home,
-	Leaderboards,
-	Starred
-}
-enum DialogKey {
-	CreateAccount,
-	ResetPassword,
-	ShareArticle,
-	SignIn
-}
-interface Route {
-	dialogKey?: DialogKey,
-	path: RegExp,
-	queryStringKeys?: string[],
-	screenKey: ScreenKey
-}
-const routes: Route[] = [
-	{
-		path: /^\/$/,
-		screenKey: ScreenKey.Home
-	},
-	{
-		dialogKey: DialogKey.CreateAccount,
-		path: /^\/$/,
-		queryStringKeys: ['create-account'],
-		screenKey: ScreenKey.Home
-	},
-	{
-		dialogKey: DialogKey.ResetPassword,
-		path: /^\/$/,
-		queryStringKeys: ['reset-password', 'email', 'token'],
-		screenKey: ScreenKey.Home
-	},
-	{
-		path: /^\/articles\/[^/]+\/[^/]+$/,
-		screenKey: ScreenKey.ArticleDetails
-	},
-	{
-		dialogKey: DialogKey.ShareArticle,
-		path: /^\/articles\/[^/]+\/[^/]+$/,
-		queryStringKeys: ['share'],
-		screenKey: ScreenKey.ArticleDetails
-	}
-];
-function findRoute(routes: Route[], qsKeysToExclude: string[], location: Location) {
-	let matches = routes.filter(route => route.path.test(location.path));
-	if (!matches) {
-		return null;
-	}
-	let keysToMatch: string[];
-	if (
-		location.queryString && (
-			keysToMatch = Object
-				.keys(parseQueryString(location.queryString))
-				.filter(key => !qsKeysToExclude.includes(key))
-		).length
-	) {
-		matches = matches.filter(route => (
-			route.queryStringKeys &&
-			route.queryStringKeys.length === keysToMatch.length &&
-			route.queryStringKeys.every(key => keysToMatch.includes(key))
-		));
-	} else {
-		matches = matches.filter(route => !route.queryStringKeys);
-	}
-	if (matches.length === 1) {
-		return matches[0];
-	}
-	return null;
-}
-const navItems: {
-	iconName: IconName,
-		label: string,
-			screenKey: ScreenKey
-} [] = [{
-	iconName: 'home',
-	label: 'Home',
-	screenKey: ScreenKey.Home
-}, {
-	iconName: 'star',
-	label: 'Starred',
-	screenKey: ScreenKey.Starred
-}, {
-	iconName: 'clock',
-	label: 'History',
-	screenKey: ScreenKey.History
-}, {
-	iconName: 'line-chart',
-	label: 'Stats',
-	screenKey: ScreenKey.Leaderboards
-}];
 export interface Props {
 	captcha: Captcha,
 	initialLocation: Location,
@@ -149,7 +62,12 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 	protected readonly _createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>;
 	protected readonly _dialogCreatorMap: { [P in DialogKey]: (queryString: string) => React.ReactNode } = {
 		[DialogKey.CreateAccount]: () => (
-			<div></div>
+			<CreateAccountDialog
+				captcha={this.props.captcha}
+				onCreateAccount={this._createAccount}
+				onCloseDialog={this._closeDialog}
+				onShowToast={this._addToast}
+			/>
 		),
 		[DialogKey.ResetPassword]: (queryString: string) => {
 			const kvps = parseQueryString(queryString);
@@ -167,8 +85,25 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			<div></div>
 		),
 		[DialogKey.SignIn]: () => (
-			<div></div>
+			<SignInDialog
+				onCloseDialog={this._closeDialog}
+				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+				onShowToast={this._addToast}
+				onSignIn={this._signIn}
+			/>
 		)
+	};
+	protected readonly _openRequestPasswordResetDialog = () => {
+		this.setState({
+			dialog: (
+				<RequestPasswordResetDialog
+					captcha={this.props.captcha}
+					onCloseDialog={this._closeDialog}
+					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+					onShowToast={this._addToast}
+				/>
+			)
+		});
 	};
 	protected readonly _popScreen = () => {
 		this.setState({ screens: this.state.screens.slice(0, this.state.screens.length - 2) });
@@ -240,12 +175,39 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 				}
 			};
 		},
-		[ScreenKey.Starred]: () => ({
-			key: ScreenKey.Starred,
-			render: () => {
-				return <div></div>;
+		[ScreenKey.Starred]: () => {
+			function mapToGlobalState(articles: Fetchable<PageResult<UserArticle>>) {
+				return { articleLists: { articles } };
 			}
-		}),
+			const load = (pageNumber: number) => {
+				return this.props.serverApi.listStarredArticles(
+					pageNumber,
+					starredArticles => this.setScreenState(
+						ScreenKey.Starred,
+						mapToGlobalState(starredArticles)
+					)
+				);
+			};
+			const pageResult = load(1);
+			return {
+				...mapToGlobalState(pageResult),
+				key: ScreenKey.Starred,
+				render: () => {
+					const screen = this.getScreen(ScreenKey.Starred);
+					return (
+						<StarredPage
+							articles={screen.articleLists.articles}
+							isUserSignedIn={!!this.state.user}
+							onReadArticle={this._readArticle}
+							onReload={load}
+							onShareArticle={this._shareArticle}
+							onToggleArticleStar={this._toggleArticleStar}
+							onViewComments={this._viewComments}
+						/>
+					);
+				}
+			};
+		},
 		[ScreenKey.History]: () => ({
 			key: ScreenKey.History,
 			render: () => {
@@ -269,16 +231,7 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			this.props.serverApi.unstarArticle :
 			this.props.serverApi.starArticle)(article.id);
 	};
-	protected readonly _viewAdminPage = () => {
-
-	};
 	protected readonly _viewComments = (article: UserArticle) => {
-
-	};
-	protected readonly _viewInbox = () => {
-
-	};
-	protected readonly _viewSettings = () => {
 
 	};
 	constructor(props: P & Props) {
@@ -296,7 +249,7 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 		}
 		window.history.replaceState(
 			null,
-			document.title,
+			window.document.title,
 			window.location.pathname + createQueryString(
 				qsKeys
 					.filter(key => !keys.includes(key))
@@ -332,21 +285,13 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			});
 	}
 	protected getLocationState(location: Location) {
-		const route = findRoute(routes, [clientTypeQsKey], location);
+		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
 		return {
 			dialog: route.dialogKey ?
 				this._dialogCreatorMap[route.dialogKey](location.queryString) :
 				null,
 			screen: this._screenCreatorMap[route.screenKey]()
 		};
-	}
-	protected getNavItems() {
-		return navItems
-			.map(item => ({
-				iconName: item.iconName,
-				label: item.label,
-				isSelected: this.state.screens[0].key === item.screenKey
-			}));
 	}
 	protected signIn(email: string, password: string) {
 		return this.props.serverApi.signIn(email, password);

@@ -101,6 +101,7 @@ export default class extends React.PureComponent<Props, {
 								Log In
 							</button>,
 							<button
+								className="loud"
 								key="createAccount"
 								onClick={this.props.onShowCreateAccountDialog}
 							>

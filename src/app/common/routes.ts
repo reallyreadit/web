@@ -1,70 +1,43 @@
-import { RouteProps } from 'react-router';
-import HotTopicsPage from './components/HotTopicsPage';
-import AboutPage from './components/AboutPage';
-import AdminPage from './components/AdminPage';
-import StarredPage from './components/StarredPage';
-import HistoryPage from './components/HistoryPage';
-import ArticlePage from './components/ArticlePage';
-import InboxPage from './components/InboxPage';
-import SettingsPage from './components/SettingsPage';
-import EmailConfirmationPage from './components/EmailConfirmationPage';
-import EmailSubscriptionsPage from './components/EmailSubscriptionsPage';
-import PasswordPage from './components/PasswordPage';
-import PrivacyPolicyPage from './components/PrivacyPolicyPage';
-import PizzaPage from './components/PizzaPage';
+import { Route } from "./Route";
+import DialogKey from "./DialogKey";
+import ScreenKey from "./ScreenKey";
 
-export default [
+const routes: Route<DialogKey, ScreenKey>[] = [
 	{
-		exact: true,
-		path: '/',
-		component: HotTopicsPage
+		createUrl: () => '/',
+		pathRegExp: /^\/$/,
+		screenKey: ScreenKey.Home
 	},
 	{
-		path: '/about',
-		component: AboutPage
+		createUrl: () => '/?create-account',
+		dialogKey: DialogKey.CreateAccount,
+		pathRegExp: /^\/$/,
+		queryStringKeys: ['create-account'],
+		screenKey: ScreenKey.Home
 	},
 	{
-		path: '/admin',
-		component: AdminPage
+		createUrl: params => `/?reset-password&email=${params['email']}&token=${params['token']}`,
+		dialogKey: DialogKey.ResetPassword,
+		pathRegExp: /^\/$/,
+		queryStringKeys: ['reset-password', 'email', 'token'],
+		screenKey: ScreenKey.Home
 	},
 	{
-		path: '/articles/:sourceSlug/:articleSlug/:commentId?',
-		component: ArticlePage
+		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}`,
+		pathRegExp: /^\/articles\/[^/]+\/[^/]+$/,
+		screenKey: ScreenKey.ArticleDetails
 	},
 	{
-		path: '/email/confirm/:result',
-		component: EmailConfirmationPage
+		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}?share`,
+		dialogKey: DialogKey.ShareArticle,
+		pathRegExp: /^\/articles\/[^/]+\/[^/]+$/,
+		queryStringKeys: ['share'],
+		screenKey: ScreenKey.ArticleDetails
 	},
 	{
-		path: '/email/subscriptions',
-		component: EmailSubscriptionsPage
-	},
-	{
-		path: '/history',
-		component: HistoryPage
-	},
-	{
-		path: '/inbox',
-		component: InboxPage
-	},
-	{
-		path: '/password/:action/:result',
-		component: PasswordPage
-	},
-	{
-		path: '/pizza',
-		component: PizzaPage
-	},
-	{
-		path: '/privacy',
-		component: PrivacyPolicyPage
-	},
-	{
-		path: '/settings',
-		component: SettingsPage
-	},
-	{
-		path: '/starred',
-		component: StarredPage
+		createUrl: () => '/starred',
+		pathRegExp: /^\/starred$/,
+		screenKey: ScreenKey.Starred
 	}
-] as RouteProps[];
+];
+export default routes;

@@ -1,5 +1,7 @@
 .read-count-indicator {
 	white-space: nowrap;
+	display: flex;
+	align-items: center;
 }
 .read-count-indicator > .icon {
 	margin-right: 3px;

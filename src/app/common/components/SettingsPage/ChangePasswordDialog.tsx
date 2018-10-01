@@ -3,7 +3,7 @@ import Context from '../../Context';
 import InputField from '../controls/InputField';
 import Dialog, { State } from '../controls/Dialog';
 
-export default class CreateAccountDialog extends Dialog<{}, {}, Partial<State> & {
+export default class extends Dialog<{}, {}, Partial<State> & {
 	currentPassword?: string,
 	currentPasswordError?: string,
 	password1?: string,

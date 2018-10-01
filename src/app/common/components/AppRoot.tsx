@@ -7,7 +7,7 @@ import AppNav from './AppRoot/AppNav';
 import Root, { Screen, Props as RootProps } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
-import { clientTypeKey as clientTypeQsKey } from '../queryString';
+import { clientTypeQueryStringKey } from '../queryString';
 
 export default class extends Root {
 	constructor(props: RootProps) {
@@ -75,7 +75,7 @@ export default class extends Root {
 			});
 	}
 	public componentDidMount() {
-		this.clearQueryStringKvps([clientTypeQsKey]);
+		this.clearQueryStringKvps([clientTypeQueryStringKey]);
 	}
 	public render() {
 		const title = this.state.screens.length ?

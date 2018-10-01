@@ -1,9 +1,3 @@
-%nav-separator {
-	flex: 0 0 auto;
-	width: 1px;
-	background-color: silver;
-	margin: 0 6px;
-}
 %menu-flag {
 	content: "";
 	position: absolute;
@@ -14,45 +8,47 @@
 	border-color: red red transparent transparent;
 }
 
-.header {
-	padding: 25px 0;
-}
-.header > .row {
+.browser-header {
 	display: flex;
-}
-.header > .row > .content {
-	display: flex;
-	box-sizing: border-box;
 	justify-content: space-between;
-	width: 100%;
-	max-width: 870px;
-	padding: 0 10px;
-	margin: 0 auto;
+	border-bottom: 3px solid black;
 }
-.header > .row.top > .content {
-	height: 40px;
-	align-items: center;
+.browser-header > .logo-container {
+	padding: 20px 0 20px 30px;
 }
-.header > .row.top > .content > .logo {
-	flex: 0 0 auto;
+.browser-header > .logo-container > svg {
+	height: 30px;
 }
-.header > .row.top > .content > .logo > svg {
-	display: block;
-	width: 180px;
-}
-.header > .row.top > .content > .nav-section {
+.browser-header > .menu-container {
 	display: flex;
 	align-items: center;
-	min-width: 0;
-	margin-left: 20px;
+	padding: 0 30px 0 0;	
 }
-.header > .row.top > .content > .nav-section > .header-button {
-	height: 32px;
+.browser-header > .menu-container > button {
+	height: 40px;
+	border: none;
+	padding: 0 20px;
+	background-color: transparent;
+	font-size: 16px;
+	cursor: pointer;
 }
-.header > .row.top > .content > .nav-section > .header-button.about {
-	flex: 0 0 auto;
+.browser-header > .menu-container > button:not(.loud):hover {
+	background-color: silver;
 }
-.header > .row.top > .content > .nav-section > .menu {
+.browser-header > .menu-container > button:focus {
+	outline: none;
+}
+.browser-header > .menu-container > button:not(:last-child) {
+	margin-right: 10px;
+}
+.browser-header > .menu-container > button.loud {
+	background-color: black;
+	color: white;
+}
+.browser-header > .menu-container > button > label {
+	cursor: pointer;
+}
+.browser-header > .menu-container > .menu {
 	box-sizing: border-box;
 	height: 32px;
 	min-width: 0;
@@ -62,178 +58,41 @@
 	font-weight: bold;
 	text-transform: uppercase;
 }
-.header > .row.top > .content > .nav-section > .menu:focus {
+.browser-header > .menu-container > .menu:focus {
 	border: 1px solid black;
 	padding: 0 9px;
 	background-color: white;
 }
-.header > .row.top > .content > .nav-section > .menu.indicator::after {
+.browser-header > .menu-container > .menu.indicator::after {
 	@extend %menu-flag;
 }
-.header > .row.top > .content > .nav-section > .menu > label {
+.browser-header > .menu-container > .menu > label {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.header > .row.top > .content > .nav-section > .menu > .hamburger {
+.browser-header > .menu-container > .menu > .hamburger {
 	display: none;
 }
-.header > .row.top > .content > .nav-section > .menu > ol {
+.browser-header > .menu-container > .menu > ol {
 	top: 30px;
 	right: -1px;
 	background-color: white;
 	border: 1px solid black;
 }
-.header > .row.top > .content > .nav-section > .menu > ol > li {
+.browser-header > .menu-container > .menu > ol > li {
 	position: relative;
 }
-.header > .row.top > .content > .nav-section > .menu > ol > li.about {
+.browser-header > .menu-container > .menu > ol > li.about {
 	display: none;
 }
-.header > .row.top > .content > .nav-section > .menu > ol > li.indicator::after {
+.browser-header > .menu-container > .menu > ol > li.indicator::after {
 	@extend %menu-flag;
 }
-.header > .row.top > .content > .nav-section > .menu > ol > li > a,
-.header > .row.top > .content > .nav-section > .menu > ol > li > span {
+.browser-header > .menu-container > .menu > ol > li > a,
+.browser-header > .menu-container > .menu > ol > li > span {
 	display: block;
 	text-decoration: none;
 	color: inherit;
 	padding: 5px 10px;
-}
-.header > .row.top > .content > .nav-section > .nav-separator {
-	@extend %nav-separator;
-	height: 17px;
-}
-.header > .row.bottom > .content {
-	height: 45px;
-}
-.header > .row.bottom > .content > .section {
-	display: flex;
-	align-items: center;
-}
-.header > .row.bottom > .content > .section.left > .subtitle {
-	display: none;
-	padding: 5px 5px 0 5px;
-	font-style: italic;
-	color: #333;
-	font-size: 12px;
-	text-align: center;
-}
-.header > .row.bottom > .content > .section.left > .nav-buttons {
-	display: flex;
-}
-.header > .row.bottom > .content > .section > .nav-buttons > .header-button {
-	height: 32px;
-}
-.header > .row.bottom > .content > .section > .pizza-button {
-	height: 41px;
-	text-decoration: none;
-	text-transform: uppercase;
-	font-weight: bold;
-	display: flex;
-	align-items: center;
-	color: black;
-}
-.header > .row.bottom > .content > .section > .pizza-button > .live {
-	height: 100%;
-	display: flex;
-	align-items: center;
-	padding: 0 5px;
-	box-sizing: border-box;
-	color: white;
-	background-color: plum;
-}
-.header > .row.bottom > .content > .section > .pizza-button > .live > .icon {
-	margin-right: 3px;
-	top: 0;
-}
-.header > .row.bottom > .content > .section > .pizza-button > .content {
-	padding: 0 5px;
-	border-width: 1px 1px 1px 0;
-	height: 100%;
-	display: flex;
-	flex-flow: column;
-	justify-content: space-evenly;
-	align-items: center;
-	border: 1px solid plum;
-	box-sizing: border-box;
-	background-color: white;
-}
-.header > .row.bottom > .content > .section > .pizza-button.selected > .content {
-	border-bottom-width: 3px;
-	 padding-top: 2px;
-}
-.header > .row.bottom > .content > .section > .pizza-button > .content > .subtitle {
-	font-weight: normal;
-    font-size: 11px;
-}
-.header > .row.subtitle > .content {
-	justify-content: flex-start;
-}
-.header > .row.subtitle > .content > span {
-	display: block;
-	text-align: center;
-	font-style: italic;
-	color: #333;
-}
-
-@media (max-width: 529px) {
-	.header {
-		padding-top: 10px;
-		padding-bottom: 15px;
-	}
-	.header > .row.top {
-		margin-bottom: 10px;
-	}
-	.header > .row.top.unauthenticated > .content {
-		flex-direction: column;
-		height: auto;
-	}
-	.header > .row.top.unauthenticated > .content > .logo {
-		margin-bottom: 10px;
-		padding-left: 0;
-	}
-	.header > .row.top.unauthenticated > .content .nav-section {
-		margin-left: 0;
-	}
-	.header > .row.top:not(.unauthenticated) > .content > .nav-section > .header-button.about,
-	.header > .row.top:not(.unauthenticated) > .content > .nav-section > .nav-separator {
-		display: none;
-	}
-	.header > .row.top > .content > .nav-section > .menu > label {
-		display: none;
-	}
-	.header > .row.top > .content > .nav-section > .menu > .hamburger {
-		display: inline-block;
-		width: 28px;
-		height: 28px;
-		top: 0;
-	}
-	.header > .row.top > .content > .nav-section > .menu > .caret {
-		display: none;
-	}
-	.header > .row.top > .content > .nav-section > .menu > ol > li.about {
-		display: list-item;
-	}
-	.header > .row.bottom > .content {
-		justify-content: center;
-	}
-	.header > .row.bottom > .content > .section.left {
-		position: fixed;
-		background-color: white;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 10;
-		display: flex;
-		justify-content: space-evenly;
-		border-top: 1px solid black;	
-		flex-direction: column;
-	}
-	.header > .row.bottom > .content > .section.left > .subtitle {
-		display: block;
-	}
-	.header > .row.subtitle {
-		display: none;
-	}
 }

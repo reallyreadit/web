@@ -8,7 +8,7 @@ import SessionState from '../../common/models/SessionState';
 import ApiRequest from '../common/serverApi/Request';
 import config from './config';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
-//import routes from '../common/routes';
+import routes from '../common/routes';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
 import * as url from 'url';
@@ -19,14 +19,15 @@ import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeKey as clientTypeQsKey } from '../common/queryString';
+import { createQueryString, clientTypeQueryStringKey } from '../common/queryString';
+import { findRouteByLocation } from '../common/Route';
 
 // redirect helper function
 const nodeUrl = url;
 function redirect(req: express.Request, res: express.Response, url: string) {
-	if (clientTypeQsKey in req.query) {
+	if (clientTypeQueryStringKey in req.query) {
 		const redirectUrl = nodeUrl.parse(url, true);
-		redirectUrl.query[clientTypeQsKey] = req.query[clientTypeQsKey];
+		redirectUrl.query[clientTypeQueryStringKey] = req.query[clientTypeQueryStringKey];
 		url = nodeUrl.format(redirectUrl);
 	}
 	res.redirect(url);
@@ -205,16 +206,25 @@ server = server.get('/inbox', (req, res, next) => {
 	}
 });
 // render matched route or return 404
-/*server = server.use((req, res, next) => {
-	if (routes.find(route => !!matchPath(req.path, route))) {
+server = server.use((req, res, next) => {
+	if (
+		findRouteByLocation(
+			routes,
+			{
+				path: req.path,
+				queryString: createQueryString(req.query)
+			},
+			[clientTypeQueryStringKey]
+		)
+	) {
 		next();
 	} else {
 		res.sendStatus(404);
 	}
-});*/
+});
 // render the app
 server = server.get('/*', (req, res) => {
-	const clientType = (req.query[clientTypeQsKey] as ClientType) || ClientType.Browser;
+	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
 		serverApi: req.api,
 		captcha: new Captcha(),

@@ -8,9 +8,10 @@ import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
-import SignInDialog from './BrowserRoot/SignInDialog';
-import RequestPasswordResetDialog from './BrowserRoot/SignInDialog/RequestPasswordResetDialog';
-import CreateAccountDialog from './BrowserRoot/CreateAccountDialog';
+import ScreenKey from '../ScreenKey';
+import DialogKey from '../DialogKey';
+import routes from '../routes';
+import { findRouteByKey } from '../Route';
 
 interface Props {
 	localStorageApi: LocalStorageApi,
@@ -22,39 +23,34 @@ export default class extends Root<
 > {
 	private readonly _openCreateAccountDialog = () => {
 		this.setState({
-			dialog: (
-				<CreateAccountDialog
-					captcha={this.props.captcha}
-					onCreateAccount={this._createAccount}
-					onCloseDialog={this._closeDialog}
-					onShowToast={this._addToast}
-				/>
-			)
-		});
-	};
-	private readonly _openRequestPasswordResetDialog = () => {
-		this.setState({
-			dialog: (
-				<RequestPasswordResetDialog
-					captcha={this.props.captcha}
-					onCloseDialog={this._closeDialog}
-					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
-					onShowToast={this._addToast}
-				/>
-			)
+			dialog: this._dialogCreatorMap[DialogKey.CreateAccount](window.location.search)
 		});
 	};
 	private readonly _openSignInDialog = () => {
 		this.setState({
-			dialog: (
-				<SignInDialog
-					onCloseDialog={this._closeDialog}
-					onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
-					onShowToast={this._addToast}
-					onSignIn={this._signIn}
-				/>
-			)
+			dialog: this._dialogCreatorMap[DialogKey.SignIn](window.location.search)
 		});
+	};
+	private readonly _viewAdminPage = () => {
+
+	};
+	private readonly _viewHistory = () => {
+
+	};
+	private readonly _viewHome = () => {
+		this.replaceScreen(ScreenKey.Home);
+	};
+	private readonly _viewInbox = () => {
+
+	};
+	private readonly _viewLeaderboards = () => {
+
+	};
+	private readonly _viewSettings = () => {
+		
+	};
+	private readonly _viewStarred = () => {
+		this.replaceScreen(ScreenKey.Starred);
 	};
 	constructor(props: Props & RootProps) {
 		super(props);
@@ -73,6 +69,16 @@ export default class extends Root<
 	private handleUserChange(userAccount: UserAccount) {
 		this.setState({ user: userAccount });
 		this.props.localStorageApi.updateUser(userAccount);
+	}
+	private replaceScreen(key: ScreenKey) {
+		this.setState({
+			screens: [this._screenCreatorMap[key]()]
+		});
+		window.history.pushState(
+			null,
+			window.document.title,
+			findRouteByKey(routes, key).createUrl()
+		);
 	}
 	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
 		return super
@@ -99,6 +105,15 @@ export default class extends Root<
 	}
 	public componentDidMount() {
 		this.clearQueryStringKvps();
+		window.addEventListener('popstate', () => {
+			this.setState({
+				screens: [
+					this
+						.getLocationState({ path: window.location.pathname })
+						.screen
+				]
+			});
+		});
 	}
 	public render() {
 		return (
@@ -119,7 +134,11 @@ export default class extends Root<
 				/>
 				<main>
 					<BrowserNav
-						items={this.getNavItems()}
+						onViewHistory={this._viewHistory}
+						onViewHome={this._viewHome}
+						onViewLeaderboards={this._viewLeaderboards}
+						onViewStarred={this._viewStarred}
+						selectedScreenKey={this.state.screens[0].key}
 					/>
 					<div className="screen">
 						{this.state.screens[0].render()}

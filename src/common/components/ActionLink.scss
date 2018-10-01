@@ -1,6 +1,8 @@
 .action-link {
 	text-decoration: underline;
 	cursor: pointer;
+	display: flex;
+	align-items: center;
 }
 .action-link.disabled {
 	color: #ccc;

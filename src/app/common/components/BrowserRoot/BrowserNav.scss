@@ -1,0 +1,36 @@
+.browser-nav {
+	display: flex;
+	flex-flow: column;
+	border-right: 3px solid black;
+}
+.browser-nav > li:first-child > button {
+	padding-top: 20px;
+}
+.browser-nav > li:last-child > button {
+	padding-bottom: 20px;
+}
+.browser-nav > li.selected > button {
+	color: white;
+	background-color: black;
+}
+.browser-nav > li > button {
+	display: flex;
+	padding: 20px 30px;
+	font-size: 16px;
+	width: 100%;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+}
+.browser-nav > li > button:not(.selected):hover {
+	background-color: silver;
+}
+.browser-nav > li > button:focus {
+	outline: none;
+}
+.browser-nav > li > button > .icon {
+	margin-right: 10px;
+}
+.browser-nav > li > button > label {
+	cursor: pointer;
+}

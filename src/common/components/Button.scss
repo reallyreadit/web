@@ -41,8 +41,9 @@ $disabled-border-color: #ccc;
 		position: relative;
 		z-index: 4;
     	height: ($button-height - 2) + px;
-		line-height: ($button-height - 2) + px;
 		background-color: #fff;
+		display: flex;
+		align-items: center;
 	}
 	.content::before,
 	.content::after { @include end-cap($bevel-height - 1); }

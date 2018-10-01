@@ -2,11 +2,13 @@
 	margin-bottom: 15px;
 }
 .hot-topics-page > span {
-	margin: 7px 0 14px 0;
+	margin: 20px 0;
 }
 .hot-topics-page > .hot-topics > .aotd > h3 {
-	text-align: center;
-	padding-bottom: 5px;
+	padding-bottom: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 .hot-topics-page > .hot-topics > .aotd > h3 > .icon:first-child {
 	margin-right: 9px;
