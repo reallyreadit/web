@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import AppRoot from '../common/components/AppRoot';
 import ServerApi from './ServerApi';
 import Captcha from './Captcha';
-import Environment from '../common/Environment';
+import ClientType from '../common/ClientType';
 import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
 
@@ -16,7 +16,6 @@ ga('send', 'pageview');
 
 const serverApi = new ServerApi(window.initData.serverApi);
 
-let rootElement: React.ReactElement<any>;
 const rootProps = {
 	serverApi,
 	captcha: new Captcha(
@@ -27,23 +26,29 @@ const rootProps = {
 			};
 		}
 	),
-	path: window.location.pathname,
-	user: window.initData.userAccount
+	initialLocation: window.initData.initialLocation,
+	initialUser: window.initData.userAccount
 };
-if (window.initData.environment === Environment.App) {
-	rootElement = React.createElement(
-		AppRoot,
-		rootProps
-	);
-} else {
-	rootElement = React.createElement(
-		BrowserRoot,
-		{
-			...rootProps,
-			localStorage: new LocalStorageApi(),
-			newReplyNotification: window.initData.newReplyNotification
-		}
-	);
+let rootElement: React.ReactElement<any>;
+switch (window.initData.clientType) {
+	case ClientType.App:
+		rootElement = React.createElement(
+			AppRoot,
+			rootProps
+		);
+		break;
+	case ClientType.Browser:
+		rootElement = React.createElement(
+			BrowserRoot,
+			{
+				...rootProps,
+				localStorageApi: new LocalStorageApi(),
+				newReplyNotification: window.initData.newReplyNotification
+			}
+		);
+		break;
+	default:
+		throw new Error('Invalid clientType');
 }
 
 ReactDOM.render(

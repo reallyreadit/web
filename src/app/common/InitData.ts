@@ -1,12 +1,13 @@
 import { InitData as ServerApiInitData } from './serverApi/ServerApi';
 import UserAccount from '../../common/models/UserAccount';
-import Environment from './Environment';
+import ClientType from './ClientType';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
+import Location from './Location';
 
 export default interface InitData {
-	environment: Environment,
+	clientType: ClientType,
+	initialLocation: Location,
 	newReplyNotification: NewReplyNotification,
-	path: string,
 	serverApi: ServerApiInitData,
 	userAccount: UserAccount,
 	verifyCaptcha: boolean

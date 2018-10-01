@@ -13,3 +13,16 @@ export function parseQueryString(queryString: string) {
 			return result;
 		}, {} as { [key: string]: string })
 }
+export function createQueryString(kvps: { [key: string]: string }) {
+	let keys: string[];
+	if (!kvps || !((keys = Object.keys(kvps)).length)) {
+		return '';
+	}
+	return (
+		'?' +
+		keys
+			.map(key => kvps[key] ? `${key}=${kvps[key]}` : key)
+			.join('&')
+	);
+}
+export const clientTypeKey = 'clientType';

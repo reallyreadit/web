@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Button from '../../../../../common/components/Button';
-import SignInDialog from '../../SignInDialog';
-import CreateAccountDialog from '../../CreateAccountDialog';
+import SignInDialog from '../../BrowserRoot/SignInDialog';
+import CreateAccountDialog from '../../BrowserRoot/CreateAccountDialog';
 import Context, { contextTypes } from '../../../Context';
 
 export enum Error {

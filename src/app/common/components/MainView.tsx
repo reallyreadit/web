@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Route } from 'react-router';
 import Context, { contextTypes } from '../Context';
-import DialogManager from './MainView/DialogManager';
+import DialogManager from './DialogManager';
 import Toaster from './Toaster';
 import Header from './MainView/BrowserView/Header';
 import routes from '../routes';
-import SignInDialog from './SignInDialog';
-import CreateAccountDialog from './CreateAccountDialog';
-import ResetPasswordDialog from './MainView/ResetPasswordDialog';
+import SignInDialog from './BrowserRoot/SignInDialog';
+import CreateAccountDialog from './BrowserRoot/CreateAccountDialog';
+import ResetPasswordDialog from './ResetPasswordDialog';
 import EmailConfirmationBar from './MainView/EmailConfirmationBar';
 import ClientType from '../ClientType';
 import AppAuthScreen from './MainView/AppView/AppAuthScreen';

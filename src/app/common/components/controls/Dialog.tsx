@@ -1,19 +1,19 @@
 import * as React from 'react';
 import Button from '../../../../common/components/Button';
-import Context, { contextTypes } from '../../Context';
 import { IconName } from '../../../../common/components/Icon';
-import { Intent } from '../../Page';
+import { Intent } from '../Toaster';
 
-interface State {
+export interface Props {
+	onCloseDialog: () => void,
+	onShowToast: (text: string, intent: Intent) => void
+}
+export interface State {
 	errorMessage: string,
 	showErrors: boolean,
 	isLoading: boolean,
 	isSubmitting: boolean
 }
-export { State };
-export default abstract class Dialog<T, P, S extends Partial<State>> extends React.PureComponent<P, S> {
-	public static contextTypes = contextTypes;
-	public context: Context;
+export default abstract class <T, P, S extends Partial<State>> extends React.PureComponent<P & Props, S> {
 	private readonly _title: string;
 	private readonly _submitButtonIcon: IconName;
 	private readonly _submitButtonText: string;
@@ -35,7 +35,7 @@ export default abstract class Dialog<T, P, S extends Partial<State>> extends Rea
 					.then(result => {
 						this._close();
 						if (this._successMessage) {
-							this.context.page.showToast(this._successMessage, Intent.Success);
+							this.props.onShowToast(this._successMessage, Intent.Success);
 						}
 						this.onSuccess(result);
 					})
@@ -46,17 +46,19 @@ export default abstract class Dialog<T, P, S extends Partial<State>> extends Rea
 			);
 		}
 	};
-	private _close = () => this.context.page.closeDialog();
-	constructor(params: {
-		title: string,
-		submitButtonIcon?: IconName,
-		submitButtonText: string,
-		successMessage?: string
-	},
-		props: P,
-		context: Context
+	private readonly _close = () => {
+		this.props.onCloseDialog();
+	};
+	constructor(
+		params: {
+			title: string,
+			submitButtonIcon?: IconName,
+			submitButtonText: string,
+			successMessage?: string
+		},
+		props: P & Props
 	) {
-		super(props, context);
+		super(props);
 		this._title = params.title;
 		this._submitButtonIcon = params.submitButtonIcon || 'checkmark';
 		this._submitButtonText = params.submitButtonText;

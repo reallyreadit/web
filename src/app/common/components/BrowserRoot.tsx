@@ -7,36 +7,72 @@ import Root, { Props as RootProps } from './Root';
 import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
+import DialogManager from './DialogManager';
+import SignInDialog from './BrowserRoot/SignInDialog';
+import RequestPasswordResetDialog from './BrowserRoot/SignInDialog/RequestPasswordResetDialog';
+import CreateAccountDialog from './BrowserRoot/CreateAccountDialog';
 
 interface Props {
-	localStorage: LocalStorageApi,
+	localStorageApi: LocalStorageApi,
 	newReplyNotification: NewReplyNotification | null
 }
 export default class extends Root<
 	Props,
 	{ showNewReplyIndicator: boolean }
 > {
-	private readonly _showCreateAccountDialog = () => {
-
+	private readonly _openCreateAccountDialog = () => {
+		this.setState({
+			dialog: (
+				<CreateAccountDialog
+					captcha={this.props.captcha}
+					onCreateAccount={this._createAccount}
+					onCloseDialog={this._closeDialog}
+					onShowToast={this._addToast}
+				/>
+			)
+		});
 	};
-	private readonly _showSignInDialog = () => {
-
+	private readonly _openRequestPasswordResetDialog = () => {
+		this.setState({
+			dialog: (
+				<RequestPasswordResetDialog
+					captcha={this.props.captcha}
+					onCloseDialog={this._closeDialog}
+					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+					onShowToast={this._addToast}
+				/>
+			)
+		});
+	};
+	private readonly _openSignInDialog = () => {
+		this.setState({
+			dialog: (
+				<SignInDialog
+					onCloseDialog={this._closeDialog}
+					onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+					onShowToast={this._addToast}
+					onSignIn={this._signIn}
+				/>
+			)
+		});
 	};
 	constructor(props: Props & RootProps) {
 		super(props);
+		const locationState = this.getLocationState(props.initialLocation);
 		this.state = {
+			dialog: locationState.dialog,
+			screens: [locationState.screen],
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
-			screens: [this.createScreen(props.path)],
 			toasts: [],
-			user: props.user
+			user: props.initialUser
 		};
-		props.localStorage.addListener('user', user => {
+		props.localStorageApi.addListener('user', user => {
 			this.setState({ user });
 		});
 	}
 	private handleUserChange(userAccount: UserAccount) {
 		this.setState({ user: userAccount });
-		this.props.localStorage.updateUser(userAccount);
+		this.props.localStorageApi.updateUser(userAccount);
 	}
 	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
 		return super
@@ -61,6 +97,9 @@ export default class extends Root<
 				this.handleUserChange(null);
 			});
 	}
+	public componentDidMount() {
+		this.clearQueryStringKvps();
+	}
 	public render() {
 		return (
 			<div className="browser-root">
@@ -69,8 +108,8 @@ export default class extends Root<
 					user={this.state.user}
 				/>
 				<BrowserHeader
-					onShowCreateAccountDialog={this._showCreateAccountDialog}
-					onShowSignInDialog={this._showSignInDialog}
+					onShowCreateAccountDialog={this._openCreateAccountDialog}
+					onShowSignInDialog={this._openSignInDialog}
 					onSignOut={this._signOut}
 					onViewAdminPage={this._viewAdminPage}
 					onViewInbox={this._viewInbox}
@@ -86,6 +125,7 @@ export default class extends Root<
 						{this.state.screens[0].render()}
 					</div>
 				</main>
+				<DialogManager dialog={this.state.dialog} />
 				<Toaster
 					onRemoveToast={this._removeToast}
 					toasts={this.state.toasts}

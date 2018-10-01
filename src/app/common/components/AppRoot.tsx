@@ -4,24 +4,44 @@ import AppHeader from './AppRoot/AppHeader';
 import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
 import AppNav from './AppRoot/AppNav';
-import Root, { Props as RootProps } from './Root';
+import Root, { Screen, Props as RootProps } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
+import DialogManager from './DialogManager';
+import { clientTypeKey as clientTypeQsKey } from '../queryString';
 
 export default class extends Root {
 	constructor(props: RootProps) {
 		super(props);
+		let
+			dialog: React.ReactNode,
+			screens: Screen[];
+		if (props.initialUser) {
+			const locationState = this.getLocationState(props.initialLocation);
+			dialog = locationState.dialog;
+			screens = [locationState.screen];
+		} else {
+			dialog = null;
+			screens = [];
+		}
 		this.state = {
-			screens: props.user ?
-				[this.createScreen(props.path)] :
-				[],
+			dialog,
+			screens,
 			toasts: [],
-			user: props.user
+			user: props.initialUser
 		};
 	}
 	private handleUserChange(userAccount: UserAccount) {
 		if (userAccount) {
+			const locationState = this.getLocationState({
+				path: window.location.pathname,
+				queryString: window.location.search
+			});
+			if (window.location.search) {
+				this.clearQueryStringKvps();
+			}
 			this.setState({
-				screens: [this.createScreen(window.location.pathname)],
+				dialog: locationState.dialog,
+				screens: [locationState.screen],
 				user: userAccount
 			});
 		} else {
@@ -54,6 +74,9 @@ export default class extends Root {
 				this.handleUserChange(null);
 			});
 	}
+	public componentDidMount() {
+		this.clearQueryStringKvps([clientTypeQsKey]);
+	}
 	public render() {
 		const title = this.state.screens.length ?
 			this.state.screens[this.state.screens.length - 1].title :
@@ -85,6 +108,10 @@ export default class extends Root {
 						<AppNav
 							items={this.getNavItems()}
 							key="nav"
+						/>,
+						<DialogManager
+							dialog={this.state.dialog}
+							key="dialogs"
 						/>
 					] :
 					<AppAuthScreen

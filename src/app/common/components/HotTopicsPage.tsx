@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../../../common/models/UserArticle';
-import Fetchable from '../api/Fetchable';
+import Fetchable from '../serverApi/Fetchable';
 import ArticleList from './controls/articles/ArticleList';
 import PageSelector from './controls/PageSelector';
 import Icon from '../../../common/components/Icon';

@@ -1,13 +1,16 @@
 import * as React from 'react';
-import Context from '../Context';
-import Dialog, { State } from './controls/Dialog';
-import UserAccount from '../../../common/models/UserAccount';
-import { Intent } from '../Page';
-import EmailAddressField from './controls/authentication/EmailAddressField';
-import PasswordField from './controls/authentication/PasswordField';
-import UsernameField from './controls/authentication/UsernameField';
+import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import EmailAddressField from '../controls/authentication/EmailAddressField';
+import PasswordField from '../controls/authentication/PasswordField';
+import UsernameField from '../controls/authentication/UsernameField';
+import Captcha from '../../../server/Captcha';
+import { Intent } from '../Toaster';
 
-export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial<State> & {
+interface Props {
+	captcha: Captcha,
+	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>
+}
+export default class extends Dialog<void, Props, Partial<State> & {
 	name?: string,
 	nameError?: string,
 	email?: string,
@@ -23,15 +26,13 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 		this._captchaElement = ref;
 	};
 	private _captchaId: number | null = null;
-	constructor(props: {}, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Sign Up',
-				submitButtonText: 'Sign Up',
-				successMessage: 'Welcome to reallyread.it!\nPlease check your email and confirm your address.'
+				submitButtonText: 'Sign Up'
 			},
-			props,
-			context
+			props
 		);
 	}
 	protected renderFields() {
@@ -72,21 +73,12 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 		}];
 	}
 	protected submitForm() {
-		return this.context.api.createUserAccount(
+		return this.props.onCreateAccount(
 			this.state.name,
 			this.state.email,
 			this.state.password,
 			this.context.captcha.getResponse(this._captchaId)
 		);
-	}
-	protected onSuccess(userAccount: UserAccount) {
-		this.context.user.signIn(userAccount);
-		ga('send', {
-			hitType: 'event',
-			eventCategory: 'UserAccount',
-			eventAction: 'create',
-			eventLabel: userAccount.name
-		});
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'DuplicateName')) {
@@ -96,13 +88,13 @@ export default class CreateAccountDialog extends Dialog<UserAccount, {}, Partial
 			this.setState({ emailError: 'Email address already in use.' });
 		}
 		if (errors.some(error => error === 'InvalidCaptcha')) {
-			this.context.page.showToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
+			this.props.onShowToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
 		}
-		this.context.captcha.reset(this._captchaId);
+		this.props.captcha.reset(this._captchaId);
 	}
 	public componentDidMount() {
-		this.context.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, this.context.captcha.siteKeys.createAccount);
+		this.props.captcha.onReady().then(captcha => {
+			this._captchaId = captcha.render(this._captchaElement, this.props.captcha.siteKeys.createAccount);
 		});
 	}
 }

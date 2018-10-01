@@ -1,10 +1,14 @@
 import * as React from 'react';
-import Context from '../../Context';
-import InputField from '../controls/InputField';
-import Dialog, { State } from '../controls/Dialog';
-import { Intent } from '../../Page';
+import InputField from '../../controls/InputField';
+import Dialog, { Props as DialogProps, State } from '../../controls/Dialog';
+import Captcha from '../../../Captcha';
+import { Intent } from '../../Toaster';
 
-export default class RequestPasswordResetDialog extends Dialog<{}, {}, Partial<State> & {
+interface Props {
+	captcha: Captcha,
+	onRequestPasswordReset: (email: string, captchaResponse: string) => Promise<void>
+}
+export default class extends Dialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string
 }> {
@@ -14,15 +18,14 @@ export default class RequestPasswordResetDialog extends Dialog<{}, {}, Partial<S
 		this._captchaElement = ref;
 	};
 	private _captchaId: number | null = null;
-	constructor(props: {}, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Request Password Reset',
 				submitButtonText: 'Submit Request',
 				successMessage: 'Password reset email has been sent'
 			},
-			props,
-			context
+			props
 		);
 	}
 	protected renderFields() {
@@ -48,9 +51,9 @@ export default class RequestPasswordResetDialog extends Dialog<{}, {}, Partial<S
 		return [{ email: this.state.emailError }];
 	}
 	protected submitForm() {
-		return this.context.api.requestPasswordReset(
+		return this.props.onRequestPasswordReset(
 			this.state.email,
-			this.context.captcha.getResponse(this._captchaId)
+			this.props.captcha.getResponse(this._captchaId)
 		);
 	}
 	protected onError(errors: string[]) {
@@ -61,13 +64,13 @@ export default class RequestPasswordResetDialog extends Dialog<{}, {}, Partial<S
 			this.setState({ errorMessage: 'Password reset rate limit exceeded.\nPlease try again later.' });
 		}
 		if (errors.some(error => error === 'InvalidCaptcha')) {
-			this.context.page.showToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
+			this.props.onShowToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
 		}
-		this.context.captcha.reset(this._captchaId);
+		this.props.captcha.reset(this._captchaId);
 	}
 	public componentDidMount() {
-		this.context.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, this.context.captcha.siteKeys.forgotPassword);
+		this.props.captcha.onReady().then(captcha => {
+			this._captchaId = captcha.render(this._captchaElement, this.props.captcha.siteKeys.forgotPassword);
 		});
 	}
 }

@@ -18,14 +18,15 @@ import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
-import Environment from '../common/Environment';
+import ClientType from '../common/ClientType';
+import { createQueryString, clientTypeKey as clientTypeQsKey } from '../common/queryString';
 
 // redirect helper function
 const nodeUrl = url;
-function redirectWithMode(req: express.Request, res: express.Response, url: string) {
-	if (req.query['mode']) {
+function redirect(req: express.Request, res: express.Response, url: string) {
+	if (clientTypeQsKey in req.query) {
 		const redirectUrl = nodeUrl.parse(url, true);
-		redirectUrl.query['mode'] = req.query['mode'];
+		redirectUrl.query[clientTypeQsKey] = req.query[clientTypeQsKey];
 		url = nodeUrl.format(redirectUrl);
 	}
 	res.redirect(url);
@@ -115,7 +116,7 @@ server = server.use((req, res, next) => {
 // authorize
 server = server.get(['/history', '/inbox', '/settings', '/starred'], (req, res, next) => {
 	if (!req.sessionState.userAccount) {
-		redirectWithMode(req, res, '/');
+		redirect(req, res, '/');
 	} else {
 		next();
 	}
@@ -135,7 +136,7 @@ server = server.get('/confirmEmail', (req, res) => {
 	req.api
 		.fetchJson('POST', new ApiRequest('/UserAccounts/ConfirmEmail2', { token: req.query['token'] }))
 		.then(() => {
-			redirectWithMode(req, res, '/email/confirm/success');
+			redirect(req, res, '/email/confirm/success');
 		})
 		.catch((error: string) => {
 			const redirectUrl = ({
@@ -144,7 +145,7 @@ server = server.get('/confirmEmail', (req, res) => {
 				'NotFound': '/email/confirm/not-found'
 			} as { [key: string]: string })[error];
 			if (redirectUrl) {
-				redirectWithMode(req, res, redirectUrl);
+				redirect(req, res, redirectUrl);
 			} else {
 				res.sendStatus(400);
 			}
@@ -154,7 +155,7 @@ server = server.get('/resetPassword', (req, res) => {
 	req.api
 		.fetchJson<PasswordResetRequest>('GET', new ApiRequest('/UserAccounts/PasswordResetRequest2', { token: req.query['token'] }))
 		.then(resetRequest => {
-			redirectWithMode(req, res, url.format({
+			redirect(req, res, url.format({
 				pathname: '/',
 				query: {
 					'reset-password': '',
@@ -169,7 +170,7 @@ server = server.get('/resetPassword', (req, res) => {
 				'NotFound': '/password/reset/not-found'
 			} as { [key: string]: string })[error];
 			if (redirectUrl) {
-				redirectWithMode(req, res, redirectUrl);
+				redirect(req, res, redirectUrl);
 			} else {
 				res.sendStatus(400);
 			}
@@ -187,7 +188,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 		.fetchJson<Comment>('POST', new ApiRequest(path, params))
 		.then(comment => {
 			const slugParts = comment.articleSlug.split('_');
-			redirectWithMode(req, res, `/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
+			redirect(req, res, `/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
 		})
 		.catch(() => {
 			res.sendStatus(400);
@@ -213,33 +214,37 @@ server = server.get('/inbox', (req, res, next) => {
 });*/
 // render the app
 server = server.get('/*', (req, res) => {
-	let environment: Environment;
-	if (req.query['mode'] === 'app') {
-		environment = Environment.App;
-	} else {
-		environment = Environment.Browser;
-	}
-	let rootElement: React.ReactElement<any>;
+	const clientType = (req.query[clientTypeQsKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
 		serverApi: req.api,
 		captcha: new Captcha(),
-		path: req.path,
-		user: req.sessionState.userAccount
+		initialLocation: {
+			path: req.path,
+			queryString: createQueryString(req.query)
+		},
+		initialUser: req.sessionState.userAccount
 	};
-	if (environment === Environment.App) {
-		rootElement = React.createElement(
-			AppRoot,
-			rootProps
-		);
-	} else {
-		rootElement = React.createElement(
-			BrowserRoot,
-			{
-				...rootProps,
-				localStorage: new LocalStorageApi(),
-				newReplyNotification: req.sessionState.newReplyNotification
-			}
-		);
+	let rootElement: React.ReactElement<any>;
+	switch (clientType) {
+		case ClientType.App:
+			rootElement = React.createElement(
+				AppRoot,
+				rootProps
+			);
+			break;
+		case ClientType.Browser:
+			rootElement = React.createElement(
+				BrowserRoot,
+				{
+					...rootProps,
+					localStorageApi: new LocalStorageApi(),
+					newReplyNotification: req.sessionState.newReplyNotification
+				}
+			);
+			break;
+		default:
+			res.status(400).send('Invalid clientType');
+			return;
 	}
 	// call renderToString first to capture all the api requests
 	ReactDOMServer.renderToString(rootElement);
@@ -257,9 +262,9 @@ server = server.get('/*', (req, res) => {
 			enableCaptcha: config.enableCaptcha,
 			extensionId: config.extensionId,
 			initData: {
-				environment,
+				clientType,
 				newReplyNotification: req.sessionState.newReplyNotification,
-				path: req.path,
+				initialLocation: rootProps.initialLocation,
 				serverApi: req.api.getInitData(),
 				userAccount: req.sessionState.userAccount,
 				verifyCaptcha: config.enableCaptcha

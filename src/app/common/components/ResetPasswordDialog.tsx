@@ -1,13 +1,13 @@
 import * as React from 'react';
-import Context from '../../Context';
-import InputField from '../controls/InputField';
-import Dialog, { State } from '../controls/Dialog';
+import InputField from './controls/InputField';
+import Dialog, { Props as DialogProps, State } from './controls/Dialog';
 
 interface Props {
 	email: string,
+	onResetPassword: (token: string, email: string) => Promise<void>
 	token: string
 }
-export default class ResetPasswordDialog extends Dialog<{}, Props, Partial<State> & {
+export default class extends Dialog<void, Props, Partial<State> & {
 	password1?: string,
 	password1Error?: string,
 	password2?: string,
@@ -15,15 +15,14 @@ export default class ResetPasswordDialog extends Dialog<{}, Props, Partial<State
 }> {
 	private _handlePassword1Change = (password1: string, password1Error: string) => this.setState({ password1, password1Error });
 	private _handlePassword2Change = (password2: string, password2Error: string) => this.setState({ password2, password2Error });
-	constructor(props: Props, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Change Password',
 				submitButtonText: 'Save Changes',
 				successMessage: 'Password changed'
 			},
-			props,
-			context
+			props
 		);
 	}
 	protected renderFields() {
@@ -65,7 +64,7 @@ export default class ResetPasswordDialog extends Dialog<{}, Props, Partial<State
 		return [errors];
 	}
 	protected submitForm() {
-		return this.context.api.resetPassword(this.props.token, this.state.password1);
+		return this.props.onResetPassword(this.props.token, this.state.password1);
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'RequestNotFound')) {

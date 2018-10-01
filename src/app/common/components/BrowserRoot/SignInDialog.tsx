@@ -1,12 +1,13 @@
 import * as React from 'react';
-import Context from '../Context';
-import Dialog, { State } from './controls/Dialog';
-import UserAccount from '../../../common/models/UserAccount';
-import RequestPasswordResetDialog from './SignInDialog/RequestPasswordResetDialog';
-import EmailAddressField from './controls/authentication/EmailAddressField';
-import PasswordField from './controls/authentication/PasswordField';
+import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import EmailAddressField from '../controls/authentication/EmailAddressField';
+import PasswordField from '../controls/authentication/PasswordField';
 
-export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State> & {
+interface Props {
+	onOpenPasswordResetDialog: () => void,
+	onSignIn: (emailAddress: string, password: string) => Promise<void>
+}
+export default class extends Dialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string,
 	password?: string,
@@ -14,18 +15,13 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 }> {
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
-	private _openPasswordResetDialog = () => {
-		this.context.page.closeDialog();
-		this.context.page.openDialog(<RequestPasswordResetDialog />);
-	};
-	constructor(props: {}, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Log In',
 				submitButtonText: 'Log In'
 			},
-			props,
-			context
+			props
 		);
 	}
 	protected renderFields() {
@@ -45,7 +41,7 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 					onChange={this._handlePasswordChange}
 				/>
 				<div className="forgot-password">
-					<span onClick={this._openPasswordResetDialog}>Forgot your password?</span>
+					<span onClick={this.props.onOpenPasswordResetDialog}>Forgot your password?</span>
 				</div>
 			</div>
 		);
@@ -57,10 +53,7 @@ export default class SignInDialog extends Dialog<UserAccount, {}, Partial<State>
 		}];
 	}
 	protected submitForm() {
-		return this.context.api.signIn(this.state.email, this.state.password);
-	}
-	protected onSuccess(userAccount: UserAccount) {
-		this.context.user.signIn(userAccount);
+		return this.props.onSignIn(this.state.email, this.state.password);
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'UserAccountNotFound')) {
