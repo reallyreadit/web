@@ -1,7 +1,9 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
-import classNames from 'classnames';
 import ScreenKey from '../../ScreenKey';
+import BrowserButton from './BrowserButton';
+import { findRouteByKey } from '../../Route';
+import routes from '../../routes';
 
 export default class extends React.PureComponent<{
 	onViewHistory: () => void,
@@ -13,41 +15,45 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<ol className="browser-nav">
-				<li className={classNames(
-					'nav-item',
-					{ 'selected': this.props.selectedScreenKey === ScreenKey.Home }
-				)}>
-					<button onClick={this.props.onViewHome}>
+				<li>
+					<BrowserButton
+						href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
+						onClick={this.props.onViewHome}
+						style={this.props.selectedScreenKey === ScreenKey.Home ? 'loud' : 'normal'}
+					>
 						<Icon name="home" />
 						<label>Home</label>
-					</button>
+					</BrowserButton>
 				</li>
-				<li className={classNames(
-					'nav-item',
-					{ 'selected': this.props.selectedScreenKey === ScreenKey.Starred }
-				)}>
-					<button onClick={this.props.onViewStarred}>
+				<li>
+					<BrowserButton
+						href={findRouteByKey(routes, ScreenKey.Starred).createUrl()}
+						onClick={this.props.onViewStarred}
+						style={this.props.selectedScreenKey === ScreenKey.Starred ? 'loud' : 'normal'}
+					>
 						<Icon name="star" />
 						<label>Starred</label>
-					</button>
+					</BrowserButton>
 				</li>
-				<li className={classNames(
-					'nav-item',
-					{ 'selected': this.props.selectedScreenKey === ScreenKey.History }
-				)}>
-					<button onClick={this.props.onViewHistory}>
+				<li>
+					<BrowserButton
+						href={findRouteByKey(routes, ScreenKey.History).createUrl()}
+						onClick={this.props.onViewHistory}
+						style={this.props.selectedScreenKey === ScreenKey.History ? 'loud' : 'normal'}
+					>
 						<Icon name="clock" />
 						<label>History</label>
-					</button>
+					</BrowserButton>
 				</li>
-				<li className={classNames(
-					'nav-item',
-					{ 'selected': this.props.selectedScreenKey === ScreenKey.Leaderboards }
-				)}>
-					<button onClick={this.props.onViewLeaderboards}>
+				<li>
+					<BrowserButton 
+						href={findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()}
+						onClick={this.props.onViewLeaderboards}
+						style={this.props.selectedScreenKey === ScreenKey.Leaderboards ? 'loud' : 'normal'}
+					>
 						<Icon name="line-chart" />
 						<label>Leaderboards</label>
-					</button>
+					</BrowserButton>
 				</li>
 			</ol>
 		);

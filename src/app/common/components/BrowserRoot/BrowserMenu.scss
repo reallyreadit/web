@@ -1,0 +1,74 @@
+.browser-menu {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	flex-flow: row-reverse;
+	animation: browser-menu-overlay-fade-in 250ms forwards;
+}
+.browser-menu.closing {
+	animation: browser-menu-overlay-fade-in 250ms reverse backwards;
+}
+.browser-menu > .drawer {
+	display: flex;
+	flex-flow: column;
+	background-color: white;
+	border-left: 3px solid black;
+	font-size: 16px;
+	animation: browser-menu-drawer-open 250ms forwards;
+}
+.browser-menu.closing > .drawer {
+	animation: browser-menu-drawer-close 250ms forwards;
+}
+.browser-menu > .drawer > .header {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: space-between;
+	padding: 28px 38px 20px 30px;
+}
+.browser-menu > .drawer > .header > label {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: bold;
+}
+.browser-menu > .drawer > .header > .icon {
+	cursor: pointer;
+}
+.browser-menu > .drawer > ol {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+}
+.browser-menu > .drawer > .footer {
+	flex: 0 0 auto;
+	text-align: center;
+	padding: 20px 30px;
+}
+
+@keyframes browser-menu-overlay-fade-in {
+	from {
+		background-color: rgba(0, 0, 0, 0);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0.25);
+	}
+}
+@keyframes browser-menu-drawer-open {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+@keyframes browser-menu-drawer-close {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}

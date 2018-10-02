@@ -16,9 +16,9 @@ import ScreenKey from '../ScreenKey';
 import DialogKey from '../DialogKey';
 import { findRouteByLocation } from '../Route';
 import routes from '../routes';
-import CreateAccountDialog from './BrowserRoot/CreateAccountDialog';
-import SignInDialog from './BrowserRoot/SignInDialog';
-import RequestPasswordResetDialog from './BrowserRoot/SignInDialog/RequestPasswordResetDialog';
+import CreateAccountDialog from './CreateAccountDialog';
+import SignInDialog from './SignInDialog';
+import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 
 export interface Props {
 	captcha: Captcha,
@@ -132,8 +132,20 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			});
 	};
 	protected readonly _screenCreatorMap: { [P in ScreenKey]: () => Screen } = {
+		[ScreenKey.AdminPage]: () => ({
+			key: ScreenKey.AdminPage,
+			render: () => {
+				return <div></div>;
+			}
+		}),
 		[ScreenKey.ArticleDetails]: () => ({
-			key: ScreenKey.Starred,
+			key: ScreenKey.ArticleDetails,
+			render: () => {
+				return <div></div>;
+			}
+		}),
+		[ScreenKey.History]: () => ({
+			key: ScreenKey.History,
 			render: () => {
 				return <div></div>;
 			}
@@ -175,6 +187,30 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 				}
 			};
 		},
+		[ScreenKey.Inbox]: () => ({
+			key: ScreenKey.Inbox,
+			render: () => {
+				return <div></div>;
+			}
+		}),
+		[ScreenKey.Leaderboards]: () => ({
+			key: ScreenKey.Leaderboards,
+			render: () => {
+				return <div></div>;
+			}
+		}),
+		[ScreenKey.PrivacyPolicy]: () => ({
+			key: ScreenKey.PrivacyPolicy,
+			render: () => {
+				return <div></div>;
+			}
+		}),
+		[ScreenKey.Settings]: () => ({
+			key: ScreenKey.Settings,
+			render: () => {
+				return <div></div>;
+			}
+		}),
 		[ScreenKey.Starred]: () => {
 			function mapToGlobalState(articles: Fetchable<PageResult<UserArticle>>) {
 				return { articleLists: { articles } };
@@ -207,19 +243,7 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 					);
 				}
 			};
-		},
-		[ScreenKey.History]: () => ({
-			key: ScreenKey.History,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.Leaderboards]: () => ({
-			key: ScreenKey.Leaderboards,
-			render: () => {
-				return <div></div>;
-			}
-		})
+		}
 	};
 	protected readonly _shareArticle = (article: UserArticle) => {
 

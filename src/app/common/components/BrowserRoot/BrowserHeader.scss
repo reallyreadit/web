@@ -12,9 +12,7 @@
 	display: flex;
 	justify-content: space-between;
 	border-bottom: 3px solid black;
-}
-.browser-header > .logo-container {
-	padding: 20px 0 20px 30px;
+	padding: 20px 30px;
 }
 .browser-header > .logo-container > svg {
 	height: 30px;
@@ -22,7 +20,6 @@
 .browser-header > .menu-container {
 	display: flex;
 	align-items: center;
-	padding: 0 30px 0 0;	
 }
 .browser-header > .menu-container > button {
 	height: 40px;
@@ -48,51 +45,8 @@
 .browser-header > .menu-container > button > label {
 	cursor: pointer;
 }
-.browser-header > .menu-container > .menu {
-	box-sizing: border-box;
-	height: 32px;
-	min-width: 0;
-	align-items: center;
-	display: flex;
-	padding: 0 10px;
-	font-weight: bold;
-	text-transform: uppercase;
-}
-.browser-header > .menu-container > .menu:focus {
-	border: 1px solid black;
-	padding: 0 9px;
-	background-color: white;
-}
-.browser-header > .menu-container > .menu.indicator::after {
-	@extend %menu-flag;
-}
-.browser-header > .menu-container > .menu > label {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-.browser-header > .menu-container > .menu > .hamburger {
-	display: none;
-}
-.browser-header > .menu-container > .menu > ol {
-	top: 30px;
-	right: -1px;
-	background-color: white;
-	border: 1px solid black;
-}
-.browser-header > .menu-container > .menu > ol > li {
-	position: relative;
-}
-.browser-header > .menu-container > .menu > ol > li.about {
-	display: none;
-}
-.browser-header > .menu-container > .menu > ol > li.indicator::after {
-	@extend %menu-flag;
-}
-.browser-header > .menu-container > .menu > ol > li > a,
-.browser-header > .menu-container > .menu > ol > li > span {
+.browser-header > .menu-container > .menu-icon-container > .icon {
 	display: block;
-	text-decoration: none;
-	color: inherit;
-	padding: 5px 10px;
+	font-size: 32px;
+	cursor: pointer;
 }

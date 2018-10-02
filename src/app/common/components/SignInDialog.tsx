@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
-import EmailAddressField from '../controls/authentication/EmailAddressField';
-import PasswordField from '../controls/authentication/PasswordField';
+import Dialog, { Props as DialogProps, State } from './controls/Dialog';
+import EmailAddressField from './controls/authentication/EmailAddressField';
+import PasswordField from './controls/authentication/PasswordField';
 
 interface Props {
 	onOpenPasswordResetDialog: () => void,

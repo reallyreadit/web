@@ -1,0 +1,34 @@
+.browser-button {
+	display: flex;
+	padding: 20px 30px;
+	font-size: 16px;
+	width: 100%;
+	box-sizing: border-box;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	text-decoration: none;
+	color: black;
+}
+.browser-button:hover {
+	background-color: silver;
+}
+.browser-button:focus {
+	outline: none;
+}
+.browser-button:active {
+	color: black;
+}
+.browser-button.loud {
+	background-color: black;
+	color: white;
+}
+.browser-button > .icon:first-child {
+	margin-right: 10px;
+}
+.browser-button > .icon:last-child {
+	margin-left: 10px;
+}
+.browser-button > label {
+	cursor: pointer;
+}

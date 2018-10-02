@@ -42,7 +42,7 @@ export function findRouteByKey<TDialogKey, TScreenKey>(routes: Route<TDialogKey,
 	if (dialogKey != null) {
 		matches = matches.filter(route => route.dialogKey === dialogKey);
 	} else {
-		matches = matches.filter(route => !route.dialogKey);
+		matches = matches.filter(route => route.dialogKey == null);
 	}
 	if (matches.length === 1) {
 		return matches[0];

@@ -12,6 +12,7 @@ import ScreenKey from '../ScreenKey';
 import DialogKey from '../DialogKey';
 import routes from '../routes';
 import { findRouteByKey } from '../Route';
+import BrowserMenu from './BrowserRoot/BrowserMenu';
 
 interface Props {
 	localStorageApi: LocalStorageApi,
@@ -19,12 +20,24 @@ interface Props {
 }
 export default class extends Root<
 	Props,
-	{ showNewReplyIndicator: boolean }
+	{
+		menuState: 'opened' | 'closing' | 'closed',
+		showNewReplyIndicator: boolean
+	}
 > {
+	private readonly _closeMenu = () => {
+		this.setState({ menuState: 'closing' });
+	};
+	private readonly _hideMenu = () => {
+		this.setState({ menuState: 'closed' });
+	};
 	private readonly _openCreateAccountDialog = () => {
 		this.setState({
 			dialog: this._dialogCreatorMap[DialogKey.CreateAccount](window.location.search)
 		});
+	};
+	private readonly _openMenu = () => {
+		this.setState({ menuState: 'opened' });
 	};
 	private readonly _openSignInDialog = () => {
 		this.setState({
@@ -46,6 +59,9 @@ export default class extends Root<
 	private readonly _viewLeaderboards = () => {
 
 	};
+	private readonly _viewPrivacyPolicy = () => {
+
+	};
 	private readonly _viewSettings = () => {
 		
 	};
@@ -57,6 +73,7 @@ export default class extends Root<
 		const locationState = this.getLocationState(props.initialLocation);
 		this.state = {
 			dialog: locationState.dialog,
+			menuState: 'closed',
 			screens: [locationState.screen],
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
 			toasts: [],
@@ -123,14 +140,11 @@ export default class extends Root<
 					user={this.state.user}
 				/>
 				<BrowserHeader
+					isUserSignedIn={!!this.state.user}
+					onOpenMenu={this._openMenu}
 					onShowCreateAccountDialog={this._openCreateAccountDialog}
 					onShowSignInDialog={this._openSignInDialog}
-					onSignOut={this._signOut}
-					onViewAdminPage={this._viewAdminPage}
-					onViewInbox={this._viewInbox}
-					onViewSettings={this._viewSettings}
 					showNewReplyIndicator={this.state.showNewReplyIndicator}
-					user={this.state.user}
 				/>
 				<main>
 					<BrowserNav
@@ -144,6 +158,20 @@ export default class extends Root<
 						{this.state.screens[0].render()}
 					</div>
 				</main>
+				{this.state.menuState !== 'closed' ?
+					<BrowserMenu
+						isClosing={this.state.menuState === 'closing'}
+						onClose={this._closeMenu}
+						onClosed={this._hideMenu}
+						onSignOut={this._signOut}
+						onViewAdminPage={this._viewAdminPage}
+						onViewInbox={this._viewInbox}
+						onViewPrivacyPolicy={this._viewPrivacyPolicy}
+						onViewSettings={this._viewSettings}
+						showNewReplyNotification={this.state.showNewReplyIndicator}
+						userAccount={this.state.user}
+					/> :
+					null}
 				<DialogManager dialog={this.state.dialog} />
 				<Toaster
 					onRemoveToast={this._removeToast}

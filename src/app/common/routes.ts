@@ -23,6 +23,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Home
 	},
 	{
+		createUrl: () => '/admin',
+		pathRegExp: /^\/admin$/,
+		screenKey: ScreenKey.AdminPage
+	},
+	{
 		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}`,
 		pathRegExp: /^\/articles\/[^/]+\/[^/]+$/,
 		screenKey: ScreenKey.ArticleDetails
@@ -33,6 +38,31 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/articles\/[^/]+\/[^/]+$/,
 		queryStringKeys: ['share'],
 		screenKey: ScreenKey.ArticleDetails
+	},
+	{
+		createUrl: () => '/history',
+		pathRegExp: /^\/history$/,
+		screenKey: ScreenKey.History
+	},
+	{
+		createUrl: () => '/inbox',
+		pathRegExp: /^\/inbox$/,
+		screenKey: ScreenKey.Inbox
+	},
+	{
+		createUrl: () => '/leaderboards',
+		pathRegExp: /^\/leaderboards$/,
+		screenKey: ScreenKey.Leaderboards
+	},
+	{
+		createUrl: () => '/privacy-policy',
+		pathRegExp: /^\/privacy-policy$/,
+		screenKey: ScreenKey.PrivacyPolicy
+	},
+	{
+		createUrl: () => '/settings',
+		pathRegExp: /^\/settings$/,
+		screenKey: ScreenKey.Settings
 	},
 	{
 		createUrl: () => '/starred',
