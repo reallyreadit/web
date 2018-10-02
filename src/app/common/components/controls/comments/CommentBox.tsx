@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '../../../../../common/components/Button';
 import Context, { contextTypes } from '../../../Context';
 import Comment from '../../../../../common/models/Comment';
-import * as className from 'classnames';
+import classNames from 'classnames';
 
 interface Props {
 	articleId: number,
@@ -82,7 +82,7 @@ export default class CommentBox extends React.Component<Props, {
 		return (
 			<div className="comment-box">
 				<textarea
-					className={className({
+					className={classNames({
 						expanded: !!(this.props.parentCommentId || this.state.hasFocus || this.state.hasContent),
 						resizing: this.state.isResizing
 					})}

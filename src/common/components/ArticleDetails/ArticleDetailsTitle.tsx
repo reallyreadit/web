@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import UserArticle from '../../models/UserArticle';
 import Star from '../Star';
 import { truncateText, formatTimestamp } from '../../format';
@@ -12,7 +12,7 @@ export default (props: {
 	showStar: boolean
 }) => (
 	<div className="article-details-title">
-		<div className={className('star-container', { hidden: !props.showStar })}>
+		<div className={classNames('star-container', { hidden: !props.showStar })}>
 			<Star
 				starred={!!props.article.dateStarred}
 				busy={props.isStarring}

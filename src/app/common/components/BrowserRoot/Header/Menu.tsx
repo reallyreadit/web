@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Icon from '../../../../../common/components/Icon';
-import * as className from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 
 export default class extends React.Component<{
 	buttonContent: React.ReactNode,
@@ -28,7 +28,7 @@ export default class extends React.Component<{
 	public render() {
 		return (
 			<div
-				className={className('menu', this.props.className)}
+				className={classNames('menu', this.props.className)}
 				tabIndex={-1}
 				ref={this._setMenuRef}
 				onMouseDown={this._handleMouseDown}

@@ -14,7 +14,7 @@ import AppAuthScreen from './MainView/AppView/AppAuthScreen';
 import { Intent } from '../Page';
 import Footer from './MainView/BrowserView/Footer';
 import { parseQueryString } from '../queryString';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import AppHeader from './MainView/AppView/AppHeader';
 import AppNav from './MainView/AppView/AppNav';
 import { IconName } from '../../../common/components/Icon';
@@ -164,7 +164,7 @@ export default class MainView extends React.Component<{}, {
 	}
 	public render() {
 		return (
-			<div className={className(
+			<div className={classNames(
 				'main-view',
 				{ 'flex-flow': inAppMode }
 			)}>

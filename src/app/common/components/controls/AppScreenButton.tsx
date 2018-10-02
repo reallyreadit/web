@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import Spinner from '../../../../common/components/Spinner';
 import Icon, { IconName } from '../../../../common/components/Icon';
 
@@ -20,7 +20,7 @@ export default (props: {
 	text: string
 }) => (
 	<button
-		className={className('app-screen-button', {
+		className={classNames('app-screen-button', {
 			'busy': props.busy,
 			'loud': props.style === 'loud'
 		})}

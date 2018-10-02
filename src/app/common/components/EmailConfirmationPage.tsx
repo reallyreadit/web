@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import Context, { contextTypes } from '../Context';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import { Intent } from '../Page';
 import Page from './Page';
 
@@ -38,7 +38,7 @@ export default class extends React.PureComponent<RouteComponentProps<{ result: s
 	public render() {
 		return (
 			<Page className="email-confirmation-page" title={title}>
-				<strong className={className({ 'success': resultMessages[this.props.match.params.result].intent === Intent.Success })}>
+				<strong className={classNames({ 'success': resultMessages[this.props.match.params.result].intent === Intent.Success })}>
 					{resultMessages[this.props.match.params.result].text}
 				</strong>
 			</Page>

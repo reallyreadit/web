@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Icon, { IconName } from '../../../../common/components/Icon';
-import * as className from 'classnames';
+import classNames from 'classnames';
 
 export default (props: {
 	items: {
@@ -12,7 +12,7 @@ export default (props: {
 	<ol className="app-nav">
 		{props.items.map(item => (
 			<li
-				className={className(
+				className={classNames(
 					'nav-item', 
 					{ 'selected': item.isSelected }
 				)}

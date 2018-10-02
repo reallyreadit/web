@@ -4,7 +4,7 @@ import Context, { contextTypes } from '../Context';
 import Separator from '../../../common/components/Separator';
 import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import EditContactPreferencesDialog from './SettingsPage/EditContactPreferencesDialog';
 import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
@@ -103,11 +103,11 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditNotificationsDialog} />
 						</label>
 						When someone replies to my comment:
-						<div className={className('setting', user.receiveReplyEmailNotifications ? 'on' : 'off')}>
+						<div className={classNames('setting', user.receiveReplyEmailNotifications ? 'on' : 'off')}>
 							<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
 							Send me an email
 						</div>
-						<div className={className('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
+						<div className={classNames('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
 							<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
 							Show a desktop notification
 							{(
@@ -132,11 +132,11 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditContactPreferencesDialog} />
 						</label>
 						Feel free to occasionally email me about the following:
-						<div className={className('setting', user.receiveWebsiteUpdates ? 'on' : 'off')}>
+						<div className={classNames('setting', user.receiveWebsiteUpdates ? 'on' : 'off')}>
 							<Icon name={user.receiveWebsiteUpdates ? 'checkmark' : 'cancel'} />
 							Community updates
 						</div>
-						<div className={className('setting', user.receiveSuggestedReadings ? 'on' : 'off')}>
+						<div className={classNames('setting', user.receiveSuggestedReadings ? 'on' : 'off')}>
 							<Icon name={user.receiveSuggestedReadings ? 'checkmark' : 'cancel'} />
 							Suggested readings
 						</div>

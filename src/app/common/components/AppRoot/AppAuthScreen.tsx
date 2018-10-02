@@ -2,7 +2,7 @@ import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
 import SignInCard from './AppAuthScreen/SignInCard';
 import Captcha from '../../Captcha';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import CreateAccountCard from './AppAuthScreen/CreateAccountCard';
 import { Intent } from '../Toaster';
 
@@ -34,7 +34,7 @@ export default class extends React.PureComponent<Props, {
 				<div className="content">
 					<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
 					<div className="flip-container">
-						<div className={className('flipper', { 'flipped': this.state.activeCard === Card.CreateAccount })}>
+						<div className={classNames('flipper', { 'flipped': this.state.activeCard === Card.CreateAccount })}>
 							<div className="front">
 								<SignInCard
 									onShowCreateAccountCard={this._showCreateAccountCard}

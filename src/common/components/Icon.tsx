@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 
 export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'cancel' | 'backward' | 'exclamation' | 'forbid' | 'spinner' | 'comments' |
@@ -18,7 +18,7 @@ export default (props: {
 	fill?: string
 }) => (
 	<svg
-		className={className('icon', props.className)}
+		className={classNames('icon', props.className)}
 		onClick={props.onClick}
 	>
 		{props.defs ?

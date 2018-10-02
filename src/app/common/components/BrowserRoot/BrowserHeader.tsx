@@ -3,7 +3,7 @@ import logoText from '../../../../common/svg/logoText';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import Spinner from '../../../../common/components/Spinner';
 import Menu from './Header/Menu';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import Icon from '../../../../common/components/Icon';
 import UserAccount from '../../../../common/models/UserAccount';
 
@@ -50,7 +50,7 @@ export default class extends React.PureComponent<Props, {
 				<div className="menu-container">
 					{this.props.user ?
 						<Menu
-							className={className({ indicator: this.props.showNewReplyIndicator })}
+							className={classNames({ indicator: this.props.showNewReplyIndicator })}
 							buttonContent={[
 								this.state.isSigningOut ?
 									<Spinner key="spinner" /> :
@@ -69,7 +69,7 @@ export default class extends React.PureComponent<Props, {
 										</span>
 									</li> :
 									null,
-								<li key="inbox" className={className({ indicator: this.props.showNewReplyIndicator })}>
+								<li key="inbox" className={classNames({ indicator: this.props.showNewReplyIndicator })}>
 									<span
 										onClick={this.props.onViewInbox}
 										onMouseDown={this._preventFocus}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import Icon, { IconName } from './Icon';
 
 export default class Button extends React.PureComponent<{
@@ -28,17 +28,17 @@ export default class Button extends React.PureComponent<{
 			active: this.props.state === 'active'
 		};
 		return (
-			<button className={className('button', classList)} onClick={this.handleClick}>
+			<button className={classNames('button', classList)} onClick={this.handleClick}>
 				<div className="outer-wrap">
 					<div className="inner-wrap">
 						<div className="content">
 							{this.props.iconLeft ?
-								<span className={className('icon-wrapper', { 'indicator': this.props.showIndicator })}><Icon name={this.props.iconLeft} /></span> :
+								<span className={classNames('icon-wrapper', { 'indicator': this.props.showIndicator })}><Icon name={this.props.iconLeft} /></span> :
 								null}
 							{this.props.contentLeft ?
 								<div className="content-left">{this.props.contentLeft}</div> :
 								null}
-							<span className={className('text', { 'error': this.props.textStyle === 'error' })}>{this.props.text}</span>
+							<span className={classNames('text', { 'error': this.props.textStyle === 'error' })}>{this.props.text}</span>
 							<div className="loading"></div>
 						</div>
 					</div>

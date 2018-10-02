@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 
 export type LabelPosition = 'horizontal' | 'vertical' | 'auto';
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 const render: React.SFC<Props> = (props: Props) => (
 	<label
-		className={className('form-field', props.className)}
+		className={classNames('form-field', props.className)}
 		data-label-position={props.labelPosition}
 	>
 		<strong>{props.label}</strong>

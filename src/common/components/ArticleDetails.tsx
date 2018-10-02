@@ -3,7 +3,7 @@ import UserArticle from '../models/UserArticle';
 import ArticleDetailsTitle from './ArticleDetails/ArticleDetailsTitle';
 import readingParameters from '../readingParameters';
 import SpeechBubble from './Logo/SpeechBubble';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
 import { formatTimestamp } from '../format';
@@ -122,13 +122,13 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							<Icon
 								name="share"
 								title="Share Article"
-								className={className('share', { enabled: this.props.article.isRead })}
+								className={classNames('share', { enabled: this.props.article.isRead })}
 								onClick={this._share}
 							/>
 						</div>
 					</div>
 				</div>
-				<div className={className('controls', { hidden: !this.props.showDeleteControl })}>
+				<div className={classNames('controls', { hidden: !this.props.showDeleteControl })}>
 					<div className="delete-control" title="Delete Article">
 						<Icon name="cancel" onClick={this._delete} />
 					</div>

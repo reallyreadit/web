@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ChallengeScore from '../../../../../common/models/ChallengeScore';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import CountdownTimer from './CountdownTimer';
 
 interface Props {
@@ -78,7 +78,7 @@ export default class extends React.PureComponent<Props> {
 								return (
 									<li
 										key={k}
-										className={className('step', state)}
+										className={classNames('step', state)}
 										style={{ bottom: 8 + (k * 6) }}
 									>
 									</li>
@@ -95,7 +95,7 @@ export default class extends React.PureComponent<Props> {
 					</div>
 					<div className="layer text">
 						{message ?
-							<div className={className('message-box', { 'win': score.level === 10 })}>
+							<div className={classNames('message-box', { 'win': score.level === 10 })}>
 								{message}
 							</div> :
 							null}

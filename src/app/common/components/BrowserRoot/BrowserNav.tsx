@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import ScreenKey from '../../ScreenKey';
 
 export default class extends React.PureComponent<{
@@ -13,7 +13,7 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<ol className="browser-nav">
-				<li className={className(
+				<li className={classNames(
 					'nav-item',
 					{ 'selected': this.props.selectedScreenKey === ScreenKey.Home }
 				)}>
@@ -22,7 +22,7 @@ export default class extends React.PureComponent<{
 						<label>Home</label>
 					</button>
 				</li>
-				<li className={className(
+				<li className={classNames(
 					'nav-item',
 					{ 'selected': this.props.selectedScreenKey === ScreenKey.Starred }
 				)}>
@@ -31,7 +31,7 @@ export default class extends React.PureComponent<{
 						<label>Starred</label>
 					</button>
 				</li>
-				<li className={className(
+				<li className={classNames(
 					'nav-item',
 					{ 'selected': this.props.selectedScreenKey === ScreenKey.History }
 				)}>
@@ -40,7 +40,7 @@ export default class extends React.PureComponent<{
 						<label>History</label>
 					</button>
 				</li>
-				<li className={className(
+				<li className={classNames(
 					'nav-item',
 					{ 'selected': this.props.selectedScreenKey === ScreenKey.Leaderboards }
 				)}>

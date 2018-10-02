@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import Icon, { IconName } from './Icon';
 import Spinner from './Spinner';
 
@@ -17,7 +17,7 @@ export default class extends React.PureComponent<{
 	};
 	public render() {
 		const
-			cssClass = className(
+			cssClass = classNames(
 				'action-link',
 				{
 					disabled: this.props.state === 'disabled' || this.props.state === 'busy',

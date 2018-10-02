@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames from 'classnames';
 
 export enum Intent {
 	Success,
@@ -32,7 +32,7 @@ export default class Toaster extends React.PureComponent<{
 				<ul className="toasts">
 					{this.props.toasts.map(toast =>
 						<li
-							className={className('toast', intentClassMap[toast.intent], { remove: toast.remove })}
+							className={classNames('toast', intentClassMap[toast.intent], { remove: toast.remove })}
 							key={toast.timeoutHandle}
 							dangerouslySetInnerHTML={{ __html: toast.text.replace(/\n/g, '<br />') }}
 							data-timeout-handle={toast.timeoutHandle}

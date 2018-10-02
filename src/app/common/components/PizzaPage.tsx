@@ -5,7 +5,7 @@ import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
 import Fetchable from '../api/Fetchable';
 import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
 import { DateTime } from 'luxon';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import ChallengeView from './PizzaPage/ChallengeView';
 import RefreshButton from './controls/RefreshButton';
 import Page from './Page';
@@ -215,7 +215,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 									board => board.winners.map((winner, index) => (
 										<tr
 											key={winner.name}
-											className={className({ 'highlight': winner.name === userName })}	
+											className={classNames({ 'highlight': winner.name === userName })}	
 										>
 											<td style={{ textAlign: 'center' }}>{index + 1}</td>
 											<td>{winner.name}</td>
@@ -245,7 +245,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 									board => board.contenders.map((contender, index) => (
 										<tr
 											key={contender.name}
-											className={className({ 'highlight': contender.name === userName })}
+											className={classNames({ 'highlight': contender.name === userName })}
 										>
 											<td style={{ textAlign: 'center' }}>{index + 1}</td>
 											<td>{contender.name}</td>

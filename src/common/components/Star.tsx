@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as className from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 import Icon from './Icon';
 
 export default (props: {
@@ -10,7 +10,7 @@ export default (props: {
 }) =>
 	<div
 		className={
-			className(
+			classNames(
 				'star',
 				{
 					starred: props.starred,

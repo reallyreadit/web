@@ -3,7 +3,7 @@ import Comment from '../../../../../common/models/Comment';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
 import ActionLink from '../../../../../common/components/ActionLink';
-import * as className from 'classnames';
+import classNames from 'classnames';
 import timeago from 'timeago.js';
 
 interface Props {
@@ -30,7 +30,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 	public render(): JSX.Element {
 		return (
 			<li
-				className={className(
+				className={classNames(
 					'comment-details',
 					{
 						unread: this.props.mode === 'link' && !this.props.comment.dateRead,
@@ -45,7 +45,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 					<strong>{this.props.comment.userAccount}</strong> <span>-</span> {timeago().format(this.props.comment.dateCreated + 'Z')}
 				</div>
 				<div
-					className={className('text', { 'preview': this.props.mode === 'link' })}
+					className={classNames('text', { 'preview': this.props.mode === 'link' })}
 					dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}>
 				</div>
 				{this.state.showCommentBox ? 

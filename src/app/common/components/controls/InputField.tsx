@@ -1,7 +1,7 @@
 import * as React from 'react';
 import FormField , { LabelPosition } from './FormField';
 import InputControl, { Props } from './InputControl';
-import * as classnames from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 
 export { LabelPosition };
 export default (props: Props & {
@@ -12,7 +12,7 @@ export default (props: Props & {
 	return (
 		<FormField
 			label={props.label}
-			className={classnames(props.className, 'input-field')}
+			className={classNames(props.className, 'input-field')}
 			labelPosition={props.labelPosition}
 		>
 			<InputControl {...inputControlProps} />
