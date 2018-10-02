@@ -25,6 +25,7 @@ function configureWebpack(params) {
 			resolve: {
 				extensions: ['.webpack.js', '.web.js', '.js', '.ts', '.tsx']
 			},
+			mode: params.env === project.env.prod ? 'production' : 'development',
 			module: {
 				rules: [
 					{

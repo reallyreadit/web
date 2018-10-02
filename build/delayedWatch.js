@@ -1,17 +1,19 @@
-const gulp = require('gulp'),
-	  util = require('gulp-util');
+const
+	ansiColors = require('ansi-colors'),
+	log = require('fancy-log'),
+	gulp = require('gulp');
 
 const watchEventColors = {
-	added: 'green',
-	changed: 'yellow',
-	deleted: 'red',
-	renamed: 'yellow'
+	added: ansiColors.green,
+	changed: ansiColors.yellow,
+	deleted: ansiColors.red,
+	renamed: ansiColors.yellow
 };
 
 function delayedWatch(globs, delegate) {
 	let timeout;
 	return gulp.watch(globs, event => {
-		util.log(`${util.colors[watchEventColors[event.type]](`[${event.type}]`)} ${util.colors.cyan(event.path)}`);
+		log(`${watchEventColors[event.type](`[${event.type}]`)} ${ansiColors.cyan(event.path)}`);
 		if (event.type === 'changed' || event.type === 'renamed') {
 			clearTimeout(timeout);
 			timeout = setTimeout(delegate, 500);

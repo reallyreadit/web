@@ -51,7 +51,7 @@ switch (window.initData.clientType) {
 		throw new Error('Invalid clientType');
 }
 
-ReactDOM.render(
+ReactDOM.hydrate(
 	rootElement,
 	document.getElementById('root')
 );

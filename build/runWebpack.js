@@ -1,12 +1,14 @@
-const webpack = require('webpack'),
-	  util = require('gulp-util');
+const
+	log = require('fancy-log'),
+	PluginError = require('plugin-error'),
+	webpack = require('webpack');
 
 function runWebpack(config, onComplete) {
 	webpack(config, (error, stats) => {
 		if (error) {
-			throw new util.PluginError('webpack', error);
+			throw new PluginError('webpack', error);
 		}
-		util.log(stats.toString({
+		log(stats.toString({
 			chunks: false,
 			colors: true
 		}));
