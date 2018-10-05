@@ -81,8 +81,8 @@ export default class extends React.PureComponent<Props, State> {
 	private readonly _cancel = () => {
 		this.setState(initialState, this.props.onCancel);
 	};
-	constructor() {
-		super();
+	constructor(props: Props) {
+		super(props);
 		this.state = initialState;
 	}
 	public componentDidMount() {

@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
 import classNames from 'classnames';
-import { Intent } from '../Page';
-import Page from './Page';
+import { Intent } from './Toaster';
+import { Screen } from './Root';
+import Location from '../Location';
+import { findRouteByKey } from '../Route';
+import routes from '../routes';
+import ScreenKey from '../ScreenKey';
 
-const title = 'Email Confirmation';
 const resultMessages: {
 	[key: string]: {
 		text: string,
@@ -29,19 +30,35 @@ const resultMessages: {
 		intent: Intent.Success
 	}
 };
-export default class extends React.PureComponent<RouteComponentProps<{ result: string }>, {}> {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	public componentWillMount() {
-		this.context.page.setTitle(title);
-	}
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onGetScreenState: (key: TScreenKey) => Screen
+}) {
+	return {
+		create: (location: Location) => ({ key, location }),
+		render: () => (
+			<EmailConfirmationPage
+				result={
+					deps
+						.onGetScreenState(key)
+						.location.path
+						.match(findRouteByKey(routes, ScreenKey.EmailConfirmation).pathRegExp)
+						[1]
+				}
+			/>
+		)
+	};
+}
+interface Props {
+	result: string
+}
+export default class EmailConfirmationPage extends React.PureComponent<Props> {
 	public render() {
 		return (
-			<Page className="email-confirmation-page" title={title}>
-				<strong className={classNames({ 'success': resultMessages[this.props.match.params.result].intent === Intent.Success })}>
-					{resultMessages[this.props.match.params.result].text}
+			<div className="email-confirmation-page">
+				<strong className={classNames({ 'success': resultMessages[this.props.result].intent === Intent.Success })}>
+					{resultMessages[this.props.result].text}
 				</strong>
-			</Page>
+			</div>
 		);
 	}
 }

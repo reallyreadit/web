@@ -1,8 +1,18 @@
-export function truncateText(text: string, length: number) {
-	if (!text) {
-		return text;
+import Fetchable from "../app/common/serverApi/Fetchable";
+
+export function formatFetchable<T, U>(
+	fetchable: Fetchable<T>,
+	formatter: ((value: T) => U),
+	loadingMessage?: string,
+	errorMessage?: string
+) {
+	if (fetchable.isLoading) {
+		return loadingMessage;
 	}
-	return text.length > length ? text.substring(0, length) + '...' : text;
+	if (fetchable.errors) {
+		return errorMessage;
+	}
+	return formatter(fetchable.value);
 }
 export function formatTimestamp(timestamp: string) {
 	if (!timestamp || timestamp.length < 10) {
@@ -14,10 +24,9 @@ export function formatTimestamp(timestamp: string) {
 		timestamp.substr(2, 2)
 	);
 }
-export function getArticleUrlPath(slug: string) {
-	if (!slug) {
-		return slug;
+export function truncateText(text: string, length: number) {
+	if (!text) {
+		return text;
 	}
-	const slugParts = slug.split('_');
-	return `/articles/${slugParts[0]}/${slugParts[1]}`;
+	return text.length > length ? text.substring(0, length) + '...' : text;
 }

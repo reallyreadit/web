@@ -4,12 +4,12 @@ import CommentDetails from './CommentDetails';
 
 export default class CommentList extends React.Component<{
     comments: Comment[],
-    mode: 'reply' | 'link',
+    highlightedCommentId?: number,
     isAllowedToPost?: boolean,
-    parentCommentId?: number,
-    onCommentAdded?: (comment: Comment) => void,
+    mode: 'reply' | 'link',
+    onPostComment?: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
     onViewThread?: (comment: Comment) => void,
-    highlightedCommentId?: number
+    parentCommentId?: number
 }, {}> {
     public render() {
         return (
@@ -18,12 +18,12 @@ export default class CommentList extends React.Component<{
                     <CommentDetails
                         key={comment.id}
                         comment={comment}
-                        mode={this.props.mode}
-                        isAllowedToPost={this.props.isAllowedToPost}
-                        parentCommentId={this.props.parentCommentId}
-                        onCommentAdded={this.props.onCommentAdded}
-                        onViewThread={this.props.onViewThread}
                         highlightedCommentId={this.props.highlightedCommentId}
+                        isAllowedToPost={this.props.isAllowedToPost}
+                        mode={this.props.mode}
+                        onPostComment={this.props.onPostComment}
+                        onViewThread={this.props.onViewThread}
+                        parentCommentId={this.props.parentCommentId}
                     />)}
             </ul>
         );

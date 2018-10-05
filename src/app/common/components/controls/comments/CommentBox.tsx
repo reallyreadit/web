@@ -1,17 +1,15 @@
 import * as React from 'react';
 import Button from '../../../../../common/components/Button';
-import Context, { contextTypes } from '../../../Context';
-import Comment from '../../../../../common/models/Comment';
 import classNames from 'classnames';
 
 interface Props {
 	articleId: number,
-	parentCommentId?: number,
 	isAllowedToPost: boolean,
-	onCommentPosted: (comment: Comment) => void,
-	onCancel?: () => void
+	onCancel?: () => void,
+	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
+	parentCommentId?: number
 }
-export default class CommentBox extends React.Component<Props, {
+export default class extends React.PureComponent<Props, {
 	commentText: string,
 	hasContent: boolean,
 	hasFocus: boolean,
@@ -19,8 +17,6 @@ export default class CommentBox extends React.Component<Props, {
 	isResizing: boolean,
 	isPosting: boolean
 }> {
-	public static contextTypes = contextTypes;
-	public context: Context;
 	private _updateCommentText = (e: React.FormEvent<HTMLTextAreaElement>) => this.setState({
 		commentText: e.currentTarget.value,
 		hasContent: e.currentTarget.value.trim() !== ''
@@ -35,21 +31,13 @@ export default class CommentBox extends React.Component<Props, {
 	private _blur = () => this.setState({ hasFocus: false });
 	private _postComment = () => {
 		this.setState({ isPosting: true });
-		this.context.api
-			.postComment(this.state.commentText, this.props.articleId, this.props.parentCommentId)
-			.then(comment => {
+		this.props
+			.onPostComment(this.state.commentText, this.props.articleId, this.props.parentCommentId)
+			.then(() => {
 				this.setState({
 					commentText: '',
 					hasContent: false,
 					isPosting: false
-				});
-				this.props.onCommentPosted(comment);
-				ga('send', {
-					hitType: 'event',
-					eventCategory: 'Comment',
-					eventAction: comment.parentCommentId ? 'reply' : 'post',
-					eventLabel: comment.articleTitle,
-					eventValue: comment.text.length
 				});
 			});
 	};
@@ -62,8 +50,8 @@ export default class CommentBox extends React.Component<Props, {
 			this.props.onCancel();
 		}
 	};
-	constructor(props: Props, context: Context) {
-		super(props, context);
+	constructor(props: Props) {
+		super(props);
 		this.state = {
 			commentText: '',
 			hasContent: false,

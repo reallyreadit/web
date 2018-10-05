@@ -1,16 +1,22 @@
 import * as React from 'react';
-import Context from '../Context';
-import Dialog, { State } from './controls/Dialog';
+import Dialog, { Props as DialogProps, State } from './controls/Dialog';
 import InputControl from './controls/InputControl';
 import InputField from './controls/InputField';
 import FormField from './controls/FormField';
 import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
 import UserArticle from '../../../common/models/UserArticle';
-import { Intent } from '../Page';
+import Captcha from '../Captcha';
+import { Intent } from './Toaster';
+import Fetchable from '../serverApi/Fetchable';
+import CallbackStore from '../CallbackStore';
+import { formatFetchable } from '../../../common/format';
 
 interface Props {
-	article: UserArticle
+	captcha: Captcha,
+	onGetArticle: (slug: string, callback: (article: Fetchable<UserArticle>) => void) => Fetchable<UserArticle>,
+	onShareArticle: (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => Promise<void>,
+	slug: string
 }
 interface EmailField {
 	id: number,
@@ -19,10 +25,12 @@ interface EmailField {
 	onChange: (value: string, error: string | null) => void,
 	remove: () => void
 }
-export default class extends Dialog<{}, Props, Partial<State> & {
+export default class extends Dialog<void, Props, Partial<State> & {
 	addresses: EmailField[],
+	article: Fetchable<UserArticle>,
 	message: string
 }> {
+	private readonly _callbacks = new CallbackStore();
 	private _emailFieldId = 0;
 	private _handleMessageChange = (message: string) => this.setState({ message });
 	private _addEmailAddress = () => {
@@ -38,21 +46,24 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 		this._captchaElement = ref;
 	};
 	private _captchaId: number | null = null;
-	constructor(props: Props, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Share Article',
 				submitButtonText: 'Send',
 				successMessage: 'Share email sent!'
 			},
-			props,
-			context
+			props
 		);
 		this.state = {
 			...this.state,
 			addresses: [
 				this.createEmailField()
 			],
+			article: props.onGetArticle(
+				props.slug,
+				this._callbacks.add(article => { this.setState({ article }); })
+			),
 			message: ''
 		};
 	}
@@ -88,7 +99,7 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 	protected renderFields() {
 		return (
 			<div className="share-article-dialog">
-				<h3>{this.props.article.title}</h3>
+				<h3>{formatFetchable(this.state.article, article => article.title)}</h3>
 				<FormField
 					label={`Email Address${this.state.addresses.length > 1 ? 'es (bcc\'d)' : ''}`}
 					className="email-fields"
@@ -154,11 +165,11 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 		];
 	}
 	protected submitForm() {
-		return this.context.api.shareArticle(
-			this.props.article.id,
+		return this.props.onShareArticle(
+			this.state.article.value.id,
 			this.state.addresses.map(field => field.value),
 			this.state.message,
-			this.context.captcha.getResponse(this._captchaId)
+			this.props.captcha.getResponse(this._captchaId)
 		);
 	}
 	protected onError(errors: string[]) {
@@ -170,12 +181,15 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 		} else {
 			errorMessage = 'Error sending email.\nPlease check the addresses.';
 		}
-		this.context.page.showToast(errorMessage, Intent.Danger);
-		this.context.captcha.reset(this._captchaId);
+		this.props.onShowToast(errorMessage, Intent.Danger);
+		this.props.captcha.reset(this._captchaId);
 	}
 	public componentDidMount() {
-		this.context.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, this.context.captcha.siteKeys.shareArticle);
+		this.props.captcha.onReady().then(captcha => {
+			this._captchaId = captcha.render(this._captchaElement, this.props.captcha.siteKeys.shareArticle);
 		});
+	}
+	public componentWillUnmount() {
+		this._callbacks.cancel();
 	}
 }

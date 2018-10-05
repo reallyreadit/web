@@ -11,7 +11,8 @@ export default abstract class extends EventEmitter<{
 		super();
 		this._extensionId = extensionId;
 	}
-	public abstract isInstalled(): boolean;
-	public abstract isBrowserCompatible(): boolean;
+	public abstract install(): void;
 	public abstract updateNewReplyNotification(notification: NewReplyNotification): void;
+	public abstract get isInstalled(): boolean | undefined;
+	public abstract get isBrowserCompatible(): boolean | undefined;
 }

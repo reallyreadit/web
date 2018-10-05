@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
-import Page from './Page';
+import { Screen } from './Root';
+import routes from '../routes';
+import { findRouteByKey } from '../Route';
+import ScreenKey from '../ScreenKey';
 
-const title = 'Password Reset Request';
 const resultMessages: {
 	[key: string]: {
 		[key: string]: string
@@ -14,22 +14,37 @@ const resultMessages: {
 		'expired': 'This password reset request has expired. Please generate a new request.'
 	}
 };
-export default class PasswordPage extends React.PureComponent<RouteComponentProps<{
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onGetScreenState: (key: TScreenKey) => Screen
+}) {
+	return {
+		create: (location: Location) => ({ key, location }),
+		render: () => {
+			const [, action, result] = deps
+				.onGetScreenState(key)
+				.location.path
+				.match(findRouteByKey(routes, ScreenKey.Password).pathRegExp);
+			return (
+				<PasswordPage
+					action={action}
+					result={result}
+				/>
+			);
+		}
+	};
+}
+interface Props {
 	action: string,
 	result: string
-}>, {}> {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	public componentWillMount() {
-		this.context.page.setTitle(title);
-	}
+}
+export default class PasswordPage extends React.PureComponent<Props> {
 	public render() {
 		return (
-			<Page className="password-page" title={title}>
+			<div className="password-page">
 				<strong>
-					{resultMessages[this.props.match.params.action][this.props.match.params.result]}
+					{resultMessages[this.props.action][this.props.result]}
 				</strong>
-			</Page>
+			</div>
 		);
 	}
 }

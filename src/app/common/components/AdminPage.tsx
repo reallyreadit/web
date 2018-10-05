@@ -1,19 +1,70 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
 import BulkMailing from '../../../common/models/BulkMailing';
-import Fetchable from '../api/Fetchable';
+import Fetchable from '../serverApi/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 import UserStats from '../../../common/models/UserStats';
 import ChallengeWinner from '../../../common/models/ChallengeWinner';
 import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
 import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
-import Page from './Page';
+import UserAccount from '../../../common/models/UserAccount';
+import { Intent } from './Toaster';
+import ChallengeState from '../../../common/models/ChallengeState';
+import CallbackStore from '../CallbackStore';
 
-const title = 'Admin';
-export default class extends React.Component<
-	RouteComponentProps<{}>,
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onCloseDialog: () => void,
+	onGetChallengeState: () => ChallengeState,
+	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
+	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
+	onGetChallengeResponseActionTotals: (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => Fetchable<ChallengeResponseTotal[]>,
+	onGetChallengeWinners: (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => Fetchable<ChallengeWinner[]>,
+	onGetUser: () => UserAccount | null,
+	onGetUserStats: (callback: (state: Fetchable<UserStats>) => void) => Fetchable<UserStats>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
+	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
+	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
+	onShowToast: (text: string, intent: Intent) => void
+}) {
+	return {
+		create: () => ({ key }),
+		render: () => {
+			const activeChallenge = deps.onGetChallengeState().activeChallenge;
+			return (
+				<AdminPage
+					activeChallengeId={activeChallenge ? activeChallenge.id : null}
+					onCloseDialog={deps.onCloseDialog}
+					onGetBulkMailings={deps.onGetBulkMailings}
+					onGetBulkMailingLists={deps.onGetBulkMailingLists}
+					onGetChallengeResponseActionTotals={deps.onGetChallengeResponseActionTotals}
+					onGetChallengeWinners={deps.onGetChallengeWinners}
+					onGetUserStats={deps.onGetUserStats}
+					onOpenDialog={deps.onOpenDialog}
+					onSendBulkMailing={deps.onSendBulkMailing}
+					onSendTestBulkMailing={deps.onSendTestBulkMailing}
+					onShowToast={deps.onShowToast}
+					user={deps.onGetUser()}
+				/>
+			);
+		}
+	}
+}
+interface Props {
+	activeChallengeId: number | null,
+	onCloseDialog: () => void,
+	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
+	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
+	onGetChallengeResponseActionTotals: (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => Fetchable<ChallengeResponseTotal[]>,
+	onGetChallengeWinners: (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => Fetchable<ChallengeWinner[]>,
+	onGetUserStats: (callback: (state: Fetchable<UserStats>) => void) => Fetchable<UserStats>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
+	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
+	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
+	onShowToast: (text: string, intent: Intent) => void,
+	user: UserAccount
+}
+export default class AdminPage extends React.Component<
+	Props,
 	{
 		userStats: Fetchable<UserStats>,
 		challengeResponseTotals: Fetchable<ChallengeResponseTotal[]>,
@@ -21,63 +72,67 @@ export default class extends React.Component<
 		mailings: Fetchable<BulkMailing[]>
 	}
 > {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	private readonly _goToHome = () => this.context.router.history.push('/');
+	private readonly _callbacks = new CallbackStore();
 	private readonly _reloadMailings = () => {
 		this.setState({
-			mailings: this.context.api.getBulkMailings(mailings => {
-				this.setState({ mailings });
-			})
+			mailings: this.props.onGetBulkMailings(
+				this._callbacks.add(mailings => { this.setState({ mailings }); })
+			)
 		});
 	};
-	private readonly _openCreateMailingDialog = () => this.context.page.openDialog(
-		<CreateBulkMailingDialog onSend={this._reloadMailings} />
-	);
-	constructor(props: RouteComponentProps<{}>, context: Context) {
-		super(props, context);
-		const isActiveChallenge = this.context.challenge.isActiveChallenge;
+	private readonly _openCreateMailingDialog = () => {
+		this.props.onOpenDialog(
+			<CreateBulkMailingDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onGetLists={this.props.onGetBulkMailingLists}
+				onSend={this.props.onSendBulkMailing}
+				onSendTest={this.props.onSendTestBulkMailing}
+				onSent={this._reloadMailings}
+				onShowToast={this.props.onShowToast}
+			/>
+		);
+	};
+	constructor(props: Props) {
+		super(props);
 		this.state = {
-			userStats: context.api.getUserStats(userStats => {
-				this.setState({ userStats });
-			}),
+			userStats: props.onGetUserStats(
+				this._callbacks.add(userStats => { this.setState({ userStats }); })
+			),
 			challengeResponseTotals: (
-				isActiveChallenge ?
-					this.context.api.getChallengeResponseActionTotals(
-						this.context.challenge.activeChallenge.id,
-						challengeResponseTotals => {
-							this.setState({ challengeResponseTotals });
-						}
+				props.activeChallengeId != null ?
+					props.onGetChallengeResponseActionTotals(
+						props.activeChallengeId,
+						this._callbacks.add(
+							challengeResponseTotals => {
+								this.setState({ challengeResponseTotals });
+							}
+						)
 					) :
 					{ isLoading: false, value: [] }
 			),
 			challengeWinners: (
-				isActiveChallenge ?
-					this.context.api.getChallengeWinners(
-						this.context.challenge.activeChallenge.id,
-						challengeWinners => {
-							this.setState({ challengeWinners });
-						}
+				props.activeChallengeId != null ?
+					props.onGetChallengeWinners(
+						props.activeChallengeId,
+						this._callbacks.add(
+							challengeWinners => {
+								this.setState({ challengeWinners });
+							}
+						)
 					) :
 					{ isLoading: false, value: [] }
 			),
-			mailings: context.api.getBulkMailings(mailings => {
-				this.setState({ mailings });
-			})
+			mailings: props.onGetBulkMailings(
+				this._callbacks.add(mailings => { this.setState({ mailings }); })
+			)
 		};
 	}
-	public componentWillMount() {
-		this.context.page.setTitle(title);
-	}
-	public componentDidMount() {
-		this.context.user.addListener('signOut', this._goToHome);
-	}
 	public componentWillUnmount() {
-		this.context.user.removeListener('signOut', this._goToHome);
+		this._callbacks.cancel();
 	}
 	public render() {
 		return (
-			<Page className="admin-page" title={title}>
+			<div className="admin-page">
 				<table>
 					<caption>
 						<div className="content">
@@ -215,7 +270,7 @@ export default class extends React.Component<
 							</tr>}
 					</tbody>
 				</table>
-			</Page>
+			</div>
 		);
 	}
 }

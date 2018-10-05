@@ -8,19 +8,19 @@ import timeago from 'timeago.js';
 
 interface Props {
 	comment: Comment,
-	mode: 'reply' | 'link',
+	highlightedCommentId?: number,
 	isAllowedToPost?: boolean,
-	parentCommentId?: number,
-	onCommentAdded?: (comment: Comment) => void,
+	mode: 'reply' | 'link',
+	onPostComment?: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
 	onViewThread?: (comment: Comment) => void,
-	highlightedCommentId?: number
+	parentCommentId?: number
 }
 export default class CommentDetails extends React.Component<Props, { showCommentBox: boolean }> {
 	private _showCommentBox = () => this.setState({ showCommentBox: true });
 	private _hideCommentBox = () => this.setState({ showCommentBox: false });
-	private _addComment = (comment: Comment) => {
+	private _addComment = (text: string, articleId: number, parentCommentId?: number) => {
 		this.setState({ showCommentBox: false });
-		this.props.onCommentAdded(comment);
+		return this.props.onPostComment(text, articleId, parentCommentId);
 	};
 	private _viewThread = () => this.props.onViewThread(this.props.comment);
 	constructor(props: Props) {
@@ -51,10 +51,10 @@ export default class CommentDetails extends React.Component<Props, { showComment
 				{this.state.showCommentBox ? 
 					<CommentBox
 						articleId={this.props.comment.articleId}
-						parentCommentId={this.props.comment.id}
 						isAllowedToPost={this.props.isAllowedToPost}
-						onCommentPosted={this._addComment}
 						onCancel={this._hideCommentBox}
+						onPostComment={this._addComment}
+						parentCommentId={this.props.comment.id}
 					/> :
 					this.props.mode === 'reply' ?
 						this.props.isAllowedToPost ?
@@ -64,12 +64,12 @@ export default class CommentDetails extends React.Component<Props, { showComment
 				{this.props.comment.children.length ?
 					<CommentList
 						comments={this.props.comment.children}
-						mode={this.props.mode}
-						isAllowedToPost={this.props.isAllowedToPost}
-						parentCommentId={this.props.comment.id}
-						onCommentAdded={this.props.onCommentAdded}
-						onViewThread={this.props.onViewThread}
 						highlightedCommentId={this.props.highlightedCommentId}
+						isAllowedToPost={this.props.isAllowedToPost}
+						mode={this.props.mode}
+						onPostComment={this.props.onPostComment}
+						onViewThread={this.props.onViewThread}
+						parentCommentId={this.props.comment.id}
 					/> :
 					null}
 			</li>

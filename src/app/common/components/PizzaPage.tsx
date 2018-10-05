@@ -1,60 +1,82 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
 import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
-import Fetchable from '../api/Fetchable';
+import Fetchable from '../serverApi/Fetchable';
 import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
 import { DateTime } from 'luxon';
 import classNames from 'classnames';
 import ChallengeView from './PizzaPage/ChallengeView';
 import RefreshButton from './controls/RefreshButton';
-import Page from './Page';
+import UserAccount from '../../../common/models/UserAccount';
+import { RootChallengeState } from './Root';
+import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
+import CallbackStore from '../CallbackStore';
 
-export default class extends React.Component<RouteComponentProps<{}>, {
-	leaderboard: Fetchable<ChallengeLeaderboard>
-}> {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	private readonly _forceUpdate = () => {
-		this.forceUpdate();
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onGetChallengeLeaderboard: (challengeId: number, callback: (leaderboard: Fetchable<ChallengeLeaderboard>) => void) => Fetchable<ChallengeLeaderboard>,
+	onGetChallengeState: () => RootChallengeState,
+	onGetTimeZones: (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => Fetchable<TimeZoneSelectListItem[]>,
+	onGetUser: () => UserAccount | null,
+	onQuitChallenge: () => void,
+	onStartChallenge: (timeZoneId: number) => void
+}) {
+	return {
+		create: () => ({ key }),
+		render: () => (
+			<PizzaPage
+				challengeState={deps.onGetChallengeState()}
+				onGetChallengeLeaderboard={deps.onGetChallengeLeaderboard}
+				onGetTimeZones={deps.onGetTimeZones}
+				onQuitChallenge={deps.onQuitChallenge}
+				onStartChallenge={deps.onStartChallenge}
+				user={deps.onGetUser()}
+			/>
+		)
 	};
+}
+interface Props {
+	challengeState: RootChallengeState
+	onGetChallengeLeaderboard: (challengeId: number, callback: (leaderboard: Fetchable<ChallengeLeaderboard>) => void) => Fetchable<ChallengeLeaderboard>,
+	onGetTimeZones: (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => Fetchable<TimeZoneSelectListItem[]>,
+	onQuitChallenge: () => void,
+	onStartChallenge: (timeZoneId: number) => void,
+	user: UserAccount | null
+}
+export default class PizzaPage extends React.Component<
+	Props,
+	{
+		leaderboard: Fetchable<ChallengeLeaderboard>,
+		showStartPrompt: boolean
+	}
+> {
+	private readonly _callbacks = new CallbackStore();
 	private readonly _showStartPrompt = () => {
-		this.context.challenge.update({
-			latestResponse: null
-		});
+		this.setState({ showStartPrompt: true });
 	};
 	private readonly _refresh = () => {
-		this.setState({
-			leaderboard: this.fetchLeaderboard()
-		});
+		this.setState({ leaderboard: this.fetchLeaderboard() });
 	};
 	private readonly _quit = () => {
 		if (
-			this.context.challenge.isUserEnrolled ?
+			this.props.challengeState.latestResponse &&
+			this.props.challengeState.latestResponse.action === ChallengeResponseAction.Enroll ?
 				window.confirm('Are you sure? You\'ll lose any progress you\'ve made so far!') :
 				true
 		) {
-			this.context.api
-				.quitChallenge(this.context.challenge.activeChallenge.id)
-				.then(latestResponse => {
-					this.context.challenge.update({
-						latestResponse,
-						score: null
-					});
-				});
+			this.props.onQuitChallenge();
 		}
 	};
-	constructor(props: RouteComponentProps<{}>, context: Context) {
-		super(props, context);
+	constructor(props: Props) {
+		super(props);
 		this.state = {
-			leaderboard: this.fetchLeaderboard()
+			leaderboard: this.fetchLeaderboard(),
+			showStartPrompt: !props.challengeState.latestResponse
 		};
 	}
 	private mergeLeaderboard(leaderboard: Fetchable<ChallengeLeaderboard>) {
-		if (leaderboard.value && this.context.user.isSignedIn && this.context.challenge.score) {
+		if (leaderboard.value && this.props.user && this.props.challengeState.score) {
 			const
-				userName = this.context.user.userAccount.name,
-				score = this.context.challenge.score,
+				userName = this.props.user.name,
+				score = this.props.challengeState.score,
 				contenders = leaderboard.value.contenders,
 				contenderIndex = contenders.findIndex(contender => contender.name === userName);
 			if (score.level === 0 || score.level === 10) {
@@ -121,11 +143,9 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 		return leaderboard;
 	}
 	private fetchLeaderboard() {
-		return this.context.api.getChallengeLeaderboard(
-			this.context.challenge.activeChallenge.id,
-			leaderboard => {
-				this.setState({ leaderboard });
-			}
+		return this.props.onGetChallengeLeaderboard(
+			this.props.challengeState.activeChallenge.id,
+			this._callbacks.add(leaderboard => { this.setState({ leaderboard }); })
 		);
 	}
 	private getRows(
@@ -153,39 +173,39 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 			</tr>
 		);
 	}
-	public componentWillMount() {
-		this.context.page.setTitle('Pizza Challenge');
-	}
-	public componentDidMount() {
-		this.context.challenge.addListener('change', this._forceUpdate);
-	}
 	public componentWillUnmount() {
-		this.context.challenge.removeListener('change', this._forceUpdate);
+		this._callbacks.cancel();
 	}
 	public render() {
 		const
-			showStartPrompt = (
-				this.context.challenge.latestResponse &&
-				this.context.challenge.latestResponse.action !== ChallengeResponseAction.Enroll
+			showReenrollPrompt = (
+				this.props.challengeState.latestResponse &&
+				this.props.challengeState.latestResponse.action !== ChallengeResponseAction.Enroll
 			),
 			showQuitPrompt = (
-				this.context.user.isSignedIn && (
-					!this.context.challenge.latestResponse ||
-					this.context.challenge.latestResponse.action === ChallengeResponseAction.Enroll
+				this.props.user &&
+				(
+					!this.props.challengeState.latestResponse ||
+					this.props.challengeState.latestResponse.action === ChallengeResponseAction.Enroll
 				)
 			),
-			userName = this.context.user.isSignedIn ? this.context.user.userAccount.name : null,
+			userName = this.props.user ? this.props.user.name : null,
 			mergedLeaderboard = this.mergeLeaderboard(this.state.leaderboard);
 		return (
-			<Page className="pizza-page">
-				{showStartPrompt ?
+			<div className="pizza-page">
+				{showReenrollPrompt ?
 					<div className="start-prompt prompt-wrapper">
 						<div className="prompt">
 							Want to join the challenge? Click <span onClick={this._showStartPrompt}>here</span> to get back in the game!
 						</div>
 					</div> :
 					null}
-				<ChallengeView />
+				<ChallengeView
+					challengeState={this.props.challengeState}
+					onGetTimeZones={this.props.onGetTimeZones}
+					onStartChallenge={this.props.onStartChallenge}
+					user={this.props.user}
+				/>
 				<h3>We're giving away free pizza to the first 100 people who read at least one article* per day for 10 days in a row!</h3>
 				<p>*The article must be at least five minutes long.</p>
 				<h4>
@@ -267,7 +287,7 @@ export default class extends React.Component<RouteComponentProps<{}>, {
 						</div>
 					</div> :
 					null}
-			</Page>
+			</div>
 		);
 	}
 }

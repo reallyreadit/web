@@ -1,14 +1,14 @@
-export default class CancelablePromise<T> {
-	private isCancelled = false;
-	public readonly promise: Promise<T>;
+export default class CancelablePromise<T = void> {
+	private _isCancelled = false;
+	public readonly _promise: Promise<T>;
 	constructor(promise: Promise<T>) {
-		this.promise = new Promise(
+		this._promise = new Promise(
 			(resolve, reject) => promise
-				.then(value => this.isCancelled ? reject({ isCancelled: true }) : resolve(value))
-				.catch(reason => this.isCancelled ? reject({ isCancelled: true }) : reject(reason))
+				.then(value => this._isCancelled ? reject({ isCancelled: true }) : resolve(value))
+				.catch(reason => this._isCancelled ? reject({ isCancelled: true }) : reject(reason))
 		);
 	}
 	public cancel() {
-		this.isCancelled = true;
+		this._isCancelled = true;
 	}
 }

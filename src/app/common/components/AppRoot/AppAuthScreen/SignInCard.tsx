@@ -3,10 +3,11 @@ import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
 import AppScreenButton from '../../controls/AppScreenButton';
 
-export default class extends React.PureComponent<{
+interface Props {
 	onShowCreateAccountCard: () => void,
 	onSignIn: (email: string, password: string) => Promise<void>
-}, {
+}
+export default class extends React.PureComponent<Props, {
 	email: string,
 	emailError: string | null,
 	isSubmitting: boolean,
@@ -37,8 +38,8 @@ export default class extends React.PureComponent<{
 				});
 		}
 	};
-	constructor() {
-		super();
+	constructor(props: Props) {
+		super(props);
 		this.state = {
 			email: '',
 			emailError: null,

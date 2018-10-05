@@ -1,23 +1,23 @@
 import * as React from 'react';
-import Context from '../../Context';
 import InputField from '../controls/InputField';
-import Dialog, { State } from '../controls/Dialog';
-import UserAccount from '../../../../common/models/UserAccount';
+import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 
-export default class ChangeEmailAddressDialog extends Dialog<UserAccount, {}, Partial<State> & {
+interface Props {
+	onChangeEmailAddress: (email: string) => Promise<void>
+}
+export default class ChangeEmailAddressDialog extends Dialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string
 }> {
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
-	constructor(props: {}, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Change Email Address',
 				submitButtonText: 'Save Changes',
 				successMessage: 'Email address changed'
 			},
-			props,
-			context
+			props
 		);
 	}
 	protected renderFields() {
@@ -44,10 +44,7 @@ export default class ChangeEmailAddressDialog extends Dialog<UserAccount, {}, Pa
 		return [errors];
 	}
 	protected submitForm() {
-		return this.context.api.changeEmailAddress(this.state.email);
-	}
-	protected onSuccess(userAccount: UserAccount) {
-		this.context.user.update(userAccount);
+		return this.props.onChangeEmailAddress(this.state.email);
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'ResendLimitExceeded')) {

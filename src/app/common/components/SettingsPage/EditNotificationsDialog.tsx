@@ -1,27 +1,24 @@
 import * as React from 'react';
-import Dialog, { State } from '../controls/Dialog';
-import Context from '../../Context';
-import UserAccount from '../../../../common/models/UserAccount';
+import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 
 interface Values {
 	receiveEmailNotifications: boolean,
 	receiveDesktopNotifications: boolean
 }
 interface Props extends Values {
-	onSuccess: (userAccount: UserAccount) => void
+	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>
 }
-export default class EditNotificationsDialog extends Dialog<UserAccount, Props, Partial<State> & Values> {
+export default class extends Dialog<void, Props, Partial<State> & Values> {
 	private _handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ receiveEmailNotifications: e.currentTarget.checked });
 	private _handleDesktopChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ receiveDesktopNotifications: e.currentTarget.checked });
-	constructor(props: Props, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Edit Notifications',
 				submitButtonText: 'Save Changes',
 				successMessage: 'Notification preferences updated'
 			},
-			props,
-			context
+			props
 		);
 		this.state = {
 			...this.state,
@@ -51,9 +48,6 @@ export default class EditNotificationsDialog extends Dialog<UserAccount, Props, 
 		);
 	}
 	protected submitForm() {
-		return this.context.api.updateNotificationPreferences(this.state.receiveEmailNotifications, this.state.receiveDesktopNotifications);
-	}
-	protected onSuccess(userAccount: UserAccount) {
-		this.props.onSuccess(userAccount);
+		return this.props.onUpdateNotificationPreferences(this.state.receiveEmailNotifications, this.state.receiveDesktopNotifications);
 	}
 }

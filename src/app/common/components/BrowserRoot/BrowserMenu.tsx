@@ -19,6 +19,7 @@ interface Props {
 	onViewInbox: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewSettings: () => void,
+	selectedScreenKey: ScreenKey,
 	showNewReplyNotification: boolean,
 	userAccount: UserAccount | null
 }
@@ -85,6 +86,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								<BrowserButton
 									href={findRouteByKey(routes, ScreenKey.AdminPage).createUrl()}
 									onClick={this.props.onViewAdminPage}
+									style={this.props.selectedScreenKey === ScreenKey.AdminPage ? 'loud' : 'normal'}
 								>
 									Admin
 								</BrowserButton>
@@ -94,6 +96,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<BrowserButton
 								href={findRouteByKey(routes, ScreenKey.Inbox).createUrl()}
 								onClick={this.props.onViewInbox}
+								style={this.props.selectedScreenKey === ScreenKey.Inbox ? 'loud' : 'normal'}
 							>
 								Inbox
 							</BrowserButton>
@@ -102,6 +105,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<BrowserButton
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}
 								onClick={this.props.onViewSettings}
+								style={this.props.selectedScreenKey === ScreenKey.Settings ? 'loud' : 'normal'}
 							>
 								Settings
 							</BrowserButton>
@@ -120,7 +124,12 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						<Separator />
 						<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
 						<Separator />
-						<a onClick={this._viewPrivacyPolicy}>Privacy Policy</a>
+						<a
+							href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
+							onClick={this._viewPrivacyPolicy}
+						>
+							Privacy Policy
+						</a>
 						<br />
 						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
 					</div>

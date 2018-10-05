@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
 import Separator from '../../../common/components/Separator';
 import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
@@ -11,63 +9,94 @@ import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
-import ClientType from '../ClientType';
-import EnvironmentType from '../EnvironmentType';
-import Page from './Page';
+import { Intent } from './Toaster';
 
-const title = 'Settings';
-export default class SettingsPage extends React.PureComponent<RouteComponentProps<{}>, {}> {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	private readonly _forceUpdate = () => this.forceUpdate();
-	private _redirectToHomepage = () => this.context.router.history.push('/');
-	private _updateUserAccount = (userAccount: UserAccount) => this.context.user.update(userAccount);
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onCloseDialog: () => void,
+	onChangeEmailAddress: (email: string) => Promise<void>,
+	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
+	onGetUser: () => UserAccount | null,
+	onOpenDialog: (dialog: React.ReactNode) => void,
+	onResendConfirmationEmail: () => Promise<void>,
+	onShowToast: (text: string, intent: Intent) => void,
+	onUpdateContactPreferences: (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => Promise<void>,
+	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>
+}) {
+	return {
+		create: () => ({ key }),
+		render: () => (
+			<SettingsPage
+				onCloseDialog={deps.onCloseDialog}
+				onChangeEmailAddress={deps.onChangeEmailAddress}
+				onChangePassword={deps.onChangePassword}
+				onOpenDialog={deps.onOpenDialog}
+				onResendConfirmationEmail={deps.onResendConfirmationEmail}
+				onShowToast={deps.onShowToast}
+				onUpdateContactPreferences={deps.onUpdateContactPreferences}
+				onUpdateNotificationPreferences={deps.onUpdateNotificationPreferences}
+				user={deps.onGetUser()}
+			/>
+		)
+	};
+}
+export default class SettingsPage extends React.PureComponent<
+	{
+		onCloseDialog: () => void,
+		onChangeEmailAddress: (email: string) => Promise<void>,
+		onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
+		onOpenDialog: (dialog: React.ReactNode) => void,
+		onResendConfirmationEmail: () => Promise<void>,
+		onShowToast: (text: string, intent: Intent) => void,
+		onUpdateContactPreferences: (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => Promise<void>,
+		onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>,
+		user: UserAccount
+	},
+	{}
+> {
 	private _openChangePasswordDialog = () => {
-		this.context.page.openDialog(<ChangePasswordDialog />);
+		this.props.onOpenDialog(
+			<ChangePasswordDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onChangePassword={this.props.onChangePassword}
+				onShowToast={this.props.onShowToast}
+			/>
+		);
 	};
 	private _openChangeEmailAddressDialog = () => {
-		this.context.page.openDialog(<ChangeEmailAddressDialog />);
+		this.props.onOpenDialog(
+			<ChangeEmailAddressDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onChangeEmailAddress={this.props.onChangeEmailAddress}
+				onShowToast={this.props.onShowToast}
+			/>
+		);
 	};
 	private _openEditNotificationsDialog = () => {
-		const user = this.context.user.userAccount;
-		this.context.page.openDialog(
+		this.props.onOpenDialog(
 			<EditNotificationsDialog
-				receiveEmailNotifications={user.receiveReplyEmailNotifications}
-				receiveDesktopNotifications={user.receiveReplyDesktopNotifications}
-				onSuccess={this._updateUserAccount}
+				onCloseDialog={this.props.onCloseDialog}
+				onShowToast={this.props.onShowToast}
+				onUpdateNotificationPreferences={this.props.onUpdateNotificationPreferences}
+				receiveEmailNotifications={this.props.user.receiveReplyEmailNotifications}
+				receiveDesktopNotifications={this.props.user.receiveReplyDesktopNotifications}
 			/>
 		);
 	};
 	private _openEditContactPreferencesDialog = () => {
-		const user = this.context.user.userAccount;
-		this.context.page.openDialog(
+		this.props.onOpenDialog(
 			<EditContactPreferencesDialog
-				receiveWebsiteUpdates={user.receiveWebsiteUpdates}
-				receiveSuggestedReadings={user.receiveSuggestedReadings}
-				onSuccess={this._updateUserAccount}
+				onCloseDialog={this.props.onCloseDialog}
+				onShowToast={this.props.onShowToast}
+				onUpdateContactPreferences={this.props.onUpdateContactPreferences}
+				receiveWebsiteUpdates={this.props.user.receiveWebsiteUpdates}
+				receiveSuggestedReadings={this.props.user.receiveSuggestedReadings}
 			/>
 		);
 	};
-	private _installExtension = (e: React.MouseEvent<HTMLAnchorElement>) => chrome.webstore.install();
-	public componentWillMount() {
-		this.context.page.setTitle(title);
-	}
-	public componentDidMount() {
-		this.context.user
-			.addListener('signOut', this._redirectToHomepage)
-			.addListener('update', this._forceUpdate);
-		this.context.environment.extension.addListener('change', this._forceUpdate);
-	}
-	public componentWillUnmount() {
-		this.context.user
-			.removeListener('signOut', this._redirectToHomepage)
-			.removeListener('update', this._forceUpdate);
-		this.context.environment.extension.addListener('change', this._forceUpdate);
-	}
 	public render() {
-		const user = this.context.user.userAccount;
+		const user = this.props.user;
 		return (
-			<Page className="settings-page" title={title}>
+			<div className="settings-page">
 				<ul>
 					<li>
 						<label>
@@ -93,7 +122,9 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 								<Icon name="exclamation" />
 								Not Confirmed
 								<Separator />
-								<ResendConfirmationEmailActionLink />
+								<ResendConfirmationEmailActionLink
+									onResend={this.props.onResendConfirmationEmail}
+								/>
 							</div>}
 					</li>
 					<li>
@@ -110,19 +141,6 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 						<div className={classNames('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
 							<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
 							Show a desktop notification
-							{(
-								user.receiveReplyDesktopNotifications &&
-								this.context.environment.type === EnvironmentType.Client &&
-								this.context.environment.clientType === ClientType.Browser &&
-								this.context.environment.extension.isInstalled() === false
-							) ?
-								<div className="notice">
-									<Icon name="exclamation" />
-									To get notifications you must {this.context.environment.extension.isBrowserCompatible() ?
-										<a onClick={this._installExtension}>add the Chrome extension</a> :
-										<span>add the Chrome extension</span>}.
-								</div> :
-								null}
 						</div>
 					</li>
 					<li>
@@ -142,7 +160,7 @@ export default class SettingsPage extends React.PureComponent<RouteComponentProp
 						</div>
 					</li>
 				</ul>
-			</Page>
+			</div>
 		);
 	}
 }

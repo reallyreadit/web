@@ -1,112 +1,105 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
 import UserArticle from '../../../common/models/UserArticle';
-import Fetchable from '../api/Fetchable';
+import Fetchable from '../serverApi/Fetchable';
 import PageResult from '../../../common/models/PageResult';
 import ArticleList from './controls/articles/ArticleList';
-import ArticleDetails from './controls/articles/ArticleDetails';
+import ArticleDetails from '../../../common/components/ArticleDetails';
 import PageSelector from './controls/PageSelector';
-import Page from './Page';
+import UserAccount from '../../../common/models/UserAccount';
+import { Screen } from './Root';
 
-export default class extends React.Component<RouteComponentProps<{}>, { articles: Fetchable<PageResult<UserArticle>> }> {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	private _redirectToHomepage = () => this.context.router.history.push('/');
-	private _loadArticles = () => this.context.api.listUserArticleHistory(
-		this.getCurrentPage(),
-		articles => {
-			this.setState({ articles });
-		}
-	);
-	private _updatePageNumber = (pageNumber: number) => {
-		this.setState(
-			{
-				articles: {
-					...this.state.articles,
-					value: { ...this.state.articles.value, pageNumber },
-					isLoading: true
-				}
-			},
-			this._loadArticles
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onDeleteArticle: (article: UserArticle) => void
+	onGetUserArticleHistory: (pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) => Fetchable<PageResult<UserArticle>>,
+	onGetUser: () => UserAccount | null,
+	onGetScreenState: (key: TScreenKey) => Screen,
+	onReadArticle: (article: UserArticle) => void,
+	onSetScreenState: (key: TScreenKey, state: Partial<Screen>) => void,
+	onShareArticle: (article: UserArticle) => void,
+	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewComments: (article: UserArticle) => void
+}) {
+	function getArticles(pageNumber: number) {
+		return deps.onGetUserArticleHistory(
+			pageNumber,
+			articles => deps.onSetScreenState(key, { articleLists: { ['articles']: articles } })
 		);
+	}
+	const reload = (pageNumber: number) => {
+		deps.onSetScreenState(key, {
+			articleLists: {
+				['articles']: getArticles(pageNumber)
+			}
+		});
 	};
-	private _updateArticle = (article: UserArticle) => {
-		const articleIndex = this.state.articles.value.items.findIndex(a => a.id === article.id);
-		if (articleIndex !== -1) {
-			const items = this.state.articles.value.items.slice();
-			items.splice(items.findIndex(a => a.id === article.id), 1, article);
-			this.setState({
-				articles: {
-					...this.state.articles,
-					value: { ...this.state.articles.value, items }
-				}
-			});
-		}
+	return {
+		create: () => ({
+			key,
+			articleLists: {
+				['articles']: getArticles(1)
+			}
+		}),
+		render: () => (
+			<HistoryPage
+				articles={deps.onGetScreenState(key).articleLists['articles']}
+				isUserSignedIn={!!deps.onGetUser()}
+				onDeleteArticle={deps.onDeleteArticle}
+				onReadArticle={deps.onReadArticle}
+				onReload={reload}
+				onShareArticle={deps.onShareArticle}
+				onToggleArticleStar={deps.onToggleArticleStar}
+				onViewComments={deps.onViewComments}
+			/>
+		)
 	};
-	private _updateArticleFromEnvironment = (data: { article: UserArticle, isCompletionCommit: boolean }) => {
-		this._updateArticle(data.article);
-	};
+}
+export default class HistoryPage extends React.PureComponent<{
+	articles: Fetchable<PageResult<UserArticle>>,
+	isUserSignedIn: boolean,
+	onDeleteArticle: (article: UserArticle) => void,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onReload: (pageNumber: number) => void,
+	onShareArticle: (article: UserArticle) => void,
+	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewComments: (article: UserArticle) => void
+}, {}> {
 	private _deleteArticle = (article: UserArticle) => {
 		if (window.confirm('Are you sure you want to delete this article?')) {
-			this.context.api.deleteUserArticle(article.id);
-			const items = this.state.articles.value.items.slice();
-			items.splice(items.findIndex(a => a.id === article.id), 1);
-			this.setState({
-				articles: {
-					...this.state.articles,
-					value: { ...this.state.articles.value, items }
-				}
-			});
+			this.props.onDeleteArticle(article);
 		}
 	};
-	constructor(props: RouteComponentProps<{}>, context: Context) {
-		super(props, context);
-		this.state = { articles: this._loadArticles() };
-	}
-	private getCurrentPage() {
-		return (this.state && this.state.articles && this.state.articles.value && this.state.articles.value.pageNumber) || 1;
-	}
-	public componentWillMount() {
-		this.context.page.setTitle('History');
-	}
-	public componentDidMount() {
-		this.context.user.addListener('signOut', this._redirectToHomepage);
-		this.context.environment.addListener('articleUpdated', this._updateArticleFromEnvironment);
-	}
-	public componentWillUnmount() {
-		this.context.user.removeListener('signOut', this._redirectToHomepage);
-		this.context.environment.removeListener('articleUpdated', this._updateArticleFromEnvironment);
-	}
 	public render() {
 		return (
-			<Page className="history-page">
+			<div className="history-page">
 				<ArticleList>
-					{!this.state.articles.isLoading ?
-						this.state.articles.value ?
-							this.state.articles.value.items.length ?
-								this.state.articles.value.items.map(article =>
+					{this.props.articles.isLoading ?
+						<span>Loading...</span> :
+						this.props.articles.errors ?
+							<span>Error loading articles</span> :
+							<ArticleList>
+								{this.props.articles.value.items.map(article =>
 									<li key={article.id}>
 										<ArticleDetails
 											article={article}
-											isUserSignedIn={true}
-											showDeleteControl={true}
-											onChange={this._updateArticle}
+											isUserSignedIn={this.props.isUserSignedIn}
 											onDelete={this._deleteArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShareArticle}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+											showDeleteControl
 										/>
 									</li>
-								) :
-								<li>No articles found. When you read an article it will show up here.</li> :
-							<li>Error loading articles.</li> :
-						<li>Loading...</li>}
+								)}
+							</ArticleList>}
 				</ArticleList>
 				<PageSelector
-					pageNumber={this.getCurrentPage()}
-					pageCount={this.state.articles.value ? this.state.articles.value.pageCount : 1}
-					onChange={this._updatePageNumber}
-					disabled={this.state.articles.isLoading}
+					pageNumber={this.props.articles.value ? this.props.articles.value.pageNumber : 1}
+					pageCount={this.props.articles.value ? this.props.articles.value.pageCount : 1}
+					onChange={this.props.onReload}
+					disabled={this.props.articles.isLoading}
 				/>
-			</Page>
+			</div>
 		);
 	}
 }

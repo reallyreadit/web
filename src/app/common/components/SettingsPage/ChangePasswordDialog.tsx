@@ -1,9 +1,11 @@
 import * as React from 'react';
-import Context from '../../Context';
 import InputField from '../controls/InputField';
-import Dialog, { State } from '../controls/Dialog';
+import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 
-export default class extends Dialog<{}, {}, Partial<State> & {
+interface Props {
+	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>
+}
+export default class extends Dialog<void, Props, Partial<State> & {
 	currentPassword?: string,
 	currentPasswordError?: string,
 	password1?: string,
@@ -14,15 +16,14 @@ export default class extends Dialog<{}, {}, Partial<State> & {
 	private _handleCurrentPasswordChange = (currentPassword: string, currentPasswordError: string) => this.setState({ currentPassword, currentPasswordError });
 	private _handlePassword1Change = (password1: string, password1Error: string) => this.setState({ password1, password1Error });
 	private _handlePassword2Change = (password2: string, password2Error: string) => this.setState({ password2, password2Error });
-	constructor(props: {}, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Change Password',
 				submitButtonText: 'Save Changes',
 				successMessage: 'Password changed'
 			},
-			props,
-			context
+			props
 		);
 	}
 	protected renderFields() {
@@ -73,7 +74,7 @@ export default class extends Dialog<{}, {}, Partial<State> & {
 		return [errors];
 	}
 	protected submitForm() {
-		return this.context.api.changePassword(this.state.currentPassword, this.state.password1);
+		return this.props.onChangePassword(this.state.currentPassword, this.state.password1);
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'IncorrectPassword')) {

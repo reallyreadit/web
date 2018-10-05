@@ -3,7 +3,7 @@ import BrowserHeader from './BrowserRoot/BrowserHeader';
 import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
 import BrowserNav from './BrowserRoot/BrowserNav';
-import Root, { Props as RootProps } from './Root';
+import Root, { Props as RootProps, State as RootState } from './Root';
 import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
@@ -13,71 +13,78 @@ import DialogKey from '../DialogKey';
 import routes from '../routes';
 import { findRouteByKey } from '../Route';
 import BrowserMenu from './BrowserRoot/BrowserMenu';
+import UserArticle from '../../../common/models/UserArticle';
 
-interface Props {
+interface Props extends RootProps {
 	localStorageApi: LocalStorageApi,
 	newReplyNotification: NewReplyNotification | null
 }
-export default class extends Root<
-	Props,
-	{
-		menuState: 'opened' | 'closing' | 'closed',
-		showNewReplyIndicator: boolean
-	}
-> {
+interface State extends RootState {
+	menuState: 'opened' | 'closing' | 'closed',
+	showNewReplyIndicator: boolean
+}
+export default class extends Root<Props, State> {
+
+	// dialogs
+	private readonly _openCreateAccountDialog = () => {
+		this._openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
+			path: window.location.pathname,
+			queryString: window.location.search
+		}));
+	};
+	private readonly _openSignInDialog = () => {
+		this._openDialog(this._dialogCreatorMap[DialogKey.SignIn]({
+			path: window.location.pathname,
+			queryString: window.location.search
+		}));
+	};
+
+	// menu
 	private readonly _closeMenu = () => {
 		this.setState({ menuState: 'closing' });
 	};
 	private readonly _hideMenu = () => {
 		this.setState({ menuState: 'closed' });
 	};
-	private readonly _openCreateAccountDialog = () => {
-		this.setState({
-			dialog: this._dialogCreatorMap[DialogKey.CreateAccount](window.location.search)
-		});
-	};
 	private readonly _openMenu = () => {
 		this.setState({ menuState: 'opened' });
 	};
-	private readonly _openSignInDialog = () => {
-		this.setState({
-			dialog: this._dialogCreatorMap[DialogKey.SignIn](window.location.search)
-		});
-	};
-	private readonly _viewAdminPage = () => {
 
+	// screens
+	private readonly _viewAdminPage = () => {
+		this.replaceScreen(ScreenKey.AdminPage);
 	};
 	private readonly _viewHistory = () => {
-
+		this.replaceScreen(ScreenKey.History);
 	};
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
 	};
 	private readonly _viewInbox = () => {
-
+		this.replaceScreen(ScreenKey.Inbox);
 	};
 	private readonly _viewLeaderboards = () => {
-
+		this.replaceScreen(ScreenKey.Leaderboards);
 	};
 	private readonly _viewPrivacyPolicy = () => {
-
+		this.replaceScreen(ScreenKey.PrivacyPolicy);
 	};
 	private readonly _viewSettings = () => {
-		
+		this.replaceScreen(ScreenKey.Settings);
 	};
 	private readonly _viewStarred = () => {
 		this.replaceScreen(ScreenKey.Starred);
 	};
-	constructor(props: Props & RootProps) {
+
+	constructor(props: Props) {
 		super(props);
-		const locationState = this.getLocationState(props.initialLocation);
+		const locationState = this.getLocationDependentState(props.initialLocation);
 		this.state = {
+			...this.state,
 			dialog: locationState.dialog,
 			menuState: 'closed',
 			screens: [locationState.screen],
-			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
-			toasts: [],
-			user: props.initialUser
+			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification)
 		};
 		props.localStorageApi.addListener('user', user => {
 			this.setState({ user });
@@ -87,14 +94,18 @@ export default class extends Root<
 		this.setState({ user: userAccount });
 		this.props.localStorageApi.updateUser(userAccount);
 	}
-	private replaceScreen(key: ScreenKey) {
+	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
+		const
+			url = findRouteByKey(routes, key).createUrl(urlParams),
+			[path, queryString] = url.split('?');
 		this.setState({
-			screens: [this._screenCreatorMap[key]()]
+			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
+			screens: [this._screenFactoryMap[key].create({ path, queryString })]
 		});
 		window.history.pushState(
 			null,
 			window.document.title,
-			findRouteByKey(routes, key).createUrl()
+			url
 		);
 	}
 	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
@@ -120,13 +131,20 @@ export default class extends Root<
 				this.handleUserChange(null);
 			});
 	}
+	protected viewComments(article: UserArticle) {
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		this.replaceScreen(ScreenKey.ArticleDetails, {
+			['articleSlug']: articleSlug,
+			['sourceSlug']: sourceSlug
+		});
+	}
 	public componentDidMount() {
 		this.clearQueryStringKvps();
 		window.addEventListener('popstate', () => {
 			this.setState({
 				screens: [
 					this
-						.getLocationState({ path: window.location.pathname })
+						.getLocationDependentState({ path: window.location.pathname })
 						.screen
 				]
 			});
@@ -144,6 +162,7 @@ export default class extends Root<
 					onOpenMenu={this._openMenu}
 					onShowCreateAccountDialog={this._openCreateAccountDialog}
 					onShowSignInDialog={this._openSignInDialog}
+					onViewHome={this._viewHome}
 					showNewReplyIndicator={this.state.showNewReplyIndicator}
 				/>
 				<main>
@@ -155,7 +174,7 @@ export default class extends Root<
 						selectedScreenKey={this.state.screens[0].key}
 					/>
 					<div className="screen">
-						{this.state.screens[0].render()}
+						{this._screenFactoryMap[this.state.screens[0].key].render()}
 					</div>
 				</main>
 				{this.state.menuState !== 'closed' ?
@@ -168,6 +187,7 @@ export default class extends Root<
 						onViewInbox={this._viewInbox}
 						onViewPrivacyPolicy={this._viewPrivacyPolicy}
 						onViewSettings={this._viewSettings}
+						selectedScreenKey={this.state.screens[0].key}
 						showNewReplyNotification={this.state.showNewReplyIndicator}
 						userAccount={this.state.user}
 					/> :

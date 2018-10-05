@@ -2,22 +2,32 @@ import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
 import classNames from 'classnames';
 import Icon from '../../../../common/components/Icon';
+import ScreenKey from '../../ScreenKey';
+import routes from '../../routes';
+import { findRouteByKey } from '../../Route';
 
 interface Props {
 	isUserSignedIn: boolean,
 	onOpenMenu: () => void,
 	onShowCreateAccountDialog: () => void,
 	onShowSignInDialog: () => void,
+	onViewHome: () => void,
 	showNewReplyIndicator: boolean
 }
 export default class extends React.PureComponent<Props> {
+	private readonly _handleLogoClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		this.props.onViewHome();
+	};
 	public render() {
 		return (
 			<header className="browser-header">
-				<div
+				<a
 					className="logo-container"
 					dangerouslySetInnerHTML={{ __html: logoText }}
-				></div>
+					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
+					onClick={this._handleLogoClick}
+				></a>
 				<div className="menu-container">
 					{this.props.isUserSignedIn ?
 						<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>

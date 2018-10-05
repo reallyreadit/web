@@ -1,12 +1,16 @@
 import * as React from 'react';
-import Context from '../../Context';
-import Dialog, { State } from '../controls/Dialog';
-import Fetchable from '../../api/Fetchable';
+import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import Fetchable from '../../serverApi/Fetchable';
 import ActionLink from '../../../../common/components/ActionLink';
-import { Intent } from '../../Page';
+import { Intent } from '../Toaster';
 
-interface Props { onSend: () => void }
-export default class extends Dialog<{}, Props, Partial<State> & {
+interface Props {
+	onGetLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
+	onSend: (list: string, subject: string, body: string) => Promise<void>,
+	onSendTest: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
+	onSent: () => void
+}
+export default class extends Dialog<void, Props, Partial<State> & {
 	lists: Fetchable<{ key: string, value: string }[]>,
 	list: string,
 	subject: string
@@ -21,23 +25,28 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 	private _changeTestAddress = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ testAddress: e.currentTarget.value });
 	private _sendTestEmail = () => {
 		this.setState({ sendingTestEmail: true });
-		this.context.api
-			.sendTestBulkMailing(this.state.list, this.state.subject, this.state.body, this.state.testAddress)
-			.then(() => this.context.page.showToast('Test email sent!', Intent.Success))
-			.catch(() => this.context.page.showToast('Failed to send test email', Intent.Danger))
-			.then(() => this.setState({ sendingTestEmail: false }));
+		this.props
+			.onSendTest(this.state.list, this.state.subject, this.state.body, this.state.testAddress)
+			.then(() => {
+				this.props.onShowToast('Test email sent!', Intent.Success);
+			})
+			.catch(() => {
+				this.props.onShowToast('Failed to send test email', Intent.Danger);
+			})
+			.then(() => {
+				this.setState({ sendingTestEmail: false });
+			});
 	};
-	constructor(props: Props, context: Context) {
+	constructor(props: Props & DialogProps) {
 		super(
 			{
 				title: 'Create Bulk Mailing',
 				submitButtonText: 'Send',
 				successMessage: 'Mail sent!'
 			},
-			props,
-			context
+			props
 		);
-		const lists = context.api.getBulkMailingLists(lists => this.setState({ lists, list: lists.value[0].value }));
+		const lists = props.onGetLists(lists => this.setState({ lists, list: lists.value[0].value }));
 		this.state = {
 			...this.state,
 			lists,
@@ -103,23 +112,23 @@ export default class extends Dialog<{}, Props, Partial<State> & {
 			error = 'Body is required';
 		}
 		if (error) {
-			this.context.page.showToast(error, Intent.Danger);
+			this.props.onShowToast(error, Intent.Danger);
 		}
 		return [{ error }];
 	}
 	protected submitForm() {
 		if (window.confirm('Really?')) {
-			return this.context.api.sendBulkMailing(this.state.list, this.state.subject, this.state.body);
+			return this.props.onSend(this.state.list, this.state.subject, this.state.body);
 		} else {
 			return Promise.reject(['cancelled']);
 		}
 	}
 	protected onSuccess() {
-		this.props.onSend();
+		this.props.onSent();
 	}
 	protected onError(errors: string[]) {
 		if (!errors || !errors.length || errors[0] !== 'cancelled') {
-			this.context.page.showToast(
+			this.props.onShowToast(
 				errors && errors.length ? errors[0] : 'Unknown Error -- Careful, mail may have been sent',
 				Intent.Danger
 			);

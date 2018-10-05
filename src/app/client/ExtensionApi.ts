@@ -33,7 +33,7 @@ export default class extends ExtensionApi {
         });
     }
     private sendMessage<T>(type: string, data?: {}) {
-        if (this.isBrowserCompatible()) {
+        if (this.isBrowserCompatible) {
             return new Promise<T>((resolve, reject) => {
                 try {
                     chrome.runtime.sendMessage(this._extensionId, { type, data }, resolve);
@@ -44,14 +44,17 @@ export default class extends ExtensionApi {
         }
         return Promise.reject('NotSupported');
     }
-    public isInstalled() {
-        return this._isInstalled;
-    }
-    public isBrowserCompatible() {
-        return !!(window.chrome && window.chrome.runtime);
+    public install() {
+        chrome.webstore.install();
     }
     public updateNewReplyNotification(notification: NewReplyNotification) {
         this.sendMessage('updateNewReplyNotification', notification)
             .catch(() => {});
+    }
+    public get isInstalled() {
+        return this._isInstalled;
+    }
+    public get isBrowserCompatible() {
+        return !!(window.chrome && window.chrome.runtime);
     }
 }

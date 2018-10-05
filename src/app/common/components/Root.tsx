@@ -4,24 +4,40 @@ import Captcha from '../Captcha';
 import { Toast, Intent } from './Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import Fetchable from '../serverApi/Fetchable';
-import HotTopics from '../../../common/models/HotTopics';
 import UserArticle from '../../../common/models/UserArticle';
+import Comment from '../../../common/models/Comment';
 import PageResult from '../../../common/models/PageResult';
-import HotTopicsPage from './HotTopicsPage';
+import { createScreenFactory as createHotTopicsPageScreenFacory } from './HotTopicsPage';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, createQueryString, clientTypeQueryStringKey } from '../queryString';
 import Location from '../Location';
-import StarredPage from './StarredPage';
+import { createScreenFactory as createStarredPageScreenFactory } from './StarredPage';
 import ScreenKey from '../ScreenKey';
 import DialogKey from '../DialogKey';
-import { findRouteByLocation } from '../Route';
+import { findRouteByLocation, findRouteByKey } from '../Route';
 import routes from '../routes';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
+import { createScreenFactory as createAdminPageScreenFactory } from './AdminPage';
+import ChallengeState from '../../../common/models/ChallengeState';
+import { createScreenFactory as createHistoryScreenFactory } from './HistoryPage';
+import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
+import { createScreenFactory as createPizzaPageScreenFactory } from './PizzaPage';
+import { createScreenFactory as createSettingsPageScreenFactory } from './SettingsPage';
+import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
+import { createScreenFactory as createArticlePageScreenFactory } from './ArticlePage';
+import ShareArticleDialog from './ShareArticleDialog';
+import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
+import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
+import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 
+export interface RootChallengeState extends ChallengeState {
+	isLoading: boolean
+}
 export interface Props {
 	captcha: Captcha,
+	initialChallengeState: ChallengeState,
 	initialLocation: Location,
 	initialUser: UserAccount | null,
 	serverApi: ServerApi
@@ -30,19 +46,170 @@ export interface Screen {
 	articleLists?: { [key: string]: Fetchable<PageResult<UserArticle>> },
 	articles?: { [key: string]: Fetchable<UserArticle> },
 	key: ScreenKey,
-	render: () => React.ReactNode,
-	title?: string
+	location?: Location
 }
-interface State {
+export interface State {
+	challengeState: RootChallengeState,
 	dialog: React.ReactNode,
 	screens: Screen[],
 	toasts: Toast[],
 	user: UserAccount | null
 }
-export default abstract class <P = {}, S = {}> extends React.Component<
-	P & Props,
-	S & State
-> {
+export default abstract class <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
+	
+	// articles
+	protected readonly _readArticle = (article: UserArticle) => {
+
+	};
+	protected readonly _shareArticle = (article: UserArticle) => {
+
+	};
+	protected readonly _toggleArticleStar = (article: UserArticle) => {
+		return (article.dateStarred ?
+			this.props.serverApi.unstarArticle :
+			this.props.serverApi.starArticle)(article.id);
+	};
+
+	// challenge
+	protected readonly _startChallenge = (timeZoneId: number) => {
+		this.props.serverApi
+			.startChallenge(this.state.challengeState.activeChallenge.id, timeZoneId)
+			.then(({ response, score }) => {
+				this.setState({
+					challengeState: {
+						...(this.state.challengeState as RootChallengeState),
+						latestResponse: response,
+						score
+					}
+				});
+			});
+	};
+	protected readonly _quitChallenge = () => {
+		this.props.serverApi
+			.quitChallenge(this.state.challengeState.activeChallenge.id)
+			.then(latestResponse => {
+				this.setState({
+					challengeState: {
+						...(this.state.challengeState as RootChallengeState),
+						latestResponse,
+						score: null
+					}
+				});
+			});
+	};
+
+	// comments
+	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: number) => {
+		return this.props.serverApi
+			.postComment(text, articleId, parentCommentId)
+			.then(comment => {
+				ga('send', {
+					hitType: 'event',
+					eventCategory: 'Comment',
+					eventAction: comment.parentCommentId ? 'reply' : 'post',
+					eventLabel: comment.articleTitle,
+					eventValue: comment.text.length
+				});
+				return comment;
+			});
+	};
+	protected readonly _readReply = (comment: Comment) => {
+
+	};
+	protected readonly _viewComments: (article: UserArticle) => void;
+
+	// dialogs
+	protected readonly _closeDialog = () => {
+		this._openDialog(null);
+	};
+	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: Location) => React.ReactNode } = {
+		[DialogKey.CreateAccount]: () => (
+			<CreateAccountDialog
+				captcha={this.props.captcha}
+				onCreateAccount={this._createAccount}
+				onCloseDialog={this._closeDialog}
+				onShowToast={this._addToast}
+			/>
+		),
+		[DialogKey.ResetPassword]: location => {
+			const kvps = parseQueryString(location.queryString);
+			return (
+				<ResetPasswordDialog
+					email={decodeURIComponent(kvps['email'])}
+					onCloseDialog={this._closeDialog}
+					onResetPassword={this.props.serverApi.resetPassword}
+					onShowToast={this._addToast}
+					token={decodeURIComponent(kvps['token'])}
+				/>
+			);
+		},
+		[DialogKey.ShareArticle]: location => {
+			const [, sourceSlug, articleSlug] = location.path.match(findRouteByKey(routes, ScreenKey.ArticleDetails).pathRegExp);
+			return (
+				<ShareArticleDialog
+					captcha={this.props.captcha}
+					onCloseDialog={this._closeDialog}
+					onGetArticle={this.props.serverApi.getArticleDetails}
+					onShareArticle={this.props.serverApi.shareArticle}
+					onShowToast={this._addToast}
+					slug={sourceSlug + '_' + articleSlug}
+				/>
+			);
+		},
+		[DialogKey.SignIn]: () => (
+			<SignInDialog
+				onCloseDialog={this._closeDialog}
+				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+				onShowToast={this._addToast}
+				onSignIn={this._signIn}
+			/>
+		)
+	};
+	protected readonly _openRequestPasswordResetDialog = () => {
+		this._openDialog(
+			<RequestPasswordResetDialog
+				captcha={this.props.captcha}
+				onCloseDialog={this._closeDialog}
+				onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+				onShowToast={this._addToast}
+			/>
+		);
+	};
+	protected readonly _openDialog = (dialog: React.ReactNode) => {
+		this.setState({ dialog });
+	};
+
+	// screens
+	protected readonly _popScreen = () => {
+		this.setState({ screens: this.state.screens.slice(0, this.state.screens.length - 2) });
+	};
+	protected readonly _screenFactoryMap: {
+		[P in ScreenKey]: {
+			create: (location: Location) => Screen,
+			render: () => React.ReactNode
+		}
+	};
+
+	// state
+	private readonly _getChallengeState = () => {
+		return this.state.challengeState;
+	};
+	private readonly _getScreenState = (key: ScreenKey) => {
+		return this.state.screens.find(screen => screen.key === key);
+	};
+	private readonly _setScreenState = (key: ScreenKey, state: Partial<Screen>) => {
+		const screen = this.state.screens.find(screen => screen.key === key);
+		if (screen) {
+			const screens = this.state.screens.slice();
+			screens.splice(screens.indexOf(screen), 1, { ...screen, ...state });
+			this.setState({ screens });
+		}
+	};
+	private readonly _getUser = () => {
+		return this.state.user;
+	};
+
+	// toasts
 	protected readonly _addToast = (text: string, intent: Intent) => {
 		const toast = {
 			text,
@@ -56,65 +223,26 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 		};
 		this.setState({ toasts: [...this.state.toasts, toast] });
 	};
-	protected readonly _closeDialog = () => {
-		this.setState({ dialog: null });
-	};
-	protected readonly _createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>;
-	protected readonly _dialogCreatorMap: { [P in DialogKey]: (queryString: string) => React.ReactNode } = {
-		[DialogKey.CreateAccount]: () => (
-			<CreateAccountDialog
-				captcha={this.props.captcha}
-				onCreateAccount={this._createAccount}
-				onCloseDialog={this._closeDialog}
-				onShowToast={this._addToast}
-			/>
-		),
-		[DialogKey.ResetPassword]: (queryString: string) => {
-			const kvps = parseQueryString(queryString);
-			return (
-				<ResetPasswordDialog
-					email={decodeURIComponent(kvps['email'])}
-					onCloseDialog={this._closeDialog}
-					onResetPassword={this.props.serverApi.resetPassword}
-					onShowToast={this._addToast}
-					token={decodeURIComponent(kvps['token'])}
-				/>
-			);
-		},
-		[DialogKey.ShareArticle]: () => (
-			<div></div>
-		),
-		[DialogKey.SignIn]: () => (
-			<SignInDialog
-				onCloseDialog={this._closeDialog}
-				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
-				onShowToast={this._addToast}
-				onSignIn={this._signIn}
-			/>
-		)
-	};
-	protected readonly _openRequestPasswordResetDialog = () => {
-		this.setState({
-			dialog: (
-				<RequestPasswordResetDialog
-					captcha={this.props.captcha}
-					onCloseDialog={this._closeDialog}
-					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
-					onShowToast={this._addToast}
-				/>
-			)
-		});
-	};
-	protected readonly _popScreen = () => {
-		this.setState({ screens: this.state.screens.slice(0, this.state.screens.length - 2) });
-	};
-	protected readonly _readArticle = (article: UserArticle) => {
-
-	};
 	protected readonly _removeToast = (timeoutHandle: number) => {
 		this.setState({
 			toasts: this.state.toasts.filter(toast => toast.timeoutHandle !== timeoutHandle)
 		});
+	};
+
+	// user account
+	protected readonly _changeEmailAddress = (email: string) => {
+		return this.props.serverApi
+			.changeEmailAddress(email)
+			.then(user => {
+				this.setState({ user });
+			});
+	};
+	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
+		return this.props.serverApi.changePassword(currentPassword, newPassword);
+	};
+	protected readonly _createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>;
+	protected readonly _deleteArticle = (article: UserArticle) => {
+
 	};
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
@@ -131,138 +259,137 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 				);
 			});
 	};
-	protected readonly _screenCreatorMap: { [P in ScreenKey]: () => Screen } = {
-		[ScreenKey.AdminPage]: () => ({
-			key: ScreenKey.AdminPage,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.ArticleDetails]: () => ({
-			key: ScreenKey.ArticleDetails,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.History]: () => ({
-			key: ScreenKey.History,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.Home]: () => {
-			function mapToGlobalState(hotTopics: Fetchable<HotTopics>) {
-				return {
-					articleLists: { articles: { ...hotTopics, value: hotTopics.value ? hotTopics.value.articles : null } },
-					articles: { aotd: { ...hotTopics, value: hotTopics.value ? hotTopics.value.aotd : null } }
-				};
-			}
-			const load = (pageNumber: number) => {
-				return this.props.serverApi.listHotTopics(
-					pageNumber,
-					hotTopics => this.setScreenState(
-						ScreenKey.Home,
-						mapToGlobalState(hotTopics)
-					)
-				);
-			};
-			const hotTopics = load(1);
-			return {
-				...mapToGlobalState(hotTopics),
-				key: ScreenKey.Home,
-				render: () => {
-					const screen = this.getScreen(ScreenKey.Home);
-					return (
-						<HotTopicsPage
-							aotd={screen.articles.aotd}
-							articles={screen.articleLists.articles}
-							isUserSignedIn={!!this.state.user}
-							onReadArticle={this._readArticle}
-							onReload={load}
-							onShareArticle={this._shareArticle}
-							onToggleArticleStar={this._toggleArticleStar}
-							onViewComments={this._viewComments}
-						/>
-					);
-				}
-			};
-		},
-		[ScreenKey.Inbox]: () => ({
-			key: ScreenKey.Inbox,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.Leaderboards]: () => ({
-			key: ScreenKey.Leaderboards,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.PrivacyPolicy]: () => ({
-			key: ScreenKey.PrivacyPolicy,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.Settings]: () => ({
-			key: ScreenKey.Settings,
-			render: () => {
-				return <div></div>;
-			}
-		}),
-		[ScreenKey.Starred]: () => {
-			function mapToGlobalState(articles: Fetchable<PageResult<UserArticle>>) {
-				return { articleLists: { articles } };
-			}
-			const load = (pageNumber: number) => {
-				return this.props.serverApi.listStarredArticles(
-					pageNumber,
-					starredArticles => this.setScreenState(
-						ScreenKey.Starred,
-						mapToGlobalState(starredArticles)
-					)
-				);
-			};
-			const pageResult = load(1);
-			return {
-				...mapToGlobalState(pageResult),
-				key: ScreenKey.Starred,
-				render: () => {
-					const screen = this.getScreen(ScreenKey.Starred);
-					return (
-						<StarredPage
-							articles={screen.articleLists.articles}
-							isUserSignedIn={!!this.state.user}
-							onReadArticle={this._readArticle}
-							onReload={load}
-							onShareArticle={this._shareArticle}
-							onToggleArticleStar={this._toggleArticleStar}
-							onViewComments={this._viewComments}
-						/>
-					);
-				}
-			};
-		}
-	};
-	protected readonly _shareArticle = (article: UserArticle) => {
-
-	};
 	protected readonly _signIn: (email: string, password: string) => Promise<void>;
 	protected readonly _signOut: () => Promise<void>;
-	protected readonly _toggleArticleStar = (article: UserArticle) => {
-		return (article.dateStarred ?
-			this.props.serverApi.unstarArticle :
-			this.props.serverApi.starArticle)(article.id);
+	protected readonly _updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
+		return this.props.serverApi
+			.updateContactPreferences(receiveWebsiteUpdates, receiveSuggestedReadings)
+			.then(user => {
+				this.setState({ user });
+			});
 	};
-	protected readonly _viewComments = (article: UserArticle) => {
+	protected readonly _updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
+		return this.props.serverApi
+			.updateEmailSubscriptions(token, subscriptions)
+			.then(() => {
+				// TODO: if user is signed in update user
+			});
+	};
+	protected readonly _updateNotificationPreferences = (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => {
+		return this.props.serverApi
+			.updateNotificationPreferences(receiveEmailNotifications, receiveDesktopNotifications)
+			.then(user => {
+				this.setState({ user });
+			});
+	};
 
-	};
-	constructor(props: P & Props) {
+	constructor(props: P) {
 		super(props);
+
+		this.state = {
+			challengeState: { ...props.initialChallengeState, isLoading: false },
+			toasts: [],
+			user: props.initialUser
+		} as S;
+
 		this._createAccount = this.createAccount.bind(this);
 		this._signIn = this.signIn.bind(this);
 		this._signOut = this.signOut.bind(this);
+		this._viewComments = this.viewComments.bind(this);
+
+		this._screenFactoryMap = {
+			[ScreenKey.AdminPage]: createAdminPageScreenFactory(ScreenKey.AdminPage, {
+				onCloseDialog: this._closeDialog,
+				onGetChallengeState: this._getChallengeState,
+				onGetBulkMailings: this.props.serverApi.getBulkMailings,
+				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
+				onGetChallengeResponseActionTotals: this.props.serverApi.getChallengeResponseActionTotals,
+				onGetChallengeWinners: this.props.serverApi.getChallengeWinners,
+				onGetUser: this._getUser,
+				onGetUserStats: this.props.serverApi.getUserStats,
+				onOpenDialog: this._openDialog,
+				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
+				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
+				onShowToast: this._addToast
+			}),
+			[ScreenKey.ArticleDetails]: createArticlePageScreenFactory(ScreenKey.ArticleDetails, {
+				onGetArticle: this.props.serverApi.getArticleDetails,
+				onGetComments: this.props.serverApi.listComments,
+				onGetUser: this._getUser,
+				onGetScreenState: this._getScreenState,
+				onPostComment: this._postComment,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar
+			}),
+			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation, {
+				onGetScreenState: this._getScreenState
+			}),
+			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
+				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
+				onUpdateEmailSubscriptions: this._updateEmailSubscriptions,
+				onGetScreenState: this._getScreenState
+			}),
+			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
+				onDeleteArticle: this._deleteArticle,
+				onGetUserArticleHistory: this.props.serverApi.listUserArticleHistory,
+				onGetUser: this._getUser,
+				onGetScreenState: this._getScreenState,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			}),
+			[ScreenKey.Home]: createHotTopicsPageScreenFacory(ScreenKey.Home, {
+				onGetHotTopics: this.props.serverApi.listHotTopics,
+				onGetUser: this._getUser,
+				onGetScreenState: this._getScreenState,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			}),
+			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
+				onGetReplies: this.props.serverApi.listReplies,
+				onReadReply: this._readReply
+			}),
+			[ScreenKey.Leaderboards]: createPizzaPageScreenFactory(ScreenKey.Leaderboards, {
+				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
+				onGetChallengeState: this._getChallengeState,
+				onGetTimeZones: this.props.serverApi.getTimeZones,
+				onGetUser: this._getUser,
+				onQuitChallenge: this._quitChallenge,
+				onStartChallenge: this._startChallenge
+			}),
+			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password, {
+				onGetScreenState: this._getScreenState
+			}),
+			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
+			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
+				onCloseDialog: this._closeDialog,
+				onChangeEmailAddress: this._changeEmailAddress,
+				onChangePassword: this._changePassword,
+				onGetUser: this._getUser,
+				onOpenDialog: this._openDialog,
+				onResendConfirmationEmail: this._resendConfirmationEmail,
+				onShowToast: this._addToast,
+				onUpdateContactPreferences: this._updateContactPreferences,
+				onUpdateNotificationPreferences: this._updateNotificationPreferences
+			}),
+			[ScreenKey.Starred]: createStarredPageScreenFactory(ScreenKey.Starred, {
+				onGetStarredArticles: this.props.serverApi.listStarredArticles,
+				onGetUser: this._getUser,
+				onGetScreenState: this._getScreenState,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			})
+		};
 	}
 	protected clearQueryStringKvps(keys?: string[]) {
 		const
@@ -284,16 +411,6 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 			)
 		);
 	}
-	private getScreen(key: ScreenKey) {
-		return this.state.screens.find(screen => screen.key === key);
-	}
-	private setScreenState(key: ScreenKey, state: Partial<Screen>) {
-		const
-			screens = this.state.screens.slice(),
-			screen = screens.find(screen => screen.key === key);
-		screens.splice(screens.indexOf(screen), 1, { ...screen, ...state });
-		this.setState({ screens });
-	}
 	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
 		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse)
@@ -308,13 +425,13 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 				return userAccount;
 			});
 	}
-	protected getLocationState(location: Location) {
+	protected getLocationDependentState(location: Location) {
 		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
 		return {
 			dialog: route.dialogKey ?
-				this._dialogCreatorMap[route.dialogKey](location.queryString) :
+				this._dialogCreatorMap[route.dialogKey](location) :
 				null,
-			screen: this._screenCreatorMap[route.screenKey]()
+			screen: this._screenFactoryMap[route.screenKey].create(location)
 		};
 	}
 	protected signIn(email: string, password: string) {
@@ -323,6 +440,7 @@ export default abstract class <P = {}, S = {}> extends React.Component<
 	protected signOut() {
 		return this.props.serverApi.signOut();
 	}
+	protected abstract viewComments(article: UserArticle): void;
 	public componentWillUnmount() {
 		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));
 	}

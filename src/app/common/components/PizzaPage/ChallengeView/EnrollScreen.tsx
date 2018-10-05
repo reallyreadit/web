@@ -1,12 +1,13 @@
 import * as React from 'react';
-import Context, { contextTypes } from '../../../Context';
 import TimeZoneSelectListItem from '../../../../../common/models/TimeZoneSelectListItem';
-import Fetchable from '../../../api/Fetchable';
+import Fetchable from '../../../serverApi/Fetchable';
 import { DateTime } from 'luxon';
 import ButtonBar from './ButtonBar';
 
 interface Props {
-	onCancel: () => void
+	onCancel: () => void,
+	onGetTimeZones: (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => Fetchable<TimeZoneSelectListItem[]>,
+	onStartChallenge: (timeZoneId: number) => void
 }
 export default class extends React.Component<
 	Props,
@@ -19,8 +20,6 @@ export default class extends React.Component<
 		} | null
 	}
 > {
-	public static contextTypes = contextTypes;
-	public context: Context;
 	private readonly _timeZoneName = DateTime.local().zoneName;
 	private readonly _selectTimeZone = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectListItem = this.state.timeZoneSelectListItems.value.find(zone => zone.key === e.currentTarget.value);
@@ -36,23 +35,13 @@ export default class extends React.Component<
 	};
 	private readonly _enroll = () => {
 		this.setState({ isSubmitting: true });
-		this.context.api
-			.startChallenge(
-				this.context.challenge.activeChallenge.id,
-				this.state.timeZoneSelection.id
-			)
-			.then(data => {
-				this.context.challenge.update({
-					latestResponse: data.response,
-					score: data.score
-				});
-			});
+		this.props.onStartChallenge(this.state.timeZoneSelection.id);
 	};
-	constructor(props: Props, context: Context) {
-		super(props, context);
+	constructor(props: Props) {
+		super(props);
 		this.state = {
 			isSubmitting: false,
-			timeZoneSelectListItems: this.context.api.getTimeZones(timeZoneSelectListItems => {
+			timeZoneSelectListItems: props.onGetTimeZones(timeZoneSelectListItems => {
 				const selectedListItem = timeZoneSelectListItems.value.find(zone => zone.value.some(value => value.name === this._timeZoneName));
 				this.setState({
 					timeZoneSelectListItems,

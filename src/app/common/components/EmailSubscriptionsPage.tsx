@@ -1,16 +1,39 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import Context, { contextTypes } from '../Context';
-import Fetchable from '../api/Fetchable';
+import Fetchable from '../serverApi/Fetchable';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
-import Page from './Page';
+import CallbackStore from '../CallbackStore';
 import { parseQueryString } from '../queryString';
+import { Screen } from './Root';
+import Location from '../Location';
 
-type Props = RouteComponentProps<{}>;
-const title = 'Email Subscriptions';
-export default class extends React.PureComponent<
+interface Props {
+	onGetEmailSubscriptions: (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => Fetchable<EmailSubscriptionsRequest>,
+	onUpdateEmailSubscriptions: (token: string, subscriptions: EmailSubscriptions) => Promise<void>,
+	token: string | null
+}
+export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+	onGetEmailSubscriptions: (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => Fetchable<EmailSubscriptionsRequest>,
+	onGetScreenState: (key: TScreenKey) => Screen,
+	onUpdateEmailSubscriptions: (token: string, subscriptions: EmailSubscriptions) => Promise<void>
+}) {
+	return {
+		create: (location: Location) => ({ key, location }),
+		render: () => (
+			<EmailSubscriptionPage
+				onGetEmailSubscriptions={deps.onGetEmailSubscriptions}
+				onUpdateEmailSubscriptions={deps.onUpdateEmailSubscriptions}
+				token={
+					decodeURIComponent(
+						parseQueryString(deps.onGetScreenState(key).location.queryString)['token']
+					)
+				}
+			/>
+		)
+	};
+}
+export default class EmailSubscriptionPage extends React.PureComponent<
 	Props,
 	{
 		request: Fetchable<EmailSubscriptionsRequest>,
@@ -19,8 +42,7 @@ export default class extends React.PureComponent<
 		isUpdated: boolean
 	}
 > {
-	public static contextTypes = contextTypes;
-	public context: Context;
+	private readonly _callbacks = new CallbackStore();
 	private readonly _changeCommentReplyNotification = (e: React.ChangeEvent<HTMLInputElement>) =>
 		this.setState({ values: { ...this.state.values, commentReplyNotifications: e.currentTarget.checked } });
 	private readonly _changeWebsiteUpdates = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -29,8 +51,8 @@ export default class extends React.PureComponent<
 		this.setState({ values: { ...this.state.values, suggestedReadings: e.currentTarget.checked } });
 	private readonly _submit = () => {
 		this.setState({ isSubmitting: true });
-		this.context.api
-			.updateEmailSubscriptions(this._token, this.state.values)
+		this.props
+			.onUpdateEmailSubscriptions(this._token, this.state.values)
 			.then(() => {
 				this.setState({
 					request: {
@@ -43,24 +65,22 @@ export default class extends React.PureComponent<
 					isSubmitting: false,
 					isUpdated: true
 				});
-				if (this.context.user.isSignedIn) {
-					this.context.api.getUserAccount(result => this.context.user.update(result.value));
-				}
 			});
 	};
 	private _token: string;
-	constructor(props: Props, context: Context) {
-		super(props, context);
-		const queryStringParams = parseQueryString(context.router.route.location.search);
-		if (queryStringParams['token']) {
+	constructor(props: Props) {
+		super(props);
+		if (props.token) {
 			const
-				token = decodeURIComponent(queryStringParams['token']),
-				request = context.api.getEmailSubscriptions(
+				token = props.token,
+				request = props.onGetEmailSubscriptions(
 					token,
-					request => this.setState({
-						request,
-						values: request.value.subscriptions
-					})
+					this._callbacks.add(
+						request => this.setState({
+							request,
+							values: request.value.subscriptions
+						})
+					)
 				);
 			this._token = token;
 			this.state = {
@@ -96,12 +116,9 @@ export default class extends React.PureComponent<
 			)
 		);
 	}
-	public componentWillMount() {
-		this.context.page.setTitle(title);
-	}
 	public render() {
 		return (
-			<Page className="email-subscriptions-page" title={title}>
+			<div className="email-subscriptions-page">
 				{this.state.request ?
 					this.state.request.isLoading ?
 						<span>Loading...</span> :
@@ -156,7 +173,7 @@ export default class extends React.PureComponent<
 							</div> :
 							<strong>Invalid token</strong> :
 					<strong>Invalid token</strong>}
-			</Page>
+			</div>
 		);
 	}
 }

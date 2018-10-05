@@ -4,19 +4,20 @@ import AppHeader from './AppRoot/AppHeader';
 import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
 import AppNav from './AppRoot/AppNav';
-import Root, { Screen, Props as RootProps } from './Root';
+import Root, { Screen, Props } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
 import { clientTypeQueryStringKey } from '../queryString';
+import UserArticle from '../../../common/models/UserArticle';
 
 export default class extends Root {
-	constructor(props: RootProps) {
+	constructor(props: Props) {
 		super(props);
 		let
 			dialog: React.ReactNode,
 			screens: Screen[];
 		if (props.initialUser) {
-			const locationState = this.getLocationState(props.initialLocation);
+			const locationState = this.getLocationDependentState(props.initialLocation);
 			dialog = locationState.dialog;
 			screens = [locationState.screen];
 		} else {
@@ -24,15 +25,14 @@ export default class extends Root {
 			screens = [];
 		}
 		this.state = {
+			...this.state,
 			dialog,
-			screens,
-			toasts: [],
-			user: props.initialUser
+			screens
 		};
 	}
 	private handleUserChange(userAccount: UserAccount) {
 		if (userAccount) {
-			const locationState = this.getLocationState({
+			const locationState = this.getLocationDependentState({
 				path: window.location.pathname,
 				queryString: window.location.search
 			});
@@ -74,13 +74,17 @@ export default class extends Root {
 				this.handleUserChange(null);
 			});
 	}
+	protected viewComments(article: UserArticle) {
+		
+	}
 	public componentDidMount() {
 		this.clearQueryStringKvps([clientTypeQueryStringKey]);
 	}
 	public render() {
-		const title = this.state.screens.length ?
+		/*const title = this.state.screens.length ?
 			this.state.screens[this.state.screens.length - 1].title :
-			null;
+			null;*/
+		const title = '';
 		return (
 			<div className="app-root">
 				{this.state.user ?
@@ -101,12 +105,12 @@ export default class extends Root {
 						>
 							{this.state.screens.map(screen => (
 								<li key={screen.key}>
-									{screen.render()}
+									{this._screenFactoryMap[screen.key].render()}
 								</li>
 							))}
 						</ol>,
 						<AppNav
-							items={this.getNavItems()}
+							items={[]}
 							key="nav"
 						/>,
 						<DialogManager

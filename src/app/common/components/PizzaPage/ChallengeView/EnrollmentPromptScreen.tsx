@@ -1,6 +1,5 @@
 import * as React from 'react';
 import ButtonBar from './ButtonBar';
-import Context, { contextTypes } from '../../../Context';
 
 interface Props {
 	isUserSignedIn: boolean,
@@ -11,10 +10,8 @@ export default class extends React.PureComponent<
 	Props,
 	{ isSubmitting: boolean }
 > {
-	public static contextTypes = contextTypes;
-	public context: Context;
-	constructor(props: Props, context: Context) {
-		super(props, context);
+	constructor(props: Props) {
+		super(props);
 		this.state = {
 			isSubmitting: false
 		};

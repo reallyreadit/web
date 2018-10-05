@@ -28,16 +28,33 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.AdminPage
 	},
 	{
-		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}`,
-		pathRegExp: /^\/articles\/[^/]+\/[^/]+$/,
+		createUrl: params => {
+			let url = `/articles/${params['sourceSlug']}/${params['articleSlug']}`;
+			if (params['commentId']) {
+				url += `/${params['commentId']}`;
+			}
+			return url;
+		},
+		pathRegExp: /^\/articles\/([^/]+)\/([^/]+)(\/[^/]+)?$/,
 		screenKey: ScreenKey.ArticleDetails
 	},
 	{
 		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}?share`,
 		dialogKey: DialogKey.ShareArticle,
-		pathRegExp: /^\/articles\/[^/]+\/[^/]+$/,
+		pathRegExp: /^\/articles\/([^/]+)\/([^/]+)$/,
 		queryStringKeys: ['share'],
 		screenKey: ScreenKey.ArticleDetails
+	},
+	{
+		createUrl: params => `/email/confirm/${params['result']}`,
+		pathRegExp: /^\/email\/confirm\/([^/]+)$/,
+		screenKey: ScreenKey.EmailConfirmation
+	},
+	{
+		createUrl: params => `/email/subscriptions?token=${params['token']}`,
+		pathRegExp: /^\/email\/subscriptions$/,
+		queryStringKeys: ['token'],
+		screenKey: ScreenKey.EmailSubscriptions
 	},
 	{
 		createUrl: () => '/history',
@@ -53,6 +70,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/leaderboards',
 		pathRegExp: /^\/leaderboards$/,
 		screenKey: ScreenKey.Leaderboards
+	},
+	{
+		createUrl: params => `/password/${params['action']}/${params['result']}`,
+		pathRegExp: /^\/password\/([^/]+)\/([^/]+)$/,
+		screenKey: ScreenKey.Password
 	},
 	{
 		createUrl: () => '/privacy-policy',

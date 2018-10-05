@@ -17,7 +17,6 @@ ga('send', 'pageview');
 const serverApi = new ServerApi(window.initData.serverApi);
 
 const rootProps = {
-	serverApi,
 	captcha: new Captcha(
 		window.initData.verifyCaptcha,
 		onLoadHandler => {
@@ -26,8 +25,10 @@ const rootProps = {
 			};
 		}
 	),
+	initialChallengeState: window.initData.challengeState,
 	initialLocation: window.initData.initialLocation,
-	initialUser: window.initData.userAccount
+	initialUser: window.initData.userAccount,
+	serverApi
 };
 let rootElement: React.ReactElement<any>;
 switch (window.initData.clientType) {

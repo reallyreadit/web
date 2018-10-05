@@ -1,18 +1,28 @@
 import * as React from 'react';
 import ActionLink from './ActionLink';
 import UserArticle from '../models/UserArticle';
-import { getArticleUrlPath } from '../format';
+import routes from '../../app/common/routes';
+import { findRouteByKey } from '../../app/common/Route';
+import ScreenKey from '../../app/common/ScreenKey';
 
 export default (props: {
 	article: UserArticle,
 	onClick?: (e: React.MouseEvent<HTMLElement>, href: string) => void
-}) => (
-	<span className="comments-action-link">
-		<ActionLink
-			href={getArticleUrlPath(props.article.slug)}
-			iconLeft="comments"
-			onClick={props.onClick}
-			text={`${props.article.commentCount} comment${props.article.commentCount !== 1 ? 's' : ''}`}
-		/>
-	</span>
-);
+}) => {
+	const
+		[sourceSlug, articleSlug] = props.article.slug.split('_'),
+		urlParams = {
+			['articleSlug']: articleSlug,
+			['sourceSlug']: sourceSlug
+		};
+	return (
+		<span className="comments-action-link">
+			<ActionLink
+				href={findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl(urlParams)}
+				iconLeft="comments"
+				onClick={props.onClick}
+				text={`${props.article.commentCount} comment${props.article.commentCount !== 1 ? 's' : ''}`}
+			/>
+		</span>
+	);
+}
