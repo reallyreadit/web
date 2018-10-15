@@ -192,7 +192,9 @@ export default class Readability {
 	 *
 	 * If function is not passed, removes all the nodes in node list.
 	 */
-	private _removeNodes<T extends Node>(nodeList: NodeListOf<T>, filterFn?: (node: T, i: number, nodeList: NodeListOf<T>) => boolean) {
+	private _removeNodes<T extends Element>(nodeList: HTMLCollectionOf<T>, filterFn?: (node: T, i: number, nodeList: HTMLCollectionOf<T>) => boolean): void;
+	private _removeNodes<T extends Node>(nodeList: NodeListOf<T>, filterFn?: (node: T, i: number, nodeList: NodeListOf<T>) => boolean): void;
+	private _removeNodes(nodeList: NodeList | HTMLCollection, filterFn?: (node: Node, i: number, nodeList: NodeList & HTMLCollection) => boolean) {
 		for (var i = nodeList.length - 1; i >= 0; i--) {
 			var node = nodeList[i];
 			var parentNode = node.parentNode;
@@ -207,7 +209,7 @@ export default class Readability {
 	/**
 	 * Iterates over a NodeList, and calls _setNodeTag for each node.
 	 */
-	private _replaceNodeTags(nodeList: NodeList, newTagName: keyof HTMLElementTagNameMap) {
+	private _replaceNodeTags(nodeList: NodeList | HTMLCollection, newTagName: keyof HTMLElementTagNameMap) {
 		for (var i = nodeList.length - 1; i >= 0; i--) {
 			var node = nodeList[i];
 			this._setNodeTag(node, newTagName);
@@ -221,7 +223,9 @@ export default class Readability {
 	 * For convenience, the current object context is applied to the provided
 	 * iterate function.
 	 */
-	private _forEachNode<T extends Node>(nodeList: NodeListOf<T> | T[] | HTMLCollection, fn: (node: T, index: number) => void) {
+	private _forEachNode<T extends Element>(nodeList: HTMLCollectionOf<T> | T[], fn: (node: T, index: number) => void): void;
+	private _forEachNode<T extends Node>(nodeList: NodeListOf<T> | T[], fn: (node: T, index: number) => void): void;
+	private _forEachNode(nodeList: NodeList | HTMLCollection | Node[], fn: (node: Node, index: number) => void) {
 		Array.prototype.forEach.call(nodeList, fn, this);
 	}
 
@@ -250,10 +254,10 @@ export default class Readability {
 	/**
 	 * Concat all nodelists passed as arguments.
 	 */
-	private _concatNodeLists(...args: NodeList[]) {
+	private _concatNodeLists(...args: (NodeList | HTMLCollection)[]) {
 		var slice = Array.prototype.slice;
-		var args = slice.call(args) as NodeList[];
-		var nodeLists = args.map(function(list) {
+		var args = slice.call(args) as (NodeList | HTMLCollection)[];
+		var nodeLists = args.map(function (list) {
 			return slice.call(list);
 		});
 		return Array.prototype.concat.apply([], nodeLists);
@@ -799,7 +803,7 @@ export default class Readability {
 				if (node.tagName === "DIV") {
 					// Put phrasing content into paragraphs.
 					var p = null;
-					var childNode = node.firstChild;
+					var childNode = node.firstChild as Node;
 					while (childNode) {
 						var nextSibling = childNode.nextSibling;
 						if (this._isPhrasingContent(childNode)) {
@@ -1148,7 +1152,7 @@ export default class Readability {
 
 			if (parseSuccessful) {
 				// Find out text direction from ancestors of final top candidate.
-				var ancestors = [parentOfTopCandidate, topCandidate].concat(this._getNodeAncestors(parentOfTopCandidate));
+				var ancestors = [parentOfTopCandidate as Node, topCandidate].concat(this._getNodeAncestors(parentOfTopCandidate));
 				this._someNode(ancestors, function(this: Readability, ancestor) {
 					if (!(ancestor as Element).tagName)
 						return false;

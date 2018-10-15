@@ -4,9 +4,9 @@ import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
 import CallbackStore from '../CallbackStore';
-import { parseQueryString } from '../queryString';
+import { parseQueryString } from '../../../common/routing/queryString';
 import { Screen } from './Root';
-import Location from '../Location';
+import Location from '../../../common/routing/Location';
 
 interface Props {
 	onGetEmailSubscriptions: (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => Fetchable<EmailSubscriptionsRequest>,

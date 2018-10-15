@@ -1,9 +1,9 @@
 import * as React from 'react';
 import ActionLink from './ActionLink';
 import UserArticle from '../models/UserArticle';
-import routes from '../../app/common/routes';
-import { findRouteByKey } from '../../app/common/Route';
-import ScreenKey from '../../app/common/ScreenKey';
+import routes from '../routing/routes';
+import { findRouteByKey } from '../routing/Route';
+import ScreenKey from '../routing/ScreenKey';
 
 export default (props: {
 	article: UserArticle,

@@ -7,7 +7,7 @@ import AppNav from './AppRoot/AppNav';
 import Root, { Screen, Props } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
-import { clientTypeQueryStringKey } from '../queryString';
+import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import UserArticle from '../../../common/models/UserArticle';
 
 export default class extends Root {

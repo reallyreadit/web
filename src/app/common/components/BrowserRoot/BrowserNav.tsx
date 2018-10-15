@@ -1,9 +1,9 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
-import ScreenKey from '../../ScreenKey';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 import BrowserButton from './BrowserButton';
-import { findRouteByKey } from '../../Route';
-import routes from '../../routes';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
 
 export default class extends React.PureComponent<{
 	onViewHistory: () => void,

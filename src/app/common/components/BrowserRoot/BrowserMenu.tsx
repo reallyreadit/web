@@ -5,9 +5,9 @@ import Separator from '../../../../common/components/Separator';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import classNames from 'classnames';
 import Spinner from '../../../../common/components/Spinner';
-import routes from '../../routes';
-import { findRouteByKey } from '../../Route';
-import ScreenKey from '../../ScreenKey';
+import routes from '../../../../common/routing/routes';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 import BrowserButton from './BrowserButton';
 
 interface Props {

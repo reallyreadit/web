@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Screen } from './Root';
-import routes from '../routes';
-import { findRouteByKey } from '../Route';
-import ScreenKey from '../ScreenKey';
+import routes from '../../../common/routing/routes';
+import { findRouteByKey } from '../../../common/routing/Route';
+import ScreenKey from '../../../common/routing/ScreenKey';
 
 const resultMessages: {
 	[key: string]: {

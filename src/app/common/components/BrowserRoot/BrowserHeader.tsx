@@ -2,9 +2,9 @@ import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
 import classNames from 'classnames';
 import Icon from '../../../../common/components/Icon';
-import ScreenKey from '../../ScreenKey';
-import routes from '../../routes';
-import { findRouteByKey } from '../../Route';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import routes from '../../../../common/routing/routes';
+import { findRouteByKey } from '../../../../common/routing/Route';
 
 interface Props {
 	isUserSignedIn: boolean,

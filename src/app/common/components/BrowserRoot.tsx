@@ -8,10 +8,10 @@ import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
-import ScreenKey from '../ScreenKey';
-import DialogKey from '../DialogKey';
-import routes from '../routes';
-import { findRouteByKey } from '../Route';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import DialogKey from '../../../common/routing/DialogKey';
+import routes from '../../../common/routing/routes';
+import { findRouteByKey } from '../../../common/routing/Route';
 import BrowserMenu from './BrowserRoot/BrowserMenu';
 import UserArticle from '../../../common/models/UserArticle';
 

@@ -2,10 +2,10 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { Intent } from './Toaster';
 import { Screen } from './Root';
-import Location from '../Location';
-import { findRouteByKey } from '../Route';
-import routes from '../routes';
-import ScreenKey from '../ScreenKey';
+import Location from '../../../common/routing/Location';
+import { findRouteByKey } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
+import ScreenKey from '../../../common/routing/ScreenKey';
 
 const resultMessages: {
 	[key: string]: {

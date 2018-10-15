@@ -8,7 +8,7 @@ import SessionState from '../../common/models/SessionState';
 import ApiRequest from '../common/serverApi/Request';
 import config from './config';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
-import routes from '../common/routes';
+import routes from '../../common/routing/routes';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
 import * as url from 'url';
@@ -19,8 +19,8 @@ import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey } from '../common/queryString';
-import { findRouteByLocation } from '../common/Route';
+import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
+import { findRouteByLocation } from '../../common/routing/Route';
 import ChallengeState from '../../common/models/ChallengeState';
 
 // redirect helper function
