@@ -7,7 +7,6 @@ import Fetchable from '../serverApi/Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
 import PageResult from '../../../common/models/PageResult';
-import { createScreenFactory as createHotTopicsPageScreenFacory } from './HotTopicsPage';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import Location from '../../../common/routing/Location';
@@ -46,7 +45,12 @@ export interface Screen {
 	articleLists?: { [key: string]: Fetchable<PageResult<UserArticle>> },
 	articles?: { [key: string]: Fetchable<UserArticle> },
 	key: ScreenKey,
-	location?: Location
+	location?: Location,
+	title?: string
+}
+export interface ScreenFactory {
+	create: (location: Location) => Screen,
+	render: (state: Screen) => React.ReactNode
 }
 export interface State {
 	challengeState: RootChallengeState,
@@ -180,32 +184,24 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	};
 
 	// screens
-	protected readonly _popScreen = () => {
-		this.setState({ screens: this.state.screens.slice(0, this.state.screens.length - 2) });
-	};
-	protected readonly _screenFactoryMap: {
-		[P in ScreenKey]: {
-			create: (location: Location) => Screen,
-			render: () => React.ReactNode
-		}
-	};
+	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory }>;
 
 	// state
-	private readonly _getChallengeState = () => {
+	protected readonly _getChallengeState = () => {
 		return this.state.challengeState;
 	};
-	private readonly _getScreenState = (key: ScreenKey) => {
-		return this.state.screens.find(screen => screen.key === key);
-	};
-	private readonly _setScreenState = (key: ScreenKey, state: Partial<Screen>) => {
+	protected readonly _setScreenState = (key: ScreenKey, state: Partial<Screen>) => {
 		const screen = this.state.screens.find(screen => screen.key === key);
 		if (screen) {
 			const screens = this.state.screens.slice();
 			screens.splice(screens.indexOf(screen), 1, { ...screen, ...state });
 			this.setState({ screens });
+			if ('title' in state && state.title !== screen.title) {
+				this.onTitleChanged(state.title);
+			}
 		}
 	};
-	private readonly _getUser = () => {
+	protected readonly _getUser = () => {
 		return this.state.user;
 	};
 
@@ -240,7 +236,20 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
 		return this.props.serverApi.changePassword(currentPassword, newPassword);
 	};
-	protected readonly _createAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>;
+	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
+		return this.props.serverApi
+			.createUserAccount(name, email, password, captchaResponse)
+			.then(userAccount => {
+				this._addToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
+				ga('send', {
+					hitType: 'event',
+					eventCategory: 'UserAccount',
+					eventAction: 'create',
+					eventLabel: userAccount.name
+				});
+				this.onUserChanged(userAccount);
+			});
+	};
 	protected readonly _deleteArticle = (article: UserArticle) => {
 
 	};
@@ -259,8 +268,20 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				);
 			});
 	};
-	protected readonly _signIn: (email: string, password: string) => Promise<void>;
-	protected readonly _signOut: () => Promise<void>;
+	protected readonly _signIn = (email: string, password: string) => {
+		return this.props.serverApi
+			.signIn(email, password)
+			.then(userAccount => {
+				this.onUserChanged(userAccount);
+			});
+	};
+	protected readonly _signOut = () => {
+		return this.props.serverApi
+			.signOut()
+			.then(() => {
+				this.onUserChanged(null);
+			});
+	};
 	protected readonly _updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
 		return this.props.serverApi
 			.updateContactPreferences(receiveWebsiteUpdates, receiveSuggestedReadings)
@@ -292,9 +313,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			user: props.initialUser
 		} as S;
 
-		this._createAccount = this.createAccount.bind(this);
-		this._signIn = this.signIn.bind(this);
-		this._signOut = this.signOut.bind(this);
 		this._viewComments = this.viewComments.bind(this);
 
 		this._screenFactoryMap = {
@@ -316,36 +334,21 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onGetArticle: this.props.serverApi.getArticleDetails,
 				onGetComments: this.props.serverApi.listComments,
 				onGetUser: this._getUser,
-				onGetScreenState: this._getScreenState,
 				onPostComment: this._postComment,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar
 			}),
-			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation, {
-				onGetScreenState: this._getScreenState
-			}),
+			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
 				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
-				onUpdateEmailSubscriptions: this._updateEmailSubscriptions,
-				onGetScreenState: this._getScreenState
+				onUpdateEmailSubscriptions: this._updateEmailSubscriptions
 			}),
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.listUserArticleHistory,
 				onGetUser: this._getUser,
-				onGetScreenState: this._getScreenState,
-				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
-				onShareArticle: this._shareArticle,
-				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
-			}),
-			[ScreenKey.Home]: createHotTopicsPageScreenFacory(ScreenKey.Home, {
-				onGetHotTopics: this.props.serverApi.listHotTopics,
-				onGetUser: this._getUser,
-				onGetScreenState: this._getScreenState,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState,
 				onShareArticle: this._shareArticle,
@@ -364,9 +367,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onQuitChallenge: this._quitChallenge,
 				onStartChallenge: this._startChallenge
 			}),
-			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password, {
-				onGetScreenState: this._getScreenState
-			}),
+			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
 			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
 				onCloseDialog: this._closeDialog,
@@ -382,7 +383,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			[ScreenKey.Starred]: createStarredPageScreenFactory(ScreenKey.Starred, {
 				onGetStarredArticles: this.props.serverApi.listStarredArticles,
 				onGetUser: this._getUser,
-				onGetScreenState: this._getScreenState,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState,
 				onShareArticle: this._shareArticle,
@@ -411,20 +411,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			)
 		);
 	}
-	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
-		return this.props.serverApi
-			.createUserAccount(name, email, password, captchaResponse)
-			.then(userAccount => {
-				this._addToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
-				ga('send', {
-					hitType: 'event',
-					eventCategory: 'UserAccount',
-					eventAction: 'create',
-					eventLabel: userAccount.name
-				});
-				return userAccount;
-			});
-	}
 	protected getLocationDependentState(location: Location) {
 		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
 		return {
@@ -434,12 +420,8 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			screen: this._screenFactoryMap[route.screenKey].create(location)
 		};
 	}
-	protected signIn(email: string, password: string) {
-		return this.props.serverApi.signIn(email, password);
-	}
-	protected signOut() {
-		return this.props.serverApi.signOut();
-	}
+	protected onTitleChanged(title: string) { }
+	protected onUserChanged(userAccount: UserAccount | null) { }
 	protected abstract viewComments(article: UserArticle): void;
 	public componentWillUnmount() {
 		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));

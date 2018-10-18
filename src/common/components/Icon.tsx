@@ -6,9 +6,9 @@ export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'write' | 'envelope' | 'user' | 'cog' | 'book' | 'refresh' | 'lightbulb' |
 	'question' | 'hyperlink' | 'gallery' | 'star' | 'clock' | 'key' | 'trophy' |
 	'home' | 'box' | 'star-empty' | 'email' | 'share' | 'in-alt' | 'out-alt' |
-	'chevron-down' | 'chevron-up' | 'three-bars' | 'arrow-up' | 'arrow-down' |
+	'three-bars' | 'arrow-up' | 'arrow-down' |
 	'thumbs-o-up' | 'retweet' | 'sort' | 'heart' | 'circle-full' | 'arrow-right2' |
-	'line-chart';
+	'line-chart' | 'chevron-left';
 export default (props: {
 	name: IconName,
 	title?: string,

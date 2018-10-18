@@ -6,6 +6,7 @@ import Captcha from './Captcha';
 import ClientType from '../common/ClientType';
 import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
+import WindowApi from './WindowApi';
 
 ga('create', {
 	trackingId: 'UA-101617933-1',
@@ -44,7 +45,8 @@ switch (window.initData.clientType) {
 			{
 				...rootProps,
 				localStorageApi: new LocalStorageApi(),
-				newReplyNotification: window.initData.newReplyNotification
+				newReplyNotification: window.initData.newReplyNotification,
+				windowApi: new WindowApi()
 			}
 		);
 		break;

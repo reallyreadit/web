@@ -15,18 +15,17 @@ interface Props {
 }
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onGetEmailSubscriptions: (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => Fetchable<EmailSubscriptionsRequest>,
-	onGetScreenState: (key: TScreenKey) => Screen,
 	onUpdateEmailSubscriptions: (token: string, subscriptions: EmailSubscriptions) => Promise<void>
 }) {
 	return {
-		create: (location: Location) => ({ key, location }),
-		render: () => (
+		create: (location: Location) => ({ key, location, title: 'Email Subscriptions' }),
+		render: (state: Screen) => (
 			<EmailSubscriptionPage
 				onGetEmailSubscriptions={deps.onGetEmailSubscriptions}
 				onUpdateEmailSubscriptions={deps.onUpdateEmailSubscriptions}
 				token={
 					decodeURIComponent(
-						parseQueryString(deps.onGetScreenState(key).location.queryString)['token']
+						parseQueryString(state.location.queryString)['token']
 					)
 				}
 			/>

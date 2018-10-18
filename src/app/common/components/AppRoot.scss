@@ -1,0 +1,62 @@
+/*
+  componentPath: src/app/common/components/AppRoot
+  cssComponentId: app-root_vc3j5h_vc3j5h
+*/
+
+.app-root_vc3j5h {
+	font-family: 'Bitter';
+	font-size: 13px;
+	letter-spacing: 0.02em;
+	height: 100%;
+	background-color: ghostwhite;
+	display: flex;
+	flex-flow: column;
+}
+.app-root_vc3j5h > .content {
+	flex: 1 1 auto;
+	position: relative;
+	overflow: hidden;
+	height: 100%;
+}
+.app-root_vc3j5h > .content > .screens {
+	position: relative;
+	overflow: hidden;
+	height: 100%;
+}
+.app-root_vc3j5h > .content > .screens > .screen {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	padding: 10px;
+	box-sizing: border-box;
+	background-color: ghostwhite;
+}
+.app-root_vc3j5h > .content > .screens > .screen + .screen {
+	animation: app-root_vc3j5h-screen-slide-in 250ms forwards;
+}
+.app-root_vc3j5h > .content > .screens > .screen.has-title {
+	top: 40px;
+	bottom: 0;
+	height: auto;
+}
+.app-root_vc3j5h > .content > .screens > .screen.slide-out {
+	animation: app-root_vc3j5h-screen-slide-out 250ms forwards;
+}
+
+@keyframes app-root_vc3j5h-screen-slide-in {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+@keyframes app-root_vc3j5h-screen-slide-out {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}

@@ -22,6 +22,7 @@ import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
 import { findRouteByLocation } from '../../common/routing/Route';
 import ChallengeState from '../../common/models/ChallengeState';
+import WindowApi from './WindowApi';
 
 // redirect helper function
 const nodeUrl = url;
@@ -228,6 +229,7 @@ server = server.get('/*', (req, res) => {
 	req.api
 		.fetchJson<ChallengeState>('GET', new ApiRequest('/Challenges/State'))
 		.then(challengeState => {
+			const windowApi = new WindowApi();
 			const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 			const rootProps = {
 				serverApi: req.api,
@@ -253,7 +255,8 @@ server = server.get('/*', (req, res) => {
 						{
 							...rootProps,
 							localStorageApi: new LocalStorageApi(),
-							newReplyNotification: req.sessionState.newReplyNotification
+							newReplyNotification: req.sessionState.newReplyNotification,
+							windowApi
 						}
 					);
 					break;
@@ -285,7 +288,7 @@ server = server.get('/*', (req, res) => {
 						userAccount: req.sessionState.userAccount,
 						verifyCaptcha: config.enableCaptcha
 					},
-					title: ''
+					title: windowApi.getTitle()
 				}));
 			});
 		});

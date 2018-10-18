@@ -8,8 +8,9 @@
 	margin-top: 10px;
 }
 .create-account-card > .cancel-container {
+	display: flex;
+	justify-content: center;
 	margin-top: 20px;
-	text-align: center;
 }
 .create-account-card > .cancel-container > .action-link {
 	color: silver;

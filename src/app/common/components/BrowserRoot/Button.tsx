@@ -16,7 +16,7 @@ export default class extends React.PureComponent<Props> {
 		this.props.onClick();
 	};
 	public render() {
-		const className = classNames('browser-button', this.props.style);
+		const className = classNames('button_cn7dmh', this.props.style);
 		if (this.props.href) {
 			return (
 				<a

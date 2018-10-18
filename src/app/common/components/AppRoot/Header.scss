@@ -1,0 +1,39 @@
+/*
+  componentPath: src/app/common/components/AppRoot/Header
+  cssComponentId: header_q3p9go
+*/
+
+.header_q3p9go {
+	position: absolute;
+	width: 100%;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-bottom: 3px solid black;
+	background-color: ghostwhite;
+}
+.header_q3p9go.has-back-button {
+	transition: transform 250ms;
+}
+.header_q3p9go.has-back-button::after {
+	content: "";
+	display: block;
+	flex: 0 0 auto;
+	width: 32px;
+}
+.header_q3p9go.hidden {
+	transform: translateY(-100%);
+}
+.header_q3p9go > .icon {
+	flex: 0 0 auto;
+	width: 32px;
+}
+.header_q3p9go > .title {
+	flex: 1 1 auto;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+	font-weight: bold;
+}

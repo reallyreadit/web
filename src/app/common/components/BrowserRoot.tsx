@@ -1,8 +1,8 @@
 import * as React from 'react';
-import BrowserHeader from './BrowserRoot/BrowserHeader';
+import Header from './BrowserRoot/Header';
 import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
-import BrowserNav from './BrowserRoot/BrowserNav';
+import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState } from './Root';
 import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
@@ -12,12 +12,15 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
 import routes from '../../../common/routing/routes';
 import { findRouteByKey } from '../../../common/routing/Route';
-import BrowserMenu from './BrowserRoot/BrowserMenu';
+import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
+import { createScreenFactory as createHomeScreenFactory } from './BrowserRoot/HomePage';
+import WindowApi from '../WindowApi';
 
 interface Props extends RootProps {
 	localStorageApi: LocalStorageApi,
-	newReplyNotification: NewReplyNotification | null
+	newReplyNotification: NewReplyNotification | null,
+	windowApi: WindowApi
 }
 interface State extends RootState {
 	menuState: 'opened' | 'closing' | 'closed',
@@ -78,6 +81,20 @@ export default class extends Root<Props, State> {
 
 	constructor(props: Props) {
 		super(props);
+
+		this._screenFactoryMap = {
+			...this._screenFactoryMap,
+			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				onGetHotTopics: this.props.serverApi.listHotTopics,
+				onGetUser: this._getUser,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			})
+		};
+
 		const locationState = this.getLocationDependentState(props.initialLocation);
 		this.state = {
 			...this.state,
@@ -86,50 +103,35 @@ export default class extends Root<Props, State> {
 			screens: [locationState.screen],
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification)
 		};
+
 		props.localStorageApi.addListener('user', user => {
 			this.setState({ user });
 		});
-	}
-	private handleUserChange(userAccount: UserAccount) {
-		this.setState({ user: userAccount });
-		this.props.localStorageApi.updateUser(userAccount);
+
+		props.windowApi.setTitle(locationState.screen.title);
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
 		const
 			url = findRouteByKey(routes, key).createUrl(urlParams),
-			[path, queryString] = url.split('?');
+			[path, queryString] = url.split('?'),
+			screen = this._screenFactoryMap[key].create({ path, queryString });
 		this.setState({
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
-			screens: [this._screenFactoryMap[key].create({ path, queryString })]
+			screens: [screen]
 		});
+		this.props.windowApi.setTitle(screen.title);
 		window.history.pushState(
 			null,
-			window.document.title,
+			screen.title,
 			url
 		);
 	}
-	protected createAccount(name: string, email: string, password: string, captchaResponse: string) {
-		return super
-			.createAccount(name, email, password, captchaResponse)
-			.then(userAccount => {
-				this.handleUserChange(userAccount);
-				return userAccount;
-			});
+	protected onTitleChanged(title: string) {
+		this.props.windowApi.setTitle(title);
 	}
-	protected signIn(email: string, password: string) {
-		return super
-			.signIn(email, password)
-			.then(userAccount => {
-				this.handleUserChange(userAccount);
-				return userAccount;
-			});
-	}
-	protected signOut() {
-		return super
-			.signOut()
-			.then(() => {
-				this.handleUserChange(null);
-			});
+	protected onUserChanged(userAccount: UserAccount) {
+		this.setState({ user: userAccount });
+		this.props.localStorageApi.updateUser(userAccount);
 	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
@@ -141,23 +143,20 @@ export default class extends Root<Props, State> {
 	public componentDidMount() {
 		this.clearQueryStringKvps();
 		window.addEventListener('popstate', () => {
-			this.setState({
-				screens: [
-					this
-						.getLocationDependentState({ path: window.location.pathname })
-						.screen
-				]
-			});
+			const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
+			this.setState({ screens: [screen] });
+			this.props.windowApi.setTitle(screen.title);
 		});
 	}
 	public render() {
+		const screen = this.state.screens[0];
 		return (
 			<div className="browser-root">
 				<EmailConfirmationBar
 					onResendConfirmationEmail={this._resendConfirmationEmail}
 					user={this.state.user}
 				/>
-				<BrowserHeader
+				<Header
 					isUserSignedIn={!!this.state.user}
 					onOpenMenu={this._openMenu}
 					onShowCreateAccountDialog={this._openCreateAccountDialog}
@@ -166,19 +165,19 @@ export default class extends Root<Props, State> {
 					showNewReplyIndicator={this.state.showNewReplyIndicator}
 				/>
 				<main>
-					<BrowserNav
+					<NavBar
 						onViewHistory={this._viewHistory}
 						onViewHome={this._viewHome}
 						onViewLeaderboards={this._viewLeaderboards}
 						onViewStarred={this._viewStarred}
-						selectedScreenKey={this.state.screens[0].key}
+						selectedScreenKey={screen.key}
 					/>
 					<div className="screen">
-						{this._screenFactoryMap[this.state.screens[0].key].render()}
+						{this._screenFactoryMap[screen.key].render(screen)}
 					</div>
 				</main>
 				{this.state.menuState !== 'closed' ?
-					<BrowserMenu
+					<Menu
 						isClosing={this.state.menuState === 'closing'}
 						onClose={this._closeMenu}
 						onClosed={this._hideMenu}

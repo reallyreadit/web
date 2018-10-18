@@ -1,9 +1,9 @@
 import * as React from 'react';
 import logoText from '../../../../common/svg/logoText';
-import SignInCard from './AppAuthScreen/SignInCard';
+import SignInCard from './AuthScreen/SignInCard';
 import Captcha from '../../Captcha';
 import classNames from 'classnames';
-import CreateAccountCard from './AppAuthScreen/CreateAccountCard';
+import CreateAccountCard from './AuthScreen/CreateAccountCard';
 import { Intent } from '../Toaster';
 
 interface Props {
@@ -30,7 +30,7 @@ export default class extends React.PureComponent<Props, {
 	}
 	public render() {
 		return (
-			<div className="app-auth-screen">
+			<div className="auth-screen_gnq77a">
 				<div className="content">
 					<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
 					<div className="flip-container">

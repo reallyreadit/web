@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import Spinner from '../../../../common/components/Spinner';
-import Icon, { IconName } from '../../../../common/components/Icon';
+import Spinner from '../../../../../common/components/Spinner';
+import Icon, { IconName } from '../../../../../common/components/Icon';
 
 function createIconElement(icon: IconName, busy: boolean) {
 	return (
@@ -20,7 +20,7 @@ export default (props: {
 	text: string
 }) => (
 	<button
-		className={classNames('app-screen-button', {
+		className={classNames('button_vp905n', {
 			'busy': props.busy,
 			'loud': props.style === 'loud'
 		})}

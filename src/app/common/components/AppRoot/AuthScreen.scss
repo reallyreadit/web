@@ -1,0 +1,59 @@
+/*
+  componentPath: src/app/common/components/AppRoot/AuthScreen
+  cssComponentId: auth-screen_gnq77a
+*/
+
+.auth-screen_gnq77a {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+	padding: 0 10px;
+}
+.auth-screen_gnq77a > .content {
+	width: 100%;
+	max-width: 400px;
+}
+.auth-screen_gnq77a > .content > .logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 30px;
+}
+.auth-screen_gnq77a > .content > .logo > svg {
+	display: block;
+	width: 80%;
+	min-width: 240px;
+	max-width: 300px;
+}
+.auth-screen_gnq77a > .content > .flip-container {
+	height: 280px;
+	perspective: 1000px;
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper {
+	transition: 500ms;
+	transform-style: preserve-3d;
+	position: relative;
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper.flipped {
+	transform: rotateY(-180deg);
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front,
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .back {
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front {
+	z-index: 2;
+	transform: translateZ(0);
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .back {
+	transform: rotateY(180deg);
+}

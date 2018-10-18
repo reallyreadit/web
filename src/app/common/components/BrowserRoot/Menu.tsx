@@ -8,7 +8,7 @@ import Spinner from '../../../../common/components/Spinner';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import BrowserButton from './BrowserButton';
+import Button from './Button';
 
 interface Props {
 	isClosing: boolean,
@@ -25,7 +25,7 @@ interface Props {
 }
 export default class extends React.PureComponent<Props, { isSigningOut: boolean }> {
 	private readonly _handleAnimationEnd = (ev: React.AnimationEvent) => {
-		if (ev.animationName === 'browser-menu-drawer-close') {
+		if (ev.animationName === 'menu_v25ec5-drawer-close') {
 			this.props.onClosed();
 		}
 	};
@@ -65,7 +65,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 		}
 		return (
 			<div
-				className={classNames('browser-menu', { 'closing': this.props.isClosing })}
+				className={classNames('menu_v25ec5', { 'closing': this.props.isClosing })}
 				onAnimationEnd={this._handleAnimationEnd}
 				onClick={this.props.onClose}
 			>
@@ -83,40 +83,40 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					<ol>
 						{user.role === UserAccountRole.Admin ?
 							<li>
-								<BrowserButton
+								<Button
 									href={findRouteByKey(routes, ScreenKey.AdminPage).createUrl()}
 									onClick={this.props.onViewAdminPage}
 									style={this.props.selectedScreenKey === ScreenKey.AdminPage ? 'loud' : 'normal'}
 								>
 									Admin
-								</BrowserButton>
+								</Button>
 							</li> :
 							null}
 						<li>
-							<BrowserButton
+							<Button
 								href={findRouteByKey(routes, ScreenKey.Inbox).createUrl()}
 								onClick={this.props.onViewInbox}
 								style={this.props.selectedScreenKey === ScreenKey.Inbox ? 'loud' : 'normal'}
 							>
 								Inbox
-							</BrowserButton>
+							</Button>
 						</li>
 						<li>
-							<BrowserButton
+							<Button
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}
 								onClick={this.props.onViewSettings}
 								style={this.props.selectedScreenKey === ScreenKey.Settings ? 'loud' : 'normal'}
 							>
 								Settings
-							</BrowserButton>
+							</Button>
 						</li>
 						<li>
-							<BrowserButton onClick={this._signOut}>
+							<Button onClick={this._signOut}>
 								<label>Log Out</label>
 								{this.state.isSigningOut ?
 									<Spinner /> :
 									null}
-							</BrowserButton>
+							</Button>
 						</li>
 					</ol>
 					<div className="footer">

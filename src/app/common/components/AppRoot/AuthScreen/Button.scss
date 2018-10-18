@@ -1,4 +1,9 @@
-.app-screen-button {
+/*
+  componentPath: src/app/common/components/AppRoot/AuthScreen/Button
+  cssComponentId: button_vp905n
+*/
+
+.button_vp905n {
 	background-color: white;
 	border: 2px solid black;
 	text-transform: uppercase;
@@ -9,20 +14,20 @@
 	justify-content: center;
 	align-items: center;
 }
-.app-screen-button[disabled] {
+.button_vp905n[disabled] {
 	color: silver;
 	border-color: silver;
 }
-.app-screen-button.loud {
+.button_vp905n.loud {
 	background-color: black;
 	color: white;
 }
-.app-screen-button > .icon,
-.app-screen-button > .spinner {
+.button_vp905n > .icon,
+.button_vp905n > .spinner {
 	top: 0;
 	margin: 0 5px;
 }
-.app-screen-button > .icon:last-child,
-.app-screen-button > .spinner:last-child {
+.button_vp905n > .icon:last-child,
+.button_vp905n > .spinner:last-child {
 	visibility: hidden;
 }

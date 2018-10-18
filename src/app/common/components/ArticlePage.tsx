@@ -21,11 +21,13 @@ function getPathParams(path: string) {
 		slug: sourceSlug + '_' + articleSlug
 	}
 }
+function getTitle(article: Fetchable<UserArticle>) {
+	return article.value ? article.value.title : 'Loading...';
+}
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onGetArticle: (slug: string, callback: (article: Fetchable<UserArticle>) => void) => Fetchable<UserArticle>,
 	onGetComments: (slug: string, callback: (comments: Fetchable<Comment[]>) => void) => Fetchable<Comment[]>,
 	onGetUser: () => UserAccount | null,
-	onGetScreenState: (key: TScreenKey) => Screen,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onSetScreenState: (key: TScreenKey, state: Partial<Screen>) => void,
@@ -33,19 +35,24 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>
 }) {
 	return {
-		create: (location: Location) => ({
-			key,
-			articles: {
-				['article']: deps.onGetArticle(getPathParams(location.path).slug, article => {
-					deps.onSetScreenState(key, { articles: { ['article']: article } })
+		create: (location: Location) => {
+			const article = deps.onGetArticle(getPathParams(location.path).slug, article => {
+				deps.onSetScreenState(key, {
+					articles: { ['article']: article },
+					title: getTitle(article)
 				})
-			},
-			location
-		}),
-		render: () => {
-			const
-				state = deps.onGetScreenState(key),
-				pathParams = getPathParams(state.location.path);
+			});
+			return {
+				key,
+				articles: {
+					['article']: article
+				},
+				location,
+				title: getTitle(article)
+			};
+		},
+		render: (state: Screen) => {
+			const pathParams = getPathParams(state.location.path);
 			return (
 				<ArticlePage
 					article={state.articles['article']}

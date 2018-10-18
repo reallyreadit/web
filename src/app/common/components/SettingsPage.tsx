@@ -23,7 +23,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>
 }) {
 	return {
-		create: () => ({ key }),
+		create: () => ({ key, title: 'Settings' }),
 		render: () => (
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}

@@ -11,7 +11,7 @@ interface Props {
 }
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
 	return {
-		create: () => ({ key }),
+		create: () => ({ key, title: 'Inbox' }),
 		render: () => (
 			<InboxPage {...deps} />
 		)

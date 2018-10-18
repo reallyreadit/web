@@ -14,15 +14,11 @@ const resultMessages: {
 		'expired': 'This password reset request has expired. Please generate a new request.'
 	}
 };
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
-	onGetScreenState: (key: TScreenKey) => Screen
-}) {
+export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: Location) => ({ key, location }),
-		render: () => {
-			const [, action, result] = deps
-				.onGetScreenState(key)
-				.location.path
+		create: (location: Location) => ({ key, location, title: 'Password Reset' }),
+		render: (state: Screen) => {
+			const [, action, result] = state.location.path
 				.match(findRouteByKey(routes, ScreenKey.Password).pathRegExp);
 			return (
 				<PasswordPage

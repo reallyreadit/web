@@ -27,7 +27,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onShowToast: (text: string, intent: Intent) => void
 }) {
 	return {
-		create: () => ({ key }),
+		create: () => ({ key, title: 'Admin' }),
 		render: () => {
 			const activeChallenge = deps.onGetChallengeState().activeChallenge;
 			return (

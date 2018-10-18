@@ -1,0 +1,38 @@
+/*
+  componentPath: src/app/common/components/AppRoot/NavTray
+  cssComponentId: nav-tray_2tc8
+*/
+
+.nav-tray_2tc8 {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	border-top: 3px solid black;
+}
+.nav-tray_2tc8 > li {
+	width: 25%;
+	text-align: center;
+}
+.nav-tray_2tc8 > li > button {
+	max-width: 100%;
+	padding: 5px;
+	margin: 0 auto;
+	background: none;
+	border: none;
+	outline: none;
+}
+.nav-tray_2tc8 > li > button.selected {
+	color: dodgerblue;
+	font-weight: bold;
+}
+.nav-tray_2tc8 > li > button > .icon {
+	font-size: 20px;
+}
+.nav-tray_2tc8 > li > button > label {
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	margin-top: 2px;
+	font-size: 11px;
+}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
-import AppScreenButton from '../../controls/AppScreenButton';
+import Button from './Button';
 
 interface Props {
 	onShowCreateAccountCard: () => void,
@@ -68,7 +68,7 @@ export default class extends React.PureComponent<Props, {
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
-				<AppScreenButton
+				<Button
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
 					text="Log In"
@@ -76,7 +76,7 @@ export default class extends React.PureComponent<Props, {
 				<div className="break">
 					<span>or</span>
 				</div>
-				<AppScreenButton
+				<Button
 					onClick={this.props.onShowCreateAccountCard}
 					style="loud"
 					text="Sign Up"

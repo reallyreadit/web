@@ -11,7 +11,6 @@ import { Screen } from './Root';
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onGetStarredArticles: (pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) => Fetchable<PageResult<UserArticle>>,
 	onGetUser: () => UserAccount | null,
-	onGetScreenState: (key: TScreenKey) => Screen,
 	onReadArticle: (article: UserArticle) => void,
 	onSetScreenState: (key: TScreenKey, state: Partial<Screen>) => void,
 	onShareArticle: (article: UserArticle) => void,
@@ -29,14 +28,15 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	});
 	return {
 		create: () => ({
-			key,
 			articleLists: {
 				['articles']: getArticles(1)
-			}
+			},
+			key,
+			title: 'Starred'
 		}),
-		render: () => (
+		render: (state: Screen) => (
 			<StarredPage
-				articles={deps.onGetScreenState(key).articleLists['articles']}
+				articles={state.articleLists['articles']}
 				isUserSignedIn={!!deps.onGetUser()}
 				onReadArticle={deps.onReadArticle}
 				onReload={reload}

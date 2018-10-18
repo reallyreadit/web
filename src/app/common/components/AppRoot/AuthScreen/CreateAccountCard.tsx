@@ -2,7 +2,7 @@ import * as React from 'react';
 import Captcha from '../../../Captcha';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
-import AppScreenButton from '../../controls/AppScreenButton';
+import Button from './Button';
 import UsernameField from '../../controls/authentication/UsernameField';
 import ActionLink from '../../../../../common/components/ActionLink';
 import { Intent } from '../../Toaster';
@@ -121,7 +121,7 @@ export default class extends React.PureComponent<Props, State> {
 					key="captcha"
 					ref={this._setCaptchaElement}
 				></div>
-				<AppScreenButton
+				<Button
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
 					text="Sign Up"

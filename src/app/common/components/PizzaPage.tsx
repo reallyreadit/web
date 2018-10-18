@@ -20,7 +20,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onStartChallenge: (timeZoneId: number) => void
 }) {
 	return {
-		create: () => ({ key }),
+		create: () => ({ key, title: 'Leaderboards' }),
 		render: () => (
 			<PizzaPage
 				challengeState={deps.onGetChallengeState()}

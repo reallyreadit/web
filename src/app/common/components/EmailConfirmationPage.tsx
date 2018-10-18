@@ -30,17 +30,13 @@ const resultMessages: {
 		intent: Intent.Success
 	}
 };
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
-	onGetScreenState: (key: TScreenKey) => Screen
-}) {
+export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: Location) => ({ key, location }),
-		render: () => (
+		create: (location: Location) => ({ key, location, title: 'Email Confirmation' }),
+		render: (state: Screen) => (
 			<EmailConfirmationPage
 				result={
-					deps
-						.onGetScreenState(key)
-						.location.path
+					state.location.path
 						.match(findRouteByKey(routes, ScreenKey.EmailConfirmation).pathRegExp)
 						[1]
 				}

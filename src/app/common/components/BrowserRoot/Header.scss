@@ -1,3 +1,8 @@
+/*
+  componentPath: src/app/common/components/BrowserRoot/Header
+  cssComponentId: header_cvm3v7
+*/
+
 %menu-flag {
 	content: "";
 	position: absolute;
@@ -8,20 +13,21 @@
 	border-color: red red transparent transparent;
 }
 
-.browser-header {
+.header_cvm3v7 {
+	flex: 0 0 auto;
 	display: flex;
 	justify-content: space-between;
 	border-bottom: 3px solid black;
 	padding: 20px 30px;
 }
-.browser-header > .logo-container > svg {
+.header_cvm3v7 > .logo-container > svg {
 	height: 30px;
 }
-.browser-header > .menu-container {
+.header_cvm3v7 > .menu-container {
 	display: flex;
 	align-items: center;
 }
-.browser-header > .menu-container > button {
+.header_cvm3v7 > .menu-container > button {
 	height: 40px;
 	border: none;
 	padding: 0 20px;
@@ -29,23 +35,23 @@
 	font-size: 16px;
 	cursor: pointer;
 }
-.browser-header > .menu-container > button:not(.loud):hover {
+.header_cvm3v7 > .menu-container > button:not(.loud):hover {
 	background-color: silver;
 }
-.browser-header > .menu-container > button:focus {
+.header_cvm3v7 > .menu-container > button:focus {
 	outline: none;
 }
-.browser-header > .menu-container > button:not(:last-child) {
+.header_cvm3v7 > .menu-container > button:not(:last-child) {
 	margin-right: 10px;
 }
-.browser-header > .menu-container > button.loud {
+.header_cvm3v7 > .menu-container > button.loud {
 	background-color: black;
 	color: white;
 }
-.browser-header > .menu-container > button > label {
+.header_cvm3v7 > .menu-container > button > label {
 	cursor: pointer;
 }
-.browser-header > .menu-container > .menu-icon-container > .icon {
+.header_cvm3v7 > .menu-container > .menu-icon-container > .icon {
 	display: block;
 	font-size: 32px;
 	cursor: pointer;

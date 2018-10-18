@@ -21,7 +21,7 @@ export default class extends React.PureComponent<Props> {
 	};
 	public render() {
 		return (
-			<header className="browser-header">
+			<header className="header_cvm3v7">
 				<a
 					className="logo-container"
 					dangerouslySetInnerHTML={{ __html: logoText }}
