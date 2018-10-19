@@ -110,11 +110,14 @@ export default class extends Root<Props, State> {
 
 		props.windowApi.setTitle(locationState.screen.title);
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
+	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		const
 			url = findRouteByKey(routes, key).createUrl(urlParams),
 			[path, queryString] = url.split('?'),
 			screen = this._screenFactoryMap[key].create({ path, queryString });
+		if (title) {
+			screen.title = title;
+		}
 		this.setState({
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
 			screens: [screen]
@@ -135,10 +138,13 @@ export default class extends Root<Props, State> {
 	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
-		this.replaceScreen(ScreenKey.ArticleDetails, {
-			['articleSlug']: articleSlug,
-			['sourceSlug']: sourceSlug
-		});
+		this.replaceScreen(
+			ScreenKey.ArticleDetails, {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			},
+			article.title
+		);
 	}
 	public componentDidMount() {
 		this.clearQueryStringKvps();

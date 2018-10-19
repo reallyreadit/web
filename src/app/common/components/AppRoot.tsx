@@ -147,7 +147,10 @@ export default class extends Root<Props, State> {
 		this.setState({
 			screens: [
 				...this.state.screens,
-				this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString })
+				{
+					...this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString }),
+					title: article.title
+				}
 			]
 		});
 	}
