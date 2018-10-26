@@ -25,31 +25,6 @@ interface State extends RootState {
 	menuState: 'opened' | 'closing' | 'closed',
 }
 export default class extends Root<Props, State> {
-	// articles
-	protected readonly _readArticle = (article: UserArticle) => {
-		this.props.appApi.readArticle(article);
-	};
-
-	// comments
-	protected readonly _viewComments = (article: UserArticle) => {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
-			url = findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl({
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			}),
-			[path, queryString] = url.split('?');
-		this.setState({
-			screens: [
-				...this.state.screens,
-				{
-					...this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString }),
-					title: article.title
-				}
-			]
-		});
-	};
-
 	// menu
 	private readonly _closeMenu = () => {
 		this.setState({ menuState: 'closing' });
@@ -171,6 +146,27 @@ export default class extends Root<Props, State> {
 				user: null
 			});
 		}
+	}
+	protected readArticle(article: UserArticle) {
+		this.props.appApi.readArticle(article);
+	}
+	protected readComments(article: UserArticle) {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			url = findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl({
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			}),
+			[path, queryString] = url.split('?');
+		this.setState({
+			screens: [
+				...this.state.screens,
+				{
+					...this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString }),
+					title: article.title
+				}
+			]
+		});
 	}
 	public componentDidMount() {
 		//this.clearQueryStringKvps([clientTypeQueryStringKey]);

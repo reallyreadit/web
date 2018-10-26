@@ -62,7 +62,7 @@ export interface State {
 }
 export default abstract class <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
 	// articles
-	protected abstract readonly _readArticle: (article: UserArticle) => void;
+	protected readonly _readArticle: (article: UserArticle) => void;
 	protected readonly _shareArticle = (article: UserArticle) => {
 
 	};
@@ -118,7 +118,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected readonly _readReply = (comment: Comment) => {
 
 	};
-	protected abstract readonly _viewComments: (article: UserArticle) => void;
+	protected readonly _viewComments: (article: UserArticle) => void;
 
 	// dialogs
 	protected readonly _closeDialog = () => {
@@ -312,6 +312,10 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			user: props.initialUser
 		} as S;
 
+		// delegates
+		this._readArticle = this.readArticle.bind(this);
+		this._viewComments = this.viewComments.bind(this);
+
 		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.AdminPage]: createAdminPageScreenFactory(ScreenKey.AdminPage, {
@@ -420,6 +424,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserChanged(userAccount: UserAccount | null) { }
+	protected readArticle(article: UserArticle) { }
 	protected updateArticles(article: UserArticle) {
 		this.setState(produce((state: State) => {
 			state.screens.forEach(screen => {
@@ -436,12 +441,13 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				Object.keys(screen.articles).forEach(key => {
 					const screenArticle = screen.articles[key];
 					if (screenArticle.value && screenArticle.value.id === article.id) {
-						screen.articles[key] = article;
+						screen.articles[key].value = article;
 					}
 				});
 			});
 		}));
 	}
+	protected viewComments(article: UserArticle) { }
 	public componentWillUnmount() {
 		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));
 	}

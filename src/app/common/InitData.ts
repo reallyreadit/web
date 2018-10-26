@@ -8,6 +8,7 @@ import ChallengeState from '../../common/models/ChallengeState';
 export default interface InitData {
 	challengeState: ChallengeState,
 	clientType: ClientType,
+	extensionId: string,
 	initialLocation: Location,
 	newReplyNotification: NewReplyNotification,
 	serverApi: ServerApiInitData,

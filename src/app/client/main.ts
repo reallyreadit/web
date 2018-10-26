@@ -7,6 +7,8 @@ import ClientType from '../common/ClientType';
 import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
 import WindowApi from './WindowApi';
+import AppApi from './AppApi';
+import ExtensionApi from './ExtensionApi';
 
 ga('create', {
 	trackingId: 'UA-101617933-1',
@@ -36,7 +38,10 @@ switch (window.initData.clientType) {
 	case ClientType.App:
 		rootElement = React.createElement(
 			AppRoot,
-			rootProps
+			{
+				...rootProps,
+				appApi: new AppApi()
+			}
 		);
 		break;
 	case ClientType.Browser:
@@ -44,6 +49,7 @@ switch (window.initData.clientType) {
 			BrowserRoot,
 			{
 				...rootProps,
+				extensionApi: new ExtensionApi(window.initData.extensionId),
 				localStorageApi: new LocalStorageApi(),
 				newReplyNotification: window.initData.newReplyNotification,
 				windowApi: new WindowApi()

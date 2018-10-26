@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "bunyan": "^1.8.12",
-    "classnames": "^2.2.6",
+    "classnames": "git+https://github.com/jacamera/classnames.git",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "immer": "^1.7.2",

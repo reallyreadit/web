@@ -29,23 +29,6 @@ interface State extends RootState {
 	showNewReplyIndicator: boolean
 }
 export default class extends Root<Props, State> {
-	// articles
-	protected readonly _readArticle = (article: UserArticle) => {
-
-	};
-
-	// comments
-	protected readonly _viewComments = (article: UserArticle) => {
-		const [sourceSlug, articleSlug] = article.slug.split('_');
-		this.replaceScreen(
-			ScreenKey.ArticleDetails, {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			},
-			article.title
-		);
-	};
-
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
 		this._openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
@@ -162,6 +145,16 @@ export default class extends Root<Props, State> {
 	protected onUserChanged(userAccount: UserAccount) {
 		this.setState({ user: userAccount });
 		this.props.localStorageApi.updateUser(userAccount);
+	}
+	protected viewComments(article: UserArticle) {
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		this.replaceScreen(
+			ScreenKey.ArticleDetails, {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			},
+			article.title
+		);
 	}
 	public componentDidMount() {
 		this.clearQueryStringKvps();

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
-import classNames = require('classnames');
+import classNames from 'classnames';
 
 export default (props: {
 	isTransitioningBack: boolean,

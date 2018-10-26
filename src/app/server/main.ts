@@ -23,6 +23,8 @@ import { createQueryString, clientTypeQueryStringKey } from '../../common/routin
 import { findRouteByLocation } from '../../common/routing/Route';
 import ChallengeState from '../../common/models/ChallengeState';
 import WindowApi from './WindowApi';
+import AppApi from './AppApi';
+import ExtensionApi from './ExtensionApi';
 
 // redirect helper function
 const nodeUrl = url;
@@ -246,7 +248,10 @@ server = server.get('/*', (req, res) => {
 				case ClientType.App:
 					rootElement = React.createElement(
 						AppRoot,
-						rootProps
+						{
+							...rootProps,
+							appApi: new AppApi()
+						}
 					);
 					break;
 				case ClientType.Browser:
@@ -254,6 +259,7 @@ server = server.get('/*', (req, res) => {
 						BrowserRoot,
 						{
 							...rootProps,
+							extensionApi: new ExtensionApi(config.extensionId),
 							localStorageApi: new LocalStorageApi(),
 							newReplyNotification: req.sessionState.newReplyNotification,
 							windowApi
@@ -282,6 +288,7 @@ server = server.get('/*', (req, res) => {
 					initData: {
 						challengeState,
 						clientType,
+						extensionId: config.extensionId,
 						newReplyNotification: req.sessionState.newReplyNotification,
 						initialLocation: rootProps.initialLocation,
 						serverApi: req.api.getInitData(),
