@@ -16,8 +16,10 @@ import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
 import { createScreenFactory as createHomeScreenFactory } from './BrowserRoot/HomePage';
 import WindowApi from '../WindowApi';
+import ExtensionApi from '../ExtensionApi';
 
 interface Props extends RootProps {
+	extensionApi: ExtensionApi,
 	localStorageApi: LocalStorageApi,
 	newReplyNotification: NewReplyNotification | null,
 	windowApi: WindowApi
@@ -27,6 +29,22 @@ interface State extends RootState {
 	showNewReplyIndicator: boolean
 }
 export default class extends Root<Props, State> {
+	// articles
+	protected readonly _readArticle = (article: UserArticle) => {
+
+	};
+
+	// comments
+	protected readonly _viewComments = (article: UserArticle) => {
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		this.replaceScreen(
+			ScreenKey.ArticleDetails, {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			},
+			article.title
+		);
+	};
 
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
@@ -82,6 +100,7 @@ export default class extends Root<Props, State> {
 	constructor(props: Props) {
 		super(props);
 
+		// screens
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
@@ -95,6 +114,7 @@ export default class extends Root<Props, State> {
 			})
 		};
 
+		// state
 		const locationState = this.getLocationDependentState(props.initialLocation);
 		this.state = {
 			...this.state,
@@ -104,11 +124,18 @@ export default class extends Root<Props, State> {
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification)
 		};
 
+		// LocalStorageApi
 		props.localStorageApi.addListener('user', user => {
 			this.setState({ user });
 		});
 
+		// WindowApi
 		props.windowApi.setTitle(locationState.screen.title);
+
+		// ExtensionApi
+		props.extensionApi.addListener('articleUpdated', ev => {
+			this.updateArticles(ev.article);
+		});
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		const
@@ -135,16 +162,6 @@ export default class extends Root<Props, State> {
 	protected onUserChanged(userAccount: UserAccount) {
 		this.setState({ user: userAccount });
 		this.props.localStorageApi.updateUser(userAccount);
-	}
-	protected viewComments(article: UserArticle) {
-		const [sourceSlug, articleSlug] = article.slug.split('_');
-		this.replaceScreen(
-			ScreenKey.ArticleDetails, {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			},
-			article.title
-		);
 	}
 	public componentDidMount() {
 		this.clearQueryStringKvps();

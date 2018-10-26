@@ -30,6 +30,7 @@ import ShareArticleDialog from './ShareArticleDialog';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
+import produce from 'immer';
 
 export interface RootChallengeState extends ChallengeState {
 	isLoading: boolean
@@ -60,11 +61,8 @@ export interface State {
 	user: UserAccount | null
 }
 export default abstract class <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
-	
 	// articles
-	protected readonly _readArticle = (article: UserArticle) => {
-
-	};
+	protected abstract readonly _readArticle: (article: UserArticle) => void;
 	protected readonly _shareArticle = (article: UserArticle) => {
 
 	};
@@ -120,7 +118,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected readonly _readReply = (comment: Comment) => {
 
 	};
-	protected readonly _viewComments: (article: UserArticle) => void;
+	protected abstract readonly _viewComments: (article: UserArticle) => void;
 
 	// dialogs
 	protected readonly _closeDialog = () => {
@@ -307,14 +305,14 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	constructor(props: P) {
 		super(props);
 
+		// state
 		this.state = {
 			challengeState: { ...props.initialChallengeState, isLoading: false },
 			toasts: [],
 			user: props.initialUser
 		} as S;
 
-		this._viewComments = this.viewComments.bind(this);
-
+		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.AdminPage]: createAdminPageScreenFactory(ScreenKey.AdminPage, {
 				onCloseDialog: this._closeDialog,
@@ -422,7 +420,28 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserChanged(userAccount: UserAccount | null) { }
-	protected abstract viewComments(article: UserArticle): void;
+	protected updateArticles(article: UserArticle) {
+		this.setState(produce((state: State) => {
+			state.screens.forEach(screen => {
+				Object.keys(screen.articleLists).forEach(key => {
+					const list = screen.articleLists[key];
+					if (list.value) {
+						list.value.items.forEach((listArticle, index, articles) => {
+							if (listArticle.id === article.id) {
+								articles.splice(articles.indexOf(listArticle), 1, article);
+							}
+						});
+					}
+				});
+				Object.keys(screen.articles).forEach(key => {
+					const screenArticle = screen.articles[key];
+					if (screenArticle.value && screenArticle.value.id === article.id) {
+						screen.articles[key] = article;
+					}
+				});
+			});
+		}));
+	}
 	public componentWillUnmount() {
 		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));
 	}

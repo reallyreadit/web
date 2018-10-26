@@ -4,7 +4,7 @@ import Header from './AppRoot/Header';
 import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props, State as RootState } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
 //import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
@@ -13,14 +13,43 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import routes from '../../../common/routing/routes';
 import { findRouteByKey } from '../../../common/routing/Route';
 import { createScreenFactory as createHomeScreenFactory } from './AppRoot/HomePage';
-import classNames = require('classnames');
+import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
+import AppApi from '../AppApi';
 
+interface Props extends RootProps {
+	appApi: AppApi
+}
 interface State extends RootState {
 	isPoppingScreen: boolean,
 	menuState: 'opened' | 'closing' | 'closed',
 }
 export default class extends Root<Props, State> {
+	// articles
+	protected readonly _readArticle = (article: UserArticle) => {
+		this.props.appApi.readArticle(article);
+	};
+
+	// comments
+	protected readonly _viewComments = (article: UserArticle) => {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			url = findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl({
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			}),
+			[path, queryString] = url.split('?');
+		this.setState({
+			screens: [
+				...this.state.screens,
+				{
+					...this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString }),
+					title: article.title
+				}
+			]
+		});
+	};
+
 	// menu
 	private readonly _closeMenu = () => {
 		this.setState({ menuState: 'closing' });
@@ -72,6 +101,7 @@ export default class extends Root<Props, State> {
 	constructor(props: Props) {
 		super(props);
 
+		// screens
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
@@ -86,6 +116,7 @@ export default class extends Root<Props, State> {
 			})
 		};
 
+		// state
 		let
 			dialog: React.ReactNode,
 			screens: Screen[];
@@ -104,6 +135,11 @@ export default class extends Root<Props, State> {
 			menuState: 'closed',
 			screens
 		};
+
+		// AppApi
+		props.appApi.addListener('articleUpdated', ev => {
+			this.updateArticles(ev.article);
+		});
 	}
 	private replaceScreen(key: ScreenKey) {
 		const
@@ -135,24 +171,6 @@ export default class extends Root<Props, State> {
 				user: null
 			});
 		}
-	}
-	protected viewComments(article: UserArticle) {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
-			url = findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl({
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			}),
-			[path, queryString] = url.split('?');
-		this.setState({
-			screens: [
-				...this.state.screens,
-				{
-					...this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString }),
-					title: article.title
-				}
-			]
-		});
 	}
 	public componentDidMount() {
 		//this.clearQueryStringKvps([clientTypeQueryStringKey]);
