@@ -12,7 +12,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onDeleteArticle: (article: UserArticle) => void
 	onGetUserArticleHistory: (pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) => Fetchable<PageResult<UserArticle>>,
 	onGetUser: () => UserAccount | null,
-	onReadArticle: (article: UserArticle) => void,
+	onReadArticle: (article: UserArticle, ev: React.MouseEvent) => void,
 	onSetScreenState: (key: TScreenKey, state: Partial<Screen>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,

@@ -147,10 +147,11 @@ export default class extends Root<Props, State> {
 			});
 		}
 	}
-	protected readArticle(article: UserArticle) {
+	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
+		ev.preventDefault();
 		this.props.appApi.readArticle(article);
 	}
-	protected readComments(article: UserArticle) {
+	protected viewComments(article: UserArticle) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			url = findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl({

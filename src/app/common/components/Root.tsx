@@ -62,7 +62,7 @@ export interface State {
 }
 export default abstract class <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
 	// articles
-	protected readonly _readArticle: (article: UserArticle) => void;
+	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
 	protected readonly _shareArticle = (article: UserArticle) => {
 
 	};
@@ -424,26 +424,30 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserChanged(userAccount: UserAccount | null) { }
-	protected readArticle(article: UserArticle) { }
+	protected readArticle(article: UserArticle, ev: React.MouseEvent) { }
 	protected updateArticles(article: UserArticle) {
 		this.setState(produce((state: State) => {
 			state.screens.forEach(screen => {
-				Object.keys(screen.articleLists).forEach(key => {
-					const list = screen.articleLists[key];
-					if (list.value) {
-						list.value.items.forEach((listArticle, index, articles) => {
-							if (listArticle.id === article.id) {
-								articles.splice(articles.indexOf(listArticle), 1, article);
-							}
-						});
-					}
-				});
-				Object.keys(screen.articles).forEach(key => {
-					const screenArticle = screen.articles[key];
-					if (screenArticle.value && screenArticle.value.id === article.id) {
-						screen.articles[key].value = article;
-					}
-				});
+				if (screen.articleLists) {
+					Object.keys(screen.articleLists).forEach(key => {
+						const list = screen.articleLists[key];
+						if (list.value) {
+							list.value.items.forEach((listArticle, index, articles) => {
+								if (listArticle.id === article.id) {
+									articles.splice(articles.indexOf(listArticle), 1, article);
+								}
+							});
+						}
+					});
+				}
+				if (screen.articles) {
+					Object.keys(screen.articles).forEach(key => {
+						const screenArticle = screen.articles[key];
+						if (screenArticle.value && screenArticle.value.id === article.id) {
+							screen.articles[key].value = article;
+						}
+					});
+				}
 			});
 		}));
 	}
