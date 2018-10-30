@@ -1,5 +1,11 @@
 import UserArticle from "../../common/models/UserArticle";
 
+function stringifyForLiteral(obj: {}) {
+	return JSON
+		.stringify(obj)
+		.replace(/\\/g, '\\\\')
+		.replace(/'/g, '\\\'');
+}
 export default class {
 	private static sendMessage(type: string, data: {} = null) {
 		chrome.tabs.query(
@@ -8,7 +14,7 @@ export default class {
 				.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
 				.forEach(tab => chrome.tabs.executeScript(
 					tab.id,
-					{ code: `window.postMessage('${JSON.stringify({ type, data }).replace(/(['"])/g, '\\\$1')}', '*');` }
+					{ code: `window.postMessage('${stringifyForLiteral({ type, data })}', '*');` }
 				))
 		);
 	}
