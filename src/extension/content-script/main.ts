@@ -20,7 +20,8 @@ let
 		action: SourceRuleAction
 	}[],
 	parseMode: 'analyze' | 'mutate',
-	showOverlay: boolean;
+	showOverlay: boolean,
+	forceRead: boolean;
 
 // event page interface
 let historyStateUpdatedTimeout: number;
@@ -133,7 +134,8 @@ function loadPage() {
 			// proceed if we have a positive metadata result or if we're following a read rule
 			if (
 				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
-				(rule && rule.action === SourceRuleAction.Read)
+				(rule && rule.action === SourceRuleAction.Read) ||
+				forceRead
 			) {
 				const content = parseDocumentContent(parseMode);
 				// prefer the metadata but fall back to content parse values in case none is present
@@ -193,11 +195,9 @@ eventPageApi
 		sourceRules = initData.sourceRules.map(rule => ({ ...rule, path: new RegExp(rule.path) }));
 		parseMode = initData.parseMode;
 		showOverlay = initData.showOverlay;
+		forceRead = initData.forceRead;
 		// load page
 		if (initData.loadPage) {
 			loadPage();
 		}
 	});
-
-// debug
-(<any>window).getContext = () => context;

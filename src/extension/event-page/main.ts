@@ -62,6 +62,7 @@ const contentScriptApi = new ContentScriptApi({
 				sourceRules: serverApi.getSourceRules(new URL(url).hostname),
 				parseMode: JSON.parse(localStorage.getItem('parseMode')),
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
+				forceRead: false,
 				loadPage: isAuthenticated
 			}));
 	},
