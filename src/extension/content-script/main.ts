@@ -13,15 +13,17 @@ let
 		page: null as Page,
 		lastCommitPercentComplete: 0
 	},
-	config: ContentScriptConfig,
-	sourceRules: {
-		path: RegExp,
-		priority: number,
-		action: SourceRuleAction
-	}[],
-	parseMode: 'analyze' | 'mutate',
-	showOverlay: boolean,
-	forceRead: boolean;
+	initData: {
+		config: ContentScriptConfig,
+		parseMetadata: boolean,
+		parseMode: 'analyze' | 'mutate',
+		showOverlay: boolean,
+		sourceRules: {
+			path: RegExp,
+			priority: number,
+			action: SourceRuleAction
+		}[]
+	};
 
 // event page interface
 let historyStateUpdatedTimeout: number;
@@ -30,7 +32,7 @@ const eventPageApi = new EventPageApi({
 	onLoadPage: loadPage,
 	onUnloadPage: unloadPage,
 	onShowOverlay: value => {
-		showOverlay = value;
+		initData.showOverlay = value;
 		if (context.page) {
 			context.page.showOverlay(value);
 		}
@@ -61,22 +63,22 @@ const timers: {
 
 function readWord() {
 	if (context.page.readWord()) {
-		if (timers.readWord.rate === config.idleReadRate) {
+		if (timers.readWord.rate === initData.config.idleReadRate) {
 			window.clearInterval(timers.readWord.handle);
 			timers.readWord = {
-				handle: window.setInterval(readWord, config.readWordRate),
-				rate: config.readWordRate
+				handle: window.setInterval(readWord, initData.config.readWordRate),
+				rate: initData.config.readWordRate
 			};
-			timers.commitReadState = window.setInterval(commitReadState, config.readStateCommitRate);
+			timers.commitReadState = window.setInterval(commitReadState, initData.config.readStateCommitRate);
 		}
 	} else if (context.page.isRead()) {
 		stopReading();
 		commitReadState();
-	} else if (timers.readWord.rate === config.readWordRate) {
+	} else if (timers.readWord.rate === initData.config.readWordRate) {
 		window.clearInterval(timers.readWord.handle);
 		timers.readWord = {
-			handle: window.setInterval(readWord, config.idleReadRate),
-			rate: config.idleReadRate
+			handle: window.setInterval(readWord, initData.config.idleReadRate),
+			rate: initData.config.idleReadRate
 		};
 		window.clearInterval(timers.commitReadState);
 	}
@@ -104,10 +106,10 @@ function commitReadState() {
 function startReading() {
 	if (!isReading && !context.page.isRead()) {
 		timers.readWord = {
-			handle: window.setInterval(readWord, config.idleReadRate),
-			rate: config.idleReadRate
+			handle: window.setInterval(readWord, initData.config.idleReadRate),
+			rate: initData.config.idleReadRate
 		};
-		timers.updatePageOffset = window.setInterval(updatePageOffset, config.pageOffsetUpdateRate);
+		timers.updatePageOffset = window.setInterval(updatePageOffset, initData.config.pageOffsetUpdateRate);
 		isReading = true;
 		readWord();
 	}
@@ -125,7 +127,7 @@ function stopReading() {
 function loadPage() {
 	unloadPage().then(() => {
 		// check for matching source rules
-		const rule = sourceRules
+		const rule = initData.sourceRules
 			.filter(rule => rule.path.test(context.path))
 			.sort((a, b) => b.priority - a.priority)[0];
 		// proceed if we're not ignoring the page
@@ -133,15 +135,18 @@ function loadPage() {
 			const metaParseResult = parseDocumentMetadata();
 			// proceed if we have a positive metadata result or if we're following a read rule
 			if (
+				!initData.parseMetadata ||
 				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
-				(rule && rule.action === SourceRuleAction.Read) ||
-				forceRead
+				(rule && rule.action === SourceRuleAction.Read)
 			) {
-				const content = parseDocumentContent(parseMode);
+				const content = parseDocumentContent(initData.parseMode);
 				// prefer the metadata but fall back to content parse values in case none is present
 				const description = metaParseResult.metadata.article.description || content.excerpt;
-				if (content.elements.length && metaParseResult.metadata.url && metaParseResult.metadata.article.title) {
-					context.page = new Page(content.elements, showOverlay);
+				if (
+					content.elements.length &&
+					(!initData.parseMetadata || (metaParseResult.metadata.url && metaParseResult.metadata.article.title))
+				) {
+					context.page = new Page(content.elements, initData.showOverlay);
 					eventPageApi
 						.registerPage({
 							...metaParseResult.metadata,
@@ -189,15 +194,14 @@ window.addEventListener('unload', () => eventPageApi.unregisterContentScript());
 // register content script
 eventPageApi
 	.registerContentScript(window.location)
-	.then(initData => {
-		// set up parameters
-		config = initData.config;
-		sourceRules = initData.sourceRules.map(rule => ({ ...rule, path: new RegExp(rule.path) }));
-		parseMode = initData.parseMode;
-		showOverlay = initData.showOverlay;
-		forceRead = initData.forceRead;
+	.then(serializedInitData => {
+		// set initData
+		initData = {
+			...serializedInitData,
+			sourceRules: serializedInitData.sourceRules.map(rule => ({ ...rule, path: new RegExp(rule.path) }))
+		};
 		// load page
-		if (initData.loadPage) {
+		if (serializedInitData.loadPage) {
 			loadPage();
 		}
 	});

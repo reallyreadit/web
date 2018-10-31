@@ -59,11 +59,11 @@ const contentScriptApi = new ContentScriptApi({
 			.getAuthStatus()
 			.then(isAuthenticated => ({
 				config: serverApi.contentScriptConfig,
-				sourceRules: serverApi.getSourceRules(new URL(url).hostname),
+				loadPage: isAuthenticated,
+				parseMetadata: true,
 				parseMode: JSON.parse(localStorage.getItem('parseMode')),
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
-				forceRead: false,
-				loadPage: isAuthenticated
+				sourceRules: serverApi.getSourceRules(new URL(url).hostname)
 			}));
 	},
 	onRegisterPage: (tabId, data) => {

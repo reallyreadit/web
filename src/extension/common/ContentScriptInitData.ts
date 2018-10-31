@@ -3,8 +3,8 @@ import SourceRule from '../../common/models/SourceRule';
 
 export default interface ContentScriptInitData {
 	config: ContentScriptConfig,
-	forceRead: boolean,
 	loadPage: boolean,
+	parseMetadata: boolean,
 	parseMode: 'analyze' | 'mutate',
 	showOverlay: boolean,
 	sourceRules: SourceRule[]
