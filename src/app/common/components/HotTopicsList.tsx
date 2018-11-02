@@ -11,8 +11,8 @@ export default (props: {
 	aotd: Fetchable<UserArticle>,
 	articles: Fetchable<PageResult<UserArticle>>,
 	isUserSignedIn: boolean,
+	onLoadPage?: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onReload: (pageNumber: number) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void
@@ -50,11 +50,13 @@ export default (props: {
 				)}
 			</ArticleList>
 			: null}
-		<PageSelector
-			pageNumber={props.articles.value ? props.articles.value.pageNumber : 1}
-			pageCount={props.articles.value ? props.articles.value.pageCount : 1}
-			onChange={props.onReload}
-			disabled={props.articles.isLoading}
-		/>
+		{props.onLoadPage ?
+			<PageSelector
+				pageNumber={props.articles.value ? props.articles.value.pageNumber : 1}
+				pageCount={props.articles.value ? props.articles.value.pageCount : 1}
+				onChange={props.onLoadPage}
+				disabled={props.articles.isLoading}
+			/> :
+			null}
 	</div>
 );

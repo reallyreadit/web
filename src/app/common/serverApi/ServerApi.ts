@@ -36,8 +36,8 @@ export default abstract class {
 	protected getUrl(path: string) {
 		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
-	public readonly listHotTopics = (pageNumber: number, callback: (articles: Fetchable<HotTopics>) => void) => {
-		return this.get<HotTopics>(new Request('/Articles/ListHotTopics', { pageNumber }), callback);
+	public readonly listHotTopics = (pageNumber: number, pageSize: number, callback: (articles: Fetchable<HotTopics>) => void) => {
+		return this.get<HotTopics>(new Request('/Articles/ListHotTopics', { pageNumber, pageSize }), callback);
 	};
 	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.post<UserAccount>(new Request(

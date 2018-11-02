@@ -18,7 +18,7 @@ function mapToScreenState(hotTopics: Fetchable<HotTopics>) {
 export function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	deps: {
-		onGetHotTopics: (pageNumber: number, callback: (hotTopics: Fetchable<HotTopics>) => void) => Fetchable<HotTopics>,
+		onGetHotTopics: (pageNumber: number, pageSize: number, callback: (hotTopics: Fetchable<HotTopics>) => void) => Fetchable<HotTopics>,
 		onGetUser: () => UserAccount | null,
 		onOpenMenu: () => void,
 		onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -28,15 +28,15 @@ export function createScreenFactory<TScreenKey>(
 		onViewComments: (article: UserArticle) => void
 	}
 ) {
-	const getHotTopics = (pageNumber: number) => deps.onGetHotTopics(
-		pageNumber,
+	const getHotTopics = () => deps.onGetHotTopics(
+		1,
+		10,
 		hotTopics => {
 			deps.onSetScreenState(key, mapToScreenState(hotTopics));
 		}
 	);
-	const reload = (pageNumber: number) => deps.onSetScreenState(key, mapToScreenState(getHotTopics(pageNumber)));
 	return {
-		create: () => ({ ...mapToScreenState(getHotTopics(1)), key }),
+		create: () => ({ ...mapToScreenState(getHotTopics()), key }),
 		render: (state: Screen) => (
 			<div className="home-page_3aivep">
 				<div className="header">
@@ -56,7 +56,6 @@ export function createScreenFactory<TScreenKey>(
 						articles={state.articleLists['articles']}
 						isUserSignedIn={!!deps.onGetUser()}
 						onReadArticle={deps.onReadArticle}
-						onReload={reload}
 						onShareArticle={deps.onShareArticle}
 						onToggleArticleStar={deps.onToggleArticleStar}
 						onViewComments={deps.onViewComments}
