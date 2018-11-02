@@ -33,6 +33,9 @@
 	box-sizing: border-box;
 	background-color: ghostwhite;
 }
+.app-root_vc3j5h > .content > .screens > .screen:not(.has-title) {
+	border-top: 1px solid #ccc;
+}
 .app-root_vc3j5h > .content > .screens > .screen + .screen {
 	animation: app-root_vc3j5h-screen-slide-in 250ms forwards;
 }
