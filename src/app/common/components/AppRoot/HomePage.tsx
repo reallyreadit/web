@@ -7,6 +7,7 @@ import { Screen } from '../Root';
 import HotTopicsList from '../HotTopicsList';
 import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
+import LoadingOverlay from '../controls/LoadingOverlay';
 
 function mapToScreenState(hotTopics: Fetchable<HotTopics>) {
 	return {
@@ -48,16 +49,18 @@ export function createScreenFactory<TScreenKey>(
 						onClick={deps.onOpenMenu}
 					/>
 				</div>
-				<HotTopicsList
-					aotd={state.articles['aotd']}
-					articles={state.articleLists['articles']}
-					isUserSignedIn={!!deps.onGetUser()}
-					onReadArticle={deps.onReadArticle}
-					onReload={reload}
-					onShareArticle={deps.onShareArticle}
-					onToggleArticleStar={deps.onToggleArticleStar}
-					onViewComments={deps.onViewComments}
-				/>
+				{state.articles['aotd'].isLoading || state.articleLists['articles'].isLoading ?
+					<LoadingOverlay position="static" /> :
+					<HotTopicsList
+						aotd={state.articles['aotd']}
+						articles={state.articleLists['articles']}
+						isUserSignedIn={!!deps.onGetUser()}
+						onReadArticle={deps.onReadArticle}
+						onReload={reload}
+						onShareArticle={deps.onShareArticle}
+						onToggleArticleStar={deps.onToggleArticleStar}
+						onViewComments={deps.onViewComments}
+					/>}
 			</div>
 		)
 	};

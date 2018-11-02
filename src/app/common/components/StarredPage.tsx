@@ -7,6 +7,7 @@ import PageSelector from './controls/PageSelector';
 import ArticleDetails from '../../../common/components/ArticleDetails';
 import UserAccount from '../../../common/models/UserAccount';
 import { Screen } from './Root';
+import LoadingOverlay from './controls/LoadingOverlay';
 
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onGetStarredArticles: (pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) => Fetchable<PageResult<UserArticle>>,
@@ -35,15 +36,17 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 			title: 'Starred'
 		}),
 		render: (state: Screen) => (
-			<StarredPage
-				articles={state.articleLists['articles']}
-				isUserSignedIn={!!deps.onGetUser()}
-				onReadArticle={deps.onReadArticle}
-				onReload={reload}
-				onShareArticle={deps.onShareArticle}
-				onToggleArticleStar={deps.onToggleArticleStar}
-				onViewComments={deps.onViewComments}
-			/>
+			state.articleLists['articles'].isLoading ?
+				<LoadingOverlay /> :
+				<StarredPage
+					articles={state.articleLists['articles']}
+					isUserSignedIn={!!deps.onGetUser()}
+					onReadArticle={deps.onReadArticle}
+					onReload={reload}
+					onShareArticle={deps.onShareArticle}
+					onToggleArticleStar={deps.onToggleArticleStar}
+					onViewComments={deps.onViewComments}
+				/>
 		)
 	};
 }
@@ -59,24 +62,22 @@ export default class StarredPage extends React.PureComponent<{
 	public render() {
 		return (
 			<div className="starred-page">
-				{this.props.articles.isLoading ?
-					<span>Loading...</span> :
-					this.props.articles.errors ?
-						<span>Error loading articles</span> :
-						<ArticleList>
-							{this.props.articles.value.items.map(article =>
-								<li key={article.id}>
-									<ArticleDetails
-										article={article}
-										isUserSignedIn={this.props.isUserSignedIn}
-										onRead={this.props.onReadArticle}
-										onShare={this.props.onShareArticle}
-										onToggleStar={this.props.onToggleArticleStar}
-										onViewComments={this.props.onViewComments}
-									/>
-								</li>
-							)}
-						</ArticleList>}
+				{this.props.articles.value ?
+					<ArticleList>
+						{this.props.articles.value.items.map(article =>
+							<li key={article.id}>
+								<ArticleDetails
+									article={article}
+									isUserSignedIn={this.props.isUserSignedIn}
+									onRead={this.props.onReadArticle}
+									onShare={this.props.onShareArticle}
+									onToggleStar={this.props.onToggleArticleStar}
+									onViewComments={this.props.onViewComments}
+								/>
+							</li>
+						)}
+					</ArticleList> :
+					null}
 				<PageSelector
 					pageNumber={this.props.articles.value ? this.props.articles.value.pageNumber : 1}
 					pageCount={this.props.articles.value ? this.props.articles.value.pageCount : 1}

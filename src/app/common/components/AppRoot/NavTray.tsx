@@ -15,7 +15,7 @@ export default (props: {
 				className={props.selectedScreenKey === ScreenKey.Home ? 'selected' : null}
 				onClick={props.onViewHome}
 			>
-				<Icon name="home" />
+				<Icon name="books" />
 				<label>Home</label>
 			</button>
 		</li>
@@ -33,7 +33,7 @@ export default (props: {
 				className={props.selectedScreenKey === ScreenKey.History ? 'selected' : null}
 				onClick={props.onViewHistory}
 			>
-				<Icon name="clock" />
+				<Icon name="history" />
 				<label>History</label>
 			</button>
 		</li>
@@ -42,8 +42,17 @@ export default (props: {
 				className={props.selectedScreenKey === ScreenKey.Leaderboards ? 'selected' : null}
 				onClick={props.onViewLeaderboards}
 			>
-				<Icon name="line-chart" />
+				<Icon name="podium" />
 				<label>Leaderboards</label>
+			</button>
+		</li>
+		<li>
+			<button
+				className={props.selectedScreenKey === ScreenKey.Leaderboards ? 'selected' : null}
+				onClick={props.onViewLeaderboards}
+			>
+				<Icon name="pizza" />
+				<label>Pizza Challenge</label>
 			</button>
 		</li>
 	</ol>

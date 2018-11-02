@@ -1,0 +1,21 @@
+/*
+  componentPath: src/app/common/components/controls/LoadingOverlay
+  cssComponentId: loading-overlay_zfgtd1
+*/
+
+.loading-overlay_zfgtd1 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #666;
+}
+.loading-overlay_zfgtd1.absolute {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+.loading-overlay_zfgtd1 > .spinner {
+	margin-left: 5px;
+}

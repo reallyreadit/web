@@ -19,7 +19,7 @@ export default (props: {
 				onClick={props.onGoToInbox}
 				state={props.state}
 				showIndicator={props.showNewReplyIndicator} />
-			<Button text="Starred" iconLeft="star-empty" onClick={props.onGoToStarred} state={props.state} />
+			<Button text="Starred" iconLeft="star" onClick={props.onGoToStarred} state={props.state} />
 			<Button text="History" iconLeft="clock" onClick={props.onGoToHistory} state={props.state} />
 		</div> :
 		<div className="nav-bar">

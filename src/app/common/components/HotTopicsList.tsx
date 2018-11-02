@@ -18,44 +18,38 @@ export default (props: {
 	onViewComments: (article: UserArticle) => void
 }) => (
 	<div className="hot-topics-list">
-		<div className="hot-topics">
-			{props.aotd.isLoading ?
-				<span>Loading...</span> :
-				props.aotd.errors ?
-					<span>Error loading article of the day</span> :
-					<div className="aotd">
-						<h3>
-							<Icon name="trophy" />Article of the Day<Icon name="trophy" />
-						</h3>
+		{props.aotd.value ?
+			<div className="aotd">
+				<h3>
+					<Icon name="trophy" />Article of the Day<Icon name="trophy" />
+				</h3>
+				<ArticleDetails
+					article={props.aotd.value}
+					isUserSignedIn={props.isUserSignedIn}
+					onRead={props.onReadArticle}
+					onShare={props.onShareArticle}
+					onToggleStar={props.onToggleArticleStar}
+					onViewComments={props.onViewComments}
+				/>
+				<hr />
+			</div>
+			: null}
+		{props.articles.value ?
+			<ArticleList>
+				{props.articles.value.items.map(article =>
+					<li key={article.id}>
 						<ArticleDetails
-							article={props.aotd.value}
+							article={article}
 							isUserSignedIn={props.isUserSignedIn}
 							onRead={props.onReadArticle}
 							onShare={props.onShareArticle}
 							onToggleStar={props.onToggleArticleStar}
 							onViewComments={props.onViewComments}
 						/>
-						<hr />
-					</div>}
-			{props.articles.isLoading ?
-				<span>Loading...</span> :
-				props.articles.errors ?
-					<span>Error loading articles</span> :
-					<ArticleList>
-						{props.articles.value.items.map(article =>
-							<li key={article.id}>
-								<ArticleDetails
-									article={article}
-									isUserSignedIn={props.isUserSignedIn}
-									onRead={props.onReadArticle}
-									onShare={props.onShareArticle}
-									onToggleStar={props.onToggleArticleStar}
-									onViewComments={props.onViewComments}
-								/>
-							</li>
-						)}
-					</ArticleList>}
-		</div>
+					</li>
+				)}
+			</ArticleList>
+			: null}
 		<PageSelector
 			pageNumber={props.articles.value ? props.articles.value.pageNumber : 1}
 			pageCount={props.articles.value ? props.articles.value.pageCount : 1}

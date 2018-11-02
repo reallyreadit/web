@@ -4,6 +4,7 @@ import Comment from '../../../common/models/Comment';
 import PageResult from '../../../common/models/PageResult';
 import CommentList from './controls/comments/CommentList';
 import PageSelector from './controls/PageSelector';
+import LoadingOverlay from './controls/LoadingOverlay';
 
 interface Props {
 	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) => Fetchable<PageResult<Comment>>,
@@ -40,25 +41,27 @@ export default class InboxPage extends React.Component<
 	public render() {
 		return (
 			<div className="inbox-page">
-				<div className="replies">
-					{!this.state.replies.isLoading ?
-						this.state.replies.value ?
-							this.state.replies.value.items.length ?
-								<CommentList
-									comments={this.state.replies.value.items} 
-									mode="link" 
-									onViewThread={this.props.onReadReply} 
-								/> :
-								<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
-							<span>Error loading replies.</span> :
-						<span>Loading...</span>}
-				</div>
-				<PageSelector
-					pageNumber={this.state.replies.value ? this.state.replies.value.pageNumber : 1}
-					pageCount={this.state.replies.value ? this.state.replies.value.pageCount : 1}
-					onChange={this._updatePageNumber}
-					disabled={this.state.replies.isLoading}
-				/>
+				{this.state.replies.isLoading ?
+					<LoadingOverlay /> :
+					<>
+						<div className="replies">
+							{this.state.replies.value ?
+								this.state.replies.value.items.length ?
+									<CommentList
+										comments={this.state.replies.value.items}
+										mode="link"
+										onViewThread={this.props.onReadReply}
+									/> :
+									<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
+								null}
+						</div>
+						<PageSelector
+							pageNumber={this.state.replies.value ? this.state.replies.value.pageNumber : 1}
+							pageCount={this.state.replies.value ? this.state.replies.value.pageCount : 1}
+							onChange={this._updatePageNumber}
+							disabled={this.state.replies.isLoading}
+						/>
+					</>}
 			</div>
 		);
 	}

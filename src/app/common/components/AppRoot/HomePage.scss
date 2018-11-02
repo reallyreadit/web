@@ -3,7 +3,13 @@
   cssComponentId: home-page_3aivep
 */
 
+.home-page_3aivep {
+	display: flex;
+	flex-flow: column;
+	min-height: 100%;
+}
 .home-page_3aivep > .header {
+	flex: 0 0 auto;
 	display: flex;
 	padding: 20px 0;
 	align-items: center;
@@ -25,4 +31,8 @@
 	flex: 0 0 auto;
 	width: 24px;
 	font-size: 24px;
+}
+.home-page_3aivep > .loading-overlay_zfgtd1,
+.home-page_3aivep > .hot-topics-list {
+	flex: 1 1 auto;
 }

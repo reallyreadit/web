@@ -1,26 +1,23 @@
-.hot-topics-list > .hero {
-	margin-bottom: 15px;
+.hot-topics-list {
+	position: relative;
 }
-.hot-topics-list > span {
-	margin: 20px 0;
-}
-.hot-topics-list > .hot-topics > .aotd > h3 {
+.hot-topics-list > .aotd > h3 {
 	padding-bottom: 10px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-.hot-topics-list > .hot-topics > .aotd > h3 > .icon:first-child {
+.hot-topics-list > .aotd > h3 > .icon:first-child {
 	margin-right: 9px;
 }
-.hot-topics-list > .hot-topics > .aotd > h3 > .icon:last-child {
+.hot-topics-list > .aotd > h3 > .icon:last-child {
 	margin-left: 9px;
 }
-.hot-topics-list > .hot-topics > .aotd > .article-details {
+.hot-topics-list > .aotd > .article-details {
 	border-width: 3px;
 	border-color: #666;
 }
-.hot-topics-list > .hot-topics > .aotd > hr {
+.hot-topics-list > .aotd > hr {
 	margin: 15px auto;
 	width: 75%;
 	border-width: 1px 0 0 0;

@@ -19,7 +19,7 @@ export default (props: {
 				onClick={props.onViewHome}
 				style={props.selectedScreenKey === ScreenKey.Home ? 'loud' : 'normal'}
 			>
-				<Icon name="home" />
+				<Icon name="books" />
 				<label>Home</label>
 			</Button>
 		</li>
@@ -39,7 +39,7 @@ export default (props: {
 				onClick={props.onViewHistory}
 				style={props.selectedScreenKey === ScreenKey.History ? 'loud' : 'normal'}
 			>
-				<Icon name="clock" />
+				<Icon name="history" />
 				<label>History</label>
 			</Button>
 		</li>
@@ -49,8 +49,18 @@ export default (props: {
 				onClick={props.onViewLeaderboards}
 				style={props.selectedScreenKey === ScreenKey.Leaderboards ? 'loud' : 'normal'}
 			>
-				<Icon name="line-chart" />
+				<Icon name="podium" />
 				<label>Leaderboards</label>
+			</Button>
+		</li>
+		<li>
+			<Button
+				href={findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()}
+				onClick={props.onViewLeaderboards}
+				style={props.selectedScreenKey === ScreenKey.Leaderboards ? 'loud' : 'normal'}
+			>
+				<Icon name="pizza" />
+				<label>Pizza Challenge</label>
 			</Button>
 		</li>
 	</ol>

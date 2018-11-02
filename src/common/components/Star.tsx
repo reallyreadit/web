@@ -22,7 +22,7 @@ export default (props: {
 		title={props.starred ? 'Unstar Article' : 'Star Article'}
 	>
 		<Icon
-			name="star"
+			name="article-details-star"
 			onClick={props.onClick}
 		/>
 	</div>;
