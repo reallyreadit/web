@@ -81,14 +81,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							null}
 						<li>
 							<button
-								className={this.props.selectedScreenKey === ScreenKey.Inbox ? 'selected' : null}
-								onClick={this.props.onViewInbox}
-							>
-								Inbox
-							</button>
-						</li>
-						<li>
-							<button
 								className={this.props.selectedScreenKey === ScreenKey.Settings ? 'selected' : null}
 								onClick={this.props.onViewSettings}
 							>

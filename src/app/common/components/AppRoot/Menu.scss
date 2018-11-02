@@ -12,6 +12,7 @@
 	z-index: 100;
 	display: flex;
 	flex-flow: row-reverse;
+	border-top: 1px solid transparent;
 	animation: menu_fk9ujy-overlay-fade-in 250ms forwards;
 }
 .menu_fk9ujy.closing {
@@ -21,7 +22,7 @@
 	display: flex;
 	flex-flow: column;
 	background-color: white;
-	border-left: 3px solid black;
+	border-left: 1px solid #ccc;
 	font-size: 14px;
 	animation: menu_fk9ujy-drawer-open 250ms forwards;
 }
@@ -77,9 +78,11 @@
 @keyframes menu_fk9ujy-overlay-fade-in {
 	from {
 		background-color: rgba(0, 0, 0, 0);
+		border-top-color: rgba(204, 204, 204, 0);
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0.25);
+		background-color: rgba(204, 204, 204, 0.25);
+		border-top-color: rgba(204, 204, 204, 1);
 	}
 }
 @keyframes menu_fk9ujy-drawer-open {

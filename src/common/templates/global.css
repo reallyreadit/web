@@ -506,3 +506,6 @@ html {
 button {
   font-family: inherit;
 }
+a, button, span, svg {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
