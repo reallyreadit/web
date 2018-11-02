@@ -8,6 +8,7 @@ enum ScreenKey {
 	Inbox,
 	Leaderboards,
 	Password,
+	PizzaChallenge,
 	PrivacyPolicy,
 	Settings,
 	Starred

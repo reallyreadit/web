@@ -9,6 +9,7 @@ export default (props: {
 	onViewHistory: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
+	onViewPizzaChallenge: () => void,
 	onViewStarred: () => void,
 	selectedScreenKey: ScreenKey
 }) => (
@@ -55,9 +56,9 @@ export default (props: {
 		</li>
 		<li>
 			<Button
-				href={findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()}
-				onClick={props.onViewLeaderboards}
-				style={props.selectedScreenKey === ScreenKey.Leaderboards ? 'loud' : 'normal'}
+				href={findRouteByKey(routes, ScreenKey.PizzaChallenge).createUrl()}
+				onClick={props.onViewPizzaChallenge}
+				style={props.selectedScreenKey === ScreenKey.PizzaChallenge ? 'loud' : 'normal'}
 			>
 				<Icon name="pizza" />
 				<label>Pizza Challenge</label>

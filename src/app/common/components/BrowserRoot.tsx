@@ -68,6 +68,9 @@ export default class extends Root<Props, State> {
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
 	};
+	private readonly _viewPizzaChallenge = () => {
+		this.replaceScreen(ScreenKey.PizzaChallenge);
+	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.replaceScreen(ScreenKey.PrivacyPolicy);
 	};
@@ -177,6 +180,7 @@ export default class extends Root<Props, State> {
 						onViewHistory={this._viewHistory}
 						onViewHome={this._viewHome}
 						onViewLeaderboards={this._viewLeaderboards}
+						onViewPizzaChallenge={this._viewPizzaChallenge}
 						onViewStarred={this._viewStarred}
 						selectedScreenKey={screen.key}
 					/>

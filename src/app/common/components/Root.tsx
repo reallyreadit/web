@@ -30,6 +30,7 @@ import ShareArticleDialog from './ShareArticleDialog';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
+import { createScreenFactory as createLeaderboardsScreenFactory } from './LeaderboardsPage';
 import produce from 'immer';
 
 export interface RootChallengeState extends ChallengeState {
@@ -361,7 +362,9 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onGetReplies: this.props.serverApi.listReplies,
 				onReadReply: this._readReply
 			}),
-			[ScreenKey.Leaderboards]: createPizzaPageScreenFactory(ScreenKey.Leaderboards, {
+			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards),
+			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
+			[ScreenKey.PizzaChallenge]: createPizzaPageScreenFactory(ScreenKey.PizzaChallenge, {
 				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
 				onGetChallengeState: this._getChallengeState,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
@@ -369,7 +372,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onQuitChallenge: this._quitChallenge,
 				onStartChallenge: this._startChallenge
 			}),
-			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
 			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
 				onCloseDialog: this._closeDialog,

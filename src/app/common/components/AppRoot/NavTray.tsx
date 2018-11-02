@@ -6,6 +6,7 @@ export default (props: {
 	onViewHistory: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
+	onViewPizzaChallenge: () => void,
 	onViewStarred: () => void,
 	selectedScreenKey: ScreenKey
 }) => (
@@ -48,8 +49,8 @@ export default (props: {
 		</li>
 		<li>
 			<button
-				className={props.selectedScreenKey === ScreenKey.Leaderboards ? 'selected' : null}
-				onClick={props.onViewLeaderboards}
+				className={props.selectedScreenKey === ScreenKey.PizzaChallenge ? 'selected' : null}
+				onClick={props.onViewPizzaChallenge}
 			>
 				<Icon name="pizza" />
 				<label>Pizza Challenge</label>
