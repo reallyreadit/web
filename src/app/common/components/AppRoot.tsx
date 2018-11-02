@@ -10,8 +10,6 @@ import DialogManager from './DialogManager';
 //import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import routes from '../../../common/routing/routes';
-import { findRouteByKey } from '../../../common/routing/Route';
 import { createScreenFactory as createHomeScreenFactory } from './AppRoot/HomePage';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
@@ -49,7 +47,7 @@ export default class extends Root<Props, State> {
 		}
 	};
 	private readonly _viewAdminPage = () => {
-		this.replaceScreen(ScreenKey.AdminPage);
+		this.pushScreen(ScreenKey.AdminPage);
 	};
 	private readonly _viewHistory = () => {
 		this.replaceScreen(ScreenKey.History);
@@ -64,10 +62,10 @@ export default class extends Root<Props, State> {
 		this.replaceScreen(ScreenKey.Leaderboards);
 	};
 	private readonly _viewPrivacyPolicy = () => {
-		this.replaceScreen(ScreenKey.PrivacyPolicy);
+		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
 	private readonly _viewSettings = () => {
-		this.replaceScreen(ScreenKey.Settings);
+		this.pushScreen(ScreenKey.Settings);
 	};
 	private readonly _viewStarred = () => {
 		this.replaceScreen(ScreenKey.Starred);
@@ -116,13 +114,19 @@ export default class extends Root<Props, State> {
 			this.updateArticles(ev.article);
 		});
 	}
+	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+		this.setScreensState([
+			...this.state.screens,
+			this.createScreen(key, urlParams, title).screen
+		]);
+	}
 	private replaceScreen(key: ScreenKey) {
-		const
-			url = findRouteByKey(routes, key).createUrl(),
-			[path, queryString] = url.split('?');
+		this.setScreensState([this.createScreen(key).screen]);
+	}
+	private setScreensState(screens: Screen[]) {
 		this.setState({
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
-			screens: [this._screenFactoryMap[key].create({ path, queryString })]
+			screens
 		});
 	}
 	protected onUserChanged(userAccount: UserAccount) {
@@ -152,22 +156,15 @@ export default class extends Root<Props, State> {
 		this.props.appApi.readArticle(article);
 	}
 	protected viewComments(article: UserArticle) {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
-			url = findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl({
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		this.pushScreen(
+			ScreenKey.ArticleDetails,
+			{
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
-			}),
-			[path, queryString] = url.split('?');
-		this.setState({
-			screens: [
-				...this.state.screens,
-				{
-					...this._screenFactoryMap[ScreenKey.ArticleDetails].create({ path, queryString }),
-					title: article.title
-				}
-			]
-		});
+			},
+			article.title
+		);
 	}
 	public componentDidMount() {
 		//this.clearQueryStringKvps([clientTypeQueryStringKey]);

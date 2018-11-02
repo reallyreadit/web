@@ -10,8 +10,6 @@ import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
-import routes from '../../../common/routing/routes';
-import { findRouteByKey } from '../../../common/routing/Route';
 import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
 import { createScreenFactory as createHomeScreenFactory } from './BrowserRoot/HomePage';
@@ -121,13 +119,7 @@ export default class extends Root<Props, State> {
 		});
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
-		const
-			url = findRouteByKey(routes, key).createUrl(urlParams),
-			[path, queryString] = url.split('?'),
-			screen = this._screenFactoryMap[key].create({ path, queryString });
-		if (title) {
-			screen.title = title;
-		}
+		const { screen, url } = this.createScreen(key, urlParams, title);
 		this.setState({
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
 			screens: [screen]

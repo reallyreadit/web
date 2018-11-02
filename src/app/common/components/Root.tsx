@@ -413,6 +413,16 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			)
 		);
 	}
+	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+		const
+			url = findRouteByKey(routes, key).createUrl(urlParams),
+			[path, queryString] = url.split('?'),
+			screen = this._screenFactoryMap[key].create({ path, queryString });
+		if (title) {
+			screen.title = title;
+		}
+		return { screen, url };
+	}
 	protected getLocationDependentState(location: Location) {
 		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
 		return {
