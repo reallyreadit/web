@@ -362,7 +362,10 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onGetReplies: this.props.serverApi.listReplies,
 				onReadReply: this._readReply
 			}),
-			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards),
+			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
+				onGetWeeklyReadingLeaderboards: this.props.serverApi.getWeeklyReadingLeaderboards,
+				onGetWeeklyReadingStats: this.props.serverApi.getWeeklyReadingStats
+			}),
 			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
 			[ScreenKey.PizzaChallenge]: createPizzaPageScreenFactory(ScreenKey.PizzaChallenge, {
 				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,

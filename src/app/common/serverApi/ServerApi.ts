@@ -19,7 +19,10 @@ import ChallengeState from '../../../common/models/ChallengeState';
 import UserStats from '../../../common/models/UserStats';
 import ChallengeWinner from '../../../common/models/ChallengeWinner';
 import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
+import UserWeeklyReadingStats from '../../../common/models/UserWeeklyReadingStats';
+import WeeklyReadingLeaderboards from '../../../common/models/WeeklyReadingLeaderboards';
 
+export type FetchFunction<T> = (callback: (value: Fetchable<T>) => void) => Fetchable<T>;
 export interface InitData {
 	endpoint: Endpoint,
 	requests: Request[]
@@ -30,6 +33,9 @@ export default abstract class {
 	protected _isInitialized = false;
 	constructor(endpoint: Endpoint) {
 		this._endpoint = endpoint;
+	}
+	private createFetchFunction<T>(path: string) {
+		return (callback: (value: Fetchable<T>) => void) => this.get<T>(new Request(path), callback);
 	}
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
@@ -168,4 +174,8 @@ export default abstract class {
 	public readonly getChallengeResponseActionTotals = (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => {
 		return this.get<ChallengeResponseTotal[]>(new Request('/Challenges/ResponseActionTotals', { challengeId }), callback);
 	};
+
+	// Stats
+	public readonly getWeeklyReadingLeaderboards = this.createFetchFunction<WeeklyReadingLeaderboards>('/Stats/WeeklyReadingLeaderboards');
+	public readonly getWeeklyReadingStats = this.createFetchFunction<UserWeeklyReadingStats | null>('/Stats/WeeklyReading');
 }
