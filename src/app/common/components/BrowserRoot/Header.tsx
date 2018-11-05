@@ -32,7 +32,7 @@ export default class extends React.PureComponent<Props> {
 					{this.props.isUserSignedIn ?
 						<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>
 							<Icon
-								name="three-bars"
+								name="user"
 								onClick={this.props.onOpenMenu}
 							/>
 						</div> :

@@ -45,7 +45,7 @@ export function createScreenFactory<TScreenKey>(
 						dangerouslySetInnerHTML={{ __html: logoText }}
 					></div>
 					<Icon
-						name="three-bars"
+						name="user"
 						onClick={deps.onOpenMenu}
 					/>
 				</div>
