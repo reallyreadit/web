@@ -22,7 +22,8 @@ import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTota
 import UserWeeklyReadingStats from '../../../common/models/UserWeeklyReadingStats';
 import WeeklyReadingLeaderboards from '../../../common/models/WeeklyReadingLeaderboards';
 
-export type FetchFunction<T> = (callback: (value: Fetchable<T>) => void) => Fetchable<T>;
+export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
+export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export interface InitData {
 	endpoint: Endpoint,
 	requests: Request[]
@@ -34,17 +35,17 @@ export default abstract class {
 	constructor(endpoint: Endpoint) {
 		this._endpoint = endpoint;
 	}
-	private createFetchFunction<T>(path: string) {
-		return (callback: (value: Fetchable<T>) => void) => this.get<T>(new Request(path), callback);
+	private createFetchFunction<TResult>(path: string) {
+		return (callback: (value: Fetchable<TResult>) => void) => this.get<TResult>(new Request(path), callback);
+	}
+	private createFetchFunctionWithParams<TParams, TResult>(path: string) {
+		return (params: TParams, callback: (value: Fetchable<TResult>) => void) => this.get<TResult>(new Request(path, params), callback);
 	}
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
 	protected getUrl(path: string) {
 		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
-	public readonly listHotTopics = (pageNumber: number, pageSize: number, callback: (articles: Fetchable<HotTopics>) => void) => {
-		return this.get<HotTopics>(new Request('/Articles/ListHotTopics', { pageNumber, pageSize }), callback);
-	};
 	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/CreateAccount',
@@ -174,6 +175,9 @@ export default abstract class {
 	public readonly getChallengeResponseActionTotals = (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => {
 		return this.get<ChallengeResponseTotal[]>(new Request('/Challenges/ResponseActionTotals', { challengeId }), callback);
 	};
+
+	// Articles
+	public readonly getHotTopics = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>('/Articles/ListHotTopics');
 
 	// Stats
 	public readonly getWeeklyReadingLeaderboards = this.createFetchFunction<WeeklyReadingLeaderboards>('/Stats/WeeklyReadingLeaderboards');

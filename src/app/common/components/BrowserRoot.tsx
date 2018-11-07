@@ -12,7 +12,7 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
 import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
-import { createScreenFactory as createHomeScreenFactory } from './BrowserRoot/HomePage';
+import createHomeScreenFactory from './BrowserRoot/HomePage';
 import WindowApi from '../WindowApi';
 import ExtensionApi from '../ExtensionApi';
 
@@ -39,6 +39,12 @@ export default class extends Root<Props, State> {
 			path: window.location.pathname,
 			queryString: window.location.search
 		}));
+	};
+
+	// events
+	private readonly _userChangeEventHandlers: ((newUser: UserAccount) => void)[] = [];
+	private readonly _registerUserChangeEventHandler = (handler: (newUser: UserAccount) => void) => {
+		return this.registerEventHandler(this._userChangeEventHandlers, handler);
 	};
 
 	// menu
@@ -88,10 +94,11 @@ export default class extends Root<Props, State> {
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
-				onGetHotTopics: this.props.serverApi.listHotTopics,
+				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onGetUser: this._getUser,
 				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -118,7 +125,9 @@ export default class extends Root<Props, State> {
 
 		// ExtensionApi
 		props.extensionApi.addListener('articleUpdated', ev => {
-			this.updateArticles(ev.article);
+			this._articleChangeEventHandlers.forEach(handler => {
+				handler(ev.article);
+			});
 		});
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
@@ -140,6 +149,9 @@ export default class extends Root<Props, State> {
 	protected onUserChanged(userAccount: UserAccount) {
 		this.setState({ user: userAccount });
 		this.props.localStorageApi.updateUser(userAccount);
+		this._userChangeEventHandlers.forEach(handler => {
+			handler(userAccount);
+		});
 	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');

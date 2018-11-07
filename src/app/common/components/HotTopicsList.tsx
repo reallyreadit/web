@@ -1,15 +1,39 @@
 import * as React from 'react';
 import UserArticle from '../../../common/models/UserArticle';
-import Fetchable from '../serverApi/Fetchable';
 import ArticleList from './controls/articles/ArticleList';
 import PageSelector from './controls/PageSelector';
 import Icon from '../../../common/components/Icon';
 import ArticleDetails from '../../../common/components/ArticleDetails';
 import PageResult from '../../../common/models/PageResult';
+import Fetchable from '../serverApi/Fetchable';
+import HotTopics from '../../../common/models/HotTopics';
+import produce from 'immer';
 
+interface State {
+	hotTopics: Fetchable<HotTopics>
+}
+export function updateArticles(this: React.Component<{}, State>, updatedArticle: UserArticle) {
+	if (
+		this.state.hotTopics.value &&
+		[this.state.hotTopics.value.aotd]
+			.concat(this.state.hotTopics.value.articles.items)
+			.some(article => article.id === updatedArticle.id)
+	) {
+		this.setState(produce<State>(prevState => {
+			if (prevState.hotTopics.value.aotd.id === updatedArticle.id) {
+				prevState.hotTopics.value.aotd = updatedArticle;
+			}
+			prevState.hotTopics.value.articles.items.forEach((article, index, articles) => {
+				if (article.id === updatedArticle.id) {
+					articles.splice(articles.indexOf(article), 1, updatedArticle);
+				}
+			});
+		}));
+	}
+}
 export default (props: {
-	aotd: Fetchable<UserArticle>,
-	articles: Fetchable<PageResult<UserArticle>>,
+	aotd: UserArticle,
+	articles: PageResult<UserArticle>,
 	isUserSignedIn: boolean,
 	onLoadPage?: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -18,44 +42,39 @@ export default (props: {
 	onViewComments: (article: UserArticle) => void
 }) => (
 	<div className="hot-topics-list">
-		{props.aotd.value ?
-			<div className="aotd">
-				<h3>
-					<Icon name="trophy" />Article of the Day<Icon name="trophy" />
-				</h3>
-				<ArticleDetails
-					article={props.aotd.value}
-					isUserSignedIn={props.isUserSignedIn}
-					onRead={props.onReadArticle}
-					onShare={props.onShareArticle}
-					onToggleStar={props.onToggleArticleStar}
-					onViewComments={props.onViewComments}
-				/>
-				<hr />
-			</div>
-			: null}
-		{props.articles.value ?
-			<ArticleList>
-				{props.articles.value.items.map(article =>
-					<li key={article.id}>
-						<ArticleDetails
-							article={article}
-							isUserSignedIn={props.isUserSignedIn}
-							onRead={props.onReadArticle}
-							onShare={props.onShareArticle}
-							onToggleStar={props.onToggleArticleStar}
-							onViewComments={props.onViewComments}
-						/>
-					</li>
-				)}
-			</ArticleList>
-			: null}
+		<div className="aotd">
+			<h3>
+				<Icon name="trophy" />Article of the Day<Icon name="trophy" />
+			</h3>
+			<ArticleDetails
+				article={props.aotd}
+				isUserSignedIn={props.isUserSignedIn}
+				onRead={props.onReadArticle}
+				onShare={props.onShareArticle}
+				onToggleStar={props.onToggleArticleStar}
+				onViewComments={props.onViewComments}
+			/>
+			<hr />
+		</div>
+		<ArticleList>
+			{props.articles.items.map(article =>
+				<li key={article.id}>
+					<ArticleDetails
+						article={article}
+						isUserSignedIn={props.isUserSignedIn}
+						onRead={props.onReadArticle}
+						onShare={props.onShareArticle}
+						onToggleStar={props.onToggleArticleStar}
+						onViewComments={props.onViewComments}
+					/>
+				</li>
+			)}
+		</ArticleList>
 		{props.onLoadPage ?
 			<PageSelector
-				pageNumber={props.articles.value ? props.articles.value.pageNumber : 1}
-				pageCount={props.articles.value ? props.articles.value.pageCount : 1}
+				pageNumber={props.articles.pageNumber}
+				pageCount={props.articles.pageCount}
 				onChange={props.onLoadPage}
-				disabled={props.articles.isLoading}
 			/> :
 			null}
 	</div>

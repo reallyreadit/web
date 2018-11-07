@@ -3,41 +3,52 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import HotTopics from '../../../../common/models/HotTopics';
-import { Screen } from '../Root';
-import HotTopicsList from '../HotTopicsList';
+import HotTopicsList, { updateArticles } from '../HotTopicsList';
 import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
+import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import CallbackStore from '../../CallbackStore';
+import EventHandlerStore from '../../EventHandlerStore';
 
-function mapToScreenState(hotTopics: Fetchable<HotTopics>) {
-	return {
-		articleLists: { ['articles']: { ...hotTopics, value: hotTopics.value ? hotTopics.value.articles : null } },
-		articles: { ['aotd']: { ...hotTopics, value: hotTopics.value ? hotTopics.value.aotd : null } }
-	};
+interface Props {
+	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
+	onGetUser: () => UserAccount | null,
+	onOpenMenu: () => void,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onShareArticle: (article: UserArticle) => void,
+	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewComments: (article: UserArticle) => void
 }
-export function createScreenFactory<TScreenKey>(
-	key: TScreenKey,
-	deps: {
-		onGetHotTopics: (pageNumber: number, pageSize: number, callback: (hotTopics: Fetchable<HotTopics>) => void) => Fetchable<HotTopics>,
-		onGetUser: () => UserAccount | null,
-		onOpenMenu: () => void,
-		onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-		onSetScreenState: (key: TScreenKey, state: Partial<Screen>) => void,
-		onShareArticle: (article: UserArticle) => void,
-		onToggleArticleStar: (article: UserArticle) => Promise<void>,
-		onViewComments: (article: UserArticle) => void
+interface State {
+	hotTopics: Fetchable<HotTopics>
+}
+class HomePage extends React.Component<Props, State> {
+	private readonly _callbacks = new CallbackStore();
+	private readonly _eventHandlers = new EventHandlerStore();
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			hotTopics: props.onGetHotTopics(
+				{ pageNumber: 1, pageSize: 10 },
+				this._callbacks.add(hotTopics => {
+					this.setState({ hotTopics });
+				})
+			)
+		};
+		this._eventHandlers.add(
+			props.onRegisterArticleChangeHandler(updatedArticle => {
+				updateArticles.call(this, updatedArticle);
+			})
+		);
 	}
-) {
-	const getHotTopics = () => deps.onGetHotTopics(
-		1,
-		10,
-		hotTopics => {
-			deps.onSetScreenState(key, mapToScreenState(hotTopics));
-		}
-	);
-	return {
-		create: () => ({ ...mapToScreenState(getHotTopics()), key }),
-		render: (state: Screen) => (
+	public componentWillUnmount() {
+		this._callbacks.cancel();
+		this._eventHandlers.unregister();
+	}
+	public render() {
+		return (
 			<div className="home-page_3aivep">
 				<div className="header">
 					<div
@@ -46,21 +57,32 @@ export function createScreenFactory<TScreenKey>(
 					></div>
 					<Icon
 						name="user"
-						onClick={deps.onOpenMenu}
+						onClick={this.props.onOpenMenu}
 					/>
 				</div>
-				{state.articles['aotd'].isLoading || state.articleLists['articles'].isLoading ?
+				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<HotTopicsList
-						aotd={state.articles['aotd']}
-						articles={state.articleLists['articles']}
-						isUserSignedIn={!!deps.onGetUser()}
-						onReadArticle={deps.onReadArticle}
-						onShareArticle={deps.onShareArticle}
-						onToggleArticleStar={deps.onToggleArticleStar}
-						onViewComments={deps.onViewComments}
+						aotd={this.state.hotTopics.value.aotd}
+						articles={this.state.hotTopics.value.articles}
+						isUserSignedIn={!!this.props.onGetUser()}
+						onReadArticle={this.props.onReadArticle}
+						onShareArticle={this.props.onShareArticle}
+						onToggleArticleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
 					/>}
 			</div>
+		);
+	}
+}
+export default function <TScreenKey>(
+	key: TScreenKey,
+	deps: Props
+) {
+	return {
+		create: () => ({ key }),
+		render: () => (
+			<HomePage {...deps} />
 		)
 	};
 }

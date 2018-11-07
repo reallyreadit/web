@@ -10,7 +10,7 @@ import DialogManager from './DialogManager';
 //import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import { createScreenFactory as createHomeScreenFactory } from './AppRoot/HomePage';
+import createHomeScreenFactory from './AppRoot/HomePage';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
@@ -81,11 +81,11 @@ export default class extends Root<Props, State> {
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
-				onGetHotTopics: this.props.serverApi.listHotTopics,
+				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onGetUser: this._getUser,
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -114,7 +114,9 @@ export default class extends Root<Props, State> {
 
 		// AppApi
 		props.appApi.addListener('articleUpdated', ev => {
-			this.updateArticles(ev.article);
+			this._articleChangeEventHandlers.forEach(handler => {
+				handler(ev.article);
+			});
 		});
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {

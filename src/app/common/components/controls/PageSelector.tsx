@@ -1,11 +1,15 @@
 import * as React from 'react';
 
-export default class PageSelector extends React.PureComponent<{
+interface Props {
 	pageNumber: number,
 	pageCount: number,
 	onChange: (pageNumber: number) => void,
-	disabled: boolean
-}, {}> {
+	disabled?: boolean
+}
+export default class PageSelector extends React.PureComponent<Props> {
+	public static defaultProps: Partial<Props> = {
+		disabled: false
+	};
 	private _updatePageNumber = (e: React.ChangeEvent<HTMLSelectElement>) => this.props.onChange(parseInt(e.currentTarget.value));
 	public render() {
 		return (
