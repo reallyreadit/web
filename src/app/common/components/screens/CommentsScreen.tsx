@@ -34,12 +34,12 @@ export function getPathParams(path: string) {
 interface Props {
 	article: Fetchable<UserArticle>
 	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
-	onGetUser: () => UserAccount | null,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	path: string
+	path: string,
+	user: UserAccount | null
 }
 export default class extends React.Component<
 	Props,
@@ -88,7 +88,7 @@ export default class extends React.Component<
 	}
 	public render() {
 		const
-			isUserSignedIn = !!this.props.onGetUser(),
+			isUserSignedIn = !!this.props.user,
 			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead;
 		return (
 			<div className="comments-screen_udh2l6">

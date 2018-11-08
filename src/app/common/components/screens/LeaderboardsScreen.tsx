@@ -8,8 +8,8 @@ import UserAccount from '../../../../common/models/UserAccount';
 
 export default (props: {
 	leaderboards: Fetchable<WeeklyReadingLeaderboards>,
-	onGetUser: () => UserAccount | null,
-	stats: Fetchable<UserWeeklyReadingStats | null>
+	stats: Fetchable<UserWeeklyReadingStats | null>,
+	user: UserAccount | null
 }) => (
 	<div className="leaderboards-screen_wuzsob">
 		{props.stats.isLoading || props.leaderboards.isLoading ?
@@ -26,7 +26,7 @@ export default (props: {
 								<strong># of Minutes:</strong> {Math.floor(props.stats.value.wordCount / readingParameters.averageWordsPerMinute)} (ranked {props.stats.value.wordCountRank} out of {props.stats.value.userCount})
 							</li>
 						</ol> :
-						props.onGetUser() ?
+						props.user ?
 							<span>Start reading to see your stats</span> :
 							<span>Sign up to see your personal reading stats</span>}
 				</div>

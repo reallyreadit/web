@@ -7,16 +7,17 @@ import CallbackStore from '../../CallbackStore';
 import EventHandlerStore from '../../EventHandlerStore';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
+import { Screen, RootState } from '../Root';
 
 interface Props {
 	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
-	onGetUser: () => UserAccount | null,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	user: UserAccount | null
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -42,7 +43,7 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			articles: props.onGetUser() ?
+			articles: props.user ?
 				this.fetchArticles(1) :
 				emptyPageResult
 		};
@@ -78,7 +79,7 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 		return (
 			<StarredScreen
 				articles={this.state.articles}
-				isUserSignedIn={!!this.props.onGetUser()}
+				isUserSignedIn={!!this.props.user}
 				onLoadPage={this._loadPage}
 				onReadArticle={this.props.onReadArticle}
 				onShareArticle={this.props.onShareArticle}
@@ -90,12 +91,12 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Props
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: () => ({ key, title: 'Starred' }),
-		render: () => (
-			<BrowserStarredScreen {...deps} />
+		render: (screenState: Screen, rootState: RootState) => (
+			<BrowserStarredScreen {...{ ...deps, user: rootState.user }} />
 		)
 	};
 }

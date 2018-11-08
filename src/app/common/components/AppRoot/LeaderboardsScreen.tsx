@@ -6,11 +6,12 @@ import { FetchFunction } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CallbackStore from '../../CallbackStore';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
+import { Screen, RootState } from '../Root';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<WeeklyReadingLeaderboards>,
 	onGetStats: FetchFunction<UserWeeklyReadingStats | null>,
-	onGetUser: () => UserAccount | null
+	user: UserAccount | null
 }
 class AppLeaderboardsScreen extends React.Component<Props, {
 	leaderboards: Fetchable<WeeklyReadingLeaderboards>,
@@ -31,17 +32,17 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
-				onGetUser={this.props.onGetUser}
 				stats={this.state.stats}
+				user={this.props.user}
 			/>
 		);
 	}
 }
-export default function<TScreenKey>(key: TScreenKey, deps: Props) {
+export default function<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
 		create: () => ({ key, title: 'Leaderboards' }),
-		render: () => (
-			<AppLeaderboardsScreen {...deps} />
+		render: (screenState: Screen, rootState: RootState) => (
+			<AppLeaderboardsScreen {...{ ...deps, user: rootState.user }} />
 		)
 	};
 }

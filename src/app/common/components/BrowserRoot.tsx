@@ -110,7 +110,6 @@ export default class extends Root<Props, State> {
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
-				onGetUser: this._getUser,
 				onPostComment: this._postComment,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -122,7 +121,6 @@ export default class extends Root<Props, State> {
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
-				onGetUser: this._getUser,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
@@ -132,7 +130,6 @@ export default class extends Root<Props, State> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onGetHotTopics: this.props.serverApi.getHotTopics,
-				onGetUser: this._getUser,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
@@ -143,7 +140,6 @@ export default class extends Root<Props, State> {
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onGetLeaderboards: this.props.serverApi.getWeeklyReadingLeaderboards,
 				onGetStats: this.props.serverApi.getWeeklyReadingStats,
-				onGetUser: this._getUser,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler
 			}),
 			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {
@@ -158,7 +154,6 @@ export default class extends Root<Props, State> {
 			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
-				onGetUser: this._getUser,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,

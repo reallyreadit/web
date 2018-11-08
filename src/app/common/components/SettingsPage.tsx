@@ -10,49 +10,20 @@ import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 import { Intent } from './Toaster';
+import { Screen, RootState } from './Root';
 
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
+interface Props {
 	onCloseDialog: () => void,
 	onChangeEmailAddress: (email: string) => Promise<void>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
-	onGetUser: () => UserAccount | null,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onShowToast: (text: string, intent: Intent) => void,
 	onUpdateContactPreferences: (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => Promise<void>,
-	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>
-}) {
-	return {
-		create: () => ({ key, title: 'Settings' }),
-		render: () => (
-			<SettingsPage
-				onCloseDialog={deps.onCloseDialog}
-				onChangeEmailAddress={deps.onChangeEmailAddress}
-				onChangePassword={deps.onChangePassword}
-				onOpenDialog={deps.onOpenDialog}
-				onResendConfirmationEmail={deps.onResendConfirmationEmail}
-				onShowToast={deps.onShowToast}
-				onUpdateContactPreferences={deps.onUpdateContactPreferences}
-				onUpdateNotificationPreferences={deps.onUpdateNotificationPreferences}
-				user={deps.onGetUser()}
-			/>
-		)
-	};
+	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>,
+	user: UserAccount
 }
-export default class SettingsPage extends React.PureComponent<
-	{
-		onCloseDialog: () => void,
-		onChangeEmailAddress: (email: string) => Promise<void>,
-		onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
-		onOpenDialog: (dialog: React.ReactNode) => void,
-		onResendConfirmationEmail: () => Promise<void>,
-		onShowToast: (text: string, intent: Intent) => void,
-		onUpdateContactPreferences: (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => Promise<void>,
-		onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>,
-		user: UserAccount
-	},
-	{}
-> {
+class SettingsPage extends React.PureComponent<Props> {
 	private _openChangePasswordDialog = () => {
 		this.props.onOpenDialog(
 			<ChangePasswordDialog
@@ -164,4 +135,22 @@ export default class SettingsPage extends React.PureComponent<
 			</div>
 		);
 	}
+}
+export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
+	return {
+		create: () => ({ key, title: 'Settings' }),
+		render: (screenState: Screen, rootState: RootState) => (
+			<SettingsPage
+				onCloseDialog={deps.onCloseDialog}
+				onChangeEmailAddress={deps.onChangeEmailAddress}
+				onChangePassword={deps.onChangePassword}
+				onOpenDialog={deps.onOpenDialog}
+				onResendConfirmationEmail={deps.onResendConfirmationEmail}
+				onShowToast={deps.onShowToast}
+				onUpdateContactPreferences={deps.onUpdateContactPreferences}
+				onUpdateNotificationPreferences={deps.onUpdateNotificationPreferences}
+				user={rootState.user}
+			/>
+		)
+	};
 }

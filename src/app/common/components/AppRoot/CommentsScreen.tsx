@@ -4,7 +4,7 @@ import Fetchable from '../../serverApi/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';
-import { Screen } from '../Root';
+import { Screen, RootState } from '../Root';
 import Location from '../../../../common/routing/Location';
 import Comment from '../../../../common/models/Comment';
 import EventHandlerStore from '../../EventHandlerStore';
@@ -12,7 +12,6 @@ import EventHandlerStore from '../../EventHandlerStore';
 interface Props {
 	article: Fetchable<UserArticle>
 	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
-	onGetUser: () => UserAccount | null,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
@@ -20,7 +19,8 @@ interface Props {
 	onSetScreenState: (state: Partial<Screen<Fetchable<UserArticle>>>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	path: string
+	path: string,
+	user: UserAccount | null
 }
 class AppCommentsScreen extends React.Component<Props> {
 	private readonly _eventHandlers = new EventHandlerStore();
@@ -47,27 +47,21 @@ class AppCommentsScreen extends React.Component<Props> {
 			<CommentsScreen
 				article={this.props.article}
 				onGetComments={this.props.onGetComments}
-				onGetUser={this.props.onGetUser}
 				onPostComment={this.props.onPostComment}
 				onReadArticle={this.props.onReadArticle}
 				onShareArticle={this.props.onShareArticle}
 				onToggleArticleStar={this.props.onToggleArticleStar}
 				path={this.props.path}
+				user={this.props.user}
 			/>
 		);
 	}
 }
-export default function <TScreenKey>(key: TScreenKey, deps: {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'onReloadArticle' | 'onSetScreenState' | 'path' | 'user'>> & {
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
-	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
-	onGetUser: () => UserAccount | null,
-	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
-	onSetScreenState: (key: TScreenKey, state: Partial<Screen<Fetchable<UserArticle>>>) => void,
-	onShareArticle: (article: UserArticle) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>
-}) {
+	onSetScreenState: (key: TScreenKey, state: Partial<Screen<Fetchable<UserArticle>>>) => void
+};
+export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
 	const setScreenState = (state: Partial<Screen<Fetchable<UserArticle>>>) => {
 		deps.onSetScreenState(key, state);
 	};
@@ -93,11 +87,10 @@ export default function <TScreenKey>(key: TScreenKey, deps: {
 				title: article.value ? article.value.title : 'Loading...'
 			};
 		},
-		render: (state: Screen<Fetchable<UserArticle>>) => (
+		render: (state: Screen<Fetchable<UserArticle>>, rootState: RootState) => (
 			<AppCommentsScreen
 				article={state.componentState}
 				onGetComments={deps.onGetComments}
-				onGetUser={deps.onGetUser}
 				onPostComment={deps.onPostComment}
 				onReadArticle={deps.onReadArticle}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
@@ -106,6 +99,7 @@ export default function <TScreenKey>(key: TScreenKey, deps: {
 				onShareArticle={deps.onShareArticle}
 				onToggleArticleStar={deps.onToggleArticleStar}
 				path={state.location.path}
+				user={rootState.user}
 			/>
 		)
 	};

@@ -10,44 +10,9 @@ import { stringMap as challengeResponseActionStringMap } from '../../../common/m
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from './Toaster';
 import CallbackStore from '../CallbackStore';
+import { Screen, RootState } from './Root';
 
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
-	onCloseDialog: () => void,
-	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
-	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
-	onGetChallengeResponseActionTotals: (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => Fetchable<ChallengeResponseTotal[]>,
-	onGetChallengeWinners: (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => Fetchable<ChallengeWinner[]>,
-	onGetUser: () => UserAccount | null,
-	onGetUserStats: (callback: (state: Fetchable<UserStats>) => void) => Fetchable<UserStats>,
-	onOpenDialog: (dialog: React.ReactNode) => void,
-	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
-	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
-	onShowToast: (text: string, intent: Intent) => void
-}) {
-	return {
-		create: () => ({ key, title: 'Admin' }),
-		render: () => {
-			return (
-				<AdminPage
-					activeChallengeId={1}
-					onCloseDialog={deps.onCloseDialog}
-					onGetBulkMailings={deps.onGetBulkMailings}
-					onGetBulkMailingLists={deps.onGetBulkMailingLists}
-					onGetChallengeResponseActionTotals={deps.onGetChallengeResponseActionTotals}
-					onGetChallengeWinners={deps.onGetChallengeWinners}
-					onGetUserStats={deps.onGetUserStats}
-					onOpenDialog={deps.onOpenDialog}
-					onSendBulkMailing={deps.onSendBulkMailing}
-					onSendTestBulkMailing={deps.onSendTestBulkMailing}
-					onShowToast={deps.onShowToast}
-					user={deps.onGetUser()}
-				/>
-			);
-		}
-	}
-}
 interface Props {
-	activeChallengeId: number | null,
 	onCloseDialog: () => void,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
@@ -60,7 +25,7 @@ interface Props {
 	onShowToast: (text: string, intent: Intent) => void,
 	user: UserAccount
 }
-export default class AdminPage extends React.Component<
+class AdminPage extends React.Component<
 	Props,
 	{
 		userStats: Fetchable<UserStats>,
@@ -95,29 +60,21 @@ export default class AdminPage extends React.Component<
 			userStats: props.onGetUserStats(
 				this._callbacks.add(userStats => { this.setState({ userStats }); })
 			),
-			challengeResponseTotals: (
-				props.activeChallengeId != null ?
-					props.onGetChallengeResponseActionTotals(
-						props.activeChallengeId,
-						this._callbacks.add(
-							challengeResponseTotals => {
-								this.setState({ challengeResponseTotals });
-							}
-						)
-					) :
-					{ isLoading: false, value: [] }
+			challengeResponseTotals: props.onGetChallengeResponseActionTotals(
+				1,
+				this._callbacks.add(
+					challengeResponseTotals => {
+						this.setState({ challengeResponseTotals });
+					}
+				)
 			),
-			challengeWinners: (
-				props.activeChallengeId != null ?
-					props.onGetChallengeWinners(
-						props.activeChallengeId,
-						this._callbacks.add(
-							challengeWinners => {
-								this.setState({ challengeWinners });
-							}
-						)
-					) :
-					{ isLoading: false, value: [] }
+			challengeWinners: props.onGetChallengeWinners(
+				1,
+				this._callbacks.add(
+					challengeWinners => {
+						this.setState({ challengeWinners });
+					}
+				)
 			),
 			mailings: props.onGetBulkMailings(
 				this._callbacks.add(mailings => { this.setState({ mailings }); })
@@ -269,5 +226,27 @@ export default class AdminPage extends React.Component<
 				</table>
 			</div>
 		);
+	}
+}
+export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
+	return {
+		create: () => ({ key, title: 'Admin' }),
+		render: (screenState: Screen, rootState: RootState) => {
+			return (
+				<AdminPage
+					onCloseDialog={deps.onCloseDialog}
+					onGetBulkMailings={deps.onGetBulkMailings}
+					onGetBulkMailingLists={deps.onGetBulkMailingLists}
+					onGetChallengeResponseActionTotals={deps.onGetChallengeResponseActionTotals}
+					onGetChallengeWinners={deps.onGetChallengeWinners}
+					onGetUserStats={deps.onGetUserStats}
+					onOpenDialog={deps.onOpenDialog}
+					onSendBulkMailing={deps.onSendBulkMailing}
+					onSendTestBulkMailing={deps.onSendTestBulkMailing}
+					onShowToast={deps.onShowToast}
+					user={rootState.user}
+				/>
+			);
+		}
 	}
 }

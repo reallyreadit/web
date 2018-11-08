@@ -7,12 +7,13 @@ import UserAccount from '../../../../common/models/UserAccount';
 import EventHandlerStore from '../../EventHandlerStore';
 import CallbackStore from '../../CallbackStore';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
+import { Screen, RootState } from '../Root';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<WeeklyReadingLeaderboards>,
 	onGetStats: FetchFunction<UserWeeklyReadingStats | null>,
-	onGetUser: () => UserAccount | null,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
+	user: UserAccount | null
 }
 class BrowserLeaderboardsScreen extends React.Component<Props, {
 	leaderboards: Fetchable<WeeklyReadingLeaderboards>,
@@ -24,7 +25,7 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 		super(props);
 		this.state = {
 			leaderboards: props.onGetLeaderboards(this._callbacks.add(leaderboards => { this.setState({ leaderboards }) })),
-			stats: props.onGetUser() ?
+			stats: props.user ?
 				props.onGetStats(this._callbacks.add(stats => { this.setState({ stats }) })) :
 				{ isLoading: false }
 		};
@@ -52,17 +53,17 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
-				onGetUser={this.props.onGetUser}
 				stats={this.state.stats}
+				user={this.props.user}
 			/>
 		);
 	}
 }
-export default function<TScreenKey>(key: TScreenKey, deps: Props) {
+export default function<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
 		create: () => ({ key, title: 'Leaderboards' }),
-		render: () => (
-			<BrowserLeaderboardsScreen {...deps} />
+		render: (screenState: Screen, rootState: RootState) => (
+			<BrowserLeaderboardsScreen {...{ ...deps, user: rootState.user }} />
 		)
 	};
 }

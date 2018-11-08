@@ -7,16 +7,17 @@ import CallbackStore from '../../CallbackStore';
 import EventHandlerStore from '../../EventHandlerStore';
 import PageResult from '../../../../common/models/PageResult';
 import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
+import { Screen, RootState } from '../Root';
 
 interface Props {
 	onDeleteArticle: (article: UserArticle) => void,
-	onGetUser: () => UserAccount | null,
 	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	user: UserAccount | null
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -56,7 +57,7 @@ class AppHistoryScreen extends React.Component<Props, State> {
 		return (
 			<HistoryScreen
 				articles={this.state.articles}
-				isUserSignedIn={!!this.props.onGetUser()}
+				isUserSignedIn={!!this.props.user}
 				onDeleteArticle={this.props.onDeleteArticle}
 				onLoadPage={this._loadPage}
 				onReadArticle={this.props.onReadArticle}
@@ -67,14 +68,14 @@ class AppHistoryScreen extends React.Component<Props, State> {
 		);
 	}
 }
-export default function <TScreenKey>(
+export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Props
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: () => ({ key, title: 'History' }),
-		render: () => (
-			<AppHistoryScreen {...deps} />
+		render: (screenState: Screen, rootState: RootState) => (
+			<AppHistoryScreen {...{ ...deps, user: rootState.user }} />
 		)
 	};
 }

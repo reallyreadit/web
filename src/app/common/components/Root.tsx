@@ -15,9 +15,9 @@ import routes from '../../../common/routing/routes';
 import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
-import { createScreenFactory as createAdminPageScreenFactory } from './AdminPage';
+import createAdminPageScreenFactory from './AdminPage';
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
-import { createScreenFactory as createSettingsPageScreenFactory } from './SettingsPage';
+import createSettingsPageScreenFactory from './SettingsPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import ShareArticleDialog from './ShareArticleDialog';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
@@ -179,9 +179,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			}
 		}
 	};
-	protected readonly _getUser = () => {
-		return this.state.user;
-	};
 
 	// toasts
 	protected readonly _addToast = (text: string, intent: Intent) => {
@@ -307,7 +304,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetChallengeResponseActionTotals: this.props.serverApi.getChallengeResponseActionTotals,
 				onGetChallengeWinners: this.props.serverApi.getChallengeWinners,
-				onGetUser: this._getUser,
 				onGetUserStats: this.props.serverApi.getUserStats,
 				onOpenDialog: this._openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
@@ -329,7 +325,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onCloseDialog: this._closeDialog,
 				onChangeEmailAddress: this._changeEmailAddress,
 				onChangePassword: this._changePassword,
-				onGetUser: this._getUser,
 				onOpenDialog: this._openDialog,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShowToast: this._addToast,
