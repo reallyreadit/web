@@ -17,11 +17,10 @@ import Comment from '../../common/models/Comment';
 import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
-import LocalStorageApi from './LocalStorageApi';
 import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
-import WindowApi from './WindowApi';
+import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
@@ -228,7 +227,7 @@ server = server.use((req, res, next) => {
 });
 // render the app
 server = server.get('/*', (req, res) => {
-	const windowApi = new WindowApi();
+	const browserApi = new BrowserApi();
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
 		serverApi: req.api,
@@ -255,10 +254,9 @@ server = server.get('/*', (req, res) => {
 				BrowserRoot,
 				{
 					...rootProps,
+					browserApi,
 					extensionApi: new ExtensionApi(config.extensionId),
-					localStorageApi: new LocalStorageApi(),
-					newReplyNotification: req.sessionState.newReplyNotification,
-					windowApi
+					newReplyNotification: req.sessionState.newReplyNotification
 				}
 			);
 			break;
@@ -290,7 +288,7 @@ server = server.get('/*', (req, res) => {
 				userAccount: req.sessionState.userAccount,
 				verifyCaptcha: config.enableCaptcha
 			},
-			title: windowApi.getTitle()
+			title: browserApi.getTitle()
 		}));
 	});
 });

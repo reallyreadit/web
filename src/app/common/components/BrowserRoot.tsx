@@ -4,7 +4,6 @@ import Toaster from './Toaster';
 import EmailConfirmationBar from './EmailConfirmationBar';
 import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState } from './Root';
-import LocalStorageApi from '../LocalStorageApi';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
@@ -18,16 +17,16 @@ import createHistoryScreenFactory from './BrowserRoot/HistoryScreen';
 import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
 import createPizzaScreenFactory from './BrowserRoot/PizzaScreen';
 import createStarredScreenFactory from './BrowserRoot/StarredScreen';
-import WindowApi from '../WindowApi';
+import BrowserApi from '../BrowserApi';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
+import EventSource from '../EventSource';
 
 interface Props extends RootProps {
 	extensionApi: ExtensionApi,
-	localStorageApi: LocalStorageApi,
 	newReplyNotification: NewReplyNotification | null,
-	windowApi: WindowApi
+	browserApi: BrowserApi
 }
 interface State extends RootState {
 	menuState: 'opened' | 'closing' | 'closed',
@@ -170,13 +169,17 @@ export default class extends Root<Props, State> {
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification)
 		};
 
-		// LocalStorageApi
-		props.localStorageApi.addListener('user', user => {
-			this.setState({ user });
-		});
-
-		// WindowApi
-		props.windowApi.setTitle(locationState.screen.title);
+		// BrowserApi
+		props.browserApi.setTitle(locationState.screen.title);
+		props.browserApi
+			.addListener('articleUpdated', article => {
+				this._articleChangeEventHandlers.forEach(handler => {
+					handler(article);
+				});
+			})
+			.addListener('userUpdated', user => {
+				this.onUserChanged(user, EventSource.Sync);
+			});
 
 		// ExtensionApi
 		props.extensionApi.addListener('articleUpdated', ev => {
@@ -187,7 +190,7 @@ export default class extends Root<Props, State> {
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string): Pick<State, 'menuState' | 'screens'> {
 		const { screen, url } = this.createScreen(key, urlParams, title);
-		this.props.windowApi.setTitle(screen.title);
+		this.props.browserApi.setTitle(screen.title);
 		window.history.pushState(
 			null,
 			screen.title,
@@ -199,9 +202,9 @@ export default class extends Root<Props, State> {
 		};
 	}
 	protected onTitleChanged(title: string) {
-		this.props.windowApi.setTitle(title);
+		this.props.browserApi.setTitle(title);
 	}
-	protected onUserChanged(userAccount: UserAccount) {
+	protected onUserChanged(userAccount: UserAccount, source: EventSource) {
 		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
 		if (screenAuthLevel != null && (!userAccount || userAccount.role !== screenAuthLevel)) {
 			this.setState({
@@ -215,7 +218,9 @@ export default class extends Root<Props, State> {
 				});
 			});
 		}
-		this.props.localStorageApi.updateUser(userAccount);
+		if (source === EventSource.Original) {
+			this.props.browserApi.updateUser(userAccount);
+		}
 	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
@@ -232,7 +237,7 @@ export default class extends Root<Props, State> {
 		window.addEventListener('popstate', () => {
 			const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
 			this.setState({ screens: [screen] });
-			this.props.windowApi.setTitle(screen.title);
+			this.props.browserApi.setTitle(screen.title);
 		});
 	}
 	public render() {

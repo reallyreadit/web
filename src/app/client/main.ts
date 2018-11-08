@@ -5,10 +5,12 @@ import ServerApi from './ServerApi';
 import Captcha from './Captcha';
 import ClientType from '../common/ClientType';
 import BrowserRoot from '../common/components/BrowserRoot';
-import LocalStorageApi from './LocalStorageApi';
-import WindowApi from './WindowApi';
+import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
+
+// clean up localStorage, switched to using BroadcastChannel for tab sync instead
+localStorage.clear();
 
 ga('create', {
 	trackingId: 'UA-101617933-1',
@@ -48,10 +50,9 @@ switch (window.initData.clientType) {
 			BrowserRoot,
 			{
 				...rootProps,
+				browserApi: new BrowserApi(),
 				extensionApi: new ExtensionApi(window.initData.extensionId),
-				localStorageApi: new LocalStorageApi(),
-				newReplyNotification: window.initData.newReplyNotification,
-				windowApi: new WindowApi()
+				newReplyNotification: window.initData.newReplyNotification
 			}
 		);
 		break;

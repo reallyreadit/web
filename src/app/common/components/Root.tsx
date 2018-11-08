@@ -23,6 +23,7 @@ import ShareArticleDialog from './ShareArticleDialog';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
+import EventSource from '../EventSource';
 
 export interface Props {
 	captcha: Captcha,
@@ -214,7 +215,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 					eventAction: 'create',
 					eventLabel: userAccount.name
 				});
-				this.onUserChanged(userAccount);
+				this.onUserChanged(userAccount, EventSource.Original);
 			});
 	};
 	protected readonly _deleteArticle = (article: UserArticle) => {
@@ -239,14 +240,14 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		return this.props.serverApi
 			.signIn(email, password)
 			.then(userAccount => {
-				this.onUserChanged(userAccount);
+				this.onUserChanged(userAccount, EventSource.Original);
 			});
 	};
 	protected readonly _signOut = () => {
 		return this.props.serverApi
 			.signOut()
 			.then(() => {
-				this.onUserChanged(null);
+				this.onUserChanged(null, EventSource.Original);
 			});
 	};
 	protected readonly _updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
@@ -363,7 +364,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		};
 	}
 	protected onTitleChanged(title: string) { }
-	protected onUserChanged(userAccount: UserAccount | null) { }
+	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) { }
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) { }
 	protected registerEventHandler<T>(handlers: T[], handler: T) {
 		handlers.push(handler);
