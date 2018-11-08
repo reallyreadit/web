@@ -20,10 +20,23 @@ import BrowserRoot from '../common/components/BrowserRoot';
 import LocalStorageApi from './LocalStorageApi';
 import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
-import { findRouteByLocation } from '../../common/routing/Route';
+import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import WindowApi from './WindowApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
+import ScreenKey from '../../common/routing/ScreenKey';
+
+// route helper function
+function findRouteByRequest(req: express.Request) {
+	return findRouteByLocation(
+		routes,
+		{
+			path: req.path,
+			queryString: createQueryString(req.query)
+		},
+		[clientTypeQueryStringKey]
+	);
+}
 
 // redirect helper function
 const nodeUrl = url;
@@ -118,21 +131,18 @@ server = server.use((req, res, next) => {
 	}
 });
 // authorize
-server = server.get(['/history', '/inbox', '/settings', '/starred'], (req, res, next) => {
-	if (!req.sessionState.userAccount) {
-		redirect(req, res, '/');
-	} else {
-		next();
-	}
-});
-server = server.get('/admin', (req, res, next) => {
+server = server.use((req, res, next) => {
+	const route = findRouteByRequest(req);
 	if (
-		!req.sessionState.userAccount ||
-		req.sessionState.userAccount.role !== UserAccountRole.Admin
+		!route ||
+		route.authLevel == null ||
+		(req.sessionState.userAccount && req.sessionState.userAccount.role === route.authLevel)
 	) {
+		next();
+	} else if (route.authLevel === UserAccountRole.Admin) {
 		res.sendStatus(404);
 	} else {
-		next();
+		redirect(req, res, findRouteByKey(routes, ScreenKey.Home).createUrl());
 	}
 });
 // handle redirects
@@ -210,16 +220,7 @@ server = server.get('/inbox', (req, res, next) => {
 });
 // render matched route or return 404
 server = server.use((req, res, next) => {
-	if (
-		findRouteByLocation(
-			routes,
-			{
-				path: req.path,
-				queryString: createQueryString(req.query)
-			},
-			[clientTypeQueryStringKey]
-		)
-	) {
+	if (findRouteByRequest(req)) {
 		next();
 	} else {
 		res.sendStatus(404);

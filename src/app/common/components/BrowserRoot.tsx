@@ -20,6 +20,8 @@ import createPizzaScreenFactory from './BrowserRoot/PizzaScreen';
 import createStarredScreenFactory from './BrowserRoot/StarredScreen';
 import WindowApi from '../WindowApi';
 import ExtensionApi from '../ExtensionApi';
+import { findRouteByKey } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
 
 interface Props extends RootProps {
 	extensionApi: ExtensionApi,
@@ -65,31 +67,31 @@ export default class extends Root<Props, State> {
 
 	// screens
 	private readonly _viewAdminPage = () => {
-		this.replaceScreen(ScreenKey.AdminPage);
+		this.setState(this.replaceScreen(ScreenKey.AdminPage));
 	};
 	private readonly _viewHistory = () => {
-		this.replaceScreen(ScreenKey.History);
+		this.setState(this.replaceScreen(ScreenKey.History));
 	};
 	private readonly _viewHome = () => {
-		this.replaceScreen(ScreenKey.Home);
+		this.setState(this.replaceScreen(ScreenKey.Home));
 	};
 	private readonly _viewInbox = () => {
-		this.replaceScreen(ScreenKey.Inbox);
+		this.setState(this.replaceScreen(ScreenKey.Inbox));
 	};
 	private readonly _viewLeaderboards = () => {
-		this.replaceScreen(ScreenKey.Leaderboards);
+		this.setState(this.replaceScreen(ScreenKey.Leaderboards));
 	};
 	private readonly _viewPizzaChallenge = () => {
-		this.replaceScreen(ScreenKey.PizzaChallenge);
+		this.setState(this.replaceScreen(ScreenKey.PizzaChallenge));
 	};
 	private readonly _viewPrivacyPolicy = () => {
-		this.replaceScreen(ScreenKey.PrivacyPolicy);
+		this.setState(this.replaceScreen(ScreenKey.PrivacyPolicy));
 	};
 	private readonly _viewSettings = () => {
-		this.replaceScreen(ScreenKey.Settings);
+		this.setState(this.replaceScreen(ScreenKey.Settings));
 	};
 	private readonly _viewStarred = () => {
-		this.replaceScreen(ScreenKey.Starred);
+		this.setState(this.replaceScreen(ScreenKey.Starred));
 	};
 
 	constructor(props: Props) {
@@ -183,38 +185,47 @@ export default class extends Root<Props, State> {
 			});
 		});
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string): Pick<State, 'menuState' | 'screens'> {
 		const { screen, url } = this.createScreen(key, urlParams, title);
-		this.setState({
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
-			screens: [screen]
-		});
 		this.props.windowApi.setTitle(screen.title);
 		window.history.pushState(
 			null,
 			screen.title,
 			url
 		);
+		return {
+			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
+			screens: [screen]
+		};
 	}
 	protected onTitleChanged(title: string) {
 		this.props.windowApi.setTitle(title);
 	}
 	protected onUserChanged(userAccount: UserAccount) {
-		this.setState({ user: userAccount });
+		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
+		if (screenAuthLevel != null && (!userAccount || userAccount.role !== screenAuthLevel)) {
+			this.setState({
+				...this.replaceScreen(ScreenKey.Home),
+				user: userAccount
+			});
+		} else {
+			this.setState({ user: userAccount }, () => {
+				this._userChangeEventHandlers.forEach(handler => {
+					handler(userAccount);
+				});
+			});
+		}
 		this.props.localStorageApi.updateUser(userAccount);
-		this._userChangeEventHandlers.forEach(handler => {
-			handler(userAccount);
-		});
 	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
-		this.replaceScreen(
+		this.setState(this.replaceScreen(
 			ScreenKey.Comments, {
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
 			article.title
-		);
+		));
 	}
 	public componentDidMount() {
 		this.clearQueryStringKvps();

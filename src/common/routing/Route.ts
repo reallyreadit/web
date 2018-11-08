@@ -1,7 +1,9 @@
 import Location from './Location';
 import { parseQueryString } from './queryString';
+import UserAccountRole from '../models/UserAccountRole';
 
 export interface Route<TDialogKey, TScreenKey> {
+	authLevel?: UserAccountRole,
 	createUrl: (params?: { [key: string]: string }) => string,
 	dialogKey?: TDialogKey,
 	pathRegExp: RegExp,

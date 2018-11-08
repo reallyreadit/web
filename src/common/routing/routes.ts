@@ -1,6 +1,7 @@
 import { Route } from "./Route";
 import DialogKey from "./DialogKey";
 import ScreenKey from "./ScreenKey";
+import UserAccountRole from "../models/UserAccountRole";
 
 const routes: Route<DialogKey, ScreenKey>[] = [
 	{
@@ -23,6 +24,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Home
 	},
 	{
+		authLevel: UserAccountRole.Admin,
 		createUrl: () => '/admin',
 		pathRegExp: /^\/admin$/,
 		screenKey: ScreenKey.AdminPage
@@ -62,6 +64,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.History
 	},
 	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/inbox',
 		pathRegExp: /^\/inbox$/,
 		screenKey: ScreenKey.Inbox
@@ -87,6 +90,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.PrivacyPolicy
 	},
 	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',
 		pathRegExp: /^\/settings$/,
 		screenKey: ScreenKey.Settings
