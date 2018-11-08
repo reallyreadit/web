@@ -92,7 +92,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			});
 	};
 	protected readonly _readReply = (comment: Comment) => {
-
+		this.props.serverApi.readReply(comment.id);
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
 
