@@ -22,13 +22,16 @@ import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
+import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
+import ReadReadinessBar from './BrowserRoot/ReadReadinessBar';
 
 interface Props extends RootProps {
+	browserApi: BrowserApi,
 	extensionApi: ExtensionApi,
-	newReplyNotification: NewReplyNotification | null,
-	browserApi: BrowserApi
+	newReplyNotification: NewReplyNotification | null
 }
 interface State extends RootState {
+	isExtensionInstalled: boolean | null,
 	menuState: 'opened' | 'closing' | 'closed',
 	showNewReplyIndicator: boolean
 }
@@ -51,6 +54,11 @@ export default class extends Root<Props, State> {
 	private readonly _userChangeEventHandlers: ((newUser: UserAccount) => void)[] = [];
 	private readonly _registerUserChangeEventHandler = (handler: (newUser: UserAccount) => void) => {
 		return this.registerEventHandler(this._userChangeEventHandlers, handler);
+	};
+
+	// extension
+	private readonly _installExtension = () => {
+		this.props.extensionApi.install();
 	};
 
 	// menu
@@ -166,6 +174,7 @@ export default class extends Root<Props, State> {
 		this.state = {
 			...this.state,
 			dialog: locationState.dialog,
+			isExtensionInstalled: null,
 			menuState: 'closed',
 			screens: [locationState.screen],
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification)
@@ -182,11 +191,15 @@ export default class extends Root<Props, State> {
 			});
 
 		// ExtensionApi
-		props.extensionApi.addListener('articleUpdated', ev => {
-			this._articleChangeEventHandlers.forEach(handler => {
-				handler(ev.article, ev.isCompletionCommit);
+		props.extensionApi
+			.addListener('articleUpdated', ev => {
+				this._articleChangeEventHandlers.forEach(handler => {
+					handler(ev.article, ev.isCompletionCommit);
+				});
+			})
+			.addListener('change', isExtensionInstalled => {
+				this.setState({ isExtensionInstalled });
 			});
-		});
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string): Pick<State, 'menuState' | 'screens'> {
 		const { screen, url } = this.createScreen(key, urlParams, title);
@@ -222,6 +235,21 @@ export default class extends Root<Props, State> {
 			this.props.browserApi.updateUser(userAccount);
 		}
 	}
+	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
+		if (!this.state.user || !this.props.extensionApi.isInstalled) {
+			ev.preventDefault();
+			this._openDialog(
+				<ReadReadinessDialog
+					articleUrl={article.url}
+					error={!this.state.user ? ReadReadinessError.SignedOut : this.props.extensionApi.isBrowserCompatible ? ReadReadinessError.ExtensionNotInstalled : ReadReadinessError.IncompatibleBrowser}
+					onCloseDialog={this._closeDialog}
+					onInstallExtension={this._installExtension}
+					onShowCreateAccountDialog={this._openCreateAccountDialog}
+					onShowSignInDialog={this._openSignInDialog}
+				/>
+			);
+		}
+	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		this.setState(this.replaceScreen(
@@ -244,6 +272,12 @@ export default class extends Root<Props, State> {
 		const screen = this.state.screens[0];
 		return (
 			<div className="browser-root">
+				{this.state.user && this.state.isExtensionInstalled === false ?
+					<ReadReadinessBar
+						isBrowserCompatible={this.props.extensionApi.isBrowserCompatible}
+						onInstallExtension={this._installExtension}
+					/> :
+					null}
 				<EmailConfirmationBar
 					onResendConfirmationEmail={this._resendConfirmationEmail}
 					user={this.state.user}

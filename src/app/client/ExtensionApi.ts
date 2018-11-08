@@ -2,7 +2,7 @@ import ExtensionApi from '../common/ExtensionApi';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
 
 export default class extends ExtensionApi {
-    private _isInstalled: boolean = null;
+    private _isInstalled: boolean | null = null;
     constructor(extensionId: string) {
         super(extensionId);
         this.sendMessage('ping')
@@ -36,7 +36,7 @@ export default class extends ExtensionApi {
         if (this.isBrowserCompatible) {
             return new Promise<T>((resolve, reject) => {
                 try {
-                    chrome.runtime.sendMessage(this._extensionId, { type, data }, resolve);
+                    window.chrome.runtime.sendMessage(this._extensionId, { type, data }, resolve);
                 } catch (ex) {
                     reject();
                 }
@@ -45,7 +45,7 @@ export default class extends ExtensionApi {
         return Promise.reject('NotSupported');
     }
     public install() {
-        chrome.webstore.install();
+        window.chrome.webstore.install();
     }
     public updateNewReplyNotification(notification: NewReplyNotification) {
         this.sendMessage('updateNewReplyNotification', notification)
@@ -55,6 +55,6 @@ export default class extends ExtensionApi {
         return this._isInstalled;
     }
     public get isBrowserCompatible() {
-        return !!(window.chrome && window.chrome.runtime);
+        return !!(window.chrome && window.chrome.webstore);
     }
 }

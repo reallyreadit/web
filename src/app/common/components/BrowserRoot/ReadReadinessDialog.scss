@@ -1,0 +1,30 @@
+.read-readiness-dialog {
+    padding: 15px;
+	z-index: 100;
+	background: #fff;
+    border: 7px double #000;
+    border-radius: 10px;
+	h3 {
+		margin: 0 0 15px 0;
+		font-size: 17px;
+		text-align: center;
+	}
+	a {
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.continue {
+		margin: 15px 0 0 0;
+		text-align: center;
+	}
+	.continue > a {
+		color: darkgray;
+	}
+	.buttons {
+		margin-top: 6px;
+		text-align: right;
+		.button:last-child {
+			margin-left: (8 + 6) + px; 
+		}
+	}
+}
