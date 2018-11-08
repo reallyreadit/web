@@ -15,10 +15,10 @@ interface Props {
 	challengeState: Fetchable<ChallengeState>,
 	leaderboard: Fetchable<ChallengeLeaderboard>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
-	onGetUserAccount: () => UserAccount | null,
 	onQuitChallenge: () => void,
 	onRefreshLeaderboard: () => void,
-	onStartChallenge: (timeZoneId: number) => void
+	onStartChallenge: (timeZoneId: number) => void,
+	user: UserAccount | null
 }
 export default class extends React.Component<Props> {
 	private readonly _quit = () => {
@@ -36,7 +36,7 @@ export default class extends React.Component<Props> {
 		super(props);
 	}
 	private mergeLeaderboard(leaderboard: Fetchable<ChallengeLeaderboard>) {
-		const user = this.props.onGetUserAccount();
+		const user = this.props.user;
 		if (leaderboard.value && user && this.props.challengeState.value && this.props.challengeState.value.score) {
 			const
 				userName = user.name,
@@ -133,7 +133,7 @@ export default class extends React.Component<Props> {
 	}
 	public render() {
 		const
-			user = this.props.onGetUserAccount(),
+			user = this.props.user,
 			showQuitPrompt = (
 				user &&
 				this.props.challengeState.value &&

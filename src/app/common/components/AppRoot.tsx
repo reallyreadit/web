@@ -125,7 +125,6 @@ export default class extends Root<Props, State> {
 				onGetChallengeScore: this.props.serverApi.getChallengeScore,
 				onGetChallengeState: this.props.serverApi.getChallengeState,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
-				onGetUserAccount: this._getUser,
 				onQuitChallenge: this._quitChallenge,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onStartChallenge: this._startChallenge

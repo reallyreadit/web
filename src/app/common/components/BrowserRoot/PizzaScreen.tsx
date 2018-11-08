@@ -12,17 +12,18 @@ import ChallengeResponse from '../../../../common/models/ChallengeResponse';
 import ChallengeScore from '../../../../common/models/ChallengeScore';
 import UserArticle from '../../../../common/models/UserArticle';
 import produce from 'immer';
+import { Screen, RootState } from '../Root';
 
 interface Props {
 	onGetChallengeLeaderboard: FetchFunctionWithParams<{ challengeId: number }, ChallengeLeaderboard>,
 	onGetChallengeScore: FetchFunctionWithParams<{ challengeId: number }, ChallengeScore>,
 	onGetChallengeState: FetchFunction<ChallengeState>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
-	onGetUserAccount: () => UserAccount | null,
 	onQuitChallenge: (challengeId: number) => Promise<ChallengeResponse>,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onStartChallenge: (challengeId: number, timeZoneId: number) => Promise<{ response: ChallengeResponse, score: ChallengeScore}>
+	onStartChallenge: (challengeId: number, timeZoneId: number) => Promise<{ response: ChallengeResponse, score: ChallengeScore}>,
+	user: UserAccount | null
 }
 interface State {
 	challengeState: Fetchable <ChallengeState>,
@@ -113,19 +114,19 @@ export class BrowserPizzaScreen extends React.Component<Props, State> {
 				challengeState={this.state.challengeState}
 				leaderboard={this.state.leaderboard}
 				onGetTimeZones={this.props.onGetTimeZones}
-				onGetUserAccount={this.props.onGetUserAccount}
 				onQuitChallenge={this._quitChallenge}
 				onRefreshLeaderboard={this._refreshLeaderboard}
 				onStartChallenge={this._startChallenge}
+				user={this.props.user}
 			/>
 		);
 	}
 }
-export default function <TScreenKey>(key: TScreenKey, deps: Props) {
+export default function <TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
 		create: () => ({ key, title: 'Leaderboards' }),
-		render: () => (
-			<BrowserPizzaScreen {...deps} />
+		render: (screenState: Screen, rootState: RootState) => (
+			<BrowserPizzaScreen {...{ ...deps, user: rootState.user }} />
 		)
 	};
 }
