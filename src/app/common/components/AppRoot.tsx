@@ -123,10 +123,12 @@ export default class extends Root<Props, State> {
 			}),
 			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {
 				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
+				onGetChallengeScore: this.props.serverApi.getChallengeScore,
 				onGetChallengeState: this.props.serverApi.getChallengeState,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
 				onGetUserAccount: this._getUser,
 				onQuitChallenge: this._quitChallenge,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onStartChallenge: this._startChallenge
 			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
@@ -163,7 +165,7 @@ export default class extends Root<Props, State> {
 		// AppApi
 		props.appApi.addListener('articleUpdated', ev => {
 			this._articleChangeEventHandlers.forEach(handler => {
-				handler(ev.article);
+				handler(ev.article, ev.isCompletionCommit);
 			});
 		});
 	}

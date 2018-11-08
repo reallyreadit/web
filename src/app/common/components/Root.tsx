@@ -149,8 +149,8 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	};
 
 	// events
-	protected readonly _articleChangeEventHandlers: ((updatedArticle: UserArticle) => void)[] = [];
-	protected readonly _registerArticleChangeEventHandler = (handler: (updatedArticle: UserArticle) => void) => {
+	protected readonly _articleChangeEventHandlers: ((updatedArticle: UserArticle, isCompletionCommit: boolean) => void)[] = [];
+	protected readonly _registerArticleChangeEventHandler = (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => {
 		return this.registerEventHandler(this._articleChangeEventHandlers, handler);
 	};
 

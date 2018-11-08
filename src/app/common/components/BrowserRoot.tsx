@@ -140,10 +140,12 @@ export default class extends Root<Props, State> {
 			}),
 			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {
 				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
+				onGetChallengeScore: this.props.serverApi.getChallengeScore,
 				onGetChallengeState: this.props.serverApi.getChallengeState,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
 				onGetUserAccount: this._getUser,
 				onQuitChallenge: this._quitChallenge,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
 				onStartChallenge: this._startChallenge
 			}),
@@ -173,9 +175,7 @@ export default class extends Root<Props, State> {
 		props.browserApi.setTitle(locationState.screen.title);
 		props.browserApi
 			.addListener('articleUpdated', article => {
-				this._articleChangeEventHandlers.forEach(handler => {
-					handler(article);
-				});
+				// TODO: upate articles from other tabs
 			})
 			.addListener('userUpdated', user => {
 				this.onUserChanged(user, EventSource.Sync);
@@ -184,7 +184,7 @@ export default class extends Root<Props, State> {
 		// ExtensionApi
 		props.extensionApi.addListener('articleUpdated', ev => {
 			this._articleChangeEventHandlers.forEach(handler => {
-				handler(ev.article);
+				handler(ev.article, ev.isCompletionCommit);
 			});
 		});
 	}

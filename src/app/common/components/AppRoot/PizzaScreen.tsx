@@ -9,23 +9,27 @@ import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerAp
 import PizzaScreen from '../screens/PizzaScreen';
 import ChallengeScore from '../../../../common/models/ChallengeScore';
 import ChallengeResponse from '../../../../common/models/ChallengeResponse';
+import EventHandlerStore from '../../EventHandlerStore';
+import produce from 'immer';
+import UserArticle from '../../../../common/models/UserArticle';
 
 interface Props {
 	onGetChallengeLeaderboard: FetchFunctionWithParams<{ challengeId: number }, ChallengeLeaderboard>,
+	onGetChallengeScore: FetchFunctionWithParams<{ challengeId: number }, ChallengeScore>,
 	onGetChallengeState: FetchFunction<ChallengeState>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onGetUserAccount: () => UserAccount | null,
 	onQuitChallenge: (challengeId: number) => Promise<ChallengeResponse>,
+	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onStartChallenge: (challengeId: number, timeZoneId: number) => Promise<{ response: ChallengeResponse, score: ChallengeScore }>
 }
-export class AppPizzaScreen extends React.Component<
-	Props,
-	{
-		challengeState: Fetchable<ChallengeState>,
-		leaderboard: Fetchable<ChallengeLeaderboard>
-	}
-	> {
+interface State {
+	challengeState: Fetchable<ChallengeState>,
+	leaderboard: Fetchable<ChallengeLeaderboard>
+}
+export class AppPizzaScreen extends React.Component<Props, State> {
 	private readonly _callbacks = new CallbackStore();
+	private readonly _eventHandlers = new EventHandlerStore();
 	private readonly _refreshLeaderboard = () => {
 		this.setState({
 			leaderboard: this.props.onGetChallengeLeaderboard(
@@ -77,9 +81,29 @@ export class AppPizzaScreen extends React.Component<
 				})
 			)
 		};
+		this._eventHandlers.add(
+			props.onRegisterArticleChangeHandler((article, isCompletionCommit) => {
+				if (isCompletionCommit) {
+					this.setState(
+						produce<State>(prevState => {
+							prevState.challengeState.isLoading = true
+						}),
+						() => {
+							this.props.onGetChallengeScore({ challengeId: 1 }, score => {
+								this.setState(produce<State>(prevState => {
+									prevState.challengeState.isLoading = false;
+									prevState.challengeState.value.score = score.value;
+								}));
+							});
+						}
+					);
+				}
+			})
+		);
 	}
 	public componentWillUnmount() {
 		this._callbacks.cancel();
+		this._eventHandlers.unregister();
 	}
 	public render() {
 		return (
