@@ -7,6 +7,7 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Fetchable from '../../serverApi/Fetchable';
 import produce from 'immer';
 import LoadingOverlay from '../controls/LoadingOverlay';
+import InfoBox from '../controls/InfoBox';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -59,9 +60,13 @@ export default (props: {
 						onChange={props.onLoadPage}
 					/>
 				</> :
-				<div>
-					Use stars to save articles for  later.<br />
-					<strong>You have no starred articles.</strong>
-				</div>}
+				<InfoBox>
+					{props.isUserSignedIn ?
+						<>
+							Use stars to save articles for  later.<br />
+							<strong>You have no starred articles.</strong>
+						</> :
+						<span>Sign up to save articles to your starred list</span>}
+				</InfoBox>}
 	</div>
 );

@@ -7,6 +7,7 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Fetchable from '../../serverApi/Fetchable';
 import produce from 'immer';
 import LoadingOverlay from '../controls/LoadingOverlay';
+import InfoBox from '../controls/InfoBox';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -69,10 +70,14 @@ export default class extends React.PureComponent<{
 								onChange={this.props.onLoadPage}
 							/>
 						</> :
-						<div>
-							You've read 0 articles.<br />
-							<strong>Go read something!</strong>
-						</div>}
+						<InfoBox>
+							{this.props.isUserSignedIn ?
+								<>
+									You've read 0 articles.<br />
+									<strong>Go read something!</strong>
+								</> :
+								<span>Sign up to view your reading history</span>}
+						</InfoBox>}
 			</div>
 		);
 	}
