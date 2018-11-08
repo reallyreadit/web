@@ -3,15 +3,21 @@ import UserArticle from '../../common/models/UserArticle';
 import UserAccount from '../../common/models/UserAccount';
 
 export default class extends BrowserApi {
-	private readonly _channel = new BroadcastChannel('BrowserApi');
+	private readonly _channel: BroadcastChannel | null;
 	constructor() {
 		super();
-		this._channel.addEventListener('message', ev => {
-			this.emitEvent(ev.data.type, ev.data.data);
-		});
+		try {
+			this._channel = new BroadcastChannel('BrowserApi');
+			this._channel.addEventListener('message', ev => {
+				this.emitEvent(ev.data.type, ev.data.data);
+			});
+		} catch (ex) {
+			this._channel = null;
+		}
 	}
 	private broadcastUpdate(type: string, data: {}) {
-		this._channel.postMessage({ type, data });
+		if (this._channel) {
+			this._channel.postMessage({ type, data });}
 	}
 	public setTitle(title: string) {
 		window.document.title = title;
