@@ -228,7 +228,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			});
 	};
 	protected readonly _deleteArticle = (article: UserArticle) => {
-
+		this.props.serverApi.deleteUserArticle(article.id);
 	};
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
