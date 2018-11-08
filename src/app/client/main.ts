@@ -28,7 +28,6 @@ const rootProps = {
 			};
 		}
 	),
-	initialChallengeState: window.initData.challengeState,
 	initialLocation: window.initData.initialLocation,
 	initialUser: window.initData.userAccount,
 	serverApi

@@ -1,82 +1,57 @@
 import * as React from 'react';
-import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
-import Fetchable from '../serverApi/Fetchable';
-import ChallengeResponseAction from '../../../common/models/ChallengeResponseAction';
+import ChallengeLeaderboard from '../../../../common/models/ChallengeLeaderboard';
+import Fetchable from '../../serverApi/Fetchable';
+import ChallengeResponseAction from '../../../../common/models/ChallengeResponseAction';
 import { DateTime } from 'luxon';
 import classNames from 'classnames';
-import ChallengeView from './PizzaPage/ChallengeView';
-import RefreshButton from './controls/RefreshButton';
-import UserAccount from '../../../common/models/UserAccount';
-import { RootChallengeState } from './Root';
-import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
-import CallbackStore from '../CallbackStore';
+import ChallengeView from '../PizzaPage/ChallengeView';
+import RefreshButton from '../controls/RefreshButton';
+import UserAccount from '../../../../common/models/UserAccount';
+import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
+import { FetchFunction } from '../../serverApi/ServerApi';
+import ChallengeState from '../../../../common/models/ChallengeState';
 
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
-	onGetChallengeLeaderboard: (challengeId: number, callback: (leaderboard: Fetchable<ChallengeLeaderboard>) => void) => Fetchable<ChallengeLeaderboard>,
-	onGetChallengeState: () => RootChallengeState,
-	onGetTimeZones: (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => Fetchable<TimeZoneSelectListItem[]>,
-	onGetUser: () => UserAccount | null,
-	onQuitChallenge: () => void,
-	onStartChallenge: (timeZoneId: number) => void
-}) {
-	return {
-		create: () => ({ key, title: 'Leaderboards' }),
-		render: () => (
-			<PizzaPage
-				challengeState={deps.onGetChallengeState()}
-				onGetChallengeLeaderboard={deps.onGetChallengeLeaderboard}
-				onGetTimeZones={deps.onGetTimeZones}
-				onQuitChallenge={deps.onQuitChallenge}
-				onStartChallenge={deps.onStartChallenge}
-				user={deps.onGetUser()}
-			/>
-		)
-	};
-}
 interface Props {
-	challengeState: RootChallengeState
-	onGetChallengeLeaderboard: (challengeId: number, callback: (leaderboard: Fetchable<ChallengeLeaderboard>) => void) => Fetchable<ChallengeLeaderboard>,
-	onGetTimeZones: (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => Fetchable<TimeZoneSelectListItem[]>,
+	challengeState: Fetchable<ChallengeState>,
+	leaderboard: Fetchable<ChallengeLeaderboard>,
+	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
+	onGetUserAccount: () => UserAccount | null,
 	onQuitChallenge: () => void,
-	onStartChallenge: (timeZoneId: number) => void,
-	user: UserAccount | null
+	onRefreshLeaderboard: () => void,
+	onStartChallenge: (timeZoneId: number) => void
 }
-export default class PizzaPage extends React.Component<
+export default class extends React.Component<
 	Props,
 	{
-		leaderboard: Fetchable<ChallengeLeaderboard>,
 		showStartPrompt: boolean
 	}
-> {
-	private readonly _callbacks = new CallbackStore();
-	private readonly _showStartPrompt = () => {
-		this.setState({ showStartPrompt: true });
-	};
-	private readonly _refresh = () => {
-		this.setState({ leaderboard: this.fetchLeaderboard() });
-	};
+	> {
 	private readonly _quit = () => {
 		if (
-			this.props.challengeState.latestResponse &&
-			this.props.challengeState.latestResponse.action === ChallengeResponseAction.Enroll ?
+			this.props.challengeState.value &&
+			this.props.challengeState.value.latestResponse &&
+			this.props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll ?
 				window.confirm('Are you sure? You\'ll lose any progress you\'ve made so far!') :
 				true
 		) {
 			this.props.onQuitChallenge();
 		}
 	};
+	private readonly _showStartPrompt = () => {
+		this.setState({ showStartPrompt: true });
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			leaderboard: this.fetchLeaderboard(),
-			showStartPrompt: !props.challengeState.latestResponse
+			showStartPrompt: props.challengeState.value && !props.challengeState.value.latestResponse
 		};
 	}
 	private mergeLeaderboard(leaderboard: Fetchable<ChallengeLeaderboard>) {
-		if (leaderboard.value && this.props.user && this.props.challengeState.score) {
+		const user = this.props.onGetUserAccount();
+		if (leaderboard.value && user && this.props.challengeState.value && this.props.challengeState.value.score) {
 			const
-				userName = this.props.user.name,
-				score = this.props.challengeState.score,
+				userName = user.name,
+				score = this.props.challengeState.value.score,
 				contenders = leaderboard.value.contenders,
 				contenderIndex = contenders.findIndex(contender => contender.name === userName);
 			if (score.level === 0 || score.level === 10) {
@@ -142,12 +117,6 @@ export default class PizzaPage extends React.Component<
 		}
 		return leaderboard;
 	}
-	private fetchLeaderboard() {
-		return this.props.onGetChallengeLeaderboard(
-			this.props.challengeState.activeChallenge.id,
-			this._callbacks.add(leaderboard => { this.setState({ leaderboard }); })
-		);
-	}
 	private getRows(
 		mergedLeaderboard: Fetchable<ChallengeLeaderboard>,
 		delegate: (leaderboard: ChallengeLeaderboard) => React.ReactNode[],
@@ -173,26 +142,27 @@ export default class PizzaPage extends React.Component<
 			</tr>
 		);
 	}
-	public componentWillUnmount() {
-		this._callbacks.cancel();
-	}
 	public render() {
 		const
+			user = this.props.onGetUserAccount(),
 			showReenrollPrompt = (
-				this.props.challengeState.latestResponse &&
-				this.props.challengeState.latestResponse.action !== ChallengeResponseAction.Enroll
+				this.props.challengeState.value &&
+				this.props.challengeState.value.latestResponse &&
+				this.props.challengeState.value.latestResponse.action !== ChallengeResponseAction.Enroll
 			),
 			showQuitPrompt = (
-				this.props.user &&
+				user &&
 				(
-					!this.props.challengeState.latestResponse ||
-					this.props.challengeState.latestResponse.action === ChallengeResponseAction.Enroll
+					this.props.challengeState.value && (
+						!this.props.challengeState.value.latestResponse ||
+						this.props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll
+					)
 				)
 			),
-			userName = this.props.user ? this.props.user.name : null,
-			mergedLeaderboard = this.mergeLeaderboard(this.state.leaderboard);
+			userName = user ? user.name : null,
+			mergedLeaderboard = this.mergeLeaderboard(this.props.leaderboard);
 		return (
-			<div className="pizza-page">
+			<div className="pizza-screen_vkc6ks">
 				{showReenrollPrompt ?
 					<div className="start-prompt prompt-wrapper">
 						<div className="prompt">
@@ -204,7 +174,7 @@ export default class PizzaPage extends React.Component<
 					challengeState={this.props.challengeState}
 					onGetTimeZones={this.props.onGetTimeZones}
 					onStartChallenge={this.props.onStartChallenge}
-					user={this.props.user}
+					user={user}
 				/>
 				<h3>We're giving away free pizza to the first 100 people who read at least one article* per day for 10 days in a row!</h3>
 				<p>*The article must be at least five minutes long.</p>
@@ -214,8 +184,8 @@ export default class PizzaPage extends React.Component<
 				<h3>
 					Leaderboards
 					<RefreshButton
-						isLoading={this.state.leaderboard.isLoading}
-						onClick={this._refresh}
+						isLoading={this.props.leaderboard.isLoading}
+						onClick={this.props.onRefreshLeaderboard}
 					/>
 				</h3>
 				<div className="leaderboards">
@@ -235,7 +205,7 @@ export default class PizzaPage extends React.Component<
 									board => board.winners.map((winner, index) => (
 										<tr
 											key={winner.name}
-											className={classNames({ 'highlight': winner.name === userName })}	
+											className={classNames({ 'highlight': winner.name === userName })}
 										>
 											<td style={{ textAlign: 'center' }}>{index + 1}</td>
 											<td>{winner.name}</td>

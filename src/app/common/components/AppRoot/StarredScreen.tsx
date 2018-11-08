@@ -2,54 +2,48 @@ import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
-import HotTopics from '../../../../common/models/HotTopics';
-import HotTopicsList, { updateArticles } from '../HotTopicsList';
-import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import CallbackStore from '../../CallbackStore';
 import EventHandlerStore from '../../EventHandlerStore';
+import PageResult from '../../../../common/models/PageResult';
+import StarredScreen, { updateArticles } from '../screens/StarredScreen';
 
 interface Props {
-	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
+	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onGetUser: () => UserAccount | null,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
-	onRegisterUserChangeHandler: (handler: () => void) => Function,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void
 }
 interface State {
-	hotTopics: Fetchable<HotTopics>
+	articles: Fetchable<PageResult<UserArticle>>
 }
-class HomePage extends React.Component<Props, State> {
+class AppStarredScreen extends React.Component<Props, State> {
 	private readonly _callbacks = new CallbackStore();
 	private readonly _eventHandlers = new EventHandlerStore();
 	private readonly _loadPage = (pageNumber: number) => {
 		this.setState({
-			hotTopics: this.fetchHotTopics(pageNumber)
+			articles: this.fetchArticles(pageNumber)
 		});
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			hotTopics: this.fetchHotTopics(1)
+			articles: this.fetchArticles(1)
 		};
 		this._eventHandlers.add(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
 				updateArticles.call(this, updatedArticle);
-			}),
-			props.onRegisterUserChangeHandler(() => {
-				this._callbacks.cancel();
-				this._loadPage(1);
 			})
 		);
 	}
-	private fetchHotTopics(pageNumber: number) {
-		return this.props.onGetHotTopics(
-			{ pageNumber, pageSize: 40 },
-			this._callbacks.add(hotTopics => {
-				this.setState({ hotTopics });
+	private fetchArticles(pageNumber: number) {
+		return this.props.onGetStarredArticles(
+			{ pageNumber },
+			this._callbacks.add(articles => {
+				this.setState({ articles });
 			})
 		);
 	}
@@ -59,20 +53,15 @@ class HomePage extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="home-page_ku6vku">
-				{this.state.hotTopics.isLoading ?
-					<LoadingOverlay /> :
-					<HotTopicsList
-						aotd={this.state.hotTopics.value.aotd}
-						articles={this.state.hotTopics.value.articles}
-						isUserSignedIn={!!this.props.onGetUser()}
-						onReadArticle={this.props.onReadArticle}
-						onLoadPage={this._loadPage}
-						onShareArticle={this.props.onShareArticle}
-						onToggleArticleStar={this.props.onToggleArticleStar}
-						onViewComments={this.props.onViewComments}
-					/>}
-			</div>
+			<StarredScreen
+				articles={this.state.articles}
+				isUserSignedIn={!!this.props.onGetUser()}
+				onLoadPage={this._loadPage}
+				onReadArticle={this.props.onReadArticle}
+				onShareArticle={this.props.onShareArticle}
+				onToggleArticleStar={this.props.onToggleArticleStar}
+				onViewComments={this.props.onViewComments}
+			/>
 		);
 	}
 }
@@ -81,9 +70,9 @@ export default function <TScreenKey>(
 	deps: Props
 ) {
 	return {
-		create: () => ({ key, title: 'Home' }),
+		create: () => ({ key, title: 'Starred' }),
 		render: () => (
-			<HomePage {...deps} />
+			<AppStarredScreen {...deps} />
 		)
 	};
 }

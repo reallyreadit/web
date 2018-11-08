@@ -10,7 +10,12 @@ import DialogManager from './DialogManager';
 //import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import createHomeScreenFactory from './AppRoot/HomePage';
+import createCommentsScreenFactory from './AppRoot/CommentsScreen';
+import createHomeScreenFactory from './AppRoot/HomeScreen';
+import createHistoryScreenFactory from './AppRoot/HistoryScreen';
+import createLeaderboardsScreenFactory from './AppRoot/LeaderboardsScreen';
+import createPizzaScreenFactory from './AppRoot/PizzaScreen';
+import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
@@ -80,10 +85,53 @@ export default class extends Root<Props, State> {
 		// screens
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
+			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				onGetArticle: this.props.serverApi.getArticle,
+				onGetComments: this.props.serverApi.getComments,
+				onGetUser: this._getUser,
+				onPostComment: this._postComment,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onSetScreenState: this._setScreenState,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar
+			}),
+			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
+				onDeleteArticle: this._deleteArticle,
+				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
+				onGetUser: this._getUser,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onGetUser: this._getUser,
 				onOpenMenu: this._openMenu,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShareArticle: this._shareArticle,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			}),
+			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
+				onGetLeaderboards: this.props.serverApi.getWeeklyReadingLeaderboards,
+				onGetStats: this.props.serverApi.getWeeklyReadingStats,
+				onGetUser: this._getUser
+			}),
+			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {
+				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
+				onGetChallengeState: this.props.serverApi.getChallengeState,
+				onGetTimeZones: this.props.serverApi.getTimeZones,
+				onGetUserAccount: this._getUser,
+				onQuitChallenge: this._quitChallenge,
+				onStartChallenge: this._startChallenge
+			}),
+			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
+				onGetStarredArticles: this.props.serverApi.getStarredArticles,
+				onGetUser: this._getUser,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShareArticle: this._shareArticle,
@@ -163,7 +211,7 @@ export default class extends Root<Props, State> {
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		this.pushScreen(
-			ScreenKey.ArticleDetails,
+			ScreenKey.Comments,
 			{
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug

@@ -26,7 +26,7 @@ export default class extends React.Component<{}, ExtensionState> {
 	private _goToStarred = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Starred).createUrl());
 	private _goToHistory = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.History).createUrl());
 	private _goToComments = () => {
-		this._openInNewTab(findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl(this.getArticleUrlParams()));
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments).createUrl(this.getArticleUrlParams()));
 	};
 	private _toggleStar = () => {
 		return this._eventPageApi
@@ -39,7 +39,7 @@ export default class extends React.Component<{}, ExtensionState> {
 			}));
 	};
 	private _showShareDialog = () => {
-		this._openInNewTab(findRouteByKey(routes, ScreenKey.ArticleDetails,  DialogKey.ShareArticle).createUrl(this.getArticleUrlParams()));
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments,  DialogKey.ShareArticle).createUrl(this.getArticleUrlParams()));
 	};
 	private _preventDefault = (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();

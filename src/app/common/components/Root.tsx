@@ -3,14 +3,11 @@ import UserAccount from '../../../common/models/UserAccount';
 import Captcha from '../Captcha';
 import { Toast, Intent } from './Toaster';
 import ServerApi from '../serverApi/ServerApi';
-import Fetchable from '../serverApi/Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
-import PageResult from '../../../common/models/PageResult';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import Location from '../../../common/routing/Location';
-import { createScreenFactory as createStarredPageScreenFactory } from './StarredPage';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
 import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
@@ -19,32 +16,22 @@ import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import { createScreenFactory as createAdminPageScreenFactory } from './AdminPage';
-import ChallengeState from '../../../common/models/ChallengeState';
-import { createScreenFactory as createHistoryScreenFactory } from './HistoryPage';
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
-import { createScreenFactory as createPizzaPageScreenFactory } from './PizzaPage';
 import { createScreenFactory as createSettingsPageScreenFactory } from './SettingsPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
-import { createScreenFactory as createArticlePageScreenFactory } from './ArticlePage';
 import ShareArticleDialog from './ShareArticleDialog';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
-import { createScreenFactory as createLeaderboardsScreenFactory } from './LeaderboardsPage';
 
-export interface RootChallengeState extends ChallengeState {
-	isLoading: boolean
-}
 export interface Props {
 	captcha: Captcha,
-	initialChallengeState: ChallengeState,
 	initialLocation: Location,
 	initialUser: UserAccount | null,
 	serverApi: ServerApi
 }
-export interface Screen {
-	articleLists?: { [key: string]: Fetchable<PageResult<UserArticle>> },
-	articles?: { [key: string]: Fetchable<UserArticle> },
+export interface Screen<T = any> {
+	componentState?: T,
 	key: ScreenKey,
 	location?: Location,
 	title?: string
@@ -54,7 +41,6 @@ export interface ScreenFactory {
 	render: (state: Screen) => React.ReactNode
 }
 export interface State {
-	challengeState: RootChallengeState,
 	dialog: React.ReactNode,
 	screens: Screen[],
 	toasts: Toast[],
@@ -73,31 +59,11 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	};
 
 	// challenge
-	protected readonly _startChallenge = (timeZoneId: number) => {
-		this.props.serverApi
-			.startChallenge(this.state.challengeState.activeChallenge.id, timeZoneId)
-			.then(({ response, score }) => {
-				this.setState({
-					challengeState: {
-						...(this.state.challengeState as RootChallengeState),
-						latestResponse: response,
-						score
-					}
-				});
-			});
+	protected readonly _startChallenge = (challengeId: number, timeZoneId: number) => {
+		return this.props.serverApi.startChallenge(challengeId, timeZoneId);
 	};
-	protected readonly _quitChallenge = () => {
-		this.props.serverApi
-			.quitChallenge(this.state.challengeState.activeChallenge.id)
-			.then(latestResponse => {
-				this.setState({
-					challengeState: {
-						...(this.state.challengeState as RootChallengeState),
-						latestResponse,
-						score: null
-					}
-				});
-			});
+	protected readonly _quitChallenge = (challengeId: number) => {
+		return this.props.serverApi.quitChallenge(challengeId);
 	};
 
 	// comments
@@ -146,12 +112,12 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			);
 		},
 		[DialogKey.ShareArticle]: location => {
-			const [, sourceSlug, articleSlug] = location.path.match(findRouteByKey(routes, ScreenKey.ArticleDetails).pathRegExp);
+			const [, sourceSlug, articleSlug] = location.path.match(findRouteByKey(routes, ScreenKey.Comments).pathRegExp);
 			return (
 				<ShareArticleDialog
 					captcha={this.props.captcha}
 					onCloseDialog={this._closeDialog}
-					onGetArticle={this.props.serverApi.getArticleDetails}
+					onGetArticle={this.props.serverApi.getArticle}
 					onShareArticle={this.props.serverApi.shareArticle}
 					onShowToast={this._addToast}
 					slug={sourceSlug + '_' + articleSlug}
@@ -191,9 +157,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory }>;
 
 	// state
-	protected readonly _getChallengeState = () => {
-		return this.state.challengeState;
-	};
 	protected readonly _setScreenState = (key: ScreenKey, state: Partial<Screen>) => {
 		const screen = this.state.screens.find(screen => screen.key === key);
 		if (screen) {
@@ -313,7 +276,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 
 		// state
 		this.state = {
-			challengeState: { ...props.initialChallengeState, isLoading: false },
 			toasts: [],
 			user: props.initialUser
 		} as S;
@@ -326,7 +288,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		this._screenFactoryMap = {
 			[ScreenKey.AdminPage]: createAdminPageScreenFactory(ScreenKey.AdminPage, {
 				onCloseDialog: this._closeDialog,
-				onGetChallengeState: this._getChallengeState,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetChallengeResponseActionTotals: this.props.serverApi.getChallengeResponseActionTotals,
@@ -338,48 +299,16 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
 				onShowToast: this._addToast
 			}),
-			[ScreenKey.ArticleDetails]: createArticlePageScreenFactory(ScreenKey.ArticleDetails, {
-				onGetArticle: this.props.serverApi.getArticleDetails,
-				onGetComments: this.props.serverApi.listComments,
-				onGetUser: this._getUser,
-				onPostComment: this._postComment,
-				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
-				onShareArticle: this._shareArticle,
-				onToggleArticleStar: this._toggleArticleStar
-			}),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
 				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
 				onUpdateEmailSubscriptions: this._updateEmailSubscriptions
 			}),
-			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
-				onDeleteArticle: this._deleteArticle,
-				onGetUserArticleHistory: this.props.serverApi.listUserArticleHistory,
-				onGetUser: this._getUser,
-				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
-				onShareArticle: this._shareArticle,
-				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
-			}),
 			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
 				onGetReplies: this.props.serverApi.listReplies,
 				onReadReply: this._readReply
 			}),
-			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onGetWeeklyReadingLeaderboards: this.props.serverApi.getWeeklyReadingLeaderboards,
-				onGetWeeklyReadingStats: this.props.serverApi.getWeeklyReadingStats
-			}),
 			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
-			[ScreenKey.PizzaChallenge]: createPizzaPageScreenFactory(ScreenKey.PizzaChallenge, {
-				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
-				onGetChallengeState: this._getChallengeState,
-				onGetTimeZones: this.props.serverApi.getTimeZones,
-				onGetUser: this._getUser,
-				onQuitChallenge: this._quitChallenge,
-				onStartChallenge: this._startChallenge
-			}),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
 			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
 				onCloseDialog: this._closeDialog,
@@ -391,15 +320,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onShowToast: this._addToast,
 				onUpdateContactPreferences: this._updateContactPreferences,
 				onUpdateNotificationPreferences: this._updateNotificationPreferences
-			}),
-			[ScreenKey.Starred]: createStarredPageScreenFactory(ScreenKey.Starred, {
-				onGetStarredArticles: this.props.serverApi.listStarredArticles,
-				onGetUser: this._getUser,
-				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
-				onShareArticle: this._shareArticle,
-				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
 			})
 		};
 	}

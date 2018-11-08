@@ -9,12 +9,10 @@ import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTota
 import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from './Toaster';
-import ChallengeState from '../../../common/models/ChallengeState';
 import CallbackStore from '../CallbackStore';
 
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onCloseDialog: () => void,
-	onGetChallengeState: () => ChallengeState,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetChallengeResponseActionTotals: (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => Fetchable<ChallengeResponseTotal[]>,
@@ -29,10 +27,9 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	return {
 		create: () => ({ key, title: 'Admin' }),
 		render: () => {
-			const activeChallenge = deps.onGetChallengeState().activeChallenge;
 			return (
 				<AdminPage
-					activeChallengeId={activeChallenge ? activeChallenge.id : null}
+					activeChallengeId={1}
 					onCloseDialog={deps.onCloseDialog}
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}

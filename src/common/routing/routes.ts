@@ -36,14 +36,14 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			return url;
 		},
 		pathRegExp: /^\/articles\/([^/]+)\/([^/]+)(\/[^/]+)?$/,
-		screenKey: ScreenKey.ArticleDetails
+		screenKey: ScreenKey.Comments
 	},
 	{
 		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}?share`,
 		dialogKey: DialogKey.ShareArticle,
 		pathRegExp: /^\/articles\/([^/]+)\/([^/]+)$/,
 		queryStringKeys: ['share'],
-		screenKey: ScreenKey.ArticleDetails
+		screenKey: ScreenKey.Comments
 	},
 	{
 		createUrl: params => `/email/confirm/${params['result']}`,

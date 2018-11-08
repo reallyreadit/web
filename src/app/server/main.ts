@@ -21,7 +21,6 @@ import LocalStorageApi from './LocalStorageApi';
 import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
 import { findRouteByLocation } from '../../common/routing/Route';
-import ChallengeState from '../../common/models/ChallengeState';
 import WindowApi from './WindowApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
@@ -228,77 +227,71 @@ server = server.use((req, res, next) => {
 });
 // render the app
 server = server.get('/*', (req, res) => {
-	req.api
-		.fetchJson<ChallengeState>('GET', new ApiRequest('/Challenges/State'))
-		.then(challengeState => {
-			const windowApi = new WindowApi();
-			const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
-			const rootProps = {
-				serverApi: req.api,
-				captcha: new Captcha(),
-				initialChallengeState: challengeState,
-				initialLocation: {
-					path: req.path,
-					queryString: createQueryString(req.query)
-				},
-				initialUser: req.sessionState.userAccount
-			};
-			let rootElement: React.ReactElement<any>;
-			switch (clientType) {
-				case ClientType.App:
-					rootElement = React.createElement(
-						AppRoot,
-						{
-							...rootProps,
-							appApi: new AppApi()
-						}
-					);
-					break;
-				case ClientType.Browser:
-					rootElement = React.createElement(
-						BrowserRoot,
-						{
-							...rootProps,
-							extensionApi: new ExtensionApi(config.extensionId),
-							localStorageApi: new LocalStorageApi(),
-							newReplyNotification: req.sessionState.newReplyNotification,
-							windowApi
-						}
-					);
-					break;
-				default:
-					res.status(400).send('Invalid clientType');
-					return;
-			}
-			// call renderToString first to capture all the api requests
-			ReactDOMServer.renderToString(rootElement);
-			req.api.processRequests().then(() => {
-				// call renderToString again to render with api request results
-				const content = ReactDOMServer.renderToString(rootElement);
-				// set the cache header
-				if (config.cacheEnabled && !req.sessionState.userAccount) {
-					res.setHeader('Cache-Control', 'max-age=5');
+	const windowApi = new WindowApi();
+	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
+	const rootProps = {
+		serverApi: req.api,
+		captcha: new Captcha(),
+		initialLocation: {
+			path: req.path,
+			queryString: createQueryString(req.query)
+		},
+		initialUser: req.sessionState.userAccount
+	};
+	let rootElement: React.ReactElement<any>;
+	switch (clientType) {
+		case ClientType.App:
+			rootElement = React.createElement(
+				AppRoot,
+				{
+					...rootProps,
+					appApi: new AppApi()
 				}
-				// return the content and init data
-				res.send(renderHtml({
-					content,
-					enableAnalytics: config.enableAnalytics,
-					enableCaptcha: config.enableCaptcha,
-					extensionId: config.extensionId,
-					initData: {
-						challengeState,
-						clientType,
-						extensionId: config.extensionId,
-						newReplyNotification: req.sessionState.newReplyNotification,
-						initialLocation: rootProps.initialLocation,
-						serverApi: req.api.getInitData(),
-						userAccount: req.sessionState.userAccount,
-						verifyCaptcha: config.enableCaptcha
-					},
-					title: windowApi.getTitle()
-				}));
-			});
-		});
+			);
+			break;
+		case ClientType.Browser:
+			rootElement = React.createElement(
+				BrowserRoot,
+				{
+					...rootProps,
+					extensionApi: new ExtensionApi(config.extensionId),
+					localStorageApi: new LocalStorageApi(),
+					newReplyNotification: req.sessionState.newReplyNotification,
+					windowApi
+				}
+			);
+			break;
+		default:
+			res.status(400).send('Invalid clientType');
+			return;
+	}
+	// call renderToString first to capture all the api requests
+	ReactDOMServer.renderToString(rootElement);
+	req.api.processRequests().then(() => {
+		// call renderToString again to render with api request results
+		const content = ReactDOMServer.renderToString(rootElement);
+		// set the cache header
+		if (config.cacheEnabled && !req.sessionState.userAccount) {
+			res.setHeader('Cache-Control', 'max-age=5');
+		}
+		// return the content and init data
+		res.send(renderHtml({
+			content,
+			enableAnalytics: config.enableAnalytics,
+			enableCaptcha: config.enableCaptcha,
+			extensionId: config.extensionId,
+			initData: {
+				clientType,
+				extensionId: config.extensionId,
+				newReplyNotification: req.sessionState.newReplyNotification,
+				initialLocation: rootProps.initialLocation,
+				serverApi: req.api.getInitData(),
+				userAccount: req.sessionState.userAccount,
+				verifyCaptcha: config.enableCaptcha
+			},
+			title: windowApi.getTitle()
+		}));
+	});
 });
 // start the server
 server.listen(config.port, () => {

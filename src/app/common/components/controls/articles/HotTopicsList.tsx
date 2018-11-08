@@ -1,12 +1,12 @@
 import * as React from 'react';
-import UserArticle from '../../../common/models/UserArticle';
-import ArticleList from './controls/articles/ArticleList';
-import PageSelector from './controls/PageSelector';
-import Icon from '../../../common/components/Icon';
-import ArticleDetails from '../../../common/components/ArticleDetails';
-import PageResult from '../../../common/models/PageResult';
-import Fetchable from '../serverApi/Fetchable';
-import HotTopics from '../../../common/models/HotTopics';
+import UserArticle from '../../../../../common/models/UserArticle';
+import ArticleList from './ArticleList';
+import PageSelector from '../PageSelector';
+import Icon from '../../../../../common/components/Icon';
+import ArticleDetails from '../../../../../common/components/ArticleDetails';
+import PageResult from '../../../../../common/models/PageResult';
+import Fetchable from '../../../serverApi/Fetchable';
+import HotTopics from '../../../../../common/models/HotTopics';
 import produce from 'immer';
 
 interface State {
@@ -41,7 +41,7 @@ export default (props: {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void
 }) => (
-	<div className="hot-topics-list">
+	<div className="hot-topics-list_4aaj4s">
 		<div className="aotd">
 			<h3>
 				<Icon name="trophy" />Article of the Day<Icon name="trophy" />

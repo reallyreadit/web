@@ -1,0 +1,62 @@
+/*
+	componentPath: src/app/common/components/screens/LeaderboardsScreen
+	cssComponentId: leaderboards-screen_wuzsob
+*/
+
+.leaderboards-screen_wuzsob {
+	min-height: 100%;
+}
+.leaderboards-screen_wuzsob > .panel {
+	border: 1px solid silver;
+	border-radius: 5px;
+	background-color: rgba(255, 255, 255, 0.75);
+	padding: 10px;
+}
+.leaderboards-screen_wuzsob > .panel:not(:last-child) {
+	margin-bottom: 10px;
+}
+.leaderboards-screen_wuzsob > .panel > strong {
+	display: block;
+	margin-bottom: 10px;
+}
+.leaderboards-screen_wuzsob > .panel > ol > li:not(:last-child) {
+	margin-bottom: 5px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table {
+	width: 100%;
+}
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > caption {
+	font-weight: bold;
+}
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > caption,
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > thead > tr > th {
+	padding: 2px;
+	border-bottom: 1px solid silver;
+}
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > tbody > tr > td {
+	padding: 2px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > tbody > tr > td:nth-child(2) {
+	text-align: center;
+}
+.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > tbody > tr:nth-child(even) > td {
+	background-color: #f6f6f6;
+}
+
+@media (min-width: 800px) {
+	.leaderboards-screen_wuzsob > .leaderboards > ol {
+		display: flex;
+	}
+	.leaderboards-screen_wuzsob > .leaderboards > ol > li {
+		flex: 1 1 0;
+	}
+	.leaderboards-screen_wuzsob > .leaderboards > ol > li:not(:last-child) {
+		margin-bottom: 0;
+	}
+	.leaderboards-screen_wuzsob > .leaderboards > ol > li:not(:last-child) {
+		margin-right: 5px;
+	}
+	.leaderboards-screen_wuzsob > .leaderboards > ol > li:not(:first-child) {
+		margin-left: 5px;
+	}
+}

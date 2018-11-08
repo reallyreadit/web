@@ -88,18 +88,6 @@ export default abstract class {
 	public readonly signOut = () => {
 		return this.post<void>(new Request('/UserAccounts/SignOut'));
 	};
-	public readonly listStarredArticles = (pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) => {
-		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListStarred', { pageNumber }), callback);
-	};
-	public readonly listUserArticleHistory = (pageNumber: number, callback: (articles: Fetchable<PageResult<UserArticle>>) => void) => {
-		return this.get<PageResult<UserArticle>>(new Request('/Articles/ListHistory', { pageNumber }), callback);
-	};
-	public readonly getArticleDetails = (slug: string, callback: (article: Fetchable<UserArticle>) => void) => {
-		return this.get<UserArticle>(new Request('/Articles/Details', { slug }), callback);
-	};
-	public readonly listComments = (slug: string, callback: (comments: Fetchable<Comment[]>) => void) => {
-		return this.get<Comment[]>(new Request('/Articles/ListComments', { slug }), callback);
-	};
 	public readonly postComment = (text: string, articleId: number, parentCommentId?: number) => {
 		return this.post<Comment>(new Request('/Articles/PostComment', { text, articleId, parentCommentId }));
 	};
@@ -145,18 +133,6 @@ export default abstract class {
 	public readonly shareArticle = (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => {
 		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message, captchaResponse }));
 	};
-	public readonly getTimeZones = (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => {
-		return this.get<TimeZoneSelectListItem[]>(new Request('/UserAccounts/TimeZones'), callback);
-	};
-	public readonly getChallengeScore = (challengeId: number, callback: (score: Fetchable<ChallengeScore>) => void) => {
-		return this.get<ChallengeScore>(new Request('/Challenges/Score', { challengeId }), callback);
-	};
-	public readonly getChallengeLeaderboard = (challengeId: number, callback: (leaderboard: Fetchable<ChallengeLeaderboard>) => void) => {
-		return this.get<ChallengeLeaderboard>(new Request('/Challenges/Leaderboard', { challengeId }), callback);
-	};
-	public readonly getChallengeState = (callback: (state: Fetchable<ChallengeState>) => void) => {
-		return this.get<ChallengeState>(new Request('/Challenges/State'), callback);
-	};
 	public readonly startChallenge = (challengeId: number, timeZoneId: number) => {
 		return this.post<{
 			response: ChallengeResponse,
@@ -177,9 +153,21 @@ export default abstract class {
 	};
 
 	// Articles
+	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
+	public readonly getComments = this.createFetchFunctionWithParams<{ slug: string }, Comment[]>('/Articles/ListComments');
 	public readonly getHotTopics = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>('/Articles/ListHotTopics');
+	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
+	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
+
+	// Challenges
+	public readonly getChallengeLeaderboard = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeLeaderboard>('/Challenges/Leaderboard');
+	public readonly getChallengeScore = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeScore>('/Challenges/Score');
+	public readonly getChallengeState = this.createFetchFunction<ChallengeState>('/Challenges/State');
 
 	// Stats
 	public readonly getWeeklyReadingLeaderboards = this.createFetchFunction<WeeklyReadingLeaderboards>('/Stats/WeeklyReadingLeaderboards');
 	public readonly getWeeklyReadingStats = this.createFetchFunction<UserWeeklyReadingStats | null>('/Stats/WeeklyReading');
+
+	// UserAccounts
+	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
 }

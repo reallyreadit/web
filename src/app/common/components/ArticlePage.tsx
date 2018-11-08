@@ -14,62 +14,8 @@ import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import CallbackStore from '../CallbackStore';
 import LoadingOverlay from './controls/LoadingOverlay';
+import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 
-function getPathParams(path: string) {
-	const [, sourceSlug, articleSlug, commentId] = path.match(findRouteByKey(routes, ScreenKey.ArticleDetails).pathRegExp);
-	return {
-		commentId,
-		slug: sourceSlug + '_' + articleSlug
-	}
-}
-function getTitle(article: Fetchable<UserArticle>) {
-	return article.value ? article.value.title : 'Loading...';
-}
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
-	onGetArticle: (slug: string, callback: (article: Fetchable<UserArticle>) => void) => Fetchable<UserArticle>,
-	onGetComments: (slug: string, callback: (comments: Fetchable<Comment[]>) => void) => Fetchable<Comment[]>,
-	onGetUser: () => UserAccount | null,
-	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onSetScreenState: (key: TScreenKey, state: Partial<Screen>) => void,
-	onShareArticle: (article: UserArticle) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>
-}) {
-	return {
-		create: (location: Location) => {
-			const article = deps.onGetArticle(getPathParams(location.path).slug, article => {
-				deps.onSetScreenState(key, {
-					articles: { ['article']: article },
-					title: getTitle(article)
-				})
-			});
-			return {
-				key,
-				articles: {
-					['article']: article
-				},
-				location,
-				title: getTitle(article)
-			};
-		},
-		render: (state: Screen) => {
-			const pathParams = getPathParams(state.location.path);
-			return (
-				<ArticlePage
-					article={state.articles['article']}
-					articleSlug={pathParams.slug}
-					highlightedCommentId={parseInt(pathParams.commentId)}
-					isUserSignedIn={!!deps.onGetUser()}
-					onGetComments={deps.onGetComments}
-					onPostComment={deps.onPostComment}
-					onReadArticle={deps.onReadArticle}
-					onShareArticle={deps.onShareArticle}
-					onToggleArticleStar={deps.onToggleArticleStar}
-				/>
-			);
-		}
-	};
-}
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
 		return comment;
@@ -80,29 +26,33 @@ function findComment(id: number, comment: Comment) {
 	}
 	return match;
 }
+function getPathParams(path: string) {
+	const [, sourceSlug, articleSlug, commentId] = path.match(findRouteByKey(routes, ScreenKey.Comments).pathRegExp);
+	return {
+		commentId,
+		slug: sourceSlug + '_' + articleSlug
+	}
+}
 interface Props {
 	article: Fetchable<UserArticle>
 	articleSlug: string,
 	highlightedCommentId: number | null,
 	isUserSignedIn: boolean,
-	onGetComments: (slug: string, callback: (comments: Fetchable<Comment[]>) => void) => Fetchable<Comment[]>,
+	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>
 }
-
-export default class ArticlePage extends React.Component<
+class ArticlePage extends React.Component<
 	Props,
-	{
-		comments: Fetchable<Comment[]>
-	}
+	{ comments: Fetchable<Comment[]> }
 > {
 	private readonly _callbacks = new CallbackStore();
 	private readonly _noop = () => {};
 	private _loadComments = () => {
 		return this.props.onGetComments(
-			this.props.articleSlug,
+			{ slug: this.props.articleSlug },
 			this._callbacks.add(comments => { this.setState({ comments }); })
 		);
 	};
@@ -181,4 +131,47 @@ export default class ArticlePage extends React.Component<
 			</div>
 		);
 	}
+}
+export default function <TScreenKey>(key: TScreenKey, deps: {
+	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
+	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
+	onGetUser: () => UserAccount | null,
+	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onSetScreenState: (key: TScreenKey, state: Partial<Screen<Fetchable<UserArticle>>>) => void,
+	onShareArticle: (article: UserArticle) => void,
+	onToggleArticleStar: (article: UserArticle) => Promise<void>
+}) {
+	return {
+		create: (location: Location) => {
+			const article = deps.onGetArticle({ slug: getPathParams(location.path).slug }, article => {
+				deps.onSetScreenState(key, {
+					componentState: article,
+					title: article.value.title
+				});
+			});
+			return {
+				key,
+				location,
+				componentState: article,
+				title: article.value ? article.value.title : 'Loading...'
+			};
+		},
+		render: (state: Screen<Fetchable<UserArticle>>) => {
+			const pathParams = getPathParams(state.location.path);
+			return (
+				<ArticlePage
+					article={state.componentState}
+					articleSlug={pathParams.slug}
+					highlightedCommentId={parseInt(pathParams.commentId)}
+					isUserSignedIn={!!deps.onGetUser()}
+					onGetComments={deps.onGetComments}
+					onPostComment={deps.onPostComment}
+					onReadArticle={deps.onReadArticle}
+					onShareArticle={deps.onShareArticle}
+					onToggleArticleStar={deps.onToggleArticleStar}
+				/>
+			);
+		}
+	};
 }

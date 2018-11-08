@@ -3,6 +3,7 @@ import TimeZoneSelectListItem from '../../../../../common/models/TimeZoneSelectL
 import Fetchable from '../../../serverApi/Fetchable';
 import { DateTime } from 'luxon';
 import ButtonBar from './ButtonBar';
+import CallbackStore from '../../../CallbackStore';
 
 interface Props {
 	onCancel: () => void,
@@ -19,8 +20,12 @@ export default class extends React.Component<
 			selectListItem: TimeZoneSelectListItem
 		} | null
 	}
-> {
-	private readonly _timeZoneName = DateTime.local().zoneName;
+	> {
+	private readonly _callbacks = new CallbackStore();
+	private readonly _enroll = () => {
+		this.setState({ isSubmitting: true });
+		this.props.onStartChallenge(this.state.timeZoneSelection.id);
+	};
 	private readonly _selectTimeZone = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectListItem = this.state.timeZoneSelectListItems.value.find(zone => zone.key === e.currentTarget.value);
 		this.setState({
@@ -33,15 +38,12 @@ export default class extends React.Component<
 			}
 		});
 	};
-	private readonly _enroll = () => {
-		this.setState({ isSubmitting: true });
-		this.props.onStartChallenge(this.state.timeZoneSelection.id);
-	};
+	private readonly _timeZoneName = DateTime.local().zoneName;
 	constructor(props: Props) {
 		super(props);
 		this.state = {
 			isSubmitting: false,
-			timeZoneSelectListItems: props.onGetTimeZones(timeZoneSelectListItems => {
+			timeZoneSelectListItems: props.onGetTimeZones(this._callbacks.add(timeZoneSelectListItems => {
 				const selectedListItem = timeZoneSelectListItems.value.find(zone => zone.value.some(value => value.name === this._timeZoneName));
 				this.setState({
 					timeZoneSelectListItems,
@@ -51,7 +53,7 @@ export default class extends React.Component<
 						} :
 						null
 				});
-			}),
+			})),
 			timeZoneSelection: null
 		};
 	}

@@ -5,13 +5,14 @@ import EnrollScreen from './ChallengeView/EnrollScreen';
 import GameScene from './ChallengeView/GameScene';
 import UserAccount from '../../../../common/models/UserAccount';
 import LoadingScreen from './ChallengeView/LoadingScreen';
-import { RootChallengeState } from '../Root';
 import Fetchable from '../../serverApi/Fetchable';
 import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
+import ChallengeState from '../../../../common/models/ChallengeState';
+import { FetchFunction } from '../../serverApi/ServerApi';
 
 interface Props {
-	challengeState: RootChallengeState,
-	onGetTimeZones: (callback: (timeZones: Fetchable<TimeZoneSelectListItem[]>) => void) => Fetchable<TimeZoneSelectListItem[]>,
+	challengeState: Fetchable<ChallengeState>,
+	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onStartChallenge: (timeZoneId: number) => void,
 	user: UserAccount
 }
@@ -41,9 +42,11 @@ export default class extends React.PureComponent<Props, State> {
 	}
 	public render() {
 		if (
-			this.props.challengeState.activeChallenge && (
-				!this.props.challengeState.latestResponse ||
-				this.props.challengeState.latestResponse.action === ChallengeResponseAction.Enroll
+			this.props.challengeState.isLoading || (
+				this.props.challengeState.value.activeChallenge && (
+					!this.props.challengeState.value.latestResponse ||
+					this.props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll
+				)
 			)
 		) {
 			let
@@ -53,7 +56,7 @@ export default class extends React.PureComponent<Props, State> {
 				menuScreen = (
 					<LoadingScreen />
 				);
-			} else if (!this.props.challengeState.latestResponse) {
+			} else if (!this.props.challengeState.value.latestResponse) {
 				if (this.state.isEnrolling) {
 					menuScreen = (
 						<EnrollScreen
@@ -76,13 +79,13 @@ export default class extends React.PureComponent<Props, State> {
 					);
 				}
 			}
-			if (this.props.challengeState.latestResponse) {
-				timeZoneName = this.props.challengeState.latestResponse.timeZoneName;
+			if (this.props.challengeState.value && this.props.challengeState.value.latestResponse) {
+				timeZoneName = this.props.challengeState.value.latestResponse.timeZoneName;
 			}
 			return (
 				<div className="challenge-view">
 					<GameScene
-						score={this.props.challengeState.score}
+						score={this.props.challengeState.value ? this.props.challengeState.value.score : null}
 						timeZoneName={timeZoneName}
 					/>
 					{menuScreen ?

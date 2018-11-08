@@ -18,7 +18,7 @@ export default (props: {
 	return (
 		<span className="comments-action-link">
 			<ActionLink
-				href={findRouteByKey(routes, ScreenKey.ArticleDetails).createUrl(urlParams)}
+				href={findRouteByKey(routes, ScreenKey.Comments).createUrl(urlParams)}
 				iconLeft="comments"
 				onClick={props.onClick}
 				text={`${props.article.commentCount} comment${props.article.commentCount !== 1 ? 's' : ''}`}

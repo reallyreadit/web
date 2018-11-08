@@ -1,6 +1,6 @@
 enum ScreenKey {
 	AdminPage,
-	ArticleDetails,
+	Comments,
 	EmailConfirmation,
 	EmailSubscriptions,
 	History,

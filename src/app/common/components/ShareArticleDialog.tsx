@@ -11,10 +11,11 @@ import { Intent } from './Toaster';
 import Fetchable from '../serverApi/Fetchable';
 import CallbackStore from '../CallbackStore';
 import { formatFetchable } from '../../../common/format';
+import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 
 interface Props {
 	captcha: Captcha,
-	onGetArticle: (slug: string, callback: (article: Fetchable<UserArticle>) => void) => Fetchable<UserArticle>,
+	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onShareArticle: (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => Promise<void>,
 	slug: string
 }
@@ -61,7 +62,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 				this.createEmailField()
 			],
 			article: props.onGetArticle(
-				props.slug,
+				{ slug: props.slug },
 				this._callbacks.add(article => { this.setState({ article }); })
 			),
 			message: ''
