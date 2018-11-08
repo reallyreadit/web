@@ -12,7 +12,7 @@ export default class extends React.PureComponent<{
 		return (
 		   this.props.user && !this.props.user.isEmailConfirmed ?
 				<div className="email-confirmation-bar">
-					<Icon name="exclamation" /> Please confirm your email address ({this.context.user.userAccount.email})<br />
+					<Icon name="exclamation" /> Please confirm your email address ({this.props.user.email})<br />
 					Need a new confirmation email?
 					<Separator />
 					<ResendConfirmationEmailActionLink

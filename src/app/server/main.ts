@@ -135,7 +135,7 @@ server = server.use((req, res, next) => {
 	if (
 		!route ||
 		route.authLevel == null ||
-		(req.sessionState.userAccount && req.sessionState.userAccount.role === route.authLevel)
+		(req.sessionState.userAccount && (req.sessionState.userAccount.role === route.authLevel || req.sessionState.userAccount.role === UserAccountRole.Admin))
 	) {
 		next();
 	} else if (route.authLevel === UserAccountRole.Admin) {

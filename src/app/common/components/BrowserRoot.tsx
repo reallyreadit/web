@@ -187,7 +187,14 @@ export default class extends Root<Props, State> {
 				// TODO: upate articles from other tabs
 			})
 			.addListener('userUpdated', user => {
-				this.onUserChanged(user, EventSource.Sync);
+				if (
+					(this.state.user && !user) ||
+					(!this.state.user && user)
+				) {
+					this.onUserChanged(user, EventSource.Sync);
+				} else {
+					this.setState({ user });
+				}
 			});
 
 		// ExtensionApi
@@ -267,6 +274,7 @@ export default class extends Root<Props, State> {
 			this.setState({ screens: [screen] });
 			this.props.browserApi.setTitle(screen.title);
 		});
+		this.props.browserApi.updateUser(this.state.user);
 	}
 	public render() {
 		const screen = this.state.screens[0];

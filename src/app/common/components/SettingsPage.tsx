@@ -65,6 +65,7 @@ export default class SettingsPage extends React.PureComponent<
 	private _openChangeEmailAddressDialog = () => {
 		this.props.onOpenDialog(
 			<ChangeEmailAddressDialog
+				currentEmailAddress={this.props.user.email}
 				onCloseDialog={this.props.onCloseDialog}
 				onChangeEmailAddress={this.props.onChangeEmailAddress}
 				onShowToast={this.props.onShowToast}

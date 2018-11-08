@@ -370,7 +370,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected getLocationDependentState(location: Location) {
 		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
 		return {
-			dialog: route.dialogKey ?
+			dialog: route.dialogKey != null ?
 				this._dialogCreatorMap[route.dialogKey](location) :
 				null,
 			screen: this._screenFactoryMap[route.screenKey].create(location)

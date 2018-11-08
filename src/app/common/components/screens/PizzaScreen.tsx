@@ -20,12 +20,7 @@ interface Props {
 	onRefreshLeaderboard: () => void,
 	onStartChallenge: (timeZoneId: number) => void
 }
-export default class extends React.Component<
-	Props,
-	{
-		showStartPrompt: boolean
-	}
-	> {
+export default class extends React.Component<Props> {
 	private readonly _quit = () => {
 		if (
 			this.props.challengeState.value &&
@@ -37,14 +32,8 @@ export default class extends React.Component<
 			this.props.onQuitChallenge();
 		}
 	};
-	private readonly _showStartPrompt = () => {
-		this.setState({ showStartPrompt: true });
-	};
 	constructor(props: Props) {
 		super(props);
-		this.state = {
-			showStartPrompt: props.challengeState.value && !props.challengeState.value.latestResponse
-		};
 	}
 	private mergeLeaderboard(leaderboard: Fetchable<ChallengeLeaderboard>) {
 		const user = this.props.onGetUserAccount();
@@ -145,11 +134,6 @@ export default class extends React.Component<
 	public render() {
 		const
 			user = this.props.onGetUserAccount(),
-			showReenrollPrompt = (
-				this.props.challengeState.value &&
-				this.props.challengeState.value.latestResponse &&
-				this.props.challengeState.value.latestResponse.action !== ChallengeResponseAction.Enroll
-			),
 			showQuitPrompt = (
 				user &&
 				(
@@ -163,13 +147,6 @@ export default class extends React.Component<
 			mergedLeaderboard = this.mergeLeaderboard(this.props.leaderboard);
 		return (
 			<div className="pizza-screen_vkc6ks">
-				{showReenrollPrompt ?
-					<div className="start-prompt prompt-wrapper">
-						<div className="prompt">
-							Want to join the challenge? Click <span onClick={this._showStartPrompt}>here</span> to get back in the game!
-						</div>
-					</div> :
-					null}
 				<ChallengeView
 					challengeState={this.props.challengeState}
 					onGetTimeZones={this.props.onGetTimeZones}

@@ -3,6 +3,7 @@ import InputField from '../controls/InputField';
 import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 
 interface Props {
+	currentEmailAddress: string,
 	onChangeEmailAddress: (email: string) => Promise<void>
 }
 export default class ChangeEmailAddressDialog extends Dialog<void, Props, Partial<State> & {
@@ -37,7 +38,7 @@ export default class ChangeEmailAddressDialog extends Dialog<void, Props, Partia
 	}
 	protected getClientErrors() {
 		const errors = { email: this.state.emailError };
-		if (!errors.email && this.state.email === this.context.user.userAccount.email) {
+		if (!errors.email && this.state.email === this.props.currentEmailAddress) {
 			errors.email = 'Email address already set.';
 			this.setState({ emailError: errors.email });
 		}

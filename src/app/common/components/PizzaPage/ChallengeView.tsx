@@ -21,7 +21,10 @@ interface State {
 }
 export default class extends React.PureComponent<Props, State> {
 	public static getDerivedStateFromProps(props: Props, state: State): Partial<State> | null {
-		if (!props.user && state.isEnrolling) {
+		if (
+			state.isEnrolling &&
+			(!props.user || (props.challengeState.value && props.challengeState.value.latestResponse && props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll))
+		) {
 			return { isEnrolling: false };
 		}
 		return null;
@@ -41,63 +44,51 @@ export default class extends React.PureComponent<Props, State> {
 		};
 	}
 	public render() {
-		if (
-			this.props.challengeState.isLoading || (
-				this.props.challengeState.value.activeChallenge && (
-					!this.props.challengeState.value.latestResponse ||
-					this.props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll
-				)
-			)
-		) {
-			let
-				menuScreen: React.ReactNode | null = null,
-				timeZoneName: string | null = null;
-			if (this.props.challengeState.isLoading) {
-				menuScreen = (
-					<LoadingScreen />
-				);
-			} else if (!this.props.challengeState.value.latestResponse) {
-				if (this.state.isEnrolling) {
-					menuScreen = (
-						<EnrollScreen
-							onCancel={this._reset}
-							onGetTimeZones={this.props.onGetTimeZones}
-							onStartChallenge={this.props.onStartChallenge}
-						/>
-					);
-				} else {
-					menuScreen = (
-						<EnrollmentPromptScreen
-							isUserSignedIn={!!this.props.user}
-							isUserEmailConfirmed={
-								this.props.user ?
-									this.props.user.isEmailConfirmed :
-									false
-							}
-							onEnroll={this._startEnrollment}
-						/>
-					);
-				}
-			}
-			if (this.props.challengeState.value && this.props.challengeState.value.latestResponse) {
-				timeZoneName = this.props.challengeState.value.latestResponse.timeZoneName;
-			}
-			return (
-				<div className="challenge-view">
-					<GameScene
-						score={this.props.challengeState.value ? this.props.challengeState.value.score : null}
-						timeZoneName={timeZoneName}
-					/>
-					{menuScreen ?
-						<div className="overlay">
-							<div className="menu">
-								{menuScreen}
-							</div>
-						</div> :
-						null}
-				</div>
+		let
+			menuScreen: React.ReactNode | null = null,
+			timeZoneName: string | null = null;
+		if (this.props.challengeState.isLoading) {
+			menuScreen = (
+				<LoadingScreen />
+			);
+		} else if (this.state.isEnrolling) {
+			menuScreen = (
+				<EnrollScreen
+					onCancel={this._reset}
+					onGetTimeZones={this.props.onGetTimeZones}
+					onStartChallenge={this.props.onStartChallenge}
+				/>
+			);
+		} else if (!this.props.challengeState.value.latestResponse || this.props.challengeState.value.latestResponse.action !== ChallengeResponseAction.Enroll) {
+			menuScreen = (
+				<EnrollmentPromptScreen
+					isUserSignedIn={!!this.props.user}
+					isUserEmailConfirmed={
+						this.props.user ?
+							this.props.user.isEmailConfirmed :
+							false
+					}
+					onEnroll={this._startEnrollment}
+				/>
 			);
 		}
-		return null;
+		if (this.props.challengeState.value && this.props.challengeState.value.latestResponse) {
+			timeZoneName = this.props.challengeState.value.latestResponse.timeZoneName;
+		}
+		return (
+			<div className="challenge-view">
+				<GameScene
+					score={this.props.challengeState.value ? this.props.challengeState.value.score : null}
+					timeZoneName={timeZoneName}
+				/>
+				{menuScreen ?
+					<div className="overlay">
+						<div className="menu">
+							{menuScreen}
+						</div>
+					</div> :
+					null}
+			</div>
+		);
 	}
 }

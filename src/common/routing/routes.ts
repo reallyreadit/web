@@ -24,6 +24,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Home
 	},
 	{
+		createUrl: () => '/?sign-in',
+		dialogKey: DialogKey.SignIn,
+		pathRegExp: /^\/$/,
+		queryStringKeys: ['sign-in'],
+		screenKey: ScreenKey.Home
+	},
+	{
 		authLevel: UserAccountRole.Admin,
 		createUrl: () => '/admin',
 		pathRegExp: /^\/admin$/,

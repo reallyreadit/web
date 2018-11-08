@@ -27,7 +27,7 @@ export default (props: {
 							</li>
 						</ol> :
 						props.onGetUser() ?
-							<span>You haven't read an article in the past 7 days :(</span> :
+							<span>Start reading to see your stats</span> :
 							<span>Sign up to see your personal reading stats</span>}
 				</div>
 				<div className="panel leaderboards">

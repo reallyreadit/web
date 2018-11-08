@@ -77,7 +77,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 			this.state.name,
 			this.state.email,
 			this.state.password,
-			this.context.captcha.getResponse(this._captchaId)
+			this.props.captcha.getResponse(this._captchaId)
 		);
 	}
 	protected onError(errors: string[]) {

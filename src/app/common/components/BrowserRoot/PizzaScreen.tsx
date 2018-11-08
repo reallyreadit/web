@@ -45,26 +45,20 @@ export class BrowserPizzaScreen extends React.Component<Props, State> {
 		this.props
 			.onStartChallenge(1, timeZoneId)
 			.then(this._callbacks.add(({ response, score }) => {
-				this.setState({
-					challengeState: {
-						...this.state.challengeState,
-						latestResponse: response,
-						score
-					}
-				});
+				this.setState(produce<State>(prevState => {
+					prevState.challengeState.value.latestResponse = response;
+					prevState.challengeState.value.score = score;
+				}));
 			}));
 	};
 	private readonly _quitChallenge = () => {
 		this.props
 			.onQuitChallenge(1)
 			.then(this._callbacks.add(latestResponse => {
-				this.setState({
-					challengeState: {
-						...this.state.challengeState,
-						latestResponse,
-						score: null
-					}
-				});
+				this.setState(produce<State>(prevState => {
+					prevState.challengeState.value.latestResponse = latestResponse;
+					prevState.challengeState.value.score = null;
+				}));
 			}));
 	};
 	constructor(props: Props) {
