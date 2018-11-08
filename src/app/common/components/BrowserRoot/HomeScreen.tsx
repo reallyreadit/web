@@ -59,7 +59,7 @@ class HomePage extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="home-page_ku6vku">
+			<div className="home-screen_1sjipy">
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay /> :
 					<HotTopicsList
