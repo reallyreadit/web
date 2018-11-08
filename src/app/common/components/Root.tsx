@@ -270,7 +270,11 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		return this.props.serverApi
 			.updateEmailSubscriptions(token, subscriptions)
 			.then(() => {
-				// TODO: if user is signed in update user
+				if (this.state.user) {
+					this.props.serverApi.getUserAccount(user => {
+						this.setState({ user: user.value });
+					});
+				}
 			});
 	};
 	protected readonly _updateNotificationPreferences = (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => {
