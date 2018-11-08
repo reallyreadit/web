@@ -51,7 +51,16 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	// articles
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
 	protected readonly _shareArticle = (article: UserArticle) => {
-
+		this._openDialog(
+			<ShareArticleDialog
+				article={article}
+				captcha={this.props.captcha}
+				onCloseDialog={this._closeDialog}
+				onGetArticle={this.props.serverApi.getArticle}
+				onShareArticle={this.props.serverApi.shareArticle}
+				onShowToast={this._addToast}
+			/>
+		);
 	};
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
 		return (article.dateStarred ?

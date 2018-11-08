@@ -14,10 +14,11 @@ import { formatFetchable } from '../../../common/format';
 import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 
 interface Props {
+	article?: UserArticle,
 	captcha: Captcha,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onShareArticle: (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => Promise<void>,
-	slug: string
+	slug?: string
 }
 interface EmailField {
 	id: number,
@@ -61,10 +62,15 @@ export default class extends Dialog<void, Props, Partial<State> & {
 			addresses: [
 				this.createEmailField()
 			],
-			article: props.onGetArticle(
-				{ slug: props.slug },
-				this._callbacks.add(article => { this.setState({ article }); })
-			),
+			article: props.article ?
+				{
+					isLoading: false,
+					value: props.article
+				} :
+				props.onGetArticle(
+					{ slug: props.slug },
+					this._callbacks.add(article => { this.setState({ article }); })
+				),
 			message: ''
 		};
 	}
