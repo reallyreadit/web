@@ -58,7 +58,7 @@ function configureWebpack(params) {
 		define = Object.assign(define || {}, { config });
 	}
 	if (params.minify) {
-		addPlugin(webpackConfig, new webpack.optimize.UglifyJsPlugin());
+		webpackConfig.optimization = { minimize: true };
 	}
 	if (params.env !== project.env.dev) {
 		// https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
