@@ -39,7 +39,7 @@ export interface Screen<T = any> {
 }
 export interface ScreenFactory {
 	create: (location: Location) => Screen,
-	render: (state: Screen) => React.ReactNode
+	render: (screenState: Screen, rootState: RootState) => React.ReactNode
 }
 export interface State {
 	dialog: React.ReactNode,
@@ -47,6 +47,7 @@ export interface State {
 	toasts: Toast[],
 	user: UserAccount | null
 }
+export type RootState = Pick<State, 'user'>;
 export default abstract class <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
 	// articles
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;

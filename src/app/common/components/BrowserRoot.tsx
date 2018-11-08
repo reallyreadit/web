@@ -308,7 +308,7 @@ export default class extends Root<Props, State> {
 						selectedScreenKey={screen.key}
 					/>
 					<div className="screen">
-						{this._screenFactoryMap[screen.key].render(screen)}
+						{this._screenFactoryMap[screen.key].render(screen, { user: this.state.user })}
 					</div>
 				</main>
 				{this.state.menuState !== 'closed' ?

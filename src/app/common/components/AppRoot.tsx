@@ -2,7 +2,6 @@ import * as React from 'react';
 import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster from './Toaster';
-import EmailConfirmationBar from './EmailConfirmationBar';
 import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
@@ -108,10 +107,10 @@ export default class extends Root<Props, State> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onGetHotTopics: this.props.serverApi.getHotTopics,
-				onGetUser: this._getUser,
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -229,10 +228,6 @@ export default class extends Root<Props, State> {
 			<div className="app-root_vc3j5h">
 				{this.state.user ?
 					<>
-						<EmailConfirmationBar
-							onResendConfirmationEmail={this._resendConfirmationEmail}
-							user={this.state.user}
-						/>
 						<div className="content">
 							<ol className="screens">
 								{this.state.screens.map((screen, index, screens) => (
@@ -244,7 +239,7 @@ export default class extends Root<Props, State> {
 										key={screen.key}
 										onAnimationEnd={this._handleScreenAnimationEnd}
 									>
-										{this._screenFactoryMap[screen.key].render(screen)}
+										{this._screenFactoryMap[screen.key].render(screen, { user: this.state.user })}
 									</li>
 								))}
 							</ol>

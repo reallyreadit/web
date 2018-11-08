@@ -136,12 +136,9 @@ export default class extends React.Component<Props> {
 			user = this.props.onGetUserAccount(),
 			showQuitPrompt = (
 				user &&
-				(
-					this.props.challengeState.value && (
-						!this.props.challengeState.value.latestResponse ||
-						this.props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll
-					)
-				)
+				this.props.challengeState.value &&
+				this.props.challengeState.value.latestResponse &&
+				this.props.challengeState.value.latestResponse.action === ChallengeResponseAction.Enroll
 			),
 			userName = user ? user.name : null,
 			mergedLeaderboard = this.mergeLeaderboard(this.props.leaderboard);

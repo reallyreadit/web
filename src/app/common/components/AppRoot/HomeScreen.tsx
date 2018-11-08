@@ -10,16 +10,19 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import CallbackStore from '../../CallbackStore';
 import EventHandlerStore from '../../EventHandlerStore';
+import EmailConfirmationBar from '../EmailConfirmationBar';
+import { Screen, RootState } from '../Root';
 
 interface Props {
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
-	onGetUser: () => UserAccount | null,
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onResendConfirmationEmail: () => Promise<void>,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	user: UserAccount | null
 }
 interface State {
 	hotTopics: Fetchable<HotTopics>
@@ -50,6 +53,10 @@ class HomePage extends React.Component<Props, State> {
 	public render() {
 		return (
 			<div className="home-page_3aivep">
+				<EmailConfirmationBar
+					onResendConfirmationEmail={this.props.onResendConfirmationEmail}
+					user={this.props.user}
+				/>
 				<div className="header">
 					<div
 						className="logo-container"
@@ -65,7 +72,7 @@ class HomePage extends React.Component<Props, State> {
 					<HotTopicsList
 						aotd={this.state.hotTopics.value.aotd}
 						articles={this.state.hotTopics.value.articles}
-						isUserSignedIn={!!this.props.onGetUser()}
+						isUserSignedIn={!!this.props.user}
 						onReadArticle={this.props.onReadArticle}
 						onShareArticle={this.props.onShareArticle}
 						onToggleArticleStar={this.props.onToggleArticleStar}
@@ -77,12 +84,12 @@ class HomePage extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Props
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: () => ({ key }),
-		render: () => (
-			<HomePage {...deps} />
+		render: (screenState: Screen, rootState: RootState) => (
+			<HomePage {...{ ...deps, user: rootState.user }} />
 		)
 	};
 }
