@@ -1,6 +1,6 @@
 import Readability, { ParseResult } from './Readability';
 import ContentElement from './ContentElement';
-import { cloneNodeWithReference } from './utils';
+import { cloneNodeWithReference, getWords } from './utils';
 import styleArticleDocument from './styleArticleDocument';
 
 function getContentElements(rootElement: HTMLElement) {
@@ -36,9 +36,17 @@ export default function (mode: 'analyze' | 'mutate') {
 	if (parseResult.length) {
 		return {
 			excerpt: parseResult.excerpt,
-			elements: contentElements
-				.map(element => new ContentElement(element, element.textContent.match(/\S+/g).length)),
-			wordCount: parseResult.textContent.match(/\S+/g).length
+			elements: contentElements.reduce(
+				(result, element) => {
+					let wordCount: number;
+					if (wordCount = getWords(element.textContent).length) {
+						result.push(new ContentElement(element, wordCount));
+					}
+					return result;
+				},
+				[] as ContentElement[]
+			),
+			wordCount: getWords(parseResult.textContent).length
 		};
 	}
 	return {

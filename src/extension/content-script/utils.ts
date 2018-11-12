@@ -23,3 +23,8 @@ export function cloneNodeWithReference<T extends Node>(node: T) {
 	}
 	return clone;
 }
+export function getWords(text: string) {
+	// better to match words instead of splitting on
+	// whitespace in order to avoid empty results
+	return (text && text.match(/\S+/g)) || [];
+}

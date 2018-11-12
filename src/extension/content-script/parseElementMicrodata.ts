@@ -1,3 +1,5 @@
+import { getWords } from "./utils";
+
 type ItemType = { [key: string]: ItemProp | ItemProp[] };
 type ItemProp = string | ItemType;
 
@@ -55,7 +57,7 @@ function parseElementMicrodata(element: Element, topLevelTypes: ItemType[] = [],
 	// check element for microdata attributes
 	// check for scope to guard against invalid itemprops declared outside a scope
 	if (scope && element.hasAttribute('itemprop')) {
-		const properties = element.getAttribute('itemprop').match(/\S+/g);
+		const properties = getWords(element.getAttribute('itemprop'));
 		if (isScopeElement(element)) {
 			// value is a type
 			scope = mergeValue(properties, getElementType(element), scope);
