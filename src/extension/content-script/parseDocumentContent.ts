@@ -37,8 +37,8 @@ export default function (mode: 'analyze' | 'mutate') {
 		return {
 			excerpt: parseResult.excerpt,
 			elements: contentElements
-				.map(element => new ContentElement(element, element.textContent.split(' ').length)),
-			wordCount: parseResult.textContent.split(' ').length
+				.map(element => new ContentElement(element, element.textContent.match(/\S+/g).length)),
+			wordCount: parseResult.textContent.match(/\S+/g).length
 		};
 	}
 	return {

@@ -55,7 +55,7 @@ function parseElementMicrodata(element: Element, topLevelTypes: ItemType[] = [],
 	// check element for microdata attributes
 	// check for scope to guard against invalid itemprops declared outside a scope
 	if (scope && element.hasAttribute('itemprop')) {
-		const properties = element.getAttribute('itemprop').split(' ');
+		const properties = element.getAttribute('itemprop').match(/\S+/g);
 		if (isScopeElement(element)) {
 			// value is a type
 			scope = mergeValue(properties, getElementType(element), scope);
