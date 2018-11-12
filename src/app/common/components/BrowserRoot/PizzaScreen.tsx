@@ -124,7 +124,7 @@ export class BrowserPizzaScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: () => ({ key, title: 'Leaderboards' }),
+		create: () => ({ key, title: 'Pizza Challenge' }),
 		render: (screenState: Screen, rootState: RootState) => (
 			<BrowserPizzaScreen {...{ ...deps, user: rootState.user }} />
 		)
