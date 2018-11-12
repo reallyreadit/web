@@ -42,21 +42,24 @@ function createBuild(params) {
 	}
 	function getWebpackConfig(opts) {
 		return configureWebpack({
+			appConfig: params.webpack.appConfig,
 			configFile: params.webpack.configFile,
 			entry: './' + opts.entry,
-			appConfig: params.webpack.appConfig,
-			path: params.path,
-			fileName: opts.fileName,
-			sourceMaps: opts.sourceMaps,
-			minify: opts.minify,
 			env: opts.env,
+			fileName: opts.fileName,
+			isHtmlTemplate: !!params.webpack.htmlTemplate,
+			minify: opts.minify,
+			path: params.path,
+			sourceMaps: opts.sourceMaps,
 			watch: opts.watch
 		});
 	}
 	function getHtmlTemplateDelegate(outPath, resolve) {
 		return () => {
 			const template = path.join(outPath, 'html.js');
-			fs.writeFileSync(path.join(outPath, 'index.html'), eval(fs.readFileSync(template).toString()).default);
+			// the output of the htmlTemplate bundle is assigned to the variable 'html' when executed
+			eval(fs.readFileSync(template).toString());
+			fs.writeFileSync(path.join(outPath, 'index.html'), html.default);
 			fs.unlinkSync(template);
 			if (resolve) {
 				resolve();

@@ -12,7 +12,8 @@ function addPlugin(webpackConfig, plugin) {
 	webpackConfig.plugins.push(plugin);
 }
 function configureWebpack(params) {
-	const tsConfig = {
+	const
+		tsConfig = {
 			configFile: params.configFile,
 			compilerOptions: {}
 		},
@@ -70,6 +71,9 @@ function configureWebpack(params) {
 	}
 	if (define) {
 		addPlugin(webpackConfig, new webpack.DefinePlugin(define));
+	}
+	if (params.isHtmlTemplate) {
+		webpackConfig.output.library = 'html';
 	}
 	return webpackConfig;
 }
