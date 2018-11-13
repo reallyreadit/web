@@ -64,9 +64,22 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		);
 	};
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
-		return (article.dateStarred ?
-			this.props.serverApi.unstarArticle :
-			this.props.serverApi.starArticle)(article.id);
+		return (
+			article.dateStarred ?
+				this.props.serverApi.unstarArticle :
+				this.props.serverApi.starArticle
+			)(article.id)
+			.then(() => {
+				this._articleChangeEventHandlers.forEach(handler => {
+					handler(
+						{
+							...article,
+							dateStarred: article.dateStarred ? null : new Date().toISOString()
+						},
+						false
+					);
+				});
+			});
 	};
 
 	// challenge
