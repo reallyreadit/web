@@ -45,7 +45,7 @@ export default class extends ExtensionApi {
         return Promise.reject('NotSupported');
     }
     public install() {
-        window.chrome.webstore.install();
+        window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');
     }
     public updateNewReplyNotification(notification: NewReplyNotification) {
         this.sendMessage('updateNewReplyNotification', notification)
@@ -55,6 +55,10 @@ export default class extends ExtensionApi {
         return this._isInstalled;
     }
     public get isBrowserCompatible() {
-        return !!(window.chrome && window.chrome.webstore);
+        return (
+            /^(linux|mac|win)/i.test(window.navigator.platform) &&
+            window.navigator.userAgent.indexOf('Android') === -1 &&
+            window.navigator.vendor === 'Google Inc.'
+        );
     }
 }
