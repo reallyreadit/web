@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Fetchable from '../../serverApi/Fetchable';
-import UserWeeklyReadingStats from '../../../../common/models/UserWeeklyReadingStats';
-import WeeklyReadingLeaderboards from '../../../../common/models/WeeklyReadingLeaderboards';
+import UserReadStats from '../../../../common/models/UserReadStats';
+import ReadingLeaderboardRow from '../../../../common/models/ReadingLeaderboardRow';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import EventHandlerStore from '../../EventHandlerStore';
@@ -10,21 +10,21 @@ import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, RootState } from '../Root';
 
 interface Props {
-	onGetLeaderboards: FetchFunction<WeeklyReadingLeaderboards>,
-	onGetStats: FetchFunction<UserWeeklyReadingStats | null>,
+	onGetLeaderboard: FetchFunction<ReadingLeaderboardRow[]>,
+	onGetStats: FetchFunction<UserReadStats | null>,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	user: UserAccount | null
 }
 class BrowserLeaderboardsScreen extends React.Component<Props, {
-	leaderboards: Fetchable<WeeklyReadingLeaderboards>,
-	stats: Fetchable<UserWeeklyReadingStats | null>
+	leaderboard: Fetchable<ReadingLeaderboardRow[]>,
+	stats: Fetchable<UserReadStats | null>
 }> {
 	private readonly _callbacks = new CallbackStore();
 	private readonly _eventHandlers = new EventHandlerStore();
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			leaderboards: props.onGetLeaderboards(this._callbacks.add(leaderboards => { this.setState({ leaderboards }) })),
+			leaderboard: props.onGetLeaderboard(this._callbacks.add(leaderboard => { this.setState({ leaderboard }) })),
 			stats: props.user ?
 				props.onGetStats(this._callbacks.add(stats => { this.setState({ stats }) })) :
 				{ isLoading: false }
@@ -52,7 +52,7 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 	public render() {
 		return (
 			<LeaderboardsScreen
-				leaderboards={this.state.leaderboards}
+				leaderboard={this.state.leaderboard}
 				stats={this.state.stats}
 				user={this.props.user}
 			/>

@@ -138,8 +138,8 @@ export default class extends Root<Props, State> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onGetLeaderboards: this.props.serverApi.getWeeklyReadingLeaderboards,
-				onGetStats: this.props.serverApi.getWeeklyReadingStats,
+				onGetLeaderboard: this.props.serverApi.getReadingLeaderboard,
+				onGetStats: this.props.serverApi.getReadingStats,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler
 			}),
 			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {

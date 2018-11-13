@@ -19,8 +19,8 @@ import ChallengeState from '../../../common/models/ChallengeState';
 import UserStats from '../../../common/models/UserStats';
 import ChallengeWinner from '../../../common/models/ChallengeWinner';
 import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
-import UserWeeklyReadingStats from '../../../common/models/UserWeeklyReadingStats';
-import WeeklyReadingLeaderboards from '../../../common/models/WeeklyReadingLeaderboards';
+import UserReadStats from '../../../common/models/UserReadStats';
+import ReadingLeaderboardRow from '../../../common/models/ReadingLeaderboardRow';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -165,8 +165,8 @@ export default abstract class {
 	public readonly getChallengeState = this.createFetchFunction<ChallengeState>('/Challenges/State');
 
 	// Stats
-	public readonly getWeeklyReadingLeaderboards = this.createFetchFunction<WeeklyReadingLeaderboards>('/Stats/WeeklyReadingLeaderboards');
-	public readonly getWeeklyReadingStats = this.createFetchFunction<UserWeeklyReadingStats | null>('/Stats/WeeklyReading');
+	public readonly getReadingLeaderboard = this.createFetchFunction<ReadingLeaderboardRow[]>('/Stats/ReadingLeaderboards');
+	public readonly getReadingStats = this.createFetchFunction<UserReadStats | null>('/Stats/Reading');
 
 	// UserAccounts
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');

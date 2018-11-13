@@ -15,48 +15,26 @@
 .leaderboards-screen_wuzsob > .panel:not(:last-child) {
 	margin-bottom: 10px;
 }
-.leaderboards-screen_wuzsob > .panel > strong {
-	display: block;
+.leaderboards-screen_wuzsob > .panel > ol > li:not(:last-child) {
 	margin-bottom: 10px;
 }
-.leaderboards-screen_wuzsob > .panel > ol > li:not(:last-child) {
-	margin-bottom: 5px;
-}
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table {
+.leaderboards-screen_wuzsob > .leaderboard > table {
 	width: 100%;
 }
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > caption {
+.leaderboards-screen_wuzsob > .leaderboard > table > caption {
 	font-weight: bold;
 }
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > caption,
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > thead > tr > th {
-	padding: 2px;
+.leaderboards-screen_wuzsob > .leaderboard > table > caption,
+.leaderboards-screen_wuzsob > .leaderboard > table > thead > tr > th {
+	padding-bottom: 10px;
 	border-bottom: 1px solid silver;
 }
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > tbody > tr > td {
-	padding: 2px;
+.leaderboards-screen_wuzsob > .leaderboard > table > tbody > tr > td {
+	padding: 5px;
 }
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > tbody > tr > td:nth-child(2) {
+.leaderboards-screen_wuzsob > .leaderboard > table > tbody > tr > td:nth-child(2) {
 	text-align: center;
 }
-.leaderboards-screen_wuzsob > .leaderboards > ol > li > table > tbody > tr:nth-child(even) > td {
+.leaderboards-screen_wuzsob > .leaderboard > table > tbody > tr:nth-child(even) > td {
 	background-color: #f6f6f6;
-}
-
-@media (min-width: 800px) {
-	.leaderboards-screen_wuzsob > .leaderboards > ol {
-		display: flex;
-	}
-	.leaderboards-screen_wuzsob > .leaderboards > ol > li {
-		flex: 1 1 0;
-	}
-	.leaderboards-screen_wuzsob > .leaderboards > ol > li:not(:last-child) {
-		margin-bottom: 0;
-	}
-	.leaderboards-screen_wuzsob > .leaderboards > ol > li:not(:last-child) {
-		margin-right: 5px;
-	}
-	.leaderboards-screen_wuzsob > .leaderboards > ol > li:not(:first-child) {
-		margin-left: 5px;
-	}
 }
