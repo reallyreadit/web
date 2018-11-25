@@ -71,8 +71,9 @@
 	text-align: center;
 	padding: 20px;
 }
-.menu_fk9ujy > .drawer > .footer > .link {
-	text-decoration: underline;
+.menu_fk9ujy > .drawer > .footer > a:last-child {
+	display: block;
+	margin-top: 10px;
 }
 
 @keyframes menu_fk9ujy-overlay-fade-in {

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
 import Icon from '../../../../common/components/Icon';
-import Separator from '../../../../common/components/Separator';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import classNames from 'classnames';
 import Spinner from '../../../../common/components/Spinner';
@@ -103,16 +102,15 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						</li>
 					</ol>
 					<div className="footer">
-						<a href="https://blog.reallyread.it">Blog</a>
-						<Separator />
-						<span
-							className="link"
+						Need help? Got feedback?<br />
+						<strong>Send us an email!</strong><br />
+						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
+						<a
+							href="#"
 							onClick={this._viewPrivacyPolicy}
 						>
-							Privacy Policy
-						</span>
-						<br />
-						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
+							Privacy
+						</a>
 					</div>
 				</div>
 			</div>
