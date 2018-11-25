@@ -6,14 +6,18 @@ import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import produce from 'immer';
 import InfoBox from '../controls/InfoBox';
+import Fetchable from '../../serverApi/Fetchable';
 
 interface State {
-	articles: PageResult<UserArticle>
+	articles: Fetchable<PageResult<UserArticle>>
 }
 export function updateArticles(this: React.Component<{}, State>, updatedArticle: UserArticle) {
-	if (this.state.articles.items.some(article => article.id === updatedArticle.id)) {
+	if (
+		this.state.articles.value &&
+		this.state.articles.value.items.some(article => article.id === updatedArticle.id)
+	) {
 		this.setState(produce<State>(prevState => {
-			prevState.articles.items.forEach((article, index, articles) => {
+			prevState.articles.value.items.forEach((article, index, articles) => {
 				if (article.id === updatedArticle.id) {
 					articles.splice(articles.indexOf(article), 1, updatedArticle);
 				}
