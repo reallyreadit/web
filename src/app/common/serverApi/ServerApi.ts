@@ -164,6 +164,9 @@ export default abstract class {
 	public readonly getChallengeScore = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeScore>('/Challenges/Score');
 	public readonly getChallengeState = this.createFetchFunction<ChallengeState>('/Challenges/State');
 
+	// Extension
+	public readonly sendExtensionInstructions = () => this.post(new Request('/Extension/SendInstructions'));
+
 	// Stats
 	public readonly getReadingLeaderboard = this.createFetchFunction<ReadingLeaderboardRow[]>('/Stats/ReadingLeaderboards');
 	public readonly getReadingStats = this.createFetchFunction<UserReadStats | null>('/Stats/Reading');

@@ -8,6 +8,7 @@ import EventHandlerStore from '../../EventHandlerStore';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
 import { Screen, RootState } from '../Root';
+import LoadingOverlay from '../controls/LoadingOverlay';
 
 interface Props {
 	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
@@ -77,15 +78,19 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<StarredScreen
-				articles={this.state.articles}
-				isUserSignedIn={!!this.props.user}
-				onLoadPage={this._loadPage}
-				onReadArticle={this.props.onReadArticle}
-				onShareArticle={this.props.onShareArticle}
-				onToggleArticleStar={this.props.onToggleArticleStar}
-				onViewComments={this.props.onViewComments}
-			/>
+			<div className="starred-screen_8khrr8">
+				{this.state.articles.isLoading ?
+					<LoadingOverlay /> :
+					<StarredScreen
+						articles={this.state.articles.value}
+						isUserSignedIn={!!this.props.user}
+						onLoadPage={this._loadPage}
+						onReadArticle={this.props.onReadArticle}
+						onShareArticle={this.props.onShareArticle}
+						onToggleArticleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
+					/>}
+			</div>
 		);
 	}
 }

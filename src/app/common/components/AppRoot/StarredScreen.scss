@@ -1,0 +1,15 @@
+/*
+	componentPath: src/app/common/components/AppRoot/StarredScreen
+	cssComponentId: starred-screen_jocosv
+*/
+
+.starred-screen_jocosv {
+	min-height: 100%;
+}
+.starred-screen_jocosv > p {
+	margin: 20px 0 30px 0;
+	text-align: center;
+}
+.starred-screen_jocosv > p > .action-link {
+	display: inline-flex;
+}

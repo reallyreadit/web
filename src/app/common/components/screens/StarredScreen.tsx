@@ -4,21 +4,16 @@ import PageResult from '../../../../common/models/PageResult';
 import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
-import Fetchable from '../../serverApi/Fetchable';
 import produce from 'immer';
-import LoadingOverlay from '../controls/LoadingOverlay';
 import InfoBox from '../controls/InfoBox';
 
 interface State {
-	articles: Fetchable<PageResult<UserArticle>>
+	articles: PageResult<UserArticle>
 }
 export function updateArticles(this: React.Component<{}, State>, updatedArticle: UserArticle) {
-	if (
-		this.state.articles.value &&
-		this.state.articles.value.items.some(article => article.id === updatedArticle.id)
-	) {
+	if (this.state.articles.items.some(article => article.id === updatedArticle.id)) {
 		this.setState(produce<State>(prevState => {
-			prevState.articles.value.items.forEach((article, index, articles) => {
+			prevState.articles.items.forEach((article, index, articles) => {
 				if (article.id === updatedArticle.id) {
 					articles.splice(articles.indexOf(article), 1, updatedArticle);
 				}
@@ -27,7 +22,7 @@ export function updateArticles(this: React.Component<{}, State>, updatedArticle:
 	}
 }
 export default (props: {
-	articles: Fetchable<PageResult<UserArticle>>,
+	articles: PageResult<UserArticle>,
 	isUserSignedIn: boolean,
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -36,37 +31,35 @@ export default (props: {
 	onViewComments: (article: UserArticle) => void
 }) => (
 	<div className="starred-screen_v6yb53">
-		{props.articles.isLoading ?
-			<LoadingOverlay /> :
-			props.articles.value.items.length ?
-				<>
-					<ArticleList>
-						{props.articles.value.items.map(article =>
-							<li key={article.id}>
-								<ArticleDetails
-									article={article}
-									isUserSignedIn={props.isUserSignedIn}
-									onRead={props.onReadArticle}
-									onShare={props.onShareArticle}
-									onToggleStar={props.onToggleArticleStar}
-									onViewComments={props.onViewComments}
-								/>
-							</li>
-						)}
-					</ArticleList>
-					<PageSelector
-						pageNumber={props.articles.value.pageNumber}
-						pageCount={props.articles.value.pageCount}
-						onChange={props.onLoadPage}
-					/>
-				</> :
-				<InfoBox>
-					{props.isUserSignedIn ?
-						<>
-							Use stars to save articles for  later.<br />
-							<strong>You have no starred articles.</strong>
-						</> :
-						<span>Sign up to save articles to your starred list</span>}
-				</InfoBox>}
+		{props.articles.items.length ?
+			<>
+				<ArticleList>
+					{props.articles.items.map(article =>
+						<li key={article.id}>
+							<ArticleDetails
+								article={article}
+								isUserSignedIn={props.isUserSignedIn}
+								onRead={props.onReadArticle}
+								onShare={props.onShareArticle}
+								onToggleStar={props.onToggleArticleStar}
+								onViewComments={props.onViewComments}
+							/>
+						</li>
+					)}
+				</ArticleList>
+				<PageSelector
+					pageNumber={props.articles.pageNumber}
+					pageCount={props.articles.pageCount}
+					onChange={props.onLoadPage}
+				/>
+			</> :
+			<InfoBox>
+				{props.isUserSignedIn ?
+					<>
+						Use stars to save articles for  later.<br />
+						<strong>You have no starred articles.</strong>
+					</> :
+					<span>Sign up to save articles to your starred list</span>}
+			</InfoBox>}
 	</div>
 );

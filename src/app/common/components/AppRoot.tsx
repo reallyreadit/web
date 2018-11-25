@@ -1,7 +1,7 @@
 import * as React from 'react';
 import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
-import Toaster from './Toaster';
+import Toaster, { Intent } from './Toaster';
 import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
@@ -27,6 +27,15 @@ interface State extends RootState {
 	menuState: 'opened' | 'closing' | 'closed',
 }
 export default class extends Root<Props, State> {
+	// extension
+	private readonly _sendExtensionInstructions = () => {
+		return this.props.serverApi
+			.sendExtensionInstructions()
+			.then(() => {
+				this._addToast('Email sent', Intent.Success);
+			});
+	};
+
 	// menu
 	private readonly _closeMenu = () => {
 		this.setState({ menuState: 'closing' });
@@ -134,6 +143,7 @@ export default class extends Root<Props, State> {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onSendExtensionInstructions: this._sendExtensionInstructions,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
