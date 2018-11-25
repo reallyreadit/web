@@ -34,6 +34,12 @@ export default (document: Document, title: string | null, byline: string | null)
 		});
 	document.documentElement.removeAttribute('style');
 	document.body.removeAttribute('style');
+	// strip links
+	Array
+		.from(document.getElementsByTagName('a'))
+		.forEach(a => {
+			a.removeAttribute('href');
+		});
 	// add styles
 	const styleElement = document.createElement('style');
 	styleElement.type = 'text/css';
