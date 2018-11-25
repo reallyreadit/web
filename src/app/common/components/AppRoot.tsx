@@ -50,6 +50,13 @@ export default class extends Root<Props, State> {
 			});
 		}
 	};
+	private readonly _readFaq = () => {
+		this.props.appApi.readArticle({
+			title: 'FAQ',
+			url: 'https://blog.reallyread.it/beta/2017/07/12/FAQ.html'
+		});
+		this._closeMenu();
+	};
 	private readonly _viewAdminPage = () => {
 		this.pushScreen(ScreenKey.AdminPage);
 	};
@@ -240,6 +247,7 @@ export default class extends Root<Props, State> {
 									isClosing={this.state.menuState === 'closing'}
 									onClose={this._closeMenu}
 									onClosed={this._hideMenu}
+									onReadFaq={this._readFaq}
 									onSignOut={this._signOut}
 									onViewAdminPage={this._viewAdminPage}
 									onViewInbox={this._viewInbox}

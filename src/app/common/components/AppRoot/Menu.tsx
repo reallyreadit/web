@@ -11,6 +11,7 @@ interface Props {
 	isClosing: boolean,
 	onClose: () => void,
 	onClosed: () => void,
+	onReadFaq: () => void,
 	onSignOut: () => void,
 	onViewAdminPage: () => void,
 	onViewInbox: () => void,
@@ -80,6 +81,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							</li> :
 							null}
 						<li>
+							<button onClick={this.props.onReadFaq}>
+								FAQ
+							</button>
+						</li>
+						<li>
 							<button
 								className={this.props.selectedScreenKey === ScreenKey.Settings ? 'selected' : null}
 								onClick={this.props.onViewSettings}
@@ -98,8 +104,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					</ol>
 					<div className="footer">
 						<a href="https://blog.reallyread.it">Blog</a>
-						<Separator />
-						<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
 						<Separator />
 						<span
 							className="link"

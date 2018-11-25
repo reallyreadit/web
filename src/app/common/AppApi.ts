@@ -8,5 +8,5 @@ export interface ArticleUpdatedEvent {
 export default abstract class extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent
 }> {
-	public abstract readArticle(article: UserArticle): void;
+	public abstract readArticle(article: Pick<UserArticle, 'title' | 'url'>): void;
 }

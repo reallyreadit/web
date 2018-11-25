@@ -30,7 +30,7 @@ export default class extends AppApi {
 			return false;
 		});
 	}
-	public readArticle(article: UserArticle) {
+	public readArticle(article: Pick<UserArticle, 'title' | 'url'>) {
 		this._app.sendMessage({
 			type: 'readArticle',
 			data: article
