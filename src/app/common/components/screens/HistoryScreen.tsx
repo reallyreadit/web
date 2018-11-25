@@ -48,6 +48,7 @@ export default class extends React.PureComponent<{
 					<LoadingOverlay /> :
 					this.props.articles.value.items.length ?
 						<>
+							<p>Note: Your personal reading history is private.</p>
 							<ArticleList>
 								{this.props.articles.value.items.map(article =>
 									<li key={article.id}>
