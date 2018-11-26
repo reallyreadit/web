@@ -224,6 +224,13 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
 		return this.props.serverApi.changePassword(currentPassword, newPassword);
 	};
+	protected readonly _changeTimeZone = (timeZoneId: number) => {
+		return this.props.serverApi
+			.changeTimeZone(timeZoneId)
+			.then(user => {
+				this.setState({ user });
+			});
+	};
 	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse)
@@ -338,6 +345,8 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onCloseDialog: this._closeDialog,
 				onChangeEmailAddress: this._changeEmailAddress,
 				onChangePassword: this._changePassword,
+				onChangeTimeZone: this._changeTimeZone,
+				onGetTimeZones: this.props.serverApi.getTimeZones,
 				onOpenDialog: this._openDialog,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShowToast: this._addToast,

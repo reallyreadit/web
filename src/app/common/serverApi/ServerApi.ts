@@ -172,5 +172,6 @@ export default abstract class {
 	public readonly getReadingStats = this.createFetchFunction<UserReadStats | null>('/Stats/Reading');
 
 	// UserAccounts
+	public readonly changeTimeZone = (timeZoneId: number) => this.post<UserAccount>(new Request('/UserAccounts/ChangeTimeZone', { timeZoneId }));
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
 }

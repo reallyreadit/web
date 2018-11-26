@@ -1,0 +1,11 @@
+/*
+	componentPath: src/app/common/components/SettingsPage/ChangeTimeZoneDialog
+	cssComponentId: change-time-zone-dialog_gparpx
+*/
+
+.change-time-zone-dialog_gparpx > select {
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

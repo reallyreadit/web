@@ -11,11 +11,16 @@ import UserAccount from '../../../common/models/UserAccount';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 import { Intent } from './Toaster';
 import { Screen, RootState } from './Root';
+import { FetchFunction } from '../serverApi/ServerApi';
+import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
+import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 
 interface Props {
 	onCloseDialog: () => void,
 	onChangeEmailAddress: (email: string) => Promise<void>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
+	onChangeTimeZone: (timeZoneId: number) => Promise<void>,
+	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onShowToast: (text: string, intent: Intent) => void,
@@ -39,6 +44,17 @@ class SettingsPage extends React.PureComponent<Props> {
 				currentEmailAddress={this.props.user.email}
 				onCloseDialog={this.props.onCloseDialog}
 				onChangeEmailAddress={this.props.onChangeEmailAddress}
+				onShowToast={this.props.onShowToast}
+			/>
+		);
+	};
+	private _openChangeTimeZoneDialog = () => {
+		this.props.onOpenDialog(
+			<ChangeTimeZoneDialog
+				currentTimeZoneId={this.props.user.timeZoneId}
+				onCloseDialog={this.props.onCloseDialog}
+				onChangeTimeZone={this.props.onChangeTimeZone}
+				onGetTimeZones={this.props.onGetTimeZones}
 				onShowToast={this.props.onShowToast}
 			/>
 		);
@@ -131,6 +147,14 @@ class SettingsPage extends React.PureComponent<Props> {
 							Suggested readings
 						</div>
 					</li>
+					<li>
+						<label>
+							<strong>Time Zone</strong>
+							<Separator />
+							<ActionLink text="Change" iconLeft="write" onClick={this._openChangeTimeZoneDialog} />
+						</label>
+						{user.timeZoneDisplayName}
+					</li>
 				</ul>
 			</div>
 		);
@@ -144,7 +168,9 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 				onCloseDialog={deps.onCloseDialog}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
 				onChangePassword={deps.onChangePassword}
+				onChangeTimeZone={deps.onChangeTimeZone}
 				onOpenDialog={deps.onOpenDialog}
+				onGetTimeZones={deps.onGetTimeZones}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onShowToast={deps.onShowToast}
 				onUpdateContactPreferences={deps.onUpdateContactPreferences}
