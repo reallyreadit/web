@@ -1,14 +1,14 @@
 import * as React from 'react';
 import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 import { FetchFunction } from '../../serverApi/ServerApi';
-import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
+import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../serverApi/Fetchable';
 import { DateTime } from 'luxon';
 import CallbackStore from '../../CallbackStore';
 
 interface Props {
 	currentTimeZoneId: number | null,
-	onChangeTimeZone: (timeZoneId: number) => Promise<void>,
+	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>
 }
 export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<State> & {
@@ -47,17 +47,33 @@ export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<St
 			isLoading: true,
 			timeZoneSelection: null,
 			timeZoneSelectListItems: props.onGetTimeZones(this._callbacks.add(timeZoneSelectListItems => {
-				const selectedListItem = this.props.currentTimeZoneId != null ?
-					timeZoneSelectListItems.value.find(zone => zone.value.some(value => value.id === this.props.currentTimeZoneId)) :
-					timeZoneSelectListItems.value.find(zone => zone.value.some(value => value.name === this._timeZoneName));
+				const selectedItem = timeZoneSelectListItems.value
+					.reduce(
+						(zones, item) => zones.concat(item.value.map(zone => ({ ...zone, key: item.key }))),
+						[] as (TimeZoneSelectListItemValue & { key: string })[]
+					)
+					.filter(
+						zone => this.props.currentTimeZoneId != null ?
+							zone.id === this.props.currentTimeZoneId :
+							zone.name === this._timeZoneName
+					)
+					.sort((a, b) => {
+						if (a.territory > b.territory) {
+							return 1;
+						}
+						if (a.territory < b.territory) {
+							return -1;
+						}
+						return 0;
+					})[0];
 				this.setState({
 					isLoading: false,
 					timeZoneSelectListItems,
-					timeZoneSelection: selectedListItem ? {
+					timeZoneSelection: selectedItem ? {
 							id: this.props.currentTimeZoneId != null ?
 								this.props.currentTimeZoneId :
-								selectedListItem.value.find(value => value.name === this._timeZoneName).id,
-							selectListItem: selectedListItem
+								selectedItem.id,
+							selectListItem: timeZoneSelectListItems.value.find(item => item.key === selectedItem.key)
 						} :
 						null
 				});
@@ -90,7 +106,7 @@ export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<St
 		);
 	}
 	protected submitForm() {
-		return this.props.onChangeTimeZone(this.state.timeZoneSelection.id);
+		return this.props.onChangeTimeZone({ id: this.state.timeZoneSelection.id });
 	}
 	public componentWillUnmount() {
 		this._callbacks.cancel();

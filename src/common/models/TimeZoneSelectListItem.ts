@@ -1,8 +1,9 @@
+export interface TimeZoneSelectListItemValue {
+	id: number,
+	territory: string,
+	name: string
+}
 export default interface TimeZoneSelectListItem {
 	key: string,
-	value: {
-		id: number,
-		territory: string,
-		name: string
-	}[]
+	value: TimeZoneSelectListItemValue[]
 }

@@ -2,7 +2,6 @@ import * as React from 'react';
 import ChallengeLeaderboard from '../../../../common/models/ChallengeLeaderboard';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
-import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
 import CallbackStore from '../../CallbackStore';
 import ChallengeState from '../../../../common/models/ChallengeState';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
@@ -18,11 +17,10 @@ interface Props {
 	onGetChallengeLeaderboard: FetchFunctionWithParams<{ challengeId: number }, ChallengeLeaderboard>,
 	onGetChallengeScore: FetchFunctionWithParams<{ challengeId: number }, ChallengeScore>,
 	onGetChallengeState: FetchFunction<ChallengeState>,
-	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onQuitChallenge: (challengeId: number) => Promise<ChallengeResponse>,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onStartChallenge: (challengeId: number, timeZoneId: number) => Promise<{ response: ChallengeResponse, score: ChallengeScore}>,
+	onStartChallenge: (challengeId: number) => Promise<{ response: ChallengeResponse, score: ChallengeScore}>,
 	user: UserAccount | null
 }
 interface State {
@@ -42,9 +40,9 @@ export class BrowserPizzaScreen extends React.Component<Props, State> {
 			)
 		});
 	};
-	private readonly _startChallenge = (timeZoneId: number) => {
+	private readonly _startChallenge = () => {
 		this.props
-			.onStartChallenge(1, timeZoneId)
+			.onStartChallenge(1)
 			.then(this._callbacks.add(({ response, score }) => {
 				this.setState(produce<State>(prevState => {
 					prevState.challengeState.value.latestResponse = response;
@@ -113,7 +111,6 @@ export class BrowserPizzaScreen extends React.Component<Props, State> {
 			<PizzaScreen
 				challengeState={this.state.challengeState}
 				leaderboard={this.state.leaderboard}
-				onGetTimeZones={this.props.onGetTimeZones}
 				onQuitChallenge={this._quitChallenge}
 				onRefreshLeaderboard={this._refreshLeaderboard}
 				onStartChallenge={this._startChallenge}

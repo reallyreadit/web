@@ -10,6 +10,10 @@ export default class extends React.PureComponent<
 	Props,
 	{ isSubmitting: boolean }
 > {
+	private readonly _enroll = () => {
+		this.setState({ isSubmitting: true });
+		this.props.onEnroll();
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -23,8 +27,10 @@ export default class extends React.PureComponent<
 					<ButtonBar isBusy={this.state.isSubmitting}>
 						<button
 							type="submit"
-							onClick={this.props.onEnroll}
-						>&gt;&gt; Start &gt;&gt;</button>
+							onClick={this._enroll}
+						>
+							&gt;&gt; Start &gt;&gt;
+						</button>
 					</ButtonBar> :
 					<span className="auth-notice">
 						{!this.props.isUserSignedIn ?

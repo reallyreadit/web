@@ -46,10 +46,10 @@ export default abstract class {
 	protected getUrl(path: string) {
 		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
-	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string) => {
+	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string, timeZoneName: string) => {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/CreateAccount',
-			{ name, email, password, captchaResponse }
+			{ name, email, password, captchaResponse, timeZoneName }
 		));
 	};
 	public readonly resendConfirmationEmail = () => {
@@ -133,12 +133,6 @@ export default abstract class {
 	public readonly shareArticle = (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => {
 		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message, captchaResponse }));
 	};
-	public readonly startChallenge = (challengeId: number, timeZoneId: number) => {
-		return this.post<{
-			response: ChallengeResponse,
-			score: ChallengeScore
-		}>(new Request('/Challenges/Start', { challengeId, timeZoneId }));
-	};
 	public readonly quitChallenge = (challengeId: number) => {
 		return this.post<ChallengeResponse>(new Request('/Challenges/Quit', { challengeId }));
 	};
@@ -163,6 +157,10 @@ export default abstract class {
 	public readonly getChallengeLeaderboard = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeLeaderboard>('/Challenges/Leaderboard');
 	public readonly getChallengeScore = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeScore>('/Challenges/Score');
 	public readonly getChallengeState = this.createFetchFunction<ChallengeState>('/Challenges/State');
+	public readonly startChallenge = (challengeId: number) => this.post<{
+		response: ChallengeResponse,
+		score: ChallengeScore
+	}>(new Request('/Challenges/Start', { challengeId }));
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post(new Request('/Extension/SendInstructions'));
@@ -172,6 +170,6 @@ export default abstract class {
 	public readonly getReadingStats = this.createFetchFunction<UserReadStats | null>('/Stats/Reading');
 
 	// UserAccounts
-	public readonly changeTimeZone = (timeZoneId: number) => this.post<UserAccount>(new Request('/UserAccounts/ChangeTimeZone', { timeZoneId }));
+	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>(new Request('/UserAccounts/ChangeTimeZone', timeZone));
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
 }

@@ -134,7 +134,6 @@ export default class extends Root<Props, State> {
 				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
 				onGetChallengeScore: this.props.serverApi.getChallengeScore,
 				onGetChallengeState: this.props.serverApi.getChallengeState,
-				onGetTimeZones: this.props.serverApi.getTimeZones,
 				onQuitChallenge: this._quitChallenge,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onStartChallenge: this._startChallenge
@@ -231,6 +230,7 @@ export default class extends Root<Props, State> {
 	}
 	public componentDidMount() {
 		//this.clearQueryStringKvps([clientTypeQueryStringKey]);
+		super.componentDidMount();
 	}
 	public render() {
 		return (

@@ -19,7 +19,7 @@ interface Props {
 	onCloseDialog: () => void,
 	onChangeEmailAddress: (email: string) => Promise<void>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
-	onChangeTimeZone: (timeZoneId: number) => Promise<void>,
+	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onResendConfirmationEmail: () => Promise<void>,

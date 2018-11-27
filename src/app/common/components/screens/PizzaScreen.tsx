@@ -7,17 +7,14 @@ import classNames from 'classnames';
 import ChallengeView from '../PizzaPage/ChallengeView';
 import RefreshButton from '../controls/RefreshButton';
 import UserAccount from '../../../../common/models/UserAccount';
-import TimeZoneSelectListItem from '../../../../common/models/TimeZoneSelectListItem';
-import { FetchFunction } from '../../serverApi/ServerApi';
 import ChallengeState from '../../../../common/models/ChallengeState';
 
 interface Props {
 	challengeState: Fetchable<ChallengeState>,
 	leaderboard: Fetchable<ChallengeLeaderboard>,
-	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onQuitChallenge: () => void,
 	onRefreshLeaderboard: () => void,
-	onStartChallenge: (timeZoneId: number) => void,
+	onStartChallenge: () => void,
 	user: UserAccount | null
 }
 export default class extends React.Component<Props> {
@@ -146,7 +143,6 @@ export default class extends React.Component<Props> {
 			<div className="pizza-screen_vkc6ks">
 				<ChallengeView
 					challengeState={this.props.challengeState}
-					onGetTimeZones={this.props.onGetTimeZones}
 					onStartChallenge={this.props.onStartChallenge}
 					user={user}
 				/>

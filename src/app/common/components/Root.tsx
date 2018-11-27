@@ -24,6 +24,7 @@ import { createScreenFactory as createEmailConfirmationScreenFactory } from './E
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import EventSource from '../EventSource';
+import { DateTime } from 'luxon';
 
 export interface Props {
 	captcha: Captcha,
@@ -83,8 +84,8 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	};
 
 	// challenge
-	protected readonly _startChallenge = (challengeId: number, timeZoneId: number) => {
-		return this.props.serverApi.startChallenge(challengeId, timeZoneId);
+	protected readonly _startChallenge = (challengeId: number) => {
+		return this.props.serverApi.startChallenge(challengeId);
 	};
 	protected readonly _quitChallenge = (challengeId: number) => {
 		return this.props.serverApi.quitChallenge(challengeId);
@@ -224,16 +225,16 @@ export default abstract class <P extends Props = Props, S extends State = State>
 	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
 		return this.props.serverApi.changePassword(currentPassword, newPassword);
 	};
-	protected readonly _changeTimeZone = (timeZoneId: number) => {
+	protected readonly _changeTimeZone = (timeZone: { id?: number, name?: string }) => {
 		return this.props.serverApi
-			.changeTimeZone(timeZoneId)
+			.changeTimeZone(timeZone)
 			.then(user => {
 				this.setState({ user });
 			});
 	};
 	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.props.serverApi
-			.createUserAccount(name, email, password, captchaResponse)
+			.createUserAccount(name, email, password, captchaResponse, DateTime.local().zoneName)
 			.then(userAccount => {
 				this._addToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
 				ga('send', {
@@ -267,6 +268,9 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		return this.props.serverApi
 			.signIn(email, password)
 			.then(userAccount => {
+				if (userAccount.timeZoneId == null) {
+					this.setTimeZone();
+				}
 				this.onUserChanged(userAccount, EventSource.Original);
 			});
 	};
@@ -355,6 +359,9 @@ export default abstract class <P extends Props = Props, S extends State = State>
 			})
 		};
 	}
+	private setTimeZone() {
+		return this._changeTimeZone({ name: DateTime.local().zoneName });
+	}
 	protected clearQueryStringKvps(keys?: string[]) {
 		const
 			qsKvps = parseQueryString(window.location.search),
@@ -404,6 +411,11 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		};
 	}
 	protected viewComments(article: UserArticle) { }
+	public componentDidMount() {
+		if (this.state.user && this.state.user.timeZoneId == null) {
+			this.setTimeZone();
+		}
+	}
 	public componentWillUnmount() {
 		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));
 	}
