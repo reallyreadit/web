@@ -16,11 +16,11 @@ import ChallengeResponse from '../../../common/models/ChallengeResponse';
 import ChallengeScore from '../../../common/models/ChallengeScore';
 import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
 import ChallengeState from '../../../common/models/ChallengeState';
-import UserStats from '../../../common/models/UserStats';
+import UserAccountStats from '../../../common/models/UserAccountStats';
 import ChallengeWinner from '../../../common/models/ChallengeWinner';
 import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
-import UserReadStats from '../../../common/models/UserReadStats';
-import ReadingLeaderboardRow from '../../../common/models/ReadingLeaderboardRow';
+import UserStats from '../../../common/models/UserStats';
+import Leaderboards from '../../../common/models/Leaderboards';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -136,8 +136,8 @@ export default abstract class {
 	public readonly quitChallenge = (challengeId: number) => {
 		return this.post<ChallengeResponse>(new Request('/Challenges/Quit', { challengeId }));
 	};
-	public readonly getUserStats = (callback: (state: Fetchable<UserStats>) => void) => {
-		return this.get<UserStats>(new Request('/UserAccounts/Stats'), callback);
+	public readonly getUserAccountStats = (callback: (state: Fetchable<UserAccountStats>) => void) => {
+		return this.get<UserAccountStats>(new Request('/UserAccounts/Stats'), callback);
 	};
 	public readonly getChallengeWinners = (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => {
 		return this.get<ChallengeWinner[]>(new Request('/Challenges/Winners', { challengeId }), callback);
@@ -166,8 +166,8 @@ export default abstract class {
 	public readonly sendExtensionInstructions = () => this.post(new Request('/Extension/SendInstructions'));
 
 	// Stats
-	public readonly getReadingLeaderboard = this.createFetchFunction<ReadingLeaderboardRow[]>('/Stats/ReadingLeaderboards');
-	public readonly getReadingStats = this.createFetchFunction<UserReadStats | null>('/Stats/Reading');
+	public readonly getLeaderboards = this.createFetchFunction<Leaderboards>('/Stats/Leaderboards');
+	public readonly getUserStats = this.createFetchFunction<UserStats | null>('/Stats/UserStats');
 
 	// UserAccounts
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>(new Request('/UserAccounts/ChangeTimeZone', timeZone));

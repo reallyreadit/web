@@ -328,7 +328,7 @@ export default abstract class <P extends Props = Props, S extends State = State>
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetChallengeResponseActionTotals: this.props.serverApi.getChallengeResponseActionTotals,
 				onGetChallengeWinners: this.props.serverApi.getChallengeWinners,
-				onGetUserStats: this.props.serverApi.getUserStats,
+				onGetUserStats: this.props.serverApi.getUserAccountStats,
 				onOpenDialog: this._openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,

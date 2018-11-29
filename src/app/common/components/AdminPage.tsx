@@ -3,7 +3,7 @@ import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../serverApi/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
-import UserStats from '../../../common/models/UserStats';
+import UserAccountStats from '../../../common/models/UserAccountStats';
 import ChallengeWinner from '../../../common/models/ChallengeWinner';
 import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
 import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
@@ -18,7 +18,7 @@ interface Props {
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetChallengeResponseActionTotals: (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => Fetchable<ChallengeResponseTotal[]>,
 	onGetChallengeWinners: (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => Fetchable<ChallengeWinner[]>,
-	onGetUserStats: (callback: (state: Fetchable<UserStats>) => void) => Fetchable<UserStats>,
+	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
 	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
@@ -28,7 +28,7 @@ interface Props {
 class AdminPage extends React.Component<
 	Props,
 	{
-		userStats: Fetchable<UserStats>,
+		userStats: Fetchable<UserAccountStats>,
 		challengeResponseTotals: Fetchable<ChallengeResponseTotal[]>,
 		challengeWinners: Fetchable<ChallengeWinner[]>,
 		mailings: Fetchable<BulkMailing[]>

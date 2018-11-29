@@ -15,8 +15,12 @@
 .leaderboards-screen_wuzsob > .panel:not(:last-child) {
 	margin-bottom: 10px;
 }
-.leaderboards-screen_wuzsob > .panel > ol > li:not(:last-child) {
+.leaderboards-screen_wuzsob > .panel > ol:not(:last-child) {
 	margin-bottom: 10px;
+}
+.leaderboards-screen_wuzsob > .panel > ol > li:first-child {
+	font-size: 16px;
+	margin-bottom: 5px;
 }
 .leaderboards-screen_wuzsob > .leaderboard > table {
 	width: 100%;

@@ -1,27 +1,27 @@
 import * as React from 'react';
 import Fetchable from '../../serverApi/Fetchable';
-import UserReadStats from '../../../../common/models/UserReadStats';
-import ReadingLeaderboardRow from '../../../../common/models/ReadingLeaderboardRow';
+import UserStats from '../../../../common/models/UserStats';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CallbackStore from '../../CallbackStore';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, RootState } from '../Root';
+import Leaderboards from '../../../../common/models/Leaderboards';
 
 interface Props {
-	onGetLeaderboard: FetchFunction<ReadingLeaderboardRow[]>,
-	onGetStats: FetchFunction<UserReadStats | null>,
+	onGetLeaderboards: FetchFunction<Leaderboards>,
+	onGetStats: FetchFunction<UserStats | null>,
 	user: UserAccount | null
 }
 class AppLeaderboardsScreen extends React.Component<Props, {
-	leaderboard: Fetchable<ReadingLeaderboardRow[]>,
-	stats: Fetchable<UserReadStats | null>
+	leaderboards: Fetchable<Leaderboards>,
+	stats: Fetchable<UserStats | null>
 }> {
 	private readonly _callbacks = new CallbackStore();
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			leaderboard: props.onGetLeaderboard(this._callbacks.add(leaderboard => { this.setState({ leaderboard }) })),
+			leaderboards: props.onGetLeaderboards(this._callbacks.add(leaderboards => { this.setState({ leaderboards }) })),
 			stats: props.onGetStats(this._callbacks.add(stats => { this.setState({ stats }) }))
 		};
 	}
@@ -31,7 +31,7 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 	public render() {
 		return (
 			<LeaderboardsScreen
-				leaderboard={this.state.leaderboard}
+				leaderboards={this.state.leaderboards}
 				stats={this.state.stats}
 				user={this.props.user}
 			/>

@@ -1,4 +1,7 @@
 export default interface UserStats {
-	totalCount: number,
-	confirmedCount: number
+	readCount: number,
+	readCountRank: number,
+	streak: number | null,
+	streakRank: number | null,
+	userCount: number
 }
