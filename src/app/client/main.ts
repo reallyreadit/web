@@ -8,9 +8,13 @@ import BrowserRoot from '../common/components/BrowserRoot';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
+import * as jsCookie from 'js-cookie';
 
 // clean up localStorage, switched to using BroadcastChannel for tab sync instead
 localStorage.clear();
+
+// clean up cookies
+jsCookie.remove('hideHero');
 
 ga('create', {
 	trackingId: 'UA-101617933-1',
