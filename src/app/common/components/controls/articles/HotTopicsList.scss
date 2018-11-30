@@ -6,26 +6,16 @@
 .hot-topics-list_4aaj4s {
 	position: relative;
 }
-.hot-topics-list_4aaj4s > .aotd > h3 {
+.hot-topics-list_4aaj4s > h3 {
 	padding-bottom: 10px;
 	display: flex;
-	justify-content: center;
 	align-items: center;
+	font-size: 21px;
+	font-weight: normal;
 }
-.hot-topics-list_4aaj4s > .aotd > h3 > .icon:first-child {
+.hot-topics-list_4aaj4s > h3:not(:first-child) {
+	padding-top: 10px;
+}
+.hot-topics-list_4aaj4s > h3 > .icon {
 	margin-right: 9px;
-}
-.hot-topics-list_4aaj4s > .aotd > h3 > .icon:last-child {
-	margin-left: 9px;
-}
-.hot-topics-list_4aaj4s > .aotd > .article-details {
-	border-width: 3px;
-	border-color: #666;
-}
-.hot-topics-list_4aaj4s > .aotd > hr {
-	margin: 15px auto;
-	width: 75%;
-	border-width: 1px 0 0 0;
-	border-style: solid;
-	border-color: silver;
 }

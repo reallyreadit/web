@@ -40,20 +40,20 @@ export default (props: {
 	onViewComments: (article: UserArticle) => void
 }) => (
 	<div className="hot-topics-list_4aaj4s">
-		<div className="aotd">
-			<h3>
-				<Icon name="trophy" />Article of the Day<Icon name="trophy" />
-			</h3>
-			<ArticleDetails
-				article={props.aotd}
-				isUserSignedIn={props.isUserSignedIn}
-				onRead={props.onReadArticle}
-				onShare={props.onShareArticle}
-				onToggleStar={props.onToggleArticleStar}
-				onViewComments={props.onViewComments}
-			/>
-			<hr />
-		</div>
+		<h3>
+			<Icon name="trophy" /> Article of the Day
+		</h3>
+		<ArticleDetails
+			article={props.aotd}
+			isUserSignedIn={props.isUserSignedIn}
+			onRead={props.onReadArticle}
+			onShare={props.onShareArticle}
+			onToggleStar={props.onToggleArticleStar}
+			onViewComments={props.onViewComments}
+		/>
+		<h3>
+			<Icon name="fire" />  Top Reads
+		</h3>
 		<ArticleList>
 			{props.articles.items.map(article =>
 				<li key={article.id}>
