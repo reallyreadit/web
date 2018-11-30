@@ -233,40 +233,37 @@ export default class extends Root<Props, State> {
 		super.componentDidMount();
 	}
 	public render() {
+		const
+			rootState = { user: this.state.user },
+			topScreen = this.state.screens[this.state.screens.length - (this.state.isPoppingScreen ? 2 : 1)];
+		let headerContent: React.ReactNode | undefined;
+		if (this._screenFactoryMap[topScreen.key].renderHeaderContent) {
+			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, rootState);
+		}
 		return (
 			<div className="app-root_vc3j5h">
 				{this.state.user ?
 					<>
+						<Header
+							content={headerContent}
+							isTransitioningBack={this.state.isPoppingScreen}
+							onBack={this._popScreen}
+							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
+						/>
 						<div className="content">
 							<ol className="screens">
 								{this.state.screens.map((screen, index, screens) => (
 									<li
 										className={classNames('screen', {
-											'has-title': !!screen.title,
 											'slide-out': this.state.isPoppingScreen && index === screens.length - 1
 										})}
 										key={screen.key}
 										onAnimationEnd={this._handleScreenAnimationEnd}
 									>
-										{this._screenFactoryMap[screen.key].render(screen, { user: this.state.user })}
+										{this._screenFactoryMap[screen.key].render(screen, rootState)}
 									</li>
 								))}
 							</ol>
-							{this.state.menuState !== 'closed' ?
-								<Menu
-									isClosing={this.state.menuState === 'closing'}
-									onClose={this._closeMenu}
-									onClosed={this._hideMenu}
-									onReadFaq={this._readFaq}
-									onSignOut={this._signOut}
-									onViewAdminPage={this._viewAdminPage}
-									onViewInbox={this._viewInbox}
-									onViewPrivacyPolicy={this._viewPrivacyPolicy}
-									onViewSettings={this._viewSettings}
-									selectedScreenKey={this.state.screens[0].key}
-									userAccount={this.state.user}
-								/> :
-								null}
 						</div>
 						<NavTray
 							onViewHistory={this._viewHistory}
@@ -275,11 +272,21 @@ export default class extends Root<Props, State> {
 							onViewStarred={this._viewStarred}
 							selectedScreenKey={this.state.screens[0].key}
 						/>
-						<Header
-							isTransitioningBack={this.state.isPoppingScreen}
-							onBack={this._popScreen}
-							titles={this.state.screens.map(screen => screen.title)}
-						/>
+						{this.state.menuState !== 'closed' ?
+							<Menu
+								isClosing={this.state.menuState === 'closing'}
+								onClose={this._closeMenu}
+								onClosed={this._hideMenu}
+								onReadFaq={this._readFaq}
+								onSignOut={this._signOut}
+								onViewAdminPage={this._viewAdminPage}
+								onViewInbox={this._viewInbox}
+								onViewPrivacyPolicy={this._viewPrivacyPolicy}
+								onViewSettings={this._viewSettings}
+								selectedScreenKey={this.state.screens[0].key}
+								userAccount={this.state.user}
+							/> :
+							null}
 						<DialogManager dialog={this.state.dialog} />
 					</> :
 					<AuthScreen

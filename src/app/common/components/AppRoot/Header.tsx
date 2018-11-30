@@ -1,24 +1,24 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
-import classNames from 'classnames';
 
 export default (props: {
+	content?: React.ReactNode,
 	isTransitioningBack: boolean,
 	onBack: () => void,
-	titles: (string | null)[]
+	titles: (React.ReactNode | null)[]
 }) => (
-	<div className={classNames(
-		'header_q3p9go', {
-			'has-back-button': props.titles.length > 1,
-			'hidden': (props.titles.length === 1 || (props.titles.length === 2 && props.isTransitioningBack)) && !props.titles[0]
-		}
-	)}>
-		{props.titles.length > 1 ?
-			<Icon
-				name="chevron-left"
-				onClick={props.onBack}
-			/> :
-			null}
-		<label className="title">{props.titles[props.titles.length - (props.isTransitioningBack ? 2 : 1)]}</label>
+	<div className="header_q3p9go">
+		<div className="back-button">
+			{props.titles.length > 1 && !props.isTransitioningBack ?
+				<Icon
+					name="chevron-left"
+					onClick={props.onBack}
+				/> :
+				null}
+		</div>
+		<div className="title">{props.titles[props.titles.length - (props.isTransitioningBack ? 2 : 1)]}</div>
+		<div className="right-content">
+			{props.content}
+		</div>
 	</div>
 );

@@ -77,16 +77,6 @@ class HomePage extends React.Component<Props, State> {
 					onResendConfirmationEmail={this.props.onResendConfirmationEmail}
 					user={this.props.user}
 				/>
-				<div className="header">
-					<div
-						className="logo-container"
-						dangerouslySetInnerHTML={{ __html: logoText }}
-					></div>
-					<Icon
-						name="user"
-						onClick={this.props.onOpenMenu}
-					/>
-				</div>
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
@@ -113,9 +103,25 @@ export default function <TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
-		create: () => ({ key }),
+		create: () => ({
+			key,
+			titleContent: (
+				<div
+					className="home-screen_an7vm5-title-content"
+					dangerouslySetInnerHTML={{ __html: logoText }}
+				></div>
+			)
+		}),
 		render: (screenState: Screen, rootState: RootState) => (
 			<HomePage {...{ ...deps, user: rootState.user }} />
+		),
+		renderHeaderContent: () => (
+			<div className="home-screen_an7vm5-header-content">
+				<Icon
+					name="user"
+					onClick={deps.onOpenMenu}
+				/>
+			</div>
 		)
 	};
 }

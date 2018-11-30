@@ -12,7 +12,6 @@
 	z-index: 100;
 	display: flex;
 	flex-flow: row-reverse;
-	border-top: 1px solid transparent;
 	animation: menu_fk9ujy-overlay-fade-in 250ms forwards;
 }
 .menu_fk9ujy.closing {
@@ -33,7 +32,7 @@
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: space-between;
-	padding: 36px 16px 20px 20px;
+	padding: 16px;
 }
 .menu_fk9ujy > .drawer > .header > label {
 	white-space: nowrap;
@@ -69,7 +68,7 @@
 .menu_fk9ujy > .drawer > .footer {
 	flex: 0 0 auto;
 	text-align: center;
-	padding: 20px;
+	padding: 16px;
 }
 .menu_fk9ujy > .drawer > .footer > a:last-child {
 	display: block;

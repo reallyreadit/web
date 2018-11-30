@@ -37,11 +37,13 @@ export interface Screen<T = any> {
 	componentState?: T,
 	key: ScreenKey,
 	location?: Location,
-	title?: string
+	title?: string,
+	titleContent?: React.ReactNode
 }
 export interface ScreenFactory {
 	create: (location: Location) => Screen,
-	render: (screenState: Screen, rootState: RootState) => React.ReactNode
+	render: (screenState: Screen, rootState: RootState) => React.ReactNode,
+	renderHeaderContent?: (screenState: Screen, rootState: RootState) => React.ReactNode
 }
 export interface State {
 	dialog: React.ReactNode,
