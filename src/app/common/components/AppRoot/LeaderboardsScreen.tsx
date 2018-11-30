@@ -3,7 +3,7 @@ import Fetchable from '../../serverApi/Fetchable';
 import UserStats from '../../../../common/models/UserStats';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
-import CallbackStore from '../../CallbackStore';
+import AsyncTracker from '../../AsyncTracker';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, RootState } from '../Root';
 import Leaderboards from '../../../../common/models/Leaderboards';
@@ -17,16 +17,16 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 	leaderboards: Fetchable<Leaderboards>,
 	stats: Fetchable<UserStats | null>
 }> {
-	private readonly _callbacks = new CallbackStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			leaderboards: props.onGetLeaderboards(this._callbacks.add(leaderboards => { this.setState({ leaderboards }) })),
-			stats: props.onGetStats(this._callbacks.add(stats => { this.setState({ stats }) }))
+			leaderboards: props.onGetLeaderboards(this._asyncTracker.addCallback(leaderboards => { this.setState({ leaderboards }) })),
+			stats: props.onGetStats(this._asyncTracker.addCallback(stats => { this.setState({ stats }) }))
 		};
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (

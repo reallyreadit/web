@@ -3,7 +3,7 @@ import ActionLink from '../../../../common/components/ActionLink';
 import { IconName } from '../../../../common/components/Icon';
 
 interface Props {
-	icon: IconName,
+	icon?: IconName,
 	onClick: () => Promise<void>,
 	text: string
 }

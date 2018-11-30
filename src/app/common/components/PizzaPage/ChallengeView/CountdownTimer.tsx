@@ -1,23 +1,25 @@
 import * as React from 'react';
 import { DateTime } from 'luxon';
+import AsyncTracker from '../../../AsyncTracker';
 
 export default class extends React.PureComponent<{
 	day: number,
 	level: number,
 	timeZoneName: string
 }> {
-	private _intervalId: number | null = null;
+	private readonly _asyncTracker = new AsyncTracker();
 	public componentDidMount() {
-		this._intervalId = window.setInterval(
-			() => {
-				this.forceUpdate();
-			},
-			60 * 1000
+		this._asyncTracker.addInterval(
+			window.setInterval(
+				() => {
+					this.forceUpdate();
+				},
+				60 * 1000
+			)
 		);
 	}
 	public componentWillUnmount() {
-		window.clearInterval(this._intervalId);
-		this._intervalId = null;
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		let message: string;

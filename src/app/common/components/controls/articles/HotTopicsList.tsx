@@ -1,7 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../../../../../common/models/UserArticle';
 import ArticleList from './ArticleList';
-import PageSelector from '../PageSelector';
 import Icon from '../../../../../common/components/Icon';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import PageResult from '../../../../../common/models/PageResult';
@@ -35,7 +34,6 @@ export default (props: {
 	aotd: UserArticle,
 	articles: PageResult<UserArticle>,
 	isUserSignedIn: boolean,
-	onLoadPage?: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -70,12 +68,5 @@ export default (props: {
 				</li>
 			)}
 		</ArticleList>
-		{props.onLoadPage ?
-			<PageSelector
-				pageNumber={props.articles.pageNumber}
-				pageCount={props.articles.pageCount}
-				onChange={props.onLoadPage}
-			/> :
-			null}
 	</div>
 );

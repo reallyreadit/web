@@ -9,7 +9,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import Captcha from '../Captcha';
 import { Intent } from './Toaster';
 import Fetchable from '../serverApi/Fetchable';
-import CallbackStore from '../CallbackStore';
+import AsyncTracker from '../AsyncTracker';
 import { formatFetchable } from '../../../common/format';
 import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 
@@ -32,7 +32,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	article: Fetchable<UserArticle>,
 	message: string
 }> {
-	private readonly _callbacks = new CallbackStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private _emailFieldId = 0;
 	private _handleMessageChange = (message: string) => this.setState({ message });
 	private _addEmailAddress = () => {
@@ -69,7 +69,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 				} :
 				props.onGetArticle(
 					{ slug: props.slug },
-					this._callbacks.add(article => { this.setState({ article }); })
+					this._asyncTracker.addCallback(article => { this.setState({ article }); })
 				),
 			message: ''
 		};
@@ -197,6 +197,6 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		});
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
+		this._asyncTracker.cancelAll();
 	}
 }

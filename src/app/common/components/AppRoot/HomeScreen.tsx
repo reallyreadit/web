@@ -8,10 +8,11 @@ import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import CallbackStore from '../../CallbackStore';
-import EventHandlerStore from '../../EventHandlerStore';
+import AsyncTracker from '../../AsyncTracker';
 import EmailConfirmationBar from '../EmailConfirmationBar';
 import { Screen, RootState } from '../Root';
+import AsyncActionLink from '../controls/AsyncActionLink';
+import produce from 'immer';
 
 interface Props {
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
@@ -28,31 +29,50 @@ interface State {
 	hotTopics: Fetchable<HotTopics>
 }
 class HomePage extends React.Component<Props, State> {
-	private readonly _callbacks = new CallbackStore();
-	private readonly _eventHandlers = new EventHandlerStore();
+	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _loadMore = () => {
+		return this._asyncTracker.addPromise(new Promise<void>((resolve, reject) => {
+			this.props.onGetHotTopics(
+				{
+					pageNumber: this.state.hotTopics.value.articles.pageNumber + 1,
+					pageSize: 10
+				},
+				this._asyncTracker.addCallback(hotTopics => {
+					resolve();
+					this.setState(produce<State>(state => {
+						state.hotTopics.value.articles = {
+							...hotTopics.value.articles,
+							items: state.hotTopics.value.articles.items.concat(
+								hotTopics.value.articles.items
+							)
+						}
+					}));
+				})
+			)
+		}));
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
 			hotTopics: props.onGetHotTopics(
 				{ pageNumber: 1, pageSize: 10 },
-				this._callbacks.add(hotTopics => {
+				this._asyncTracker.addCallback(hotTopics => {
 					this.setState({ hotTopics });
 				})
 			)
 		};
-		this._eventHandlers.add(
+		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
 				updateArticles.call(this, updatedArticle);
 			})
 		);
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
-		this._eventHandlers.unregister();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (
-			<div className="home-page_3aivep">
+			<div className="home-screen_an7vm5">
 				<EmailConfirmationBar
 					onResendConfirmationEmail={this.props.onResendConfirmationEmail}
 					user={this.props.user}
@@ -69,15 +89,21 @@ class HomePage extends React.Component<Props, State> {
 				</div>
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :
-					<HotTopicsList
-						aotd={this.state.hotTopics.value.aotd}
-						articles={this.state.hotTopics.value.articles}
-						isUserSignedIn={!!this.props.user}
-						onReadArticle={this.props.onReadArticle}
-						onShareArticle={this.props.onShareArticle}
-						onToggleArticleStar={this.props.onToggleArticleStar}
-						onViewComments={this.props.onViewComments}
-					/>}
+					<>
+						<HotTopicsList
+							aotd={this.state.hotTopics.value.aotd}
+							articles={this.state.hotTopics.value.articles}
+							isUserSignedIn={!!this.props.user}
+							onReadArticle={this.props.onReadArticle}
+							onShareArticle={this.props.onShareArticle}
+							onToggleArticleStar={this.props.onToggleArticleStar}
+							onViewComments={this.props.onViewComments}
+						/>
+						<AsyncActionLink
+							text="Show more"
+							onClick={this._loadMore}
+						/>
+					</>}
 			</div>
 		);
 	}

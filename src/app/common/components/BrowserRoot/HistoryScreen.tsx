@@ -3,8 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import CallbackStore from '../../CallbackStore';
-import EventHandlerStore from '../../EventHandlerStore';
+import AsyncTracker from '../../AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
 import { Screen, RootState } from '../Root';
@@ -34,8 +33,7 @@ const emptyPageResult = {
 	}
 };
 class BrowserHistoryScreen extends React.Component<Props, State> {
-	private readonly _callbacks = new CallbackStore();
-	private readonly _eventHandlers = new EventHandlerStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadPage = (pageNumber: number) => {
 		this.setState({
 			articles: this.fetchArticles(pageNumber)
@@ -48,12 +46,12 @@ class BrowserHistoryScreen extends React.Component<Props, State> {
 				this.fetchArticles(1) :
 				emptyPageResult
 		};
-		this._eventHandlers.add(
+		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
 				updateArticles.call(this, updatedArticle);
 			}),
 			props.onRegisterUserChangeHandler(user => {
-				this._callbacks.cancel();
+				this._asyncTracker.cancelAll();
 				if (user) {
 					this._loadPage(1);
 				} else {
@@ -67,14 +65,13 @@ class BrowserHistoryScreen extends React.Component<Props, State> {
 	private fetchArticles(pageNumber: number) {
 		return this.props.onGetUserArticleHistory(
 			{ pageNumber },
-			this._callbacks.add(articles => {
+			this._asyncTracker.addCallback(articles => {
 				this.setState({ articles });
 			})
 		);
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
-		this._eventHandlers.unregister();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (

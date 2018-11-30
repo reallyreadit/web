@@ -9,7 +9,7 @@ import CommentBox from '../controls/comments/CommentBox';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import CallbackStore from '../../CallbackStore';
+import AsyncTracker from '../../AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
@@ -69,11 +69,11 @@ export default class extends React.Component<
 				this.setState({ comments: { ...this.state.comments, value: comments } });
 			});
 	};
-	private readonly _callbacks = new CallbackStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadComments = () => {
 		return this.props.onGetComments(
 			{ slug: getPathParams(this.props.path).slug },
-			this._callbacks.add(comments => { this.setState({ comments }); })
+			this._asyncTracker.addCallback(comments => { this.setState({ comments }); })
 		);
 	};
 	private readonly _noop = () => { };
@@ -84,7 +84,7 @@ export default class extends React.Component<
 		};
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		const

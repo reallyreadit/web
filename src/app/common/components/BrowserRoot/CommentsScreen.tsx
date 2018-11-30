@@ -7,7 +7,7 @@ import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';
 import { Screen, RootState } from '../Root';
 import Location from '../../../../common/routing/Location';
 import Comment from '../../../../common/models/Comment';
-import EventHandlerStore from '../../EventHandlerStore';
+import AsyncTracker from '../../AsyncTracker';
 
 interface Props {
 	article: Fetchable<UserArticle>
@@ -24,10 +24,10 @@ interface Props {
 	user: UserAccount | null
 }
 class BrowserCommentsScreen extends React.Component<Props> {
-	private readonly _eventHandlers = new EventHandlerStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	constructor(props: Props) {
 		super(props);
-		this._eventHandlers.add(
+		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
 				if (this.props.article.value && this.props.article.value.id === updatedArticle.id) {
 					this.props.onSetScreenState({
@@ -44,7 +44,7 @@ class BrowserCommentsScreen extends React.Component<Props> {
 		);
 	}
 	public componentWillUnmount() {
-		this._eventHandlers.unregister();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (

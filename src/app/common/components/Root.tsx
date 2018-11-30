@@ -25,6 +25,7 @@ import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import EventSource from '../EventSource';
 import { DateTime } from 'luxon';
+import AsyncTracker from '../AsyncTracker';
 
 export interface Props {
 	captcha: Captcha,
@@ -49,7 +50,9 @@ export interface State {
 	user: UserAccount | null
 }
 export type RootState = Pick<State, 'user'>;
-export default abstract class <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
+export default abstract class Root <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
+	private readonly _asyncTracker = new AsyncTracker();
+
 	// articles
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
 	protected readonly _shareArticle = (article: UserArticle) => {
@@ -199,11 +202,13 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		const toast = {
 			text,
 			intent,
-			timeoutHandle: window.setTimeout(() => {
-				const toasts = this.state.toasts.slice();
-				toasts[toasts.indexOf(toast)] = { ...toast, remove: true };
-				this.setState({ toasts });
-			}, 5000),
+			timeoutHandle: this._asyncTracker.addTimeout(
+				window.setTimeout(() => {
+					const toasts = this.state.toasts.slice();
+					toasts[toasts.indexOf(toast)] = { ...toast, remove: true };
+					this.setState({ toasts });
+				}, 5000)
+			),
 			remove: false
 		};
 		this.setState({ toasts: [...this.state.toasts, toast] });
@@ -417,6 +422,6 @@ export default abstract class <P extends Props = Props, S extends State = State>
 		}
 	}
 	public componentWillUnmount() {
-		this.state.toasts.forEach(toast => window.clearTimeout(toast.timeoutHandle));
+		this._asyncTracker.cancelAll();
 	}
 }

@@ -9,7 +9,7 @@ import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTota
 import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from './Toaster';
-import CallbackStore from '../CallbackStore';
+import AsyncTracker from '../AsyncTracker';
 import { Screen, RootState } from './Root';
 
 interface Props {
@@ -34,11 +34,11 @@ class AdminPage extends React.Component<
 		mailings: Fetchable<BulkMailing[]>
 	}
 > {
-	private readonly _callbacks = new CallbackStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _reloadMailings = () => {
 		this.setState({
 			mailings: this.props.onGetBulkMailings(
-				this._callbacks.add(mailings => { this.setState({ mailings }); })
+				this._asyncTracker.addCallback(mailings => { this.setState({ mailings }); })
 			)
 		});
 	};
@@ -58,11 +58,11 @@ class AdminPage extends React.Component<
 		super(props);
 		this.state = {
 			userStats: props.onGetUserStats(
-				this._callbacks.add(userStats => { this.setState({ userStats }); })
+				this._asyncTracker.addCallback(userStats => { this.setState({ userStats }); })
 			),
 			challengeResponseTotals: props.onGetChallengeResponseActionTotals(
 				1,
-				this._callbacks.add(
+				this._asyncTracker.addCallback(
 					challengeResponseTotals => {
 						this.setState({ challengeResponseTotals });
 					}
@@ -70,19 +70,19 @@ class AdminPage extends React.Component<
 			),
 			challengeWinners: props.onGetChallengeWinners(
 				1,
-				this._callbacks.add(
+				this._asyncTracker.addCallback(
 					challengeWinners => {
 						this.setState({ challengeWinners });
 					}
 				)
 			),
 			mailings: props.onGetBulkMailings(
-				this._callbacks.add(mailings => { this.setState({ mailings }); })
+				this._asyncTracker.addCallback(mailings => { this.setState({ mailings }); })
 			)
 		};
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (

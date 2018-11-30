@@ -3,7 +3,7 @@ import Fetchable from '../serverApi/Fetchable';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
-import CallbackStore from '../CallbackStore';
+import AsyncTracker from '../AsyncTracker';
 import { parseQueryString } from '../../../common/routing/queryString';
 import { Screen } from './Root';
 import Location from '../../../common/routing/Location';
@@ -41,7 +41,7 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 		isUpdated: boolean
 	}
 > {
-	private readonly _callbacks = new CallbackStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeCommentReplyNotification = (e: React.ChangeEvent<HTMLInputElement>) =>
 		this.setState({ values: { ...this.state.values, commentReplyNotifications: e.currentTarget.checked } });
 	private readonly _changeWebsiteUpdates = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -74,7 +74,7 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 				token = props.token,
 				request = props.onGetEmailSubscriptions(
 					token,
-					this._callbacks.add(
+					this._asyncTracker.addCallback(
 						request => this.setState({
 							request,
 							values: request.value.subscriptions

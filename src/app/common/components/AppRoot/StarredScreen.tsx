@@ -3,8 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import CallbackStore from '../../CallbackStore';
-import EventHandlerStore from '../../EventHandlerStore';
+import AsyncTracker from '../../AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
 import { Screen, RootState } from '../Root';
@@ -25,8 +24,7 @@ interface State {
 	articles: Fetchable<PageResult<UserArticle>>
 }
 class AppStarredScreen extends React.Component<Props, State> {
-	private readonly _callbacks = new CallbackStore();
-	private readonly _eventHandlers = new EventHandlerStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadPage = (pageNumber: number) => {
 		this.setState({
 			articles: this.fetchArticles(pageNumber)
@@ -37,7 +35,7 @@ class AppStarredScreen extends React.Component<Props, State> {
 		this.state = {
 			articles: this.fetchArticles(1)
 		};
-		this._eventHandlers.add(
+		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
 				updateArticles.call(this, updatedArticle);
 			})
@@ -46,14 +44,13 @@ class AppStarredScreen extends React.Component<Props, State> {
 	private fetchArticles(pageNumber: number) {
 		return this.props.onGetStarredArticles(
 			{ pageNumber },
-			this._callbacks.add(articles => {
+			this._asyncTracker.addCallback(articles => {
 				this.setState({ articles });
 			})
 		);
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
-		this._eventHandlers.unregister();
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (

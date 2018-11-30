@@ -4,7 +4,7 @@ import { FetchFunction } from '../../serverApi/ServerApi';
 import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../serverApi/Fetchable';
 import { DateTime } from 'luxon';
-import CallbackStore from '../../CallbackStore';
+import AsyncTracker from '../../AsyncTracker';
 
 interface Props {
 	currentTimeZoneId: number | null,
@@ -18,7 +18,7 @@ export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<St
 		selectListItem: TimeZoneSelectListItem
 	} | null
 }> {
-	private readonly _callbacks = new CallbackStore();
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _selectTimeZone = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectListItem = this.state.timeZoneSelectListItems.value.find(zone => zone.key === e.currentTarget.value);
 		this.setState({
@@ -46,7 +46,7 @@ export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<St
 			...this.state,
 			isLoading: true,
 			timeZoneSelection: null,
-			timeZoneSelectListItems: props.onGetTimeZones(this._callbacks.add(timeZoneSelectListItems => {
+			timeZoneSelectListItems: props.onGetTimeZones(this._asyncTracker.addCallback(timeZoneSelectListItems => {
 				const selectedItem = timeZoneSelectListItems.value
 					.reduce(
 						(zones, item) => zones.concat(item.value.map(zone => ({ ...zone, key: item.key }))),
@@ -109,6 +109,6 @@ export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<St
 		return this.props.onChangeTimeZone({ id: this.state.timeZoneSelection.id });
 	}
 	public componentWillUnmount() {
-		this._callbacks.cancel();
+		this._asyncTracker.cancelAll();
 	}
 }
