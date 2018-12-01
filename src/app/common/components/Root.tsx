@@ -40,10 +40,10 @@ export interface Screen<T = any> {
 	title?: string,
 	titleContent?: React.ReactNode
 }
-export interface ScreenFactory {
+export interface ScreenFactory<TRootState> {
 	create: (location: Location) => Screen,
-	render: (screenState: Screen, rootState: RootState) => React.ReactNode,
-	renderHeaderContent?: (screenState: Screen, rootState: RootState) => React.ReactNode
+	render: (screenState: Screen, rootState: TRootState) => React.ReactNode,
+	renderHeaderContent?: (screenState: Screen, rootState: TRootState) => React.ReactNode
 }
 export interface State {
 	dialog: React.ReactNode,
@@ -51,8 +51,12 @@ export interface State {
 	toasts: Toast[],
 	user: UserAccount | null
 }
-export type RootState = Pick<State, 'user'>;
-export default abstract class Root <P extends Props = Props, S extends State = State> extends React.Component<P, S> {
+export type SharedState = Pick<State, 'user'>;
+export default abstract class Root <
+	P extends Props,
+	S extends State,
+	TSharedState extends SharedState
+> extends React.Component<P, S> {
 	private readonly _asyncTracker = new AsyncTracker();
 
 	// articles
@@ -176,7 +180,7 @@ export default abstract class Root <P extends Props = Props, S extends State = S
 	};
 
 	// screens
-	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory }>;
+	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
 
 	// state
 	protected readonly _setScreenState = (key: ScreenKey, state: Partial<Screen>) => {

@@ -24,7 +24,7 @@ interface State extends RootState {
 	isPoppingScreen: boolean,
 	menuState: 'opened' | 'closing' | 'closed',
 }
-export default class extends Root<Props, State> {
+export default class extends Root<Props, State, Pick<State, 'user'>> {
 	// extension
 	private readonly _sendExtensionInstructions = () => {
 		return this.props.serverApi

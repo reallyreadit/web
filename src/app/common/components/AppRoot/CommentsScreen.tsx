@@ -4,7 +4,7 @@ import Fetchable from '../../serverApi/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';
-import { Screen, RootState } from '../Root';
+import { Screen, SharedState } from '../Root';
 import Location from '../../../../common/routing/Location';
 import Comment from '../../../../common/models/Comment';
 import AsyncTracker from '../../AsyncTracker';
@@ -87,7 +87,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				title: article.value ? article.value.title : 'Loading...'
 			};
 		},
-		render: (state: Screen<Fetchable<UserArticle>>, rootState: RootState) => (
+		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => (
 			<AppCommentsScreen
 				article={state.componentState}
 				onGetComments={deps.onGetComments}
@@ -99,7 +99,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onShareArticle={deps.onShareArticle}
 				onToggleArticleStar={deps.onToggleArticleStar}
 				path={state.location.path}
-				user={rootState.user}
+				user={sharedState.user}
 			/>
 		)
 	};

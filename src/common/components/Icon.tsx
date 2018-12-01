@@ -8,7 +8,7 @@ export type IconName = 'locked' | 'switch' | 'plus' | 'refresh2' | 'checkmark' |
 	'home' | 'box' | 'email' | 'share' | 'in-alt' | 'out-alt' |
 	'arrow-up' | 'arrow-down' | 'article-details-star' |
 	'thumbs-o-up' | 'retweet' | 'sort' | 'heart' | 'circle-full' | 'arrow-right2' |
-	'line-chart' | 'chevron-left' | 'books' | 'star' | 'history' | 'podium';
+	'line-chart' | 'chevron-left' | 'books' | 'star' | 'history' | 'podium' | 'warning';
 export default (props: {
 	name: IconName,
 	title?: string,

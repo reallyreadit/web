@@ -10,7 +10,7 @@ import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 import { Intent } from './Toaster';
-import { Screen, RootState } from './Root';
+import { Screen, SharedState } from './Root';
 import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
@@ -163,7 +163,7 @@ class SettingsPage extends React.PureComponent<Props> {
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
 		create: () => ({ key, title: 'Settings' }),
-		render: (screenState: Screen, rootState: RootState) => (
+		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
@@ -175,7 +175,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 				onShowToast={deps.onShowToast}
 				onUpdateContactPreferences={deps.onUpdateContactPreferences}
 				onUpdateNotificationPreferences={deps.onUpdateNotificationPreferences}
-				user={rootState.user}
+				user={sharedState.user}
 			/>
 		)
 	};

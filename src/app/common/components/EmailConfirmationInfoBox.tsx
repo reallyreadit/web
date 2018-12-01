@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Separator from '../../../common/components/Separator';
-import Icon from '../../../common/components/Icon';
 import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 import UserAccount from '../../../common/models/UserAccount';
+import InfoBox from './controls/InfoBox';
 
 export default class extends React.PureComponent<{
 	onResendConfirmationEmail: () => Promise<void>,
@@ -10,15 +9,17 @@ export default class extends React.PureComponent<{
 }, {}> {
 	public render() {
 		return (
-		   this.props.user && !this.props.user.isEmailConfirmed ?
-				<div className="email-confirmation-bar">
-					<Icon name="exclamation" /> Please confirm your email address ({this.props.user.email})<br />
-					Need a new confirmation email?
-					<Separator />
+			this.props.user && !this.props.user.isEmailConfirmed ?
+				<InfoBox
+					icon="warning"
+					position="static"
+					style="warning"
+				>
+					Confirm your email address.
 					<ResendConfirmationEmailActionLink
 						onResend={this.props.onResendConfirmationEmail}
 					/> 
-				</div> :
+				</InfoBox> :
 				null
 		);
 	}

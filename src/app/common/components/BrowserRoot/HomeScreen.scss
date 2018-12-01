@@ -4,5 +4,14 @@
 */
 
 .home-screen_1sjipy {
+	display: flex;
+	flex-flow: column;
 	min-height: 100%;
+}
+.home-screen_1sjipy > .info-box_whou0t + .info-box_whou0t {
+	margin-top: 10px;
+}
+.home-screen_1sjipy > .loading-overlay_zfgtd1,
+.home-screen_1sjipy > .hot-topics-list {
+	flex: 1 1 auto;
 }

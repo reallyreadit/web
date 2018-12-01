@@ -6,7 +6,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
-import { Screen, RootState } from '../Root';
+import { Screen, SharedState } from '../Root';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncActionLink from '../controls/AsyncActionLink';
 
@@ -88,8 +88,8 @@ export default function <TScreenKey>(
 ) {
 	return {
 		create: () => ({ key, title: 'Starred' }),
-		render: (screenState: Screen, rootState: RootState) => (
-			<AppStarredScreen {...{ ...deps, user: rootState.user }} />
+		render: (screenState: Screen, sharedState: SharedState) => (
+			<AppStarredScreen {...{ ...deps, user: sharedState.user }} />
 		)
 	};
 }

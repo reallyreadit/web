@@ -1,9 +1,8 @@
 import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster from './Toaster';
-import EmailConfirmationBar from './EmailConfirmationBar';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
@@ -22,7 +21,6 @@ import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
-import ReadReadinessBar from './BrowserRoot/ReadReadinessBar';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -34,7 +32,8 @@ interface State extends RootState {
 	menuState: 'opened' | 'closing' | 'closed',
 	showNewReplyIndicator: boolean
 }
-export default class extends Root<Props, State> {
+export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
+export default class extends Root<Props, State, SharedState> {
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
 		this._openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
@@ -125,10 +124,13 @@ export default class extends Root<Props, State> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onGetHotTopics: this.props.serverApi.getHotTopics,
+				onInstallExtension: this._installExtension,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -261,16 +263,6 @@ export default class extends Root<Props, State> {
 		const screen = this.state.screens[0];
 		return (
 			<div className="browser-root">
-				{this.state.user && this.state.isExtensionInstalled === false ?
-					<ReadReadinessBar
-						isBrowserCompatible={this.props.extensionApi.isBrowserCompatible}
-						onInstallExtension={this._installExtension}
-					/> :
-					null}
-				<EmailConfirmationBar
-					onResendConfirmationEmail={this._resendConfirmationEmail}
-					user={this.state.user}
-				/>
 				<Header
 					isUserSignedIn={!!this.state.user}
 					onOpenMenu={this._openMenu}
@@ -288,7 +280,10 @@ export default class extends Root<Props, State> {
 						selectedScreenKey={screen.key}
 					/>
 					<div className="screen">
-						{this._screenFactoryMap[screen.key].render(screen, { user: this.state.user })}
+						{this._screenFactoryMap[screen.key].render(screen, {
+							isExtensionInstalled: this.state.isExtensionInstalled,
+							user: this.state.user
+						})}
 					</div>
 				</main>
 				{this.state.menuState !== 'closed' ?

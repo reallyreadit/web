@@ -71,7 +71,10 @@ export default class extends React.PureComponent<{
 								onChange={this.props.onLoadPage}
 							/>
 						</> :
-						<InfoBox>
+						<InfoBox
+							position="absolute"
+							style="normal"
+						>
 							{this.props.isUserSignedIn ?
 								<>
 									You've read 0 articles.<br /><br />

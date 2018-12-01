@@ -9,8 +9,8 @@ import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
-import EmailConfirmationBar from '../EmailConfirmationBar';
-import { Screen, RootState } from '../Root';
+import EmailConfirmationInfoBox from '../EmailConfirmationInfoBox';
+import { Screen, SharedState } from '../Root';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import produce from 'immer';
 
@@ -73,7 +73,7 @@ class HomePage extends React.Component<Props, State> {
 	public render() {
 		return (
 			<div className="home-screen_an7vm5">
-				<EmailConfirmationBar
+				<EmailConfirmationInfoBox
 					onResendConfirmationEmail={this.props.onResendConfirmationEmail}
 					user={this.props.user}
 				/>
@@ -112,8 +112,8 @@ export default function <TScreenKey>(
 				></div>
 			)
 		}),
-		render: (screenState: Screen, rootState: RootState) => (
-			<HomePage {...{ ...deps, user: rootState.user }} />
+		render: (screenState: Screen, sharedState: SharedState) => (
+			<HomePage {...{ ...deps, user: sharedState.user }} />
 		),
 		renderHeaderContent: () => (
 			<div className="home-screen_an7vm5-header-content">

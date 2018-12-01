@@ -57,7 +57,10 @@ export default (props: {
 					onChange={props.onLoadPage}
 				/>
 			</> :
-			<InfoBox>
+			<InfoBox
+				position="absolute"
+				style="normal"
+			>
 				{props.isUserSignedIn ?
 					<>
 						Use stars to save articles for later.<br /><br />

@@ -4,19 +4,49 @@
 */
 
 .info-box_whou0t {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.info-box_whou0t.absolute {
 	position: absolute;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
+}
+.info-box_whou0t > .box {
+	display: flex;
+	padding: 10px;
+	border: 3px solid #e0e0e0;
+	font-size: 15px;	
+}
+.info-box_whou0t.warning > .box {
+	background-color: lightpink;
+	border-color: darkred;
+}
+.info-box_whou0t > .box > .icon-container {
+	flex: 0 0 auto;
+	width: 36px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin-right: 10px;
 }
-.info-box_whou0t > .content {
-	background-color: white;
-	border: 1px solid #e0e0e0;
-	padding: 7px;
-	font-size: 15px;
-	text-align: center;
+.info-box_whou0t > .box > .icon-container > .icon {
+	font-size: 36px;
+}
+.info-box_whou0t.warning > .box > .icon-container > .icon {
+	color: darkred;
+}
+.info-box_whou0t > .box > .content {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+.info-box_whou0t > .box > .content > .action-link {
+	justify-content: center;
+	margin-top: 10px;
 }

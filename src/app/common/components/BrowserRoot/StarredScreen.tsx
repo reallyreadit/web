@@ -6,7 +6,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
-import { Screen, RootState } from '../Root';
+import { Screen, SharedState } from '../Root';
 import LoadingOverlay from '../controls/LoadingOverlay';
 
 interface Props {
@@ -97,8 +97,8 @@ export default function <TScreenKey>(
 ) {
 	return {
 		create: () => ({ key, title: 'Starred' }),
-		render: (screenState: Screen, rootState: RootState) => (
-			<BrowserStarredScreen {...{ ...deps, user: rootState.user }} />
+		render: (screenState: Screen, sharedState: SharedState) => (
+			<BrowserStarredScreen {...{ ...deps, user: sharedState.user }} />
 		)
 	};
 }

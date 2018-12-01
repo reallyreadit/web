@@ -6,7 +6,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
-import { Screen, RootState } from '../Root';
+import { Screen, SharedState } from '../Root';
 
 interface Props {
 	onDeleteArticle: (article: UserArticle) => void,
@@ -71,8 +71,8 @@ export default function createScreenFactory<TScreenKey>(
 ) {
 	return {
 		create: () => ({ key, title: 'History' }),
-		render: (screenState: Screen, rootState: RootState) => (
-			<AppHistoryScreen {...{ ...deps, user: rootState.user }} />
+		render: (screenState: Screen, sharedState: SharedState) => (
+			<AppHistoryScreen {...{ ...deps, user: sharedState.user }} />
 		)
 	};
 }

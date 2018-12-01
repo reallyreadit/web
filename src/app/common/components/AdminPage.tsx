@@ -7,7 +7,7 @@ import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from './Toaster';
 import AsyncTracker from '../AsyncTracker';
-import { Screen, RootState } from './Root';
+import { Screen, SharedState } from './Root';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -140,7 +140,7 @@ class AdminPage extends React.Component<
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
 		create: () => ({ key, title: 'Admin' }),
-		render: (screenState: Screen, rootState: RootState) => {
+		render: (screenState: Screen, sharedState: SharedState) => {
 			return (
 				<AdminPage
 					onCloseDialog={deps.onCloseDialog}
@@ -151,7 +151,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onSendBulkMailing={deps.onSendBulkMailing}
 					onSendTestBulkMailing={deps.onSendTestBulkMailing}
 					onShowToast={deps.onShowToast}
-					user={rootState.user}
+					user={sharedState.user}
 				/>
 			);
 		}
