@@ -12,7 +12,7 @@ export default (props: {
 	<InputField
 		autoFocus={props.autoFocus}
 		error={props.error}
-		label="Email Address"
+		label="Email"
 		labelPosition={props.labelPosition}
 		maxLength={256}
 		onChange={props.onChange}

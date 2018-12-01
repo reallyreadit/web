@@ -9,7 +9,7 @@ export function parseQueryString(queryString: string) {
 		.split('&')
 		.reduce((result, param) => {
 			const parts = param.split('=');
-			result[parts[0]] = parts[1];
+			result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
 			return result;
 		}, {} as { [key: string]: string })
 }
@@ -21,7 +21,7 @@ export function createQueryString(kvps: { [key: string]: string }) {
 	return (
 		'?' +
 		keys
-			.map(key => kvps[key] ? `${key}=${kvps[key]}` : key)
+			.map(key => kvps[key] ? `${encodeURIComponent(key)}=${encodeURIComponent(kvps[key])}` : encodeURIComponent(key))
 			.join('&')
 	);
 }

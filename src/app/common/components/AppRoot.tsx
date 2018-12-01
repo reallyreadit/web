@@ -6,7 +6,6 @@ import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
-//import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
@@ -150,20 +149,16 @@ export default class extends Root<Props, State> {
 		};
 
 		// state
-		let
-			dialog: React.ReactNode,
-			screens: Screen[];
+		const locationState = this.getLocationDependentState(props.initialLocation);
+		let screens: Screen[];
 		if (props.initialUser) {
-			const locationState = this.getLocationDependentState(props.initialLocation);
-			dialog = locationState.dialog;
 			screens = [locationState.screen];
 		} else {
-			dialog = null;
 			screens = [];
 		}
 		this.state = {
 			...this.state,
-			dialog,
+			dialog: locationState.dialog,
 			isPoppingScreen: false,
 			menuState: 'closed',
 			screens
@@ -228,10 +223,6 @@ export default class extends Root<Props, State> {
 			article.title
 		);
 	}
-	public componentDidMount() {
-		//this.clearQueryStringKvps([clientTypeQueryStringKey]);
-		super.componentDidMount();
-	}
 	public render() {
 		const
 			rootState = { user: this.state.user },
@@ -287,14 +278,15 @@ export default class extends Root<Props, State> {
 								userAccount={this.state.user}
 							/> :
 							null}
-						<DialogManager dialog={this.state.dialog} />
 					</> :
 					<AuthScreen
 						captcha={this.props.captcha}
 						onCreateAccount={this._createAccount}
+						onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
 						onShowToast={this._addToast}
 						onSignIn={this._signIn}
 					/>}
+				<DialogManager dialog={this.state.dialog} />
 				<Toaster
 					onRemoveToast={this._removeToast}
 					toasts={this.state.toasts}

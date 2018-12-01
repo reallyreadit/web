@@ -133,11 +133,11 @@ export default abstract class Root <P extends Props = Props, S extends State = S
 			const kvps = parseQueryString(location.queryString);
 			return (
 				<ResetPasswordDialog
-					email={decodeURIComponent(kvps['email'])}
+					email={kvps['email']}
 					onCloseDialog={this._closeDialog}
-					onResetPassword={this.props.serverApi.resetPassword}
+					onResetPassword={this._resetPassword}
 					onShowToast={this._addToast}
-					token={decodeURIComponent(kvps['token'])}
+					token={kvps['token']}
 				/>
 			);
 		},
@@ -255,6 +255,13 @@ export default abstract class Root <P extends Props = Props, S extends State = S
 	};
 	protected readonly _deleteArticle = (article: UserArticle) => {
 		this.props.serverApi.deleteUserArticle(article.id);
+	};
+	protected readonly _resetPassword = (token: string, password: string) => {
+		return this.props.serverApi
+			.resetPassword(token, password)
+			.then(userAccount => {
+				this.onUserChanged(userAccount, EventSource.Original);
+			});
 	};
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
@@ -419,6 +426,7 @@ export default abstract class Root <P extends Props = Props, S extends State = S
 	}
 	protected viewComments(article: UserArticle) { }
 	public componentDidMount() {
+		this.clearQueryStringKvps();
 		if (this.state.user && this.state.user.timeZoneId == null) {
 			this.setTimeZone();
 		}

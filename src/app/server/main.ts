@@ -42,8 +42,13 @@ const nodeUrl = url;
 function redirect(req: express.Request, res: express.Response, url: string) {
 	if (clientTypeQueryStringKey in req.query) {
 		const redirectUrl = nodeUrl.parse(url, true);
-		redirectUrl.query[clientTypeQueryStringKey] = req.query[clientTypeQueryStringKey];
-		url = nodeUrl.format(redirectUrl);
+		url = nodeUrl.format({
+			pathname: redirectUrl.pathname,
+			query: {
+				...redirectUrl.query,
+				[clientTypeQueryStringKey]: req.query[clientTypeQueryStringKey]
+			}
+		})
 	}
 	res.redirect(url);
 }

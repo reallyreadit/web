@@ -4,14 +4,26 @@
 	text-align: center;
 	font-size: 14px;
 }
-.create-account-card > .app-screen-button {
-	margin-top: 10px;
+.create-account-card > .form-field:not(:last-of-type) {
+	margin-bottom: 10px;
 }
-.create-account-card > .cancel-container {
+.create-account-card > .form-field > .field-container > .input-control > input {
+	height: 30px;
+	line-height: 30px;
+	padding: 0 10px;
+	font-size: 15px;
+}
+.create-account-card > .captcha {
 	display: flex;
 	justify-content: center;
-	margin-top: 20px;
+	margin-top: 15px;
+	min-height: 78px;
 }
-.create-account-card > .cancel-container > .action-link {
-	color: silver;
+.create-account-card > .button_vp905n {
+	margin-top: 15px;
+}
+.create-account-card > .action-link {
+	justify-content: center;
+	margin-top: 20px;
+	color: #666;
 }

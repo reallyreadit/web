@@ -2,9 +2,11 @@ import * as React from 'react';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
 import Button from './Button';
+import ActionLink from '../../../../../common/components/ActionLink';
 
 interface Props {
-	onShowCreateAccountCard: () => void,
+	onCancel: () => void,
+	onOpenRequestPasswordResetDialog: () => void,
 	onSignIn: (email: string, password: string) => Promise<void>
 }
 export default class extends React.PureComponent<Props, {
@@ -52,7 +54,7 @@ export default class extends React.PureComponent<Props, {
 	public render() {
 		return (
 			<div className="sign-in-card">
-				<strong>Already have an account?</strong>
+				<strong>Log In</strong>
 				<EmailAddressField
 					autoFocus
 					error={this.state.emailError}
@@ -71,16 +73,11 @@ export default class extends React.PureComponent<Props, {
 				<Button
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
+					style="loud"
 					text="Log In"
 				/>
-				<div className="break">
-					<span>or</span>
-				</div>
-				<Button
-					onClick={this.props.onShowCreateAccountCard}
-					style="loud"
-					text="Sign Up"
-				/>
+				<ActionLink onClick={this.props.onOpenRequestPasswordResetDialog} text="Forgot Password?" />
+				<ActionLink onClick={this.props.onCancel} text="Cancel" />
 			</div>
 		);
 	}

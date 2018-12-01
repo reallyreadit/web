@@ -6,13 +6,14 @@
 .button_vp905n {
 	background-color: white;
 	border: 2px solid black;
-	text-transform: uppercase;
 	font-weight: bold;
-	height: 34px;
-	width: 100%;
+	height: 42px;
+	width: 80%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	font-size: 18px;
+	margin: 0 auto;
 }
 .button_vp905n[disabled] {
 	color: silver;

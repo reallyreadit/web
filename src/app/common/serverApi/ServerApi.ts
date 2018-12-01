@@ -59,7 +59,7 @@ export default abstract class {
 		return this.post(new Request('/UserAccounts/ChangePassword', { currentPassword, newPassword }));
 	};
 	public readonly resetPassword = (token: string, password: string) => {
-		return this.post(new Request('/UserAccounts/ResetPassword', { token, password }));
+		return this.post<UserAccount>(new Request('/UserAccounts/ResetPassword', { token, password }));
 	};
 	public readonly changeEmailAddress = (email: string) => {
 		return this.post<UserAccount>(new Request('/UserAccounts/ChangeEmailAddress', { email }));

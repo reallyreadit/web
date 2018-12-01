@@ -23,16 +23,6 @@ interface State {
 	passwordError: string | null,
 	showErrors: boolean
 }
-const initialState: State = {
-	email: '',
-	emailError: null,
-	isSubmitting: false,
-	name: '',
-	nameError: null,
-	password: '',
-	passwordError: null,
-	showErrors: false
-};
 export default class extends React.PureComponent<Props, State> {
 	private readonly _changeName = (name: string, nameError: string) => {
 		this.setState({ name, nameError });
@@ -78,12 +68,18 @@ export default class extends React.PureComponent<Props, State> {
 				});
 		}
 	};
-	private readonly _cancel = () => {
-		this.setState(initialState, this.props.onCancel);
-	};
 	constructor(props: Props) {
 		super(props);
-		this.state = initialState;
+		this.state = {
+			email: '',
+			emailError: null,
+			isSubmitting: false,
+			name: '',
+			nameError: null,
+			password: '',
+			passwordError: null,
+			showErrors: false
+		};
 	}
 	public componentDidMount() {
 		this.props.captcha.onReady().then(captcha => {
@@ -93,7 +89,7 @@ export default class extends React.PureComponent<Props, State> {
 	public render() {
 		return (
 			<div className="create-account-card">
-				<strong>Create a new account</strong>
+				<strong>Create an account</strong>
 				<UsernameField
 					autoFocus
 					error={this.state.nameError}
@@ -118,17 +114,16 @@ export default class extends React.PureComponent<Props, State> {
 					value={this.state.password}
 				/>
 				<div
-					key="captcha"
+					className="captcha"
 					ref={this._setCaptchaElement}
 				></div>
 				<Button
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
+					style="loud"
 					text="Sign Up"
 				/>
-				<div className="cancel-container">
-					<ActionLink onClick={this._cancel} text="Cancel" />
-				</div>
+				<ActionLink onClick={this.props.onCancel} text="Cancel" />
 			</div>
 		)
 	}

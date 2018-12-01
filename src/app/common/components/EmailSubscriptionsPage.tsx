@@ -23,11 +23,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 			<EmailSubscriptionPage
 				onGetEmailSubscriptions={deps.onGetEmailSubscriptions}
 				onUpdateEmailSubscriptions={deps.onUpdateEmailSubscriptions}
-				token={
-					decodeURIComponent(
-						parseQueryString(state.location.queryString)['token']
-					)
-				}
+				token={parseQueryString(state.location.queryString)['token']}
 			/>
 		)
 	};

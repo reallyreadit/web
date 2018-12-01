@@ -4,20 +4,20 @@
 	text-align: center;
 	font-size: 14px;
 }
-.sign-in-card > .app-screen-button:first-of-type {
-	margin-top: 10px;
+.sign-in-card > .form-field:not(:last-of-type) {
+	margin-bottom: 10px;
 }
-.sign-in-card > .break {
-	display: flex;
-	align-items: center;
-	margin: 20px 0;
-	color: silver;
+.sign-in-card > .form-field > .field-container > .input-control > input {
+	height: 30px;
+	line-height: 30px;
+	padding: 0 10px;
+	font-size: 15px;
 }
-.sign-in-card > .break::before,
-.sign-in-card > .break::after {
-	content: "";
-	display: block;
-	flex: 1 1 auto;
-	border-bottom: 1px solid silver;
-	margin: 0 10px;
+.sign-in-card > .button_vp905n {
+	margin-top: 15px;
+}
+.sign-in-card > .action-link {
+	justify-content: center;
+	margin-top: 20px;
+	color: #666;
 }

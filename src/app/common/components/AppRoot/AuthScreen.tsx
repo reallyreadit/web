@@ -5,17 +5,31 @@ import Captcha from '../../Captcha';
 import classNames from 'classnames';
 import CreateAccountCard from './AuthScreen/CreateAccountCard';
 import { Intent } from '../Toaster';
+import Button from './AuthScreen/Button';
 
 interface Props {
 	captcha: Captcha,
 	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
+	onOpenRequestPasswordResetDialog: () => void,
 	onShowToast: (text: string, intent: Intent) => void,
 	onSignIn: (email: string, password: string) => Promise<void>
 }
 enum Card { SignIn, CreateAccount }
 export default class extends React.PureComponent<Props, {
-	activeCard: Card
+	activeCard: Card | null,
+	isFlippingBack: boolean
 }> {
+	private readonly _cancel = () => {
+		this.setState({ isFlippingBack: true });
+	};
+	private readonly _handleFlipperAnimationEnd = (ev: React.AnimationEvent) => {
+		if (ev.animationName === 'auth-screen_gnq77a-flip-back') {
+			this.setState({
+				activeCard: null,
+				isFlippingBack: false
+			});
+		}
+	};
 	private readonly _showCreateAccountCard = () => {
 		this.setState({ activeCard: Card.CreateAccount });
 	};
@@ -25,29 +39,63 @@ export default class extends React.PureComponent<Props, {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			activeCard: Card.SignIn
+			activeCard: null,
+			isFlippingBack: false
 		};
 	}
 	public render() {
+		let activeCard: React.ReactNode | null;
+		switch (this.state.activeCard) {
+			case Card.CreateAccount:
+				activeCard = (
+					<CreateAccountCard
+						captcha={this.props.captcha}
+						onCancel={this._cancel}
+						onCreateAccount={this.props.onCreateAccount}
+						onShowToast={this.props.onShowToast}
+					/>
+				);
+				break;
+			case Card.SignIn:
+				activeCard = (
+					<SignInCard
+						onCancel={this._cancel}
+						onOpenRequestPasswordResetDialog={this.props.onOpenRequestPasswordResetDialog}
+						onSignIn={this.props.onSignIn}
+					/>
+				);
+				break;
+		}
 		return (
 			<div className="auth-screen_gnq77a">
 				<div className="content">
 					<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
 					<div className="flip-container">
-						<div className={classNames('flipper', { 'flipped': this.state.activeCard === Card.CreateAccount })}>
+						<div
+							className={classNames(
+								'flipper',
+								this.state.isFlippingBack ?
+									'backwards' :
+									this.state.activeCard != null ?
+										'flipped' :
+										null
+							)}
+							onAnimationEnd={this._handleFlipperAnimationEnd}
+						>
 							<div className="front">
-								<SignInCard
-									onShowCreateAccountCard={this._showCreateAccountCard}
-									onSignIn={this.props.onSignIn}
+								<h2>Feed your head.</h2>
+								<Button
+									onClick={this._showCreateAccountCard}
+									style="loud"
+									text="Sign Up"
+								/>
+								<Button
+									onClick={this._showSignInCard}
+									text="Log In"
 								/>
 							</div>
 							<div className="back">
-								<CreateAccountCard
-									captcha={this.props.captcha}
-									onCancel={this._showSignInCard}
-									onCreateAccount={this.props.onCreateAccount}
-									onShowToast={this.props.onShowToast}
-								/>
+								{activeCard}
 							</div>
 						</div>
 					</div>
