@@ -12,13 +12,7 @@ import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import HotTopics from '../../../common/models/HotTopics';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
-import ChallengeResponse from '../../../common/models/ChallengeResponse';
-import ChallengeScore from '../../../common/models/ChallengeScore';
-import ChallengeLeaderboard from '../../../common/models/ChallengeLeaderboard';
-import ChallengeState from '../../../common/models/ChallengeState';
 import UserAccountStats from '../../../common/models/UserAccountStats';
-import ChallengeWinner from '../../../common/models/ChallengeWinner';
-import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
 import UserStats from '../../../common/models/UserStats';
 import Leaderboards from '../../../common/models/Leaderboards';
 
@@ -133,17 +127,8 @@ export default abstract class {
 	public readonly shareArticle = (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => {
 		return this.post(new Request('/Articles/Share', { articleId, emailAddresses, message, captchaResponse }));
 	};
-	public readonly quitChallenge = (challengeId: number) => {
-		return this.post<ChallengeResponse>(new Request('/Challenges/Quit', { challengeId }));
-	};
 	public readonly getUserAccountStats = (callback: (state: Fetchable<UserAccountStats>) => void) => {
 		return this.get<UserAccountStats>(new Request('/UserAccounts/Stats'), callback);
-	};
-	public readonly getChallengeWinners = (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => {
-		return this.get<ChallengeWinner[]>(new Request('/Challenges/Winners', { challengeId }), callback);
-	};
-	public readonly getChallengeResponseActionTotals = (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => {
-		return this.get<ChallengeResponseTotal[]>(new Request('/Challenges/ResponseActionTotals', { challengeId }), callback);
 	};
 
 	// Articles
@@ -152,15 +137,6 @@ export default abstract class {
 	public readonly getHotTopics = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>('/Articles/ListHotTopics');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
-
-	// Challenges
-	public readonly getChallengeLeaderboard = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeLeaderboard>('/Challenges/Leaderboard');
-	public readonly getChallengeScore = this.createFetchFunctionWithParams<{ challengeId: number }, ChallengeScore>('/Challenges/Score');
-	public readonly getChallengeState = this.createFetchFunction<ChallengeState>('/Challenges/State');
-	public readonly startChallenge = (challengeId: number) => this.post<{
-		response: ChallengeResponse,
-		score: ChallengeScore
-	}>(new Request('/Challenges/Start', { challengeId }));
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post(new Request('/Extension/SendInstructions'));

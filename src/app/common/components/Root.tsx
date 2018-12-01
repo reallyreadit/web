@@ -88,14 +88,6 @@ export default abstract class Root <P extends Props = Props, S extends State = S
 			});
 	};
 
-	// challenge
-	protected readonly _startChallenge = (challengeId: number) => {
-		return this.props.serverApi.startChallenge(challengeId);
-	};
-	protected readonly _quitChallenge = (challengeId: number) => {
-		return this.props.serverApi.quitChallenge(challengeId);
-	};
-
 	// comments
 	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: number) => {
 		return this.props.serverApi
@@ -340,8 +332,6 @@ export default abstract class Root <P extends Props = Props, S extends State = S
 				onCloseDialog: this._closeDialog,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
-				onGetChallengeResponseActionTotals: this.props.serverApi.getChallengeResponseActionTotals,
-				onGetChallengeWinners: this.props.serverApi.getChallengeWinners,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
 				onOpenDialog: this._openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,

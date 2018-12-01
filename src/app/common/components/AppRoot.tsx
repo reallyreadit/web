@@ -12,7 +12,6 @@ import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createHistoryScreenFactory from './AppRoot/HistoryScreen';
 import createLeaderboardsScreenFactory from './AppRoot/LeaderboardsScreen';
-import createPizzaScreenFactory from './AppRoot/PizzaScreen';
 import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
@@ -128,14 +127,6 @@ export default class extends Root<Props, State> {
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onGetStats: this.props.serverApi.getUserStats,
-			}),
-			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {
-				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
-				onGetChallengeScore: this.props.serverApi.getChallengeScore,
-				onGetChallengeState: this.props.serverApi.getChallengeState,
-				onQuitChallenge: this._quitChallenge,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onStartChallenge: this._startChallenge
 			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,

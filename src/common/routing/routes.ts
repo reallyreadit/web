@@ -87,11 +87,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Password
 	},
 	{
-		createUrl: () => '/pizza',
-		pathRegExp: /^\/pizza$/,
-		screenKey: ScreenKey.PizzaChallenge
-	},
-	{
 		createUrl: () => '/privacy-policy',
 		pathRegExp: /^\/privacy-policy$/,
 		screenKey: ScreenKey.PrivacyPolicy

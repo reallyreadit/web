@@ -15,7 +15,6 @@ import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createHistoryScreenFactory from './BrowserRoot/HistoryScreen';
 import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
-import createPizzaScreenFactory from './BrowserRoot/PizzaScreen';
 import createStarredScreenFactory from './BrowserRoot/StarredScreen';
 import BrowserApi from '../BrowserApi';
 import ExtensionApi from '../ExtensionApi';
@@ -88,9 +87,6 @@ export default class extends Root<Props, State> {
 	private readonly _viewLeaderboards = () => {
 		this.setState(this.replaceScreen(ScreenKey.Leaderboards));
 	};
-	private readonly _viewPizzaChallenge = () => {
-		this.setState(this.replaceScreen(ScreenKey.PizzaChallenge));
-	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setState(this.replaceScreen(ScreenKey.PrivacyPolicy));
 	};
@@ -142,15 +138,6 @@ export default class extends Root<Props, State> {
 				onGetStats: this.props.serverApi.getUserStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler
-			}),
-			[ScreenKey.PizzaChallenge]: createPizzaScreenFactory(ScreenKey.PizzaChallenge, {
-				onGetChallengeLeaderboard: this.props.serverApi.getChallengeLeaderboard,
-				onGetChallengeScore: this.props.serverApi.getChallengeScore,
-				onGetChallengeState: this.props.serverApi.getChallengeState,
-				onQuitChallenge: this._quitChallenge,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
-				onStartChallenge: this._startChallenge
 			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
@@ -297,7 +284,6 @@ export default class extends Root<Props, State> {
 						onViewHistory={this._viewHistory}
 						onViewHome={this._viewHome}
 						onViewLeaderboards={this._viewLeaderboards}
-						onViewPizzaChallenge={this._viewPizzaChallenge}
 						onViewStarred={this._viewStarred}
 						selectedScreenKey={screen.key}
 					/>

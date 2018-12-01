@@ -4,9 +4,6 @@ import Fetchable from '../serverApi/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 import UserAccountStats from '../../../common/models/UserAccountStats';
-import ChallengeWinner from '../../../common/models/ChallengeWinner';
-import ChallengeResponseTotal from '../../../common/models/ChallengeResponseTotal';
-import { stringMap as challengeResponseActionStringMap } from '../../../common/models/ChallengeResponseAction';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from './Toaster';
 import AsyncTracker from '../AsyncTracker';
@@ -16,8 +13,6 @@ interface Props {
 	onCloseDialog: () => void,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
-	onGetChallengeResponseActionTotals: (challengeId: number, callback: (state: Fetchable<ChallengeResponseTotal[]>) => void) => Fetchable<ChallengeResponseTotal[]>,
-	onGetChallengeWinners: (challengeId: number, callback: (state: Fetchable<ChallengeWinner[]>) => void) => Fetchable<ChallengeWinner[]>,
 	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
@@ -29,8 +24,6 @@ class AdminPage extends React.Component<
 	Props,
 	{
 		userStats: Fetchable<UserAccountStats>,
-		challengeResponseTotals: Fetchable<ChallengeResponseTotal[]>,
-		challengeWinners: Fetchable<ChallengeWinner[]>,
 		mailings: Fetchable<BulkMailing[]>
 	}
 > {
@@ -59,22 +52,6 @@ class AdminPage extends React.Component<
 		this.state = {
 			userStats: props.onGetUserStats(
 				this._asyncTracker.addCallback(userStats => { this.setState({ userStats }); })
-			),
-			challengeResponseTotals: props.onGetChallengeResponseActionTotals(
-				1,
-				this._asyncTracker.addCallback(
-					challengeResponseTotals => {
-						this.setState({ challengeResponseTotals });
-					}
-				)
-			),
-			challengeWinners: props.onGetChallengeWinners(
-				1,
-				this._asyncTracker.addCallback(
-					challengeWinners => {
-						this.setState({ challengeWinners });
-					}
-				)
 			),
 			mailings: props.onGetBulkMailings(
 				this._asyncTracker.addCallback(mailings => { this.setState({ mailings }); })
@@ -111,74 +88,6 @@ class AdminPage extends React.Component<
 								</tr> :
 							<tr>
 								<td>Loading...</td>
-							</tr>}
-					</tbody>
-				</table>
-				<table>
-					<caption>
-						<div className="content">
-							<strong>Challenge Response Action Totals</strong>
-						</div>
-					</caption>
-					<thead>
-						<tr>
-							<th>Action</th>
-							<th>Count</th>
-						</tr>
-					</thead>
-					<tbody>
-						{!this.state.challengeResponseTotals.isLoading ?
-							this.state.challengeResponseTotals.value ?
-								this.state.challengeResponseTotals.value.length ?
-									this.state.challengeResponseTotals.value.map(t => (
-										<tr key={t.action}>
-											<td>{challengeResponseActionStringMap[t.action]}</td>
-											<td>{t.count}</td>
-										</tr>
-									)) :
-									<tr>
-										<td colSpan={2}>No responses found.</td>
-									</tr> :
-								<tr>
-									<td colSpan={2}>Error loading responses.</td>
-								</tr> :
-							<tr>
-								<td colSpan={2}>Loading...</td>
-							</tr>}
-					</tbody>
-				</table>
-				<table>
-					<caption>
-						<div className="content">
-							<strong>Challenge Winners</strong>
-						</div>
-					</caption>
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Email</th>
-							<th>Date Awarded</th>
-						</tr>
-					</thead>
-					<tbody>
-						{!this.state.challengeWinners.isLoading ?
-							this.state.challengeWinners.value ?
-								this.state.challengeWinners.value.length ?
-									this.state.challengeWinners.value.map(w => (
-										<tr key={w.name}>
-											<td>{w.name}</td>
-											<td>{w.email}</td>
-											<td>{w.dateAwarded}</td>
-										</tr>
-									)) :
-									<tr>
-										<td colSpan={3}>No winners found.</td>
-									</tr> :
-								<tr>
-									<td colSpan={3}>Error loading winners.</td>
-								</tr> :
-							<tr>
-								<td colSpan={3}>Loading...</td>
 							</tr>}
 					</tbody>
 				</table>
@@ -237,8 +146,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onCloseDialog={deps.onCloseDialog}
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}
-					onGetChallengeResponseActionTotals={deps.onGetChallengeResponseActionTotals}
-					onGetChallengeWinners={deps.onGetChallengeWinners}
 					onGetUserStats={deps.onGetUserStats}
 					onOpenDialog={deps.onOpenDialog}
 					onSendBulkMailing={deps.onSendBulkMailing}
