@@ -237,7 +237,7 @@ export default class extends Root<Props, State> {
 			rootState = { user: this.state.user },
 			topScreen = this.state.screens[this.state.screens.length - (this.state.isPoppingScreen ? 2 : 1)];
 		let headerContent: React.ReactNode | undefined;
-		if (this._screenFactoryMap[topScreen.key].renderHeaderContent) {
+		if (topScreen && this._screenFactoryMap[topScreen.key].renderHeaderContent) {
 			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, rootState);
 		}
 		return (
