@@ -1,7 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../../../../../common/models/UserArticle';
 import ArticleList from './ArticleList';
-import Icon from '../../../../../common/components/Icon';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import PageResult from '../../../../../common/models/PageResult';
 import Fetchable from '../../../serverApi/Fetchable';
@@ -40,9 +39,7 @@ export default (props: {
 	onViewComments: (article: UserArticle) => void
 }) => (
 	<div className="hot-topics-list_4aaj4s">
-		<h3>
-			<Icon name="trophy" /> Article of the Day
-		</h3>
+		<h3>Article of the Day</h3>
 		<ArticleDetails
 			article={props.aotd}
 			isUserSignedIn={props.isUserSignedIn}
@@ -51,9 +48,7 @@ export default (props: {
 			onToggleStar={props.onToggleArticleStar}
 			onViewComments={props.onViewComments}
 		/>
-		<h3>
-			<Icon name="fire" />  Top Reads
-		</h3>
+		<h3>Top Reads</h3>
 		<ArticleList>
 			{props.articles.items.map(article =>
 				<li key={article.id}>

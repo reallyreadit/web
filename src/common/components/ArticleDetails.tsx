@@ -1,13 +1,13 @@
 import * as React from 'react';
 import UserArticle from '../models/UserArticle';
-import ArticleDetailsTitle from './ArticleDetails/ArticleDetailsTitle';
+import { formatTimestamp } from '../format';
+import Star from './Star';
 import readingParameters from '../readingParameters';
 import SpeechBubble from './Logo/SpeechBubble';
-import classNames from 'classnames';
-import CommentsActionLink from './CommentsActionLink';
 import Icon from './Icon';
-import { formatTimestamp } from '../format';
-import ReadCountIndicator from './ReadCountIndicator';
+import ScreenKey from '../routing/ScreenKey';
+import routes from '../routing/routes';
+import { findRouteByKey } from '../routing/Route';
 
 interface Props {
 	article: UserArticle,
@@ -23,9 +23,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	public static defaultProps = {
 		onDelete: () => {},
 		showDeleteControl: false
-	};
-	private readonly _delete = () => {
-		this.props.onDelete(this.props.article);
 	};
 	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		this.props.onRead(this.props.article, e);
@@ -43,6 +40,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			.catch(() => { this.setState({ isStarring: false }); })
 	};
 	private readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
+		e.preventDefault();
 		this.props.onViewComments(this.props.article, e as React.MouseEvent<HTMLAnchorElement>);
 	};
 	constructor(props: Props) {
@@ -50,87 +48,142 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		this.state = { isStarring: false };
 	}
 	public render() {
+		const
+			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),
+			urlParams = {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			},
+			commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments).createUrl(urlParams),
+			star = (
+				<div className="star-container">
+					<Star
+						starred={!!this.props.article.dateStarred}
+						busy={this.state.isStarring}
+						onClick={this._toggleStar}
+					/>
+				</div>
+			),
+			titleLink = (
+				<a
+					className="title-link"
+					href={this.props.article.url}
+					onClick={this._read}
+				>
+					{this.props.article.title}
+				</a>
+			);
 		return (
 			<div className="article-details">
-				<div className="content">
-					<ArticleDetailsTitle
-						article={this.props.article}
-						isStarring={this.state.isStarring}
-						onClick={this._read}
-						onToggleStar={this._toggleStar}
-						showStar={this.props.isUserSignedIn}
-					/>
-					{this.props.article.tags.length ?
-						<div className="tags">
-							{this.props.article.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
-						</div> :
-						null}
-					<div className="columns">
-						<div className="left">
-							<div className="length">
-								{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))} min
+				<div className="small-title">
+					{star}
+					{titleLink}
+				</div>
+				<div className="columns">
+					<div className="stats">
+						<div className="stat reads">
+							<div className="count">
+								{this.props.article.readCount}
 							</div>
+							<label>{this.props.article.readCount === 1 ? 'read' : 'reads'}</label>
+						</div>
+						<a
+							className="stat comments"
+							href={commentsLinkHref}
+							onClick={this._viewComments}
+						>
+							<div className="count">
+								{this.props.article.commentCount}
+							</div>
+							<label>{this.props.article.commentCount === 1 ? 'comment' : 'comments'}</label>
+						</a>
+					</div>
+					{star}
+					<div className="article">
+						{titleLink}
+						<div className="meta">
+							<span className="publisher">
+								{this.props.article.source}
+							</span>
+							{this.props.article.authors.length || this.props.article.datePublished ?
+								<span> · </span> :
+								null}
+							{this.props.article.authors.length ?
+								<span className="author">
+									{this.props.article.authors.join(', ')}
+								</span> :
+								null}
+							{this.props.article.authors.length && this.props.article.datePublished ?
+								<span> · </span> :
+								null}
+							{this.props.article.datePublished ?
+								<span className="date">
+									{formatTimestamp(this.props.article.datePublished)}
+								</span> :
+								null}
+							{this.props.article.isRead ?
+								<Icon
+									name="share"
+									title="Share Article"
+									onClick={this._share}
+								/> :
+								null}
+						</div>
+					</div>
+					<div className="small-stats-article">
+						<div className="meta">
+							<div className="publisher">
+								{this.props.article.source}
+							</div>
+							<div className="author-date">
+								{this.props.article.authors.length ?
+									<span className="author">
+										{this.props.article.authors.join(', ')}
+									</span> :
+									null}
+								{this.props.article.authors.length && this.props.article.datePublished ?
+									<span className="spacer">·</span> :
+									null}
+								{this.props.article.datePublished ?
+									<span className="date">
+										{formatTimestamp(this.props.article.datePublished)}
+									</span> :
+									null}
+							</div>
+						</div>
+						<div className="stats">
+							<div className="stat reads">
+								{this.props.article.readCount}
+								{this.props.article.readCount === 1 ? ' read' : ' reads'}
+							</div>
+							<a
+								className="stat comments"
+								href={commentsLinkHref}
+								onClick={this._viewComments}
+							>
+								{this.props.article.commentCount}
+								{this.props.article.commentCount === 1 ? ' comment' : ' comments'}
+							</a>
+							{this.props.article.isRead ?
+								<Icon
+									name="share"
+									title="Share Article"
+									onClick={this._share}
+								/> :
+								null}
+						</div>
+					</div>
+					<div className="bubble">
+						<div className="container">
 							<SpeechBubble
 								percentComplete={this.props.article.percentComplete}
-								renderLabel
 								isRead={this.props.article.isRead}
 								uuid={`article-details-speech-bubble-${this.props.article.id}`}
 							/>
-						</div>
-						<div className="middle">
-							<ArticleDetailsTitle
-								article={this.props.article}
-								isStarring={this.state.isStarring}
-								onClick={this._read}
-								onToggleStar={this._toggleStar}
-								showStar={this.props.isUserSignedIn}
-							/>
-							{this.props.article.description ?
-								<div className="description" tabIndex={-1}>{this.props.article.description}</div> :
-								null}
-							<div className="meta-groups">
-								<div className="source">
-									{
-										this.props.article.source +
-										(this.props.article.section ? ' >> ' + this.props.article.section : '') +
-										(this.props.article.authors.length ? ' - ' + this.props.article.authors.join(', ') : '')
-									}
-								</div>
-								<div className="flex-spacer"></div>
-								<div className="rrit-meta">
-									<ReadCountIndicator readCount={this.props.article.readCount} />
-									<div className="flex-spacer"></div>
-									<CommentsActionLink
-										article={this.props.article}
-										onClick={this._viewComments}
-									/>
-									{this.props.article.aotdTimestamp ?
-										<div className="flex-spacer"></div> :
-										null}
-									{this.props.article.aotdTimestamp ?
-										<Icon
-											key="aotd"
-											name="trophy"
-											title={`Article of the Day on ${formatTimestamp(this.props.article.aotdTimestamp)}`}
-											className="aotd"
-										/> :
-										null}
-									</div>
+							<div className="length">
+								{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))} min read
 							</div>
 						</div>
-						<div className="right">
-							<Icon
-								name="share"
-								title="Share Article"
-								className={classNames('share', { enabled: this.props.article.isRead })}
-								onClick={this._share}
-							/>
-						</div>
-					</div>
-				</div>
-				<div className={classNames('controls', { hidden: !this.props.showDeleteControl })}>
-					<div className="delete-control" title="Delete Article">
-						<Icon name="cancel" onClick={this._delete} />
 					</div>
 				</div>
 			</div>

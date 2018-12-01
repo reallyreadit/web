@@ -35,8 +35,8 @@ export default (props: {
 							</ol>
 						</> :
 						props.user ?
-							<span>Start reading to see your stats</span> :
-							<span>Sign up to see your personal reading stats</span>}
+							<span>Start reading to see your stats.</span> :
+							<span>Sign up to see your personal reading stats.</span>}
 				</div>
 				<div className="panel leaderboard">
 					<table>

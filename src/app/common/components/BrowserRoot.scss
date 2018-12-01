@@ -26,3 +26,7 @@
 	padding: 20px;
 	position: relative;
 }
+.browser-root > main > .screen > * {
+	max-width: 800px;
+	margin: 0 auto;
+}

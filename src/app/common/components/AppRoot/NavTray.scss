@@ -8,7 +8,7 @@
 	display: flex;
 	align-items: center;
 	border-top: 1px solid #ccc;
-	background-color: #eee;
+	background-color: #eaeaea;
 }
 .nav-tray_2tc8 > li {
 	width: 25%;
@@ -23,7 +23,8 @@
 	color: #666;
 }
 .nav-tray_2tc8 > li > button.selected {
-	color: dodgerblue;
+	color: black;
+	font-weight: bold;
 }
 .nav-tray_2tc8 > li > button > .icon {
 	font-size: 20px;

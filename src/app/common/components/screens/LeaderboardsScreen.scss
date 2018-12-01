@@ -7,10 +7,10 @@
 	min-height: 100%;
 }
 .leaderboards-screen_wuzsob > .panel {
-	border: 1px solid silver;
-	border-radius: 5px;
-	background-color: rgba(255, 255, 255, 0.75);
-	padding: 10px;
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	padding: 7px;
+
 }
 .leaderboards-screen_wuzsob > .panel:not(:last-child) {
 	margin-bottom: 10px;
@@ -21,6 +21,9 @@
 .leaderboards-screen_wuzsob > .panel > ol > li:first-child {
 	font-size: 16px;
 	margin-bottom: 5px;
+}
+.leaderboards-screen_wuzsob > .panel > ol > li:last-child {
+	font-size: 12px;
 }
 .leaderboards-screen_wuzsob > .leaderboard > table {
 	width: 100%;
