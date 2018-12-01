@@ -3,7 +3,7 @@
 
   "name": "reallyread.it",
   "description": "A community of readers",
-  "version": "0.48",
+  "version": "0.49",
 	
   "icons": {
     "16": "./icons/icon-16.png",
