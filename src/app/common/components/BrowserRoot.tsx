@@ -251,6 +251,7 @@ export default class extends Root<Props, State, SharedState> {
 		));
 	}
 	public componentDidMount() {
+		this.clearQueryString();
 		window.addEventListener('popstate', () => {
 			const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
 			this.setState({ screens: [screen] });

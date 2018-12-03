@@ -16,6 +16,7 @@ import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
+import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -184,7 +185,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				queryString: window.location.search
 			});
 			if (window.location.search) {
-				this.clearQueryStringKvps();
+				this.clearQueryString(clientTypeQueryStringKey);
 			}
 			this.setState({
 				dialog: locationState.dialog,
@@ -213,6 +214,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			},
 			article.title
 		);
+	}
+	public componentDidMount() {
+		this.clearQueryString(clientTypeQueryStringKey);
 	}
 	public render() {
 		const

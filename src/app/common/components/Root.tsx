@@ -370,19 +370,16 @@ export default abstract class Root <
 	private setTimeZone() {
 		return this._changeTimeZone({ name: DateTime.local().zoneName });
 	}
-	protected clearQueryStringKvps(keys?: string[]) {
+	protected clearQueryString(...keysToKeep: string[]) {
 		const
 			qsKvps = parseQueryString(window.location.search),
 			qsKeys = Object.keys(qsKvps);
-		if (!keys) {
-			keys = qsKeys;
-		}
 		window.history.replaceState(
 			null,
 			window.document.title,
 			window.location.pathname + createQueryString(
 				qsKeys
-					.filter(key => !keys.includes(key))
+					.filter(key => keysToKeep.includes(key))
 					.reduce((result, key) => {
 						result[key] = qsKvps[key];
 						return result;
@@ -420,7 +417,6 @@ export default abstract class Root <
 	}
 	protected viewComments(article: UserArticle) { }
 	public componentDidMount() {
-		this.clearQueryStringKvps();
 		if (this.state.user && this.state.user.timeZoneId == null) {
 			this.setTimeZone();
 		}
