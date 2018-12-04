@@ -4,11 +4,7 @@
 */
 
 .app-root_vc3j5h {
-	font-family: 'Bitter';
-	font-size: 13px;
-	letter-spacing: 0.02em;
 	height: 100%;
-	background-color: ghostwhite;
 	display: flex;
 	flex-flow: column;
 }
@@ -39,7 +35,7 @@
 .app-root_vc3j5h > .content > .screens > .screen.slide-out {
 	animation: app-root_vc3j5h-screen-slide-out 250ms forwards;
 }
-.app-root_vc3j5h > .content > .screens > .screen > * {
+.app-root_vc3j5h > .content > .screens > .screen > div {
 	max-width: 800px;
 	margin: 0 auto;
 }

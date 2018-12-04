@@ -1,9 +1,5 @@
 .browser-root {
-	font-family: 'Bitter';
-	font-size: 13px;
-	letter-spacing: 0.02em;
 	height: 100%;
-	background-color: ghostwhite;
 	display: flex;
 	flex-flow: column;
 }
@@ -26,7 +22,7 @@
 	padding: 20px;
 	position: relative;
 }
-.browser-root > main > .screen > * {
+.browser-root > main > .screen > div {
 	max-width: 800px;
 	margin: 0 auto;
 }
