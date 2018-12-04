@@ -164,15 +164,26 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		});
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
-		this.setScreensState([
-			...this.state.screens,
-			this.createScreen(key, urlParams, title).screen
-		]);
+		const { screen, url } = this.createScreen(key, urlParams, title);
+		this.setScreensState(
+			[
+				...this.state.screens,
+				screen
+			],
+			screen.title,
+			url
+		);
 	}
 	private replaceScreen(key: ScreenKey) {
-		this.setScreensState([this.createScreen(key).screen]);
+		const { screen, url } = this.createScreen(key);
+		this.setScreensState([screen], screen.title, url);
 	}
-	private setScreensState(screens: Screen[]) {
+	private setScreensState(screens: Screen[], title: string, url: string) {
+		window.history.pushState(
+			null,
+			title,
+			url
+		);
 		this.setState({
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
 			screens
