@@ -408,14 +408,14 @@ export default abstract class Root <
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) { }
-	protected readArticle(article: UserArticle, ev: React.MouseEvent) { }
+	protected abstract readArticle(article: UserArticle, ev: React.MouseEvent): void;
 	protected registerEventHandler<T>(handlers: T[], handler: T) {
 		handlers.push(handler);
 		return () => {
 			handlers.splice(handlers.indexOf(handler), 1);
 		};
 	}
-	protected viewComments(article: UserArticle) { }
+	protected abstract viewComments(article: UserArticle): void;
 	public componentDidMount() {
 		if (this.state.user && this.state.user.timeZoneId == null) {
 			this.setTimeZone();
