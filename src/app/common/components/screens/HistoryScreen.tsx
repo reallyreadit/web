@@ -77,10 +77,10 @@ export default class extends React.PureComponent<{
 						>
 							{this.props.isUserSignedIn ?
 								<>
-									You've read 0 articles.<br /><br />
-									<strong>Go read something!</strong>
+									<p>You've read 0 articles.</p>
+									<p><strong>Go read something!</strong></p>
 								</> :
-								<span>Sign up to track and improve your reading.</span>}
+								<p>Sign up to track and improve your reading.</p>}
 						</InfoBox>}
 			</div>
 		);

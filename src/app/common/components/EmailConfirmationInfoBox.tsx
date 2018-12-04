@@ -15,10 +15,8 @@ export default class extends React.PureComponent<{
 					position="static"
 					style="warning"
 				>
-					Confirm your email address.
-					<ResendConfirmationEmailActionLink
-						onResend={this.props.onResendConfirmationEmail}
-					/> 
+					<p>Confirm your email address.</p>
+					<p><ResendConfirmationEmailActionLink onResend={this.props.onResendConfirmationEmail} /></p>
 				</InfoBox> :
 				null
 		);

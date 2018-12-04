@@ -46,7 +46,6 @@
 	justify-content: center;
 	align-items: center;
 }
-.info-box_whou0t > .box > .content > .action-link {
-	justify-content: center;
+.info-box_whou0t > .box > .content > p:not(:first-of-type) {
 	margin-top: 10px;
 }

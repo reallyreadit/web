@@ -13,8 +13,8 @@ export default class extends React.PureComponent<{
 				style="warning"
 			>
 				{this.props.isBrowserCompatible ?
-					<span>Click <a href="#" onClick={this.props.onInstallExtension}>here</a> to add the Chrome extension.</span> :
-					<span>You must use Chrome (on Mac or PC) to track your reading.</span>}
+					<p>Click <a href="#" onClick={this.props.onInstallExtension}>here</a> to add the Chrome extension.</p> :
+					<p>You must use Chrome (on Mac or PC) to track your reading.</p>}
 			</InfoBox>
 		);
 	}
