@@ -49,3 +49,6 @@
 .info-box_whou0t > .box > .content > p:not(:first-of-type) {
 	margin-top: 10px;
 }
+.info-box_whou0t.warning > .box > .content > p > .action-link.disabled {
+	color: #666;
+}
