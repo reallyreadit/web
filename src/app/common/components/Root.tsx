@@ -6,7 +6,7 @@ import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
 import ResetPasswordDialog from './ResetPasswordDialog';
-import { parseQueryString, createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import Location from '../../../common/routing/Location';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
@@ -369,23 +369,6 @@ export default abstract class Root <
 	}
 	private setTimeZone() {
 		return this._changeTimeZone({ name: DateTime.local().zoneName });
-	}
-	protected clearQueryString(...keysToKeep: string[]) {
-		const
-			qsKvps = parseQueryString(window.location.search),
-			qsKeys = Object.keys(qsKvps);
-		window.history.replaceState(
-			null,
-			window.document.title,
-			window.location.pathname + createQueryString(
-				qsKeys
-					.filter(key => keysToKeep.includes(key))
-					.reduce((result, key) => {
-						result[key] = qsKvps[key];
-						return result;
-					}, {} as { [key: string]: string })
-			)
-		);
 	}
 	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		const

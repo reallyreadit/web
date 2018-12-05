@@ -21,6 +21,7 @@ import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
+import RootErrorBoundary from './RootErrorBoundary';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -94,6 +95,11 @@ export default class extends Root<Props, State, SharedState> {
 	};
 	private readonly _viewStarred = () => {
 		this.setState(this.replaceScreen(ScreenKey.Starred));
+	};
+
+	// window
+	private readonly _reloadWindow = () => {
+		window.location.href = '/';
 	};
 
 	constructor(props: Props) {
@@ -251,63 +257,75 @@ export default class extends Root<Props, State, SharedState> {
 		));
 	}
 	public componentDidMount() {
-		this.clearQueryString();
+		// clear query string used to set initial state
+		window.history.replaceState(
+			null,
+			window.document.title,
+			window.location.pathname
+		);
+		// add listener for back navigation
 		window.addEventListener('popstate', () => {
 			const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
 			this.setState({ screens: [screen] });
 			this.props.browserApi.setTitle(screen.title);
 		});
+		// update other tabs with the latest user data
 		this.props.browserApi.updateUser(this.state.user);
+		// base
 		super.componentDidMount();
 	}
 	public render() {
 		const screen = this.state.screens[0];
 		return (
-			<div className="browser-root">
-				<Header
-					isUserSignedIn={!!this.state.user}
-					onOpenMenu={this._openMenu}
-					onShowCreateAccountDialog={this._openCreateAccountDialog}
-					onShowSignInDialog={this._openSignInDialog}
-					onViewHome={this._viewHome}
-					showNewReplyIndicator={this.state.showNewReplyIndicator}
-				/>
-				<main>
-					<NavBar
-						onViewHistory={this._viewHistory}
+			<RootErrorBoundary
+				onReloadWindow={this._reloadWindow}
+			>
+				<div className="browser-root">
+					<Header
+						isUserSignedIn={!!this.state.user}
+						onOpenMenu={this._openMenu}
+						onShowCreateAccountDialog={this._openCreateAccountDialog}
+						onShowSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
-						onViewLeaderboards={this._viewLeaderboards}
-						onViewStarred={this._viewStarred}
-						selectedScreenKey={screen.key}
+						showNewReplyIndicator={this.state.showNewReplyIndicator}
 					/>
-					<div className="screen">
-						{this._screenFactoryMap[screen.key].render(screen, {
-							isExtensionInstalled: this.state.isExtensionInstalled,
-							user: this.state.user
-						})}
-					</div>
-				</main>
-				{this.state.menuState !== 'closed' ?
-					<Menu
-						isClosing={this.state.menuState === 'closing'}
-						onClose={this._closeMenu}
-						onClosed={this._hideMenu}
-						onSignOut={this._signOut}
-						onViewAdminPage={this._viewAdminPage}
-						onViewInbox={this._viewInbox}
-						onViewPrivacyPolicy={this._viewPrivacyPolicy}
-						onViewSettings={this._viewSettings}
-						selectedScreenKey={this.state.screens[0].key}
-						showNewReplyNotification={this.state.showNewReplyIndicator}
-						userAccount={this.state.user}
-					/> :
-					null}
-				<DialogManager dialog={this.state.dialog} />
-				<Toaster
-					onRemoveToast={this._removeToast}
-					toasts={this.state.toasts}
-				/>
-			</div>
+					<main>
+						<NavBar
+							onViewHistory={this._viewHistory}
+							onViewHome={this._viewHome}
+							onViewLeaderboards={this._viewLeaderboards}
+							onViewStarred={this._viewStarred}
+							selectedScreenKey={screen.key}
+						/>
+						<div className="screen">
+							{this._screenFactoryMap[screen.key].render(screen, {
+								isExtensionInstalled: this.state.isExtensionInstalled,
+								user: this.state.user
+							})}
+						</div>
+					</main>
+					{this.state.menuState !== 'closed' ?
+						<Menu
+							isClosing={this.state.menuState === 'closing'}
+							onClose={this._closeMenu}
+							onClosed={this._hideMenu}
+							onSignOut={this._signOut}
+							onViewAdminPage={this._viewAdminPage}
+							onViewInbox={this._viewInbox}
+							onViewPrivacyPolicy={this._viewPrivacyPolicy}
+							onViewSettings={this._viewSettings}
+							selectedScreenKey={this.state.screens[0].key}
+							showNewReplyNotification={this.state.showNewReplyIndicator}
+							userAccount={this.state.user}
+						/> :
+						null}
+					<DialogManager dialog={this.state.dialog} />
+					<Toaster
+						onRemoveToast={this._removeToast}
+						toasts={this.state.toasts}
+					/>
+				</div>
+			</RootErrorBoundary>
 		);
 	}
 }

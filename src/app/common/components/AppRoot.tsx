@@ -16,7 +16,9 @@ import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
-import { clientTypeQueryStringKey } from '../../../common/routing/queryString';
+import RootErrorBoundary from './RootErrorBoundary';
+import { createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
+import ClientType from '../ClientType';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -47,9 +49,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	};
 
 	// screens
-	private readonly _popScreen = () => {
-		this.setState({ isPoppingScreen: true });
-	};
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			this.setState({
@@ -57,6 +56,10 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				screens: this.state.screens.slice(0, this.state.screens.length - 1)
 			});
 		}
+	};
+	private _hasRenderedInitialLocationScreen: boolean;
+	private readonly _popScreen = () => {
+		this.setState({ isPoppingScreen: true });
 	};
 	private readonly _readFaq = () => {
 		this.props.appApi.readArticle({
@@ -88,6 +91,11 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	};
 	private readonly _viewStarred = () => {
 		this.replaceScreen(ScreenKey.Starred);
+	};
+
+	// window
+	private readonly _reloadWindow = () => {
+		window.location.reload(true);
 	};
 
 	constructor(props: Props) {
@@ -144,8 +152,10 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		const locationState = this.getLocationDependentState(props.initialLocation);
 		let screens: Screen[];
 		if (props.initialUser) {
+			this._hasRenderedInitialLocationScreen = true;
 			screens = [locationState.screen];
 		} else {
+			this._hasRenderedInitialLocationScreen = false;
 			screens = [];
 		}
 		this.state = {
@@ -164,26 +174,15 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		});
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
-		const { screen, url } = this.createScreen(key, urlParams, title);
-		this.setScreensState(
-			[
-				...this.state.screens,
-				screen
-			],
-			screen.title,
-			url
-		);
+		this.setScreensState([
+			...this.state.screens,
+			this.createScreen(key, urlParams, title).screen
+		]);
 	}
 	private replaceScreen(key: ScreenKey) {
-		const { screen, url } = this.createScreen(key);
-		this.setScreensState([screen], screen.title, url);
+		this.setScreensState([this.createScreen(key).screen]);
 	}
-	private setScreensState(screens: Screen[], title: string, url: string) {
-		window.history.pushState(
-			null,
-			title,
-			url
-		);
+	private setScreensState(screens: Screen[]) {
 		this.setState({
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
 			screens
@@ -191,16 +190,19 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	}
 	protected onUserChanged(userAccount: UserAccount) {
 		if (userAccount) {
-			const locationState = this.getLocationDependentState({
-				path: window.location.pathname,
-				queryString: window.location.search
-			});
-			if (window.location.search) {
-				this.clearQueryString(clientTypeQueryStringKey);
+			let screen: Screen;
+			if (this._hasRenderedInitialLocationScreen) {
+				screen = this
+					.createScreen(ScreenKey.Home)
+					.screen;
+			} else {
+				screen = this
+					.getLocationDependentState(this.props.initialLocation)
+					.screen;
+				this._hasRenderedInitialLocationScreen = true;
 			}
 			this.setState({
-				dialog: locationState.dialog,
-				screens: [locationState.screen],
+				screens: [screen],
 				user: userAccount
 			});
 		} else {
@@ -227,7 +229,11 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		);
 	}
 	public componentDidMount() {
-		this.clearQueryString(clientTypeQueryStringKey);
+		window.history.replaceState(
+			null,
+			null,
+			'/' + createQueryString({ [clientTypeQueryStringKey]: ClientType.App })
+		);
 	}
 	public render() {
 		const
@@ -238,66 +244,70 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, rootState);
 		}
 		return (
-			<div className="app-root_vc3j5h">
-				{this.state.user ?
-					<>
-						<Header
-							content={headerContent}
-							isTransitioningBack={this.state.isPoppingScreen}
-							onBack={this._popScreen}
-							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
-						/>
-						<div className="content">
-							<ol className="screens">
-								{this.state.screens.map((screen, index, screens) => (
-									<li
-										className={classNames('screen', {
-											'slide-out': this.state.isPoppingScreen && index === screens.length - 1
-										})}
-										key={screen.key}
-										onAnimationEnd={this._handleScreenAnimationEnd}
-									>
-										{this._screenFactoryMap[screen.key].render(screen, rootState)}
-									</li>
-								))}
-							</ol>
-						</div>
-						<NavTray
-							onViewHistory={this._viewHistory}
-							onViewHome={this._viewHome}
-							onViewLeaderboards={this._viewLeaderboards}
-							onViewStarred={this._viewStarred}
-							selectedScreenKey={this.state.screens[0].key}
-						/>
-						{this.state.menuState !== 'closed' ?
-							<Menu
-								isClosing={this.state.menuState === 'closing'}
-								onClose={this._closeMenu}
-								onClosed={this._hideMenu}
-								onReadFaq={this._readFaq}
-								onSignOut={this._signOut}
-								onViewAdminPage={this._viewAdminPage}
-								onViewInbox={this._viewInbox}
-								onViewPrivacyPolicy={this._viewPrivacyPolicy}
-								onViewSettings={this._viewSettings}
+			<RootErrorBoundary
+				onReloadWindow={this._reloadWindow}
+			>
+				<div className="app-root_vc3j5h">
+					{this.state.user ?
+						<>
+							<Header
+								content={headerContent}
+								isTransitioningBack={this.state.isPoppingScreen}
+								onBack={this._popScreen}
+								titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
+							/>
+							<div className="content">
+								<ol className="screens">
+									{this.state.screens.map((screen, index, screens) => (
+										<li
+											className={classNames('screen', {
+												'slide-out': this.state.isPoppingScreen && index === screens.length - 1
+											})}
+											key={screen.key}
+											onAnimationEnd={this._handleScreenAnimationEnd}
+										>
+											{this._screenFactoryMap[screen.key].render(screen, rootState)}
+										</li>
+									))}
+								</ol>
+							</div>
+							<NavTray
+								onViewHistory={this._viewHistory}
+								onViewHome={this._viewHome}
+								onViewLeaderboards={this._viewLeaderboards}
+								onViewStarred={this._viewStarred}
 								selectedScreenKey={this.state.screens[0].key}
-								userAccount={this.state.user}
-							/> :
-							null}
-					</> :
-					<AuthScreen
-						captcha={this.props.captcha}
-						onCreateAccount={this._createAccount}
-						onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
-						onShowToast={this._addToast}
-						onSignIn={this._signIn}
-					/>}
-				<DialogManager dialog={this.state.dialog} />
-				<Toaster
-					onRemoveToast={this._removeToast}
-					toasts={this.state.toasts}
-				/>
-			</div>
+							/>
+							{this.state.menuState !== 'closed' ?
+								<Menu
+									isClosing={this.state.menuState === 'closing'}
+									onClose={this._closeMenu}
+									onClosed={this._hideMenu}
+									onReadFaq={this._readFaq}
+									onSignOut={this._signOut}
+									onViewAdminPage={this._viewAdminPage}
+									onViewInbox={this._viewInbox}
+									onViewPrivacyPolicy={this._viewPrivacyPolicy}
+									onViewSettings={this._viewSettings}
+									selectedScreenKey={this.state.screens[0].key}
+									userAccount={this.state.user}
+								/> :
+								null}
+						</> :
+						<AuthScreen
+							captcha={this.props.captcha}
+							onCreateAccount={this._createAccount}
+							onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
+							onShowToast={this._addToast}
+							onSignIn={this._signIn}
+						/>}
+					<DialogManager dialog={this.state.dialog} />
+					<Toaster
+						onRemoveToast={this._removeToast}
+						toasts={this.state.toasts}
+					/>
+				</div>
+			</RootErrorBoundary>
 		);
 	}
 }
