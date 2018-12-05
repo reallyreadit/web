@@ -56,7 +56,6 @@ export default class extends React.PureComponent<Props, {
 			<div className="sign-in-card">
 				<strong>Log In</strong>
 				<EmailAddressField
-					autoFocus
 					error={this.state.emailError}
 					labelPosition="vertical"
 					onChange={this._changeEmail}

@@ -91,7 +91,6 @@ export default class extends React.PureComponent<Props, State> {
 			<div className="create-account-card">
 				<strong>Create an account</strong>
 				<UsernameField
-					autoFocus
 					error={this.state.nameError}
 					key="username"
 					labelPosition="vertical"
