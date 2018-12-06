@@ -17,7 +17,7 @@ interface Props {
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
 	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
-	onShowToast: (text: string, intent: Intent) => void,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	user: UserAccount
 }
 class AdminPage extends React.Component<

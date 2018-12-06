@@ -88,7 +88,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 			this.setState({ emailError: 'Email address already in use.' });
 		}
 		if (errors.some(error => error === 'InvalidCaptcha')) {
-			this.props.onShowToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
+			this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
 		}
 		this.props.captcha.reset(this._captchaId);
 	}

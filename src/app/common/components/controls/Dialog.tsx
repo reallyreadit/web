@@ -5,7 +5,7 @@ import { Intent } from '../Toaster';
 
 export interface Props {
 	onCloseDialog: () => void,
-	onShowToast: (text: string, intent: Intent) => void
+	onShowToast: (content: React.ReactNode, intent: Intent) => void
 }
 export interface State {
 	errorMessage: string,

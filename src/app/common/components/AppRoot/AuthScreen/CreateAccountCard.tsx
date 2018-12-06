@@ -11,7 +11,7 @@ export interface Props {
 	captcha: Captcha,
 	onCancel: () => void,
 	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
-	onShowToast: (text: string, intent: Intent) => void
+	onShowToast: (content: React.ReactNode, intent: Intent) => void
 }
 interface State {
 	email: string,
@@ -62,7 +62,7 @@ export default class extends React.PureComponent<Props, State> {
 						this.setState({ emailError: 'Email address already in use.' });
 					}
 					if (errors.includes('InvalidCaptcha')) {
-						this.props.onShowToast('Invalid Captcha\nPlease Try Again', Intent.Danger);
+						this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
 					}
 					this.props.captcha.reset(this._captchaId);
 				});

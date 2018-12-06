@@ -11,7 +11,7 @@ interface Props {
 	captcha: Captcha,
 	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
 	onOpenRequestPasswordResetDialog: () => void,
-	onShowToast: (text: string, intent: Intent) => void,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (email: string, password: string) => Promise<void>
 }
 enum Card { SignIn, CreateAccount }

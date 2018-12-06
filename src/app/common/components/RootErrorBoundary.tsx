@@ -33,7 +33,8 @@ export default class RootErrorBoundary extends React.PureComponent<Props, { isRe
 								iconLeft="refresh2"
 								onClick={this._reload}
 								state={this.state.isReloading ? 'busy' : 'normal'}
-								text={this.state.isReloading ? 'Reloading' : 'Reload App'} />
+								text={this.state.isReloading ? 'Reloading' : 'Reload App'}
+							/>
 						</p>
 					</InfoBox>
 				}

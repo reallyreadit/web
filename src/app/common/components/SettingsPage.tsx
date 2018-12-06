@@ -23,7 +23,7 @@ interface Props {
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onResendConfirmationEmail: () => Promise<void>,
-	onShowToast: (text: string, intent: Intent) => void,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onUpdateContactPreferences: (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => Promise<void>,
 	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>,
 	user: UserAccount
