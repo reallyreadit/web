@@ -13,8 +13,9 @@ const build = createBuild({
 		`${project.srcDir}/common/**/*.{css,scss}`
 	],
 	staticAssets: [
-		`${project.srcDir}/app/client/fonts/**/*.*`,
-		`${project.srcDir}/app/client/images/**/*.*`
+		`${project.srcDir}/app/client/assets/**/*`,
+		`${project.srcDir}/app/client/fonts/**/*`,
+		`${project.srcDir}/app/client/images/**/*`
 	],
 	path: 'app/client'
 });

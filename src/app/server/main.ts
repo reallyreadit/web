@@ -24,6 +24,8 @@ import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -53,6 +55,16 @@ function redirect(req: express.Request, res: express.Response, url: string) {
 	res.redirect(url);
 }
 
+// read package.json version info
+const version = JSON
+	.parse(fs.readFileSync(config.packageFilePath, { encoding: 'utf8' }))
+	['it.reallyread']
+	.version as {
+		app: number,
+		contentScript: number,
+		extension: number
+	};
+
 // set up logger
 const log = bunyan.createLogger({
 	name: 'app',
@@ -77,7 +89,7 @@ server = server.use((req, res, next) => {
 // configure cookie parser
 server = server.use(cookieParser());
 // configure static content
-if (config.contentRootPath) {
+if (config.serveStaticContent) {
 	// attempt to serve static files first
 	server = server.use(express.static(config.contentRootPath));
 }
@@ -92,6 +104,21 @@ server = server.get('/apple-app-site-association', (req, res) => {
 			}]
 		}
 	});
+});
+// app content script updating
+server = server.get('/assets/update/contentScript', (req, res) => {
+	if (!req.query['currentVersion'] || parseFloat(req.query['currentVersion']) < version.contentScript) {
+		res.setHeader('X-ReallyReadIt-Version', version.contentScript);
+		res.sendFile(
+			path.join(config.contentRootPath, 'assets', 'contentScript'),
+			{
+				headers: { 'Content-Type': 'text/plain' },
+				root: '.'
+			}
+		);
+	} else {
+		res.sendStatus(200);
+	}
 });
 // authenticate
 server = server.use((req, res, next) => {
