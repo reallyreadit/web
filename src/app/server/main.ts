@@ -110,14 +110,14 @@ server = server.get('/version', (req, res) => {
 	res.status(200).send(version.app.toString());
 });
 // app content script updating
-server = server.get('/contentScript', (req, res) => {
+server = server.get('/assets/update/contentScript', (req, res) => {
 	if (!req.query['currentVersion'] || parseFloat(req.query['currentVersion']) < version.contentScript) {
 		res.setHeader('X-ReallyReadIt-Version', version.contentScript);
 		res.sendFile(
-			path.join(config.contentRootPath, 'assets', 'contentScript'),
+			path.posix.join('assets', 'contentScript'),
 			{
 				headers: { 'Content-Type': 'text/plain' },
-				root: '.'
+				root: config.contentRootPath
 			}
 		);
 	} else {
