@@ -10,7 +10,7 @@ const intentClassMap = {
 	[Intent.Danger]: 'danger'
 };
 export interface ToastEvent {
-	text: string,
+	content: React.ReactNode,
 	intent: Intent,
 }
 export interface Toast extends ToastEvent {
@@ -34,10 +34,10 @@ export default class Toaster extends React.PureComponent<{
 						<li
 							className={classNames('toast', intentClassMap[toast.intent], { remove: toast.remove })}
 							key={toast.timeoutHandle}
-							dangerouslySetInnerHTML={{ __html: toast.text.replace(/\n/g, '<br />') }}
 							data-timeout-handle={toast.timeoutHandle}
 							onAnimationEnd={this._removeToast}
 						>
+							{toast.content}
 						</li>)}
 				</ul>
 			</div>

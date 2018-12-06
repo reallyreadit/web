@@ -28,6 +28,12 @@
 	color: white;
 	background-color: red;
 }
+.toaster > .toasts > .toast > p:not(:first-of-type) {
+	margin-top: 10px;
+}
+.toaster > .toasts > .toast > p > .action-link.disabled {
+	color: #666;
+}
 
 @keyframes toaster-pop-in {
 	0% { transform: scale(0, 0); }
