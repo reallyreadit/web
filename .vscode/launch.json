@@ -20,13 +20,13 @@
 			"name": "Attach to Dev Server",
 			"type": "node",
 			"request": "attach",
-			"port": 5858,
+			"port": 9229,
 			"address": "localhost",
 			"restart": false,
 			"sourceMaps": true,
 			"outFiles": ["${workspaceRoot}/bin/dev/app/server/**/*.js"],
 			"localRoot": "${workspaceRoot}",
-			"remoteRoot": null
+			"remoteRoot": "/e4cd4b92-a3bf-400b-8385-a245b1eefc2f"
 		},
 		{
 			"name": "Launch Gulp",
