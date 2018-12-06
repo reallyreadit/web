@@ -12,6 +12,7 @@
 .browser-root > main {
 	flex: 1 1 auto;
 	display: flex;
+	overflow: hidden;
 }
 .browser-root > main > .browser-nav {
 	flex: 0 0 auto;
