@@ -11,5 +11,6 @@ export default interface InitData {
 	newReplyNotification: NewReplyNotification,
 	serverApi: ServerApiInitData,
 	userAccount: UserAccount,
-	verifyCaptcha: boolean
+	verifyCaptcha: boolean,
+	version: number
 }

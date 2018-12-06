@@ -15,7 +15,7 @@ export default class extends BrowserApi {
 			this._channel = null;
 		}
 	}
-	private broadcastUpdate(type: string, data: {}) {
+	private broadcastUpdate(type: string, data?: {}) {
 		if (this._channel) {
 			this._channel.postMessage({ type, data });}
 	}
@@ -24,6 +24,9 @@ export default class extends BrowserApi {
 	}
 	public updateArticle(article: UserArticle) {
 		this.broadcastUpdate('articleUpdated', article);
+	}
+	public updateAvailable(version: number) {
+		this.broadcastUpdate('updateAvailable', version);
 	}
 	public updateUser(user: UserAccount) {
 		this.broadcastUpdate('userUpdated', user);

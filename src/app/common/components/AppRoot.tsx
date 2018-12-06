@@ -19,6 +19,7 @@ import AppApi from '../AppApi';
 import RootErrorBoundary from './RootErrorBoundary';
 import { createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
+import UpdateToast from './UpdateToast';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -28,6 +29,8 @@ interface State extends RootState {
 	menuState: 'opened' | 'closing' | 'closed',
 }
 export default class extends Root<Props, State, Pick<State, 'user'>> {
+	private _isUpdateAvailable: boolean = false;
+
 	// extension
 	private readonly _sendExtensionInstructions = () => {
 		return this.props.serverApi
@@ -94,6 +97,20 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	};
 
 	// window
+	private readonly _handleVisibilityChange = () => {
+		if (!this._isUpdateAvailable && !window.document.hidden) {
+			this.fetchUpdateStatus().then(status => {
+				if (status.isAvailable) {
+					this._isUpdateAvailable = true;
+					this._addToast(
+						<UpdateToast onReloadWindow={this._reloadWindow} />,
+						Intent.Success,
+						false
+					);
+				}
+			});
+		}
+	};
 	private readonly _reloadWindow = () => {
 		window.location.reload(true);
 	};
@@ -229,11 +246,17 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		);
 	}
 	public componentDidMount() {
+		super.componentDidMount();
 		window.history.replaceState(
 			null,
 			null,
 			'/' + createQueryString({ [clientTypeQueryStringKey]: ClientType.App })
 		);
+		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
+	}
+	public componentWillUnmount() {
+		super.componentWillUnmount();
+		window.document.removeEventListener('visibilitychange', this._handleVisibilityChange);
 	}
 	public render() {
 		const

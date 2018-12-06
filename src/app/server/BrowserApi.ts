@@ -13,6 +13,9 @@ export default class extends BrowserApi {
 	public updateArticle(article: UserArticle) {
 		throw new Error('Operation not supported in server environment');
 	}
+	public updateAvailable(version: number) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public updateUser(user: UserAccount) {
 		throw new Error('Operation not supported in server environment');
 	}

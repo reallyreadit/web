@@ -10,8 +10,10 @@ import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import * as jsCookie from 'js-cookie';
 
-// clean up localStorage, switched to using BroadcastChannel for tab sync instead
-localStorage.clear();
+// clean up localStorage
+localStorage.removeItem('challenge');
+localStorage.removeItem('newReplyNotification');
+localStorage.removeItem('userAccount');
 
 // clean up cookies
 jsCookie.remove('hideHero');
@@ -36,7 +38,8 @@ const rootProps = {
 	),
 	initialLocation: window.initData.initialLocation,
 	initialUser: window.initData.userAccount,
-	serverApi
+	serverApi,
+	version: window.initData.version
 };
 let rootElement: React.ReactElement<any>;
 switch (window.initData.clientType) {

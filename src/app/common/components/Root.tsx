@@ -31,7 +31,8 @@ export interface Props {
 	captcha: Captcha,
 	initialLocation: Location,
 	initialUser: UserAccount | null,
-	serverApi: ServerApi
+	serverApi: ServerApi,
+	version: number
 }
 export interface Screen<T = any> {
 	componentState?: T,
@@ -196,17 +197,19 @@ export default abstract class Root <
 	};
 
 	// toasts
-	protected readonly _addToast = (text: string, intent: Intent) => {
+	protected readonly _addToast = (content: React.ReactNode, intent: Intent, remove: boolean = true) => {
 		const toast = {
-			text,
+			content,
 			intent,
-			timeoutHandle: this._asyncTracker.addTimeout(
-				window.setTimeout(() => {
-					const toasts = this.state.toasts.slice();
-					toasts[toasts.indexOf(toast)] = { ...toast, remove: true };
-					this.setState({ toasts });
-				}, 5000)
-			),
+			timeoutHandle: remove ?
+				this._asyncTracker.addTimeout(
+					window.setTimeout(() => {
+						const toasts = this.state.toasts.slice();
+						toasts[toasts.indexOf(toast)] = { ...toast, remove: true };
+						this.setState({ toasts });
+					}, 5000)
+				) :
+				0,
 			remove: false
 		};
 		this.setState({ toasts: [...this.state.toasts, toast] });
@@ -239,7 +242,7 @@ export default abstract class Root <
 		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse, DateTime.local().zoneName)
 			.then(userAccount => {
-				this._addToast('Welcome to reallyread.it!\nPlease check your email and confirm your address.', Intent.Success);
+				this._addToast(<>Welcome to reallyread.it!<br />Please check your email and confirm your address.</>, Intent.Success);
 				ga('send', {
 					hitType: 'event',
 					eventCategory: 'UserAccount',
@@ -370,6 +373,39 @@ export default abstract class Root <
 	private setTimeZone() {
 		return this._changeTimeZone({ name: DateTime.local().zoneName });
 	}
+	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: number }> {
+		const
+			now = Date.now(),
+			lastCheck = localStorage.getItem('lastUpdateCheck');
+		if (
+			!lastCheck ||
+			now - parseInt(lastCheck) >= 1 * 60 * 60 * 1000
+		) {
+			localStorage.setItem('lastUpdateCheck', now.toString());
+			return fetch('/version')
+				.then(res => {
+					if (res.ok) {
+						return res.text().then(text => {
+							const version = parseFloat(text);
+							if (this.props.version < version) {
+								return {
+									isAvailable: true,
+									version
+								};
+							}
+							return { isAvailable: false };
+						});
+					} else {
+						throw new Error();
+					}
+				})
+				.catch(() => {
+					localStorage.setItem('lastUpdateCheck', lastCheck || '0');
+					return { isAvailable: false };
+				});
+		}
+		return Promise.resolve({ isAvailable: false });
+	}
 	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		const
 			url = findRouteByKey(routes, key).createUrl(urlParams),
@@ -390,6 +426,7 @@ export default abstract class Root <
 		};
 	}
 	protected onTitleChanged(title: string) { }
+	protected onUpdateAvailable() { }
 	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) { }
 	protected abstract readArticle(article: UserArticle, ev: React.MouseEvent): void;
 	protected registerEventHandler<T>(handlers: T[], handler: T) {

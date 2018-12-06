@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Header from './BrowserRoot/Header';
-import Toaster from './Toaster';
+import Toaster, { Intent } from './Toaster';
 import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
@@ -22,6 +22,7 @@ import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import RootErrorBoundary from './RootErrorBoundary';
+import UpdateToast from './UpdateToast';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -35,6 +36,9 @@ interface State extends RootState {
 }
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 export default class extends Root<Props, State, SharedState> {
+	private _isUpdateAvailable: boolean = false;
+	private _updateCheckInterval: number | null = null;
+
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
 		this._openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
@@ -98,6 +102,19 @@ export default class extends Root<Props, State, SharedState> {
 	};
 
 	// window
+	private readonly _handleHistoryPopState = () => {
+		const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
+		this.setState({ screens: [screen] });
+		this.props.browserApi.setTitle(screen.title);
+	};
+	private readonly _handleVisibilityChange = () => {
+		if (!window.document.hidden) {
+			this.checkForUpdate();
+			this.startUpdateCheckInterval();
+		} else {
+			this.stopUpdateCheckInterval();
+		}
+	};
 	private readonly _reloadWindow = () => {
 		window.location.href = '/';
 	};
@@ -175,6 +192,11 @@ export default class extends Root<Props, State, SharedState> {
 			.addListener('articleUpdated', article => {
 				// TODO: upate articles from other tabs
 			})
+			.addListener('updateAvailable', version => {
+				if (!this._isUpdateAvailable && version > this.props.version) {
+					this.setUpdateAvailable();
+				}
+			})
 			.addListener('userUpdated', user => {
 				if (
 					(this.state.user && !user) ||
@@ -197,6 +219,16 @@ export default class extends Root<Props, State, SharedState> {
 				this.setState({ isExtensionInstalled });
 			});
 	}
+	private checkForUpdate() {
+		if (!this._isUpdateAvailable) {
+			this.fetchUpdateStatus().then(status => {
+				if (status.isAvailable) {
+					this.setUpdateAvailable();
+					this.props.browserApi.updateAvailable(status.version);
+				}
+			});
+		}
+	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string): Pick<State, 'menuState' | 'screens'> {
 		const { screen, url } = this.createScreen(key, urlParams, title);
 		this.props.browserApi.setTitle(screen.title);
@@ -209,6 +241,28 @@ export default class extends Root<Props, State, SharedState> {
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
 			screens: [screen]
 		};
+	}
+	private setUpdateAvailable() {
+		this._isUpdateAvailable = true;
+		this.stopUpdateCheckInterval();
+		this._addToast(
+			<UpdateToast onReloadWindow={this._reloadWindow} />,
+			Intent.Success,
+			false
+		);
+	}
+	private startUpdateCheckInterval() {
+		if (!this._isUpdateAvailable && !this._updateCheckInterval) {
+			this._updateCheckInterval = window.setInterval(() => {
+				this.checkForUpdate();
+			}, 10 * 60 * 1000);
+		}
+	}
+	private stopUpdateCheckInterval() {
+		if (this._updateCheckInterval) {
+			window.clearInterval(this._updateCheckInterval);
+			this._updateCheckInterval = null;
+		}
 	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
@@ -257,6 +311,7 @@ export default class extends Root<Props, State, SharedState> {
 		));
 	}
 	public componentDidMount() {
+		super.componentDidMount();
 		// clear query string used to set initial state
 		window.history.replaceState(
 			null,
@@ -264,15 +319,22 @@ export default class extends Root<Props, State, SharedState> {
 			window.location.pathname
 		);
 		// add listener for back navigation
-		window.addEventListener('popstate', () => {
-			const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
-			this.setState({ screens: [screen] });
-			this.props.browserApi.setTitle(screen.title);
-		});
+		window.addEventListener('popstate', this._handleHistoryPopState);
+		// add listener for visibility change
+		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
+		if (!document.hidden) {
+			this.startUpdateCheckInterval();
+		}
 		// update other tabs with the latest user data
 		this.props.browserApi.updateUser(this.state.user);
-		// base
-		super.componentDidMount();
+	}
+	public componentWillUnmount() {
+		super.componentWillUnmount();
+		window.removeEventListener('popstate', this._handleHistoryPopState);
+		window.document.removeEventListener('visibilitychange', this._handleVisibilityChange);
+		if (this._updateCheckInterval) {
+			window.clearInterval(this._updateCheckInterval);
+		}
 	}
 	public render() {
 		const screen = this.state.screens[0];

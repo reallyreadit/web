@@ -105,6 +105,10 @@ server = server.get('/apple-app-site-association', (req, res) => {
 		}
 	});
 });
+// version check
+server = server.get('/version', (req, res) => {
+	res.status(200).send(version.app.toString());
+});
 // app content script updating
 server = server.get('/assets/update/contentScript', (req, res) => {
 	if (!req.query['currentVersion'] || parseFloat(req.query['currentVersion']) < version.contentScript) {
@@ -262,13 +266,14 @@ server = server.get('/*', (req, res) => {
 	const browserApi = new BrowserApi();
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
-		serverApi: req.api,
 		captcha: new Captcha(),
 		initialLocation: {
 			path: req.path,
 			queryString: createQueryString(req.query)
 		},
-		initialUser: req.sessionState.userAccount
+		initialUser: req.sessionState.userAccount,
+		serverApi: req.api,
+		version: version.app
 	};
 	let rootElement: React.ReactElement<any>;
 	switch (clientType) {
@@ -318,7 +323,8 @@ server = server.get('/*', (req, res) => {
 				initialLocation: rootProps.initialLocation,
 				serverApi: req.api.getInitData(),
 				userAccount: req.sessionState.userAccount,
-				verifyCaptcha: config.enableCaptcha
+				verifyCaptcha: config.enableCaptcha,
+				version: version.app
 			},
 			title: browserApi.getTitle()
 		}));
