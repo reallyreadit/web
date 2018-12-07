@@ -8,10 +8,14 @@
 	flex-flow: column;
 	min-height: 100%;
 }
+.home-screen_1sjipy > .info-box_whou0t {
+	flex: 0 0 auto;
+}
 .home-screen_1sjipy > .info-box_whou0t + .info-box_whou0t {
 	margin-top: 10px;
 }
 .home-screen_1sjipy > .promo-container {
+	flex: 0 0 auto;
 	margin: 75px 0;
 	text-align: center;
 }
@@ -26,7 +30,10 @@
 	padding: 10px 50px;
 	outline: none;
 }
+.home-screen_1sjipy > .info-box_whou0t + .hot-topics-list_4aaj4s {
+	margin-top: 20px;
+}
 .home-screen_1sjipy > .loading-overlay_zfgtd1,
-.home-screen_1sjipy > .hot-topics-list {
+.home-screen_1sjipy > .hot-topics-list_4aaj4s {
 	flex: 1 1 auto;
 }

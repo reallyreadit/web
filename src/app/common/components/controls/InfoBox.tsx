@@ -6,12 +6,13 @@ export default (props: {
 	children: React.ReactNode,
 	icon?: IconName,
 	position: 'absolute' | 'static',
-	style: 'normal' | 'warning'
+	style: 'normal' | 'warning' | 'success'
 }) => (
 	<div className={classNames(
 		'info-box_whou0t',
 		{
 			'absolute': props.position === 'absolute',
+			'success': props.style === 'success',
 			'warning': props.style === 'warning'
 		}
 	)}>

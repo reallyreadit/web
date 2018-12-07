@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import HotTopics from '../../../../common/models/HotTopics';
-import HotTopicsList, { updateArticles } from '../controls/articles/HotTopicsList';
+import HotTopicsList, { updateHotTopics } from '../controls/articles/HotTopicsList';
 import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -13,12 +13,13 @@ import EmailConfirmationInfoBox from '../EmailConfirmationInfoBox';
 import { Screen, SharedState } from '../Root';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import produce from 'immer';
+import WelcomeInfoBox from '../WelcomeInfoBox';
 
 interface Props {
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onResendConfirmationEmail: () => Promise<void>,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -28,7 +29,7 @@ interface Props {
 interface State {
 	hotTopics: Fetchable<HotTopics>
 }
-class HomePage extends React.Component<Props, State> {
+class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadMore = () => {
 		return this._asyncTracker.addPromise(new Promise<void>((resolve, reject) => {
@@ -62,8 +63,8 @@ class HomePage extends React.Component<Props, State> {
 			)
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(updatedArticle => {
-				updateArticles.call(this, updatedArticle);
+			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
+				updateHotTopics.call(this, updatedArticle, isCompletionCommit);
 			})
 		);
 	}
@@ -80,6 +81,13 @@ class HomePage extends React.Component<Props, State> {
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
+						{(
+							this.props.user &&
+							this.props.user.isEmailConfirmed &&
+							!this.state.hotTopics.value.userStats
+						) ?
+							<WelcomeInfoBox /> :
+							null}
 						<HotTopicsList
 							aotd={this.state.hotTopics.value.aotd}
 							articles={this.state.hotTopics.value.articles}
@@ -113,7 +121,7 @@ export default function <TScreenKey>(
 			)
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
-			<HomePage {...{ ...deps, user: sharedState.user }} />
+			<HomeScreen {...{ ...deps, user: sharedState.user }} />
 		),
 		renderHeaderContent: () => (
 			<div className="home-screen_an7vm5-header-content">

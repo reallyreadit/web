@@ -25,6 +25,10 @@
 	background-color: lightpink;
 	border-color: darkred;
 }
+.info-box_whou0t.success > .box {
+	background-color: greenyellow;
+	border-color: green;
+}
 .info-box_whou0t > .box > .icon-container {
 	flex: 0 0 auto;
 	width: 36px;
@@ -39,12 +43,16 @@
 .info-box_whou0t.warning > .box > .icon-container > .icon {
 	color: darkred;
 }
+.info-box_whou0t.success > .box > .icon-container > .icon {
+	color: green;
+}
 .info-box_whou0t > .box > .content {
 	flex: 1 1 auto;
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
 	align-items: center;
+	text-align: center;
 }
 .info-box_whou0t > .box > .content > p:not(:first-of-type) {
 	margin-top: 10px;

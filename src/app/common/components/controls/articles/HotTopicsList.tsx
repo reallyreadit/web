@@ -10,12 +10,15 @@ import produce from 'immer';
 interface State {
 	hotTopics: Fetchable<HotTopics>
 }
-export function updateArticles(this: React.Component<{}, State>, updatedArticle: UserArticle) {
+export function updateHotTopics(this: React.Component<{}, State>, updatedArticle: UserArticle, isCompletionCommit: boolean) {
 	if (
 		this.state.hotTopics.value &&
-		[this.state.hotTopics.value.aotd]
-			.concat(this.state.hotTopics.value.articles.items)
-			.some(article => article.id === updatedArticle.id)
+		(
+			[this.state.hotTopics.value.aotd]
+				.concat(this.state.hotTopics.value.articles.items)
+				.some(article => article.id === updatedArticle.id) ||
+			(!this.state.hotTopics.value.userStats && isCompletionCommit)
+		)
 	) {
 		this.setState(produce<State>(prevState => {
 			if (prevState.hotTopics.value.aotd.id === updatedArticle.id) {
@@ -26,6 +29,16 @@ export function updateArticles(this: React.Component<{}, State>, updatedArticle:
 					articles.splice(articles.indexOf(article), 1, updatedArticle);
 				}
 			});
+			if (!prevState.hotTopics.value.userStats && isCompletionCommit) {
+				// ugly hack to dismiss welcome info box
+				prevState.hotTopics.value.userStats = {
+					readCount: 1,
+					readCountRank: 0,
+					streak: null,
+					streakRank: null,
+					userCount: 0
+				};
+			}
 		}));
 	}
 }

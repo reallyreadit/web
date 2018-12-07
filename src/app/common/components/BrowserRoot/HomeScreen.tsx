@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import HotTopics from '../../../../common/models/HotTopics';
-import HotTopicsList, { updateArticles } from '../controls/articles/HotTopicsList';
+import HotTopicsList, { updateHotTopics } from '../controls/articles/HotTopicsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
@@ -13,6 +13,7 @@ import EmailConfirmationInfoBox from '../EmailConfirmationInfoBox';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
 import PromoCarousel from '../PromoCarousel';
+import WelcomeInfoBox from '../WelcomeInfoBox';
 
 interface Props {
 	isBrowserCompatible: boolean,
@@ -21,7 +22,7 @@ interface Props {
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
 	onResendConfirmationEmail: () => Promise<void>,
 	onShareArticle: (article: UserArticle) => void,
@@ -32,7 +33,7 @@ interface Props {
 interface State {
 	hotTopics: Fetchable<HotTopics>
 }
-class HomePage extends React.Component<Props, State> {
+class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadPage = (pageNumber: number) => {
 		this.setState({
@@ -45,8 +46,8 @@ class HomePage extends React.Component<Props, State> {
 			hotTopics: this.fetchHotTopics(1)
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(updatedArticle => {
-				updateArticles.call(this, updatedArticle);
+			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
+				updateHotTopics.call(this, updatedArticle, isCompletionCommit);
 			}),
 			props.onRegisterUserChangeHandler(() => {
 				this._asyncTracker.cancelAll();
@@ -89,6 +90,14 @@ class HomePage extends React.Component<Props, State> {
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
+						{(
+							this.props.user &&
+							this.props.user.isEmailConfirmed &&
+							this.props.isExtensionInstalled &&
+							!this.state.hotTopics.value.userStats
+						 ) ?
+							<WelcomeInfoBox /> :
+							null}
 						<HotTopicsList
 							aotd={this.state.hotTopics.value.aotd}
 							articles={this.state.hotTopics.value.articles}
@@ -115,7 +124,7 @@ export default function <TScreenKey>(
 	return {
 		create: () => ({ key, title: 'Home' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
-			<HomePage {
+			<HomeScreen {
 				...{
 					...deps,
 					isExtensionInstalled: sharedState.isExtensionInstalled,
