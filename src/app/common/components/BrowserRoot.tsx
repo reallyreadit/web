@@ -357,6 +357,7 @@ export default class extends Root<Props, State, SharedState> {
 							onViewHistory={this._viewHistory}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
+							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewStarred={this._viewStarred}
 							selectedScreenKey={screen.key}
 						/>
@@ -375,7 +376,6 @@ export default class extends Root<Props, State, SharedState> {
 							onSignOut={this._signOut}
 							onViewAdminPage={this._viewAdminPage}
 							onViewInbox={this._viewInbox}
-							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewSettings={this._viewSettings}
 							selectedScreenKey={this.state.screens[0].key}
 							showNewReplyNotification={this.state.showNewReplyIndicator}

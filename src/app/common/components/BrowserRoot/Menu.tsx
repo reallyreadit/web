@@ -1,7 +1,6 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
 import Icon from '../../../../common/components/Icon';
-import Separator from '../../../../common/components/Separator';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import classNames from 'classnames';
 import Spinner from '../../../../common/components/Spinner';
@@ -17,7 +16,6 @@ interface Props {
 	onSignOut: () => Promise<void>,
 	onViewAdminPage: () => void,
 	onViewInbox: () => void,
-	onViewPrivacyPolicy: () => void,
 	onViewSettings: () => void,
 	selectedScreenKey: ScreenKey,
 	showNewReplyNotification: boolean,
@@ -43,10 +41,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 	};
 	private readonly _stopPropagation = (e: React.MouseEvent) => {
 		e.stopPropagation();
-	};
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewPrivacyPolicy();
 	};
 	private _cachedUser: UserAccount | undefined;
 	constructor(props: Props) {
@@ -119,20 +113,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							</Button>
 						</li>
 					</ol>
-					<div className="footer">
-						<a href="https://blog.reallyread.it">Blog</a>
-						<Separator />
-						<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
-						<Separator />
-						<a
-							href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
-							onClick={this._viewPrivacyPolicy}
-						>
-							Privacy Policy
-						</a>
-						<br />
-						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
-					</div>
 				</div>
 			</div>
 		);

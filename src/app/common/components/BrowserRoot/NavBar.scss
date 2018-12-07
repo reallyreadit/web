@@ -9,3 +9,14 @@
 	flex-flow: column;
 	border-right: 3px solid black;
 }
+.nav-bar_yh8orf > ol {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+}
+.nav-bar_yh8orf > .footer {
+	flex: 0 0 auto;
+	text-align: center;
+	padding: 20px;
+	font-size: 14px;
+}

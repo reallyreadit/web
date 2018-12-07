@@ -20,6 +20,7 @@
 .menu_v25ec5 > .drawer {
 	display: flex;
 	flex-flow: column;
+	width: 250px;
 	background-color: white;
 	border-left: 3px solid black;
 	font-size: 16px;
@@ -47,11 +48,6 @@
 	flex: 1 1 auto;
 	display: flex;
 	flex-flow: column;
-}
-.menu_v25ec5 > .drawer > .footer {
-	flex: 0 0 auto;
-	text-align: center;
-	padding: 20px 30px;
 }
 
 @keyframes menu_v25ec5-overlay-fade-in {
