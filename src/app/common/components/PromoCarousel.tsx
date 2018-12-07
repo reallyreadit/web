@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 
-export default () => (
+export default (props: { showArrows: boolean }) => (
 	<Carousel
 		className="promo-carousel_mvtpec"
 		dynamicHeight
 		emulateTouch
+		showArrows={props.showArrows}
 		showStatus={false}
 		showThumbs={false}
 	>

@@ -85,7 +85,7 @@ export default class extends React.PureComponent<Props, {
 						>
 							<div className="front">
 								<div className="carousel-wrapper">
-									<PromoCarousel />
+									<PromoCarousel showArrows={false} />
 								</div>
 								<Button
 									onClick={this._showCreateAccountCard}

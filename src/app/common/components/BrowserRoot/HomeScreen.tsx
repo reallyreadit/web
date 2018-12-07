@@ -12,12 +12,14 @@ import PageSelector from '../controls/PageSelector';
 import EmailConfirmationInfoBox from '../EmailConfirmationInfoBox';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
+import PromoCarousel from '../PromoCarousel';
 
 interface Props {
 	isBrowserCompatible: boolean,
 	isExtensionInstalled: boolean | null,
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
 	onInstallExtension: () => void,
+	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
@@ -75,6 +77,14 @@ class HomePage extends React.Component<Props, State> {
 						isBrowserCompatible={this.props.isBrowserCompatible}
 						onInstallExtension={this.props.onInstallExtension}
 					/> :
+					null}
+				{!this.props.user ?
+					<div className="promo-container">
+						<PromoCarousel showArrows />
+						<button onClick={this.props.onOpenCreateAccountDialog}>
+							Sign Up
+						</button>
+					</div> :
 					null}
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :

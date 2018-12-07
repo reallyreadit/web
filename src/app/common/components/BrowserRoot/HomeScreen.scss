@@ -11,6 +11,21 @@
 .home-screen_1sjipy > .info-box_whou0t + .info-box_whou0t {
 	margin-top: 10px;
 }
+.home-screen_1sjipy > .promo-container {
+	margin: 75px 0;
+	text-align: center;
+}
+.home-screen_1sjipy > .promo-container > button {
+	margin-top: 15px;
+	background-color: black;
+	border: none;
+	cursor: pointer;
+	color: white;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 10px 50px;
+	outline: none;
+}
 .home-screen_1sjipy > .loading-overlay_zfgtd1,
 .home-screen_1sjipy > .hot-topics-list {
 	flex: 1 1 auto;
