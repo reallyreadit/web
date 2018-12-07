@@ -1,0 +1,28 @@
+/*
+	componentPath: src/app/common/components/PromoCarousel
+	cssComponentId: promo-carousel_mvtpec
+*/
+
+.promo-carousel_mvtpec > .carousel {
+	padding-bottom: 34px;
+}
+.promo-carousel_mvtpec > .carousel > .slider-wrapper > .slider > .slide {
+	background-color: transparent;
+}
+.promo-carousel_mvtpec > .carousel > .slider-wrapper > .slider > .slide > div {
+	text-align: center;
+	font-size: 15px;
+	padding: 0 5px;
+}
+.promo-carousel_mvtpec > .carousel > .slider-wrapper > .slider > .slide > div > strong {
+	display: block;
+	font-size: 40px;
+	margin-bottom: 10px;
+}
+.promo-carousel_mvtpec > .carousel > .control-dots > .dot {
+	box-shadow: none;
+	background-color: #666;
+}
+.promo-carousel_mvtpec > .carousel > .control-dots > .dot.selected {
+	background-color: black;
+}

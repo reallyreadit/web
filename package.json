@@ -6,7 +6,7 @@
     "version": {
       "app": 0.71,
       "contentScript": 0.1,
-      "extension": 0.50
+      "extension": 0.5
     }
   },
   "devDependencies": {
@@ -49,6 +49,7 @@
     "luxon": "^1.4.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-responsive-carousel": "^3.1.43",
     "request": "^2.88.0",
     "timeago.js": "^3.0.2"
   }
