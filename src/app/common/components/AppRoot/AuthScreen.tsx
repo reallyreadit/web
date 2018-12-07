@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import CreateAccountCard from './AuthScreen/CreateAccountCard';
 import { Intent } from '../Toaster';
 import Button from './AuthScreen/Button';
+import PromoCarousel from '../PromoCarousel';
 
 interface Props {
 	captcha: Captcha,
@@ -83,7 +84,9 @@ export default class extends React.PureComponent<Props, {
 							onAnimationEnd={this._handleFlipperAnimationEnd}
 						>
 							<div className="front">
-								<h2>Feed your head.</h2>
+								<div className="carousel-wrapper">
+									<PromoCarousel />
+								</div>
 								<Button
 									onClick={this._showCreateAccountCard}
 									style="loud"

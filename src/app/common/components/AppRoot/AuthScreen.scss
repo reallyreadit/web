@@ -36,6 +36,7 @@
 	transition: 500ms;
 	transform-style: preserve-3d;
 	position: relative;
+	height: 100%;
 }
 .auth-screen_gnq77a > .content > .flip-container > .flipper.flipped {
 	animation: auth-screen_gnq77a-flip-forward 500ms forwards;
@@ -56,11 +57,20 @@
 .auth-screen_gnq77a > .content > .flip-container > .flipper > .front {
 	z-index: 2;
 	transform: translateZ(0);
+	display: flex;
+	flex-flow: column;
 }
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > h2 {
-	font-size: 18px;
-	text-align: center;
-	margin-bottom: 50px;
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .carousel-wrapper {
+	flex: 1 1 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .carousel-wrapper > .promo-carousel_mvtpec {
+	width: 100%;
+}
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_vp905n {
+	flex: 0 0 auto;
 }
 .auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_vp905n:not(:last-child) {
 	margin-bottom: 20px;
