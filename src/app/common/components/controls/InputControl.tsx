@@ -1,8 +1,10 @@
 import * as React from 'react';
 
-const emailRegExp = /.+@.+/;
+const
+	emailRegExp = /.+@.+/,
+	usernameRegExp = /^[A-Za-z0-9\-_]+$/;
 export interface Props {
-	type: 'text' | 'email' | 'password' | 'multiline',
+	type: 'text' | 'email' | 'password' | 'multiline' | 'username',
 	label: string,
 	value?: string,
 	error?: string,
@@ -49,6 +51,11 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 			case 'email':
 				if (!emailRegExp.test(value)) {
 					return `Invalid ${this.props.label}.`;
+				}
+				break;
+			case 'username':
+				if (!usernameRegExp.test(value)) {
+					return 'Only letters/numbers/-_ allowed.';
 				}
 				break;
 		}

@@ -18,7 +18,7 @@ export default (props: {
 			onChange={props.onChange}
 			required
 			showError={props.showError}
-			type="text"
+			type="username"
 			value={props.value}
 		/>
 	);
