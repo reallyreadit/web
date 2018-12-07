@@ -63,8 +63,8 @@ export default (props: {
 			>
 				{props.isUserSignedIn ?
 					<>
-						<p>Use stars to save articles for later.</p>
-						<p><strong>You have no starred articles.</strong></p>
+						<p>You have 0 starred articles.</p>
+						<p><strong>Star articles to save them for later.</strong></p>
 					</> :
 					<p>Sign up to save articles to your starred list.</p>}
 			</InfoBox>}

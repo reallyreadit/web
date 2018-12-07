@@ -59,13 +59,17 @@ class AppStarredScreen extends React.Component<Props, State> {
 					<LoadingOverlay /> :
 					<>
 						<p>
-							Pro tip: Add the Chrome extension to star articles from anywhere on the internet.
-							{this.props.user.isEmailConfirmed ?
-								<AsyncActionLink
-									icon="email"
-									onClick={this.props.onSendExtensionInstructions}
-									text="Email me the link."
-								/> :
+							{this.state.articles.value.items.length ?
+								<>
+									Pro tip: Add the Chrome extension to star articles from anywhere on the internet.
+									{this.props.user.isEmailConfirmed ?
+										<AsyncActionLink
+											icon="email"
+											onClick={this.props.onSendExtensionInstructions}
+											text="Email me the link."
+										/> :
+										null}
+								</> :
 								null}
 						</p>
 						<StarredScreen
