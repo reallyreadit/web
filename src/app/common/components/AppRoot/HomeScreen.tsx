@@ -124,11 +124,11 @@ export default function <TScreenKey>(
 			<HomeScreen {...{ ...deps, user: sharedState.user }} />
 		),
 		renderHeaderContent: () => (
-			<div className="home-screen_an7vm5-header-content">
-				<Icon
-					name="user"
-					onClick={deps.onOpenMenu}
-				/>
+			<div
+				className="home-screen_an7vm5-header-content"
+				onClick={deps.onOpenMenu}
+			>
+				<Icon name="user" />
 			</div>
 		)
 	};

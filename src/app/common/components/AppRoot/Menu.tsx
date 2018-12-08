@@ -63,10 +63,12 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 				>
 					<div className="header">
 						<label>{user.name}</label>
-						<Icon
-							name="cancel"
+						<div
+							className="close-button"
 							onClick={this.props.onClose}
-						/>
+						>
+							<Icon name="cancel" />
+						</div>
 					</div>
 					<ol>
 						{user.role === UserAccountRole.Admin ?

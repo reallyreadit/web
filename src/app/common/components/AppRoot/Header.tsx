@@ -8,13 +8,15 @@ export default (props: {
 	titles: (React.ReactNode | null)[]
 }) => (
 	<div className="header_q3p9go">
-		<div className="back-button">
+		<div className="left-content">
 			{props.titles.length > 1 && !props.isTransitioningBack ?
-				<Icon
-					name="chevron-left"
+				<div
+					className="back-button"
 					onClick={props.onBack}
-				/> :
-				null}
+				>
+					<Icon name="chevron-left" />
+				</div> :
+					null}
 		</div>
 		<div className="title">{props.titles[props.titles.length - (props.isTransitioningBack ? 2 : 1)]}</div>
 		<div className="right-content">

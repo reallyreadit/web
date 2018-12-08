@@ -30,11 +30,11 @@
 	fill: #666;
 }
 .home-screen_an7vm5-header-content {
-	text-align: right;
-	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
 }
 .home-screen_an7vm5-header-content > .icon {
-	font-size: 19px;
-	position: relative;
-   right: 10px;
+	font-size: 22px;
 }

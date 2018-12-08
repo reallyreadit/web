@@ -31,16 +31,27 @@
 .menu_fk9ujy > .drawer > .header {
 	flex: 0 0 auto;
 	display: flex;
-	justify-content: space-between;
-	padding: 16px;
 }
 .menu_fk9ujy > .drawer > .header > label {
+	flex: 1 1 auto;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-weight: bold;
+	display: flex;
+	align-items: center;
+	padding-left: 20px;
+	max-width: 155px;
 }
-.menu_fk9ujy > .drawer > .header > .icon {
+.menu_fk9ujy > .drawer > .header > .close-button {
+	flex: 0 0 auto;
+	height: 42px;
+	width: 36px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.menu_fk9ujy > .drawer > .header > .close-button > .icon {
 	cursor: pointer;
 }
 .menu_fk9ujy > .drawer > ol {
