@@ -43,11 +43,6 @@ export default class extends Dialog<void, Props, Partial<State> & {
 			addresses
 		});
 	};
-	private _captchaElement: HTMLDivElement | null = null;
-	private readonly _setCaptchaElement = (ref: HTMLDivElement) => {
-		this._captchaElement = ref;
-	};
-	private _captchaId: number | null = null;
 	constructor(props: Props & DialogProps) {
 		super(
 			{
@@ -151,10 +146,6 @@ export default class extends Dialog<void, Props, Partial<State> & {
 					value={this.state.message}
 					onChange={this._handleMessageChange}
 				/>
-				<div
-					className="captcha"
-					ref={this._setCaptchaElement}
-				></div>
 			</div>
 		);
 	}
@@ -172,12 +163,15 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		];
 	}
 	protected submitForm() {
-		return this.props.onShareArticle(
-			this.state.article.value.id,
-			this.state.addresses.map(field => field.value),
-			this.state.message,
-			this.props.captcha.getResponse(this._captchaId)
-		);
+		return this.props.captcha
+			.onReady()
+			.then(captcha => captcha.execute('shareArticle'))
+			.then(captchaResponse => this.props.onShareArticle(
+				this.state.article.value.id,
+				this.state.addresses.map(field => field.value),
+				this.state.message,
+				captchaResponse
+			));
 	}
 	protected onError(errors: string[]) {
 		let errorMessage: string;
@@ -189,12 +183,6 @@ export default class extends Dialog<void, Props, Partial<State> & {
 			errorMessage = 'Error sending email.\nPlease check the addresses.';
 		}
 		this.props.onShowToast(errorMessage, Intent.Danger);
-		this.props.captcha.reset(this._captchaId);
-	}
-	public componentDidMount() {
-		this.props.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, this.props.captcha.siteKeys.shareArticle);
-		});
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();

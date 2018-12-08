@@ -21,11 +21,6 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	private _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
-	private _captchaElement: HTMLDivElement | null = null;
-	private readonly _setCaptchaElement = (ref: HTMLDivElement) => {
-		this._captchaElement = ref;
-	};
-	private _captchaId: number | null = null;
 	constructor(props: Props & DialogProps) {
 		super(
 			{
@@ -58,11 +53,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 				onChange={this._handlePasswordChange}
 				showError={this.state.showErrors}
 				value={this.state.password}
-			/>,
-			<div
-				key="captcha"
-				ref={this._setCaptchaElement}
-			></div>
+			/>
 		];
 	}
 	protected getClientErrors() {
@@ -73,12 +64,15 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		}];
 	}
 	protected submitForm() {
-		return this.props.onCreateAccount(
-			this.state.name,
-			this.state.email,
-			this.state.password,
-			this.props.captcha.getResponse(this._captchaId)
-		);
+		return this.props.captcha
+			.onReady()
+			.then(captcha => captcha.execute('createAccount'))
+			.then(captchaResponse => this.props.onCreateAccount(
+				this.state.name,
+				this.state.email,
+				this.state.password,
+				captchaResponse
+			));
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'DuplicateName')) {
@@ -90,11 +84,5 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		if (errors.some(error => error === 'InvalidCaptcha')) {
 			this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
 		}
-		this.props.captcha.reset(this._captchaId);
-	}
-	public componentDidMount() {
-		this.props.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, this.props.captcha.siteKeys.createAccount);
-		});
 	}
 }

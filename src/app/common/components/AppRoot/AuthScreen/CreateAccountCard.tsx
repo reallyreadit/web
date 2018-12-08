@@ -33,11 +33,6 @@ export default class extends React.PureComponent<Props, State> {
 	private readonly _changePassword = (password: string, passwordError: string) => {
 		this.setState({ password, passwordError });
 	};
-	private _captchaElement: HTMLDivElement | null = null;
-	private readonly _setCaptchaElement = (ref: HTMLDivElement) => {
-		this._captchaElement = ref;
-	};
-	private _captchaId: number | null = null;
 	private readonly _submit = () => {
 		this.setState({ showErrors: true });
 		if (
@@ -46,13 +41,15 @@ export default class extends React.PureComponent<Props, State> {
 			!this.state.passwordError
 		) {
 			this.setState({ isSubmitting: true });
-			this.props
-				.onCreateAccount(
+			this.props.captcha
+				.onReady()
+				.then(captcha => captcha.execute('createAccount'))
+				.then(captchaResponse => this.props.onCreateAccount(
 					this.state.name,
 					this.state.email,
 					this.state.password,
-					this.props.captcha.getResponse(this._captchaId)
-				)
+					captchaResponse
+				))
 				.catch((errors: string[]) => {
 					this.setState({ isSubmitting: false });
 					if (errors.includes('DuplicateName')) {
@@ -64,7 +61,6 @@ export default class extends React.PureComponent<Props, State> {
 					if (errors.includes('InvalidCaptcha')) {
 						this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
 					}
-					this.props.captcha.reset(this._captchaId);
 				});
 		}
 	};
@@ -80,11 +76,6 @@ export default class extends React.PureComponent<Props, State> {
 			passwordError: null,
 			showErrors: false
 		};
-	}
-	public componentDidMount() {
-		this.props.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, captcha.siteKeys.createAccount);
-		});
 	}
 	public render() {
 		return (
@@ -112,10 +103,6 @@ export default class extends React.PureComponent<Props, State> {
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
-				<div
-					className="captcha"
-					ref={this._setCaptchaElement}
-				></div>
 				<Button
 					busy={this.state.isSubmitting}
 					onClick={this._submit}

@@ -1,10 +1,13 @@
 import Captcha from '../common/Captcha';
 
+interface ReCaptchaV3 {
+	execute: (siteKey: string, options: { action: string }) => Promise<string>
+}
 export default class extends Captcha {
 	private readonly _verifyCaptcha: boolean;
-	private _captcha: ReCaptchaV2.ReCaptcha | null = null;
+	private _captcha: ReCaptchaV3 | null = null;
 	private readonly _resolvers: ((captcha: this) => void)[] = [];
-	constructor(verifyCaptcha: boolean, registerOnLoadHandler: (handler: (captcha: ReCaptchaV2.ReCaptcha) => void) => void) {
+	constructor(verifyCaptcha: boolean, registerOnLoadHandler: (handler: (captcha: ReCaptchaV3) => void) => void) {
 		super();
 		this._verifyCaptcha = verifyCaptcha;
 		if (verifyCaptcha) {
@@ -16,11 +19,11 @@ export default class extends Captcha {
 			});
 		}
 	}
-	public getResponse(id: number) {
+	public execute(action: string) {
 		if (this._captcha) {
-			return this._captcha.getResponse(id);
+			return this._captcha.execute('6Lejf38UAAAAALcvA6u_JvImVdjfqS2TF71IstNl', { action });
 		}
-		return '';
+		return Promise.resolve('');
 	}
 	public onReady() {
 		if (this._captcha || !this._verifyCaptcha) {
@@ -29,16 +32,5 @@ export default class extends Captcha {
 		return new Promise<this>((resolve, reject) => {
 			this._resolvers.push(resolve);
 		});
-	}
-	public render(container: HTMLElement, siteKey: string) {
-		if (this._captcha) {
-			return this._captcha.render(container, { sitekey: siteKey });
-		}
-		return 0;
-	}
-	public reset(id: number) {
-		if (this._captcha) {
-			this._captcha.reset(id);
-		}
 	}
 }

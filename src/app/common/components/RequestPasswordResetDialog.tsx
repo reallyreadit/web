@@ -13,11 +13,6 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	emailError?: string
 }> {
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
-	private _captchaElement: HTMLDivElement | null = null;
-	private readonly _setCaptchaElement = (ref: HTMLDivElement) => {
-		this._captchaElement = ref;
-	};
-	private _captchaId: number | null = null;
 	constructor(props: Props & DialogProps) {
 		super(
 			{
@@ -40,21 +35,20 @@ export default class extends Dialog<void, Props, Partial<State> & {
 				error={this.state.emailError}
 				showError={this.state.showErrors}
 				onChange={this._handleEmailChange}
-			/>,
-			<div
-				key="captcha"
-				ref={this._setCaptchaElement}
-			></div>
+			/>
 		];
 	}
 	protected getClientErrors() {
 		return [{ email: this.state.emailError }];
 	}
 	protected submitForm() {
-		return this.props.onRequestPasswordReset(
-			this.state.email,
-			this.props.captcha.getResponse(this._captchaId)
-		);
+		return this.props.captcha
+			.onReady()
+			.then(captcha => captcha.execute('requestPasswordReset'))
+			.then(captchaResponse => this.props.onRequestPasswordReset(
+				this.state.email,
+				captchaResponse
+			));
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'UserAccountNotFound')) {
@@ -66,11 +60,5 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		if (errors.some(error => error === 'InvalidCaptcha')) {
 			this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
 		}
-		this.props.captcha.reset(this._captchaId);
-	}
-	public componentDidMount() {
-		this.props.captcha.onReady().then(captcha => {
-			this._captchaId = captcha.render(this._captchaElement, this.props.captcha.siteKeys.forgotPassword);
-		});
 	}
 }
