@@ -7,6 +7,7 @@ export default (model: {
 	enableAnalytics: boolean,
 	extensionId: string,
 	initData: InitData,
+	iosAppId: string,
 	title: string
 }) => {
 	let viewportMetaElement: string;
@@ -33,9 +34,8 @@ export default (model: {
 		<!-- End Google Analytics -->
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
-		${model.initData.clientType === ClientType.Browser ?
-			'<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">' :
-			''}
+		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
+		<meta name="apple-itunes-app" content="app-id=${model.iosAppId}" />
 		<title>${model.title}</title>
 	</head>
 	<body>

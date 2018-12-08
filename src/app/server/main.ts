@@ -325,6 +325,7 @@ server = server.get('/*', (req, res) => {
 				userAccount: req.sessionState.userAccount,
 				version: version.app
 			},
+			iosAppId: config.iosAppId,
 			title: browserApi.getTitle()
 		}));
 	});
