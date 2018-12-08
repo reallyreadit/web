@@ -51,7 +51,6 @@ class BrowserHistoryScreen extends React.Component<Props, State> {
 				updateArticles.call(this, updatedArticle);
 			}),
 			props.onRegisterUserChangeHandler(user => {
-				this._asyncTracker.cancelAll();
 				if (user) {
 					this._loadPage(1);
 				} else {

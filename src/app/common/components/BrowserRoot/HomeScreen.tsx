@@ -50,7 +50,6 @@ class HomeScreen extends React.Component<Props, State> {
 				updateHotTopics.call(this, updatedArticle, isCompletionCommit);
 			}),
 			props.onRegisterUserChangeHandler(() => {
-				this._asyncTracker.cancelAll();
 				this._loadPage(1);
 			})
 		);
