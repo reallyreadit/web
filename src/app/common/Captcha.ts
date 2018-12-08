@@ -1,4 +1,5 @@
 export default abstract class {
 	public abstract execute(action: string): Promise<string>;
-	public abstract onReady(): Promise<this>;
+	public abstract hideBadge(): void;
+	public abstract showBadge(): void;
 }

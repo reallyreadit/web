@@ -18,3 +18,12 @@ a, button, span, svg {
 a {
 	color: black;
 }
+html > body > div:not(#root) {
+	position: relative;
+	z-index: 100;
+	transform: translateX(75px);
+	transition: transform 200ms;
+}
+html > body.show-captcha > div:not(#root) {
+	transform: translateX(0);
+}

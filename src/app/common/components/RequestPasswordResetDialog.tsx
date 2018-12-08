@@ -43,8 +43,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	}
 	protected submitForm() {
 		return this.props.captcha
-			.onReady()
-			.then(captcha => captcha.execute('requestPasswordReset'))
+			.execute('requestPasswordReset')
 			.then(captchaResponse => this.props.onRequestPasswordReset(
 				this.state.email,
 				captchaResponse
@@ -60,5 +59,11 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		if (errors.some(error => error === 'InvalidCaptcha')) {
 			this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
 		}
+	}
+	public componentDidMount() {
+		this.props.captcha.showBadge();
+	}
+	public componentWillUnmount() {
+		this.props.captcha.hideBadge();
 	}
 }

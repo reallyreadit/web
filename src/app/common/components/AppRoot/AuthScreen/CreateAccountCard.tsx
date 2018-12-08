@@ -24,6 +24,10 @@ interface State {
 	showErrors: boolean
 }
 export default class extends React.PureComponent<Props, State> {
+	private readonly _cancel = () => {
+		this.props.captcha.hideBadge();
+		this.props.onCancel();
+	};
 	private readonly _changeName = (name: string, nameError: string) => {
 		this.setState({ name, nameError });
 	};
@@ -42,8 +46,7 @@ export default class extends React.PureComponent<Props, State> {
 		) {
 			this.setState({ isSubmitting: true });
 			this.props.captcha
-				.onReady()
-				.then(captcha => captcha.execute('createAccount'))
+				.execute('createUserAccount')
 				.then(captchaResponse => this.props.onCreateAccount(
 					this.state.name,
 					this.state.email,
@@ -77,6 +80,12 @@ export default class extends React.PureComponent<Props, State> {
 			showErrors: false
 		};
 	}
+	public componentDidMount() {
+		this.props.captcha.showBadge();
+	}
+	public componentWillUnmount() {
+		this.props.captcha.hideBadge();
+	}
 	public render() {
 		return (
 			<div className="create-account-card">
@@ -109,7 +118,7 @@ export default class extends React.PureComponent<Props, State> {
 					style="loud"
 					text="Sign Up"
 				/>
-				<ActionLink onClick={this.props.onCancel} text="Cancel" />
+				<ActionLink onClick={this._cancel} text="Cancel" />
 			</div>
 		)
 	}

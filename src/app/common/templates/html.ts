@@ -5,7 +5,6 @@ import ClientType from '../ClientType';
 export default (model: {
 	content: string,
 	enableAnalytics: boolean,
-	enableCaptcha: boolean,
 	extensionId: string,
 	initData: InitData,
 	title: string
@@ -46,9 +45,9 @@ export default (model: {
 			window.initData = ${JSON.stringify(model.initData)};
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
-		${model.enableCaptcha ?
-			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=explicit'></script>` :
-			`<!-- captcha disabled in dev mode -->`}
+		${model.initData.captchaSiteKey ?
+			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=${model.initData.captchaSiteKey}'></script>` :
+			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`
 	);

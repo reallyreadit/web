@@ -164,8 +164,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	}
 	protected submitForm() {
 		return this.props.captcha
-			.onReady()
-			.then(captcha => captcha.execute('shareArticle'))
+			.execute('shareArticle')
 			.then(captchaResponse => this.props.onShareArticle(
 				this.state.article.value.id,
 				this.state.addresses.map(field => field.value),
@@ -184,7 +183,11 @@ export default class extends Dialog<void, Props, Partial<State> & {
 		}
 		this.props.onShowToast(errorMessage, Intent.Danger);
 	}
+	public componentDidMount() {
+		this.props.captcha.showBadge();
+	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
+		this.props.captcha.hideBadge();
 	}
 }

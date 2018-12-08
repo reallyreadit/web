@@ -314,16 +314,15 @@ server = server.get('/*', (req, res) => {
 		res.send(renderHtml({
 			content,
 			enableAnalytics: config.enableAnalytics,
-			enableCaptcha: config.enableCaptcha,
 			extensionId: config.extensionId,
 			initData: {
+				captchaSiteKey: config.captchaSiteKey,
 				clientType,
 				extensionId: config.extensionId,
 				newReplyNotification: req.sessionState.newReplyNotification,
 				initialLocation: rootProps.initialLocation,
 				serverApi: req.api.getInitData(),
 				userAccount: req.sessionState.userAccount,
-				verifyCaptcha: config.enableCaptcha,
 				version: version.app
 			},
 			title: browserApi.getTitle()

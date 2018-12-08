@@ -29,10 +29,10 @@ const serverApi = new ServerApi(window.initData.serverApi);
 
 const rootProps = {
 	captcha: new Captcha(
-		window.initData.verifyCaptcha,
+		window.initData.captchaSiteKey,
 		onLoadHandler => {
 			window.onReCaptchaLoaded = () => {
-				onLoadHandler(grecaptcha);
+				onLoadHandler(window.grecaptcha);
 			};
 		}
 	),
