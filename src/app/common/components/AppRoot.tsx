@@ -110,6 +110,11 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				}
 			});
 		}
+		if (this.state.user &&  !this.state.user.isEmailConfirmed && !window.document.hidden) {
+			this.props.serverApi.getUserAccount(result => {
+				this.setState({ user: result.value });
+			});
+		}
 	};
 	private readonly _reloadWindow = () => {
 		window.location.reload(true);
