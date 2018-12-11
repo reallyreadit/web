@@ -1,10 +1,14 @@
 const styleContent = `
 html {
-	font-family: sans-serif;
+	font-family: serif;
+	font-size: 16pt;
+	line-height: 1.5em;
+	background-color: ivory;
+	color: #333;
 }
 body {
 	margin: 10px auto;
-	padding: 0 10px 120px 10px;
+	padding: 0 10px 100px 10px;
 	max-width: 600px;
 }
 body * {
@@ -13,8 +17,15 @@ body * {
 img {
 	height: auto !important;
 }
+#rrit-title {
+	font-size: 20pt;
+	font-family: sans-serif;
+	line-height: 1.25em;
+	margin: 20px 0 10px 0;
+}
 #rrit-byline {
-	margin: 0.8em 0;
+	font-style: italic;
+	margin-bottom: 20px;
 }
 `;
 
