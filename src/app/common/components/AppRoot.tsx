@@ -252,6 +252,12 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			'/' + createQueryString({ [clientTypeQueryStringKey]: ClientType.App })
 		);
 		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
+		// iOS keyboard scroll bug
+		window.setTimeout(() => {
+			if (window.scrollY !== 0) {
+				window.scrollTo(0, 0);
+			}
+		}, 100);
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

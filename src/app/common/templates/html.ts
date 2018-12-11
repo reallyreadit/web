@@ -1,6 +1,5 @@
 import icons from '../../../common/svg/icons';
 import InitData from '../InitData';
-import ClientType from '../ClientType';
 
 export default (model: {
 	content: string,
@@ -9,23 +8,12 @@ export default (model: {
 	initData: InitData,
 	iosAppId: string,
 	title: string
-}) => {
-	let viewportMetaElement: string;
-	switch (model.initData.clientType) {
-		case ClientType.App:
-			// workaround for iOS 12 webview viewport keyboard positioning bug
-			viewportMetaElement = '<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">';
-			break;
-		case ClientType.Browser:
-			viewportMetaElement = '<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">';
-			break;
-	}
-	return (
+}) => (
 `<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		${viewportMetaElement}
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 		<!-- Google Analytics -->
 		<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;</script>
 		${model.enableAnalytics ?
@@ -50,5 +38,4 @@ export default (model: {
 			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`
-	);
-}
+);

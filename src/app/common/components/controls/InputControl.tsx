@@ -25,7 +25,20 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 		autoFocus: false,
 		required: false
 	};
-	private _handleBlur = () => this.setState({ isEditing: false });
+	private _handleFocus = () => {
+		// iOS keyboard scroll bug
+		window.isFocusedOnField = true;
+	};
+	private _handleBlur = () => {
+		this.setState({ isEditing: false });
+		// iOS keyboard scroll bug
+		window.isFocusedOnField = false;
+		window.setTimeout(() => {
+			if (!window.isFocusedOnField && window.scrollY !== 0) {
+				window.scrollTo(0, 0);
+			}
+		}, 100);
+	};
 	private _handleChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		this.setState({ isEditing: true });
 		this.props.onChange(e.currentTarget.value, this._validate(e.currentTarget.value));
@@ -75,6 +88,7 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 			autoFocus: this.props.autoFocus,
 			value: this.props.value,
 			onChange: this._handleChange,
+			onFocus: this._handleFocus,
 			onBlur: this._handleBlur
 		};
 		return (
