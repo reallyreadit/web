@@ -110,11 +110,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				}
 			});
 		}
-		if (this.state.user &&  !this.state.user.isEmailConfirmed && !window.document.hidden) {
-			this.props.serverApi.getUserAccount(result => {
-				this.setState({ user: result.value });
-			});
-		}
 	};
 	private readonly _reloadWindow = () => {
 		window.location.reload(true);
@@ -150,7 +145,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments

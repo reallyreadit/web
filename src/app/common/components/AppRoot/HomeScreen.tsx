@@ -9,7 +9,6 @@ import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
-import EmailConfirmationInfoBox from '../EmailConfirmationInfoBox';
 import { Screen, SharedState } from '../Root';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import produce from 'immer';
@@ -20,7 +19,6 @@ interface Props {
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => Function,
-	onResendConfirmationEmail: () => Promise<void>,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -74,16 +72,11 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<div className="home-screen_an7vm5">
-				<EmailConfirmationInfoBox
-					onResendConfirmationEmail={this.props.onResendConfirmationEmail}
-					user={this.props.user}
-				/>
 				{this.state.hotTopics.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
 						{(
 							this.props.user &&
-							this.props.user.isEmailConfirmed &&
 							!this.state.hotTopics.value.userStats
 						) ?
 							<WelcomeInfoBox /> :

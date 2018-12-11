@@ -242,7 +242,6 @@ export default abstract class Root <
 		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse, DateTime.local().zoneName)
 			.then(userAccount => {
-				this._addToast(<>Welcome to reallyread.it!<br />Please check your email and confirm your address.</>, Intent.Success);
 				ga('send', {
 					hitType: 'event',
 					eventCategory: 'UserAccount',

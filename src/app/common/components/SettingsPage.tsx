@@ -8,12 +8,12 @@ import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
-import ResendConfirmationEmailActionLink from './controls/ResendConfirmationEmailActionLink';
 import { Intent } from './Toaster';
 import { Screen, SharedState } from './Root';
 import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
+import AsyncActionLink from './controls/AsyncActionLink';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -110,8 +110,10 @@ class SettingsPage extends React.PureComponent<Props> {
 								<Icon name="exclamation" />
 								Not Confirmed
 								<Separator />
-								<ResendConfirmationEmailActionLink
-									onResend={this.props.onResendConfirmationEmail}
+								<AsyncActionLink
+									icon="email"
+									onClick={this.props.onResendConfirmationEmail}
+									text="Resend confirmation email"
 								/>
 							</div>}
 					</li>

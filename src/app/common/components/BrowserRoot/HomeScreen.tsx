@@ -9,7 +9,6 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../AsyncTracker';
 import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
-import EmailConfirmationInfoBox from '../EmailConfirmationInfoBox';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
 import PromoCarousel from '../PromoCarousel';
@@ -24,7 +23,6 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onResendConfirmationEmail: () => Promise<void>,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -68,10 +66,6 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<div className="home-screen_1sjipy">
-				<EmailConfirmationInfoBox
-					onResendConfirmationEmail={this.props.onResendConfirmationEmail}
-					user={this.props.user}
-				/>
 				{this.props.user && this.props.isExtensionInstalled === false ?
 					<ReadReadinessInfoBox
 						isBrowserCompatible={this.props.isBrowserCompatible}
@@ -91,7 +85,6 @@ class HomeScreen extends React.Component<Props, State> {
 					<>
 						{(
 							this.props.user &&
-							this.props.user.isEmailConfirmed &&
 							this.props.isExtensionInstalled &&
 							!this.state.hotTopics.value.userStats
 						 ) ?
