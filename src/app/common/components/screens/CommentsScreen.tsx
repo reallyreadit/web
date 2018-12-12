@@ -12,7 +12,7 @@ import AsyncTracker from '../../AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
-import Location from '../../../../common/routing/Location';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
@@ -24,7 +24,7 @@ function findComment(id: number, comment: Comment) {
 	}
 	return match;
 }
-export function getPathParams(location: Location) {
+export function getPathParams(location: RouteLocation) {
 	const matches = location.path.match(findRouteByLocation(routes, location).pathRegExp);
 	if (location.path.startsWith('/articles')) {
 		return {
@@ -42,7 +42,7 @@ export function getPathParams(location: Location) {
 }
 interface Props {
 	article: Fetchable<UserArticle>,
-	location: Location,
+	location: RouteLocation,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,

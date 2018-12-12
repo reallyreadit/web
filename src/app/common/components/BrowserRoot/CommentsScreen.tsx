@@ -11,7 +11,7 @@ import AsyncTracker from '../../AsyncTracker';
 
 interface Props {
 	article: Fetchable<UserArticle>
-	location: Location,
+	location: RouteLocation,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -77,7 +77,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 		});
 	};
 	return {
-		create: (location: Location) => {
+		create: (location: RouteLocation) => {
 			const article = deps.onGetArticle({ slug: getPathParams(location).slug }, article => {
 				setScreenState({
 					componentState: article,
