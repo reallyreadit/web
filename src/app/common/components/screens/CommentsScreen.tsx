@@ -6,13 +6,13 @@ import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import CommentList from '../controls/comments/CommentList';
 import CommentBox from '../controls/comments/CommentBox';
-import { findRouteByKey } from '../../../../common/routing/Route';
+import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
-import ScreenKey from '../../../../common/routing/ScreenKey';
 import AsyncTracker from '../../AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
+import Location from '../../../../common/routing/Location';
 
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
@@ -24,21 +24,30 @@ function findComment(id: number, comment: Comment) {
 	}
 	return match;
 }
-export function getPathParams(path: string) {
-	const [, sourceSlug, articleSlug, commentId] = path.match(findRouteByKey(routes, ScreenKey.Comments).pathRegExp);
-	return {
-		commentId,
-		slug: sourceSlug + '_' + articleSlug
+export function getPathParams(location: Location) {
+	const matches = location.path.match(findRouteByLocation(routes, location).pathRegExp);
+	if (location.path.startsWith('/articles')) {
+		return {
+			commentId: matches[3],
+			slug: matches[1] + '_' + matches[2]
+		};
 	}
+	if (location.path.startsWith('/proof')) {
+		return {
+			slug: matches[2] + '_' + matches[3],
+			userName: matches[1]
+		}
+	}
+	throw new Error('Unexpected path');
 }
 interface Props {
-	article: Fetchable<UserArticle>
+	article: Fetchable<UserArticle>,
+	location: Location,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	path: string,
 	user: UserAccount | null
 }
 export default class extends React.Component<
@@ -72,7 +81,7 @@ export default class extends React.Component<
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadComments = () => {
 		return this.props.onGetComments(
-			{ slug: getPathParams(this.props.path).slug },
+			{ slug: getPathParams(this.props.location).slug },
 			this._asyncTracker.addCallback(comments => { this.setState({ comments }); })
 		);
 	};
@@ -89,12 +98,16 @@ export default class extends React.Component<
 	public render() {
 		const
 			isUserSignedIn = !!this.props.user,
-			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead;
+			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead,
+			pathParams = getPathParams(this.props.location);
 		return (
 			<div className="comments-screen_udh2l6">
 				{this.props.article.isLoading || this.state.comments.isLoading ?
 					<LoadingOverlay /> :
 					<>
+						{pathParams.userName ?
+							<div>{pathParams.userName} really read this article!</div> :
+							null}
 						<ArticleList>
 							{this.props.article.value ?
 								<li>
@@ -119,7 +132,7 @@ export default class extends React.Component<
 							this.state.comments.value.length ?
 								<CommentList
 									comments={this.state.comments.value}
-									highlightedCommentId={parseInt(getPathParams(this.props.path).commentId)}
+									highlightedCommentId={parseInt(pathParams.commentId)}
 									isAllowedToPost={isAllowedToPost}
 									mode="reply"
 									onPostComment={this._addReply}

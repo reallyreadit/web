@@ -92,6 +92,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.PrivacyPolicy
 	},
 	{
+		createUrl: params => `/proof/${params['userName']}/${params['sourceSlug']}/${params['articleSlug']}`,
+		pathRegExp: /^\/proof\/([^/]+)\/([^/]+)\/([^/]+)$/,
+		screenKey: ScreenKey.Proof
+	},
+	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',
 		pathRegExp: /^\/settings$/,

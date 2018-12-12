@@ -11,6 +11,7 @@ import AsyncTracker from '../../AsyncTracker';
 
 interface Props {
 	article: Fetchable<UserArticle>
+	location: Location,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -19,7 +20,6 @@ interface Props {
 	onSetScreenState: (state: Partial<Screen<Fetchable<UserArticle>>>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	path: string,
 	user: UserAccount | null
 }
 class AppCommentsScreen extends React.Component<Props> {
@@ -46,18 +46,18 @@ class AppCommentsScreen extends React.Component<Props> {
 		return (
 			<CommentsScreen
 				article={this.props.article}
+				location={this.props.location}
 				onGetComments={this.props.onGetComments}
 				onPostComment={this.props.onPostComment}
 				onReadArticle={this.props.onReadArticle}
 				onShareArticle={this.props.onShareArticle}
 				onToggleArticleStar={this.props.onToggleArticleStar}
-				path={this.props.path}
 				user={this.props.user}
 			/>
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'onReloadArticle' | 'onSetScreenState' | 'path' | 'user'>> & {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'onReloadArticle' | 'onSetScreenState' | 'user'>> & {
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onSetScreenState: (key: TScreenKey, state: Partial<Screen<Fetchable<UserArticle>>>) => void
 };
@@ -74,7 +74,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 	};
 	return {
 		create: (location: Location) => {
-			const article = deps.onGetArticle({ slug: getPathParams(location.path).slug }, article => {
+			const article = deps.onGetArticle({ slug: getPathParams(location).slug }, article => {
 				setScreenState({
 					componentState: article,
 					title: article.value.title
@@ -90,6 +90,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => (
 			<AppCommentsScreen
 				article={state.componentState}
+				location={state.location}
 				onGetComments={deps.onGetComments}
 				onPostComment={deps.onPostComment}
 				onReadArticle={deps.onReadArticle}
@@ -98,7 +99,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onSetScreenState={setScreenState}
 				onShareArticle={deps.onShareArticle}
 				onToggleArticleStar={deps.onToggleArticleStar}
-				path={state.location.path}
 				user={sharedState.user}
 			/>
 		)

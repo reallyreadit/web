@@ -119,18 +119,19 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		super(props);
 
 		// screens
+		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
+			onGetArticle: this.props.serverApi.getArticle,
+			onGetComments: this.props.serverApi.getComments,
+			onPostComment: this._postComment,
+			onReadArticle: this._readArticle,
+			onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+			onSetScreenState: this._setScreenState,
+			onShareArticle: this._shareArticle,
+			onToggleArticleStar: this._toggleArticleStar
+		});
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
-			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
-				onGetArticle: this.props.serverApi.getArticle,
-				onGetComments: this.props.serverApi.getComments,
-				onPostComment: this._postComment,
-				onReadArticle: this._readArticle,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onSetScreenState: this._setScreenState,
-				onShareArticle: this._shareArticle,
-				onToggleArticleStar: this._toggleArticleStar
-			}),
+			[ScreenKey.Comments]: commentsScreenFactory,
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
@@ -153,6 +154,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onGetStats: this.props.serverApi.getUserStats,
 			}),
+			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,

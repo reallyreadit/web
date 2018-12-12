@@ -253,6 +253,10 @@ server = server.get('/inbox', (req, res, next) => {
 		next();
 	}
 });
+// verify proof
+server = server.get('/proof', (req, res, next) => {
+	
+});
 // render matched route or return 404
 server = server.use((req, res, next) => {
 	if (findRouteByRequest(req)) {
