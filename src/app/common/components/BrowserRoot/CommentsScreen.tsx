@@ -5,7 +5,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';
 import { Screen, SharedState } from '../Root';
-import Location from '../../../../common/routing/Location';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 import Comment from '../../../../common/models/Comment';
 import AsyncTracker from '../../AsyncTracker';
 
