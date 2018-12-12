@@ -2,7 +2,7 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { Intent } from './Toaster';
 import { Screen } from './Root';
-import Location from '../../../common/routing/Location';
+import RouteLocation from '../../../common/routing/RouteLocation';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -32,7 +32,7 @@ const resultMessages: {
 };
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: Location) => ({ key, location, title: 'Email Confirmation' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Email Confirmation' }),
 		render: (state: Screen) => (
 			<EmailConfirmationPage
 				result={

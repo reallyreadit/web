@@ -1,4 +1,4 @@
-import Location from './Location';
+import RouteLocation from './RouteLocation';
 import { parseQueryString } from './queryString';
 import UserAccountRole from '../models/UserAccountRole';
 
@@ -10,7 +10,7 @@ export interface Route<TDialogKey, TScreenKey> {
 	queryStringKeys?: string[],
 	screenKey: TScreenKey
 }
-export function findRouteByLocation<TDialogKey, TScreenKey>(routes: Route<TDialogKey, TScreenKey>[], location: Location, qsKeysToExclude?: string[]) {
+export function findRouteByLocation<TDialogKey, TScreenKey>(routes: Route<TDialogKey, TScreenKey>[], location: RouteLocation, qsKeysToExclude?: string[]) {
 	let matches = routes.filter(route => route.pathRegExp.test(location.path));
 	if (!matches) {
 		return null;

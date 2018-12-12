@@ -7,7 +7,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
-import Location from '../../../common/routing/Location';
+import RouteLocation from '../../../common/routing/RouteLocation';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
 import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
@@ -29,7 +29,7 @@ import AsyncTracker from '../AsyncTracker';
 
 export interface Props {
 	captcha: Captcha,
-	initialLocation: Location,
+	initialLocation: RouteLocation,
 	initialUser: UserAccount | null,
 	serverApi: ServerApi,
 	version: number
@@ -37,12 +37,12 @@ export interface Props {
 export interface Screen<T = any> {
 	componentState?: T,
 	key: ScreenKey,
-	location?: Location,
+	location?: RouteLocation,
 	title?: string,
 	titleContent?: React.ReactNode
 }
 export interface ScreenFactory<TRootState> {
-	create: (location: Location) => Screen,
+	create: (location: RouteLocation) => Screen,
 	render: (screenState: Screen, rootState: TRootState) => React.ReactNode,
 	renderHeaderContent?: (screenState: Screen, rootState: TRootState) => React.ReactNode
 }
@@ -117,7 +117,7 @@ export default abstract class Root <
 	protected readonly _closeDialog = () => {
 		this._openDialog(null);
 	};
-	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: Location) => React.ReactNode } = {
+	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: RouteLocation) => React.ReactNode } = {
 		[DialogKey.CreateAccount]: () => (
 			<CreateAccountDialog
 				captcha={this.props.captcha}
@@ -415,7 +415,7 @@ export default abstract class Root <
 		}
 		return { screen, url };
 	}
-	protected getLocationDependentState(location: Location) {
+	protected getLocationDependentState(location: RouteLocation) {
 		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
 		return {
 			dialog: route.dialogKey != null ?
