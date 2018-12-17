@@ -14,6 +14,7 @@ interface Props {
 	article: UserArticle,
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onDelete?: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (article: UserArticle) => void,
@@ -29,10 +30,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	private readonly _copyLink = () => {
 		if (this.props.article.isRead) {
 			this.props.onCopyTextToClipboard(
-				window.location.protocol +
-				'//' +
-				window.location.hostname +
-				findRouteByKey(routes, ScreenKey.Proof).createUrl({ 'token': this.props.article.proofToken }),
+				this.props.onCreateAbsoluteUrl(
+					findRouteByKey(routes, ScreenKey.Proof).createUrl({ 'token': this.props.article.proofToken })
+				),
 				'Link copied to clipboard'
 			);
 		}

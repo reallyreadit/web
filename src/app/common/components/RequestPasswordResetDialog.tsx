@@ -2,7 +2,7 @@ import * as React from 'react';
 import InputField from './controls/InputField';
 import Dialog, { Props as DialogProps, State } from './controls/Dialog';
 import Captcha from '../Captcha';
-import { Intent } from './Toaster';
+import { Intent } from '../../../common/components/Toaster';
 
 interface Props {
 	captcha: Captcha,

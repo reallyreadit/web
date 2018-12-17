@@ -4,7 +4,7 @@ import { FetchFunction } from '../../serverApi/ServerApi';
 import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../serverApi/Fetchable';
 import { DateTime } from 'luxon';
-import AsyncTracker from '../../AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 
 interface Props {
 	currentTimeZoneId: number | null,

@@ -30,6 +30,7 @@ export default class extends React.PureComponent<{
 	articles: Fetchable<PageResult<UserArticle>>,
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteArticle: (article: UserArticle) => void
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -57,6 +58,7 @@ export default class extends React.PureComponent<{
 											article={article}
 											isUserSignedIn={this.props.isUserSignedIn}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 											onDelete={this._deleteArticle}
 											onRead={this.props.onReadArticle}
 											onShare={this.props.onShareArticle}

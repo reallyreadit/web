@@ -5,8 +5,8 @@ import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserAccount from '../../../common/models/UserAccount';
-import { Intent } from './Toaster';
-import AsyncTracker from '../AsyncTracker';
+import { Intent } from '../../../common/components/Toaster';
+import AsyncTracker from '../../../common/AsyncTracker';
 import { Screen, SharedState } from './Root';
 
 interface Props {

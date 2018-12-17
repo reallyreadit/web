@@ -3,7 +3,7 @@ import Fetchable from '../serverApi/Fetchable';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';
-import AsyncTracker from '../AsyncTracker';
+import AsyncTracker from '../../../common/AsyncTracker';
 import { parseQueryString } from '../../../common/routing/queryString';
 import { Screen } from './Root';
 import RouteLocation from '../../../common/routing/RouteLocation';

@@ -5,7 +5,7 @@ import PasswordField from '../../controls/authentication/PasswordField';
 import Button from './Button';
 import UsernameField from '../../controls/authentication/UsernameField';
 import ActionLink from '../../../../../common/components/ActionLink';
-import { Intent } from '../../Toaster';
+import { Intent } from '../../../../../common/components/Toaster';
 
 export interface Props {
 	captcha: Captcha,

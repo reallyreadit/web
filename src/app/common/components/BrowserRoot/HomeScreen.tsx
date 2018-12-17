@@ -6,7 +6,7 @@ import HotTopics from '../../../../common/models/HotTopics';
 import HotTopicsList, { updateHotTopics } from '../controls/articles/HotTopicsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import AsyncTracker from '../../AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
@@ -18,6 +18,7 @@ interface Props {
 	isBrowserCompatible: boolean,
 	isExtensionInstalled: boolean | null,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
@@ -96,6 +97,7 @@ class HomeScreen extends React.Component<Props, State> {
 							articles={this.state.hotTopics.value.articles}
 							isUserSignedIn={!!this.props.user}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onReadArticle={this.props.onReadArticle}
 							onShareArticle={this.props.onShareArticle}
 							onToggleArticleStar={this.props.onToggleArticleStar}

@@ -7,9 +7,9 @@ import ActionLink from '../../../common/components/ActionLink';
 import Icon from '../../../common/components/Icon';
 import UserArticle from '../../../common/models/UserArticle';
 import Captcha from '../Captcha';
-import { Intent } from './Toaster';
+import { Intent } from '../../../common/components/Toaster';
 import Fetchable from '../serverApi/Fetchable';
-import AsyncTracker from '../AsyncTracker';
+import AsyncTracker from '../../../common/AsyncTracker';
 import { formatFetchable } from '../../../common/format';
 import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 

@@ -8,7 +8,7 @@ import EditNotificationsDialog from './SettingsPage/EditNotificationsDialog';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
-import { Intent } from './Toaster';
+import { Intent } from '../../../common/components/Toaster';
 import { Screen, SharedState } from './Root';
 import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';

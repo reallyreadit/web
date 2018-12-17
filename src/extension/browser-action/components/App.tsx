@@ -10,9 +10,14 @@ import routes from '../../../common/routing/routes';
 import { findRouteByKey } from '../../../common/routing/Route';
 import DialogKey from '../../../common/routing/DialogKey';
 import UserArticle from '../../../common/models/UserArticle';
+import Toaster, { Toast } from '../../../common/components/Toaster';
+import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
+import ClipboardService from '../../../common/services/ClipboardService';
+import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
+import AsyncTracker from '../../../common/AsyncTracker';
 
-export default class extends React.Component<{}, ExtensionState> {
-	private _openInNewTab = (path: string) => window.open(`${config.web.protocol}://${config.web.host}${path}`, '_blank');
+export default class extends React.Component<{}, ExtensionState & { toasts: Toast[] }> {
+	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
 	private _showSignInDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.SignIn).createUrl());
 	private _showCreateAccountDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.CreateAccount).createUrl());
 	private _goToInbox = () => (
@@ -45,6 +50,23 @@ export default class extends React.Component<{}, ExtensionState> {
 		e.preventDefault();
 	};
 	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
+
+	// clipboard
+	private readonly _clipboard = new ClipboardService((content, intent) => {
+		this._toaster.addToast(content, intent);
+	});
+
+	// routing
+	private readonly _createAbsoluteUrl = (path: string) => `${config.web.protocol}://${config.web.host}${path}`;
+
+	// toasts
+	private readonly _toaster = new ToasterService({
+		asyncTracker: new AsyncTracker(),
+		setState: (state: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
+			this.setState(state);
+		}
+	});
+
 	constructor(props: {}) {
 		super(props);
 		this.state = {
@@ -52,6 +74,7 @@ export default class extends React.Component<{}, ExtensionState> {
 			isOnHomePage: false,
 			showNewReplyIndicator: false,
 			focusedTab: null,
+			toasts: [],
 			userArticle: null
 		};
 		this._eventPageApi
@@ -75,7 +98,7 @@ export default class extends React.Component<{}, ExtensionState> {
 				</div> :
 				<div className="app">
 					<h1>
-						<a href={`${config.web.protocol}://${config.web.host}`} target="_blank" dangerouslySetInnerHTML={{ __html: logoText }}></a>
+						<a href={this._createAbsoluteUrl('/')} target="_blank" dangerouslySetInnerHTML={{ __html: logoText }}></a>
 					</h1>
 					{!this.state.isAuthenticated ?
 						<div className="signed-out-warning">
@@ -98,6 +121,8 @@ export default class extends React.Component<{}, ExtensionState> {
 							<ArticleDetails
 								article={this.state.userArticle}
 								isUserSignedIn={true}
+								onCopyTextToClipboard={this._clipboard.copyText}
+								onCreateAbsoluteUrl={this._createAbsoluteUrl}
 								onRead={this._preventDefault}
 								onShare={this._showShareDialog}
 								onToggleStar={this._toggleStar}
@@ -107,6 +132,11 @@ export default class extends React.Component<{}, ExtensionState> {
 								No article found on page
 							</div> :
 						null}
+					<Toaster
+						onRemoveToast={this._toaster.removeToast}
+						toasts={this.state.toasts}
+					/>
+					<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
 				</div>
 		);
 	}

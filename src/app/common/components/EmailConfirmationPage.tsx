@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { Intent } from './Toaster';
+import { Intent } from '../../../common/components/Toaster';
 import { Screen } from './Root';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import { findRouteByKey } from '../../../common/routing/Route';

@@ -8,7 +8,7 @@ import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import AsyncTracker from '../../AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen, SharedState } from '../Root';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import produce from 'immer';
@@ -16,6 +16,7 @@ import WelcomeInfoBox from '../WelcomeInfoBox';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -87,6 +88,7 @@ class HomeScreen extends React.Component<Props, State> {
 							articles={this.state.hotTopics.value.articles}
 							isUserSignedIn={!!this.props.user}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onReadArticle={this.props.onReadArticle}
 							onShareArticle={this.props.onShareArticle}
 							onToggleArticleStar={this.props.onToggleArticleStar}

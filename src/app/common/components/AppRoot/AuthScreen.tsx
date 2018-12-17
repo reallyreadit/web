@@ -4,7 +4,7 @@ import SignInCard from './AuthScreen/SignInCard';
 import Captcha from '../../Captcha';
 import classNames from 'classnames';
 import CreateAccountCard from './AuthScreen/CreateAccountCard';
-import { Intent } from '../Toaster';
+import { Intent } from '../../../../common/components/Toaster';
 import Button from './AuthScreen/Button';
 import PromoCarousel from '../PromoCarousel';
 

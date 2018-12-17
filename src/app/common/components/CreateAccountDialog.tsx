@@ -4,7 +4,7 @@ import EmailAddressField from './controls/authentication/EmailAddressField';
 import PasswordField from './controls/authentication/PasswordField';
 import UsernameField from './controls/authentication/UsernameField';
 import Captcha from '../../server/Captcha';
-import { Intent } from './Toaster';
+import { Intent } from '../../../common/components/Toaster';
 
 interface Props {
 	captcha: Captcha,

@@ -3,7 +3,7 @@ import Fetchable from '../../serverApi/Fetchable';
 import UserStats from '../../../../common/models/UserStats';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
-import AsyncTracker from '../../AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, SharedState } from '../Root';
 import Leaderboards from '../../../../common/models/Leaderboards';

@@ -3,13 +3,14 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import AsyncTracker from '../../AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
 import { Screen, SharedState } from '../Root';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteArticle: (article: UserArticle) => void,
 	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -57,6 +58,7 @@ class AppHistoryScreen extends React.Component<Props, State> {
 				articles={this.state.articles}
 				isUserSignedIn={!!this.props.user}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onDeleteArticle={this.props.onDeleteArticle}
 				onLoadPage={this._loadPage}
 				onReadArticle={this.props.onReadArticle}

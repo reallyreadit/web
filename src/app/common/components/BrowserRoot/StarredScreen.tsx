@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import AsyncTracker from '../../AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
 import { Screen, SharedState } from '../Root';
@@ -11,6 +11,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
@@ -82,6 +83,7 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 						articles={this.state.articles.value}
 						isUserSignedIn={!!this.props.user}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onLoadPage={this._loadPage}
 						onReadArticle={this.props.onReadArticle}
 						onShareArticle={this.props.onShareArticle}

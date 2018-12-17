@@ -2,7 +2,7 @@ import * as React from 'react';
 import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 import Fetchable from '../../serverApi/Fetchable';
 import ActionLink from '../../../../common/components/ActionLink';
-import { Intent } from '../Toaster';
+import { Intent } from '../../../../common/components/Toaster';
 
 interface Props {
 	onGetLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
