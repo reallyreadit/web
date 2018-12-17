@@ -14,6 +14,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import VerificationTokenData from '../../../../common/models/VerificationTokenData';
+import { clientTypeQueryStringKey } from '../../../../common/routing/queryString';
 
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
@@ -26,7 +27,7 @@ function findComment(id: number, comment: Comment) {
 	return match;
 }
 export function getPathParams(location: RouteLocation) {
-	const params = findRouteByLocation(routes, location).getPathParams(location.path);
+	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey]).getPathParams(location.path);
 	if ('token' in params) {
 		return {
 			proofToken: params['token']
