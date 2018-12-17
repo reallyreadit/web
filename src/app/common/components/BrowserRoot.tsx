@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Header from './BrowserRoot/Header';
-import Toaster, { Intent } from './Toaster';
+import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
@@ -121,7 +121,8 @@ export default class extends Root<Props, State, SharedState> {
 
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
-			onCopyTextToClipboard: this._copyTextToClipboard,
+			onCopyTextToClipboard: this._clipboard.copyText,
+			onCreateAbsoluteUrl: this._createAbsoluteUrl,
 			onGetArticle: this.props.serverApi.getArticle,
 			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
@@ -137,7 +138,8 @@ export default class extends Root<Props, State, SharedState> {
 			...this._screenFactoryMap,
 			[ScreenKey.Comments]: commentsScreenFactory,
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
-				onCopyTextToClipboard: this._copyTextToClipboard,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
@@ -149,7 +151,8 @@ export default class extends Root<Props, State, SharedState> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
-				onCopyTextToClipboard: this._copyTextToClipboard,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onInstallExtension: this._installExtension,
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
@@ -168,7 +171,8 @@ export default class extends Root<Props, State, SharedState> {
 			}),
 			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
-				onCopyTextToClipboard: this._copyTextToClipboard,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -249,7 +253,7 @@ export default class extends Root<Props, State, SharedState> {
 	private setUpdateAvailable() {
 		this._isUpdateAvailable = true;
 		this.stopUpdateCheckInterval();
-		this._addToast(
+		this._toaster.addToast(
 			<UpdateToast onReloadWindow={this._reloadWindow} />,
 			Intent.Success,
 			false
@@ -356,7 +360,7 @@ export default class extends Root<Props, State, SharedState> {
 					null}
 				<DialogManager dialog={this.state.dialog} />
 				<Toaster
-					onRemoveToast={this._removeToast}
+					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
 				/>
 			</>

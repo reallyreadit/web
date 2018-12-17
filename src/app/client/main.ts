@@ -39,7 +39,8 @@ const rootProps = {
 	initialLocation: window.initData.initialLocation,
 	initialUser: window.initData.userAccount,
 	serverApi,
-	version: window.initData.version
+	version: window.initData.version,
+	webServerEndpoint: window.initData.webServerEndpoint
 };
 let rootElement: React.ReactElement<any>;
 switch (window.initData.clientType) {

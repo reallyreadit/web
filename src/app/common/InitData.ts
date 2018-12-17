@@ -3,6 +3,7 @@ import UserAccount from '../../common/models/UserAccount';
 import ClientType from './ClientType';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
 import RouteLocation from '../../common/routing/RouteLocation';
+import HttpEndpoint from '../../common/HttpEndpoint';
 
 export default interface InitData {
 	captchaSiteKey: string | null,
@@ -12,5 +13,6 @@ export default interface InitData {
 	newReplyNotification: NewReplyNotification,
 	serverApi: ServerApiInitData,
 	userAccount: UserAccount,
-	version: number
+	version: number,
+	webServerEndpoint: HttpEndpoint
 }

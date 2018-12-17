@@ -1,7 +1,7 @@
 import * as React from 'react';
 import UserAccount from '../../../common/models/UserAccount';
 import Captcha from '../Captcha';
-import { Toast, Intent } from './Toaster';
+import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
 import Comment from '../../../common/models/Comment';
@@ -25,16 +25,21 @@ import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import EventSource from '../EventSource';
 import { DateTime } from 'luxon';
-import AsyncTracker from '../AsyncTracker';
+import AsyncTracker from '../../../common/AsyncTracker';
 import classNames, { ClassValue } from 'classnames';
 import RootErrorBoundary from './RootErrorBoundary';
+import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
+import ClipboardService from '../../../common/services/ClipboardService';
+import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
+import HttpEndpoint from '../../../common/HttpEndpoint';
 
 export interface Props {
 	captcha: Captcha,
 	initialLocation: RouteLocation,
 	initialUser: UserAccount | null,
 	serverApi: ServerApi,
-	version: number
+	version: number,
+	webServerEndpoint: HttpEndpoint
 }
 export interface Screen<T = any> {
 	componentState?: T,
@@ -48,10 +53,9 @@ export interface ScreenFactory<TRootState> {
 	render: (screenState: Screen, rootState: TRootState) => React.ReactNode,
 	renderHeaderContent?: (screenState: Screen, rootState: TRootState) => React.ReactNode
 }
-export interface State {
+export interface State extends ToasterState {
 	dialog: React.ReactNode,
 	screens: Screen[],
-	toasts: Toast[],
 	user: UserAccount | null
 }
 export type SharedState = Pick<State, 'user'>;
@@ -73,7 +77,7 @@ export default abstract class Root <
 				onCloseDialog={this._closeDialog}
 				onGetArticle={this.props.serverApi.getArticle}
 				onShareArticle={this.props.serverApi.shareArticle}
-				onShowToast={this._addToast}
+				onShowToast={this._toaster.addToast}
 			/>
 		);
 	};
@@ -97,19 +101,9 @@ export default abstract class Root <
 	};
 
 	// clipboard
-	private _clipboardTextInput: HTMLInputElement | undefined;
-	protected readonly _copyTextToClipboard = (text: string, successMessage: string) => {
-		if (this._clipboardTextInput) {
-			this._clipboardTextInput.value = text;
-			this._clipboardTextInput.select();
-			window.document.execCommand('copy');
-			this._clipboardTextInput.value = '';
-			this._addToast(successMessage, Intent.Success);
-		}
-	};
-	private readonly _setClipboardTextInputRef = (ref: HTMLInputElement) => {
-		this._clipboardTextInput = ref;
-	};
+	protected readonly _clipboard = new ClipboardService((content, intent) => {
+		this._toaster.addToast(content, intent);
+	});
 
 	// comments
 	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: number) => {
@@ -141,7 +135,7 @@ export default abstract class Root <
 				captcha={this.props.captcha}
 				onCreateAccount={this._createAccount}
 				onCloseDialog={this._closeDialog}
-				onShowToast={this._addToast}
+				onShowToast={this._toaster.addToast}
 			/>
 		),
 		[DialogKey.ResetPassword]: location => {
@@ -151,7 +145,7 @@ export default abstract class Root <
 					email={kvps['email']}
 					onCloseDialog={this._closeDialog}
 					onResetPassword={this._resetPassword}
-					onShowToast={this._addToast}
+					onShowToast={this._toaster.addToast}
 					token={kvps['token']}
 				/>
 			);
@@ -164,7 +158,7 @@ export default abstract class Root <
 					onCloseDialog={this._closeDialog}
 					onGetArticle={this.props.serverApi.getArticle}
 					onShareArticle={this.props.serverApi.shareArticle}
-					onShowToast={this._addToast}
+					onShowToast={this._toaster.addToast}
 					slug={sourceSlug + '_' + articleSlug}
 				/>
 			);
@@ -173,7 +167,7 @@ export default abstract class Root <
 			<SignInDialog
 				onCloseDialog={this._closeDialog}
 				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
-				onShowToast={this._addToast}
+				onShowToast={this._toaster.addToast}
 				onSignIn={this._signIn}
 			/>
 		)
@@ -184,7 +178,7 @@ export default abstract class Root <
 				captcha={this.props.captcha}
 				onCloseDialog={this._closeDialog}
 				onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
-				onShowToast={this._addToast}
+				onShowToast={this._toaster.addToast}
 			/>
 		);
 	};
@@ -197,6 +191,9 @@ export default abstract class Root <
 	protected readonly _registerArticleChangeEventHandler = (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => {
 		return this.registerEventHandler(this._articleChangeEventHandlers, handler);
 	};
+
+	// routing
+	protected readonly _createAbsoluteUrl: (path: string) => string;
 
 	// screens
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
@@ -217,28 +214,12 @@ export default abstract class Root <
 	};
 
 	// toasts
-	protected readonly _addToast = (content: React.ReactNode, intent: Intent, remove: boolean = true) => {
-		const toast = {
-			content,
-			intent,
-			timeoutHandle: remove ?
-				this._asyncTracker.addTimeout(
-					window.setTimeout(() => {
-						const toasts = this.state.toasts.slice();
-						toasts[toasts.indexOf(toast)] = { ...toast, remove: true };
-						this.setState({ toasts });
-					}, 5000)
-				) :
-				0,
-			remove: false
-		};
-		this.setState({ toasts: [...this.state.toasts, toast] });
-	};
-	protected readonly _removeToast = (timeoutHandle: number) => {
-		this.setState({
-			toasts: this.state.toasts.filter(toast => toast.timeoutHandle !== timeoutHandle)
-		});
-	};
+	protected readonly _toaster = new ToasterService({
+		asyncTracker: this._asyncTracker,
+		setState: (state: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
+			this.setState(state);
+		}
+	});
 
 	// user account
 	protected readonly _changeEmailAddress = (email: string) => {
@@ -285,10 +266,10 @@ export default abstract class Root <
 		return this.props.serverApi
 			.resendConfirmationEmail()
 			.then(() => {
-				this._addToast('Confirmation email sent', Intent.Success);
+				this._toaster.addToast('Confirmation email sent', Intent.Success);
 			})
 			.catch((errors: string[]) => {
-				this._addToast(
+				this._toaster.addToast(
 					errors.includes('ResendLimitExceeded') ?
 						'Error sending email.\nPlease try again in a few minutes.' :
 						'Error sending email.\nPlease try again later.',
@@ -358,6 +339,9 @@ export default abstract class Root <
 		this._readArticle = this.readArticle.bind(this);
 		this._viewComments = this.viewComments.bind(this);
 
+		// routing
+		this._createAbsoluteUrl = path => `${props.webServerEndpoint.protocol}://${props.webServerEndpoint.host}${path}`;
+
 		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.AdminPage]: createAdminPageScreenFactory(ScreenKey.AdminPage, {
@@ -368,7 +352,7 @@ export default abstract class Root <
 				onOpenDialog: this._openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
-				onShowToast: this._addToast
+				onShowToast: this._toaster.addToast
 			}),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
@@ -389,7 +373,7 @@ export default abstract class Root <
 				onGetTimeZones: this.props.serverApi.getTimeZones,
 				onOpenDialog: this._openDialog,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
-				onShowToast: this._addToast,
+				onShowToast: this._toaster.addToast,
 				onUpdateContactPreferences: this._updateContactPreferences,
 				onUpdateNotificationPreferences: this._updateNotificationPreferences
 			})
@@ -476,11 +460,7 @@ export default abstract class Root <
 			<div className={classNames('root_9rc2fv', this._concreteClassName)}>
 				<RootErrorBoundary onReloadWindow={this._reloadWindow}>
 					{this.renderBody()}
-					<input
-						className="clipboard-text-input"
-						ref={this._setClipboardTextInputRef}
-						type="text"
-					/>
+					<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
 				</RootErrorBoundary>
 			</div>
 		);

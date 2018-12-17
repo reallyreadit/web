@@ -1,7 +1,7 @@
 import * as React from 'react';
 import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
-import Toaster, { Intent } from './Toaster';
+import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
@@ -35,7 +35,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		return this.props.serverApi
 			.sendExtensionInstructions()
 			.then(() => {
-				this._addToast('Email sent', Intent.Success);
+				this._toaster.addToast('Email sent', Intent.Success);
 			});
 	};
 
@@ -101,7 +101,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			this.fetchUpdateStatus().then(status => {
 				if (status.isAvailable) {
 					this._isUpdateAvailable = true;
-					this._addToast(
+					this._toaster.addToast(
 						<UpdateToast onReloadWindow={this._reloadWindow} />,
 						Intent.Success,
 						false
@@ -116,7 +116,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
-			onCopyTextToClipboard: this._copyTextToClipboard,
+			onCopyTextToClipboard: this._clipboard.copyText,
+			onCreateAbsoluteUrl: this._createAbsoluteUrl,
 			onGetArticle: this.props.serverApi.getArticle,
 			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
@@ -131,7 +132,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			...this._screenFactoryMap,
 			[ScreenKey.Comments]: commentsScreenFactory,
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
-				onCopyTextToClipboard: this._copyTextToClipboard,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
@@ -141,7 +143,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
-				onCopyTextToClipboard: this._copyTextToClipboard,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
@@ -156,7 +159,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			}),
 			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
-				onCopyTextToClipboard: this._copyTextToClipboard,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -299,12 +303,12 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 						captcha={this.props.captcha}
 						onCreateAccount={this._createAccount}
 						onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
-						onShowToast={this._addToast}
+						onShowToast={this._toaster.addToast}
 						onSignIn={this._signIn}
 					/>}
 				<DialogManager dialog={this.state.dialog} />
 				<Toaster
-					onRemoveToast={this._removeToast}
+					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
 				/>
 			</>

@@ -126,11 +126,7 @@ server = server.get('/assets/update/contentScript', (req, res) => {
 });
 // authenticate
 server = server.use((req, res, next) => {
-	const api = new ServerApi({
-		scheme: config.api.protocol,
-		host: config.api.host,
-		port: config.api.port
-	}, {
+	const api = new ServerApi(config.apiServer, {
 		key: config.cookieName,
 		value: req.cookies[config.cookieName]
 	});
@@ -273,7 +269,8 @@ server = server.get('/*', (req, res) => {
 		},
 		initialUser: req.sessionState.userAccount,
 		serverApi: req.api,
-		version: version.app
+		version: version.app,
+		webServerEndpoint: config.webServer
 	};
 	let rootElement: React.ReactElement<any>;
 	switch (clientType) {
@@ -323,7 +320,8 @@ server = server.get('/*', (req, res) => {
 				initialLocation: rootProps.initialLocation,
 				serverApi: req.api.getInitData(),
 				userAccount: req.sessionState.userAccount,
-				version: version.app
+				version: version.app,
+				webServerEndpoint: config.webServer
 			},
 			iosAppId: config.iosAppId,
 			title: browserApi.getTitle()
