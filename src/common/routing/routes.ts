@@ -36,24 +36,46 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/admin$/,
 		screenKey: ScreenKey.AdminPage
 	},
-	{
-		createUrl: params => {
-			let url = `/articles/${params['sourceSlug']}/${params['articleSlug']}`;
-			if (params['commentId']) {
-				url += `/${params['commentId']}`;
-			}
-			return url;
-		},
-		pathRegExp: /^\/articles\/([^/]+)\/([^/]+)(\/[^/]+)?$/,
-		screenKey: ScreenKey.Comments
-	},
-	{
-		createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}?share`,
-		dialogKey: DialogKey.ShareArticle,
-		pathRegExp: /^\/articles\/([^/]+)\/([^/]+)$/,
-		queryStringKeys: ['share'],
-		screenKey: ScreenKey.Comments
-	},
+	(function () {
+		const pathRegExp = /^\/articles\/([^/]+)\/([^/]+)(\/[^/]+)?$/;
+		return {
+			createUrl: params => {
+				let url = `/articles/${params['sourceSlug']}/${params['articleSlug']}`;
+				if (params['commentId']) {
+					url += `/${params['commentId']}`;
+				}
+				return url;
+			},
+			getPathParams: path => {
+				const [, sourceSlug, articleSlug, commentId] = path.match(pathRegExp);
+				let result = { articleSlug, sourceSlug } as {
+					articleSlug: string,
+					commentId?: string,
+					sourceSlug: string
+				};
+				if (commentId != null) {
+					result.commentId = commentId;
+				}
+				return result;
+			},
+			pathRegExp,
+			screenKey: ScreenKey.Comments
+		} as Route<DialogKey, ScreenKey>;
+	})(),
+	(function () {
+		const pathRegExp = /^\/articles\/([^/]+)\/([^/]+)$/;
+		return {
+			createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}?share`,
+			dialogKey: DialogKey.ShareArticle,
+			getPathParams: path => {
+				const [, sourceSlug, articleSlug] = path.match(pathRegExp);
+				return { articleSlug, sourceSlug };
+			},
+			pathRegExp,
+			queryStringKeys: ['share'],
+			screenKey: ScreenKey.Comments
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	{
 		createUrl: params => `/email/confirm/${params['result']}`,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,
@@ -91,11 +113,15 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/privacy-policy$/,
 		screenKey: ScreenKey.PrivacyPolicy
 	},
-	{
-		createUrl: params => `/proof/${params['token']}`,
-		pathRegExp: /^\/proof\/([^/]+)$/,
-		screenKey: ScreenKey.Proof
-	},
+	(function () {
+		const pathRegExp = /^\/proof\/([^/]+)$/;
+		return {
+			createUrl: params => `/proof/${params['token']}`,
+			getPathParams: path => ({ 'token': path.match(pathRegExp)[1] }),
+			pathRegExp,
+			screenKey: ScreenKey.Proof
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',

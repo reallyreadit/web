@@ -13,12 +13,12 @@ import produce from 'immer';
 
 interface Props {
 	location: RouteLocation,
-	onGetComments: FetchFunctionWithParams<{ id?: number, slug?: string }, Comment[]>,
+	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onReloadArticle: (params: { id?: number, slug?: string }) => void,
+	onReloadArticle: (params: { proofToken?: string, slug?: string }) => void,
 	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -61,7 +61,7 @@ class BrowserCommentsScreen extends React.Component<Props> {
 	}
 }
 type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'location' | 'onReloadArticle' | 'onSetScreenState' | 'tokenData' | 'user'>> & {
-	onGetArticle: FetchFunctionWithParams<{ id?: number, slug?: string }, UserArticle>,
+	onGetArticle: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, UserArticle>,
 	onGetVerificationTokenData: FetchFunctionWithParams<{ token: string }, VerificationTokenData>,
 	onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => void
 };
@@ -69,7 +69,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 	const setScreenState = (getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => {
 		deps.onSetScreenState(key, getNextState);
 	};
-	const reloadArticle = (params: { id?: number, slug?: string }) => {
+	const reloadArticle = (params: { proofToken?: string, slug?: string }) => {
 		deps.onGetArticle(params, article => {
 			setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
 				currentState.componentState.value.article = article.value;
@@ -80,9 +80,10 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 		create: (location: RouteLocation) => {
 			let tokenData: Fetchable<VerificationTokenData>;
 			const pathParams = getPathParams(location);
-			if (pathParams.proofToken) {
+			if ('proofToken' in pathParams) {
 				tokenData = deps.onGetVerificationTokenData({ token: pathParams.proofToken }, data => {
 					setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.isLoading = false;
 						currentState.componentState.value = data.value;
 						currentState.title = data.value.article.title;
 					}));
@@ -90,6 +91,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 			} else {
 				const article = deps.onGetArticle({ slug: pathParams.slug }, article => {
 					setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.isLoading = false;
 						currentState.componentState.value = {
 							article: article.value,
 							readerName: null

@@ -13,7 +13,7 @@ import produce from 'immer';
 
 interface Props {
 	location: RouteLocation,
-	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
+	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
@@ -56,7 +56,7 @@ class AppCommentsScreen extends React.Component<Props> {
 	}
 }
 type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'location' | 'onSetScreenState' | 'tokenData' | 'user'>> & {
-	onGetArticle: FetchFunctionWithParams<{ id?: number, slug?: string }, UserArticle>,
+	onGetArticle: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, UserArticle>,
 	onGetVerificationTokenData: FetchFunctionWithParams<{ token: string }, VerificationTokenData>,
 	onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => void
 };
@@ -68,9 +68,10 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 		create: (location: RouteLocation) => {
 			let tokenData: Fetchable<VerificationTokenData>;
 			const pathParams = getPathParams(location);
-			if (pathParams.proofToken) {
+			if ('proofToken' in pathParams) {
 				tokenData = deps.onGetVerificationTokenData({ token: pathParams.proofToken }, data => {
 					setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.isLoading = false;
 						currentState.componentState.value = data.value;
 						currentState.title = data.value.article.title;
 					}));
@@ -78,6 +79,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 			} else {
 				const article = deps.onGetArticle({ slug: pathParams.slug }, article => {
 					setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.isLoading = false;
 						currentState.componentState.value = {
 							article: article.value,
 							readerName: null

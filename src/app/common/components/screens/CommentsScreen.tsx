@@ -26,23 +26,27 @@ function findComment(id: number, comment: Comment) {
 	return match;
 }
 export function getPathParams(location: RouteLocation) {
-	const matches = location.path.match(findRouteByLocation(routes, location).pathRegExp);
-	if (location.path.startsWith('/articles')) {
+	const params = findRouteByLocation(routes, location).getPathParams(location.path);
+	if ('token' in params) {
 		return {
-			commentId: matches[3],
-			slug: matches[1] + '_' + matches[2]
+			proofToken: params['token']
 		};
-	}
-	if (location.path.startsWith('/proof')) {
-		return {
-			proofToken: matches[1]
+	} else {
+		let result = {
+			slug: params['sourceSlug'] + '_' + params['articleSlug']
+		} as {
+			commentId?: string,
+			slug: string
+		};
+		if ('commentId' in params) {
+			result.commentId = params['commentId'];
 		}
+		return result;
 	}
-	throw new Error('Unexpected path');
 }
 interface Props {
 	location: RouteLocation,
-	onGetComments: FetchFunctionWithParams<{ id?: number, slug?: string }, Comment[]>,
+	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
@@ -99,7 +103,7 @@ export default class extends React.Component<
 		const
 			isUserSignedIn = !!this.props.user,
 			isAllowedToPost = this.props.tokenData.value && isUserSignedIn && this.props.tokenData.value.article.isRead,
-			highlightedCommentId = getPathParams(this.props.location).commentId;
+			pathParams = getPathParams(this.props.location);
 		return (
 			<div className="comments-screen_udh2l6">
 				{this.props.tokenData.isLoading || this.state.comments.isLoading ?
@@ -139,7 +143,7 @@ export default class extends React.Component<
 							this.state.comments.value.length ?
 								<CommentList
 									comments={this.state.comments.value}
-									highlightedCommentId={highlightedCommentId ? parseInt(highlightedCommentId) : null}
+									highlightedCommentId={'commentId' in pathParams ? parseInt(pathParams.commentId) : null}
 									isAllowedToPost={isAllowedToPost}
 									mode="reply"
 									onPostComment={this._addReply}

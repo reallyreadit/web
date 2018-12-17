@@ -6,6 +6,7 @@ export interface Route<TDialogKey, TScreenKey> {
 	authLevel?: UserAccountRole,
 	createUrl: (params?: { [key: string]: string }) => string,
 	dialogKey?: TDialogKey,
+	getPathParams?: (path: string) => ({ [key: string]: string }),
 	pathRegExp: RegExp,
 	queryStringKeys?: string[],
 	screenKey: TScreenKey
