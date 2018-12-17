@@ -5,7 +5,7 @@ import Comment from '../../../common/models/Comment';
 import UserAccount from '../../../common/models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
-import Endpoint from './Endpoint';
+import HttpEndpoint from '../../../common/HttpEndpoint';
 import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import PageResult from '../../../common/models/PageResult';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
@@ -20,14 +20,14 @@ import VerificationTokenData from '../../../common/models/VerificationTokenData'
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export interface InitData {
-	endpoint: Endpoint,
+	endpoint: HttpEndpoint,
 	requests: Request[]
 }
 export default abstract class {
-	protected readonly _endpoint: Endpoint;
+	protected readonly _endpoint: HttpEndpoint;
 	protected _reqStore: RequestStore;
 	protected _isInitialized = false;
-	constructor(endpoint: Endpoint) {
+	constructor(endpoint: HttpEndpoint) {
 		this._endpoint = endpoint;
 	}
 	private createFetchFunction<TResult>(path: string) {
@@ -39,7 +39,7 @@ export default abstract class {
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
 	protected getUrl(path: string) {
-		return `${this._endpoint.scheme}://${this._endpoint.host}:${this._endpoint.port}${path}`;
+		return `${this._endpoint.protocol}://${this._endpoint.host}:${this._endpoint.port}${path}`;
 	}
 	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string, timeZoneName: string) => {
 		return this.post<UserAccount>(new Request(

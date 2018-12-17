@@ -1,11 +1,9 @@
-declare const config: {
-	api: {
-		protocol: string,
-		host: string
-	},
-	cookieName: string,
-	web: {
-		protocol: string,
-		host: string
-	}
-};
+import HttpEndpoint from "../../common/HttpEndpoint";
+
+declare global {
+	const config: {
+		api: HttpEndpoint,
+		cookieName: string,
+		web: HttpEndpoint
+	};
+}

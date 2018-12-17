@@ -2,20 +2,20 @@ import * as request from 'request';
 import Fetchable from '../common/serverApi/Fetchable';
 import Request from '../common/serverApi/Request';
 import RequestStore from '../common/serverApi/RequestStore';
-import Endpoint from '../common/serverApi/Endpoint';
+import HttpEndpoint from '../../common/HttpEndpoint';
 import KeyValuePair from '../../common/KeyValuePair';
 import ServerApi from '../common/serverApi/ServerApi';
 
 export default class extends ServerApi {
 	private _authCookie: KeyValuePair<string, string | null>;
-	constructor(endpoint: Endpoint, authCookie: KeyValuePair<string, string | null>) {
+	constructor(endpoint: HttpEndpoint, authCookie: KeyValuePair<string, string | null>) {
 		super(endpoint);
 		this._authCookie = authCookie;
 		this._reqStore = new RequestStore();
 	}
 	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
-			let uri = this._endpoint.scheme + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path;
+			let uri = this._endpoint.protocol + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path;
 			if (method === 'GET') {
 				uri += params.getQueryString();
 			}
