@@ -4,7 +4,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Button from './Button';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
-import Separator from '../../../../common/components/Separator';
+import Footer from './Footer';
 
 export default class NavBar extends React.PureComponent<{
 	onViewHistory: () => void,
@@ -14,10 +14,6 @@ export default class NavBar extends React.PureComponent<{
 	onViewStarred: () => void,
 	selectedScreenKey: ScreenKey
 }> {
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewPrivacyPolicy();
-	};
 	public render() {
 		return (
 			<div className="nav-bar_yh8orf">
@@ -63,20 +59,7 @@ export default class NavBar extends React.PureComponent<{
 						</Button>
 					</li>
 				</ol>
-				<div className="footer">
-					<a href="https://blog.reallyread.it">Blog</a>
-					<Separator />
-					<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
-					<Separator />
-					<a
-						href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
-						onClick={this._viewPrivacyPolicy}
-					>
-						Privacy Policy
-					</a>
-					<br />
-					<a href="mailto:support@reallyread.it">support@reallyread.it</a>
-				</div>
+				<Footer onViewPrivacyPolicy={this.props.onViewPrivacyPolicy} />
 			</div>
 		);
 	}

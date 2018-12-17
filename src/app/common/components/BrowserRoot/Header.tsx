@@ -21,7 +21,7 @@ export default class extends React.PureComponent<Props> {
 	};
 	public render() {
 		return (
-			<header className="header_cvm3v7">
+			<header className={classNames('header_cvm3v7', { authenticated: this.props.isUserSignedIn })}>
 				<a
 					className="logo-container"
 					dangerouslySetInnerHTML={{ __html: logoText }}

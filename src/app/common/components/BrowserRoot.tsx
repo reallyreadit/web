@@ -23,6 +23,7 @@ import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import RootErrorBoundary from './RootErrorBoundary';
 import UpdateToast from './UpdateToast';
+import Footer from './BrowserRoot/Footer';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -125,6 +126,7 @@ export default class extends Root<Props, State, SharedState> {
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
 			onGetArticle: this.props.serverApi.getArticle,
+			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
 			onPostComment: this._postComment,
 			onReadArticle: this._readArticle,
@@ -354,19 +356,24 @@ export default class extends Root<Props, State, SharedState> {
 						showNewReplyIndicator={this.state.showNewReplyIndicator}
 					/>
 					<main>
-						<NavBar
-							onViewHistory={this._viewHistory}
-							onViewHome={this._viewHome}
-							onViewLeaderboards={this._viewLeaderboards}
-							onViewPrivacyPolicy={this._viewPrivacyPolicy}
-							onViewStarred={this._viewStarred}
-							selectedScreenKey={screen.key}
-						/>
+						{this.state.user ?
+							<NavBar
+								onViewHistory={this._viewHistory}
+								onViewHome={this._viewHome}
+								onViewLeaderboards={this._viewLeaderboards}
+								onViewPrivacyPolicy={this._viewPrivacyPolicy}
+								onViewStarred={this._viewStarred}
+								selectedScreenKey={screen.key}
+							/> :
+							null}
 						<div className="screen">
 							{this._screenFactoryMap[screen.key].render(screen, {
 								isExtensionInstalled: this.state.isExtensionInstalled,
 								user: this.state.user
 							})}
+							{!this.state.user ?
+								<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
+								null}
 						</div>
 					</main>
 					{this.state.menuState !== 'closed' ?
