@@ -19,8 +19,11 @@ export default class CommentDetails extends React.Component<Props, { showComment
 	private _showCommentBox = () => this.setState({ showCommentBox: true });
 	private _hideCommentBox = () => this.setState({ showCommentBox: false });
 	private _addComment = (text: string, articleId: number, parentCommentId?: number) => {
-		this.setState({ showCommentBox: false });
-		return this.props.onPostComment(text, articleId, parentCommentId);
+		return this.props
+			.onPostComment(text, articleId, parentCommentId)
+			.then(() => {
+				this.setState({ showCommentBox: false });
+			});
 	};
 	private _viewThread = () => this.props.onViewThread(this.props.comment);
 	constructor(props: Props) {
