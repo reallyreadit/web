@@ -21,7 +21,6 @@ import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
-import RootErrorBoundary from './RootErrorBoundary';
 import UpdateToast from './UpdateToast';
 import Footer from './BrowserRoot/Footer';
 
@@ -116,15 +115,13 @@ export default class extends Root<Props, State, SharedState> {
 			this.stopUpdateCheckInterval();
 		}
 	};
-	private readonly _reloadWindow = () => {
-		window.location.href = '/';
-	};
 
 	constructor(props: Props) {
-		super(props);
+		super('browser-root_6tjc3j', props);
 
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
+			onCopyTextToClipboard: this._copyTextToClipboard,
 			onGetArticle: this.props.serverApi.getArticle,
 			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
@@ -140,6 +137,7 @@ export default class extends Root<Props, State, SharedState> {
 			...this._screenFactoryMap,
 			[ScreenKey.Comments]: commentsScreenFactory,
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
+				onCopyTextToClipboard: this._copyTextToClipboard,
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
@@ -151,6 +149,7 @@ export default class extends Root<Props, State, SharedState> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				onCopyTextToClipboard: this._copyTextToClipboard,
 				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onInstallExtension: this._installExtension,
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
@@ -169,6 +168,7 @@ export default class extends Root<Props, State, SharedState> {
 			}),
 			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
+				onCopyTextToClipboard: this._copyTextToClipboard,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -304,6 +304,64 @@ export default class extends Root<Props, State, SharedState> {
 			);
 		}
 	}
+	protected reloadWindow() {
+		window.location.href = '/';
+	}
+	protected renderBody() {
+		const screen = this.state.screens[0];
+		return (
+			<>
+				<Header
+					isUserSignedIn={!!this.state.user}
+					onOpenMenu={this._openMenu}
+					onShowCreateAccountDialog={this._openCreateAccountDialog}
+					onShowSignInDialog={this._openSignInDialog}
+					onViewHome={this._viewHome}
+					showNewReplyIndicator={this.state.showNewReplyIndicator}
+				/>
+				<main>
+					{this.state.user ?
+						<NavBar
+							onViewHistory={this._viewHistory}
+							onViewHome={this._viewHome}
+							onViewLeaderboards={this._viewLeaderboards}
+							onViewPrivacyPolicy={this._viewPrivacyPolicy}
+							onViewStarred={this._viewStarred}
+							selectedScreenKey={screen.key}
+						/> :
+						null}
+					<div className="screen">
+						{this._screenFactoryMap[screen.key].render(screen, {
+							isExtensionInstalled: this.state.isExtensionInstalled,
+							user: this.state.user
+						})}
+						{!this.state.user ?
+							<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
+							null}
+					</div>
+				</main>
+				{this.state.menuState !== 'closed' ?
+					<Menu
+						isClosing={this.state.menuState === 'closing'}
+						onClose={this._closeMenu}
+						onClosed={this._hideMenu}
+						onSignOut={this._signOut}
+						onViewAdminPage={this._viewAdminPage}
+						onViewInbox={this._viewInbox}
+						onViewSettings={this._viewSettings}
+						selectedScreenKey={this.state.screens[0].key}
+						showNewReplyNotification={this.state.showNewReplyIndicator}
+						userAccount={this.state.user}
+					/> :
+					null}
+				<DialogManager dialog={this.state.dialog} />
+				<Toaster
+					onRemoveToast={this._removeToast}
+					toasts={this.state.toasts}
+				/>
+			</>
+		);
+	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		this.setState(this.replaceScreen(
@@ -339,64 +397,5 @@ export default class extends Root<Props, State, SharedState> {
 		if (this._updateCheckInterval) {
 			window.clearInterval(this._updateCheckInterval);
 		}
-	}
-	public render() {
-		const screen = this.state.screens[0];
-		return (
-			<RootErrorBoundary
-				onReloadWindow={this._reloadWindow}
-			>
-				<div className="browser-root">
-					<Header
-						isUserSignedIn={!!this.state.user}
-						onOpenMenu={this._openMenu}
-						onShowCreateAccountDialog={this._openCreateAccountDialog}
-						onShowSignInDialog={this._openSignInDialog}
-						onViewHome={this._viewHome}
-						showNewReplyIndicator={this.state.showNewReplyIndicator}
-					/>
-					<main>
-						{this.state.user ?
-							<NavBar
-								onViewHistory={this._viewHistory}
-								onViewHome={this._viewHome}
-								onViewLeaderboards={this._viewLeaderboards}
-								onViewPrivacyPolicy={this._viewPrivacyPolicy}
-								onViewStarred={this._viewStarred}
-								selectedScreenKey={screen.key}
-							/> :
-							null}
-						<div className="screen">
-							{this._screenFactoryMap[screen.key].render(screen, {
-								isExtensionInstalled: this.state.isExtensionInstalled,
-								user: this.state.user
-							})}
-							{!this.state.user ?
-								<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
-								null}
-						</div>
-					</main>
-					{this.state.menuState !== 'closed' ?
-						<Menu
-							isClosing={this.state.menuState === 'closing'}
-							onClose={this._closeMenu}
-							onClosed={this._hideMenu}
-							onSignOut={this._signOut}
-							onViewAdminPage={this._viewAdminPage}
-							onViewInbox={this._viewInbox}
-							onViewSettings={this._viewSettings}
-							selectedScreenKey={this.state.screens[0].key}
-							showNewReplyNotification={this.state.showNewReplyIndicator}
-							userAccount={this.state.user}
-						/> :
-						null}
-					<DialogManager dialog={this.state.dialog} />
-					<Toaster
-						onRemoveToast={this._removeToast}
-						toasts={this.state.toasts}
-					/>
-				</div>
-			</RootErrorBoundary>
-		);
 	}
 }

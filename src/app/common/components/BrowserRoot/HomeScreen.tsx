@@ -17,6 +17,7 @@ import WelcomeInfoBox from '../WelcomeInfoBox';
 interface Props {
 	isBrowserCompatible: boolean,
 	isExtensionInstalled: boolean | null,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
@@ -94,6 +95,7 @@ class HomeScreen extends React.Component<Props, State> {
 							aotd={this.state.hotTopics.value.aotd}
 							articles={this.state.hotTopics.value.articles}
 							isUserSignedIn={!!this.props.user}
+							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onReadArticle={this.props.onReadArticle}
 							onShareArticle={this.props.onShareArticle}
 							onToggleArticleStar={this.props.onToggleArticleStar}

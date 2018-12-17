@@ -8,10 +8,12 @@ import Icon from './Icon';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
+import classNames from 'classnames';
 
 interface Props {
 	article: UserArticle,
 	isUserSignedIn: boolean,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onDelete?: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (article: UserArticle) => void,
@@ -24,13 +26,19 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		onDelete: () => {},
 		showDeleteControl: false
 	};
+	private readonly _copyLink = () => {
+		if (this.props.article.isRead) {
+			this.props.onCopyTextToClipboard(
+				window.location.protocol +
+				'//' +
+				window.location.hostname +
+				findRouteByKey(routes, ScreenKey.Proof).createUrl({ 'token': this.props.article.proofToken }),
+				'Link copied to clipboard'
+			);
+		}
+	};
 	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		this.props.onRead(this.props.article, e);
-	};
-	private readonly _share = () => {
-		if (this.props.article.isRead) {
-			this.props.onShare(this.props.article);
-		}
 	};
 	private readonly _toggleStar = () => {
 		this.setState({ isStarring: true });
@@ -72,6 +80,17 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				>
 					{this.props.article.title}
 				</a>
+			),
+			copyLinkButton = (
+				<div
+					className={classNames('copy-link', { disabled: !this.props.article.isRead })}
+					onClick={this._copyLink}
+				>
+					<Icon
+						name="link"
+						title="Copy Link"
+					/>
+				</div>
 			);
 		return (
 			<div className="article-details">
@@ -121,13 +140,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{formatTimestamp(this.props.article.datePublished)}
 								</span> :
 								null}
-							{this.props.article.isRead ?
-								<Icon
-									name="share"
-									title="Share Article"
-									onClick={this._share}
-								/> :
-								null}
 						</div>
 					</div>
 					<div className="small-stats-article">
@@ -152,25 +164,21 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							</div>
 						</div>
 						<div className="stats">
-							<div className="stat reads">
-								{this.props.article.readCount}
-								{this.props.article.readCount === 1 ? ' read' : ' reads'}
+							<div className="reads-comments">
+								<div className="stat reads">
+									{this.props.article.readCount}
+									{this.props.article.readCount === 1 ? ' read' : ' reads'}
+								</div>
+								<a
+									className="stat comments"
+									href={commentsLinkHref}
+									onClick={this._viewComments}
+								>
+									{this.props.article.commentCount}
+									{this.props.article.commentCount === 1 ? ' comment' : ' comments'}
+								</a>
 							</div>
-							<a
-								className="stat comments"
-								href={commentsLinkHref}
-								onClick={this._viewComments}
-							>
-								{this.props.article.commentCount}
-								{this.props.article.commentCount === 1 ? ' comment' : ' comments'}
-							</a>
-							{this.props.article.isRead ?
-								<Icon
-									name="share"
-									title="Share Article"
-									onClick={this._share}
-								/> :
-								null}
+							{copyLinkButton}
 						</div>
 					</div>
 					<div className="bubble">
@@ -185,6 +193,11 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							</div>
 						</div>
 					</div>
+					{this.props.isUserSignedIn ?
+						<div className="share">
+							{copyLinkButton}
+						</div> :
+						null}
 				</div>
 			</div>
 		);

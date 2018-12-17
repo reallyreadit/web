@@ -26,6 +26,8 @@ import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './
 import EventSource from '../EventSource';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../AsyncTracker';
+import classNames, { ClassValue } from 'classnames';
+import RootErrorBoundary from './RootErrorBoundary';
 
 export interface Props {
 	captcha: Captcha,
@@ -59,6 +61,7 @@ export default abstract class Root <
 	TSharedState extends SharedState
 > extends React.Component<P, S> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _concreteClassName: ClassValue;
 
 	// articles
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
@@ -91,6 +94,21 @@ export default abstract class Root <
 					);
 				});
 			});
+	};
+
+	// clipboard
+	private _clipboardTextInput: HTMLInputElement | undefined;
+	protected readonly _copyTextToClipboard = (text: string, successMessage: string) => {
+		if (this._clipboardTextInput) {
+			this._clipboardTextInput.value = text;
+			this._clipboardTextInput.select();
+			window.document.execCommand('copy');
+			this._clipboardTextInput.value = '';
+			this._addToast(successMessage, Intent.Success);
+		}
+	};
+	private readonly _setClipboardTextInputRef = (ref: HTMLInputElement) => {
+		this._clipboardTextInput = ref;
 	};
 
 	// comments
@@ -321,8 +339,14 @@ export default abstract class Root <
 			});
 	};
 
-	constructor(props: P) {
+	// window
+	protected readonly _reloadWindow = () => {
+		this.reloadWindow();
+	};
+
+	constructor(className: ClassValue, props: P) {
 		super(props);
+		this._concreteClassName = className;
 
 		// state
 		this.state = {
@@ -430,12 +454,14 @@ export default abstract class Root <
 	protected onUpdateAvailable() { }
 	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) { }
 	protected abstract readArticle(article: UserArticle, ev: React.MouseEvent): void;
+	protected abstract reloadWindow(): void;
 	protected registerEventHandler<T>(handlers: T[], handler: T) {
 		handlers.push(handler);
 		return () => {
 			handlers.splice(handlers.indexOf(handler), 1);
 		};
 	}
+	protected abstract renderBody(): React.ReactNode;
 	protected abstract viewComments(article: UserArticle): void;
 	public componentDidMount() {
 		if (this.state.user && this.state.user.timeZoneId == null) {
@@ -444,5 +470,19 @@ export default abstract class Root <
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
+	}
+	public render() {
+		return (
+			<div className={classNames('root_9rc2fv', this._concreteClassName)}>
+				<RootErrorBoundary onReloadWindow={this._reloadWindow}>
+					{this.renderBody()}
+					<input
+						className="clipboard-text-input"
+						ref={this._setClipboardTextInputRef}
+						type="text"
+					/>
+				</RootErrorBoundary>
+			</div>
+		);
 	}
 }

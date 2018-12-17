@@ -47,6 +47,7 @@ export function getPathParams(location: RouteLocation) {
 }
 interface Props {
 	location: RouteLocation,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -127,6 +128,7 @@ export default class extends React.Component<
 								<ArticleDetails
 									article={this.props.tokenData.value.article}
 									isUserSignedIn={isUserSignedIn}
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onRead={this.props.onReadArticle}
 									onShare={this.props.onShareArticle}
 									onToggleStar={this.props.onToggleArticleStar}

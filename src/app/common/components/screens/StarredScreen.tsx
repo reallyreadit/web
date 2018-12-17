@@ -28,6 +28,7 @@ export function updateArticles(this: React.Component<{}, State>, updatedArticle:
 export default (props: {
 	articles: PageResult<UserArticle>,
 	isUserSignedIn: boolean,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
@@ -43,6 +44,7 @@ export default (props: {
 							<ArticleDetails
 								article={article}
 								isUserSignedIn={props.isUserSignedIn}
+								onCopyTextToClipboard={props.onCopyTextToClipboard}
 								onRead={props.onReadArticle}
 								onShare={props.onShareArticle}
 								onToggleStar={props.onToggleArticleStar}

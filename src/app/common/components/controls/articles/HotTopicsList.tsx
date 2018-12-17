@@ -46,6 +46,7 @@ export default (props: {
 	aotd: UserArticle,
 	articles: PageResult<UserArticle>,
 	isUserSignedIn: boolean,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -56,6 +57,7 @@ export default (props: {
 		<ArticleDetails
 			article={props.aotd}
 			isUserSignedIn={props.isUserSignedIn}
+			onCopyTextToClipboard={props.onCopyTextToClipboard}
 			onRead={props.onReadArticle}
 			onShare={props.onShareArticle}
 			onToggleStar={props.onToggleArticleStar}
@@ -68,6 +70,7 @@ export default (props: {
 					<ArticleDetails
 						article={article}
 						isUserSignedIn={props.isUserSignedIn}
+						onCopyTextToClipboard={props.onCopyTextToClipboard}
 						onRead={props.onReadArticle}
 						onShare={props.onShareArticle}
 						onToggleStar={props.onToggleArticleStar}

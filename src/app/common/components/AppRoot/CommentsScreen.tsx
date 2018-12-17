@@ -13,6 +13,7 @@ import produce from 'immer';
 
 interface Props {
 	location: RouteLocation,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -44,6 +45,7 @@ class AppCommentsScreen extends React.Component<Props> {
 		return (
 			<CommentsScreen
 				location={this.props.location}
+				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onGetComments={this.props.onGetComments}
 				onPostComment={this.props.onPostComment}
 				onReadArticle={this.props.onReadArticle}
@@ -109,6 +111,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 		render: (state: Screen<Fetchable<VerificationTokenData>>, sharedState: SharedState) => (
 			<AppCommentsScreen
 				location={state.location}
+				onCopyTextToClipboard={deps.onCopyTextToClipboard}
 				onGetComments={deps.onGetComments}
 				onPostComment={deps.onPostComment}
 				onReadArticle={deps.onReadArticle}

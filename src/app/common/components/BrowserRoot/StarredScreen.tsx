@@ -10,6 +10,7 @@ import { Screen, SharedState } from '../Root';
 import LoadingOverlay from '../controls/LoadingOverlay';
 
 interface Props {
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
@@ -80,6 +81,7 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 					<StarredScreen
 						articles={this.state.articles.value}
 						isUserSignedIn={!!this.props.user}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onLoadPage={this._loadPage}
 						onReadArticle={this.props.onReadArticle}
 						onShareArticle={this.props.onShareArticle}

@@ -16,7 +16,6 @@ import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
-import RootErrorBoundary from './RootErrorBoundary';
 import { createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
@@ -111,15 +110,13 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			});
 		}
 	};
-	private readonly _reloadWindow = () => {
-		window.location.reload(true);
-	};
 
 	constructor(props: Props) {
-		super(props);
+		super('app-root_vc3j5h', props);
 
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
+			onCopyTextToClipboard: this._copyTextToClipboard,
 			onGetArticle: this.props.serverApi.getArticle,
 			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
@@ -134,6 +131,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			...this._screenFactoryMap,
 			[ScreenKey.Comments]: commentsScreenFactory,
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
+				onCopyTextToClipboard: this._copyTextToClipboard,
 				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
@@ -143,6 +141,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				onCopyTextToClipboard: this._copyTextToClipboard,
 				onGetHotTopics: this.props.serverApi.getHotTopics,
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
@@ -157,6 +156,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			}),
 			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
+				onCopyTextToClipboard: this._copyTextToClipboard,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -236,6 +236,80 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		ev.preventDefault();
 		this.props.appApi.readArticle(article);
 	}
+	protected reloadWindow() {
+		window.location.reload(true);
+	}
+	protected renderBody() {
+		const
+			rootState = { user: this.state.user },
+			topScreen = this.state.screens[this.state.screens.length - (this.state.isPoppingScreen ? 2 : 1)];
+		let headerContent: React.ReactNode | undefined;
+		if (topScreen && this._screenFactoryMap[topScreen.key].renderHeaderContent) {
+			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, rootState);
+		}
+		return (
+			<>
+				{this.state.user ?
+					<>
+						<Header
+							content={headerContent}
+							isTransitioningBack={this.state.isPoppingScreen}
+							onBack={this._popScreen}
+							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
+						/>
+						<div className="content">
+							<ol className="screens">
+								{this.state.screens.map((screen, index, screens) => (
+									<li
+										className={classNames('screen', {
+											'slide-out': this.state.isPoppingScreen && index === screens.length - 1
+										})}
+										key={screen.key}
+										onAnimationEnd={this._handleScreenAnimationEnd}
+									>
+										{this._screenFactoryMap[screen.key].render(screen, rootState)}
+									</li>
+								))}
+							</ol>
+						</div>
+						<NavTray
+							onViewHistory={this._viewHistory}
+							onViewHome={this._viewHome}
+							onViewLeaderboards={this._viewLeaderboards}
+							onViewStarred={this._viewStarred}
+							selectedScreenKey={this.state.screens[0].key}
+						/>
+						{this.state.menuState !== 'closed' ?
+							<Menu
+								isClosing={this.state.menuState === 'closing'}
+								onClose={this._closeMenu}
+								onClosed={this._hideMenu}
+								onReadFaq={this._readFaq}
+								onSignOut={this._signOut}
+								onViewAdminPage={this._viewAdminPage}
+								onViewInbox={this._viewInbox}
+								onViewPrivacyPolicy={this._viewPrivacyPolicy}
+								onViewSettings={this._viewSettings}
+								selectedScreenKey={this.state.screens[0].key}
+								userAccount={this.state.user}
+							/> :
+							null}
+					</> :
+					<AuthScreen
+						captcha={this.props.captcha}
+						onCreateAccount={this._createAccount}
+						onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
+						onShowToast={this._addToast}
+						onSignIn={this._signIn}
+					/>}
+				<DialogManager dialog={this.state.dialog} />
+				<Toaster
+					onRemoveToast={this._removeToast}
+					toasts={this.state.toasts}
+				/>
+			</>
+		);
+	}
 	protected viewComments(article: UserArticle) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		this.pushScreen(
@@ -265,80 +339,5 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	public componentWillUnmount() {
 		super.componentWillUnmount();
 		window.document.removeEventListener('visibilitychange', this._handleVisibilityChange);
-	}
-	public render() {
-		const
-			rootState = { user: this.state.user },
-			topScreen = this.state.screens[this.state.screens.length - (this.state.isPoppingScreen ? 2 : 1)];
-		let headerContent: React.ReactNode | undefined;
-		if (topScreen && this._screenFactoryMap[topScreen.key].renderHeaderContent) {
-			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, rootState);
-		}
-		return (
-			<RootErrorBoundary
-				onReloadWindow={this._reloadWindow}
-			>
-				<div className="app-root_vc3j5h">
-					{this.state.user ?
-						<>
-							<Header
-								content={headerContent}
-								isTransitioningBack={this.state.isPoppingScreen}
-								onBack={this._popScreen}
-								titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
-							/>
-							<div className="content">
-								<ol className="screens">
-									{this.state.screens.map((screen, index, screens) => (
-										<li
-											className={classNames('screen', {
-												'slide-out': this.state.isPoppingScreen && index === screens.length - 1
-											})}
-											key={screen.key}
-											onAnimationEnd={this._handleScreenAnimationEnd}
-										>
-											{this._screenFactoryMap[screen.key].render(screen, rootState)}
-										</li>
-									))}
-								</ol>
-							</div>
-							<NavTray
-								onViewHistory={this._viewHistory}
-								onViewHome={this._viewHome}
-								onViewLeaderboards={this._viewLeaderboards}
-								onViewStarred={this._viewStarred}
-								selectedScreenKey={this.state.screens[0].key}
-							/>
-							{this.state.menuState !== 'closed' ?
-								<Menu
-									isClosing={this.state.menuState === 'closing'}
-									onClose={this._closeMenu}
-									onClosed={this._hideMenu}
-									onReadFaq={this._readFaq}
-									onSignOut={this._signOut}
-									onViewAdminPage={this._viewAdminPage}
-									onViewInbox={this._viewInbox}
-									onViewPrivacyPolicy={this._viewPrivacyPolicy}
-									onViewSettings={this._viewSettings}
-									selectedScreenKey={this.state.screens[0].key}
-									userAccount={this.state.user}
-								/> :
-								null}
-						</> :
-						<AuthScreen
-							captcha={this.props.captcha}
-							onCreateAccount={this._createAccount}
-							onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
-							onShowToast={this._addToast}
-							onSignIn={this._signIn}
-						/>}
-					<DialogManager dialog={this.state.dialog} />
-					<Toaster
-						onRemoveToast={this._removeToast}
-						toasts={this.state.toasts}
-					/>
-				</div>
-			</RootErrorBoundary>
-		);
 	}
 }

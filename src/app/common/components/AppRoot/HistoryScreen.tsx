@@ -9,6 +9,7 @@ import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
 import { Screen, SharedState } from '../Root';
 
 interface Props {
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onDeleteArticle: (article: UserArticle) => void,
 	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -55,6 +56,7 @@ class AppHistoryScreen extends React.Component<Props, State> {
 			<HistoryScreen
 				articles={this.state.articles}
 				isUserSignedIn={!!this.props.user}
+				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onDeleteArticle={this.props.onDeleteArticle}
 				onLoadPage={this._loadPage}
 				onReadArticle={this.props.onReadArticle}

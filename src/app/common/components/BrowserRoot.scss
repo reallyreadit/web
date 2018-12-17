@@ -1,35 +1,40 @@
-.browser-root {
+/*
+	componentPath: src/app/common/components/BrowserRoot
+	cssComponentId: browser-root_6tjc3j
+*/
+
+.browser-root_6tjc3j {
 	height: 100%;
 	display: flex;
 	flex-flow: column;
 }
-.browser-root > .email-confirmation-bar {
+.browser-root_6tjc3j > .email-confirmation-bar {
 	flex: 0 0 auto;
 }
-.browser-root > .browser-header {
+.browser-root_6tjc3j > .browser-header {
 	flex: 0 0 auto;
 }
-.browser-root > main {
+.browser-root_6tjc3j > main {
 	flex: 1 1 auto;
 	display: flex;
 	overflow: hidden;
 }
-.browser-root > main > .browser-nav {
+.browser-root_6tjc3j > main > .browser-nav {
 	flex: 0 0 auto;
 }
-.browser-root > main > .screen {
+.browser-root_6tjc3j > main > .screen {
 	flex: 1 1 auto;
 	overflow: auto;
 	padding: 20px;
 	position: relative;
 }
-.browser-root > main > .screen > div {
+.browser-root_6tjc3j > main > .screen > div {
 	max-width: 800px;
 	margin: 0 auto;
 }
 
 @media (max-width: 499px) {
-	.browser-root > main > .screen {
+	.browser-root_6tjc3j > main > .screen {
 		padding: 10px;
 	}
 }

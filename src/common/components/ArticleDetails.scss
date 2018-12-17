@@ -59,14 +59,6 @@
 .article-details > .columns > .article > .meta {
 	margin-top: 5px;
 }
-.article-details > .columns > .article > .meta > .icon {
-	font-size: 14px;
-	margin-left: 6px;
-	vertical-align: middle;
-	position: relative;
-	top: -1px;
-	cursor: pointer;
-}
 .article-details > .columns > .small-stats-article {
 	display: none;
 }
@@ -80,11 +72,31 @@
 .article-details > .columns > .bubble > .container {
 	position: relative;
 }
+.article-details > .columns > .bubble > .container > .speech-bubble {
+	display: block;
+}
 .article-details > .columns > .bubble > .container > .length {
 	position: absolute;
 	top: 15%;
 	width: 100%;
 	text-align: center;
+}
+.article-details > .columns > .share {
+	flex: 0 0 auto;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+}
+.article-details > .columns > .share > .copy-link {
+	padding: 0 5px 0 10px;
+	font-size: 20px;
+	cursor: pointer;
+}
+.article-details > .columns > .share > .copy-link.disabled {
+	visibility: hidden;
+}
+.article-details > .columns > .share > .copy-link > .icon {
+	display: block;
 }
 
 @media (max-width: 450px) {
@@ -112,12 +124,12 @@
 		flex: 1 1 auto;
 		display: flex;
 		flex-flow: column;
+		justify-content: space-between;
 		padding-left: 25px;
 		min-width: 0;
 	}
 	.article-details > .columns > .small-stats-article > .meta {
-		flex: 1 1 auto;
-		margin-bottom: 5px;
+		flex: 0 0 auto;
 		margin-right: 5px;
 	}
 	.article-details > .columns > .small-stats-article > .meta > .publisher,
@@ -146,22 +158,37 @@
 	.article-details > .columns > .small-stats-article > .stats {
 		flex: 0 0 auto;
 		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		margin-right: 5px;
 	}
-	.article-details > .columns > .small-stats-article > .stats > .stat {
+	.article-details > .columns > .small-stats-article > .stats > .reads-comments {
+		display: flex;
+	}
+	.article-details > .columns > .small-stats-article > .stats > .reads-comments > .stat {
 		display: flex;
 		font-size: 15px;
 	}
-	.article-details > .columns > .small-stats-article > .stats > .stat:not(:last-child) {
+	.article-details > .columns > .small-stats-article > .stats > .reads-comments > .stat:not(:last-child) {
 		margin-right: 10px;
 	}
-	.article-details > .columns > .small-stats-article > .stats > .icon {
-		font-size: 15px;
+	.article-details > .columns > .small-stats-article > .stats > .copy-link {
+		font-size: 20px;
 		cursor: pointer;
+	}
+	.article-details > .columns > .small-stats-article > .stats > .copy-link.disabled {
+		display: none;
+	}
+	.article-details > .columns > .small-stats-article > .stats > .copy-link > .icon {
+		display: block;
 	}
 	.article-details > .columns > .bubble {
 		width: 54px;
 	}
 	.article-details > .columns > .bubble > .container > .length {
 		top: 12%;
+	}
+	.article-details > .columns > .share {
+		display: none;
 	}
 }
