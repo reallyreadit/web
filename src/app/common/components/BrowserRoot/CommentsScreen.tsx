@@ -8,19 +8,21 @@ import { Screen, SharedState } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import Comment from '../../../../common/models/Comment';
 import AsyncTracker from '../../AsyncTracker';
+import VerificationTokenData from '../../../../common/models/VerificationTokenData';
+import produce from 'immer';
 
 interface Props {
-	article: Fetchable<UserArticle>
 	location: RouteLocation,
-	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
+	onGetComments: FetchFunctionWithParams<{ id?: number, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onReloadArticle: (slug: string) => void,
-	onSetScreenState: (state: Partial<Screen<Fetchable<UserArticle>>>) => void,
+	onReloadArticle: (params: { id?: number, slug?: string }) => void,
+	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	tokenData: Fetchable<VerificationTokenData>,
 	user: UserAccount | null
 }
 class BrowserCommentsScreen extends React.Component<Props> {
@@ -29,17 +31,14 @@ class BrowserCommentsScreen extends React.Component<Props> {
 		super(props);
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
-				if (this.props.article.value && this.props.article.value.id === updatedArticle.id) {
-					this.props.onSetScreenState({
-						componentState: {
-							isLoading: false,
-							value: updatedArticle
-						}
-					});
+				if (this.props.tokenData.value && this.props.tokenData.value.article.id === updatedArticle.id) {
+					this.props.onSetScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.value.article = updatedArticle;
+					}));
 				}
 			}),
 			props.onRegisterUserChangeHandler(() => {
-				this.props.onReloadArticle(getPathParams(this.props.location).slug);
+				this.props.onReloadArticle(getPathParams(props.location));
 			})
 		);
 	}
@@ -49,51 +48,76 @@ class BrowserCommentsScreen extends React.Component<Props> {
 	public render() {
 		return (
 			<CommentsScreen
-				article={this.props.article}
 				location={this.props.location}
 				onGetComments={this.props.onGetComments}
 				onPostComment={this.props.onPostComment}
 				onReadArticle={this.props.onReadArticle}
 				onShareArticle={this.props.onShareArticle}
 				onToggleArticleStar={this.props.onToggleArticleStar}
+				tokenData={this.props.tokenData}
 				user={this.props.user}
 			/>
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'onReloadArticle' | 'onSetScreenState' | 'user'>> & {
-	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
-	onSetScreenState: (key: TScreenKey, state: Partial<Screen<Fetchable<UserArticle>>>) => void
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'location' | 'onReloadArticle' | 'onSetScreenState' | 'tokenData' | 'user'>> & {
+	onGetArticle: FetchFunctionWithParams<{ id?: number, slug?: string }, UserArticle>,
+	onGetVerificationTokenData: FetchFunctionWithParams<{ token: string }, VerificationTokenData>,
+	onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => void
 };
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
-	const setScreenState = (state: Partial<Screen<Fetchable<UserArticle>>>) => {
-		deps.onSetScreenState(key, state);
+	const setScreenState = (getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => {
+		deps.onSetScreenState(key, getNextState);
 	};
-	const reloadArticle = (slug: string) => {
-		setScreenState({
-			componentState: deps.onGetArticle({ slug }, article => {
-				setScreenState({ componentState: article });
-			})
+	const reloadArticle = (params: { id?: number, slug?: string }) => {
+		deps.onGetArticle(params, article => {
+			setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+				currentState.componentState.value.article = article.value;
+			}));
 		});
 	};
 	return {
 		create: (location: RouteLocation) => {
-			const article = deps.onGetArticle({ slug: getPathParams(location).slug }, article => {
-				setScreenState({
-					componentState: article,
-					title: article.value.title
+			let tokenData: Fetchable<VerificationTokenData>;
+			const pathParams = getPathParams(location);
+			if (pathParams.proofToken) {
+				tokenData = deps.onGetVerificationTokenData({ token: pathParams.proofToken }, data => {
+					setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.value = data.value;
+						currentState.title = data.value.article.title;
+					}));
 				});
-			});
+			} else {
+				const article = deps.onGetArticle({ slug: pathParams.slug }, article => {
+					setScreenState(produce<Screen<Fetchable<VerificationTokenData>>>(currentState => {
+						currentState.componentState.value = {
+							article: article.value,
+							readerName: null
+						};
+						currentState.title = article.value.title;
+					}));
+				});
+				if (article.isLoading) {
+					tokenData = { isLoading: true };
+				} else {
+					tokenData = {
+						isLoading: false,
+						value: {
+							article: article.value,
+							readerName: null
+						}
+					};
+				}
+			}
 			return {
 				key,
 				location,
-				componentState: article,
-				title: article.value ? article.value.title : 'Loading...'
+				componentState: tokenData,
+				title: tokenData.value ? tokenData.value.article.title : 'Loading...'
 			};
 		},
-		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => (
+		render: (state: Screen<Fetchable<VerificationTokenData>>, sharedState: SharedState) => (
 			<BrowserCommentsScreen
-				article={state.componentState}
 				location={state.location}
 				onGetComments={deps.onGetComments}
 				onPostComment={deps.onPostComment}
@@ -104,6 +128,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onSetScreenState={setScreenState}
 				onShareArticle={deps.onShareArticle}
 				onToggleArticleStar={deps.onToggleArticleStar}
+				tokenData={state.componentState}
 				user={sharedState.user}
 			/>
 		)

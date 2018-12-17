@@ -184,14 +184,16 @@ export default abstract class Root <
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
 
 	// state
-	protected readonly _setScreenState = (key: ScreenKey, state: Partial<Screen>) => {
+	protected readonly _setScreenState = (key: ScreenKey, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
 		const screen = this.state.screens.find(screen => screen.key === key);
 		if (screen) {
-			const screens = this.state.screens.slice();
-			screens.splice(screens.indexOf(screen), 1, { ...screen, ...state });
+			const
+				screens = this.state.screens.slice(),
+				nextState = getNextState(screen);
+			screens.splice(screens.indexOf(screen), 1, { ...screen, ...nextState });
 			this.setState({ screens });
-			if ('title' in state && state.title !== screen.title) {
-				this.onTitleChanged(state.title);
+			if ('title' in nextState && nextState.title !== screen.title) {
+				this.onTitleChanged(nextState.title);
 			}
 		}
 	};

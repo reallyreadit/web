@@ -121,6 +121,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
 			onGetArticle: this.props.serverApi.getArticle,
+			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
 			onPostComment: this._postComment,
 			onReadArticle: this._readArticle,

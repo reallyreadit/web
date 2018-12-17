@@ -13,6 +13,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
+import VerificationTokenData from '../../../../common/models/VerificationTokenData';
 
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
@@ -34,26 +35,25 @@ export function getPathParams(location: RouteLocation) {
 	}
 	if (location.path.startsWith('/proof')) {
 		return {
-			slug: matches[2] + '_' + matches[3],
-			userName: matches[1]
+			proofToken: matches[1]
 		}
 	}
 	throw new Error('Unexpected path');
 }
 interface Props {
-	article: Fetchable<UserArticle>,
 	location: RouteLocation,
-	onGetComments: FetchFunctionWithParams<{ slug: string }, Comment[]>,
+	onGetComments: FetchFunctionWithParams<{ id?: number, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	tokenData: Fetchable<VerificationTokenData>,
 	user: UserAccount | null
 }
 export default class extends React.Component<
 	Props,
 	{ comments: Fetchable<Comment[]> }
-	> {
+> {
 	private readonly _addComment = (text: string, articleId: number) => {
 		return this.props
 			.onPostComment(text, articleId)
@@ -81,7 +81,7 @@ export default class extends React.Component<
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _loadComments = () => {
 		return this.props.onGetComments(
-			{ slug: getPathParams(this.props.location).slug },
+			getPathParams(this.props.location),
 			this._asyncTracker.addCallback(comments => { this.setState({ comments }); })
 		);
 	};
@@ -98,33 +98,40 @@ export default class extends React.Component<
 	public render() {
 		const
 			isUserSignedIn = !!this.props.user,
-			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead,
-			pathParams = getPathParams(this.props.location);
+			isAllowedToPost = this.props.tokenData.value && isUserSignedIn && this.props.tokenData.value.article.isRead,
+			highlightedCommentId = getPathParams(this.props.location).commentId;
 		return (
 			<div className="comments-screen_udh2l6">
-				{this.props.article.isLoading || this.state.comments.isLoading ?
+				{this.props.tokenData.isLoading || this.state.comments.isLoading ?
 					<LoadingOverlay /> :
 					<>
-						{pathParams.userName ?
-							<div>{pathParams.userName} really read this article!</div> :
+						{this.props.tokenData.value.readerName ?
+							<div className="proof">
+								<div className="reader">
+									<div className="text">
+										<strong>{this.props.tokenData.value.readerName} read</strong> {this.props.tokenData.value.article.title}.
+									</div>
+								</div>
+								<div className="stamp">
+									<img src="/images/proof-stamp.svg" alt="Proof Stamp" />
+								</div>
+							</div> :
 							null}
 						<ArticleList>
-							{this.props.article.value ?
-								<li>
-									<ArticleDetails
-										article={this.props.article.value}
-										isUserSignedIn={isUserSignedIn}
-										onRead={this.props.onReadArticle}
-										onShare={this.props.onShareArticle}
-										onToggleStar={this.props.onToggleArticleStar}
-										onViewComments={this._noop}
-									/>
-								</li> :
-								null}
+							<li>
+								<ArticleDetails
+									article={this.props.tokenData.value.article}
+									isUserSignedIn={isUserSignedIn}
+									onRead={this.props.onReadArticle}
+									onShare={this.props.onShareArticle}
+									onToggleStar={this.props.onToggleArticleStar}
+									onViewComments={this._noop}
+								/>
+							</li>
 						</ArticleList>
 						<h3>Comments</h3>
 						<CommentBox
-							articleId={(this.props.article.value && this.props.article.value.id) || null}
+							articleId={this.props.tokenData.value.article.id}
 							isAllowedToPost={isAllowedToPost}
 							onPostComment={this._addComment}
 						/>
@@ -132,7 +139,7 @@ export default class extends React.Component<
 							this.state.comments.value.length ?
 								<CommentList
 									comments={this.state.comments.value}
-									highlightedCommentId={parseInt(pathParams.commentId)}
+									highlightedCommentId={highlightedCommentId ? parseInt(highlightedCommentId) : null}
 									isAllowedToPost={isAllowedToPost}
 									mode="reply"
 									onPostComment={this._addReply}

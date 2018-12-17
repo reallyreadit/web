@@ -15,6 +15,7 @@ import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListIte
 import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserStats from '../../../common/models/UserStats';
 import Leaderboards from '../../../common/models/Leaderboards';
+import VerificationTokenData from '../../../common/models/VerificationTokenData';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -132,11 +133,12 @@ export default abstract class {
 	};
 
 	// Articles
-	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
-	public readonly getComments = this.createFetchFunctionWithParams<{ slug: string }, Comment[]>('/Articles/ListComments');
+	public readonly getArticle = this.createFetchFunctionWithParams<{ proofToken?: string, slug?: string }, UserArticle>('/Articles/Details');
+	public readonly getComments = this.createFetchFunctionWithParams <{ proofToken?: string, slug?: string }, Comment[]>('/Articles/ListComments');
 	public readonly getHotTopics = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>('/Articles/ListHotTopics');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
+	public readonly getVerificationTokenData = this.createFetchFunctionWithParams<{ token: string }, VerificationTokenData>('/Articles/VerifyProofToken');
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post(new Request('/Extension/SendInstructions'));

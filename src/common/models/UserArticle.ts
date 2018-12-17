@@ -16,5 +16,6 @@ export default interface UserArticle {
 	dateCreated: string | null,
 	percentComplete: number,
 	isRead: boolean,
-	dateStarred: string | null
+	dateStarred: string | null,
+	proofToken: string | null
 }
