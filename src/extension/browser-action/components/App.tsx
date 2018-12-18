@@ -12,7 +12,7 @@ import DialogKey from '../../../common/routing/DialogKey';
 import UserArticle from '../../../common/models/UserArticle';
 import Toaster, { Toast } from '../../../common/components/Toaster';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import ClipboardService from '../../../common/services/ClipboardService';
+import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import AsyncTracker from '../../../common/AsyncTracker';
 
@@ -52,7 +52,7 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
 
 	// clipboard
-	private readonly _clipboard = new ClipboardService((content, intent) => {
+	private readonly _clipboard = new BrowserClipboardService((content, intent) => {
 		this._toaster.addToast(content, intent);
 	});
 

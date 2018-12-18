@@ -23,6 +23,7 @@ import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import UpdateToast from './UpdateToast';
 import Footer from './BrowserRoot/Footer';
+import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -117,7 +118,7 @@ export default class extends Root<Props, State, SharedState> {
 	};
 
 	constructor(props: Props) {
-		super('browser-root_6tjc3j', props);
+		super('browser-root_6tjc3j', BrowserClipboardService, props);
 
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {

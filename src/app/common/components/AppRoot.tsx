@@ -19,6 +19,7 @@ import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
+import AppClipboardService from '../../../common/services/AppClipboardService';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -112,7 +113,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	};
 
 	constructor(props: Props) {
-		super('app-root_vc3j5h', props);
+		super('app-root_vc3j5h', AppClipboardService, props);
 
 		// screens
 		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {

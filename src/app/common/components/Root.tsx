@@ -29,9 +29,9 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import classNames, { ClassValue } from 'classnames';
 import RootErrorBoundary from './RootErrorBoundary';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import ClipboardService from '../../../common/services/ClipboardService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import HttpEndpoint from '../../../common/HttpEndpoint';
+import ClipboardService from '../../../common/services/ClipboardService';
 
 export interface Props {
 	captcha: Captcha,
@@ -59,7 +59,7 @@ export interface State extends ToasterState {
 	user: UserAccount | null
 }
 export type SharedState = Pick<State, 'user'>;
-export default abstract class Root <
+export default abstract class Root<
 	P extends Props,
 	S extends State,
 	TSharedState extends SharedState
@@ -101,9 +101,7 @@ export default abstract class Root <
 	};
 
 	// clipboard
-	protected readonly _clipboard = new ClipboardService((content, intent) => {
-		this._toaster.addToast(content, intent);
-	});
+	protected readonly _clipboard: ClipboardService;
 
 	// comments
 	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: number) => {
@@ -325,7 +323,7 @@ export default abstract class Root <
 		this.reloadWindow();
 	};
 
-	constructor(className: ClassValue, props: P) {
+	constructor(className: ClassValue, clipboard: new (onAddToast: (content: string, intent: Intent) => void) => ClipboardService, props: P) {
 		super(props);
 		this._concreteClassName = className;
 
@@ -334,6 +332,11 @@ export default abstract class Root <
 			toasts: [],
 			user: props.initialUser
 		} as S;
+
+		// clipboard
+		this._clipboard = new clipboard((content, intent) => {
+			this._toaster.addToast(content, intent);
+		});
 
 		// delegates
 		this._readArticle = this.readArticle.bind(this);
