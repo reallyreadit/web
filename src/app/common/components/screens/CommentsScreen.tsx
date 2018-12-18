@@ -116,7 +116,7 @@ export default class extends React.Component<
 							<div className="proof">
 								<div className="reader">
 									<div className="text">
-										<strong>{this.props.tokenData.value.readerName} read</strong> {this.props.tokenData.value.article.title}.
+										<strong>{this.props.tokenData.value.readerName} read</strong> this article.
 									</div>
 								</div>
 								<div className="stamp">
