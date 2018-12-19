@@ -1,0 +1,54 @@
+/*
+	componentPath: src/app/common/components/controls/articles/CommunityReadsList
+	cssComponentId: community-reads-list_g4cy3n
+*/
+
+.community-reads-list_g4cy3n {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+}
+.community-reads-list_g4cy3n > h3 {
+	flex: 0 0 auto;
+	padding-bottom: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 18px;
+	font-weight: normal;
+	margin-top: 10px;
+	text-transform: uppercase;
+}
+.community-reads-list_g4cy3n > .article-details {
+	flex: 0 0 auto;
+}
+.community-reads-list_g4cy3n > .sort {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 25px 0 10px 0;
+}
+.community-reads-list_g4cy3n > .sort > button {
+	font-size: 18px;
+	cursor: pointer;
+	padding: 5px 10px;
+	background-color: transparent;
+	border: none;
+	outline: none;
+	color: #666;
+	text-transform: uppercase;
+}
+.community-reads-list_g4cy3n > .sort > .selected {
+	font-weight: bold;
+	color: black;
+}
+.community-reads-list_g4cy3n > .sort > .break {
+	width: 1px;
+	height: 24px;
+	background-color: #666;
+	margin: 0 5px;
+}
+.community-reads-list_g4cy3n > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}

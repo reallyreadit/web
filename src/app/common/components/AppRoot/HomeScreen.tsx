@@ -2,8 +2,8 @@ import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
-import HotTopics from '../../../../common/models/HotTopics';
-import HotTopicsList, { updateHotTopics } from '../controls/articles/HotTopicsList';
+import CommunityReads from '../../../../common/models/CommunityReads';
+import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
 import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -13,11 +13,12 @@ import { Screen, SharedState } from '../Root';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import produce from 'immer';
 import WelcomeInfoBox from '../WelcomeInfoBox';
+import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
+	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>,
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => Function,
@@ -27,24 +28,46 @@ interface Props {
 	user: UserAccount | null
 }
 interface State {
-	hotTopics: Fetchable<HotTopics>
+	communityReads: Fetchable<CommunityReads>,
+	isLoadingArticles: boolean,
+	sort: CommunityReadSort
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changeSort = (sort: CommunityReadSort) => {
+		this.setState({
+			isLoadingArticles: true,
+			sort
+		});
+		this.props.onGetCommunityReads(
+			{
+				pageNumber: 1,
+				pageSize: 10,
+				sort
+			},
+			this._asyncTracker.addCallback(communityReads => {
+				this.setState({
+					communityReads,
+					isLoadingArticles: false
+				});
+			})
+		)
+	};
 	private readonly _loadMore = () => {
 		return this._asyncTracker.addPromise(new Promise<void>((resolve, reject) => {
-			this.props.onGetHotTopics(
+			this.props.onGetCommunityReads(
 				{
-					pageNumber: this.state.hotTopics.value.articles.pageNumber + 1,
-					pageSize: 10
+					pageNumber: this.state.communityReads.value.articles.pageNumber + 1,
+					pageSize: 10,
+					sort: this.state.sort
 				},
-				this._asyncTracker.addCallback(hotTopics => {
+				this._asyncTracker.addCallback(communityReads => {
 					resolve();
 					this.setState(produce<State>(state => {
-						state.hotTopics.value.articles = {
-							...hotTopics.value.articles,
-							items: state.hotTopics.value.articles.items.concat(
-								hotTopics.value.articles.items
+						state.communityReads.value.articles = {
+							...communityReads.value.articles,
+							items: state.communityReads.value.articles.items.concat(
+								communityReads.value.articles.items
 							)
 						}
 					}));
@@ -55,16 +78,18 @@ class HomeScreen extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			hotTopics: props.onGetHotTopics(
-				{ pageNumber: 1, pageSize: 10 },
-				this._asyncTracker.addCallback(hotTopics => {
-					this.setState({ hotTopics });
+			communityReads: props.onGetCommunityReads(
+				{ pageNumber: 1, pageSize: 10, sort: CommunityReadSort.Hot },
+				this._asyncTracker.addCallback(communityReads => {
+					this.setState({ communityReads });
 				})
-			)
+			),
+			isLoadingArticles: false,
+			sort: CommunityReadSort.Hot
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
-				updateHotTopics.call(this, updatedArticle, isCompletionCommit);
+				updateCommunityReads.call(this, updatedArticle, isCompletionCommit);
 			})
 		);
 	}
@@ -74,30 +99,35 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<div className="home-screen_an7vm5">
-				{this.state.hotTopics.isLoading ?
+				{this.state.communityReads.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
 						{(
 							this.props.user &&
-							!this.state.hotTopics.value.userStats
+							!this.state.communityReads.value.userStats
 						) ?
 							<WelcomeInfoBox /> :
 							null}
-						<HotTopicsList
-							aotd={this.state.hotTopics.value.aotd}
-							articles={this.state.hotTopics.value.articles}
+						<CommunityReadsList
+							aotd={this.state.communityReads.value.aotd}
+							articles={this.state.communityReads.value.articles}
+							isLoadingArticles={this.state.isLoadingArticles}
 							isUserSignedIn={!!this.props.user}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onReadArticle={this.props.onReadArticle}
 							onShareArticle={this.props.onShareArticle}
+							onSortChange={this._changeSort}
 							onToggleArticleStar={this.props.onToggleArticleStar}
 							onViewComments={this.props.onViewComments}
+							sort={this.state.sort}
 						/>
-						<AsyncActionLink
-							text="Show more"
-							onClick={this._loadMore}
-						/>
+						{!this.state.isLoadingArticles ?
+							<AsyncActionLink
+								text="Show more"
+								onClick={this._loadMore}
+							/> :
+							null}
 					</>}
 			</div>
 		);

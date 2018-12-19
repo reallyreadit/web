@@ -10,12 +10,13 @@ import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import PageResult from '../../../common/models/PageResult';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
-import HotTopics from '../../../common/models/HotTopics';
+import CommunityReads from '../../../common/models/CommunityReads';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserStats from '../../../common/models/UserStats';
 import Leaderboards from '../../../common/models/Leaderboards';
 import VerificationTokenData from '../../../common/models/VerificationTokenData';
+import CommunityReadSort from '../../../common/models/CommunityReadSort';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -135,7 +136,7 @@ export default abstract class {
 	// Articles
 	public readonly getArticle = this.createFetchFunctionWithParams<{ proofToken?: string, slug?: string }, UserArticle>('/Articles/Details');
 	public readonly getComments = this.createFetchFunctionWithParams <{ proofToken?: string, slug?: string }, Comment[]>('/Articles/ListComments');
-	public readonly getHotTopics = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>('/Articles/ListHotTopics');
+	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>('/Articles/CommunityReads');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly getVerificationTokenData = this.createFetchFunctionWithParams<{ token: string }, VerificationTokenData>('/Articles/VerifyProofToken');

@@ -154,7 +154,7 @@ export default class extends Root<Props, State, SharedState> {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetHotTopics: this.props.serverApi.getHotTopics,
+				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onInstallExtension: this._installExtension,
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onReadArticle: this._readArticle,

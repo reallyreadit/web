@@ -2,8 +2,8 @@ import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../serverApi/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
-import HotTopics from '../../../../common/models/HotTopics';
-import HotTopicsList, { updateHotTopics } from '../controls/articles/HotTopicsList';
+import CommunityReads from '../../../../common/models/CommunityReads';
+import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -13,13 +13,14 @@ import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
 import PromoCarousel from '../PromoCarousel';
 import WelcomeInfoBox from '../WelcomeInfoBox';
+import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 
 interface Props {
 	isBrowserCompatible: boolean,
 	isExtensionInstalled: boolean | null,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetHotTopics: FetchFunctionWithParams<{ pageNumber: number, pageSize: number }, HotTopics>,
+	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -31,34 +32,70 @@ interface Props {
 	user: UserAccount | null
 }
 interface State {
-	hotTopics: Fetchable<HotTopics>
+	communityReads: Fetchable<CommunityReads>,
+	isLoadingArticles: boolean,
+	sort: CommunityReadSort
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _loadPage = (pageNumber: number) => {
+	private readonly _changePage = (pageNumber: number) => {
+		this.setState({ isLoadingArticles: true });
+		this.props.onGetCommunityReads(
+			{ pageNumber: pageNumber, pageSize: 40, sort: this.state.sort },
+			this._asyncTracker.addCallback(communityReads => {
+				this.setState({
+					communityReads,
+					isLoadingArticles: false
+				});
+			})
+		);
+	};
+	private readonly _changeSort = (sort: CommunityReadSort) => {
 		this.setState({
-			hotTopics: this.fetchHotTopics(pageNumber)
+			isLoadingArticles: true,
+			sort
 		});
+		this.props.onGetCommunityReads(
+			{
+				pageNumber: 1,
+				pageSize: 40,
+				sort
+			},
+			this._asyncTracker.addCallback(communityReads => {
+				this.setState({
+					communityReads,
+					isLoadingArticles: false
+				});
+			})
+		)
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			hotTopics: this.fetchHotTopics(1)
+			communityReads: props.onGetCommunityReads(
+				{ pageNumber: 1, pageSize: 40, sort: CommunityReadSort.Hot },
+				this._asyncTracker.addCallback(communityReads => {
+					this.setState({ communityReads });
+				})
+			),
+			isLoadingArticles: false,
+			sort: CommunityReadSort.Hot
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
-				updateHotTopics.call(this, updatedArticle, isCompletionCommit);
+				updateCommunityReads.call(this, updatedArticle, isCompletionCommit);
 			}),
 			props.onRegisterUserChangeHandler(() => {
-				this._loadPage(1);
-			})
-		);
-	}
-	private fetchHotTopics(pageNumber: number) {
-		return this.props.onGetHotTopics(
-			{ pageNumber, pageSize: 40 },
-			this._asyncTracker.addCallback(hotTopics => {
-				this.setState({ hotTopics });
+				this.setState({
+					communityReads: props.onGetCommunityReads(
+						{ pageNumber: 1, pageSize: 40, sort: CommunityReadSort.Hot },
+						this._asyncTracker.addCallback(communityReads => {
+							this.setState({ communityReads });
+						})
+					),
+					isLoadingArticles: false,
+					sort: CommunityReadSort.Hot
+				});
 			})
 		);
 	}
@@ -82,32 +119,37 @@ class HomeScreen extends React.Component<Props, State> {
 						</button>
 					</div> :
 					null}
-				{this.state.hotTopics.isLoading ?
+				{this.state.communityReads.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
 						{(
 							this.props.user &&
 							this.props.isExtensionInstalled &&
-							!this.state.hotTopics.value.userStats
+							!this.state.communityReads.value.userStats
 						 ) ?
 							<WelcomeInfoBox /> :
 							null}
-						<HotTopicsList
-							aotd={this.state.hotTopics.value.aotd}
-							articles={this.state.hotTopics.value.articles}
+						<CommunityReadsList
+							aotd={this.state.communityReads.value.aotd}
+							articles={this.state.communityReads.value.articles}
+							isLoadingArticles={this.state.isLoadingArticles}
 							isUserSignedIn={!!this.props.user}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onReadArticle={this.props.onReadArticle}
 							onShareArticle={this.props.onShareArticle}
+							onSortChange={this._changeSort}
 							onToggleArticleStar={this.props.onToggleArticleStar}
 							onViewComments={this.props.onViewComments}
+							sort={this.state.sort}
 						/>
-						<PageSelector
-							pageNumber={this.state.hotTopics.value.articles.pageNumber}
-							pageCount={this.state.hotTopics.value.articles.pageCount}
-							onChange={this._loadPage}
-						/>
+						{!this.state.isLoadingArticles ?
+							<PageSelector
+								pageNumber={this.state.communityReads.value.articles.pageNumber}
+								pageCount={this.state.communityReads.value.articles.pageCount}
+								onChange={this._changePage}
+							/> :
+							null}
 					</>}
 			</div>
 		);

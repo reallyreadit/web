@@ -146,7 +146,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetHotTopics: this.props.serverApi.getHotTopics,
+				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
