@@ -29,12 +29,21 @@ img {
 `;
 function createAbsoluteUrl(baseUrl: string, attrValue: string) {
 	if (/^\/\/|https?:/i.test(attrValue)) {
+		// absolute url
 		return attrValue.replace(/^\/\/|http:\/\//, 'https://');
-	} else {
+	} else if (/^\//.test(attrValue)) {
+		// absolute path
 		return (
-			baseUrl.replace(/\/$/, '') +
-			'/' +
-			attrValue.replace(/^\//, '')
+			'https://' +
+			new URL(baseUrl).host +
+			attrValue
+		);
+	} else {
+		// relative path
+		return (
+			baseUrl.replace(/^http:/, 'https:') +
+			(/\/$/.test(baseUrl) ? '' : '/') +
+			attrValue
 		);
 	}
 }
