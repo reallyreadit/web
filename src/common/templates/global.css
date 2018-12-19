@@ -498,5 +498,6 @@ table {
 }
 
 button {
-	font-family: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
 }
