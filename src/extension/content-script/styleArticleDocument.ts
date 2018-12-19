@@ -2,7 +2,7 @@ const styleContent = `
 html {
 	font-family: serif;
 	font-size: 16pt;
-	line-height: 1.5em;
+	line-height: 1.35em;
 	color: #222;
 }
 body {
