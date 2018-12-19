@@ -37,7 +37,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.AdminPage
 	},
 	(function () {
-		const pathRegExp = /^\/articles\/([^/]+)\/([^/]+)(\/[^/]+)?$/;
+		const pathRegExp = /^\/articles\/([^/]+)\/([^/]+)\/([^/]+)?$/;
 		return {
 			createUrl: params => {
 				let url = `/articles/${params['sourceSlug']}/${params['articleSlug']}`;
