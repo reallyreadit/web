@@ -26,6 +26,15 @@ export default function (mode: 'analyze' | 'mutate') {
 			break;
 		case 'mutate':
 			parseResult = new Readability(window.document).parse();
+			if (!window.document.documentElement) {
+				window.document.appendChild(window.document.createElement('html'));
+			}
+			if (!window.document.head) {
+				window.document.documentElement.appendChild(window.document.createElement('head'));
+			}
+			if (!window.document.body) {
+				window.document.documentElement.appendChild(window.document.createElement('body'));
+			}
 			window.document.body.innerHTML = parseResult.content;
 			contentElements = getContentElements(window.document.body);
 			styleArticleDocument(window.document, parseResult.title, parseResult.byline);
