@@ -4,7 +4,6 @@ import Captcha from '../Captcha';
 import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
-import Comment from '../../../common/models/Comment';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
@@ -16,7 +15,6 @@ import CreateAccountDialog from './CreateAccountDialog';
 import SignInDialog from './SignInDialog';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
-import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
 import createSettingsPageScreenFactory from './SettingsPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import ShareArticleDialog from './ShareArticleDialog';
@@ -117,9 +115,6 @@ export default abstract class Root<
 				});
 				return comment;
 			});
-	};
-	protected readonly _readReply = (comment: Comment) => {
-		this.props.serverApi.readReply(comment.id);
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
 
@@ -362,10 +357,6 @@ export default abstract class Root<
 				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
 				onUpdateEmailSubscriptions: this._updateEmailSubscriptions
 			}),
-			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
-				onGetReplies: this.props.serverApi.listReplies,
-				onReadReply: this._readReply
-			}),
 			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
 			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
@@ -449,7 +440,7 @@ export default abstract class Root<
 		};
 	}
 	protected abstract renderBody(): React.ReactNode;
-	protected abstract viewComments(article: UserArticle): void;
+	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>): void;
 	public componentDidMount() {
 		if (this.state.user && this.state.user.timeZoneId == null) {
 			this.setTimeZone();

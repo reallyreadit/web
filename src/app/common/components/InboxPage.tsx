@@ -8,7 +8,7 @@ import LoadingOverlay from './controls/LoadingOverlay';
 
 interface Props {
 	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) => Fetchable<PageResult<Comment>>,
-	onReadReply: (comment: Comment) => void
+	onViewThread: (comment: Comment) => void
 }
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
 	return {
@@ -50,7 +50,7 @@ export default class InboxPage extends React.Component<
 									<CommentList
 										comments={this.state.replies.value.items}
 										mode="link"
-										onViewThread={this.props.onReadReply}
+										onViewThread={this.props.onViewThread}
 									/> :
 									<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
 								null}

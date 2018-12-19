@@ -315,7 +315,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			</>
 		);
 	}
-	protected viewComments(article: UserArticle) {
+	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		this.pushScreen(
 			ScreenKey.Comments,

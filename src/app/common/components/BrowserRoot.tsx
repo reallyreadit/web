@@ -24,6 +24,8 @@ import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/
 import UpdateToast from './UpdateToast';
 import Footer from './BrowserRoot/Footer';
 import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
+import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
+import Comment from '../../../common/models/Comment';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -101,6 +103,18 @@ export default class extends Root<Props, State, SharedState> {
 	private readonly _viewStarred = () => {
 		this.setState(this.replaceScreen(ScreenKey.Starred));
 	};
+	private readonly _viewThread = (comment: Comment) => {
+		if (!comment.dateRead) {
+			this.props.serverApi.readReply(comment.id);
+		}
+		this.viewComments(
+			{
+				slug: comment.articleSlug,
+				title: comment.articleTitle
+			},
+			comment.id
+		);
+	};
 
 	// window
 	private readonly _handleHistoryPopState = () => {
@@ -163,6 +177,10 @@ export default class extends Root<Props, State, SharedState> {
 				onShareArticle: this._shareArticle,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
+			}),
+			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
+				onGetReplies: this.props.serverApi.listReplies,
+				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
@@ -367,13 +385,19 @@ export default class extends Root<Props, State, SharedState> {
 			</>
 		);
 	}
-	protected viewComments(article: UserArticle) {
-		const [sourceSlug, articleSlug] = article.slug.split('_');
-		this.setState(this.replaceScreen(
-			ScreenKey.Comments, {
+	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: number) {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			urlParams: { [key: string]: string } = {
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
-			},
+			};
+		if (highlightedCommentId != null) {
+			urlParams['commentId'] = highlightedCommentId.toString();
+		}
+		this.setState(this.replaceScreen(
+			ScreenKey.Comments,
+			urlParams,
 			article.title
 		));
 	}
@@ -394,6 +418,8 @@ export default class extends Root<Props, State, SharedState> {
 		}
 		// update other tabs with the latest user data
 		this.props.browserApi.updateUser(this.state.user);
+		// update the extension with the latest notification data
+		this.props.extensionApi.updateNewReplyNotification(this.props.newReplyNotification);
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

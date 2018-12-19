@@ -244,7 +244,15 @@ server = server.get('/inbox', (req, res, next) => {
 	if (hasNewUnreadReply(req.sessionState.newReplyNotification)) {
 		req.api
 			.ackNewReply()
-			.then(next);
+			.then(() => {
+				const now = Date.now();
+				req.sessionState.newReplyNotification = {
+					...req.sessionState.newReplyNotification,
+					lastNewReplyAck: now,
+					timestamp: now
+				};
+				next();
+			});
 	} else {
 		next();
 	}
