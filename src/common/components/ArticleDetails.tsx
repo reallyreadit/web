@@ -19,7 +19,7 @@ interface Props {
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (article: UserArticle) => void,
 	onToggleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onViewComments: (article: UserArticle) => void,
 	showDeleteControl?: boolean
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
@@ -49,7 +49,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	};
 	private readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
 		e.preventDefault();
-		this.props.onViewComments(this.props.article, e as React.MouseEvent<HTMLAnchorElement>);
+		this.props.onViewComments(this.props.article);
 	};
 	constructor(props: Props) {
 		super(props);
