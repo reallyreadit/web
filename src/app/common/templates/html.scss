@@ -12,6 +12,9 @@ html {
 html, body, #root {
 	height: 100%;
 }
+body {
+	overflow: hidden;
+}
 a, button, div, span, svg {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -19,7 +22,9 @@ a {
 	color: black;
 }
 html > body > div:not(#root) {
-	position: relative;
+	position: absolute;
+	right: 0;
+	bottom: 0;
 	z-index: 100;
 	transform: translateX(75px);
 	transition: transform 200ms;
