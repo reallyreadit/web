@@ -25,4 +25,3 @@ export function createQueryString(kvps: { [key: string]: string }) {
 			.join('&')
 	);
 }
-export const clientTypeQueryStringKey = 'clientType';
