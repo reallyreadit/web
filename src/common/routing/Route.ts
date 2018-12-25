@@ -11,13 +11,19 @@ export interface Route<TDialogKey, TScreenKey> {
 	queryStringKeys?: string[],
 	screenKey: TScreenKey
 }
-export function findRouteByLocation<TDialogKey, TScreenKey>(routes: Route<TDialogKey, TScreenKey>[], location: RouteLocation) {
+export function findRouteByLocation<TDialogKey, TScreenKey>(routes: Route<TDialogKey, TScreenKey>[], location: RouteLocation, qsKeysToExclude?: string[]) {
 	let matches = routes.filter(route => route.pathRegExp.test(location.path));
 	if (!matches) {
 		return null;
 	}
-	if (location.queryString) {
-		const keysToMatch = Object.keys(parseQueryString(location.queryString));
+	let keysToMatch: string[];
+	if (
+		location.queryString && (
+			keysToMatch = Object
+				.keys(parseQueryString(location.queryString))
+				.filter(key => !(qsKeysToExclude || []).includes(key))
+		).length
+	) {
 		matches = matches.filter(route => (
 			route.queryStringKeys &&
 			route.queryStringKeys.length === keysToMatch.length &&

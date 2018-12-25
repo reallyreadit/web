@@ -11,13 +11,14 @@ import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 import routes from '../../common/routing/routes';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
+import * as url from 'url';
 import PasswordResetRequest from '../../common/models/PasswordResetRequest';
 import Comment from '../../common/models/Comment';
 import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
@@ -25,7 +26,6 @@ import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import * as path from 'path';
-import DialogKey from '../../common/routing/DialogKey';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -34,8 +34,25 @@ function findRouteByRequest(req: express.Request) {
 		{
 			path: req.path,
 			queryString: createQueryString(req.query)
-		}
+		},
+		[clientTypeQueryStringKey]
 	);
+}
+
+// redirect helper function
+const nodeUrl = url;
+function redirect(req: express.Request, res: express.Response, url: string) {
+	if (clientTypeQueryStringKey in req.query) {
+		const redirectUrl = nodeUrl.parse(url, true);
+		url = nodeUrl.format({
+			pathname: redirectUrl.pathname,
+			query: {
+				...redirectUrl.query,
+				[clientTypeQueryStringKey]: req.query[clientTypeQueryStringKey]
+			}
+		})
+	}
+	res.redirect(url);
 }
 
 // read package.json version info
@@ -156,25 +173,24 @@ server = server.use((req, res, next) => {
 	} else if (route.authLevel === UserAccountRole.Admin) {
 		res.sendStatus(404);
 	} else {
-		res.redirect(findRouteByKey(routes, ScreenKey.Home).createUrl());
+		redirect(req, res, findRouteByKey(routes, ScreenKey.Home).createUrl());
 	}
 });
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
-	const route = findRouteByKey(routes, ScreenKey.EmailConfirmation);
 	req.api
 		.fetchJson('POST', new ApiRequest('/UserAccounts/ConfirmEmail2', { token: req.query['token'] }))
 		.then(() => {
-			res.redirect(route.createUrl({ 'result': 'success' }));
+			redirect(req, res, '/email/confirm/success');
 		})
 		.catch((error: string) => {
 			const redirectUrl = ({
-				'AlreadyConfirmed': route.createUrl({ 'result': 'already-confirmed' }),
-				'Expired': route.createUrl({ 'result': 'expired' }),
-				'NotFound': route.createUrl({ 'result': 'not-found' })
+				'AlreadyConfirmed': '/email/confirm/already-confirmed',
+				'Expired': '/email/confirm/expired',
+				'NotFound': '/email/confirm/not-found'
 			} as { [key: string]: string })[error];
 			if (redirectUrl) {
-				res.redirect(redirectUrl);
+				redirect(req, res, redirectUrl);
 			} else {
 				res.sendStatus(400);
 			}
@@ -184,30 +200,22 @@ server = server.get('/resetPassword', (req, res) => {
 	req.api
 		.fetchJson<PasswordResetRequest>('GET', new ApiRequest('/UserAccounts/PasswordResetRequest2', { token: req.query['token'] }))
 		.then(resetRequest => {
-			res.redirect(
-				findRouteByKey(routes, ScreenKey.Home, DialogKey.ResetPassword)
-					.createUrl({
-						'email': resetRequest.emailAddress,
-						'token': req.query['token']
-					})
-			);
+			redirect(req, res, url.format({
+				pathname: '/',
+				query: {
+					'reset-password': '',
+					'email': resetRequest.emailAddress,
+					'token': req.query['token']
+				}
+			}));
 		})
 		.catch((error: string) => {
-			const 
-				route = findRouteByKey(routes, ScreenKey.Password),
-				routeUrlActionParam = 'reset',
-				redirectUrl = ({
-					'Expired': route.createUrl({
-						'action': routeUrlActionParam,
-						'result': 'expired'
-					}),
-					'NotFound': route.createUrl({
-						'action': routeUrlActionParam,
-						'result': 'not-found'
-					})
-				} as { [key: string]: string })[error];
+			const redirectUrl = ({
+				'Expired': '/password/reset/expired',
+				'NotFound': '/password/reset/not-found'
+			} as { [key: string]: string })[error];
 			if (redirectUrl) {
-				res.redirect(redirectUrl);
+				redirect(req, res, redirectUrl);
 			} else {
 				res.sendStatus(400);
 			}
@@ -225,14 +233,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 		.fetchJson<Comment>('POST', new ApiRequest(path, params))
 		.then(comment => {
 			const slugParts = comment.articleSlug.split('_');
-			res.redirect(
-				findRouteByKey(routes, ScreenKey.Comments)
-					.createUrl({
-						'sourceSlug': slugParts[0],
-						'articleSlug': slugParts[1],
-						'commentId': comment.id.toString()
-					})
-			);
+			redirect(req, res, `/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
 		})
 		.catch(() => {
 			res.sendStatus(400);
@@ -267,7 +268,7 @@ server = server.use((req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	const browserApi = new BrowserApi();
-	const clientType = req.headers['user-agent'] === 'reallyread.it iOS App WebView' ? ClientType.App : ClientType.Browser;
+	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
 		captcha: new Captcha(),
 		initialLocation: {
