@@ -7,6 +7,13 @@ declare global {
 		grecaptcha: ReCaptchaV3,
 		initData: InitData,
 		onReCaptchaLoaded: () => void,
-		reallyreadit: WebViewMessagingListeners
+		reallyreadit: WebViewMessagingListeners,
+		webkit: {
+			messageHandlers: {
+				reallyreadit: {
+					postMessage: (message: any) => void
+				}
+			}
+		}
 	}
 }

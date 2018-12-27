@@ -41,7 +41,11 @@ export default class {
 		};
 	}
 	private postMessage(message: { data: any, callbackId: number | null } | { data: any, id: number }) {
-		window.postMessage('reallyreadit:' + JSON.stringify(message), '*');
+		if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.reallyreadit) {
+			window.webkit.messageHandlers.reallyreadit.postMessage(message);
+		} else {
+			window.postMessage('reallyreadit:' + JSON.stringify(message), '*');
+		}
 	}
 	public addListener(listener: OnMessageListener) {
 		this._onMessageListeners.push(listener);
