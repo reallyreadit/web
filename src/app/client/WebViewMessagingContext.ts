@@ -1,4 +1,16 @@
-export interface WebViewMessagingListeners {
+declare global {
+	interface Window {
+		reallyreadit: WebViewMessagingListeners,
+		webkit: {
+			messageHandlers: {
+				reallyreadit: {
+					postMessage: (message: any) => void
+				}
+			}
+		}
+	}
+}
+interface WebViewMessagingListeners {
 	sendResponse: (jsonCallbackResponse: string) => void,
 	postMessage: (jsonMessage: string) => void
 }
