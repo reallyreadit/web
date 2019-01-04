@@ -3,7 +3,7 @@ declare global {
 		reallyreadit: WebViewMessagingListeners,
 		webkit: {
 			messageHandlers: {
-				[key: string]: {
+				reallyreadit: {
 					postMessage: (message: any) => void
 				}
 			}
@@ -20,7 +20,6 @@ interface ResponseCallback {
 	function: (data: any) => void
 }
 export default class {
-	private readonly _webkitMessageHanlderKey: string | undefined;
 	private readonly _onMessageListeners: OnMessageListener[] = [];
 	private readonly _responseCallbacks: ResponseCallback[] = [];
 	constructor() {
@@ -52,14 +51,10 @@ export default class {
 				});
 			}
 		};
-		if (window.webkit && window.webkit.messageHandlers) {
-			this._webkitMessageHanlderKey = ['reallyreadit:WebApp', 'reallyreadit:Article']
-				.find(key => key in window.webkit.messageHandlers)
-		}
 	}
 	private postMessage(message: { data: any, callbackId: number | null } | { data: any, id: number }) {
-		if (this._webkitMessageHanlderKey) {
-			window.webkit.messageHandlers[this._webkitMessageHanlderKey].postMessage(message);
+		if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.reallyreadit) {
+			window.webkit.messageHandlers.reallyreadit.postMessage(message);
 		} else {
 			window.postMessage('reallyreadit:' + JSON.stringify(message), '*');
 		}
