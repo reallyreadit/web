@@ -124,6 +124,20 @@ server = server.get('/assets/update/contentScript', (req, res) => {
 		res.sendStatus(200);
 	}
 });
+server = server.get('/assets/update/ContentScript.js', (req, res) => {
+	if (parseFloat(req.query['currentVersion']) < version.contentScript) {
+		res.setHeader('X-ReallyReadIt-Version', version.contentScript);
+		res.sendFile(
+			path.posix.join('assets', 'ContentScript.js'),
+			{
+				headers: { 'Content-Type': 'text/plain' },
+				root: config.contentRootPath
+			}
+		);
+	} else {
+		res.sendStatus(200);
+	}
+});
 // authenticate
 server = server.use((req, res, next) => {
 	const api = new ServerApi(config.apiServer, {
