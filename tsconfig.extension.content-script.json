@@ -1,5 +1,6 @@
 {
 	"extends": "./tsconfig",
+	"allowJs": true,
 	"include": [
 		"src/extension/content-script",
 		"src/extension/common"

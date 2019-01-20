@@ -1,4 +1,5 @@
-import Readability, { ParseResult } from './Readability';
+import Readability from './Readability';
+import ReadabilityParseResult from './ReadabilityParseResult';
 import ContentElement from './ContentElement';
 import { cloneNodeWithReference, getWords } from './utils';
 import styleArticleDocument from './styleArticleDocument';
@@ -9,7 +10,7 @@ function getContentElements(rootElement: HTMLElement) {
 		.concat(Array.from(rootElement.getElementsByTagName('li')));
 }
 export default function (mode: 'analyze' | 'mutate') {
-	let parseResult: ParseResult;
+	let parseResult: ReadabilityParseResult;
 	let contentElements: HTMLElement[];
 	switch (mode) {
 		case 'analyze':
