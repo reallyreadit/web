@@ -5,8 +5,8 @@
   "it.reallyread": {
     "version": {
       "app": 0.82,
-      "contentScript": 0.21,
-      "extension": 0.51
+      "contentScript": 0.22,
+      "extension": 0.52
     }
   },
   "devDependencies": {
