@@ -4,6 +4,7 @@ export default interface UserPage {
 	userAccountId: number,
 	dateCreated: string,
 	lastModified: string | null,
+	readableWordCount: number,
 	readState: number[],
 	wordsRead: number,
 	dateCompleted: string | null
