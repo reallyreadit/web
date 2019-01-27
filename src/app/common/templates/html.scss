@@ -15,6 +15,9 @@ html, body, #root {
 body {
 	overflow: hidden;
 }
+#root {
+	background-color: ghostwhite;
+}
 a, button, div, span, svg {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -25,10 +28,33 @@ html > body > div:not(#root) {
 	position: absolute;
 	right: 0;
 	bottom: 0;
-	z-index: 100;
+	z-index: -1;
 	transform: translateX(75px);
-	transition: transform 200ms;
 }
 html > body.show-captcha > div:not(#root) {
-	transform: translateX(0);
+	animation: show-captcha 200ms forwards;
+}
+html > body.hide-captcha > div:not(#root) {
+	animation: hide-captcha 200ms forwards;
+}
+
+@keyframes show-captcha {
+	from {
+		transform: translateX(75px);
+		z-index: -1;
+	}
+	to {
+		transform: translateX(0);
+		z-index: 100;
+	}
+}
+@keyframes hide-captcha {
+	from {
+		transform: translateX(0);
+		z-index: 100;
+	}
+	to {
+		transform: translateX(75px);
+		z-index: -1;
+	}
 }

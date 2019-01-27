@@ -42,8 +42,10 @@ export default class extends Captcha {
 	}
 	public hideBadge() {
 		window.document.body.classList.remove('show-captcha');
+		window.document.body.classList.add('hide-captcha');
 	}
 	public showBadge() {
+		window.document.body.classList.remove('hide-captcha');
 		window.document.body.classList.add('show-captcha');
 	}
 }
