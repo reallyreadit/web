@@ -382,14 +382,17 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		if (route.screenKey === ScreenKey.Read && this.props.initialUser) {
 			const pathParams = route.getPathParams(this.props.initialLocation.path);
 			// iOS versions < 2.1 crash when calling readArticle using only the slug
-			this.props.serverApi.getArticle(
-				{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
-				result => {
-					if (result.value) {
-						this.props.appApi.readArticle(result.value);
+			// can't call serverApi for new request until it's been initialized
+			window.setTimeout(() => {
+				this.props.serverApi.getArticle(
+					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
+					result => {
+						if (result.value) {
+							this.props.appApi.readArticle(result.value);
+						}
 					}
-				}
-			);
+				);
+			}, 0);
 		}
 	}
 	public componentWillUnmount() {
