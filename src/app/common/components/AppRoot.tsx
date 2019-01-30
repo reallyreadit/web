@@ -183,8 +183,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			if (props.initialUser) {
 				this._hasProcessedInitialLocation = true;
 				screens = [
-					this._screenFactoryMap[ScreenKey.Home].create({
-						path: findRouteByKey(routes, ScreenKey.Home).createUrl()
+					this._screenFactoryMap[ScreenKey.Comments].create({
+						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(route.getPathParams(props.initialLocation.path))
 					})
 				];
 			} else {
@@ -243,8 +243,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
 				if (route.screenKey === ScreenKey.Read) {
 					const pathParams = route.getPathParams(this.props.initialLocation.path);
-					screen = this._screenFactoryMap[ScreenKey.Home].create({
-						path: findRouteByKey(routes, ScreenKey.Home).createUrl()
+					screen = this._screenFactoryMap[ScreenKey.Comments].create({
+						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
 					});
 					// iOS versions < 2.1 crash when calling readArticle using only the slug
 					this.props.serverApi.getArticle(
