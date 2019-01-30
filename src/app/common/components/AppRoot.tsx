@@ -20,6 +20,8 @@ import { createQueryString, clientTypeQueryStringKey } from '../../../common/rou
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import AppClipboardService from '../../../common/services/AppClipboardService';
+import routes from '../../../common/routing/routes';
+import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -60,13 +62,12 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			});
 		}
 	};
-	private _hasRenderedInitialLocationScreen: boolean;
+	private _hasProcessedInitialLocation: boolean;
 	private readonly _popScreen = () => {
 		this.setState({ isPoppingScreen: true });
 	};
 	private readonly _readFaq = () => {
 		this.props.appApi.readArticle({
-			title: 'FAQ',
 			url: 'https://blog.reallyread.it/beta/2017/07/12/FAQ.html'
 		});
 		this._closeMenu();
@@ -173,18 +174,36 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		};
 
 		// state
-		const locationState = this.getLocationDependentState(props.initialLocation);
 		let screens: Screen[];
-		if (props.initialUser) {
-			this._hasRenderedInitialLocationScreen = true;
-			screens = [locationState.screen];
+		let dialog: React.ReactNode;
+		const route = findRouteByLocation(routes, props.initialLocation, [clientTypeQueryStringKey]);
+		if (route.screenKey === ScreenKey.Read) {
+			dialog = null;
+			if (props.initialUser) {
+				this._hasProcessedInitialLocation = true;
+				screens = [
+					this._screenFactoryMap[ScreenKey.Home].create({
+						path: findRouteByKey(routes, ScreenKey.Home).createUrl()
+					})
+				];
+			} else {
+				this._hasProcessedInitialLocation = false;
+				screens = [];
+			}
 		} else {
-			this._hasRenderedInitialLocationScreen = false;
-			screens = [];
+			const locationState = this.getLocationDependentState(props.initialLocation);
+			dialog = locationState.dialog;
+			if (props.initialUser) {
+				this._hasProcessedInitialLocation = true;
+				screens = [locationState.screen];
+			} else {
+				this._hasProcessedInitialLocation = false;
+				screens = [];
+			}
 		}
 		this.state = {
 			...this.state,
-			dialog: locationState.dialog,
+			dialog,
 			isPoppingScreen: false,
 			menuState: 'closed',
 			screens
@@ -215,15 +234,26 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	protected onUserChanged(userAccount: UserAccount) {
 		if (userAccount) {
 			let screen: Screen;
-			if (this._hasRenderedInitialLocationScreen) {
+			if (this._hasProcessedInitialLocation) {
 				screen = this
 					.createScreen(ScreenKey.Home)
 					.screen;
 			} else {
-				screen = this
-					.getLocationDependentState(this.props.initialLocation)
-					.screen;
-				this._hasRenderedInitialLocationScreen = true;
+				const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
+				if (route.screenKey === ScreenKey.Read) {
+					const pathParams = route.getPathParams(this.props.initialLocation.path);
+					screen = this._screenFactoryMap[ScreenKey.Home].create({
+						path: findRouteByKey(routes, ScreenKey.Home).createUrl()
+					});
+					this.props.appApi.readArticle({
+						slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+					});
+				} else {
+					screen = this
+						.getLocationDependentState(this.props.initialLocation)
+						.screen;
+				}
+				this._hasProcessedInitialLocation = true;
 			}
 			this.setState({
 				screens: [screen],
@@ -340,6 +370,14 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				window.scrollTo(0, 0);
 			}
 		}, 100);
+		// check for read url
+		const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
+		if (route.screenKey === ScreenKey.Read && this.props.initialUser) {
+			const pathParams = route.getPathParams(this.props.initialLocation.path);
+			this.props.appApi.readArticle({
+				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+			});
+		}
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

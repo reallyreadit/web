@@ -5,8 +5,9 @@ export interface ArticleUpdatedEvent {
 	article: UserArticle,
 	isCompletionCommit: boolean
 }
+export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent
 }> {
-	public abstract readArticle(article: Pick<UserArticle, 'title' | 'url'>): void;
+	public abstract readArticle(reference: ArticleReference): void;
 }

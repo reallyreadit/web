@@ -122,6 +122,18 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Proof
 		} as Route<DialogKey, ScreenKey>;
 	})(),
+	(function () {
+		const pathRegExp = /^\/read\/([^/]+)\/([^/]+)$/;
+		return {
+			createUrl: params => `/read/${params['sourceSlug']}/${params['articleSlug']}`,
+			getPathParams: path => {
+				const [, sourceSlug, articleSlug] = path.match(pathRegExp);
+				return { articleSlug, sourceSlug };
+			},
+			pathRegExp,
+			screenKey: ScreenKey.Read
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',

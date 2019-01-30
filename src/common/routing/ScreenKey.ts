@@ -10,6 +10,7 @@ enum ScreenKey {
 	Password,
 	PrivacyPolicy,
 	Proof,
+	Read,
 	Settings,
 	Starred
 }

@@ -1,8 +1,7 @@
-import AppApi from '../common/AppApi';
-import UserArticle from '../../common/models/UserArticle';
+import AppApi, { ArticleReference } from '../common/AppApi';
 
 export default class extends AppApi {
-	public readArticle(article: Pick<UserArticle, 'title' | 'url'>) {
+	public readArticle(reference: ArticleReference) {
 		throw new Error('Operation not supported in server environment');
 	}
 }

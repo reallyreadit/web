@@ -1,6 +1,5 @@
-import AppApi from '../common/AppApi';
+import AppApi, { ArticleReference } from '../common/AppApi';
 import WebViewMessagingContext from './WebViewMessagingContext';
-import UserArticle from '../../common/models/UserArticle';
 
 export default class extends AppApi {
 	private readonly _app: WebViewMessagingContext | undefined;
@@ -30,10 +29,10 @@ export default class extends AppApi {
 			return false;
 		});
 	}
-	public readArticle(article: Pick<UserArticle, 'title' | 'url'>) {
+	public readArticle(reference: ArticleReference) {
 		this._app.sendMessage({
 			type: 'readArticle',
-			data: article
+			data: reference
 		});
 	}
 }
