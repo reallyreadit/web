@@ -68,8 +68,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	};
 	private readonly _readFaq = () => {
 		this.props.appApi.readArticle({
+			title: 'FAQ',
 			url: 'https://blog.reallyread.it/beta/2017/07/12/FAQ.html'
-		});
+		} as Pick<UserArticle, 'title' | 'url'>);
 		this._closeMenu();
 	};
 	private readonly _viewAdminPage = () => {
@@ -245,9 +246,15 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 					screen = this._screenFactoryMap[ScreenKey.Home].create({
 						path: findRouteByKey(routes, ScreenKey.Home).createUrl()
 					});
-					this.props.appApi.readArticle({
-						slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
-					});
+					// iOS versions < 2.1 crash when calling readArticle using only the slug
+					this.props.serverApi.getArticle(
+						{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
+						result => {
+							if (result.value) {
+								this.props.appApi.readArticle(result.value);
+							}
+						}
+					);
 				} else {
 					screen = this
 						.getLocationDependentState(this.props.initialLocation)
@@ -374,9 +381,15 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
 		if (route.screenKey === ScreenKey.Read && this.props.initialUser) {
 			const pathParams = route.getPathParams(this.props.initialLocation.path);
-			this.props.appApi.readArticle({
-				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
-			});
+			// iOS versions < 2.1 crash when calling readArticle using only the slug
+			this.props.serverApi.getArticle(
+				{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
+				result => {
+					if (result.value) {
+						this.props.appApi.readArticle(result.value);
+					}
+				}
+			);
 		}
 	}
 	public componentWillUnmount() {
