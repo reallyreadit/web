@@ -26,6 +26,7 @@ import Footer from './BrowserRoot/Footer';
 import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
 import Comment from '../../../common/models/Comment';
+import createReadScreenFactory from './BrowserRoot/ReadScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -57,7 +58,11 @@ export default class extends Root<Props, State, SharedState> {
 	};
 
 	// events
+	private readonly _extensionChangeEventHandlers: ((isInstalled: boolean) => void)[] = [];
 	private readonly _userChangeEventHandlers: ((newUser: UserAccount) => void)[] = [];
+	private readonly _registerExtensionChangeEventHandler = (handler: (isInstalled: boolean) => void) => {
+		return this.registerEventHandler(this._extensionChangeEventHandlers, handler);
+	};
 	private readonly _registerUserChangeEventHandler = (handler: (newUser: UserAccount) => void) => {
 		return this.registerEventHandler(this._userChangeEventHandlers, handler);
 	};
@@ -189,6 +194,16 @@ export default class extends Root<Props, State, SharedState> {
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler
 			}),
 			[ScreenKey.Proof]: commentsScreenFactory,
+			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
+				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				onGetArticle: this.props.serverApi.getArticle,
+				onInstallExtension: this._installExtension,
+				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onShowCreateAccountDialog: this._openCreateAccountDialog,
+				onShowSignInDialog: this._openSignInDialog,
+				onViewHomeScreen: this._viewHome
+			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -244,6 +259,9 @@ export default class extends Root<Props, State, SharedState> {
 			})
 			.addListener('change', isExtensionInstalled => {
 				this.setState({ isExtensionInstalled });
+				this._extensionChangeEventHandlers.forEach(handler => {
+					handler(isExtensionInstalled);
+				});
 			});
 	}
 	private checkForUpdate() {
@@ -334,49 +352,56 @@ export default class extends Root<Props, State, SharedState> {
 		const screen = this.state.screens[0];
 		return (
 			<>
-				<Header
-					isUserSignedIn={!!this.state.user}
-					onOpenMenu={this._openMenu}
-					onShowCreateAccountDialog={this._openCreateAccountDialog}
-					onShowSignInDialog={this._openSignInDialog}
-					onViewHome={this._viewHome}
-					showNewReplyIndicator={this.state.showNewReplyIndicator}
-				/>
-				<main>
-					{this.state.user ?
-						<NavBar
-							onViewHistory={this._viewHistory}
+				{screen.key === ScreenKey.Read ?
+					this._screenFactoryMap[screen.key].render(screen, {
+						isExtensionInstalled: this.state.isExtensionInstalled,
+						user: this.state.user
+					}) :
+					<>
+						<Header
+							isUserSignedIn={!!this.state.user}
+							onOpenMenu={this._openMenu}
+							onShowCreateAccountDialog={this._openCreateAccountDialog}
+							onShowSignInDialog={this._openSignInDialog}
 							onViewHome={this._viewHome}
-							onViewLeaderboards={this._viewLeaderboards}
-							onViewPrivacyPolicy={this._viewPrivacyPolicy}
-							onViewStarred={this._viewStarred}
-							selectedScreenKey={screen.key}
-						/> :
-						null}
-					<div className="screen">
-						{this._screenFactoryMap[screen.key].render(screen, {
-							isExtensionInstalled: this.state.isExtensionInstalled,
-							user: this.state.user
-						})}
-						{!this.state.user ?
-							<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
+							showNewReplyIndicator={this.state.showNewReplyIndicator}
+						/>
+						<main>
+							{this.state.user ?
+								<NavBar
+									onViewHistory={this._viewHistory}
+									onViewHome={this._viewHome}
+									onViewLeaderboards={this._viewLeaderboards}
+									onViewPrivacyPolicy={this._viewPrivacyPolicy}
+									onViewStarred={this._viewStarred}
+									selectedScreenKey={screen.key}
+								/> :
+								null}
+							<div className="screen">
+								{this._screenFactoryMap[screen.key].render(screen, {
+									isExtensionInstalled: this.state.isExtensionInstalled,
+									user: this.state.user
+								})}
+								{!this.state.user ?
+									<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
+									null}
+							</div>
+						</main>
+						{this.state.menuState !== 'closed' ?
+							<Menu
+								isClosing={this.state.menuState === 'closing'}
+								onClose={this._closeMenu}
+								onClosed={this._hideMenu}
+								onSignOut={this._signOut}
+								onViewAdminPage={this._viewAdminPage}
+								onViewInbox={this._viewInbox}
+								onViewSettings={this._viewSettings}
+								selectedScreenKey={this.state.screens[0].key}
+								showNewReplyNotification={this.state.showNewReplyIndicator}
+								userAccount={this.state.user}
+							/> :
 							null}
-					</div>
-				</main>
-				{this.state.menuState !== 'closed' ?
-					<Menu
-						isClosing={this.state.menuState === 'closing'}
-						onClose={this._closeMenu}
-						onClosed={this._hideMenu}
-						onSignOut={this._signOut}
-						onViewAdminPage={this._viewAdminPage}
-						onViewInbox={this._viewInbox}
-						onViewSettings={this._viewSettings}
-						selectedScreenKey={this.state.screens[0].key}
-						showNewReplyNotification={this.state.showNewReplyIndicator}
-						userAccount={this.state.user}
-					/> :
-					null}
+					</>}
 				<DialogManager dialog={this.state.dialog} />
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
