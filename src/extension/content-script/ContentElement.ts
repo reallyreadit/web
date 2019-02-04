@@ -143,6 +143,9 @@ export default class ContentElement {
             return !line.isRead();
         });
     }
+    public get element() {
+        return this._element;
+    }
     public get offsetTop() {
         return this._contentRect.top;
     }
