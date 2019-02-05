@@ -15,8 +15,7 @@ const build = createBuild({
 		`${project.srcDir}/common/**/*.{css,scss}`
 	],
 	staticAssets: [
-		`${project.srcDir}/extension/browser-action/fonts/**/*.*`,
-		`${project.srcDir}/extension/browser-action/images/**/*.*`
+		`${project.srcDir}/extension/browser-action/fonts/**/*.*`
 	],
 	path: 'extension/browser-action'
 });
