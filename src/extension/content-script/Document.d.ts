@@ -1,3 +1,0 @@
-interface Document {
-	documentURI: string
-}

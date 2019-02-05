@@ -1,6 +1,3 @@
 interface Node {
-	originalNode?: Node,
-	readability: {
-		contentScore: number
-	}
+	originalNode?: Node
 }
