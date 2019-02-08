@@ -36,14 +36,6 @@ export default class Page {
 	public initialize(userPage: UserPage) {
 		this._userPageId = userPage.id;
 		this.setReadState(userPage.readState);
-		const lastParagraph = this._contentEls[this._contentEls.length - 1].element;
-		const ratingControl = lastParagraph.ownerDocument.createElement('div');
-		ratingControl.style.width = '300px'
-		ratingControl.style.height = '100px';
-		ratingControl.style.margin = '20px auto';
-		ratingControl.style.border = '1px solid black';
-		ratingControl.style.backgroundColor = 'skyblue';
-		lastParagraph.insertAdjacentElement('afterend', ratingControl);
 	}
 	public updateOffset() {
 		this._contentEls.forEach(block => block.updateOffset());
@@ -63,6 +55,9 @@ export default class Page {
 	}
 	public remove() {
 		this._contentEls.forEach(block => block.showOverlay(false));
+	}
+	public get elements() {
+		return this._contentEls;
 	}
 	public get userPageId() {
 		return this._userPageId;

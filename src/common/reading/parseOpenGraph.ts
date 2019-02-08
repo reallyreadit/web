@@ -1,4 +1,4 @@
-import ParseResult from '../common/ParseResult';
+import ParseResult from './ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 
 function findMetaElementContent(property: string, elements: Element[]) {

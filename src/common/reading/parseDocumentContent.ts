@@ -1,15 +1,24 @@
 import Readability from './Readability';
 import ReadabilityParseResult from './ReadabilityParseResult';
-import ContentElement from './ContentElement';
 import { cloneNodeWithReference, getWords } from './utils';
 import styleArticleDocument from './styleArticleDocument';
 
+export type ParseMode = 'analyze' | 'mutate';
+export interface ContentElement {
+	element: HTMLElement,
+	wordCount: number
+}
+export interface ParseResult {
+	excerpt: string | null,
+	elements: ContentElement[],
+	wordCount: number
+}
 function getContentElements(rootElement: HTMLElement) {
 	return Array
 		.from<HTMLElement>(rootElement.getElementsByTagName('p'))
 		.concat(Array.from(rootElement.getElementsByTagName('li')));
 }
-export default function (mode: 'analyze' | 'mutate') {
+export default function (mode: ParseMode): ParseResult {
 	let parseResult: ReadabilityParseResult;
 	let contentElements: HTMLElement[];
 	switch (mode) {
@@ -50,7 +59,7 @@ export default function (mode: 'analyze' | 'mutate') {
 				(result, element) => {
 					let wordCount: number;
 					if (wordCount = getWords(element.textContent).length) {
-						result.push(new ContentElement(element, wordCount));
+						result.push({ element, wordCount });
 					}
 					return result;
 				},
@@ -61,7 +70,7 @@ export default function (mode: 'analyze' | 'mutate') {
 	}
 	return {
 		excerpt: null,
-		elements: [] as ContentElement[],
+		elements: [],
 		wordCount: 0
 	};
 }

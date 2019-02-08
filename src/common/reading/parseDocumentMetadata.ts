@@ -1,4 +1,4 @@
-import ParseResult from '../common/ParseResult';
+import ParseResult from './ParseResult';
 import parseElementMicrodata from './parseElementMicrodata';
 import parseSchema from './parseSchema';
 import parseMiscMetadata from './parseMiscMetadata';

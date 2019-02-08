@@ -1,4 +1,4 @@
-import ParseResult from '../common/ParseResult';
+import ParseResult from './ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 
 export default function parseMiscMetadata(): ParseResult {

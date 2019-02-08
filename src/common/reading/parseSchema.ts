@@ -1,4 +1,4 @@
-import ParseResult from '../common/ParseResult';
+import ParseResult from './ParseResult';
 
 function first(value: any, map?: (value: any) => any) {
 	const retValue = value instanceof Array ? value[0] : value;
