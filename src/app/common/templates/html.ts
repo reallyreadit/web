@@ -30,11 +30,15 @@ export default (model: {
 		${icons}
 		<div id="root">${model.content}</div>
 		<script type="text/javascript">
-			window.initData = ${JSON.stringify(model.initData)};
+			window.reallyreadit = {
+				app: {
+					initData: ${JSON.stringify(model.initData)}
+				}
+			};
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
 		${model.initData.captchaSiteKey ?
-			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=${model.initData.captchaSiteKey}'></script>` :
+			`<script async src='https://www.google.com/recaptcha/api.js?onload=window.reallyreadit.app.onReCaptchaLoaded&render=${model.initData.captchaSiteKey}'></script>` :
 			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`

@@ -21,29 +21,29 @@ jsCookie.remove('hideHero');
 ga('create', {
 	trackingId: 'UA-101617933-1',
 	cookieDomain: 'auto',
-	userId: window.initData.userAccount ? window.initData.userAccount.id : null
+	userId: window.reallyreadit.app.initData.userAccount ? window.reallyreadit.app.initData.userAccount.id : null
 });
 ga('send', 'pageview');
 
-const serverApi = new ServerApi(window.initData.serverApi);
+const serverApi = new ServerApi(window.reallyreadit.app.initData.serverApi);
 
 const rootProps = {
 	captcha: new Captcha(
-		window.initData.captchaSiteKey,
+		window.reallyreadit.app.initData.captchaSiteKey,
 		onLoadHandler => {
-			window.onReCaptchaLoaded = () => {
-				onLoadHandler(window.grecaptcha);
+			window.reallyreadit.app.onReCaptchaLoaded = () => {
+				onLoadHandler(window.reallyreadit.app.grecaptcha);
 			};
 		}
 	),
-	initialLocation: window.initData.initialLocation,
-	initialUser: window.initData.userAccount,
+	initialLocation: window.reallyreadit.app.initData.initialLocation,
+	initialUser: window.reallyreadit.app.initData.userAccount,
 	serverApi,
-	version: window.initData.version,
-	webServerEndpoint: window.initData.webServerEndpoint
+	version: window.reallyreadit.app.initData.version,
+	webServerEndpoint: window.reallyreadit.app.initData.webServerEndpoint
 };
 let rootElement: React.ReactElement<any>;
-switch (window.initData.clientType) {
+switch (window.reallyreadit.app.initData.clientType) {
 	case ClientType.App:
 		rootElement = React.createElement(
 			AppRoot,
@@ -59,8 +59,8 @@ switch (window.initData.clientType) {
 			{
 				...rootProps,
 				browserApi: new BrowserApi(),
-				extensionApi: new ExtensionApi(window.initData.extensionId),
-				newReplyNotification: window.initData.newReplyNotification
+				extensionApi: new ExtensionApi(window.reallyreadit.app.initData.extensionId),
+				newReplyNotification: window.reallyreadit.app.initData.newReplyNotification
 			}
 		);
 		break;

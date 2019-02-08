@@ -1,19 +1,3 @@
-declare global {
-	interface Window {
-		reallyreadit: WebViewMessagingListeners,
-		webkit: {
-			messageHandlers: {
-				reallyreadit: {
-					postMessage: (message: any) => void
-				}
-			}
-		}
-	}
-}
-interface WebViewMessagingListeners {
-	sendResponse: (jsonCallbackResponse: string) => void,
-	postMessage: (jsonMessage: string) => void
-}
 type OnMessageListener = (data: any, messageSender: null, sendResponse: (data: any) => void) => void;
 interface ResponseCallback {
 	id: number,
@@ -23,7 +7,8 @@ export default class {
 	private readonly _onMessageListeners: OnMessageListener[] = [];
 	private readonly _responseCallbacks: ResponseCallback[] = [];
 	constructor() {
-		window.reallyreadit = {
+		window.reallyreadit.app = {
+			...window.reallyreadit.app,
 			sendResponse: (jsonCallbackResponse: string) => {
 				const callbackResponse = JSON.parse(jsonCallbackResponse);
 				this._responseCallbacks

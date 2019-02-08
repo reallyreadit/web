@@ -27,14 +27,14 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 	};
 	private _handleFocus = () => {
 		// iOS keyboard scroll bug
-		window.isFocusedOnField = true;
+		window.reallyreadit.app.isFocusedOnField = true;
 	};
 	private _handleBlur = () => {
 		this.setState({ isEditing: false });
 		// iOS keyboard scroll bug
-		window.isFocusedOnField = false;
+		window.reallyreadit.app.isFocusedOnField = false;
 		window.setTimeout(() => {
-			if (!window.isFocusedOnField && window.scrollY !== 0) {
+			if (!window.reallyreadit.app.isFocusedOnField && window.scrollY !== 0) {
 				window.scrollTo(0, 0);
 			}
 		}, 100);

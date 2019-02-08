@@ -30,14 +30,14 @@ export default class extends React.PureComponent<Props, {
 	private _focus = () => {
 		this.setState({ hasFocus: true });
 		// iOS keyboard scroll bug
-		window.isFocusedOnField = true;
+		window.reallyreadit.app.isFocusedOnField = true;
 	};
 	private _blur = () => {
 		this.setState({ hasFocus: false });
 		// iOS keyboard scroll bug
-		window.isFocusedOnField = false;
+		window.reallyreadit.app.isFocusedOnField = false;
 		window.setTimeout(() => {
-			if (!window.isFocusedOnField && window.scrollY !== 0) {
+			if (!window.reallyreadit.app.isFocusedOnField && window.scrollY !== 0) {
 				window.scrollTo(0, 0);
 			}
 		}, 100);
