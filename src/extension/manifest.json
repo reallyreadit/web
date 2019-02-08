@@ -39,10 +39,15 @@
     }
   ],
   "permissions": [
-    "*://*.reallyread.it/*",
+    "*://*/*",
     "cookies",
     "webNavigation",
     "alarms",
     "notifications"
+  ],
+  "web_accessible_resources": [
+    "content-script/user-interface/bundle.css",
+    "content-script/user-interface/bundle.js",
+    "content-script/user-interface/fonts/Bitter-Regular.ttf"
   ]
 }

@@ -1,6 +1,6 @@
 import ContentScriptInitData from '../common/ContentScriptInitData';
-import ReadStateCommitData from '../common/ReadStateCommitData';
-import ParseResult from '../common/ParseResult';
+import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
+import ParseResult from '../../common/reading/ParseResult';
 import UserPage from '../../common/models/UserPage';
 
 export default class ContentScriptApi {
@@ -18,7 +18,9 @@ export default class ContentScriptApi {
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<UserPage>,
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => void,
 		onUnregisterPage: (tabId: number) => void,
-		onUnregisterContentScript: (tabId: number) => void
+		onUnregisterContentScript: (tabId: number) => void,
+		onLoadContentParser: (tabId: number) => void,
+		onLoadUserInterface: (tabId: number) => void
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -42,6 +44,12 @@ export default class ContentScriptApi {
 						break;
 					case 'unregisterContentScript':
 						handlers.onUnregisterContentScript(sender.tab.id);
+						break;
+					case 'loadContentParser':
+						handlers.onLoadContentParser(sender.tab.id);
+						break;
+					case 'loadUserInterface':
+						handlers.onLoadUserInterface(sender.tab.id);
 						break;
 				}
 			}

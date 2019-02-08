@@ -1,11 +1,26 @@
-import Page from './Page';
+import Page from '../../common/reading/Page';
 import EventPageApi from './EventPageApi';
 import ContentScriptConfig from '../common/ContentScriptConfig';
 import { SourceRuleAction } from '../../common/models/SourceRule';
-import parseDocumentMetadata from './parseDocumentMetadata';
-import parseDocumentContent from './parseDocumentContent';
+import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
+import LazyScript from './LazyScript';
+import ContentElement from '../../common/reading/ContentElement';
+import { ParseMode } from '../../common/reading/parseDocumentContent';
 
 // local state
+window.reallyreadit = {
+	extension: {
+		contentScript: {
+			contentParser: new LazyScript(() => {
+				eventPageApi.loadContentParser();
+			}),
+			userInterface: new LazyScript(() => {
+				eventPageApi.loadUserInterface();
+			})
+		}
+	}
+};
+const { contentParser, userInterface } = window.reallyreadit.extension.contentScript;
 let
 	isReading = false,
 	context = {
@@ -15,8 +30,7 @@ let
 	},
 	initData: {
 		config: ContentScriptConfig,
-		parseMetadata: boolean,
-		parseMode: 'analyze' | 'mutate',
+		parseMode: ParseMode,
 		showOverlay: boolean,
 		sourceRules: {
 			path: RegExp,
@@ -135,35 +149,46 @@ function loadPage() {
 			const metaParseResult = parseDocumentMetadata();
 			// proceed if we have a positive metadata result or if we're following a read rule
 			if (
-				!initData.parseMetadata ||
 				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
 				(rule && rule.action === SourceRuleAction.Read)
 			) {
-				const content = parseDocumentContent(initData.parseMode);
-				// prefer the metadata but fall back to content parse values in case none is present
-				const description = metaParseResult.metadata.article.description || content.excerpt;
-				if (
-					content.elements.length &&
-					(!initData.parseMetadata || (metaParseResult.metadata.url && metaParseResult.metadata.article.title))
-				) {
-					context.page = new Page(content.elements, initData.showOverlay);
-					eventPageApi
-						.registerPage({
-							...metaParseResult.metadata,
-							wordCount: content.wordCount,
-							readableWordCount: context.page.wordCount,
-							article: { ...metaParseResult.metadata.article, description }
-						})
-						.then(userPage => {
-							context.page.initialize(userPage);
-							if (document.visibilityState === 'visible') {
-								startReading();
-							}
-						})
-						.catch(() => {
-							unloadPage();
-						});
-				}
+				contentParser
+					.get()
+					.then(parser => {
+						const content = parser.parse(initData.parseMode);
+						// prefer the metadata but fall back to content parse values in case none is present
+						const description = metaParseResult.metadata.article.description || content.excerpt;
+						if (
+							content.elements.length &&
+							(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
+						) {
+							context.page = new Page(
+								content.elements.map(el => new ContentElement(el.element, el.wordCount)),
+								initData.showOverlay
+							);
+							eventPageApi
+								.registerPage({
+									...metaParseResult.metadata,
+									wordCount: content.wordCount,
+									readableWordCount: context.page.wordCount,
+									article: { ...metaParseResult.metadata.article, description }
+								})
+								.then(userPage => {
+									context.page.initialize(userPage);
+									if (window.document.visibilityState === 'visible') {
+										startReading();
+									}
+									userInterface
+										.get()
+										.then(ui => {
+											ui.construct(context.page);
+										});
+								})
+								.catch(() => {
+									unloadPage();
+								});
+						}
+					});
 			}
 		}
 	});
@@ -171,6 +196,11 @@ function loadPage() {
 function unloadPage() {
 	if (context.page) {
 		stopReading();
+		userInterface
+			.get()
+			.then(ui => {
+				ui.destruct();
+			});
 		context.page.remove();
 		context.page = null;
 		context.lastCommitPercentComplete = 0;
@@ -180,9 +210,9 @@ function unloadPage() {
 }
 
 // event handlers
-document.addEventListener('visibilitychange', () => {
+window.document.addEventListener('visibilitychange', () => {
 	if (context.page) {
-		if (document.hidden) {
+		if (window.document.hidden) {
 			stopReading();
 		} else {
 			startReading();

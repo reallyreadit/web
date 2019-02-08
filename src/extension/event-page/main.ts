@@ -60,7 +60,6 @@ const contentScriptApi = new ContentScriptApi({
 			.then(isAuthenticated => ({
 				config: serverApi.contentScriptConfig,
 				loadPage: isAuthenticated,
-				parseMetadata: true,
 				parseMode: JSON.parse(localStorage.getItem('parseMode')),
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
 				sourceRules: serverApi.getSourceRules(new URL(url).hostname)
@@ -107,6 +106,13 @@ const contentScriptApi = new ContentScriptApi({
 		tabs.remove(tabId)
 		// update icon
 		getState().then(updateIcon);
+	},
+	onLoadContentParser: tabId => {
+		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
+	},
+	onLoadUserInterface: tabId => {
+		chrome.tabs.executeScript(tabId, { file: './content-script/user-interface/bundle.js' });
+		chrome.tabs.insertCSS(tabId, { file: './content-script/user-interface/bundle.css' });
 	}
 });
 

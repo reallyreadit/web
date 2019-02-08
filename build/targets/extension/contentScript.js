@@ -1,14 +1,41 @@
-const path = require('path');
+const
+	del = require('del'),
+	path = require('path');
 
-const project = require('../../project'),
-	  createBuild = require('../../createBuild');
+const
+	project = require('../../project'),
+	createBuild = require('../../createBuild'),
+	contentParserBuild = require('./contentScript/contentParser'),
+	userInterfaceBuild = require('./contentScript/userInterface');
 
-const build = createBuild({
-	webpack: {
-		configFile: 'tsconfig.extension.content-script.json',
-		entry: path.posix.join(project.srcDir, 'extension/content-script/main.ts')
-	},
-	path: 'extension/content-script'
-});
+const
+	targetPath = 'extension/content-script',
+	contentScriptBuild = createBuild({
+		webpack: {
+			configFile: 'tsconfig.extension.content-script.json',
+			entry: path.posix.join(project.srcDir, 'extension/content-script/main.ts')
+		},
+		path: targetPath
+	});
 
-module.exports = build;
+function clean(env) {
+	return del(project.getOutPath(targetPath, env) + '/*');
+}
+function build(env) {
+	return Promise.all([
+		contentScriptBuild.build(env),
+		contentParserBuild.build(env),
+		userInterfaceBuild.build(env)
+	]);
+}
+function watch() {
+	return Promise.all([
+		contentScriptBuild.watch(),
+		contentParserBuild.watch(),
+		userInterfaceBuild.watch()
+	]);
+}
+
+module.exports = {
+	clean, build, watch
+};

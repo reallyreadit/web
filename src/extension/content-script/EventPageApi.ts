@@ -1,6 +1,6 @@
 import ContentScriptInitData from '../common/ContentScriptInitData';
-import ReadStateCommitData from '../common/ReadStateCommitData';
-import ParseResult from '../common/ParseResult';
+import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
+import ParseResult from '../../common/reading/ParseResult';
 import UserPage from '../../common/models/UserPage';
 
 export default class EventPageApi {
@@ -50,5 +50,11 @@ export default class EventPageApi {
 	}
 	public unregisterContentScript() {
 		return EventPageApi.sendMessage<void>('unregisterContentScript');
+	}
+	public loadContentParser() {
+		return EventPageApi.sendMessage<void>('loadContentParser');
+	}
+	public loadUserInterface() {
+		return EventPageApi.sendMessage<void>('loadUserInterface');
 	}
 }
