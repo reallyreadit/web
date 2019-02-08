@@ -3,6 +3,7 @@
 	"allowJs": true,
 	"include": [
 		"src/extension/content-script",
-		"src/extension/common"
+		"src/extension/common",
+		"src/common"
 	]
 }

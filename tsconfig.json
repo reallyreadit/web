@@ -15,5 +15,8 @@
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
 		"noUnusedLocals": true
-	}
+	},
+	"include": [
+		"src/common"
+	]
 }
