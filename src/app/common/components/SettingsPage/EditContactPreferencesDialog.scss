@@ -1,10 +1,15 @@
-.edit-contact-preferences-dialog > ul > li {
+/*
+	componentPath: src/app/common/components/SettingsPage/EditContactPreferencesDialog
+	cssComponentId: edit-contact-preferences-dialog_kaoktk
+*/
+
+.edit-contact-preferences-dialog_kaoktk > ul > li {
 	padding: 3px 0 0 10px
 }
-.edit-contact-preferences-dialog > ul > li > label > input {
+.edit-contact-preferences-dialog_kaoktk > ul > li > label > input {
 	vertical-align: middle;
 	margin-right: 3px;
 }
-.edit-contact-preferences-dialog > ul > li > label > span {
+.edit-contact-preferences-dialog_kaoktk > ul > li > label > span {
 	vertical-align: middle;
 }

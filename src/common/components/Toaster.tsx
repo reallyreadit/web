@@ -22,13 +22,13 @@ export default class Toaster extends React.PureComponent<{
 	toasts: Toast[]
 }, {}> {
 	private _removeToast = (e: React.AnimationEvent<{}>) => {
-		if (e.animationName === 'toaster-pop-out') {
+		if (e.animationName === 'toaster_2zbeib-pop-out') {
 			this.props.onRemoveToast(parseInt((e.currentTarget as Element).getAttribute('data-timeout-handle')));
 		}
 	};
 	public render() {
 		return (
-			<div className="toaster">
+			<div className="toaster_2zbeib">
 				<ul className="toasts">
 					{this.props.toasts.map(toast =>
 						<li

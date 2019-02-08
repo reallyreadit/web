@@ -3,7 +3,7 @@ import Icon from './Icon';
 
 export default () => (
 	<Icon
-		className="spinner" 
+		className="spinner_4hkqd5" 
 		name="spinner"
 	/>
 );

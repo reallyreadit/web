@@ -36,7 +36,7 @@ interface Props {
 export default class PasswordPage extends React.PureComponent<Props> {
 	public render() {
 		return (
-			<div className="password-page">
+			<div className="password-page_c48od1">
 				<strong>
 					{resultMessages[this.props.action][this.props.result]}
 				</strong>

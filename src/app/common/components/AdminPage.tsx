@@ -63,7 +63,7 @@ class AdminPage extends React.Component<
 	}
 	public render() {
 		return (
-			<div className="admin-page">
+			<div className="admin-page_czkowo">
 				<table>
 					<caption>
 						<div className="content">

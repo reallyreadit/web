@@ -1,8 +1,13 @@
-.comment-box {
+/*
+	componentPath: src/app/common/components/controls/comments/CommentBox
+	cssComponentId: comment-box_kaqbc2
+*/
+
+.comment-box_kaqbc2 {
 	text-align: right;
 	max-width: 600px;
 }
-.comment-box > textarea {
+.comment-box_kaqbc2 > textarea {
 	box-sizing: border-box;
 	width: 100%;
 	height: 32px;
@@ -13,23 +18,23 @@
 	outline: none;
 	transition: width 250ms, height 250ms;
 }
-.comment-box > textarea.expanded {
+.comment-box_kaqbc2 > textarea.expanded {
 	height: 130px;
 }
-.comment-box > textarea.resizing {
+.comment-box_kaqbc2 > textarea.resizing {
 	transition: none;
 }
-.comment-box > textarea::placeholder {
+.comment-box_kaqbc2 > textarea::placeholder {
 	position: relative;
 	top: 3px;
 	color: lightgray;
 	font-style: italic;
 	text-indent: 5px;
 }
-.comment-box > textarea:focus::placeholder {
+.comment-box_kaqbc2 > textarea:focus::placeholder {
 	visibility: hidden;
 }
-.comment-box > .comment-warning {
+.comment-box_kaqbc2 > .comment-warning {
 	display: block;
 	text-align: center;
 	background-color: red;
@@ -38,11 +43,11 @@
 	padding: 2px;
 	margin-bottom: 3px;
 }
-.comment-box > .comment-warning > a {
+.comment-box_kaqbc2 > .comment-warning > a {
 	color: white;
 	cursor: pointer;
 	text-decoration: underline;
 }
-.comment-box > .button:last-child {
+.comment-box_kaqbc2 > .button_ovrlmi:last-child {
 	margin-left: (8 + 6) + px;
 }

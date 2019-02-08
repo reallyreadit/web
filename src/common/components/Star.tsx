@@ -11,7 +11,7 @@ export default (props: {
 	<div
 		className={
 			classNames(
-				'star',
+				'star_n3lkaj',
 				{
 					starred: props.starred,
 					busy: props.busy

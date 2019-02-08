@@ -28,7 +28,7 @@ export default class ReadReadinessDialog extends React.PureComponent<{
 				break;
 		}
 		return (
-			<div className="read-readiness-dialog">
+			<div className="read-readiness-dialog_fpap5e">
 				<h3>Wait!</h3>
 				{message}
 				<div className="continue">

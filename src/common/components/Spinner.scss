@@ -1,8 +1,13 @@
-.spinner {
-	animation: spinner 1000ms linear infinite;
+/*
+	componentPath: src/common/components/Spinner
+	cssComponentId: spinner_4hkqd5
+*/
+
+.spinner_4hkqd5 {
+	animation: spinner_4hkqd5 1000ms linear infinite;
 }
 
-@keyframes spinner {
+@keyframes spinner_4hkqd5 {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
 }

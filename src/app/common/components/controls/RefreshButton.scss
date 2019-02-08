@@ -1,16 +1,21 @@
-.refresh-button {
+/*
+	componentPath: src/app/common/components/controls/RefreshButton
+	cssComponentId: refresh-button_l3pfze
+*/
+
+.refresh-button_l3pfze {
 	cursor: pointer;
 	color: #666;
 	transition: transform 250ms;
 }
-.refresh-button.loading {
-	animation: refresh-button-loading 1000ms linear infinite;
+.refresh-button_l3pfze.loading {
+	animation: refresh-button_l3pfze-loading 1000ms linear infinite;
 }
-.refresh-button:hover {
+.refresh-button_l3pfze:hover {
 	transform: rotate(-22deg);
 }
 
-@keyframes refresh-button-loading {
+@keyframes refresh-button_l3pfze-loading {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
 }

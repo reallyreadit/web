@@ -1,10 +1,15 @@
-.edit-notifications-dialog > ul > li {
+/*
+	componentPath: src/app/common/components/SettingsPage/EditNotificationsDialog
+	cssComponentId: edit-notifications-dialog_7jh2m
+*/
+
+.edit-notifications-dialog_7jh2m > ul > li {
 	padding: 3px 0 0 10px
 }
-.edit-notifications-dialog > ul > li > label > input {
+.edit-notifications-dialog_7jh2m > ul > li > label > input {
 	vertical-align: middle;
 	margin-right: 3px;
 }
-.edit-notifications-dialog > ul > li > label > span {
+.edit-notifications-dialog_7jh2m > ul > li > label > span {
 	vertical-align: middle;
 }

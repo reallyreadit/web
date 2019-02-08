@@ -1,33 +1,38 @@
-.form-field {
+/*
+	componentPath: src/app/common/components/controls/FormField
+	cssComponentId: form-field_8ey399
+*/
+
+.form-field_8ey399 {
 	display: block;	
 	text-align: right;
 }
-.form-field[data-label-position="vertical"] {
+.form-field_8ey399[data-label-position="vertical"] {
 	text-align: left;
 }
-.form-field > strong {
+.form-field_8ey399 > strong {
 	display: inline-block;
 	height: 22px;
 	line-height: 22px;
 	margin-right: 6px;
 	vertical-align: top;
 }
-.form-field > .field-container {
+.form-field_8ey399 > .field-container {
 	display: inline-block;
 	width: 200px;
 	min-height: 30px;
 	text-align: left;
 	vertical-align: top;
 }
-.form-field[data-label-position="vertical"] > .field-container {
+.form-field_8ey399[data-label-position="vertical"] > .field-container {
 	width: 100%;
 }
 
 @media (max-width: 499px) {
-	.form-field:not([data-label-position="horizontal"]) {
+	.form-field_8ey399:not([data-label-position="horizontal"]) {
 		text-align: left;
 	}
-	.form-field:not([data-label-position="horizontal"]) > .field-container {
+	.form-field_8ey399:not([data-label-position="horizontal"]) > .field-container {
 		width: 100%;
 	}
 }

@@ -1,4 +1,9 @@
-.dialog {
+/*
+	componentPath: src/app/common/components/controls/Dialog
+	cssComponentId: dialog_k09mus_k09mus
+*/
+
+.dialog_k09mus {
     padding: 15px;
 	z-index: 100;
 	background: #fff;
@@ -7,20 +12,20 @@
 	max-width: 100%;
 	box-sizing: border-box;
 }
-.dialog > h3 {
+.dialog_k09mus > h3 {
 	margin-bottom: 15px;
 	font-size: 17px;
 	text-align: center;
 }
-.dialog > .error-message {
+.dialog_k09mus > .error-message {
 	padding-bottom: 10px;
 	text-align: center;
 	color: crimson;
 }
-.dialog > .buttons {
+.dialog_k09mus > .buttons {
 	margin-top: 15px;
 	text-align: right;
 }
-.dialog > .buttons > .button:last-child {
+.dialog_k09mus > .buttons > .button_ovrlmi:last-child {
 	margin-left: (8 + 6) + px; 
 }

@@ -1,4 +1,9 @@
-.toaster {
+/*
+	componentPath: src/common/components/toaster
+	cssComponentId: toaster_2zbeib_2zbeib
+*/
+
+.toaster_2zbeib {
 	position: fixed;
 	top: 0;
 	z-index: 200;
@@ -9,38 +14,38 @@
 	padding: 0 10px;
 	box-sizing: border-box;
 }
-.toaster > .toasts > .toast {
+.toaster_2zbeib > .toasts > .toast {
 	padding: 10px;
 	border: 5px ridge gainsboro;
 	margin-top: 10px;
 	text-align: center;
 	font-weight: bold;
-	animation: toaster-pop-in 250ms;
+	animation: toaster_2zbeib-pop-in 250ms;
 }
-.toaster > .toasts > .toast.remove {
-	animation: toaster-pop-out 250ms;
+.toaster_2zbeib > .toasts > .toast.remove {
+	animation: toaster_2zbeib-pop-out 250ms;
 }
-.toaster > .toasts > .toast.success {
+.toaster_2zbeib > .toasts > .toast.success {
 	color: green;
 	background-color: greenyellow;
 }
-.toaster > .toasts > .toast.danger {
+.toaster_2zbeib > .toasts > .toast.danger {
 	color: white;
 	background-color: red;
 }
-.toaster > .toasts > .toast > p:not(:first-of-type) {
+.toaster_2zbeib > .toasts > .toast > p:not(:first-of-type) {
 	margin-top: 10px;
 }
-.toaster > .toasts > .toast > p > .action-link.disabled {
+.toaster_2zbeib > .toasts > .toast > p > .action-link_ftamt8.disabled {
 	color: #666;
 }
 
-@keyframes toaster-pop-in {
+@keyframes toaster_2zbeib-pop-in {
 	0% { transform: scale(0, 0); }
 	75% { transform: scale(1.25, 1.25); }
 	100% { transform: scale(1, 1); }
 }
-@keyframes toaster-pop-out {
+@keyframes toaster_2zbeib-pop-out {
 	0% { transform: scale(1, 1); }
 	100% { transform: scale(0, 0); }
 }

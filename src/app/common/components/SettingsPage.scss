@@ -1,39 +1,44 @@
-.settings-page > ul > li {
+/*
+	componentPath: src/app/common/components/SettingsPage
+	cssComponentId: settings-page_ejwkk
+*/
+
+.settings-page_ejwkk > ul > li {
 	padding-bottom: 10px;
 	line-height: 1.35em;
 }
-.settings-page > ul > li:last-child {
+.settings-page_ejwkk > ul > li:last-child {
 	padding-bottom: 0;
 }
-.settings-page > ul > li > label {
+.settings-page_ejwkk > ul > li > label {
 	display: flex;
 }
-.settings-page > ul > li > .setting {
+.settings-page_ejwkk > ul > li > .setting {
 	padding-left: 15px;
 }
-.settings-page > ul > li > .setting.on {
+.settings-page_ejwkk > ul > li > .setting.on {
 	color: green;
 }
-.settings-page > ul > li > .setting.off {
+.settings-page_ejwkk > ul > li > .setting.off {
 	color: gray;
 }
-.settings-page > ul > li > .setting.warn {
+.settings-page_ejwkk > ul > li > .setting.warn {
 	color: orange;
 }
-.settings-page > ul > li > .setting + .setting {
+.settings-page_ejwkk > ul > li > .setting + .setting {
 	margin-top: 3px;
 }
-.settings-page > ul > li > .setting > .icon {
+.settings-page_ejwkk > ul > li > .setting > .icon_rour3d {
 	margin-right: 3px;
 }
-.settings-page > ul > li > .setting > .notice {
+.settings-page_ejwkk > ul > li > .setting > .notice {
 	padding-left: 15px;
 	color: orange;
 }
-.settings-page > ul > li > .setting > .notice > .icon {
+.settings-page_ejwkk > ul > li > .setting > .notice > .icon_rour3d {
 	margin-right: 3px;
 }
-.settings-page > ul > li > .setting > .notice > a {
+.settings-page_ejwkk > ul > li > .setting > .notice > a {
 	cursor: pointer;
 	text-decoration: underline;
 }

@@ -1,4 +1,9 @@
-.read-readiness-dialog {
+/*
+	componentPath: src/app/common/components/BrowserRoot/ReadReadinessDialog
+	cssComponentId: read-readiness-dialog_fpap5e
+*/
+
+.read-readiness-dialog_fpap5e {
     padding: 15px;
 	z-index: 100;
 	background: #fff;
@@ -23,7 +28,7 @@
 	.buttons {
 		margin-top: 6px;
 		text-align: right;
-		.button:last-child {
+		.button_ovrlmi:last-child {
 			margin-left: (8 + 6) + px; 
 		}
 	}

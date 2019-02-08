@@ -1,22 +1,27 @@
-.sign-in-card > strong {
+/*
+	componentPath: src/app/common/components/AppRoot/AuthScreen/SignInCard
+	cssComponentId: sign-in-card_a5syxd
+*/
+
+.sign-in-card_a5syxd > strong {
 	display: block;
 	margin-bottom: 15px;
 	text-align: center;
 	font-size: 14px;
 }
-.sign-in-card > .form-field:not(:last-of-type) {
+.sign-in-card_a5syxd > .form-field_8ey399:not(:last-of-type) {
 	margin-bottom: 10px;
 }
-.sign-in-card > .form-field > .field-container > .input-control > input {
+.sign-in-card_a5syxd > .form-field_8ey399 > .field-container > .input-control_dua9vb > input {
 	height: 30px;
 	line-height: 30px;
 	padding: 0 10px;
 	font-size: 15px;
 }
-.sign-in-card > .button_vp905n {
+.sign-in-card_a5syxd > .button_vp905n {
 	margin-top: 15px;
 }
-.sign-in-card > .action-link {
+.sign-in-card_a5syxd > .action-link_ftamt8 {
 	display: flex;
 	justify-content: center;
 	margin-top: 20px;

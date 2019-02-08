@@ -1,4 +1,9 @@
-.star > .icon {
+/*
+	componentPath: src/common/components/Star
+	cssComponentId: star_n3lkaj
+*/
+
+.star_n3lkaj > .icon_rour3d {
 	display: block;
 	width: 20px;
 	height: 20px;
@@ -7,15 +12,15 @@
 	fill: transparent;
 	stroke: darkgray;
 }
-.star.starred > .icon {
+.star_n3lkaj.starred > .icon_rour3d {
 	fill: gold;
 	stroke: darkgoldenrod;
 }
-.star.busy > .icon {
-	animation: star-spinner 1000ms linear infinite;
+.star_n3lkaj.busy > .icon_rour3d {
+	animation: star_n3lkaj-spinner 1000ms linear infinite;
 }
 
-@keyframes star-spinner {
+@keyframes star_n3lkaj-spinner {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
 }

@@ -10,7 +10,7 @@ interface Props {
 }
 const render: React.SFC<Props> = (props: Props) => (
 	<label
-		className={classNames('form-field', props.className)}
+		className={classNames('form-field_8ey399', props.className)}
 		data-label-position={props.labelPosition}
 	>
 		<strong>{props.label}</strong>

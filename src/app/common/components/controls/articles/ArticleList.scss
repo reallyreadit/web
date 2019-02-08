@@ -1,6 +1,11 @@
-.article-list > li {
+/*
+	componentPath: src/app/common/components/controls/articles/ArticleList
+	cssComponentId: article-list_o9uw1n
+*/
+
+.article-list_o9uw1n > li {
 	margin-bottom: 15px;
 }
-.article-list > li:last-child {
+.article-list_o9uw1n > li:last-child {
 	margin-bottom: none;
 }

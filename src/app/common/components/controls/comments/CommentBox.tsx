@@ -81,7 +81,7 @@ export default class extends React.PureComponent<Props, {
 			textareaStyle['height'] = this.props.parentCommentId ? '130px' : '32px';
 		}
 		return (
-			<div className="comment-box">
+			<div className="comment-box_kaqbc2">
 				<textarea
 					className={classNames({
 						expanded: !!(this.props.parentCommentId || this.state.hasFocus || this.state.hasContent),

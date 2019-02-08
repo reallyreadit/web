@@ -1,33 +1,38 @@
-.admin-page > table {
+/*
+	componentPath: src/app/common/components/AdminPage
+	cssComponentId: admin-page_czkowo
+*/
+
+.admin-page_czkowo > table {
 	width: 100%;
 	margin-top: 10px;
 	background-color: white;
 }
-.admin-page > table:first-child {
+.admin-page_czkowo > table:first-child {
 	margin-top: 0;
 }
-.admin-page > table > caption {
+.admin-page_czkowo > table > caption {
 	background-color: white;
 }
-.admin-page > table > caption > div {
+.admin-page_czkowo > table > caption > div {
 	border-width: 1px 1px 0 1px;
 	border-style: solid;
 	border-color: gray;
 }
-.admin-page > table > caption > .content {
+.admin-page_czkowo > table > caption > .content {
 	display: flex;
 	justify-content: space-between;
 	padding: 5px;
 }
-.admin-page > table > thead > tr > th,
-.admin-page > table > tbody > tr > th,
-.admin-page > table > tbody > tr > td {
+.admin-page_czkowo > table > thead > tr > th,
+.admin-page_czkowo > table > tbody > tr > th,
+.admin-page_czkowo > table > tbody > tr > td {
 	padding: 5px;
 	border: 1px solid gray;
 }
-.admin-page > table > tbody > tr > th {
+.admin-page_czkowo > table > tbody > tr > th {
 	text-align: left;
 }
-.admin-page > table > tbody > tr > td[colspan] {
+.admin-page_czkowo > table > tbody > tr > td[colspan] {
 	text-align: center;
 }

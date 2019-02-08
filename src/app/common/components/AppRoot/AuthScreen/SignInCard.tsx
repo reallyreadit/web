@@ -53,7 +53,7 @@ export default class extends React.PureComponent<Props, {
 	}
 	public render() {
 		return (
-			<div className="sign-in-card">
+			<div className="sign-in-card_a5syxd">
 				<strong>Log In</strong>
 				<EmailAddressField
 					error={this.state.emailError}

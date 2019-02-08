@@ -7,7 +7,7 @@ export default (props: {
 	onClick: () => void
 }) => (
 	<Icon
-		className={classNames('refresh-button', { 'loading': props.isLoading })}
+		className={classNames('refresh-button_l3pfze', { 'loading': props.isLoading })}
 		name="refresh"
 		title="Refresh"
 		onClick={props.onClick}

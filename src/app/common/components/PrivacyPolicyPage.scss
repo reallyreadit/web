@@ -1,0 +1,39 @@
+/*
+	componentPath: src/app/common/components/PrivacyPolicyPage
+	cssComponentId: privacy-policy-page_75v4wh
+*/
+
+.privacy-policy-page_75v4wh {
+	max-width: 600px;
+	margin: 0 auto;
+}
+.privacy-policy-page_75v4wh > section:not(:last-of-type)::after {
+	content: "...";
+	display: block;
+	text-align: center;
+	margin: 10px 0;
+	letter-spacing: 1em;
+}
+.privacy-policy-page_75v4wh > p,
+.privacy-policy-page_75v4wh > section > p {
+	margin: 15px 0;
+}
+.privacy-policy-page_75v4wh > p:first-of-type,
+.privacy-policy-page_75v4wh > section:first-of-type > p {
+	margin-top: 0;
+}
+.privacy-policy-page_75v4wh > p:last-of-type,
+.privacy-policy-page_75v4wh > section:last-of-type > p {
+	margin-bottom: 0;
+}
+.privacy-policy-page_75v4wh > ul,
+.privacy-policy-page_75v4wh > section > ul {
+	list-style: disc;
+	padding-left: 1.5em;
+	margin-top: 5px;
+}
+.privacy-policy-page_75v4wh > p > a,
+.privacy-policy-page_75v4wh > section > p > a {
+	cursor: pointer;
+	text-decoration: underline;
+}

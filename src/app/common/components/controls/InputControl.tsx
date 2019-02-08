@@ -92,7 +92,7 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 			onBlur: this._handleBlur
 		};
 		return (
-			<div className="input-control">
+			<div className="input-control_dua9vb">
 				{this.props.type === 'multiline' ?
 					<textarea {...controlProps}></textarea> :
 					<input {...{ ...controlProps, type: this.props.type }} />}

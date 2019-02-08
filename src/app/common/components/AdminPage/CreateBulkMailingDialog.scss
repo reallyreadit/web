@@ -1,20 +1,25 @@
-.create-bulk-mailing-dialog > tbody > tr > th {
+/*
+	componentPath: src/app/common/components/AdminPage/CreateBulkMailingDialog
+	cssComponentId: create-bulk-mailing-dialog_bbvobo
+*/
+
+.create-bulk-mailing-dialog_bbvobo > tbody > tr > th {
 	text-align: right;
 	vertical-align: top;
 }
-.create-bulk-mailing-dialog > tbody > tr > th,
-.create-bulk-mailing-dialog > tbody > tr > td {
+.create-bulk-mailing-dialog_bbvobo > tbody > tr > th,
+.create-bulk-mailing-dialog_bbvobo > tbody > tr > td {
 	padding: 5px;
 }
-.create-bulk-mailing-dialog > tbody > tr > td > input {
+.create-bulk-mailing-dialog_bbvobo > tbody > tr > td > input {
 	width: 275px;
 }
-.create-bulk-mailing-dialog > tbody > tr > td > textarea {
+.create-bulk-mailing-dialog_bbvobo > tbody > tr > td > textarea {
 	width: 275px;
 	height: 125px;
 	font-family: monospace;
 }
-.create-bulk-mailing-dialog > tbody > .test-email > td > input {
+.create-bulk-mailing-dialog_bbvobo > tbody > .test-email > td > input {
 	display: block;
 	margin-bottom: 3px;
 }

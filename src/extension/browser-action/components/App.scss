@@ -1,61 +1,66 @@
-.app {
+/*
+	componentPath: src/extension/browser-action/components/App
+	cssComponentId: app_79z645
+*/
+
+.app_79z645 {
 	width: 375px;
 	font-family: 'Bitter';
 	font-size: 13px;
 	letter-spacing: 0.02em;
 }
-.app > .ready-indicator {
+.app_79z645 > .ready-indicator {
 	border: 5px solid green;
 	padding: 12px 4px;
 	border-radius: 12px;
 	background: palegreen;
 }
-.app > .ready-indicator > h1 {
+.app_79z645 > .ready-indicator > h1 {
 	text-align: center;
 	font-size: 17px;
 	color: green;
 }
-.app > h1 {
+.app_79z645 > h1 {
 	padding: 5px 0;
 	text-align: center;
 }
-.app > h1 > a {
+.app_79z645 > h1 > a {
 	display: inline-block;
 }
-.app > h1 > a > svg {
+.app_79z645 > h1 > a > svg {
 	display: block;
 	width: 170px;
 }
-.app > .signed-out-warning {
+.app_79z645 > .signed-out-warning {
 	display: flex;
 	align-items: center;
 	margin-bottom: 10px;
 	border: 1px dashed gray;
 	padding: 5px;
 }
-.app > .signed-out-warning > i {
+.app_79z645 > .signed-out-warning > i {
 	display: block;
 	width: 28px;
 	flex: 0 0 auto;
 }
-.app > .signed-out-warning > i > svg {
+.app_79z645 > .signed-out-warning > i > svg {
 	display: block;
 }
-.app > .signed-out-warning > span {
+.app_79z645 > .signed-out-warning > span {
 	font-size: 12px;
 	padding-left: 8px;
 }
-.app > .signed-out-warning > span > span {
+.app_79z645 > .signed-out-warning > span > span {
 	text-decoration: underline;
 	cursor: pointer;
 }
-.app > .nav-bar {
+.app_79z645 > .nav-bar_2crc9o {
 	text-align: center;
 }
-.app > .article-details {
+.app_79z645 > .article-details_d2vnmv {
 	margin-top: 10px;
 }
-.app > .article-placeholder {
+.app_79z645 > .article-placeholder {
 	padding: 15px 0;
    color: #999;
    font-style: italic;

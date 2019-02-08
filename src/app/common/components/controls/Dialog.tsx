@@ -79,7 +79,7 @@ export default abstract class <T, P, S extends Partial<State>> extends React.Pur
 	protected onError(errors: string[]) { }
 	public render() {
 		return (
-			<div className="dialog">
+			<div className="dialog_k09mus">
 				<h3>{this._title}</h3>
 				{this.state.errorMessage ?
 					<div

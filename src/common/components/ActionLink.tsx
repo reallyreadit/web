@@ -19,7 +19,7 @@ export default class extends React.PureComponent<{
 	public render() {
 		const
 			cssClass = classNames(
-				'action-link',
+				'action-link_ftamt8',
 				{
 					disabled: this.props.state === 'disabled' || this.props.state === 'busy',
 					busy: this.props.state === 'busy'

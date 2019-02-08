@@ -50,7 +50,7 @@ interface Props {
 export default class EmailConfirmationPage extends React.PureComponent<Props> {
 	public render() {
 		return (
-			<div className="email-confirmation-page">
+			<div className="email-confirmation-page_9gvf3g">
 				<strong className={classNames({ 'success': resultMessages[this.props.result].intent === Intent.Success })}>
 					{resultMessages[this.props.result].text}
 				</strong>

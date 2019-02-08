@@ -28,7 +28,7 @@ export default class Button extends React.PureComponent<{
 			active: this.props.state === 'active'
 		};
 		return (
-			<button className={classNames('button', classList)} onClick={this.handleClick}>
+			<button className={classNames('button_ovrlmi', classList)} onClick={this.handleClick}>
 				<div className="outer-wrap">
 					<div className="inner-wrap">
 						<div className="content">

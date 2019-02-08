@@ -1,3 +1,8 @@
+/*
+	componentPath: src/common/components/Button
+	cssComponentId: button_ovrlmi
+*/
+
 $button-height: 26;
 $bevel-height: 6;
 $bevel-width: 6;
@@ -27,7 +32,7 @@ $disabled-border-color: #ccc;
 	border-left-color: $color;
 }
 
-.button {
+.button_ovrlmi {
     display: inline-block;
     position: relative;
 	z-index: 1;
@@ -60,7 +65,7 @@ $disabled-border-color: #ccc;
 		top: 0;
 		right: 0;
 	}
-	.icon {
+	.icon_rour3d {
 		margin-right: 3px;
 	}
 	.content-left {
@@ -71,20 +76,20 @@ $disabled-border-color: #ccc;
 		text-decoration: underline dotted red;
 	}
 }
-.button::before,
-.button::after { @include end-cap($bevel-height); }
-.button::before { @include end-cap-left($bevel-width, $border-color); }
-.button::after { @include end-cap-right($bevel-width, $border-color); }
-.button:focus {
+.button_ovrlmi::before,
+.button_ovrlmi::after { @include end-cap($bevel-height); }
+.button_ovrlmi::before { @include end-cap-left($bevel-width, $border-color); }
+.button_ovrlmi::after { @include end-cap-right($bevel-width, $border-color); }
+.button_ovrlmi:focus {
 	outline: none;
 }
-.button:focus {
+.button_ovrlmi:focus {
 	.text {
 		text-decoration: underline;
 	}
 }
-.button:not(.disabled):active,
-.button:not(.disabled).active {
+.button_ovrlmi:not(.disabled):active,
+.button_ovrlmi:not(.disabled).active {
 	.content {
 		background-color: #000;
 		color: #fff;
@@ -93,7 +98,7 @@ $disabled-border-color: #ccc;
 	.content::after { border-left-color: #000; }
 }
 
-.button.preferred {
+.button_ovrlmi.preferred {
 	font-weight: bold;
 	margin: 0 (($bevel-width + 2) + px);
 	.inner-wrap {
@@ -117,12 +122,12 @@ $disabled-border-color: #ccc;
 	.outer-wrap::before { @include end-cap-left($bevel-width + 1, #fff); }
 	.outer-wrap::after { @include end-cap-right($bevel-width + 1, #fff); }
 }
-.button.preferred::before,
-.button.preferred::after { @include end-cap($bevel-height + 2); }
-.button.preferred::before { @include end-cap-left($bevel-width + 2, $border-color); }
-.button.preferred::after { @include end-cap-right($bevel-width + 2, $border-color); }
-.button.preferred:not(.disabled):active,
-.button.preferred:not(.disabled).active {
+.button_ovrlmi.preferred::before,
+.button_ovrlmi.preferred::after { @include end-cap($bevel-height + 2); }
+.button_ovrlmi.preferred::before { @include end-cap-left($bevel-width + 2, $border-color); }
+.button_ovrlmi.preferred::after { @include end-cap-right($bevel-width + 2, $border-color); }
+.button_ovrlmi.preferred:not(.disabled):active,
+.button_ovrlmi.preferred:not(.disabled).active {
 	.outer-wrap { background-color: #000; }
 	.outer-wrap::before,
 	.outer-wrap::after { @include end-cap($bevel-height + 1); }
@@ -130,29 +135,29 @@ $disabled-border-color: #ccc;
 	.outer-wrap::after { @include end-cap-right($bevel-width + 1, #000); }
 }
 
-.button.disabled {
+.button_ovrlmi.disabled {
 	cursor: default;
 	color: #ccc;
 	background-color: $disabled-border-color;
 }
-.button.disabled::before,
-.button.disabled::after { @include end-cap($bevel-height); }
-.button.disabled::before { @include end-cap-left($bevel-width, $disabled-border-color); }
-.button.disabled::after { @include end-cap-right($bevel-width, $disabled-border-color); }
+.button_ovrlmi.disabled::before,
+.button_ovrlmi.disabled::after { @include end-cap($bevel-height); }
+.button_ovrlmi.disabled::before { @include end-cap-left($bevel-width, $disabled-border-color); }
+.button_ovrlmi.disabled::after { @include end-cap-right($bevel-width, $disabled-border-color); }
 
-.button.preferred.disabled {
+.button_ovrlmi.preferred.disabled {
 	.inner-wrap { background-color: $disabled-border-color; }
 	.inner-wrap::before,
 	.inner-wrap::after { @include end-cap($bevel-height); }
 	.inner-wrap::before { @include end-cap-left($bevel-width, $disabled-border-color); }
 	.inner-wrap::after { @include end-cap-right($bevel-width, $disabled-border-color); }
 }
-.button.preferred.disabled::before,
-.button.preferred.disabled::after { @include end-cap($bevel-height + 2); }
-.button.preferred.disabled::before { @include end-cap-left($bevel-width + 2, $disabled-border-color); }
-.button.preferred.disabled::after { @include end-cap-right($bevel-width + 2, $disabled-border-color); }
+.button_ovrlmi.preferred.disabled::before,
+.button_ovrlmi.preferred.disabled::after { @include end-cap($bevel-height + 2); }
+.button_ovrlmi.preferred.disabled::before { @include end-cap-left($bevel-width + 2, $disabled-border-color); }
+.button_ovrlmi.preferred.disabled::after { @include end-cap-right($bevel-width + 2, $disabled-border-color); }
 
-.button.busy {
+.button_ovrlmi.busy {
 	.loading {
 		position: absolute;
 		bottom: -1px;
@@ -170,11 +175,11 @@ $disabled-border-color: #ccc;
 		position: absolute;
 		left: 0;
 		width: 100%;
-		animation: button-ellipsis 750ms steps(1) infinite;
+		animation: button_ovrlmi-ellipsis 750ms steps(1) infinite;
 	}
 }
 
-@keyframes button-ellipsis {
+@keyframes button_ovrlmi-ellipsis {
 	0% { content: ""; }
 	16% { content: "."; }
 	32% { content: ".."; }

@@ -26,7 +26,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	}
 	protected renderFields() {
 		return (
-			<div className="sign-in-dialog">
+			<div className="sign-in-dialog_rmrt01">
 				<EmailAddressField
 					autoFocus
 					error={this.state.emailError}

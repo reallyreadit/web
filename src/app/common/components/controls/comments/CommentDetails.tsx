@@ -34,7 +34,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 		return (
 			<li
 				className={classNames(
-					'comment-details',
+					'comment-details_xrpqq3',
 					{
 						unread: this.props.mode === 'link' && !this.props.comment.dateRead,
 						highlight: this.props.comment.id === this.props.highlightedCommentId

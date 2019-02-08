@@ -1,10 +1,15 @@
-.page-selector {
+/*
+	componentPath: src/app/common/components/controls/PageSelector
+	cssComponentId: page-selector_a8tbpb
+*/
+
+.page-selector_a8tbpb {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding-top: 10px;
 }
-.page-selector > select {
+.page-selector_a8tbpb > select {
 	margin-left: 5px;
 	font-family: inherit;
 }

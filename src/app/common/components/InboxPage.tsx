@@ -40,7 +40,7 @@ export default class InboxPage extends React.Component<
 	}
 	public render() {
 		return (
-			<div className="inbox-page">
+			<div className="inbox-page_b8knhv">
 				{this.state.replies.isLoading ?
 					<LoadingOverlay /> :
 					<>

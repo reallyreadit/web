@@ -13,7 +13,7 @@ export default class CommentList extends React.Component<{
 }, {}> {
     public render() {
         return (
-            <ul className="comment-list">
+            <ul className="comment-list_3zfaer">
                 {this.props.comments.map(comment =>
                     <CommentDetails
                         key={comment.id}

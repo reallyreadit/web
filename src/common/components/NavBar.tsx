@@ -12,7 +12,7 @@ export default (props: {
 	onGoToHistory: () => void
 }) =>
 	props.isSignedIn ?
-		<div className="nav-bar">
+		<div className="nav-bar_2crc9o">
 			<Button
 				text="Inbox"
 				iconLeft="box"
@@ -22,7 +22,7 @@ export default (props: {
 			<Button text="Starred" iconLeft="star" onClick={props.onGoToStarred} state={props.state} />
 			<Button text="History" iconLeft="clock" onClick={props.onGoToHistory} state={props.state} />
 		</div> :
-		<div className="nav-bar">
+		<div className="nav-bar_2crc9o">
 			<Button text="Sign In" iconLeft="user" onClick={props.onSignIn} />
 			<Button text="Create Account" iconLeft="plus" onClick={props.onCreateAccount} style="preferred" />
 		</div>

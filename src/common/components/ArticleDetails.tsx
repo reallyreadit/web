@@ -93,7 +93,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				</div>
 			);
 		return (
-			<div className="article-details">
+			<div className="article-details_d2vnmv">
 				<div className="small-title">
 					{star}
 					{titleLink}
@@ -186,7 +186,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							<SpeechBubble
 								percentComplete={this.props.article.percentComplete}
 								isRead={this.props.article.isRead}
-								uuid={`article-details-speech-bubble-${this.props.article.id}`}
+								uuid={`article-details_d2vnmv-speech-bubble-${this.props.article.id}`}
 							/>
 							<div className="length">
 								{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))} min read

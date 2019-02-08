@@ -28,7 +28,7 @@ export default class extends Dialog<void, Props, Partial<State> & Values> {
 	}
 	protected renderFields() {
 		return (
-			<div className="edit-contact-preferences-dialog">
+			<div className="edit-contact-preferences-dialog_kaoktk">
 				Feel free to occasionally email me about the following:
 				<ul>
 					<li>

@@ -1,4 +1,9 @@
-.dialog-manager {
+/*
+	componentPath: src/app/common/components/DialogManager
+	cssComponentId: dialog-manager_51j1qt
+*/
+
+.dialog-manager_51j1qt {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -11,10 +16,10 @@
 	justify-content: flex-start;
 	background-color: rgba(255,255,255,0.5)
 }
-.dialog-manager.hidden {
+.dialog-manager_51j1qt.hidden {
 	display: none;
 }
-.dialog-manager::before {
+.dialog-manager_51j1qt::before {
 	content: "";
 	height: 15%;
 	min-height: 15px;

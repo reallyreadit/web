@@ -100,7 +100,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	}
 	protected renderFields() {
 		return (
-			<div className="share-article-dialog">
+			<div className="share-article-dialog_okphco">
 				<h3>{formatFetchable(this.state.article, article => article.title)}</h3>
 				<FormField
 					label={`Email Address${this.state.addresses.length > 1 ? 'es (bcc\'d)' : ''}`}

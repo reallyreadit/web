@@ -28,7 +28,7 @@ export default class extends Dialog<void, Props, Partial<State> & Values> {
 	}
 	protected renderFields() {
 		return (
-			<div className="edit-notifications-dialog">
+			<div className="edit-notifications-dialog_7jh2m">
 				When someone replies to my comment:
 				<ul>
 					<li>

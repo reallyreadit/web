@@ -88,7 +88,7 @@ export default class extends React.PureComponent<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="create-account-card">
+			<div className="create-account-card_fr4krd">
 				<strong>Create an account</strong>
 				<UsernameField
 					error={this.state.nameError}

@@ -113,7 +113,7 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<div className="email-subscriptions-page">
+			<div className="email-subscriptions-page_tqh2pd">
 				{this.state.request ?
 					this.state.request.isLoading ?
 						<span>Loading...</span> :

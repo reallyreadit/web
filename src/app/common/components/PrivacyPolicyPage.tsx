@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 const privacyPolicyPage = () => (
-	<div className="privacy-policy-page copy-page">
+	<div className="privacy-policy-page_75v4wh">
 		<section>
 			<p><strong>reallyread.it Privacy Policy</strong></p>
 			<p>Last Updated: Sunday, June 4, 2017</p>

@@ -1,4 +1,9 @@
-.input-control > input {
+/*
+	componentPath: src/app/common/components/controls/InputControl
+	cssComponentId: input-control_dua9vb
+*/
+
+.input-control_dua9vb > input {
 	display: block;
 	width: 100%;
 	height: 22px;
@@ -9,10 +14,10 @@
 	border-radius: 0;
 	background: #fff;
 }
-.input-control > input:focus {
+.input-control_dua9vb > input:focus {
 	outline: none;
 }
-.input-control > .error {
+.input-control_dua9vb > .error {
 	position: relative;
 	line-height: 16px;
 	text-indent: 14px;
@@ -21,7 +26,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.input-control > .error::before {
+.input-control_dua9vb > .error::before {
 	content: "";
 	display: block;
 	position: absolute;

@@ -84,7 +84,7 @@ class SettingsPage extends React.PureComponent<Props> {
 	public render() {
 		const user = this.props.user;
 		return (
-			<div className="settings-page">
+			<div className="settings-page_ejwkk">
 				<ul>
 					<li>
 						<label>

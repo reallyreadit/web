@@ -1,27 +1,27 @@
-.button-bar > .button:not(:first-child):not(:last-child) {
+.button-bar > .button_ovrlmi:not(:first-child):not(:last-child) {
 	margin-left: 0;
 	margin-right: 0;
 	overflow: hidden;
 	border-left: 1px solid black;
 }
-.button-bar > .button:not(:first-child):not(:last-child) > .outer-wrap > .inner-wrap > .content {
+.button-bar > .button_ovrlmi:not(:first-child):not(:last-child) > .outer-wrap > .inner-wrap > .content {
 	padding-left: 6px;
 	padding-right: 6px;
 }
-.button-bar > .button:first-child {
+.button-bar > .button_ovrlmi:first-child {
 	margin-right: 0;
 }
-.button-bar > .button:first-child > .outer-wrap > .inner-wrap > .content {
+.button-bar > .button_ovrlmi:first-child > .outer-wrap > .inner-wrap > .content {
 	padding-right: 6px;
 }
-.button-bar > .button:last-child {
+.button-bar > .button_ovrlmi:last-child {
 	margin-left: 0;
 	border-left: 1px solid black;
 }
-.button-bar > .button:last-child::before,
-.button-bar > .button:last-child > .outer-wrap > .inner-wrap > .content::before {
+.button-bar > .button_ovrlmi:last-child::before,
+.button-bar > .button_ovrlmi:last-child > .outer-wrap > .inner-wrap > .content::before {
 	display: none;
 }
-.button-bar > .button:last-child > .outer-wrap > .inner-wrap > .content {
+.button-bar > .button_ovrlmi:last-child > .outer-wrap > .inner-wrap > .content {
 	padding-left: 6px;
 }

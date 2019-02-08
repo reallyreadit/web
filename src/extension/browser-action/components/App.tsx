@@ -91,12 +91,12 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	public render() {
 		return (
 			this.state.isAuthenticated && this.state.isOnHomePage ?
-				<div className="app">
+				<div className="app_79z645">
 					<div className="ready-indicator">
 						<h1>Go read something!</h1>
 					</div>
 				</div> :
-				<div className="app">
+				<div className="app_79z645">
 					<h1>
 						<a href={this._createAbsoluteUrl('/')} target="_blank" dangerouslySetInnerHTML={{ __html: logoText }}></a>
 					</h1>

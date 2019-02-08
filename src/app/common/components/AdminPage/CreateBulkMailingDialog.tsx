@@ -59,7 +59,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	}
 	protected renderFields() {
 		return (
-			<table className="create-bulk-mailing-dialog">
+			<table className="create-bulk-mailing-dialog_bbvobo">
 				<tbody>
 					<tr>
 						<th>List</th>

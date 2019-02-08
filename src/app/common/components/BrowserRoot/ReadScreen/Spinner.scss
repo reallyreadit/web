@@ -11,7 +11,7 @@
 }
 .spinner_rpko1z > div {
 	transform-origin: 24px 24px;
-	animation: lds-spinner 1.2s linear infinite;
+	animation: spinner_rpko1z 1.2s linear infinite;
 }
 .spinner_rpko1z > div:after {
 	content: " ";
@@ -73,7 +73,7 @@
 	animation-delay: 0s;
 }
 
-@keyframes lds-spinner {
+@keyframes spinner_rpko1z {
 	0% {
 		opacity: 1;
 	}

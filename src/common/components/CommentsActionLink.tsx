@@ -16,7 +16,7 @@ export default (props: {
 			['sourceSlug']: sourceSlug
 		};
 	return (
-		<span className="comments-action-link">
+		<span className="comments-action-link_whpou5">
 			<ActionLink
 				href={findRouteByKey(routes, ScreenKey.Comments).createUrl(urlParams)}
 				iconLeft="comments"

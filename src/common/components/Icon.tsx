@@ -18,7 +18,7 @@ export default (props: {
 	fill?: string
 }) => (
 	<svg
-		className={classNames('icon', props.className)}
+		className={classNames('icon_rour3d', props.className)}
 		onClick={props.onClick}
 	>
 		{props.defs ?

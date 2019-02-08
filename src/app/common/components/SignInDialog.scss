@@ -1,7 +1,12 @@
-.sign-in-dialog > .forgot-password {
+/*
+	componentPath: src/app/common/components/SignInDialog
+	cssComponentId: sign-in-dialog_rmrt01
+*/
+
+.sign-in-dialog_rmrt01 > .forgot-password {
 	text-align: center;
 }
-.sign-in-dialog > .forgot-password > span {
+.sign-in-dialog_rmrt01 > .forgot-password > span {
 	color: lightgray;
 	cursor: pointer;
 	text-decoration: underline;
