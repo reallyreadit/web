@@ -1,8 +1,9 @@
-const del = require('del'),
-	path = require('path'),
-	fs = require('fs');
+const
+	del = require('del'),
+	path = require('path');
 
-const project = require('./project'),
+const
+	project = require('./project'),
 	delayedWatch = require('./delayedWatch'),
 	configureWebpack = require('./configureWebpack'),
 	runWebpack = require('./runWebpack'),
@@ -10,15 +11,25 @@ const project = require('./project'),
 	buildScss = require('./buildScss');
 
 function createBuild(params) {
-	const srcPath = path.posix.join(project.srcDir, params.path),
-		devOutPath = project.getOutPath(params.path, project.env.dev);
+	// set the source path
+	const srcPath = path.posix.join(project.srcDir, params.path);
+	// set a default build completion delegate if not provided
+	params.onBuildComplete = (
+		params.onBuildComplete ||
+		((buildInfo, resolve) => {
+			if (resolve) {
+				resolve();
+			}
+		})
+	);
+	// batch static assets by base path
 	let staticAssets;
 	if (params.staticAssets) {
 		staticAssets = (
-			typeof params.staticAssets === 'string' ?
-				[params.staticAssets] :
-				params.staticAssets
-		)
+				typeof params.staticAssets === 'string' ?
+					[params.staticAssets] :
+					params.staticAssets
+			)
 			.reduce((batches, element) => {
 				if (typeof element === 'string') {
 					const srcBaseBatch = batches.find(batch => batch.base === srcPath);
@@ -40,96 +51,92 @@ function createBuild(params) {
 				return batches;
 			}, []);
 	}
-	function getWebpackConfig(opts) {
+	// webpack config helper
+	function getWebpackConfig(options) {
 		return configureWebpack({
 			appConfig: params.webpack.appConfig,
 			configFile: params.webpack.configFile,
-			entry: './' + opts.entry,
-			env: opts.env,
-			fileName: opts.fileName,
-			isHtmlTemplate: !!params.webpack.htmlTemplate,
-			minify: opts.minify,
+			entry: './' + params.webpack.entry,
+			env: options.env,
+			fileName: params.webpack.fileName || 'bundle.js',
+			outputLibrary: params.webpack.outputLibrary,
+			minify: (
+				params.webpack.minify != null ?
+					params.webpack.minify :
+					options.env !== project.env.dev
+			),
 			path: params.path,
-			sourceMaps: opts.sourceMaps,
-			watch: opts.watch
+			sourceMaps: (
+				params.webpack.sourceMaps != null ?
+					params.webpack.sourceMaps :
+					options.env === project.env.dev
+			),
+			watch: options.watch
 		});
 	}
-	function getHtmlTemplateDelegate(outPath, resolve) {
-		return () => {
-			const template = path.join(outPath, 'html.js');
-			// the output of the htmlTemplate bundle is assigned to the variable 'html' when executed
-			eval(fs.readFileSync(template).toString());
-			fs.writeFileSync(path.join(outPath, 'index.html'), html.default);
-			fs.unlinkSync(template);
-			if (resolve) {
-				resolve();
-			}
-		};
-	}
+	// return build
 	return {
-		clean(env) {
+		clean: function (env) {
 			return del(project.getOutPath(params.path, env));
 		},
-		build(env) {
-			const outPath = project.getOutPath(params.path, env),
+		build: function (env) {
+			const
+				outPath = project.getOutPath(params.path, env),
 				tasks = [];
 			if (params.webpack) {
-				tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig({
-					entry: params.webpack.entry,
-					fileName: 'bundle.js',
-					sourceMaps: env === project.env.dev,
-					minify: env !== project.env.dev,
-					env
-				}), resolve)));
-				if (params.webpack.htmlTemplate) {
-					tasks.push(new Promise((resolve, reject) => runWebpack(getWebpackConfig({
-						entry: params.webpack.htmlTemplate,
-						fileName: 'html.js',
-						sourceMaps: false,
-						minify: false,
-						env
-					}), getHtmlTemplateDelegate(outPath, resolve))));
-				}
+				tasks.push(new Promise(resolve => {
+					runWebpack(
+						getWebpackConfig({ env }),
+						() => {
+							params.onBuildComplete({ build: 'webpack', env, outPath }, resolve);
+						}
+					);
+				}));
 			}
 			if (params.scss) {
-				tasks.push(new Promise((resolve, reject) => buildScss({
-					src: params.scss,
-					dest: outPath,
-					base: srcPath,
-					onComplete: resolve,
-					env
-				})));
+				tasks.push(new Promise(resolve => {
+					buildScss({
+						src: params.scss,
+						dest: outPath,
+						base: srcPath,
+						onComplete: () => {
+							params.onBuildComplete({ build: 'scss', env, outPath }, resolve);
+						},
+						env
+					});
+				}));
 			}
 			if (staticAssets) {
-				staticAssets.forEach(asset => tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-					src: asset.src,
-					dest: outPath,
-					base: asset.base,
-					onComplete: resolve
-				}))));
+				staticAssets.forEach(asset => tasks.push(new Promise(resolve => {
+					buildStaticAssets({
+						src: asset.src,
+						dest: outPath,
+						base: asset.base,
+						onComplete: () => {
+							params.onBuildComplete({ build: 'staticAssets', env, outPath }, resolve);
+						}
+					});
+				})));
 			}
 			return Promise.all(tasks);
 		},
-		watch() {
+		watch: function () {
+			// set the output path
+			const devOutPath = project.getOutPath(params.path, project.env.dev);
 			if (params.webpack) {
-				runWebpack(getWebpackConfig({
-					entry: params.webpack.entry,
-					fileName: 'bundle.js',
-					sourceMaps: true,
-					minify: false,
-					env: project.env.dev,
-					watch: true
-				}));
-				if (params.webpack.htmlTemplate) {
-					runWebpack(getWebpackConfig({
-						entry: params.webpack.htmlTemplate,
-						fileName: 'html.js',
-						sourceMaps: false,
-						minify: false,
+				runWebpack(
+					getWebpackConfig({
 						env: project.env.dev,
 						watch: true
-					}), getHtmlTemplateDelegate(devOutPath));
-				}
+					}),
+					() => {
+						params.onBuildComplete({
+							build: 'webpack',
+							env: project.env.dev,
+							outPath: devOutPath
+						});
+					}
+				);
 			}
 			if (params.scss) {
 				buildScss({
@@ -137,27 +144,67 @@ function createBuild(params) {
 					dest: devOutPath,
 					base: srcPath,
 					env: project.env.dev,
-					onComplete: () => delayedWatch(params.scss, () => buildScss({
-						src: params.scss,
-						dest: devOutPath,
-						base: srcPath,
-						env: project.env.dev
-					}))
+					onComplete: () => {
+						delayedWatch(
+							params.scss,
+							() => {
+								buildScss({
+									src: params.scss,
+									dest: devOutPath,
+									base: srcPath,
+									env: project.env.dev,
+									onComplete: () => {
+										params.onBuildComplete({
+											build: 'scss',
+											env: project.env.dev,
+											outPath: devOutPath
+										});
+									}
+								});
+							}
+						);
+						params.onBuildComplete({
+							build: 'scss',
+							env: project.env.dev,
+							outPath: devOutPath
+						});
+					}
 				});
 			}
 			if (staticAssets) {
-				staticAssets.forEach(asset => buildStaticAssets({
-					src: asset.src,
-					dest: devOutPath,
-					base: asset.base,
-					env: project.env.dev,
-					onComplete: () => delayedWatch(asset.src, () => buildStaticAssets({
+				staticAssets.forEach(asset => {
+					buildStaticAssets({
 						src: asset.src,
 						dest: devOutPath,
 						base: asset.base,
-						env: project.env.dev
-					}))
-				}));
+						env: project.env.dev,
+						onComplete: () => {
+							delayedWatch(
+								asset.src,
+								() => {
+									buildStaticAssets({
+										src: asset.src,
+										dest: devOutPath,
+										base: asset.base,
+										env: project.env.dev,
+										onComplete: () => {
+											params.onBuildComplete({
+												build: 'staticAssets',
+												env: project.env.dev,
+												outPath: devOutPath
+											});
+										}
+									});
+								}
+							);
+							params.onBuildComplete({
+								build: 'staticAssets',
+								env: project.env.dev,
+								outPath: devOutPath
+							});
+						}
+					});
+				});
 			}
 		}
 	};

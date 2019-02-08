@@ -72,8 +72,8 @@ function configureWebpack(params) {
 	if (define) {
 		addPlugin(webpackConfig, new webpack.DefinePlugin(define));
 	}
-	if (params.isHtmlTemplate) {
-		webpackConfig.output.library = 'html';
+	if (params.outputLibrary) {
+		webpackConfig.output.library = params.outputLibrary;
 	}
 	return webpackConfig;
 }
