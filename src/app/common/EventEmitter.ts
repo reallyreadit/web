@@ -3,8 +3,9 @@ abstract class EventEmitter<T> {
 	private getListener<K extends keyof T>(type: K, delegate: (ev: T[K]) => void) {
 		return this.listeners.filter(l => l.type === type && l.delegate === delegate)[0];
 	}
-	protected emitEvent<K extends keyof T>(type: K, ev: T[K]) {
-		this.listeners
+	protected emitEvent<K extends keyof T>(type: K, ev?: T[K]) {
+		this
+			.listeners
 			.filter(l => l.type === type)
 			.forEach(l => l.delegate(ev));
 	}
