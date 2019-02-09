@@ -4,8 +4,7 @@ const project = require('../project'),
 	  createBuild = require('../createBuild'),
 	  browserAction = require('./extension/browserAction'),
 	  contentScript = require('./extension/contentScript'),
-	  eventPage = require('./extension/eventPage'),
-	  sourceParsers = require('./extension/sourceParsers');
+	  eventPage = require('./extension/eventPage');
 
 const targetPath = 'extension',
 	staticAssets = createBuild({
@@ -24,7 +23,6 @@ function build(env) {
 		browserAction.build(env),
 		contentScript.build(env),
 		eventPage.build(env),
-		sourceParsers.build(env),
 		staticAssets.build(env)
 	]);
 }
@@ -32,7 +30,6 @@ function watch() {
 	browserAction.watch();
 	contentScript.watch();
 	eventPage.watch();
-	sourceParsers.watch();
 	staticAssets.watch();
 }
 
