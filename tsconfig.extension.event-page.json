@@ -1,8 +1,0 @@
-{
-	"extends": "./tsconfig",
-	"include": [
-		"src/extension/event-page",
-		"src/extension/common",
-		"src/common"
-	]
-}

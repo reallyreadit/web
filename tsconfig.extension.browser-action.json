@@ -1,8 +1,0 @@
-{
-	"extends": "./tsconfig",
-	"include": [
-		"src/extension/browser-action",
-		"src/extension/common",
-		"src/common"
-	]
-}

@@ -55,7 +55,6 @@ function createBuild(params) {
 	function getWebpackConfig(options) {
 		return configureWebpack({
 			appConfig: params.webpack.appConfig,
-			configFile: params.webpack.configFile,
 			entry: './' + params.webpack.entry,
 			env: options.env,
 			fileName: params.webpack.fileName || 'bundle.js',

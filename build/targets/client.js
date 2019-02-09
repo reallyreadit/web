@@ -5,7 +5,6 @@ const project = require('../project'),
 
 const build = createBuild({
 	webpack: {
-		configFile: 'tsconfig.client.json',
 		entry: path.posix.join(project.srcDir, 'app/client/main.ts')
 	},
 	scss: [

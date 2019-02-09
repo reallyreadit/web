@@ -12,7 +12,6 @@ const
 	targetPath = 'extension/content-script',
 	contentScriptBuild = createBuild({
 		webpack: {
-			configFile: 'tsconfig.extension.content-script.json',
 			entry: path.posix.join(project.srcDir, 'extension/content-script/main.ts')
 		},
 		path: targetPath

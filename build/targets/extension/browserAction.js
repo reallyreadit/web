@@ -8,7 +8,6 @@ const
 
 const mainBuild = createBuild({
 	webpack: {
-		configFile: 'tsconfig.extension.browser-action.json',
 		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts'),
 		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 		htmlTemplate: path.posix.join(project.srcDir, 'extension/browser-action/templates/html.ts')
@@ -38,7 +37,6 @@ const htmlTemplateBuild = createBuild({
 	},
 	path: 'extension/browser-action',
 	webpack: {
-		configFile: 'tsconfig.extension.browser-action.json',
 		entry: path.posix.join(project.srcDir, 'extension/browser-action/templates/html.ts'),
 		fileName: 'html.js',
 		minify: false,

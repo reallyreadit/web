@@ -45,7 +45,6 @@ const build = createBuild({
 		`${project.srcDir}/extension/content-script/user-interface/fonts/**/*.*`
 	],
 	webpack: {
-		configFile: 'tsconfig.extension.content-script.json',
 		entry: path.posix.join(project.srcDir, 'extension/content-script/user-interface/main.ts')
 	}
 });

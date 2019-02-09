@@ -5,7 +5,6 @@ const project = require('../../project'),
 
 const build = createBuild({
 	webpack: {
-		configFile: 'tsconfig.extension.event-page.json',
 		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts'),
 		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json')
 	},
