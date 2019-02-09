@@ -1,18 +1,45 @@
-const del = require('del');
+const
+	del = require('del'),
+	fs = require('fs'),
+	path = require('path');
 
-const project = require('../project'),
-	  createBuild = require('../createBuild'),
-	  browserAction = require('./extension/browserAction'),
-	  contentScript = require('./extension/contentScript'),
-	  eventPage = require('./extension/eventPage');
+const
+	project = require('../project'),
+	createBuild = require('../createBuild'),
+	browserAction = require('./extension/browserAction'),
+	contentScript = require('./extension/contentScript'),
+	eventPage = require('./extension/eventPage');
 
-const targetPath = 'extension',
+const
+	targetPath = 'extension',
 	staticAssets = createBuild({
+		onBuildComplete: (buildInfo, resolve) => {
+			const
+				fileName = path.join(buildInfo.outPath, 'manifest.json'),
+				manifest = JSON.parse(
+					fs
+						.readFileSync(fileName)
+						.toString()
+				),
+				package = JSON.parse(
+					fs
+						.readFileSync('./package.json')
+						.toString()
+				);
+			manifest.version = package['it.reallyread'].version.extension;
+			fs.writeFileSync(
+				fileName,
+				JSON.stringify(manifest, null, 3)
+			);
+			if (resolve) {
+				resolve();
+			}
+		},
+		path: targetPath,
 		staticAssets: [
 			`${project.srcDir}/extension/icons/**`,
 			`${project.srcDir}/extension/manifest.json`
-		],
-		path: targetPath
+		]
 	});
 
 function clean(env) {
