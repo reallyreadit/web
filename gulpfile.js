@@ -1,8 +1,10 @@
-const gulp = require('gulp'),
-	  project = require('./build/project'),
-	  Server = require('./build/targets/Server'),
-	  client = require('./build/targets/client'),
-	  extension = require('./build/targets/extension');
+const
+	gulp = require('gulp'),
+	project = require('./build/project'),
+	Server = require('./build/targets/Server'),
+	client = require('./build/targets/client'),
+	extension = require('./build/targets/extension'),
+	nativeClient = require('./build/targets/nativeClient');
 
 /**
  * app
@@ -52,3 +54,16 @@ gulp.task('build:stage:extension', () => extension.build(project.env.stage));
 
 gulp.task('clean:prod:extension', () => extension.clean(project.env.prod));
 gulp.task('build:prod:extension', () => extension.build(project.env.prod));
+
+/**
+ * native client
+ */
+gulp.task('clean:dev:native-client', () => nativeClient.clean(project.env.dev));
+gulp.task('build:dev:native-client', () => nativeClient.build(project.env.dev));
+gulp.task('watch:dev:native-client', () => nativeClient.watch());
+
+gulp.task('clean:stage:native-client', () => nativeClient.clean(project.env.stage));
+gulp.task('build:stage:native-client', () => nativeClient.build(project.env.stage));
+
+gulp.task('clean:prod:native-client', () => nativeClient.clean(project.env.prod));
+gulp.task('build:prod:native-client', () => nativeClient.build(project.env.prod));

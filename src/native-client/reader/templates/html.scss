@@ -1,0 +1,21 @@
+@font-face {
+	font-family: 'Bitter';
+	src: url(data:font/ttf;charset=utf-8;base64,{BASE64_FONT});
+}
+
+#reallyreadit-footer-root {
+	font-family: 'Bitter';
+	font-size: 13px;
+	letter-spacing: 0.02em;
+	line-height: 1.2;
+}
+#reallyreadit-footer-root a,
+#reallyreadit-footer-root button,
+#reallyreadit-footer-root div,
+#reallyreadit-footer-root span,
+#reallyreadit-footer-root svg {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+#reallyreadit-footer-root a {
+	color: black;
+}
