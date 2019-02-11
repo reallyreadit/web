@@ -38,8 +38,8 @@ const build = createBuild({
 	},
 	path: 'extension/content-script/user-interface',
 	scss: [
-		`${project.srcDir}/extension/content-script/user-interface/**/*.{css,scss}`,
-		`${project.srcDir}/common/components/**/*.{css,scss}`
+		`${project.srcDir}/common/components/reader/Footer.scss`,
+		`${project.srcDir}/extension/content-script/user-interface/**/*.{css,scss}`
 	],
 	staticAssets: [
 		`${project.srcDir}/extension/content-script/user-interface/fonts/**/*.*`
