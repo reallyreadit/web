@@ -5,13 +5,10 @@ import UserPage from '../../common/models/UserPage';
 export default class Page {
 	private _contentEls: ContentElement[];
 	private _userPageId: number;
-	private _wordCount: number;
 	constructor(contentEls: ContentElement[], showOverlay: boolean) {
 		// set up the content elements
 		this._contentEls = contentEls.sort((a, b) => a.offsetTop - b.offsetTop);
 		this._contentEls.forEach(el => el.showOverlay(showOverlay));
-		// cache the word count
-		this._wordCount = this.getReadState().wordCount;
 	}
 	private setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
@@ -61,8 +58,5 @@ export default class Page {
 	}
 	public get userPageId() {
 		return this._userPageId;
-	}
-	public get wordCount() {
-		return this._wordCount;
 	}
 }
