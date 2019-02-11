@@ -16,7 +16,7 @@ const build = createBuild({
 					.readFileSync(fileName)
 					.toString()
 					.replace(
-						'{extensionId}',
+						'{EXTENSION_ID}',
 						JSON
 							.parse(
 								fs
