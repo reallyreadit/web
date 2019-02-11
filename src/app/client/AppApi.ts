@@ -1,12 +1,12 @@
 import AppApi, { ArticleReference } from '../common/AppApi';
-import WebViewMessagingContext from './WebViewMessagingContext';
+import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 
 export default class extends AppApi {
-	private readonly _app: WebViewMessagingContext | undefined;
-	constructor() {
+	private readonly _messagingContext: WebViewMessagingContext;
+	constructor(messagingContext: WebViewMessagingContext) {
 		super();
-		this._app = new WebViewMessagingContext();
-		this._app.addListener((message: { type: string, data: any }, sender, sendResponse) => {
+		this._messagingContext = messagingContext;
+		messagingContext.addListener((message: { type: string, data: any }, sender, sendResponse) => {
 			switch (message.type) {
 				case 'articleUpdated':
 					this.emitEvent('articleUpdated', message.data);
@@ -30,7 +30,7 @@ export default class extends AppApi {
 		});
 	}
 	public readArticle(reference: ArticleReference) {
-		this._app.sendMessage({
+		this._messagingContext.sendMessage({
 			type: 'readArticle',
 			data: reference
 		});

@@ -9,6 +9,7 @@ import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import * as jsCookie from 'js-cookie';
+import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 
 // clean up localStorage
 localStorage.removeItem('challenge');
@@ -45,11 +46,16 @@ const rootProps = {
 let rootElement: React.ReactElement<any>;
 switch (window.reallyreadit.app.initData.clientType) {
 	case ClientType.App:
+		const messagingContext = new WebViewMessagingContext();
+		window.reallyreadit.app = {
+			...window.reallyreadit.app,
+			...messagingContext.createIncomingMessageHandlers()
+		};
 		rootElement = React.createElement(
 			AppRoot,
 			{
 				...rootProps,
-				appApi: new AppApi()
+				appApi: new AppApi(messagingContext)
 			}
 		);
 		break;
