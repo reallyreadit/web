@@ -4,11 +4,11 @@ import { cloneNodeWithReference, getWords } from './utils';
 import styleArticleDocument from './styleArticleDocument';
 
 export type ParseMode = 'analyze' | 'mutate';
-export interface ContentElement {
+interface ContentElement {
 	element: HTMLElement,
 	wordCount: number
 }
-export interface ParseResult {
+export interface ContentParseResult {
 	excerpt: string | null,
 	elements: ContentElement[],
 	wordCount: number
@@ -18,7 +18,7 @@ function getContentElements(rootElement: HTMLElement) {
 		.from<HTMLElement>(rootElement.getElementsByTagName('p'))
 		.concat(Array.from(rootElement.getElementsByTagName('li')));
 }
-export default function (mode: ParseMode): ParseResult {
+export default function (mode: ParseMode): ContentParseResult {
 	let parseResult: ReadabilityParseResult;
 	let contentElements: HTMLElement[];
 	switch (mode) {

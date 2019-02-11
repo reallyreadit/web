@@ -1,10 +1,9 @@
-import ContentScriptConfig from './ContentScriptConfig';
 import SourceRule from '../../common/models/SourceRule';
+import { ParseMode } from '../../common/reading/parseDocumentContent';
 
 export default interface ContentScriptInitData {
-	config: ContentScriptConfig,
 	loadPage: boolean,
-	parseMode: 'analyze' | 'mutate',
+	parseMode: ParseMode,
 	showOverlay: boolean,
 	sourceRules: SourceRule[]
 }

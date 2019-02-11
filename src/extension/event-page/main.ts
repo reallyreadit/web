@@ -58,7 +58,6 @@ const contentScriptApi = new ContentScriptApi({
 		return serverApi
 			.getAuthStatus()
 			.then(isAuthenticated => ({
-				config: serverApi.contentScriptConfig,
 				loadPage: isAuthenticated,
 				parseMode: JSON.parse(localStorage.getItem('parseMode')),
 				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),

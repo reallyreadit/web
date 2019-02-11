@@ -1,15 +1,11 @@
 import Page from '../../common/reading/Page';
 import LazyScript from './LazyScript';
-import { ContentElement, ParseMode } from '../../common/reading/parseDocumentContent';
+import { ContentParseResult, ParseMode } from '../../common/reading/parseDocumentContent';
 
 declare global {
 	interface ContentScriptWindow {
 		contentParser: LazyScript<{
-			parse: (mode: ParseMode) => {
-				excerpt: string,
-				elements: ContentElement[],
-				wordCount: number
-			}
+			parse: (mode: ParseMode) => ContentParseResult
 		}>,
 		userInterface: LazyScript<{
 			construct: (page: Page) => void,

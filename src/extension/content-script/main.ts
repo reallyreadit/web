@@ -1,13 +1,13 @@
 import Page from '../../common/reading/Page';
 import EventPageApi from './EventPageApi';
-import ContentScriptConfig from '../common/ContentScriptConfig';
 import { SourceRuleAction } from '../../common/models/SourceRule';
 import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
 import LazyScript from './LazyScript';
 import ContentElement from '../../common/reading/ContentElement';
 import { ParseMode } from '../../common/reading/parseDocumentContent';
+import Reader from '../../common/reading/Reader';
+import createPageParseResult from '../../common/reading/createPageParseResult';
 
-// local state
 window.reallyreadit = {
 	extension: {
 		contentScript: {
@@ -20,16 +20,15 @@ window.reallyreadit = {
 		}
 	}
 };
+
 const { contentParser, userInterface } = window.reallyreadit.extension.contentScript;
+
 let
-	isReading = false,
 	context = {
 		path: window.location.pathname,
-		page: null as Page,
-		lastCommitPercentComplete: 0
+		page: null as Page
 	},
 	initData: {
-		config: ContentScriptConfig,
 		parseMode: ParseMode,
 		showOverlay: boolean,
 		sourceRules: {
@@ -65,77 +64,12 @@ const eventPageApi = new EventPageApi({
 	}
 });
 
-// timers
-const timers: {
-	readWord?: {
-		handle?: number,
-		rate?: number
-	},
-	updatePageOffset?: number,
-	commitReadState?: number
-} = { readWord: {} };
-
-function readWord() {
-	if (context.page.readWord()) {
-		if (timers.readWord.rate === initData.config.idleReadRate) {
-			window.clearInterval(timers.readWord.handle);
-			timers.readWord = {
-				handle: window.setInterval(readWord, initData.config.readWordRate),
-				rate: initData.config.readWordRate
-			};
-			timers.commitReadState = window.setInterval(commitReadState, initData.config.readStateCommitRate);
-		}
-	} else if (context.page.isRead()) {
-		stopReading();
-		commitReadState();
-	} else if (timers.readWord.rate === initData.config.readWordRate) {
-		window.clearInterval(timers.readWord.handle);
-		timers.readWord = {
-			handle: window.setInterval(readWord, initData.config.idleReadRate),
-			rate: initData.config.idleReadRate
-		};
-		window.clearInterval(timers.commitReadState);
+// reader
+const reader = new Reader(
+	(commitData, isCompletionCommit) => {
+		eventPageApi.commitReadState(commitData, isCompletionCommit);
 	}
-}
-function updatePageOffset() {
-	context.page.updateOffset();
-}
-function commitReadState() {
-	const
-		readState = context.page.getReadState(),
-		percentComplete = readState.getPercentComplete();
-	eventPageApi
-		.commitReadState(
-			{
-				userPageId: context.page.userPageId,
-				readState: readState.readStateArray
-			},
-			context.lastCommitPercentComplete < 90 && percentComplete >= 90
-		)
-		.catch(() => {});
-	context.lastCommitPercentComplete = percentComplete;
-}
-
-// reading lifecycle
-function startReading() {
-	if (!isReading && !context.page.isRead()) {
-		timers.readWord = {
-			handle: window.setInterval(readWord, initData.config.idleReadRate),
-			rate: initData.config.idleReadRate
-		};
-		timers.updatePageOffset = window.setInterval(updatePageOffset, initData.config.pageOffsetUpdateRate);
-		isReading = true;
-		readWord();
-	}
-}
-function stopReading() {
-	if (isReading) {
-		clearTimeout(timers.readWord.handle);
-		clearInterval(timers.updatePageOffset);
-		clearInterval(timers.commitReadState);
-		isReading = false;
-	}
-}
+)
 
 // page lifecycle
 function loadPage() {
@@ -156,8 +90,6 @@ function loadPage() {
 					.get()
 					.then(parser => {
 						const content = parser.parse(initData.parseMode);
-						// prefer the metadata but fall back to content parse values in case none is present
-						const description = metaParseResult.metadata.article.description || content.excerpt;
 						if (
 							content.elements.length &&
 							(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
@@ -167,17 +99,10 @@ function loadPage() {
 								initData.showOverlay
 							);
 							eventPageApi
-								.registerPage({
-									...metaParseResult.metadata,
-									wordCount: content.wordCount,
-									readableWordCount: context.page.wordCount,
-									article: { ...metaParseResult.metadata.article, description }
-								})
+								.registerPage(createPageParseResult(metaParseResult, content))
 								.then(userPage => {
 									context.page.initialize(userPage);
-									if (window.document.visibilityState === 'visible') {
-										startReading();
-									}
+									reader.loadPage(context.page);
 									userInterface
 										.get()
 										.then(ui => {
@@ -195,30 +120,20 @@ function loadPage() {
 }
 function unloadPage() {
 	if (context.page) {
-		stopReading();
 		userInterface
 			.get()
 			.then(ui => {
 				ui.destruct();
 			});
+		reader.unloadPage();
 		context.page.remove();
 		context.page = null;
-		context.lastCommitPercentComplete = 0;
 		return eventPageApi.unregisterPage();
 	}
 	return Promise.resolve();
 }
 
 // event handlers
-window.document.addEventListener('visibilitychange', () => {
-	if (context.page) {
-		if (window.document.hidden) {
-			stopReading();
-		} else {
-			startReading();
-		}
-	}
-});
 window.addEventListener('unload', () => eventPageApi.unregisterContentScript());
 
 // register content script

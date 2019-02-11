@@ -5,6 +5,10 @@ import parseMiscMetadata from './parseMiscMetadata';
 import parseOpenGraph from './parseOpenGraph';
 import { matchGetAbsoluteUrl } from './utils';
 
+export interface MetadataParseResult {
+	isArticle: boolean,
+	metadata: ParseResult
+}
 const emptyResult: ParseResult = {
 	url: null,
 	article: {

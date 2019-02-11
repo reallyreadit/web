@@ -59,13 +59,6 @@ export default class ServerApi {
 			}
 		});
 	}
-	// static config parameters
-	private _contentScriptConfig = {
-		readWordRate: 100,
-		idleReadRate: 500,
-		pageOffsetUpdateRate: 3000,
-		readStateCommitRate: 3000
-	};
 	// cached local storage
 	private _newReplyNotification = new ObjectStore<Cached<NewReplyNotification>>('newReplyNotification', {
 		value: {
@@ -288,8 +281,5 @@ export default class ServerApi {
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
 			.then(userArticle => this.cacheArticle(userArticle))
 			.catch(() => {});
-	}
-	public get contentScriptConfig() {
-		return this._contentScriptConfig;
 	}
 }
