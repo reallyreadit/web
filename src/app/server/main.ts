@@ -26,6 +26,7 @@ import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import * as path from 'path';
+import { createUrl } from '../../common/HttpEndpoint';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -348,7 +349,8 @@ server = server.get('/*', (req, res) => {
 				webServerEndpoint: config.webServer
 			},
 			iosAppId: config.iosAppId,
-			title: browserApi.getTitle()
+			title: browserApi.getTitle(),
+			url: createUrl(config.webServer, req.path)
 		}));
 	});
 });

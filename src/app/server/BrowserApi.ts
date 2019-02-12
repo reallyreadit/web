@@ -10,6 +10,9 @@ export default class extends BrowserApi {
 	public getTitle() {
 		return this._title;
 	}
+	public setPath(path: string) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public updateArticle(article: UserArticle) {
 		throw new Error('Operation not supported in server environment');
 	}

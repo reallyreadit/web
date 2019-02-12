@@ -22,6 +22,10 @@ export default class extends BrowserApi {
 	public setTitle(title: string) {
 		window.document.title = title;
 	}
+	public setPath(path: string) {
+		const meta = window.document.querySelector<HTMLMetaElement>('meta[name="apple-itunes-app"]');
+		meta.content = meta.content.replace(/(\sapp-argument=https?:\/\/[^\/]+)[^,]*/, '$1' + path);
+	}
 	public updateArticle(article: UserArticle) {
 		this.broadcastUpdate('articleUpdated', article);
 	}
