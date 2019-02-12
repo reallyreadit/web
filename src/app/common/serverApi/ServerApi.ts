@@ -39,9 +39,6 @@ export default abstract class {
 	}
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
-	protected getUrl(path: string) {
-		return `${this._endpoint.protocol}://${this._endpoint.host}:${this._endpoint.port}${path}`;
-	}
 	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string, timeZoneName: string) => {
 		return this.post<UserAccount>(new Request(
 			'/UserAccounts/CreateAccount',

@@ -9,6 +9,7 @@ import Request from './Request';
 import { Cached, cache, isExpired } from './Cached';
 import Comment from '../../common/models/Comment';
 import SourceRule from '../../common/models/SourceRule';
+import { createUrl } from '../../common/HttpEndpoint';
 
 export default class ServerApi {
 	private static _alarms = {
@@ -17,8 +18,9 @@ export default class ServerApi {
 	};
 	private static fetchJson<T>(request: Request) {
 		return new Promise<T>((resolve, reject) => {
-			const req = new XMLHttpRequest(),
-				url = `${config.api.protocol}://${config.api.host}` + request.path;
+			const
+				req = new XMLHttpRequest(),
+				url = createUrl(config.api, request.path);
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
 				if (this.status === 200 || this.status === 400) {
@@ -38,7 +40,7 @@ export default class ServerApi {
 					}
 				} else if (this.status === 401) {
 					chrome.cookies.remove({
-						url: `${config.api.protocol}://${config.api.host}`,
+						url: createUrl(config.api),
 						name: config.cookieName
 					});
 					reject(['Unauthenticated']);
@@ -172,7 +174,7 @@ export default class ServerApi {
 									timestamp: now
 								});
 								chrome.notifications.create(
-									`${config.web.protocol}://${config.web.host}/viewReply/${reply.id}`,
+									createUrl(config.web, '/viewReply/' + reply.id),
 									{
 										type: 'basic',
 										iconUrl: '../icons/desktop-notification-icon.svg',
@@ -254,7 +256,7 @@ export default class ServerApi {
 	}
 	public getAuthStatus() {
 		return new Promise<boolean>(resolve => chrome.cookies.get({
-			url: `${config.api.protocol}://${config.api.host}`,
+			url: createUrl(config.api),
 			name: config.cookieName
 		}, cookie => resolve(!!cookie)));
 	}

@@ -2,7 +2,7 @@ import * as request from 'request';
 import Fetchable from '../common/serverApi/Fetchable';
 import Request from '../common/serverApi/Request';
 import RequestStore from '../common/serverApi/RequestStore';
-import HttpEndpoint from '../../common/HttpEndpoint';
+import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';
 import KeyValuePair from '../../common/KeyValuePair';
 import ServerApi from '../common/serverApi/ServerApi';
 
@@ -15,13 +15,13 @@ export default class extends ServerApi {
 	}
 	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
-			let uri = this._endpoint.protocol + '://' + this._endpoint.host + ':' + this._endpoint.port + params.path;
+			let url = createUrl(this._endpoint, params.path);
 			if (method === 'GET') {
-				uri += params.getQueryString();
+				url += params.getQueryString();
 			}
 			const options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions) = {
 				method,
-				uri,
+				uri: url,
 				json: true,
 				callback: (error, res, body) => {
 					switch (res.statusCode) {

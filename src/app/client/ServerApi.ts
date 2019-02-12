@@ -2,6 +2,7 @@ import ServerApi, { InitData } from '../common/serverApi/ServerApi';
 import Request from '../common/serverApi/Request';
 import Fetchable from '../common/serverApi/Fetchable';
 import RequestStore from '../common/serverApi/RequestStore';
+import { createUrl } from '../../common/HttpEndpoint';
 
 export default class extends ServerApi {
 	constructor(initData: InitData) {
@@ -10,6 +11,7 @@ export default class extends ServerApi {
 	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
+			const url = createUrl(this._endpoint, params.path);
 			const req = new XMLHttpRequest();
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
@@ -38,11 +40,11 @@ export default class extends ServerApi {
 				reject([]);
 			});
 			if (method === 'POST') {
-				req.open(method, this.getUrl(params.path));
+				req.open(method, url);
 				req.setRequestHeader('Content-Type', 'application/json');
 				req.send(JSON.stringify(params.query));
 			} else {
-				req.open(method, this.getUrl(params.path) + params.getQueryString());
+				req.open(method, url + params.getQueryString());
 				req.send();
 			}
 		});
