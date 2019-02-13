@@ -10,9 +10,14 @@ const defaultPortConfigs = [
 ];
 export function createUrl(endpoint: HttpEndpoint, path: string | null = null) {
 	let url = endpoint.protocol + '://' + endpoint.host;
-	const defaultPortConfig = defaultPortConfigs.filter(config => config.protocol === endpoint.protocol)[0];
-	if (defaultPortConfig && defaultPortConfig.port !== endpoint.port) {
-		url += (':' + endpoint.port);
+	if (endpoint.port != null) {
+		const defaultPortConfig = defaultPortConfigs.filter(config => config.protocol === endpoint.protocol)[0];
+		if (
+			!defaultPortConfig ||
+			defaultPortConfig.port !== endpoint.port
+		) {
+			url += (':' + endpoint.port);
+		}
 	}
 	if (path) {
 		if (!path.startsWith('/')) {
@@ -25,5 +30,5 @@ export function createUrl(endpoint: HttpEndpoint, path: string | null = null) {
 export default interface HttpEndpoint {
 	protocol: string,
 	host: string,
-	port: number
+	port?: number
 }
