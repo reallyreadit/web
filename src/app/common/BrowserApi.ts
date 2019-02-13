@@ -8,7 +8,6 @@ export default abstract class extends EventEmitter<{
 	'userUpdated': UserAccount
 }> {
 	public abstract setTitle(title: string): void;
-	public abstract setPath(path: string): void;
 	public abstract updateArticle(article: UserArticle): void;
 	public abstract updateAvailable(version: number): void;
 	public abstract updateUser(user: UserAccount): void;

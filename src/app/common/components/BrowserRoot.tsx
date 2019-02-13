@@ -126,7 +126,6 @@ export default class extends Root<Props, State, SharedState> {
 		const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
 		this.setState({ screens: [screen] });
 		this.props.browserApi.setTitle(screen.title);
-		this.props.browserApi.setPath(window.location.pathname);
 	};
 	private readonly _handleVisibilityChange = () => {
 		if (!window.document.hidden) {
@@ -278,7 +277,6 @@ export default class extends Root<Props, State, SharedState> {
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string): Pick<State, 'menuState' | 'screens'> {
 		const { screen, url } = this.createScreen(key, urlParams, title);
 		this.props.browserApi.setTitle(screen.title);
-		this.props.browserApi.setPath(url);
 		window.history.pushState(
 			null,
 			screen.title,

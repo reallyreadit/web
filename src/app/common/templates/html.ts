@@ -7,8 +7,7 @@ export default (model: {
 	extensionId: string,
 	initData: InitData,
 	iosAppId: string,
-	title: string,
-	url: string
+	title: string
 }) => (
 `<!DOCTYPE html>
 <html lang="en">
@@ -24,7 +23,7 @@ export default (model: {
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
-		<meta name="apple-itunes-app" content="app-id=${model.iosAppId}, app-argument=${model.url}" />
+		<meta name="apple-itunes-app" content="app-id=${model.iosAppId}" />
 		<title>${model.title}</title>
 	</head>
 	<body>
