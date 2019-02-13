@@ -3,7 +3,7 @@ import UserArticle from '../../../../../common/models/UserArticle';
 import ArticleList from './ArticleList';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import PageResult from '../../../../../common/models/PageResult';
-import Fetchable from '../../../serverApi/Fetchable';
+import Fetchable from '../../../../../common/Fetchable';
 import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
 import CommunityReadSort from '../../../../../common/models/CommunityReadSort';

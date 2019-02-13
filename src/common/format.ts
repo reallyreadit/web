@@ -1,4 +1,4 @@
-import Fetchable from "../app/common/serverApi/Fetchable";
+import Fetchable from "./Fetchable";
 
 export function formatFetchable<T, U>(
 	fetchable: Fetchable<T>,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../../common/AsyncTracker';
 

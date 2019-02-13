@@ -6,7 +6,7 @@ import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import produce from 'immer';
 import InfoBox from '../controls/InfoBox';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>

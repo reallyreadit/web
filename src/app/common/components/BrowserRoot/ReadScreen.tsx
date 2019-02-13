@@ -9,7 +9,7 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import logoText from '../../../../common/svg/logoText';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import Spinner from './ReadScreen/Spinner';
 import UserAccount from '../../../../common/models/UserAccount';
 

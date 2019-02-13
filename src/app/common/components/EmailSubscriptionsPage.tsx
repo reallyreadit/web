@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Fetchable from '../serverApi/Fetchable';
+import Fetchable from '../../../common/Fetchable';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import Button from '../../../common/components/Button';

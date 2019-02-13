@@ -1,4 +1,4 @@
-import Fetchable from './Fetchable';
+import Fetchable from '../../../common/Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
 import BulkMailing from '../../../common/models/BulkMailing';
 import Comment from '../../../common/models/Comment';

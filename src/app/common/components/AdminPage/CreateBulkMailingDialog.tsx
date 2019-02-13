@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import ActionLink from '../../../../common/components/ActionLink';
 import { Intent } from '../../../../common/components/Toaster';
 

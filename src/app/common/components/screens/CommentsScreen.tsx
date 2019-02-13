@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
 import Comment from '../../../../common/models/Comment';
 import ArticleList from '../controls/articles/ArticleList';

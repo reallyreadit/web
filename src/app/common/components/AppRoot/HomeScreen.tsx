@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';

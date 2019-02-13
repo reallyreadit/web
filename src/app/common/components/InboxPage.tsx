@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Fetchable from '../serverApi/Fetchable';
+import Fetchable from '../../../common/Fetchable';
 import Comment from '../../../common/models/Comment';
 import PageResult from '../../../common/models/PageResult';
 import CommentList from './controls/comments/CommentList';

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';

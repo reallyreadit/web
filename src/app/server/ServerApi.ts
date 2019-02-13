@@ -1,5 +1,5 @@
 import * as request from 'request';
-import Fetchable from '../common/serverApi/Fetchable';
+import Fetchable from '../../common/Fetchable';
 import Request from '../common/serverApi/Request';
 import RequestStore from '../common/serverApi/RequestStore';
 import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';

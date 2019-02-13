@@ -4,7 +4,7 @@ import PageResult from '../../../../common/models/PageResult';
 import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import produce from 'immer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import InfoBox from '../controls/InfoBox';

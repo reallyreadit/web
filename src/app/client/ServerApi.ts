@@ -1,6 +1,6 @@
 import ServerApi, { InitData } from '../common/serverApi/ServerApi';
 import Request from '../common/serverApi/Request';
-import Fetchable from '../common/serverApi/Fetchable';
+import Fetchable from '../../common/Fetchable';
 import RequestStore from '../common/serverApi/RequestStore';
 import { createUrl } from '../../common/HttpEndpoint';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import BulkMailing from '../../../common/models/BulkMailing';
-import Fetchable from '../serverApi/Fetchable';
+import Fetchable from '../../../common/Fetchable';
 import ActionLink from '../../../common/components/ActionLink';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 import UserAccountStats from '../../../common/models/UserAccountStats';

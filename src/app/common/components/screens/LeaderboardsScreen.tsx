@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Fetchable from '../../serverApi/Fetchable';
+import Fetchable from '../../../../common/Fetchable';
 import UserStats from '../../../../common/models/UserStats';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import UserAccount from '../../../../common/models/UserAccount';
