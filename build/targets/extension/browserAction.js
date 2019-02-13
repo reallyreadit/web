@@ -57,7 +57,7 @@ function build(env) {
 function watch() {
 	return Promise.all([
 		mainBuild.watch(),
-		htmlTemplate.watch()
+		htmlTemplateBuild.watch()
 	]);
 }
 
