@@ -10,6 +10,7 @@ import { Cached, cache, isExpired } from './Cached';
 import Comment from '../../common/models/Comment';
 import SourceRule from '../../common/models/SourceRule';
 import { createUrl } from '../../common/HttpEndpoint';
+import Rating from '../../common/models/Rating';
 
 export default class ServerApi {
 	private static _alarms = {
@@ -248,8 +249,7 @@ export default class ServerApi {
 			.then(userArticle => {
 				this.cacheArticle(userArticle);
 				return userArticle;
-			})
-			.catch(() => {});
+			});
 	}
 	public getArticleLookupRequests(tabId: number) {
 		return this._articleLookupRequests.filter(r => r.id === tabId);
@@ -283,5 +283,8 @@ export default class ServerApi {
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
 			.then(userArticle => this.cacheArticle(userArticle))
 			.catch(() => {});
+	}
+	public rateArticle(articleId: number, score: number) {
+		return ServerApi.fetchJson<Rating>(new Request('POST', '/Articles/Rate', { articleId, score }));
 	}
 }

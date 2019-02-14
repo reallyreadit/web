@@ -7,6 +7,7 @@ import ContentElement from '../../common/reading/ContentElement';
 import { ParseMode } from '../../common/reading/parseDocumentContent';
 import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
+import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 
 window.reallyreadit = {
 	extension: {
@@ -24,10 +25,11 @@ window.reallyreadit = {
 const { contentParser, userInterface } = window.reallyreadit.extension.contentScript;
 
 let
-	context = {
-		path: window.location.pathname,
-		page: null as Page
-	},
+	context: {
+		lookupResult: ArticleLookupResult,
+		path: string,
+		page: Page
+	} | null,
 	initData: {
 		parseMode: ParseMode,
 		showOverlay: boolean,
@@ -46,7 +48,7 @@ const eventPageApi = new EventPageApi({
 	onUnloadPage: unloadPage,
 	onShowOverlay: value => {
 		initData.showOverlay = value;
-		if (context.page) {
+		if (context) {
 			context.page.showOverlay(value);
 		}
 	},
@@ -55,8 +57,7 @@ const eventPageApi = new EventPageApi({
 		window.clearTimeout(historyStateUpdatedTimeout);
 		historyStateUpdatedTimeout = window.setTimeout(() => {
 			const newPath = new URL(url).pathname;
-			if (newPath !== context.path) {
-				context.path = newPath;
+			if (!context || newPath !== context.path) {
 				// TODO: gotta come up with a more robust way to detect page changes
 				setTimeout(loadPage, 2000);
 			}
@@ -64,19 +65,52 @@ const eventPageApi = new EventPageApi({
 	}
 });
 
+function rateArticle(score: number) {
+	if (context) {
+		return eventPageApi.rateArticle(context.lookupResult.userArticle.id, score);
+	} else {
+		return Promise.reject();
+	}
+}
+
 // reader
 const reader = new Reader(
-	(commitData, isCompletionCommit) => {
-		eventPageApi.commitReadState(commitData, isCompletionCommit);
+	event => {
+		if (context) {
+			eventPageApi
+				.commitReadState(
+					{
+						readState: event.readStateArray,
+						userPageId: context.lookupResult.userPage.id
+					},
+					event.isCompletionCommit
+				)
+				.then(userArticle => {
+					userInterface
+						.get()
+						.then(ui => {
+							ui.update({
+								progress: {
+									isLoading: false,
+									value: {
+										isRead: userArticle.isRead,
+										percentComplete: userArticle.percentComplete
+									}
+								}
+							});
+						})
+				});
+		}
 	}
 )
 
 // page lifecycle
 function loadPage() {
 	unloadPage().then(() => {
+		const path = window.location.pathname;
 		// check for matching source rules
 		const rule = initData.sourceRules
-			.filter(rule => rule.path.test(context.path))
+			.filter(rule => rule.path.test(path))
 			.sort((a, b) => b.priority - a.priority)[0];
 		// proceed if we're not ignoring the page
 		if (!rule || rule.action !== SourceRuleAction.Ignore) {
@@ -94,19 +128,33 @@ function loadPage() {
 							content.elements.length &&
 							(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
 						) {
-							context.page = new Page(
+							const page = new Page(
 								content.elements.map(el => new ContentElement(el.element, el.wordCount)),
 								initData.showOverlay
 							);
 							eventPageApi
 								.registerPage(createPageParseResult(metaParseResult, content))
-								.then(userPage => {
-									context.page.initialize(userPage);
-									reader.loadPage(context.page);
+								.then(lookupResult => {
+									context = { lookupResult, page, path };
+									page.setReadState(lookupResult.userPage.readState);
+									reader.loadPage(page);
 									userInterface
 										.get()
 										.then(ui => {
-											ui.construct(context.page);
+											ui.construct(
+												page,
+												{
+													onSelectRating: rateArticle,
+													progress: {
+														isLoading: false,
+														value: {
+															isRead: lookupResult.userArticle.isRead,
+															percentComplete: lookupResult.userArticle.percentComplete
+														}
+													},
+													selectedRating: null	// TODO: rating needs to be added to UserArticle
+												}
+											);
 										});
 								})
 								.catch(() => {
@@ -119,7 +167,7 @@ function loadPage() {
 	});
 }
 function unloadPage() {
-	if (context.page) {
+	if (context) {
 		userInterface
 			.get()
 			.then(ui => {
@@ -127,7 +175,7 @@ function unloadPage() {
 			});
 		reader.unloadPage();
 		context.page.remove();
-		context.page = null;
+		context = null;
 		return eventPageApi.unregisterPage();
 	}
 	return Promise.resolve();

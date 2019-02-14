@@ -1,5 +1,4 @@
 import Page from './Page';
-import ReadStateCommitData from './ReadStateCommitData';
 
 const config = {
 	readWordRate: 100,
@@ -26,10 +25,12 @@ export default class Reader {
 		readWord: { }
 	};
 	constructor(
-		private readonly _onCommitReadState: (
-			data: ReadStateCommitData,
-			isCompletionCommit: boolean
-		) => void
+		private readonly _onCommitReadState: (event: {
+			isCompletionCommit: boolean,
+			isRead: boolean,
+			percentComplete: number,
+			readStateArray: number[]
+		}) => void
 	) {
 		window.document.addEventListener('visibilitychange', () => {
 			if (this._page) {
@@ -44,13 +45,15 @@ export default class Reader {
 	private commitReadState() {
 		const
 			readState = this._page.getReadState(),
-			percentComplete = readState.getPercentComplete();
+			percentComplete = readState.getPercentComplete(),
+			isRead = percentComplete >= 90;
 		this._onCommitReadState(
 			{
-				userPageId: this._page.userPageId,
-				readState: readState.readStateArray
-			},
-			this._lastCommitPercentComplete < 90 && percentComplete >= 90
+				isCompletionCommit: this._lastCommitPercentComplete < 90 && isRead,
+				isRead,
+				percentComplete,
+				readStateArray: readState.readStateArray
+			}
 		);
 		this._lastCommitPercentComplete = percentComplete;
 	}

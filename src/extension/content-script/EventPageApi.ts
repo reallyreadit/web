@@ -1,7 +1,9 @@
 import ContentScriptInitData from '../common/ContentScriptInitData';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import ParseResult from '../../common/reading/ParseResult';
-import UserPage from '../../common/models/UserPage';
+import ArticleLookupResult from '../../common/models/ArticleLookupResult';
+import UserArticle from '../../common/models/UserArticle';
+import Rating from '../../common/models/Rating';
 
 export default class EventPageApi {
 	private static sendMessage<T>(type: string, data?: {}) {
@@ -36,14 +38,17 @@ export default class EventPageApi {
 			}
 		});
 	}
+	public rateArticle(articleId: number, score: number) {
+		return EventPageApi.sendMessage<Rating>('rateArticle', { articleId, score });
+	}
 	public registerContentScript(location: Location) {
 		return EventPageApi.sendMessage<ContentScriptInitData>('registerContentScript', location.toString());
 	}
 	public registerPage(data: ParseResult) {
-		return EventPageApi.sendMessage<UserPage>('registerPage', data);
+		return EventPageApi.sendMessage<ArticleLookupResult>('registerPage', data);
 	}
 	public commitReadState(commitData: ReadStateCommitData, isCompletionCommit: boolean) {
-		return EventPageApi.sendMessage<void>('commitReadState', { commitData, isCompletionCommit });
+		return EventPageApi.sendMessage<UserArticle>('commitReadState', { commitData, isCompletionCommit });
 	}
 	public unregisterPage() {
 		return EventPageApi.sendMessage<void>('unregisterPage');

@@ -25,11 +25,17 @@ const
 		false
 	),
 	reader = new Reader(
-		(commitData, isCompletionCommit) => {
+		event => {
 			messagingContext.sendMessage(
 				{
 					type: 'commitReadState',
-					data: { commitData, isCompletionCommit }
+					data: {
+						commitData: {
+							readState: event.readStateArray,
+							userPageId: event.userPageId
+						},
+						isCompletionCommit: event.isCompletionCommit
+					}
 				}
 			)
 		}

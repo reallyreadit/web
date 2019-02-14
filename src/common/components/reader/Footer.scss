@@ -4,10 +4,11 @@
 */
 
 .footer_sg74y0 {
-	background-color: purple;
-	color: white;
-	padding: 20px;
+	max-width: 500px;
+	margin: 20px auto;
+	padding: 20px 0;
 	text-align: center;
-	border: 1px solid darkblue;
-	margin: 20px;
+}
+.footer_sg74y0 > span > button.selected {
+	background-color: lightblue;
 }

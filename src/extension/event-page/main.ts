@@ -48,6 +48,9 @@ const browserActionApi = new BrowserActionApi({
 
 // content script
 const contentScriptApi = new ContentScriptApi({
+	onRateArticle: (tabId, articleId, score) => {
+		return serverApi.rateArticle(articleId, score);
+	},
 	onRegisterContentScript: (tabId, url) => {
 		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
 		// update tabs
@@ -78,18 +81,19 @@ const contentScriptApi = new ContentScriptApi({
 				// update icon
 				getState().then(updateIcon);
 				// return page init data
-				return result.userPage;
+				return result;
 			});
 	},
 	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
-		serverApi
+		return serverApi
 			.commitReadState(tabId, commitData)
 			.then(userArticle => {
 				if (userArticle) {
 					WebAppApi.updateArticle(userArticle, isCompletionCommit);
 				}
+				return userArticle;
 			});
 	},
 	onUnregisterPage: tabId => {

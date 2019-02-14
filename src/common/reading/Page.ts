@@ -1,16 +1,14 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
-import UserPage from '../../common/models/UserPage';
 
 export default class Page {
 	private _contentEls: ContentElement[];
-	private _userPageId: number;
 	constructor(contentEls: ContentElement[], showOverlay: boolean) {
 		// set up the content elements
 		this._contentEls = contentEls.sort((a, b) => a.offsetTop - b.offsetTop);
 		this._contentEls.forEach(el => el.showOverlay(showOverlay));
 	}
-	private setReadState(readStateArray: number[]) {
+	public setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
 		const readState = new ReadState(readStateArray);
 		let wordCount = 0;
@@ -29,10 +27,6 @@ export default class Page {
 	}
 	public getReadState() {
 		return new ReadState(this._contentEls.map(b => b.getReadState()));
-	}
-	public initialize(userPage: UserPage) {
-		this._userPageId = userPage.id;
-		this.setReadState(userPage.readState);
 	}
 	public updateOffset() {
 		this._contentEls.forEach(block => block.updateOffset());
@@ -55,8 +49,5 @@ export default class Page {
 	}
 	public get elements() {
 		return this._contentEls;
-	}
-	public get userPageId() {
-		return this._userPageId;
 	}
 }
