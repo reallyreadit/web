@@ -7,7 +7,6 @@ import ContentElement from '../../common/reading/ContentElement';
 import { ParseMode } from '../../common/reading/parseDocumentContent';
 import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
-import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 
 window.reallyreadit = {
 	extension: {
@@ -26,9 +25,10 @@ const { contentParser, userInterface } = window.reallyreadit.extension.contentSc
 
 let
 	context: {
-		lookupResult: ArticleLookupResult,
+		articleId: number,
+		page: Page,
 		path: string,
-		page: Page
+		userPageId: number
 	} | null,
 	initData: {
 		parseMode: ParseMode,
@@ -67,7 +67,17 @@ const eventPageApi = new EventPageApi({
 
 function rateArticle(score: number) {
 	if (context) {
-		return eventPageApi.rateArticle(context.lookupResult.userArticle.id, score);
+		return eventPageApi
+			.rateArticle(context.articleId, score)
+			.then(rating => {
+				userInterface
+					.get()
+					.then(ui => {
+						ui.update({
+							ratingScore: rating.score
+						});
+					});
+			});
 	} else {
 		return Promise.reject();
 	}
@@ -81,7 +91,7 @@ const reader = new Reader(
 				.commitReadState(
 					{
 						readState: event.readStateArray,
-						userPageId: context.lookupResult.userPage.id
+						userPageId: context.userPageId
 					},
 					event.isCompletionCommit
 				)
@@ -89,15 +99,7 @@ const reader = new Reader(
 					userInterface
 						.get()
 						.then(ui => {
-							ui.update({
-								progress: {
-									isLoading: false,
-									value: {
-										isRead: userArticle.isRead,
-										percentComplete: userArticle.percentComplete
-									}
-								}
-							});
+							ui.update(userArticle);
 						})
 				});
 		}
@@ -135,7 +137,12 @@ function loadPage() {
 							eventPageApi
 								.registerPage(createPageParseResult(metaParseResult, content))
 								.then(lookupResult => {
-									context = { lookupResult, page, path };
+									context = { 
+										articleId: lookupResult.userArticle.id,
+										page,
+										path,
+										userPageId: lookupResult.userPage.id
+									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
 									userInterface
@@ -144,15 +151,8 @@ function loadPage() {
 											ui.construct(
 												page,
 												{
-													onSelectRating: rateArticle,
-													progress: {
-														isLoading: false,
-														value: {
-															isRead: lookupResult.userArticle.isRead,
-															percentComplete: lookupResult.userArticle.percentComplete
-														}
-													},
-													selectedRating: null	// TODO: rating needs to be added to UserArticle
+													...lookupResult.userArticle,
+													onSelectRating: rateArticle
 												}
 											);
 										});

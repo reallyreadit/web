@@ -2,13 +2,15 @@ import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
 import parseDocumentContent from '../../common/reading/parseDocumentContent';
 import Page from '../../common/reading/Page';
-import UserPage from '../../common/models/UserPage';
 import ContentElement from '../../common/reading/ContentElement';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import Reader from '../../common/reading/Reader';
 import * as ReactDOM from 'react-dom';
 import * as  React from 'react';
 import Footer from '../../common/components/reader/Footer';
+import ArticleLookupResult from '../../common/models/ArticleLookupResult';
+import Rating from '../../common/models/Rating';
+import UserArticle from '../../common/models/UserArticle';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -17,6 +19,17 @@ window.reallyreadit = {
 		reader: messagingContext.createIncomingMessageHandlers()
 	}
 };
+
+let
+	articleId: number | null,
+	props: {
+		isRead: boolean,
+		onSelectRating: (rating: number) => Promise<void>,
+		percentComplete: number,
+		ratingScore: number | null
+	},
+	root: HTMLDivElement,
+	userPageId: number | null;
 
 const
 	contentParseResult = parseDocumentContent('mutate'),
@@ -32,14 +45,53 @@ const
 					data: {
 						commitData: {
 							readState: event.readStateArray,
-							userPageId: event.userPageId
+							userPageId
 						},
 						isCompletionCommit: event.isCompletionCommit
 					}
+				},
+				(article: UserArticle) => {
+					ReactDOM.render(
+						React.createElement(
+							Footer,
+							props = {
+								...props,
+								...article
+							}
+						),
+						root
+					);
 				}
 			)
 		}
-	)
+	);
+
+function rateArticle(score: number) {
+	return new Promise<void>(resolve => {
+		messagingContext.sendMessage(
+			{
+				type: 'rateArticle',
+				data: {
+					articleId,
+					score
+				}
+			},
+			(rating: Rating) => {
+				resolve();
+				ReactDOM.render(
+					React.createElement(
+						Footer,
+						props = {
+							...props,
+							ratingScore: rating.score
+						}
+					),
+					root
+				);
+			}
+		);
+	});
+}
 
 messagingContext.sendMessage(
 	{
@@ -49,18 +101,24 @@ messagingContext.sendMessage(
 			contentParseResult
 		)
 	},
-	(userPage: UserPage) => {
-		page.initialize(userPage);
+	(lookupResult: ArticleLookupResult) => {
+		articleId = lookupResult.userArticle.id;
+		userPageId = lookupResult.userPage.id;
+		page.setReadState(lookupResult.userPage.readState);
 		reader.loadPage(page);
 		const lastParagraph = page.elements[page.elements.length - 1].element;
-		const root = lastParagraph.ownerDocument.createElement('div');
+		root = lastParagraph.ownerDocument.createElement('div');
 		root.id = 'reallyreadit-footer-root';
 		lastParagraph.insertAdjacentElement('afterend', root);
 		ReactDOM.render(
 			React.createElement(
-				Footer
+				Footer,
+				props = {
+					...lookupResult.userArticle,
+					onSelectRating: rateArticle
+				}
 			),
 			root
-		)
+		);
 	}
 );

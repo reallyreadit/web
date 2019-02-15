@@ -1,19 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Footer from '../../../common/components/reader/Footer';
-import Fetchable from '../../../common/Fetchable';
 
 export interface Props {
-	onSelectRating: (rating: number) => Promise<{}>,
-	progress: Fetchable<{
-		isRead: boolean,
-		percentComplete: number
-	}>,
-	selectedRating: number | null
+	isRead: boolean,
+	onSelectRating: (rating: number) => Promise<void>,
+	percentComplete: number,
+	ratingScore: number | null
 }
 
 let root: HTMLDivElement | null;
-let originalProps: Props | null;
+let lastProps: Props | null;
 
 window.reallyreadit.extension.contentScript.userInterface.set({
 	construct: (page, props) => {
@@ -28,20 +25,20 @@ window.reallyreadit.extension.contentScript.userInterface.set({
 			),
 			root
 		)
-		originalProps = props;
+		lastProps = props;
 	},
 	destruct: () => {
 		ReactDOM.unmountComponentAtNode(root);
 		root.remove();
 		root = null;
-		originalProps = null;
+		lastProps = null;
 	},
 	update: (props: Partial<Props>) => {
 		ReactDOM.render(
 			React.createElement(
 				Footer,
-				{
-					...originalProps,
+				lastProps = {
+					...lastProps,
 					...props
 				}
 			),
