@@ -12,10 +12,16 @@ export default class extends React.PureComponent<
 	{ isSelectingRating: boolean } 
 > {
 	private readonly _selectRating = (event: React.MouseEvent<HTMLButtonElement>) => {
-		if (!event.currentTarget.disabled) {
+		let score: number | null;
+		if (
+			!event.currentTarget.disabled &&
+			(
+				(score = parseInt(event.currentTarget.value)) !== this.props.ratingScore
+			)
+		) {
 			this.setState({ isSelectingRating: true });
 			this.props
-				.onSelectRating(parseInt(event.currentTarget.value))
+				.onSelectRating(score)
 				.then(() => {
 					this.setState({ isSelectingRating: false });
 				});
