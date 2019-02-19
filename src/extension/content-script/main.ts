@@ -96,11 +96,23 @@ const reader = new Reader(
 					event.isCompletionCommit
 				)
 				.then(userArticle => {
-					userInterface
-						.get()
-						.then(ui => {
-							ui.update(userArticle);
-						})
+					if (userArticle.isRead) {
+						userInterface
+							.get()
+							.then(ui => {
+								if (ui.isConstructed()) {
+									ui.update(userArticle);
+								} else {
+									ui.construct(
+										context.page,
+										{
+											...userArticle,
+											onSelectRating: rateArticle
+										}
+									);
+								}
+							});
+					}
 				});
 		}
 	}
@@ -145,17 +157,19 @@ function loadPage() {
 									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
-									userInterface
-										.get()
-										.then(ui => {
-											ui.construct(
-												page,
-												{
-													...lookupResult.userArticle,
-													onSelectRating: rateArticle
-												}
-											);
-										});
+									if (lookupResult.userArticle.isRead) {
+										userInterface
+											.get()
+											.then(ui => {
+												ui.construct(
+													page,
+													{
+														...lookupResult.userArticle,
+														onSelectRating: rateArticle
+													}
+												);
+											});
+									}
 								})
 								.catch(() => {
 									unloadPage();

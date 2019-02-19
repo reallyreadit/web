@@ -33,6 +33,9 @@ window.reallyreadit.extension.contentScript.userInterface.set({
 		root = null;
 		lastProps = null;
 	},
+	isConstructed: () => {
+		return !!root;
+	},
 	update: (props: Partial<Props>) => {
 		ReactDOM.render(
 			React.createElement(

@@ -11,6 +11,7 @@ declare global {
 		userInterface: LazyScript<{
 			construct: (page: Page, props: UserInterfaceProps) => void,
 			destruct: () => void,
+			isConstructed: () => boolean,
 			update: (props: Partial<UserInterfaceProps>) => void
 		}>
 	}
