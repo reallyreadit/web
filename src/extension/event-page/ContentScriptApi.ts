@@ -51,7 +51,7 @@ export default class ContentScriptApi {
 						return true;
 					case 'unregisterPage':
 						handlers.onUnregisterPage(sender.tab.id);
-						break;
+						return true;
 					case 'unregisterContentScript':
 						handlers.onUnregisterContentScript(sender.tab.id);
 						break;

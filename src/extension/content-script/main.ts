@@ -196,7 +196,12 @@ function unloadPage() {
 }
 
 // event handlers
-window.addEventListener('unload', () => eventPageApi.unregisterContentScript());
+window.addEventListener(
+	'unload',
+	() => {
+		eventPageApi.unregisterContentScript();
+	}
+);
 
 // register content script
 eventPageApi

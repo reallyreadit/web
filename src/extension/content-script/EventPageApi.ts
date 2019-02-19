@@ -5,16 +5,19 @@ import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import Rating from '../../common/models/Rating';
 
+function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
+	chrome.runtime.sendMessage({ to: 'eventPage', type, data }, responseCallback);
+}
+function sendMessageAwaitingResponse<T>(type: string, data ?: {}) {
+	return new Promise<T>((resolve, reject) => {
+		try {
+			sendMessage(type, data, resolve);
+		} catch (ex) {
+			reject();
+		}
+	});
+}
 export default class EventPageApi {
-	private static sendMessage<T>(type: string, data?: {}) {
-		return new Promise<T>((resolve, reject) => {
-			try {
-				chrome.runtime.sendMessage({ to: 'eventPage', type, data }, resolve);
-			} catch (ex) {
-				reject();
-			}
-		});
-	}
 	constructor(handlers: {
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
@@ -39,27 +42,27 @@ export default class EventPageApi {
 		});
 	}
 	public rateArticle(articleId: number, score: number) {
-		return EventPageApi.sendMessage<Rating>('rateArticle', { articleId, score });
+		return sendMessageAwaitingResponse<Rating>('rateArticle', { articleId, score });
 	}
 	public registerContentScript(location: Location) {
-		return EventPageApi.sendMessage<ContentScriptInitData>('registerContentScript', location.toString());
+		return sendMessageAwaitingResponse<ContentScriptInitData>('registerContentScript', location.toString());
 	}
 	public registerPage(data: ParseResult) {
-		return EventPageApi.sendMessage<ArticleLookupResult>('registerPage', data);
+		return sendMessageAwaitingResponse<ArticleLookupResult>('registerPage', data);
 	}
 	public commitReadState(commitData: ReadStateCommitData, isCompletionCommit: boolean) {
-		return EventPageApi.sendMessage<UserArticle>('commitReadState', { commitData, isCompletionCommit });
+		return sendMessageAwaitingResponse<UserArticle>('commitReadState', { commitData, isCompletionCommit });
 	}
 	public unregisterPage() {
-		return EventPageApi.sendMessage<void>('unregisterPage');
+		return sendMessageAwaitingResponse<void>('unregisterPage');
 	}
 	public unregisterContentScript() {
-		return EventPageApi.sendMessage<void>('unregisterContentScript');
+		sendMessage('unregisterContentScript');
 	}
 	public loadContentParser() {
-		return EventPageApi.sendMessage<void>('loadContentParser');
+		sendMessage('loadContentParser');
 	}
 	public loadUserInterface() {
-		return EventPageApi.sendMessage<void>('loadUserInterface');
+		sendMessage('loadUserInterface');
 	}
 }
