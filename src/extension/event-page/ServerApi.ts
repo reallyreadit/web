@@ -281,7 +281,10 @@ export default class ServerApi {
 	public setStarred(articleId: number, isStarred: boolean) {
 		return ServerApi
 			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
-			.then(userArticle => this.cacheArticle(userArticle))
+			.then(userArticle => {
+				this.cacheArticle(userArticle);
+				return userArticle;
+			})
 			.catch(() => {});
 	}
 	public rateArticle(articleId: number, score: number) {
