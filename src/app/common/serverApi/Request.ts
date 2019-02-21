@@ -1,35 +1,22 @@
-export default class Request {
-	constructor(
-		public readonly path: string,
-		public readonly query: {} = undefined,
-		public responseData: {} = undefined
-	) {
+export function areEqual(a: Request, b: Request) {
+	if (a.path !== b.path) {
+		return false;
 	}
-	public equals(request: Request) {
-		if (request.path !== this.path) {
+	if (!a.data || !b.data) {
+		return !a.data && !b.data;
+	}
+	if (Object.keys(a.data).length !== Object.keys(b.data).length) {
+		return false;
+	}
+	for (let key in a.data) {
+		if (!b.data.hasOwnProperty(key) || a.data[key] !== b.data[key]) {
 			return false;
 		}
-		if (request.query === undefined || this.query === undefined) {
-			return request.query === undefined && this.query === undefined;
-		}
-		if (Object.keys(request.query).length !== Object.keys(this.query).length) {
-			return false;
-		}
-		for (let key in request.query) {
-			if (!this.query.hasOwnProperty(key) || (<any>request.query)[key] !== (<any>this.query)[key]) {
-				return false;
-			}
-		}
-		return true;
 	}
-	public getQueryString() {
-		// TODO: support nested objects and arrays
-		if (this.query) {
-			const kvps = Object.keys(this.query).map(key => encodeURIComponent(key) + '=' + encodeURIComponent((this.query as { [key: string]: any })[key]));
-			if (kvps.length) {
-				return '?' + kvps.join('&');
-			}
-		}
-		return '';
-	}
+	return true;
+}
+export default interface Request {
+	context?: string,
+	data?: { [key: string]: any },
+	path: string
 }

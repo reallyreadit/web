@@ -1,20 +1,23 @@
-import Request from './Request';
-import RequestData from './RequestData';
+import Request, { areEqual } from './Request';
+import Exchange from './Exchange';
 
 export default class RequestStore {
-	public readonly requests: Request[];
-	constructor(requestData: RequestData[] = []) {
-		this.requests = requestData.map(data => new Request(data.path, data.query, data.responseData));
+	private readonly _exchanges: Exchange[];
+	constructor(exchanges: Exchange[] = []) {
+		this._exchanges = exchanges;
 	}
-	public get(request: Request) {
-		return this.requests.find(existingRequest => existingRequest.equals(request));
+	private getExchange(request: Request) {
+		return this.exchanges.find(exchange => areEqual(exchange.request, request));
 	}
-	public getData(request: Request) {
-		return this.get(request).responseData;
+	public getResponseData(request: Request) {
+		return this.getExchange(request).responseData;
 	}
-	public add(request: Request) {
-		if (!this.get(request)) {
-			this.requests.push(request);
+	public addRequest(request: Request) {
+		if (!this.getExchange(request)) {
+			this.exchanges.push({ request });
 		}
+	}
+	public get exchanges() {
+		return this._exchanges;
 	}
 }

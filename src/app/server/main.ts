@@ -5,7 +5,6 @@ import ServerApi from './ServerApi';
 import renderHtml from '../common/templates/html';
 import UserAccountRole from '../../common/models/UserAccountRole';
 import SessionState from '../../common/models/SessionState';
-import ApiRequest from '../common/serverApi/Request';
 import config from './config';
 import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 import routes from '../../common/routing/routes';
@@ -146,7 +145,7 @@ server = server.use((req, res, next) => {
 	});
 	req.api = api;
 	if (api.hasAuthCookie()) {
-		api.fetchJson<SessionState>('GET', new ApiRequest('/UserAccounts/GetSessionState'))
+		api.fetchJson<SessionState>('GET', { path: '/UserAccounts/GetSessionState' })
 			.then(sessionState => {
 				if (!sessionState) {
 					throw new Error('InvalidSessionKey');
@@ -193,7 +192,7 @@ server = server.use((req, res, next) => {
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api
-		.fetchJson('POST', new ApiRequest('/UserAccounts/ConfirmEmail2', { token: req.query['token'] }))
+		.fetchJson('POST', { path: '/UserAccounts/ConfirmEmail2', data: { token: req.query['token'] } })
 		.then(() => {
 			redirect(req, res, '/email/confirm/success');
 		})
@@ -212,7 +211,7 @@ server = server.get('/confirmEmail', (req, res) => {
 });
 server = server.get('/resetPassword', (req, res) => {
 	req.api
-		.fetchJson<PasswordResetRequest>('GET', new ApiRequest('/UserAccounts/PasswordResetRequest2', { token: req.query['token'] }))
+		.fetchJson<PasswordResetRequest>('GET', { path: '/UserAccounts/PasswordResetRequest2', data: { token: req.query['token'] } })
 		.then(resetRequest => {
 			redirect(req, res, url.format({
 				pathname: '/',
@@ -244,7 +243,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 		params['token'] = req.query['token'];
 	}
 	req.api
-		.fetchJson<Comment>('POST', new ApiRequest(path, params))
+		.fetchJson<Comment>('POST', { path, data: params })
 		.then(comment => {
 			const slugParts = comment.articleSlug.split('_');
 			redirect(req, res, `/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);

@@ -3,11 +3,12 @@ import Request from '../common/serverApi/Request';
 import Fetchable from '../../common/Fetchable';
 import RequestStore from '../common/serverApi/RequestStore';
 import { createUrl } from '../../common/HttpEndpoint';
+import { createQueryString } from '../../common/routing/queryString';
 
 export default class extends ServerApi {
 	constructor(initData: InitData) {
 		super(initData.endpoint);
-		this._reqStore = new RequestStore(initData.requests);
+		this._reqStore = new RequestStore(initData.exchanges);
 	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
@@ -42,9 +43,15 @@ export default class extends ServerApi {
 			if (method === 'POST') {
 				req.open(method, url);
 				req.setRequestHeader('Content-Type', 'application/json');
-				req.send(JSON.stringify(params.query));
+				if (params.context) {
+					req.setRequestHeader('X-Readup-Context', params.context);
+				}
+				req.send(JSON.stringify(params.data));
 			} else {
-				req.open(method, url + params.getQueryString());
+				req.open(method, url + createQueryString(params.data));
+				if (params.context) {
+					req.setRequestHeader('X-Readup-Context', params.context);
+				}
 				req.send();
 			}
 		});
@@ -53,7 +60,7 @@ export default class extends ServerApi {
 		if (!this._isInitialized) {
 			return {
 				isLoading: false,
-				value: this._reqStore.getData(request) as T
+				value: this._reqStore.getResponseData(request) as T
 			};
 		} else {
 			this.fetchJson<T>('GET', request)

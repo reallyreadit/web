@@ -5,6 +5,7 @@ import RequestStore from '../common/serverApi/RequestStore';
 import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';
 import KeyValuePair from '../../common/KeyValuePair';
 import ServerApi from '../common/serverApi/ServerApi';
+import { createQueryString } from '../../common/routing/queryString';
 
 export default class extends ServerApi {
 	private _authCookie: KeyValuePair<string, string | null>;
@@ -17,11 +18,12 @@ export default class extends ServerApi {
 		return new Promise<T>((resolve, reject) => {
 			let url = createUrl(this._endpoint, params.path);
 			if (method === 'GET') {
-				url += params.getQueryString();
+				url += createQueryString(params.data);
 			}
 			const options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions) = {
 				method,
 				uri: url,
+				headers: { },
 				json: true,
 				callback: (error, res, body) => {
 					switch (res.statusCode) {
@@ -40,11 +42,14 @@ export default class extends ServerApi {
 					}
 				}
 			};
+			if (params.context) {
+				options.headers['X-Readup-Context'] = params.context;
+			}
 			if (this.hasAuthCookie()) {
-				options.headers = { 'Cookie': this._authCookie.key + '=' + this._authCookie.value };
+				options.headers['Cookie'] = this._authCookie.key + '=' + this._authCookie.value;
 			}
 			if (method === 'POST') {
-				options.body = params.query;
+				options.body = params.data;
 			}
 			return request(options);
 		});
@@ -53,10 +58,10 @@ export default class extends ServerApi {
 		if (this._isInitialized) {
 			return {
 				isLoading: false,
-				value: this._reqStore.getData(request) as T
+				value: this._reqStore.getResponseData(request) as T
 			};
 		} else {
-			this._reqStore.add(request);
+			this._reqStore.addRequest(request);
 			return { isLoading: true };
 		}
 	}
@@ -66,15 +71,24 @@ export default class extends ServerApi {
 	public processRequests() {
 		// TODO: support catching errors and assigning to RequestData
 		return Promise
-			.all(this._reqStore.requests.map(req => this
-				.fetchJson('GET', req)
-				.then(value => req.responseData = value)))
-			.then(() => this._isInitialized = true);
+			.all(
+				this._reqStore.exchanges
+					.map(
+						exchange => this
+							.fetchJson('GET', exchange.request)
+							.then(value => {
+								exchange.responseData = value;
+							})
+					)
+			)
+			.then(() => {
+				this._isInitialized = true;
+			});
 	}
 	public getInitData() {
 		return {
 			endpoint: this._endpoint,
-			requests: this._reqStore.requests
+			exchanges: this._reqStore.exchanges
 		};
 	}
 	public hasAuthCookie() {
