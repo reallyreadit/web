@@ -5,6 +5,11 @@ import RequestStore from '../common/serverApi/RequestStore';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 
+function addContextHeader(req: XMLHttpRequest, params: Request) {
+	if (params.context) {
+		req.setRequestHeader('X-Readup-Context', params.context);
+	}
+}
 export default class extends ServerApi {
 	constructor(initData: InitData) {
 		super(initData.endpoint);
@@ -43,15 +48,11 @@ export default class extends ServerApi {
 			if (method === 'POST') {
 				req.open(method, url);
 				req.setRequestHeader('Content-Type', 'application/json');
-				if (params.context) {
-					req.setRequestHeader('X-Readup-Context', params.context);
-				}
+				addContextHeader(req, params);
 				req.send(JSON.stringify(params.data));
 			} else {
 				req.open(method, url + createQueryString(params.data));
-				if (params.context) {
-					req.setRequestHeader('X-Readup-Context', params.context);
-				}
+				addContextHeader(req, params);
 				req.send();
 			}
 		});
