@@ -43,14 +43,30 @@ const tabs = new SetStore<number, ContentScriptTab>('tabs', t => t.id);
 const browserActionApi = new BrowserActionApi({
 	onLoad: () => getState(),
 	onAckNewReply: () => serverApi.ackNewReply(),
-	onSetStarred: (articleId, isStarred) => serverApi.setStarred(articleId, isStarred)
+	onSetStarred: (articleId, isStarred) => serverApi
+		.setStarred(articleId, isStarred)
+		.then(article => {
+			if (article) {
+				WebAppApi.updateArticle(article, false);
+			}
+		})
 });
 
 // content script
 const contentScriptApi = new ContentScriptApi({
-	onRateArticle: (tabId, articleId, score) => {
-		return serverApi.rateArticle(articleId, score);
-	},
+	onRateArticle: (tabId, articleId, score) => serverApi
+		.rateArticle(articleId, score)
+		.then(rating => {
+			WebAppApi.updateArticle(
+				{
+					...serverApi.getUserArticle(articleId),
+					ratingScore: rating.score
+				}
+				,
+				false
+			);
+			return rating;
+		}),
 	onRegisterContentScript: (tabId, url) => {
 		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
 		// update tabs
