@@ -10,7 +10,7 @@ export interface Props {
 }
 
 let root: HTMLDivElement | null;
-let lastProps: Props | null;
+let lastProps: Props & { showLogo: boolean } | null;
 
 window.reallyreadit.extension.contentScript.userInterface.set({
 	construct: (page, props) => {
@@ -21,11 +21,10 @@ window.reallyreadit.extension.contentScript.userInterface.set({
 		ReactDOM.render(
 			React.createElement(
 				Footer,
-				props
+				lastProps = { ...props, showLogo: true }
 			),
 			root
 		)
-		lastProps = props;
 	},
 	destruct: () => {
 		ReactDOM.unmountComponentAtNode(root);
@@ -40,10 +39,7 @@ window.reallyreadit.extension.contentScript.userInterface.set({
 		ReactDOM.render(
 			React.createElement(
 				Footer,
-				lastProps = {
-					...lastProps,
-					...props
-				}
+				lastProps = { ...lastProps, ...props }
 			),
 			root
 		)

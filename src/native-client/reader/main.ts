@@ -26,7 +26,8 @@ let
 		isRead: boolean,
 		onSelectRating: (rating: number) => Promise<void>,
 		percentComplete: number,
-		ratingScore: number | null
+		ratingScore: number | null,
+		showLogo: boolean
 	},
 	root: HTMLDivElement,
 	userPageId: number | null;
@@ -115,7 +116,8 @@ messagingContext.sendMessage(
 				Footer,
 				props = {
 					...lookupResult.userArticle,
-					onSelectRating: rateArticle
+					onSelectRating: rateArticle,
+					showLogo: false
 				}
 			),
 			root

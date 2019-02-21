@@ -1,11 +1,13 @@
 import * as React from 'react';
 import classNames from 'classnames';
+import logoText from '../../svg/logoText';
 
 interface Props {
 	isRead: boolean,
 	onSelectRating: (rating: number) => Promise<void>,
 	percentComplete: number,
-	ratingScore: number | null
+	ratingScore: number | null,
+	showLogo: boolean
 }
 export default class extends React.PureComponent<
 	Props,
@@ -35,38 +37,51 @@ export default class extends React.PureComponent<
 		return (
 			<div className="footer_sg74y0">
 				{this.props.isRead ?
-					<span>
-						You finished! Nice work!<br />
-						Are you glad you read the whole thing?<br />
-						<label>No</label>
-							{Array
-								.from(new Array(10))
-								.map((e, i) => {
-									const value = i + 1;
-									return (
-										<button
-											className={classNames({ 'selected': value === this.props.ratingScore })}
-											disabled={this.state.isSelectingRating}
-											key={i}
-											onClick={this._selectRating}
-											value={value}
-										>
-											{value}
-										</button>
-									);
-							})}
-						<label>Yes</label>
-						<br />
+					<>
+						<div className="prompt-text">
+							<div className="line-1">Nice work.</div>
+							<div className="line-2">
+								<strong>Would you recommend this article to others?</strong>
+							</div>
+						</div>
+						<div className="rating-bar">
+							<label>No</label>
+							<div className="buttons">
+								{Array
+									.from(new Array(10))
+									.map((e, i) => {
+										const value = i + 1;
+										return (
+											<button
+												className={classNames(
+													'rating-button',
+													{ 'selected': value === this.props.ratingScore }
+												)}
+												disabled={this.state.isSelectingRating}
+												key={i}
+												onClick={this._selectRating}
+												value={value}
+											>
+												{value}
+											</button>
+										);
+								})}
+							</div>
+							<label>Yes</label>
+						</div>
 						{this.state.isSelectingRating ?
-							<span>Saving rating...</span> :
+							<div className="status-text">Saving rating...</div> :
 							this.props.ratingScore != null ?
-								<span>
-									<strong>Thanks!</strong><br />
-									<button>Comments</button>
-								</span> :
+								<div className="status-text">Thanks for your feedback.</div> :
 								null}
-					</span> :
-					<span>You've read {Math.floor(this.props.percentComplete)}% of this story.</span>}
+					</> :
+					<div>You've read {Math.floor(this.props.percentComplete)}% of this article.</div>}
+				{this.props.showLogo ?
+					<div
+						className="logo-text"
+						dangerouslySetInnerHTML={{ __html: logoText }}>
+					</div> :
+					null}
 			</div>
 		);
 	}
