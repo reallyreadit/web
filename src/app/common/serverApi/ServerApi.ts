@@ -139,7 +139,7 @@ export default abstract class {
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly getVerificationTokenData = this.createFetchFunctionWithParams<{ token: string }, VerificationTokenData>('/Articles/VerifyProofToken');
-	public readonly rateArticle = (id: number, score: number) => this.post<Rating>({ path: '/Articles/Rate', data: { articleId: id, score }, context: 'comments-screen' });
+	public readonly rateArticle = (id: number, score: number) => this.post<Rating>({ path: '/Articles/Rate', data: { articleId: id, score } });
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });
