@@ -11,57 +11,65 @@ import Comment from '../../common/models/Comment';
 import SourceRule from '../../common/models/SourceRule';
 import { createUrl } from '../../common/HttpEndpoint';
 import Rating from '../../common/models/Rating';
+import { createQueryString } from '../../common/routing/queryString';
 
+function addContextHeader(req: XMLHttpRequest, params: Request) {
+	if (params.context) {
+		req.setRequestHeader('X-Readup-Context', params.context);
+	}
+}
+function fetchJson<T>(request: Request) {
+	return new Promise<T>((resolve, reject) => {
+		const
+			req = new XMLHttpRequest(),
+			url = createUrl(config.api, request.path);
+		req.withCredentials = true;
+		req.addEventListener('load', function () {
+			if (this.status === 200 || this.status === 400) {
+				const contentType = this.getResponseHeader('Content-Type');
+				let object: any;
+				if (contentType && contentType.startsWith('application/json')) {
+					object = JSON.parse(this.responseText);
+				}
+				if (this.status === 200) {
+					if (object) {
+						resolve(object);
+					} else {
+						resolve();
+					}
+				} else {
+					reject(object || []);
+				}
+			} else if (this.status === 401) {
+				chrome.cookies.remove({
+					url: createUrl(config.api),
+					name: config.cookieName
+				});
+				reject(['Unauthenticated']);
+			} else {
+				reject([]);
+			}
+		});
+		req.addEventListener('error', function () {
+			reject([]);
+		});
+		if (request.method === 'POST') {
+			req.open(request.method, url);
+			req.setRequestHeader('Content-Type', 'application/json');
+			addContextHeader(req, request);
+			req.send(JSON.stringify(request.data));
+		} else {
+			req.open(request.method, url + createQueryString(request.data));
+			addContextHeader(req, request);
+			req.send();
+		}
+	});
+}
 export default class ServerApi {
 	private static _alarms = {
 		checkNewReplyNotification: 'ServerApi.checkNewReplyNotification',
 		getSourceRules: 'ServerApi.getSourceRules'
 	};
-	private static fetchJson<T>(request: Request) {
-		return new Promise<T>((resolve, reject) => {
-			const
-				req = new XMLHttpRequest(),
-				url = createUrl(config.api, request.path);
-			req.withCredentials = true;
-			req.addEventListener('load', function () {
-				if (this.status === 200 || this.status === 400) {
-					const contentType = this.getResponseHeader('Content-Type');
-					let object: any;
-					if (contentType && contentType.startsWith('application/json')) {
-						object = JSON.parse(this.responseText);
-					}
-					if (this.status === 200) {
-						if (object) {
-							resolve(object);
-						} else {	
-							resolve();
-						}
-					} else {
-						reject(object || []);
-					}
-				} else if (this.status === 401) {
-					chrome.cookies.remove({
-						url: createUrl(config.api),
-						name: config.cookieName
-					});
-					reject(['Unauthenticated']);
-				} else {
-					reject([]);
-				}
-			});
-			req.addEventListener('error', function () {
-				reject([]);
-			});
-			if (request.method === 'POST') {
-				req.open(request.method, url);
-				req.setRequestHeader('Content-Type', 'application/json');
-				req.send(JSON.stringify(request.data));
-			} else {
-				req.open(request.method, url + request.getQueryString());
-				req.send();
-			}
-		});
-	}
 	// cached local storage
 	private _newReplyNotification = new ObjectStore<Cached<NewReplyNotification>>('newReplyNotification', {
 		value: {
@@ -124,8 +132,7 @@ export default class ServerApi {
 				case ServerApi._alarms.checkNewReplyNotification:
 					this.getAuthStatus().then(isAuthenticated => {
 						if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
-							ServerApi
-								.fetchJson<NewReplyNotification>(new Request('GET', '/UserAccounts/CheckNewReplyNotification'))
+							fetchJson<NewReplyNotification>({ method: 'GET', path: '/UserAccounts/CheckNewReplyNotification' })
 								.then(notification => this.processNewReplyNotification(notification))
 								.catch(() => {});
 						}
@@ -164,8 +171,7 @@ export default class ServerApi {
 			this._newReplyNotification.set(cache(notification, 50000));
 			if (!isNotificationStateEqual(current.value, notification)) {
 				if (shouldShowDesktopNotification(notification)) {
-					ServerApi
-						.fetchJson<Comment>(new Request('POST', '/UserAccounts/CreateDesktopNotification'))
+					fetchJson<Comment>({ method: 'POST',  path: '/UserAccounts/CreateDesktopNotification' })
 						.then(reply => {
 							if (reply) {
 								const now = Date.now();
@@ -194,8 +200,7 @@ export default class ServerApi {
 	}
 	private checkSourceRulesCache() {
 		if (isExpired(this._sourceRules.get())) {
-			ServerApi
-				.fetchJson<SourceRule[]>(new Request('GET', '/Extension/GetSourceRules'))
+			fetchJson<SourceRule[]>({ method: 'GET', path: '/Extension/GetSourceRules' })
 				.then(rules => this._sourceRules.set(cache(rules, 719000)))
 				.catch(() => {});
 		}
@@ -205,8 +210,7 @@ export default class ServerApi {
 			store.splice(store.indexOf(request), 1)
 		};
 		store.push(request);
-		return ServerApi
-			.fetchJson<T>(request)
+		return fetchJson<T>(request)
 			.then(res => {
 				removeRequest();
 				return res;
@@ -220,7 +224,7 @@ export default class ServerApi {
 		const request = this.logRequest<{
 				userArticle: UserArticle,
 				userPage: UserPage
-			}>(new Request('POST', '/Extension/GetUserArticle', data, tabId), this._articleLookupRequests)
+			}>({ method: 'POST', path: '/Extension/GetUserArticle', data, id: tabId }, this._articleLookupRequests)
 			.then(result => {
 				this._onArticleLookupRequestChanged();
 				this.cacheArticle(result.userArticle);
@@ -237,15 +241,14 @@ export default class ServerApi {
 		const userArticle = this._articles.get(id);
 		if (userArticle && isExpired(userArticle) && !this._articleCacheRequets.some(r => r.id === id)) {
 			this
-				.logRequest<UserArticle>(new Request('GET', '/Extension/UserArticle', { id }, id), this._articleCacheRequets)
+				.logRequest<UserArticle>({ method: 'GET', path: '/Extension/UserArticle', data: { id }, id }, this._articleCacheRequets)
 				.then(userArticle => this.cacheArticle(userArticle))
 				.catch(() => {});
 		}
 		return userArticle && userArticle.value;
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
-		return ServerApi
-			.fetchJson<UserArticle>(new Request('POST', '/Extension/CommitReadState', data))
+		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/CommitReadState', data })
 			.then(userArticle => {
 				this.cacheArticle(userArticle);
 				return userArticle;
@@ -271,16 +274,14 @@ export default class ServerApi {
 			lastNewReplyAck: now,
 			timestamp: now
 		});
-		ServerApi
-			.fetchJson(new Request('POST', '/UserAccounts/AckNewReply'))
+		fetchJson({ method: 'POST', path: '/UserAccounts/AckNewReply' })
 			.catch(() => {});
 	}
 	public getSourceRules(hostname: string) {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
-		return ServerApi
-			.fetchJson<UserArticle>(new Request('POST', '/Extension/SetStarred', { articleId, isStarred }))
+		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/SetStarred', data: { articleId, isStarred } })
 			.then(userArticle => {
 				this.cacheArticle(userArticle);
 				return userArticle;
@@ -288,6 +289,10 @@ export default class ServerApi {
 			.catch(() => {});
 	}
 	public rateArticle(articleId: number, score: number) {
-		return ServerApi.fetchJson<Rating>(new Request('POST', '/Articles/Rate', { articleId, score }));
+		return fetchJson<Rating>({
+			method: 'POST',
+			path: '/Articles/Rate',
+			data: { articleId, score }
+		});
 	}
 }
