@@ -1,0 +1,68 @@
+/*
+	componentPath: src/common/components/RatingSelector
+	cssComponentId: rating-selector_epcgq9
+*/
+
+.rating-selector_epcgq9 {
+	text-align: center;
+}
+.rating-selector_epcgq9 > .prompt-text {
+	margin-bottom: 10px;
+}
+.rating-selector_epcgq9 > .rating-bar {
+	display: flex;
+	align-items: center;
+	max-width: 500px;
+	margin: 0 auto;
+}
+.rating-selector_epcgq9 > .rating-bar > label {
+	flex: 0 0 auto;
+	color: #666;
+	text-transform: uppercase;
+	font-size: smaller;
+}
+.rating-selector_epcgq9 > .rating-bar > label:first-child {
+	padding-right: 10px;
+}
+.rating-selector_epcgq9 > .rating-bar > label:last-child {
+	padding-left: 10px;
+}
+.rating-selector_epcgq9 > .rating-bar > .buttons {
+	flex: 1 1 auto;
+	display: flex;
+}
+.rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button {
+	flex: 1 1 auto;
+	width: 10%;
+	padding: 0;
+	margin: 0;
+	font-family: inherit;
+	height: 25px;
+	border-width: 1px 0 1px 1px;
+	border-style: solid;
+	border-color: #aaa;
+	background-color: white;
+	cursor: pointer;
+	font-weight: normal;
+	letter-spacing: normal;
+	line-height: normal;
+	font-size: inherit;
+}
+.rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button:first-child {
+	border-radius: 5px 0 0 5px;
+}
+.rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button:last-child {
+	border-right-width: 1px;
+	border-radius: 0 5px 5px 0;
+}
+.rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button.selected {
+	color: white;
+	background-color: dodgerblue;
+	border-color: blue;
+}
+.rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button.selected + .rating-button {
+	border-left-color: blue;
+}
+.rating-selector_epcgq9 > .status-text {
+	margin-top: 10px;
+}

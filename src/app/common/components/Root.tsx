@@ -66,6 +66,22 @@ export default abstract class Root<
 	private readonly _concreteClassName: ClassValue;
 
 	// articles
+	protected readonly _rateArticle = (article: UserArticle, score: number) => {
+		return this.props.serverApi
+			.rateArticle(article.id, score)
+			.then(rating => {
+				this._articleChangeEventHandlers.forEach(handler => {
+					handler(
+						{
+							...article,
+							ratingScore: rating.score
+						},
+						false
+					);
+				});
+				return rating;
+			});
+	};
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
 	protected readonly _shareArticle = (article: UserArticle) => {
 		this._openDialog(

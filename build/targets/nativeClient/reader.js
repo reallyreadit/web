@@ -63,6 +63,7 @@ const build = createBuild({
 	}()),
 	path: 'native-client/reader',
 	scss: [
+		`${project.srcDir}/common/components/RatingSelector.scss`,
 		`${project.srcDir}/common/components/reader/Footer.scss`,
 		`${project.srcDir}/native-client/reader/**/*.{css,scss}`
 	],

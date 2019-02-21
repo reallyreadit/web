@@ -4,7 +4,7 @@ import Footer from '../../../common/components/reader/Footer';
 
 export interface Props {
 	isRead: boolean,
-	onSelectRating: (rating: number) => Promise<void>,
+	onSelectRating: (rating: number) => Promise<{}>,
 	percentComplete: number,
 	ratingScore: number | null
 }

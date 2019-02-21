@@ -24,7 +24,7 @@ let
 	articleId: number | null,
 	props: {
 		isRead: boolean,
-		onSelectRating: (rating: number) => Promise<void>,
+		onSelectRating: (rating: number) => Promise<{}>,
 		percentComplete: number,
 		ratingScore: number | null,
 		showLogo: boolean
@@ -68,7 +68,7 @@ const
 	);
 
 function rateArticle(score: number) {
-	return new Promise<void>(resolve => {
+	return new Promise<{}>(resolve => {
 		messagingContext.sendMessage(
 			{
 				type: 'rateArticle',

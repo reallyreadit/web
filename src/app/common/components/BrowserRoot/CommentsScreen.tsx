@@ -10,6 +10,7 @@ import Comment from '../../../../common/models/Comment';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import VerificationTokenData from '../../../../common/models/VerificationTokenData';
 import produce from 'immer';
+import Rating from '../../../../common/models/Rating';
 
 interface Props {
 	location: RouteLocation,
@@ -17,6 +18,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
@@ -55,6 +57,7 @@ class BrowserCommentsScreen extends React.Component<Props> {
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onGetComments={this.props.onGetComments}
 				onPostComment={this.props.onPostComment}
+				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}
 				onShareArticle={this.props.onShareArticle}
 				onToggleArticleStar={this.props.onToggleArticleStar}
@@ -129,6 +132,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
 				onGetComments={deps.onGetComments}
 				onPostComment={deps.onPostComment}
+				onRateArticle={deps.onRateArticle}
 				onReadArticle={deps.onReadArticle}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
 				onRegisterUserChangeHandler={deps.onRegisterUserChangeHandler}

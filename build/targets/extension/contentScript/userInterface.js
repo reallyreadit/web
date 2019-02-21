@@ -38,6 +38,7 @@ const build = createBuild({
 	},
 	path: 'extension/content-script/user-interface',
 	scss: [
+		`${project.srcDir}/common/components/RatingSelector.scss`,
 		`${project.srcDir}/common/components/reader/Footer.scss`,
 		`${project.srcDir}/extension/content-script/user-interface/**/*.{css,scss}`
 	],

@@ -2,7 +2,6 @@ import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
 import Comment from '../../../../common/models/Comment';
-import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import CommentList from '../controls/comments/CommentList';
 import CommentBox from '../controls/comments/CommentBox';
@@ -15,6 +14,8 @@ import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import VerificationTokenData from '../../../../common/models/VerificationTokenData';
 import { clientTypeQueryStringKey } from '../../../../common/routing/queryString';
+import RatingSelector from '../../../../common/components/RatingSelector';
+import Rating from '../../../../common/models/Rating';
 
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
@@ -51,6 +52,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShareArticle: (article: UserArticle) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -93,6 +95,12 @@ export default class extends React.Component<
 		);
 	};
 	private readonly _noop = () => { };
+	private readonly _selectRating = (score: number) => {
+		return this.props.onRateArticle(
+			this.props.tokenData.value.article,
+			score
+		);
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -124,20 +132,26 @@ export default class extends React.Component<
 								</div>
 							</div> :
 							null}
-						<ArticleList>
-							<li>
-								<ArticleDetails
-									article={this.props.tokenData.value.article}
-									isUserSignedIn={isUserSignedIn}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onRead={this.props.onReadArticle}
-									onShare={this.props.onShareArticle}
-									onToggleStar={this.props.onToggleArticleStar}
-									onViewComments={this._noop}
-								/>
-							</li>
-						</ArticleList>
+						<ArticleDetails
+							article={this.props.tokenData.value.article}
+							isUserSignedIn={isUserSignedIn}
+							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onRead={this.props.onReadArticle}
+							onShare={this.props.onShareArticle}
+							onToggleStar={this.props.onToggleArticleStar}
+							onViewComments={this._noop}
+						/>
+						{this.props.tokenData.value.article.isRead ?
+							<RatingSelector
+								{
+									...{
+										...this.props.tokenData.value.article,
+										onSelectRating: this._selectRating
+									}
+								}
+							/> :
+							null}
 						<h3>Comments</h3>
 						<CommentBox
 							articleId={this.props.tokenData.value.article.id}

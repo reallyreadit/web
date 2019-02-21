@@ -77,6 +77,7 @@ function rateArticle(score: number) {
 							ratingScore: rating.score
 						});
 					});
+				return rating;
 			});
 	} else {
 		return Promise.reject();

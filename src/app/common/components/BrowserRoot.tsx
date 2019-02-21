@@ -147,6 +147,7 @@ export default class extends Root<Props, State, SharedState> {
 			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
 			onGetComments: this.props.serverApi.getComments,
 			onPostComment: this._postComment,
+			onRateArticle: this._rateArticle,
 			onReadArticle: this._readArticle,
 			onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 			onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
