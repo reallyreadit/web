@@ -281,9 +281,7 @@ server = server.use((req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	const browserApi = new BrowserApi();
-	const clientType = req.headers['user-agent'] === 'reallyread.it iOS App WebView' ?
-		ClientType.App :
-		(req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
+	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
 		captcha: new Captcha(),
 		initialLocation: {
