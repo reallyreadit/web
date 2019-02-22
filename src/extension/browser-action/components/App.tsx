@@ -20,14 +20,12 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
 	private _showSignInDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.SignIn).createUrl());
 	private _showCreateAccountDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.CreateAccount).createUrl());
-	private _goToInbox = () => (
-		this.state.showNewReplyIndicator ?
-			this._eventPageApi.ackNewReply() :
-			Promise.resolve({})
-		)
-		.then(() => {
-			this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl())
-		});
+	private _goToInbox = () => {
+		if (this.state.showNewReplyIndicator) {
+			this._eventPageApi.ackNewReply();
+		}
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
+	};
 	private _goToStarred = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Starred).createUrl());
 	private _goToHistory = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.History).createUrl());
 	private _goToComments = () => {

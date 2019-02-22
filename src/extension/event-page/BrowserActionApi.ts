@@ -1,15 +1,9 @@
 import ExtensionState from '../common/ExtensionState';
 
+function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
+	chrome.runtime.sendMessage({ to: 'browserActionPage', type, data }, responseCallback);
+}
 export default class BrowserActionApi {
-	private static sendMessage<T>(type: string, data?: {}) {
-		return new Promise<T>((resolve, reject) => {
-			try {
-				chrome.runtime.sendMessage({ to: 'browserActionPage', type, data }, resolve);
-			} catch (ex) {
-				reject();
-			}
-		});
-	}
 	constructor(handlers: {
 		onLoad: () => Promise<ExtensionState>,
 		onAckNewReply: () => void,
@@ -37,6 +31,6 @@ export default class BrowserActionApi {
 		});
 	}
 	public pushState(state: ExtensionState) {
-		return BrowserActionApi.sendMessage('pushState', state);
+		sendMessage('pushState', state);
 	}
 }

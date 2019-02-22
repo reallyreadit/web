@@ -1,15 +1,18 @@
 import ExtensionState from '../common/ExtensionState';
 
+function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
+	chrome.runtime.sendMessage({ to: 'eventPage', type, data }, responseCallback);
+}
+function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
+	return new Promise<T>((resolve, reject) => {
+		try {
+			sendMessage(type, data, resolve);
+		} catch (ex) {
+			reject();
+		}
+	});
+}
 export default class EventPageApi {
-	private static sendMessage<T>(type: string, data?: {}) {
-		return new Promise<T>((resolve, reject) => {
-			try {
-				chrome.runtime.sendMessage({ to: 'eventPage', type, data }, resolve);
-			} catch (ex) {
-				reject();
-			}
-		});
-	}
 	constructor(handlers: {
 		onPushState: (state: ExtensionState) => void
 	}) {
@@ -24,12 +27,12 @@ export default class EventPageApi {
 		});
 	}
 	public ackNewReply() {
-		return EventPageApi.sendMessage('ackNewReply');
+		sendMessage('ackNewReply');
 	}
 	public load() {
-		return EventPageApi.sendMessage<ExtensionState>('load');
+		return sendMessageAwaitingResponse<ExtensionState>('load');
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
-		return EventPageApi.sendMessage('setStarred', { articleId, isStarred });
+		return sendMessageAwaitingResponse('setStarred', { articleId, isStarred });
 	}
 }
