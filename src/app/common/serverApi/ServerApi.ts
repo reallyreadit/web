@@ -18,20 +18,21 @@ import Leaderboards from '../../../common/models/Leaderboards';
 import VerificationTokenData from '../../../common/models/VerificationTokenData';
 import CommunityReadSort from '../../../common/models/CommunityReadSort';
 import Rating from '../../../common/models/Rating';
-import Exchange from './Exchange';
+import ClientType from '../ClientType';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
-export interface InitData {
-	endpoint: HttpEndpoint,
-	exchanges: Exchange[]
-}
 export default abstract class {
 	protected readonly _endpoint: HttpEndpoint;
-	protected _reqStore: RequestStore;
+	protected readonly _reqStore: RequestStore;
+	protected readonly _clientType: ClientType;
+	protected readonly _clientVersion: string;
 	protected _isInitialized = false;
-	constructor(endpoint: HttpEndpoint) {
+	constructor(endpoint: HttpEndpoint, requestStore: RequestStore, clientType: ClientType, clientVersion: string) {
 		this._endpoint = endpoint;
+		this._reqStore = requestStore;
+		this._clientType = clientType;
+		this._clientVersion = clientVersion;
 	}
 	private createFetchFunction<TResult>(path: string) {
 		return (callback: (value: Fetchable<TResult>) => void) => this.get<TResult>({ path }, callback);

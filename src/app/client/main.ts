@@ -19,32 +19,39 @@ localStorage.removeItem('userAccount');
 // clean up cookies
 jsCookie.remove('hideHero');
 
+const initData = window.reallyreadit.app.initData;
+
 ga('create', {
 	trackingId: 'UA-101617933-1',
 	cookieDomain: 'auto',
-	userId: window.reallyreadit.app.initData.userAccount ? window.reallyreadit.app.initData.userAccount.id : null
+	userId: initData.userAccount ? initData.userAccount.id : null
 });
 ga('send', 'pageview');
 
-const serverApi = new ServerApi(window.reallyreadit.app.initData.serverApi);
+const serverApi = new ServerApi(
+	initData.apiServerEndpoint,
+	initData.clientType,
+	initData.version.toString(),
+	initData.exchanges
+);
 
 const rootProps = {
 	captcha: new Captcha(
-		window.reallyreadit.app.initData.captchaSiteKey,
+		initData.captchaSiteKey,
 		onLoadHandler => {
 			window.reallyreadit.app.onReCaptchaLoaded = () => {
 				onLoadHandler(window.reallyreadit.app.grecaptcha);
 			};
 		}
 	),
-	initialLocation: window.reallyreadit.app.initData.initialLocation,
-	initialUser: window.reallyreadit.app.initData.userAccount,
+	initialLocation: initData.initialLocation,
+	initialUser: initData.userAccount,
 	serverApi,
-	version: window.reallyreadit.app.initData.version,
-	webServerEndpoint: window.reallyreadit.app.initData.webServerEndpoint
+	version: initData.version,
+	webServerEndpoint: initData.webServerEndpoint
 };
 let rootElement: React.ReactElement<any>;
-switch (window.reallyreadit.app.initData.clientType) {
+switch (initData.clientType) {
 	case ClientType.App:
 		const messagingContext = new WebViewMessagingContext();
 		window.reallyreadit.app = {
@@ -65,8 +72,8 @@ switch (window.reallyreadit.app.initData.clientType) {
 			{
 				...rootProps,
 				browserApi: new BrowserApi(),
-				extensionApi: new ExtensionApi(window.reallyreadit.app.initData.extensionId),
-				newReplyNotification: window.reallyreadit.app.initData.newReplyNotification
+				extensionApi: new ExtensionApi(initData.extensionId),
+				newReplyNotification: initData.newReplyNotification
 			}
 		);
 		break;

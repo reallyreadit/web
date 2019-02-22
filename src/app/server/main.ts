@@ -139,11 +139,18 @@ server = server.get('/assets/update/ContentScript.js', (req, res) => {
 });
 // authenticate
 server = server.use((req, res, next) => {
-	const api = new ServerApi(config.apiServer, {
-		key: config.cookieName,
-		value: req.cookies[config.cookieName]
-	});
+	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
+	const api = new ServerApi(
+		config.apiServer,
+		clientType,
+		version.app.toString(),
+		{
+			key: config.cookieName,
+			value: req.cookies[config.cookieName]
+		}
+	);
 	req.api = api;
+	req.clientType = clientType;
 	if (api.hasAuthCookie()) {
 		api.fetchJson<SessionState>('GET', { path: '/UserAccounts/GetSessionState' })
 			.then(sessionState => {
@@ -281,7 +288,6 @@ server = server.use((req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	const browserApi = new BrowserApi();
-	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const rootProps = {
 		captcha: new Captcha(),
 		initialLocation: {
@@ -294,7 +300,7 @@ server = server.get('/*', (req, res) => {
 		webServerEndpoint: config.webServer
 	};
 	let rootElement: React.ReactElement<any>;
-	switch (clientType) {
+	switch (req.clientType) {
 		case ClientType.App:
 			rootElement = React.createElement(
 				AppRoot,
@@ -334,12 +340,13 @@ server = server.get('/*', (req, res) => {
 			enableAnalytics: config.enableAnalytics,
 			extensionId: config.extensionId,
 			initData: {
+				apiServerEndpoint: config.apiServer,
 				captchaSiteKey: config.captchaSiteKey,
-				clientType,
+				clientType: req.clientType,
+				exchanges: req.api.exchanges,
 				extensionId: config.extensionId,
 				newReplyNotification: req.sessionState.newReplyNotification,
 				initialLocation: rootProps.initialLocation,
-				serverApi: req.api.getInitData(),
 				userAccount: req.sessionState.userAccount,
 				version: version.app,
 				webServerEndpoint: config.webServer

@@ -6,13 +6,23 @@ import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';
 import KeyValuePair from '../../common/KeyValuePair';
 import ServerApi from '../common/serverApi/ServerApi';
 import { createQueryString } from '../../common/routing/queryString';
+import ClientType from '../common/ClientType';
 
 export default class extends ServerApi {
 	private _authCookie: KeyValuePair<string, string | null>;
-	constructor(endpoint: HttpEndpoint, authCookie: KeyValuePair<string, string | null>) {
-		super(endpoint);
+	constructor(
+		endpoint: HttpEndpoint,
+		clientType: ClientType,
+		clientVersion: string,
+		authCookie: KeyValuePair<string, string | null>
+	) {
+		super(
+			endpoint,
+			new RequestStore(),
+			clientType,
+			clientVersion
+		);
 		this._authCookie = authCookie;
-		this._reqStore = new RequestStore();
 	}
 	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
@@ -23,7 +33,9 @@ export default class extends ServerApi {
 			const options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions) = {
 				method,
 				uri: url,
-				headers: { },
+				headers: {
+					'X-Readup-Client': `web/app/server#${this._clientType}@${this._clientVersion}`
+				},
 				json: true,
 				callback: (error, res, body) => {
 					switch (res.statusCode) {
@@ -85,13 +97,10 @@ export default class extends ServerApi {
 				this._isInitialized = true;
 			});
 	}
-	public getInitData() {
-		return {
-			endpoint: this._endpoint,
-			exchanges: this._reqStore.exchanges
-		};
-	}
 	public hasAuthCookie() {
 		return !!this._authCookie.value;
+	}
+	public get exchanges() {
+		return this._reqStore.exchanges;
 	}
 }

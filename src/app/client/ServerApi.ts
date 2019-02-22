@@ -1,19 +1,31 @@
-import ServerApi, { InitData } from '../common/serverApi/ServerApi';
+import ServerApi from '../common/serverApi/ServerApi';
 import Request from '../common/serverApi/Request';
 import Fetchable from '../../common/Fetchable';
 import RequestStore from '../common/serverApi/RequestStore';
-import { createUrl } from '../../common/HttpEndpoint';
+import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
+import Exchange from '../common/serverApi/Exchange';
+import ClientType from '../common/ClientType';
 
-function addContextHeader(req: XMLHttpRequest, params: Request) {
-	if (params.context) {
-		req.setRequestHeader('X-Readup-Context', params.context);
-	}
-}
 export default class extends ServerApi {
-	constructor(initData: InitData) {
-		super(initData.endpoint);
-		this._reqStore = new RequestStore(initData.exchanges);
+	constructor(
+		endpoint: HttpEndpoint,
+		clientType: ClientType,
+		clientVersion: string,
+		exchanges: Exchange[]
+	) {
+		super(
+			endpoint,
+			new RequestStore(exchanges),
+			clientType,
+			clientVersion
+		);
+	}
+	private addCustomHeaders(req: XMLHttpRequest, params: Request) {
+		req.setRequestHeader('X-Readup-Client', `web/app/client#${this._clientType}@${this._clientVersion}`);
+		if (params.context) {
+			req.setRequestHeader('X-Readup-Context', params.context);
+		}
 	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
@@ -47,12 +59,12 @@ export default class extends ServerApi {
 			});
 			if (method === 'POST') {
 				req.open(method, url);
+				this.addCustomHeaders(req, params);
 				req.setRequestHeader('Content-Type', 'application/json');
-				addContextHeader(req, params);
 				req.send(JSON.stringify(params.data));
 			} else {
 				req.open(method, url + createQueryString(params.data));
-				addContextHeader(req, params);
+				this.addCustomHeaders(req, params);
 				req.send();
 			}
 		});
