@@ -49,6 +49,12 @@ function configureWebpack(params) {
 	}
 	if (params.appConfig) {
 		const config = JSON.parse(fs.readFileSync(params.appConfig.replace('{env}', params.env)).toString());
+		const package = JSON.parse(
+			fs
+				.readFileSync('./package.json')
+				.toString()
+		);
+		config.version = package['it.reallyread'].version.extension.toString();
 		// TODO: FIX THIS!!!
 		config.api.protocol = JSON.stringify(config.api.protocol);
 		config.api.host = JSON.stringify(config.api.host);

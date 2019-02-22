@@ -4,6 +4,7 @@ declare global {
 	const config: {
 		api: HttpEndpoint,
 		cookieName: string,
-		web: HttpEndpoint
+		web: HttpEndpoint,
+		version: string
 	};
 }

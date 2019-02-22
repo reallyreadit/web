@@ -13,7 +13,8 @@ import { createUrl } from '../../common/HttpEndpoint';
 import Rating from '../../common/models/Rating';
 import { createQueryString } from '../../common/routing/queryString';
 
-function addContextHeader(req: XMLHttpRequest, params: Request) {
+function addCustomHeaders(req: XMLHttpRequest, params: Request) {
+	req.setRequestHeader('X-Readup-Client', `web/extension@${config.version}`);
 	if (params.context) {
 		req.setRequestHeader('X-Readup-Context', params.context);
 	}
@@ -55,12 +56,12 @@ function fetchJson<T>(request: Request) {
 		});
 		if (request.method === 'POST') {
 			req.open(request.method, url);
+			addCustomHeaders(req, request);
 			req.setRequestHeader('Content-Type', 'application/json');
-			addContextHeader(req, request);
 			req.send(JSON.stringify(request.data));
 		} else {
 			req.open(request.method, url + createQueryString(request.data));
-			addContextHeader(req, request);
+			addCustomHeaders(req, request);
 			req.send();
 		}
 	});
