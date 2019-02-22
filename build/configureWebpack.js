@@ -58,6 +58,7 @@ function configureWebpack(params) {
 		// TODO: FIX THIS!!!
 		config.api.protocol = JSON.stringify(config.api.protocol);
 		config.api.host = JSON.stringify(config.api.host);
+		config.cookieDomain = JSON.stringify(config.cookieDomain);
 		config.cookieName = JSON.stringify(config.cookieName);
 		config.web.protocol = JSON.stringify(config.web.protocol);
 		config.web.host = JSON.stringify(config.web.host);

@@ -108,7 +108,7 @@ export default class ServerApi {
 		});
 		// cookie change
 		chrome.cookies.onChanged.addListener(changeInfo => {
-			if (changeInfo.cookie.name === config.cookieName) {
+			if (changeInfo.cookie.domain === '.' + config.cookieDomain && changeInfo.cookie.name === config.cookieName) {
 				const isAuthenticated = !changeInfo.removed;
 				// clear user specific cache
 				this._newReplyNotification.clear();
