@@ -445,7 +445,9 @@ export default class extends Root<Props, State, SharedState> {
 		// update other tabs with the latest user data
 		this.props.browserApi.updateUser(this.state.user);
 		// update the extension with the latest notification data
-		this.props.extensionApi.updateNewReplyNotification(this.props.newReplyNotification);
+		if (this.props.newReplyNotification) {
+			this.props.extensionApi.updateNewReplyNotification(this.props.newReplyNotification);
+		}
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();
