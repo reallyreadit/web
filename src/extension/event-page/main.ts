@@ -245,3 +245,9 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
 		sendResponse(true);
 	}
 });
+chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
+	if (details.transitionType === 'link' && tabs.get(details.tabId)) {
+		console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
+		contentScriptApi.updateHistoryState(details.tabId, details.url);
+	}
+});

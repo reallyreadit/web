@@ -5,16 +5,10 @@ import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import Rating from '../../common/models/Rating';
 
+function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
+	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
+}
 export default class ContentScriptApi {
-	private static sendMessage<T>(tabId: number, type: string, data?: {}) {
-		return new Promise<T>((resolve, reject) => {
-			try {
-				chrome.tabs.sendMessage(tabId, { type, data }, resolve);
-			} catch (ex) {
-				reject();
-			}
-		});
-	}
 	constructor(handlers: {
 		onRateArticle: (tabId: number, articleId: number, score: number) => Promise<Rating>,
 		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
@@ -65,21 +59,17 @@ export default class ContentScriptApi {
 			}
 			return undefined;
 		});
-		// history state
-		chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
-			if (details.transitionType === 'link') {
-				console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
-				ContentScriptApi.sendMessage<void>(details.tabId, 'updateHistoryState', details.url);
-			}
-		});
 	}
 	public loadPage(tabId: number) {
-		return ContentScriptApi.sendMessage<void>(tabId, 'loadPage');
+		sendMessage(tabId, 'loadPage');
 	}
 	public unloadPage(tabId: number) {
-		return ContentScriptApi.sendMessage<void>(tabId, 'unloadPage');
+		sendMessage(tabId, 'unloadPage');
 	}
 	public showOverlay(tabId: number, value: boolean) {
-		return ContentScriptApi.sendMessage<void>(tabId, 'showOverlay', value);
+		sendMessage(tabId, 'showOverlay', value);
+	}
+	public updateHistoryState(tabId: number, url: string) {
+		sendMessage(tabId, 'updateHistoryState', url);
 	}
 }
