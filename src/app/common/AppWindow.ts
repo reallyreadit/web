@@ -4,7 +4,6 @@ declare global {
 	interface AppWindow {
 		initData: InitData,
 		// iOS keyboard scroll bug
-		isFocusedOnField: boolean,
-		onReCaptchaLoaded: () => void
+		isFocusedOnField: boolean
 	}
 }

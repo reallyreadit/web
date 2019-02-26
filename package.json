@@ -4,7 +4,7 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": 0.89,
+      "app": 0.90,
       "contentScript": 0.22,
       "extension": 0.55,
       "native-client": {

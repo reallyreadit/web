@@ -39,7 +39,7 @@ const rootProps = {
 	captcha: new Captcha(
 		initData.captchaSiteKey,
 		onLoadHandler => {
-			window.reallyreadit.app.onReCaptchaLoaded = () => {
+			window.onReCaptchaLoaded = () => {
 				onLoadHandler(window.reallyreadit.app.grecaptcha);
 			};
 		}
