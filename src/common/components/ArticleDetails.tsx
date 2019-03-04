@@ -4,11 +4,10 @@ import { formatTimestamp } from '../format';
 import Star from './Star';
 import readingParameters from '../readingParameters';
 import SpeechBubble from './Logo/SpeechBubble';
-import Icon from './Icon';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
-import classNames from 'classnames';
+import ShareControl from './ShareControl';
 
 interface Props {
 	article: UserArticle,
@@ -26,16 +25,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	public static defaultProps = {
 		onDelete: () => {},
 		showDeleteControl: false
-	};
-	private readonly _copyLink = () => {
-		if (this.props.article.isRead) {
-			this.props.onCopyTextToClipboard(
-				this.props.onCreateAbsoluteUrl(
-					findRouteByKey(routes, ScreenKey.Proof).createUrl({ 'token': this.props.article.proofToken })
-				),
-				'Link copied to clipboard'
-			);
-		}
 	};
 	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		this.props.onRead(this.props.article, e);
@@ -58,11 +47,11 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	public render() {
 		const
 			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),
-			urlParams = {
+			articleUrlParams = {
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
-			commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments).createUrl(urlParams),
+			commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments).createUrl(articleUrlParams),
 			star = (
 				<div className="star-container">
 					<Star
@@ -81,16 +70,16 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					{this.props.article.title}
 				</a>
 			),
-			copyLinkButton = (
-				<div
-					className={classNames('copy-link', { disabled: !this.props.article.isRead })}
-					onClick={this._copyLink}
-				>
-					<Icon
-						name="link"
-						title="Copy Link"
-					/>
-				</div>
+			shareButton = (
+				<ShareControl
+					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+					subject={this.props.article.title}
+					url={
+						this.props.onCreateAbsoluteUrl(
+							findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
+						)
+					}
+				/>
 			);
 		return (
 			<div className="article-details_d2vnmv">
@@ -178,7 +167,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.commentCount === 1 ? ' comment' : ' comments'}
 								</a>
 							</div>
-							{copyLinkButton}
+							{shareButton}
 						</div>
 					</div>
 					<div className="bubble">
@@ -195,7 +184,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					</div>
 					{this.props.isUserSignedIn ?
 						<div className="share">
-							{copyLinkButton}
+							{shareButton}
 						</div> :
 						null}
 				</div>
