@@ -5,7 +5,6 @@ declare global {
 	interface ContentScriptWindow { }
 	interface ReaderWindow { }
 	interface Window {
-		onReCaptchaLoaded: () => void,
 		reallyreadit: {
 			app?: AppWindow,
 			extension?: {

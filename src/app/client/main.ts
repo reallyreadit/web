@@ -40,7 +40,7 @@ const rootProps = {
 		initData.captchaSiteKey,
 		onLoadHandler => {
 			window.onReCaptchaLoaded = () => {
-				onLoadHandler(window.reallyreadit.app.grecaptcha);
+				onLoadHandler(window.grecaptcha);
 			};
 		}
 	),
