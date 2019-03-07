@@ -7,6 +7,8 @@ export default class CommentList extends React.Component<{
     highlightedCommentId?: number,
     isAllowedToPost?: boolean,
     mode: 'reply' | 'link',
+    onCopyTextToClipboard: (text: string, successMessage: string) => void,
+    onCreateAbsoluteUrl: (path: string) => string,
     onPostComment?: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
     onViewThread?: (comment: Comment) => void,
     parentCommentId?: number
@@ -21,6 +23,8 @@ export default class CommentList extends React.Component<{
                         highlightedCommentId={this.props.highlightedCommentId}
                         isAllowedToPost={this.props.isAllowedToPost}
                         mode={this.props.mode}
+                        onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+                        onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
                         onPostComment={this.props.onPostComment}
                         onViewThread={this.props.onViewThread}
                         parentCommentId={this.props.parentCommentId}

@@ -185,6 +185,8 @@ export default class extends Root<Props, State, SharedState> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetReplies: this.props.serverApi.listReplies,
 				onViewThread: this._viewThread
 			}),

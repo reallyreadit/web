@@ -8,6 +8,7 @@ import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
 import ShareControl from './ShareControl';
+import Icon from './Icon';
 
 interface Props {
 	article: UserArticle,
@@ -72,6 +73,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			),
 			shareButton = (
 				<ShareControl
+					menuPosition="left"
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					subject={this.props.article.title}
 					url={
@@ -79,7 +81,12 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
 						)
 					}
-				/>
+				>
+					<Icon
+						className="icon"
+						name="share"
+					/>
+				</ShareControl>
 			);
 		return (
 			<div className="article-details_d2vnmv">
