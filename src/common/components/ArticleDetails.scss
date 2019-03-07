@@ -86,17 +86,12 @@
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
+	padding-left: 7px;
 }
-.article-details_d2vnmv > .columns > .share > .copy-link {
-	padding: 0 5px 0 10px;
-	font-size: 20px;
+.article-details_d2vnmv > .columns > .share > .share-control_mnbspk > .children > .icon {
+	width: 16px;
+	height: 16px;
 	cursor: pointer;
-}
-.article-details_d2vnmv > .columns > .share > .copy-link.disabled {
-	visibility: hidden;
-}
-.article-details_d2vnmv > .columns > .share > .copy-link > .icon_rour3d {
-	display: block;
 }
 
 @media (max-width: 450px) {

@@ -7,6 +7,8 @@ import PageSelector from './controls/PageSelector';
 import LoadingOverlay from './controls/LoadingOverlay';
 
 interface Props {
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) => Fetchable<PageResult<Comment>>,
 	onViewThread: (comment: Comment) => void
 }
@@ -50,6 +52,8 @@ export default class InboxPage extends React.Component<
 									<CommentList
 										comments={this.state.replies.value.items}
 										mode="link"
+										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onViewThread={this.props.onViewThread}
 									/> :
 									<span>No replies found. When someone replies to one of your comments it will show up here.</span> :

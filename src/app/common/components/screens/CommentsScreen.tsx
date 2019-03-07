@@ -165,6 +165,8 @@ export default class extends React.Component<
 									highlightedCommentId={'commentId' in pathParams ? parseInt(pathParams.commentId) : null}
 									isAllowedToPost={isAllowedToPost}
 									mode="reply"
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onPostComment={this._addReply}
 								/> :
 								<span>No comments found! (Post one!)</span> :

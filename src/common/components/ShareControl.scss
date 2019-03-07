@@ -1,0 +1,122 @@
+/*
+	componentPath: src/common/components/ShareControl
+	cssComponentId: share-control_mnbspk
+*/
+
+.share-control_mnbspk {
+	display: flex;
+	position: relative;
+	outline: none;	
+}
+.share-control_mnbspk > .menu {
+	position: absolute;
+	top: 50%;
+	z-index: 100;
+	white-space: nowrap;
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	border-radius: 3px;
+	box-shadow: 0px 0px 1px -1px black;
+}
+.share-control_mnbspk > .menu.left {
+	right: 100%;
+	transform: translate(-13px, -50%);
+	animation: share-control_mnbspk-pop-in-left 250ms;
+}
+.share-control_mnbspk > .menu.right {
+	left: 100%;
+	transform: translate(13px, -50%);
+	animation: share-control_mnbspk-pop-in-right 250ms;
+}
+.share-control_mnbspk > .menu.left[data-state="Closing"] {
+	animation: share-control_mnbspk-pop-out-left 250ms;
+}
+.share-control_mnbspk > .menu.right[data-state="Closing"] {
+	animation: share-control_mnbspk-pop-out-right 250ms;
+}
+.share-control_mnbspk > .menu[data-state="Closed"] {
+	display: none;
+}
+.share-control_mnbspk > .menu::before,
+.share-control_mnbspk > .menu::after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 50%;
+	border-bottom: 16px solid;
+}
+.share-control_mnbspk > .menu.left::before,
+.share-control_mnbspk > .menu.left::after {
+	border-left: 16px solid transparent;
+	transform: rotate(-45deg) translate(4px, -4px);
+	transform-origin: bottom left;
+}
+.share-control_mnbspk > .menu.right::before,
+.share-control_mnbspk > .menu.right::after {
+	border-right: 16px solid transparent;
+	transform: rotate(45deg) translate(-4px, -4px);
+	transform-origin: bottom right;
+}
+.share-control_mnbspk > .menu::before {
+	border-bottom-color: #e0e0e0;
+	box-shadow: 0px 0px 1px -1px black;
+}
+.share-control_mnbspk > .menu.left::before {
+	right: -17px;
+}
+.share-control_mnbspk > .menu.right::before {
+	left: -17px;
+}
+.share-control_mnbspk > .menu::after {
+	border-bottom-color: white;
+}
+.share-control_mnbspk > .menu.left::after {
+	right: -16px;
+}
+.share-control_mnbspk > .menu.right::after {
+	left: -16px;
+}
+.share-control_mnbspk > .menu > .button {
+	display: flex;
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+	align-items: center;
+	padding: 4px 10px;
+	background-color: white;
+	border: none;
+	outline: none;
+	text-decoration: none;
+	cursor: pointer;
+}
+.share-control_mnbspk > .menu > .button:first-child {
+	padding-top: 6px;
+	border-radius: 3px 3px 0 0;
+}
+.share-control_mnbspk > .menu > .button:last-child {
+	padding-bottom: 6px;
+	border-radius: 0 0 3px 3px;
+}
+.share-control_mnbspk > .menu > .button > label {
+	margin-left: 6px;
+	cursor: pointer;
+}
+
+@keyframes share-control_mnbspk-pop-in-left {
+	0% { transform: translate(-13px, -50%) scale(0, 0); }
+	75% { transform: translate(-13px, -50%) scale(1.15, 1.15); }
+	100% { transform: translate(-13px, -50%) scale(1, 1); }
+}
+@keyframes share-control_mnbspk-pop-out-left {
+	0% { transform: translate(-13px, -50%) scale(1, 1); }
+	100% { transform: translate(-13px, -50%) scale(0, 0); }
+}
+@keyframes share-control_mnbspk-pop-in-right {
+	0% { transform: translate(13px, -50%) scale(0, 0); }
+	75% { transform: translate(13px, -50%) scale(1.15, 1.15); }
+	100% { transform: translate(13px, -50%) scale(1, 1); }
+}
+@keyframes share-control_mnbspk-pop-out-right {
+	0% { transform: translate(13px, -50%) scale(1, 1); }
+	100% { transform: translate(13px, -50%) scale(0, 0); }
+}
