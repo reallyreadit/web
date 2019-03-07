@@ -54,6 +54,12 @@ function redirect(req: express.Request, res: express.Response, url: string) {
 	res.redirect(url);
 }
 
+// token helper function
+// Swift URLComponents doesn't encode the plus sign like encodeURIComponent and WebUtility.UrlEncode do
+function replaceSpacesWithPlusSign(token: string) {
+	return token.replace(' ', '+');
+}
+
 // read package.json version info
 const version = JSON
 	.parse(fs.readFileSync(config.packageFilePath, { encoding: 'utf8' }))
@@ -199,7 +205,7 @@ server = server.use((req, res, next) => {
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api
-		.fetchJson('POST', { path: '/UserAccounts/ConfirmEmail2', data: { token: req.query['token'] } })
+		.fetchJson('POST', { path: '/UserAccounts/ConfirmEmail2', data: { token: replaceSpacesWithPlusSign(req.query['token']) } })
 		.then(() => {
 			redirect(req, res, '/email/confirm/success');
 		})
@@ -225,7 +231,7 @@ server = server.get('/resetPassword', (req, res) => {
 				query: {
 					'reset-password': '',
 					'email': resetRequest.emailAddress,
-					'token': req.query['token']
+					'token': replaceSpacesWithPlusSign(req.query['token'])
 				}
 			}));
 		})
@@ -247,7 +253,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 	if (req.params['id']) {
 		params['id'] = req.params['id'];
 	} else if (req.query['token']) {
-		params['token'] = req.query['token'];
+		params['token'] = replaceSpacesWithPlusSign(req.query['token']);
 	}
 	req.api
 		.fetchJson<Comment>('POST', { path, data: params })
