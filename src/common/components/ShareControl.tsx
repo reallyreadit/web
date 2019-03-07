@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Icon from './Icon';
 import { createQueryString } from '../routing/queryString';
+import classNames from 'classnames';
 
 enum MenuState {
 	Open = 'Open',
@@ -8,6 +9,8 @@ enum MenuState {
 	Closed = 'Closed'
 }
 interface Props {
+	children: React.ReactNode,
+	menuPosition: 'left' | 'right',
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	subject: string,
 	url: string
@@ -26,7 +29,7 @@ export default class ShareControl extends React.PureComponent<
 		);
 	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
-		if (event.animationName === 'share-control_mnbspk-pop-out') {
+		if (event.animationName.startsWith('share-control_mnbspk-pop-out')) {
 			this.setState({ menuState: MenuState.Closed });
 		}
 	};
@@ -83,13 +86,14 @@ export default class ShareControl extends React.PureComponent<
 				onBlur={this._handleBlur}
 				tabIndex={-1}
 			>
-				<Icon
-					className="icon"
-					name="share"
-					onClick={this._handleIconClick}
-				/>
 				<div
-					className="menu"
+					className="children"
+					onClick={this._handleIconClick}
+				>
+					{this.props.children}
+				</div>
+				<div
+					className={classNames('menu', this.props.menuPosition)}
 					data-state={this.state.menuState}
 					onMouseDown={this._registerImpendingChildFocusTransition}
 				>
