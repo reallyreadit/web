@@ -10,7 +10,6 @@
 }
 .share-control_mnbspk > .menu {
 	position: absolute;
-	top: 50%;
 	z-index: 100;
 	white-space: nowrap;
 	background-color: white;
@@ -18,18 +17,35 @@
 	border-radius: 3px;
 	box-shadow: 0px 0px 1px -1px black;
 }
+.share-control_mnbspk > .menu.middle {
+	top: 50%;
+}
+.share-control_mnbspk > .menu.bottom {
+	bottom: 0;
+}
 .share-control_mnbspk > .menu.left {
 	right: 100%;
 	transform: translate(-13px, -50%);
 	animation: share-control_mnbspk-pop-in-left 250ms;
+}
+.share-control_mnbspk > .menu.middle.left {
+	transform: translate(-13px, -50%);
+	animation: share-control_mnbspk-pop-in-middle-left 250ms;
+}
+.share-control_mnbspk > .menu.bottom.left {
+	transform: translate(-13px, 5px);
+	animation: share-control_mnbspk-pop-in-bottom-left 250ms;
 }
 .share-control_mnbspk > .menu.right {
 	left: 100%;
 	transform: translate(13px, -50%);
 	animation: share-control_mnbspk-pop-in-right 250ms;
 }
-.share-control_mnbspk > .menu.left.closing {
-	animation: share-control_mnbspk-pop-out-left 250ms;
+.share-control_mnbspk > .menu.middle.left.closing {
+	animation: share-control_mnbspk-pop-out-middle-left 250ms;
+}
+.share-control_mnbspk > .menu.bottom.left.closing {
+	animation: share-control_mnbspk-pop-out-bottom-left 250ms;
 }
 .share-control_mnbspk > .menu.right.closing {
 	animation: share-control_mnbspk-pop-out-right 250ms;
@@ -39,14 +55,28 @@
 	content: "";
 	display: block;
 	position: absolute;
-	top: 50%;
 	border-bottom: 16px solid;
+}
+.share-control_mnbspk > .menu.middle::before,
+.share-control_mnbspk > .menu.middle::after {
+	top: 50%;
+}
+.share-control_mnbspk > .menu.bottom::before,
+.share-control_mnbspk > .menu.bottom::after {
+	top: 100%;
 }
 .share-control_mnbspk > .menu.left::before,
 .share-control_mnbspk > .menu.left::after {
 	border-left: 16px solid transparent;
-	transform: rotate(-45deg) translate(4px, -4px);
 	transform-origin: bottom left;
+}
+.share-control_mnbspk > .menu.middle.left::before,
+.share-control_mnbspk > .menu.middle.left::after {
+	transform: rotate(-45deg) translate(4px, -4px);
+}
+.share-control_mnbspk > .menu.bottom.left::before,
+.share-control_mnbspk > .menu.bottom.left::after {
+	transform: rotate(-45deg) translate(15px, -15px);
 }
 .share-control_mnbspk > .menu.right::before,
 .share-control_mnbspk > .menu.right::after {
@@ -99,12 +129,21 @@
 	cursor: pointer;
 }
 
-@keyframes share-control_mnbspk-pop-in-left {
+@keyframes share-control_mnbspk-pop-in-bottom-left {
+	0% { transform: translate(-13px, 5px) scale(0, 0); }
+	75% { transform: translate(-13px, 5px) scale(1.15, 1.15); }
+	100% { transform: translate(-13px, 5px) scale(1, 1); }
+}
+@keyframes share-control_mnbspk-pop-in-middle-left {
 	0% { transform: translate(-13px, -50%) scale(0, 0); }
 	75% { transform: translate(-13px, -50%) scale(1.15, 1.15); }
 	100% { transform: translate(-13px, -50%) scale(1, 1); }
 }
-@keyframes share-control_mnbspk-pop-out-left {
+@keyframes share-control_mnbspk-pop-out-bottom-left {
+	0% { transform: translate(-13px, 5px) scale(1, 1); }
+	100% { transform: translate(-13px, 5px) scale(0, 0); }
+}
+@keyframes share-control_mnbspk-pop-out-middle-left {
 	0% { transform: translate(-13px, -50%) scale(1, 1); }
 	100% { transform: translate(-13px, -50%) scale(0, 0); }
 }

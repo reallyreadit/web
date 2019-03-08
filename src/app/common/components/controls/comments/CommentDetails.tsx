@@ -5,7 +5,7 @@ import CommentBox from './CommentBox';
 import ActionLink from '../../../../../common/components/ActionLink';
 import classNames from 'classnames';
 import timeago from 'timeago.js';
-import ShareControl from '../../../../../common/components/ShareControl';
+import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
 import { findRouteByKey } from '../../../../../common/routing/Route';
 import routes from '../../../../../common/routing/routes';
 import ScreenKey from '../../../../../common/routing/ScreenKey';
@@ -89,7 +89,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 										subject: `Comment on article: ${this.props.comment.articleTitle}`,
 										url: shareUrl
 									}}
-									menuPosition="right"
+									menuPosition={MenuPosition.MiddleRight}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onShare={this.props.onShare}
 								>

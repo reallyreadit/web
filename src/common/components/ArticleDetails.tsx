@@ -7,7 +7,7 @@ import SpeechBubble from './Logo/SpeechBubble';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
-import ShareControl from './ShareControl';
+import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
@@ -73,24 +73,22 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					{this.props.article.title}
 				</a>
 			),
-			shareButton = (
-				<ShareControl
-					data={{
-						subject: this.props.article.title,
-						url: this.props.onCreateAbsoluteUrl(
-							findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
-						)
-					}}
-					menuPosition="left"
-					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-					onShare={this.props.onShare}
-				>
+			shareControlProps = {
+				children: (
 					<Icon
 						className="icon"
 						name="share"
 					/>
-				</ShareControl>
-			);
+				),
+				data: {
+					subject: this.props.article.title,
+					url: this.props.onCreateAbsoluteUrl(
+						findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
+					)
+				},
+				onCopyTextToClipboard: this.props.onCopyTextToClipboard,
+				onShare: this.props.onShare
+			};
 		return (
 			<div className="article-details_d2vnmv">
 				<div className="small-title">
@@ -177,7 +175,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.commentCount === 1 ? ' comment' : ' comments'}
 								</a>
 							</div>
-							{shareButton}
+							<ShareControl {...{ ...shareControlProps, menuPosition: MenuPosition.BottomLeft }} />
 						</div>
 					</div>
 					<div className="bubble">
@@ -194,7 +192,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					</div>
 					{this.props.isUserSignedIn ?
 						<div className="share">
-							{shareButton}
+							<ShareControl {...{...shareControlProps, menuPosition: MenuPosition.MiddleLeft}} />
 						</div> :
 						null}
 				</div>

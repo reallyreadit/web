@@ -5,10 +5,15 @@ import classNames from 'classnames';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 
+export enum MenuPosition {
+	BottomLeft = 'bottom,left',
+	MiddleLeft = 'middle,left',
+	MiddleRight = 'middle,right'
+}
 interface Props {
 	children: React.ReactNode,
 	data: ShareData,
-	menuPosition: 'left' | 'right',
+	menuPosition: MenuPosition,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onShare: (data: ShareData) => ShareChannel[]
 }
@@ -107,7 +112,7 @@ export default class ShareControl extends React.PureComponent<
 						className={
 							classNames(
 								'menu',
-								this.props.menuPosition,
+								this.props.menuPosition.split(','),
 								{ 'closing': this.state.isMenuClosing }
 							)
 						}
