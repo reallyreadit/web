@@ -2,35 +2,38 @@ import * as React from 'react';
 import Icon from './Icon';
 import { createQueryString } from '../routing/queryString';
 import classNames from 'classnames';
+import ShareData from '../sharing/ShareData';
+import ShareChannel from '../sharing/ShareChannel';
 
-enum MenuState {
-	Open = 'Open',
-	Closing = 'Closing',
-	Closed = 'Closed'
-}
 interface Props {
 	children: React.ReactNode,
+	data: ShareData,
 	menuPosition: 'left' | 'right',
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
-	subject: string,
-	url: string
+	onShare: (data: ShareData) => ShareChannel[]
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
 	{
 		childElementWillReceiveFocus: boolean,
-		menuState: MenuState
+		isMenuClosing: boolean,
+		menuOptions: ShareChannel[]
 	}
 > {
 	private readonly _copyLink = () => {
 		this.props.onCopyTextToClipboard(
-			this.props.url,
+			this.props.data.url,
 			'Link copied to clipboard'
 		);
+		// need to call closeMenu() to handle iOS touch behavior
+		this.closeMenu();
 	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
 		if (event.animationName.startsWith('share-control_mnbspk-pop-out')) {
-			this.setState({ menuState: MenuState.Closed });
+			this.setState({
+				isMenuClosing: false,
+				menuOptions: []
+			});
 		}
 	};
 	private readonly _handleBlur = () => {
@@ -40,20 +43,24 @@ export default class ShareControl extends React.PureComponent<
 			this.setState({ childElementWillReceiveFocus: false });
 		}
 	};
-	private readonly _handleIconClick = () => {
-		switch (this.state.menuState) {
-			case MenuState.Closed:
-				this.setState({ menuState: MenuState.Open });
-				break;
-			case MenuState.Open:
+	private readonly _handleChildrenClick = () => {
+		if (!this.state.isMenuClosing) {
+			if (this.state.menuOptions.length) {
 				this.closeMenu();
-				break;
+			} else {
+				const shareChannels = this.props.onShare(this.props.data);
+				if (shareChannels.length) {
+					this.setState({
+						menuOptions: shareChannels
+					});
+				}
+			}
 		}
 	};
 	private readonly _openTweetComposer = () => {
 		const queryString = createQueryString({
-			'text': this.props.subject,
-			'url': this.props.url
+			'text': this.props.data.subject,
+			'url': this.props.data.url
 		});
 		window.open(
 			`https://twitter.com/intent/tweet${queryString}`,
@@ -68,16 +75,19 @@ export default class ShareControl extends React.PureComponent<
 		super(props);
 		this.state = {
 			childElementWillReceiveFocus: false,
-			menuState: MenuState.Closed
+			isMenuClosing: false,
+			menuOptions: []
 		};
 	}
 	private closeMenu() {
-		this.setState({ menuState: MenuState.Closing });
+		this.setState({
+			isMenuClosing: true
+		});
 	}
 	public render() {
 		const emailQueryString = createQueryString({
-			'body': this.props.url,
-			'subject': this.props.subject
+			'body': this.props.data.url,
+			'subject': this.props.data.subject
 		});
 		return (
 			<div
@@ -88,38 +98,51 @@ export default class ShareControl extends React.PureComponent<
 			>
 				<div
 					className="children"
-					onClick={this._handleIconClick}
+					onClick={this._handleChildrenClick}
 				>
 					{this.props.children}
 				</div>
-				<div
-					className={classNames('menu', this.props.menuPosition)}
-					data-state={this.state.menuState}
-					onMouseDown={this._registerImpendingChildFocusTransition}
-				>
-					<button
-						className="button"
-						onClick={this._copyLink}
+				{this.state.menuOptions.length ?
+					<div
+						className={
+							classNames(
+								'menu',
+								this.props.menuPosition,
+								{ 'closing': this.state.isMenuClosing }
+							)
+						}
+						onMouseDown={this._registerImpendingChildFocusTransition}
 					>
-						<Icon name="link" />
-						<label>Copy Link</label>
-					</button>
-					<a
-						className="button"
-						href={`mailto:${emailQueryString}`}
-						target="_blank"
-					>
-						<Icon name="paper-plane" />
-						<label>Email</label>
-					</a>
-					<button
-						className="button"
-						onClick={this._openTweetComposer}
-					>
-						<Icon name="twitter" />
-						<label>Tweet</label>
-					</button>
-				</div>
+						{this.state.menuOptions.includes(ShareChannel.Clipboard) ?
+							<button
+								className="button"
+								onClick={this._copyLink}
+							>
+								<Icon name="link" />
+								<label>Copy Link</label>
+							</button> :
+							null}
+						{this.state.menuOptions.includes(ShareChannel.Email) ?
+							<a
+								className="button"
+								href={`mailto:${emailQueryString}`}
+								target="_blank"
+							>
+								<Icon name="paper-plane" />
+								<label>Email</label>
+							</a> :
+							null}
+						{this.state.menuOptions.includes(ShareChannel.Twitter) ?
+							<button
+								className="button"
+								onClick={this._openTweetComposer}
+							>
+								<Icon name="twitter" />
+								<label>Tweet</label>
+							</button> :
+							null}
+					</div> :
+					null}
 			</div>
 		);
 	}

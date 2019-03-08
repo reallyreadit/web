@@ -28,14 +28,11 @@
 	transform: translate(13px, -50%);
 	animation: share-control_mnbspk-pop-in-right 250ms;
 }
-.share-control_mnbspk > .menu.left[data-state="Closing"] {
+.share-control_mnbspk > .menu.left.closing {
 	animation: share-control_mnbspk-pop-out-left 250ms;
 }
-.share-control_mnbspk > .menu.right[data-state="Closing"] {
+.share-control_mnbspk > .menu.right.closing {
 	animation: share-control_mnbspk-pop-out-right 250ms;
-}
-.share-control_mnbspk > .menu[data-state="Closed"] {
-	display: none;
 }
 .share-control_mnbspk > .menu::before,
 .share-control_mnbspk > .menu::after {
