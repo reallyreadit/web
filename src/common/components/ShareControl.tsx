@@ -49,16 +49,14 @@ export default class ShareControl extends React.PureComponent<
 		}
 	};
 	private readonly _handleChildrenClick = () => {
-		if (!this.state.isMenuClosing) {
-			if (this.state.menuOptions.length) {
-				this.closeMenu();
-			} else {
-				const shareChannels = this.props.onShare(this.props.data);
-				if (shareChannels.length) {
-					this.setState({
-						menuOptions: shareChannels
-					});
-				}
+		if (this.state.menuOptions.length) {
+			this.closeMenu();
+		} else {
+			const shareChannels = this.props.onShare(this.props.data);
+			if (shareChannels.length) {
+				this.setState({
+					menuOptions: shareChannels
+				});
 			}
 		}
 	};
