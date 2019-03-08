@@ -166,15 +166,10 @@
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .reads-comments > .stat:not(:last-child) {
 		margin-right: 10px;
 	}
-	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .copy-link {
-		font-size: 20px;
+	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon {
+		width: 16px;
+		height: 16px;
 		cursor: pointer;
-	}
-	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .copy-link.disabled {
-		display: none;
-	}
-	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .copy-link > .icon_rour3d {
-		display: block;
 	}
 	.article-details_d2vnmv > .columns > .bubble {
 		width: 54px;
