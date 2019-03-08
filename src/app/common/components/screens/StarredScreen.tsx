@@ -7,6 +7,8 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import produce from 'immer';
 import InfoBox from '../controls/InfoBox';
 import Fetchable from '../../../../common/Fetchable';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -32,7 +34,7 @@ export default (props: {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void
 }) => (
@@ -48,7 +50,7 @@ export default (props: {
 								onCopyTextToClipboard={props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 								onRead={props.onReadArticle}
-								onShare={props.onShareArticle}
+								onShare={props.onShare}
 								onToggleStar={props.onToggleArticleStar}
 								onViewComments={props.onViewComments}
 							/>

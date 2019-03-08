@@ -16,6 +16,8 @@ import VerificationTokenData from '../../../../common/models/VerificationTokenDa
 import { clientTypeQueryStringKey } from '../../../../common/routing/queryString';
 import RatingSelector from '../../../../common/components/RatingSelector';
 import Rating from '../../../../common/models/Rating';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 function findComment(id: number, comment: Comment) {
 	if (comment.id === id) {
@@ -54,7 +56,7 @@ interface Props {
 	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	tokenData: Fetchable<VerificationTokenData>,
 	user: UserAccount | null
@@ -138,7 +140,7 @@ export default class extends React.Component<
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onRead={this.props.onReadArticle}
-							onShare={this.props.onShareArticle}
+							onShare={this.props.onShare}
 							onToggleStar={this.props.onToggleArticleStar}
 							onViewComments={this._noop}
 						/>
@@ -168,6 +170,7 @@ export default class extends React.Component<
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onPostComment={this._addReply}
+									onShare={this.props.onShare}
 								/> :
 								<span>No comments found! (Post one!)</span> :
 							null}

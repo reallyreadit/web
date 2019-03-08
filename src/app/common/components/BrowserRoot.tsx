@@ -27,6 +27,7 @@ import BrowserClipboardService from '../../../common/services/BrowserClipboardSe
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
 import Comment from '../../../common/models/Comment';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
+import ShareChannel from '../../../common/sharing/ShareChannel';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -121,6 +122,15 @@ export default class extends Root<Props, State, SharedState> {
 		);
 	};
 
+	// sharing
+	private readonly _handleShareRequest = () => {
+		return [
+			ShareChannel.Clipboard,
+			ShareChannel.Email,
+			ShareChannel.Twitter
+		];
+	};
+
 	// window
 	private readonly _handleHistoryPopState = () => {
 		const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
@@ -152,7 +162,7 @@ export default class extends Root<Props, State, SharedState> {
 			onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 			onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
 			onSetScreenState: this._setScreenState,
-			onShareArticle: this._shareArticle,
+			onShare: this._handleShareRequest,
 			onToggleArticleStar: this._toggleArticleStar
 		});
 		this._screenFactoryMap = {
@@ -166,7 +176,7 @@ export default class extends Root<Props, State, SharedState> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
-				onShareArticle: this._shareArticle,
+				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			}),
@@ -180,7 +190,7 @@ export default class extends Root<Props, State, SharedState> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
-				onShareArticle: this._shareArticle,
+				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			}),
@@ -188,6 +198,7 @@ export default class extends Root<Props, State, SharedState> {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetReplies: this.props.serverApi.listReplies,
+				onShare: this._handleShareRequest,
 				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
@@ -214,7 +225,7 @@ export default class extends Root<Props, State, SharedState> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
-				onShareArticle: this._shareArticle,
+				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			})

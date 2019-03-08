@@ -7,6 +7,8 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
 import { Screen, SharedState } from '../Root';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -16,7 +18,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	user: UserAccount | null
@@ -84,7 +86,7 @@ class BrowserHistoryScreen extends React.Component<Props, State> {
 				onDeleteArticle={this.props.onDeleteArticle}
 				onLoadPage={this._loadPage}
 				onReadArticle={this.props.onReadArticle}
-				onShareArticle={this.props.onShareArticle}
+				onShare={this.props.onShare}
 				onToggleArticleStar={this.props.onToggleArticleStar}
 				onViewComments={this.props.onViewComments}
 			/>

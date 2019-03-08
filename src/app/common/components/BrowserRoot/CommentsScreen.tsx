@@ -11,6 +11,8 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import VerificationTokenData from '../../../../common/models/VerificationTokenData';
 import produce from 'immer';
 import Rating from '../../../../common/models/Rating';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 interface Props {
 	location: RouteLocation,
@@ -24,7 +26,7 @@ interface Props {
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
 	onReloadArticle: (params: { proofToken?: string, slug?: string }) => void,
 	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<VerificationTokenData>>>) => Partial<Screen<Fetchable<VerificationTokenData>>>) => void,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	tokenData: Fetchable<VerificationTokenData>,
 	user: UserAccount | null
@@ -59,7 +61,7 @@ class BrowserCommentsScreen extends React.Component<Props> {
 				onPostComment={this.props.onPostComment}
 				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}
-				onShareArticle={this.props.onShareArticle}
+				onShare={this.props.onShare}
 				onToggleArticleStar={this.props.onToggleArticleStar}
 				tokenData={this.props.tokenData}
 				user={this.props.user}
@@ -138,7 +140,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onRegisterUserChangeHandler={deps.onRegisterUserChangeHandler}
 				onReloadArticle={reloadArticle}
 				onSetScreenState={setScreenState}
-				onShareArticle={deps.onShareArticle}
+				onShare={deps.onShare}
 				onToggleArticleStar={deps.onToggleArticleStar}
 				tokenData={state.componentState}
 				user={sharedState.user}

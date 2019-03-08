@@ -9,6 +9,8 @@ import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
 import ShareControl from './ShareControl';
 import Icon from './Icon';
+import ShareData from '../sharing/ShareData';
+import ShareChannel from '../sharing/ShareChannel';
 
 interface Props {
 	article: UserArticle,
@@ -17,7 +19,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDelete?: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	showDeleteControl?: boolean
@@ -73,14 +75,15 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			),
 			shareButton = (
 				<ShareControl
-					menuPosition="left"
-					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-					subject={this.props.article.title}
-					url={
-						this.props.onCreateAbsoluteUrl(
+					data={{
+						subject: this.props.article.title,
+						url: this.props.onCreateAbsoluteUrl(
 							findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
 						)
-					}
+					}}
+					menuPosition="left"
+					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+					onShare={this.props.onShare}
 				>
 					<Icon
 						className="icon"

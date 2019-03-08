@@ -5,11 +5,14 @@ import PageResult from '../../../common/models/PageResult';
 import CommentList from './controls/comments/CommentList';
 import PageSelector from './controls/PageSelector';
 import LoadingOverlay from './controls/LoadingOverlay';
+import ShareChannel from '../../../common/sharing/ShareChannel';
+import ShareData from '../../../common/sharing/ShareData';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) => Fetchable<PageResult<Comment>>,
+	onShare: (data: ShareData) => ShareChannel[],
 	onViewThread: (comment: Comment) => void
 }
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
@@ -54,6 +57,7 @@ export default class InboxPage extends React.Component<
 										mode="link"
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onShare={this.props.onShare}
 										onViewThread={this.props.onViewThread}
 									/> :
 									<span>No replies found. When someone replies to one of your comments it will show up here.</span> :

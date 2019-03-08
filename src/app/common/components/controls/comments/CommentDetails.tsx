@@ -9,6 +9,8 @@ import ShareControl from '../../../../../common/components/ShareControl';
 import { findRouteByKey } from '../../../../../common/routing/Route';
 import routes from '../../../../../common/routing/routes';
 import ScreenKey from '../../../../../common/routing/ScreenKey';
+import ShareChannel from '../../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../../common/sharing/ShareData';
 
 interface Props {
 	comment: Comment,
@@ -18,6 +20,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment?: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
+	onShare: (data: ShareData) => ShareChannel[],
 	onViewThread?: (comment: Comment) => void,
 	parentCommentId?: number
 }
@@ -82,10 +85,13 @@ export default class CommentDetails extends React.Component<Props, { showComment
 									<ActionLink text="Reply" iconLeft="backward" onClick={this._showCommentBox} /> :
 									null}
 								<ShareControl
+									data={{
+										subject: `Comment on article: ${this.props.comment.articleTitle}`,
+										url: shareUrl
+									}}
 									menuPosition="right"
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									subject={`Comment on article: ${this.props.comment.articleTitle}`}
-									url={shareUrl}
+									onShare={this.props.onShare}
 								>
 									<ActionLink
 										text="Share"
@@ -104,6 +110,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onPostComment={this.props.onPostComment}
+						onShare={this.props.onShare}
 						onViewThread={this.props.onViewThread}
 						parentCommentId={this.props.comment.id}
 					/> :

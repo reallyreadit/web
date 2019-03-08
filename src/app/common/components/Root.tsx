@@ -17,7 +17,6 @@ import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
 import createSettingsPageScreenFactory from './SettingsPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
-import ShareArticleDialog from './ShareArticleDialog';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
@@ -83,18 +82,6 @@ export default abstract class Root<
 			});
 	};
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
-	protected readonly _shareArticle = (article: UserArticle) => {
-		this._openDialog(
-			<ShareArticleDialog
-				article={article}
-				captcha={this.props.captcha}
-				onCloseDialog={this._closeDialog}
-				onGetArticle={this.props.serverApi.getArticle}
-				onShareArticle={this.props.serverApi.shareArticle}
-				onShowToast={this._toaster.addToast}
-			/>
-		);
-	};
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
 		return (
 			article.dateStarred ?
@@ -156,19 +143,6 @@ export default abstract class Root<
 					onResetPassword={this._resetPassword}
 					onShowToast={this._toaster.addToast}
 					token={kvps['token']}
-				/>
-			);
-		},
-		[DialogKey.ShareArticle]: location => {
-			const [, sourceSlug, articleSlug] = location.path.match(findRouteByKey(routes, ScreenKey.Comments).pathRegExp);
-			return (
-				<ShareArticleDialog
-					captcha={this.props.captcha}
-					onCloseDialog={this._closeDialog}
-					onGetArticle={this.props.serverApi.getArticle}
-					onShareArticle={this.props.serverApi.shareArticle}
-					onShowToast={this._toaster.addToast}
-					slug={sourceSlug + '_' + articleSlug}
 				/>
 			);
 		},

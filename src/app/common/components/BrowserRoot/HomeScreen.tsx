@@ -14,6 +14,8 @@ import { SharedState } from '../BrowserRoot';
 import PromoCarousel from '../PromoCarousel';
 import WelcomeInfoBox from '../WelcomeInfoBox';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 interface Props {
 	isBrowserCompatible: boolean,
@@ -26,7 +28,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	user: UserAccount | null
@@ -137,7 +139,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onReadArticle={this.props.onReadArticle}
-							onShareArticle={this.props.onShareArticle}
+							onShare={this.props.onShare}
 							onSortChange={this._changeSort}
 							onToggleArticleStar={this.props.onToggleArticleStar}
 							onViewComments={this.props.onViewComments}

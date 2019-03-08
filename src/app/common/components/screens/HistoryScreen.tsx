@@ -8,6 +8,8 @@ import Fetchable from '../../../../common/Fetchable';
 import produce from 'immer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import InfoBox from '../controls/InfoBox';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -34,7 +36,7 @@ export default class extends React.PureComponent<{
 	onDeleteArticle: (article: UserArticle) => void
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void
 }> {
@@ -61,7 +63,7 @@ export default class extends React.PureComponent<{
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 											onDelete={this._deleteArticle}
 											onRead={this.props.onReadArticle}
-											onShare={this.props.onShareArticle}
+											onShare={this.props.onShare}
 											onToggleStar={this.props.onToggleArticleStar}
 											onViewComments={this.props.onViewComments}
 											showDeleteControl

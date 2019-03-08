@@ -8,6 +8,8 @@ import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
 import { Screen, SharedState } from '../Root';
 import LoadingOverlay from '../controls/LoadingOverlay';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../common/sharing/ShareData';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -16,7 +18,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	user: UserAccount | null
@@ -86,7 +88,7 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onLoadPage={this._loadPage}
 						onReadArticle={this.props.onReadArticle}
-						onShareArticle={this.props.onShareArticle}
+						onShare={this.props.onShare}
 						onToggleArticleStar={this.props.onToggleArticleStar}
 						onViewComments={this.props.onViewComments}
 					/>}

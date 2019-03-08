@@ -62,20 +62,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Comments
 		} as Route<DialogKey, ScreenKey>;
 	})(),
-	(function () {
-		const pathRegExp = /^\/articles\/([^/]+)\/([^/]+)$/;
-		return {
-			createUrl: params => `/articles/${params['sourceSlug']}/${params['articleSlug']}?share`,
-			dialogKey: DialogKey.ShareArticle,
-			getPathParams: path => {
-				const [, sourceSlug, articleSlug] = path.match(pathRegExp);
-				return { articleSlug, sourceSlug };
-			},
-			pathRegExp,
-			queryStringKeys: ['share'],
-			screenKey: ScreenKey.Comments
-		} as Route<DialogKey, ScreenKey>;
-	})(),
 	{
 		createUrl: params => `/email/confirm/${params['result']}`,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,

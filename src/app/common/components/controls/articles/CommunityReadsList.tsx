@@ -9,6 +9,8 @@ import produce from 'immer';
 import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import LoadingOverlay from '../LoadingOverlay';
 import classNames from 'classnames';
+import ShareChannel from '../../../../../common/sharing/ShareChannel';
+import ShareData from '../../../../../common/sharing/ShareData';
 
 interface State {
 	communityReads: Fetchable<CommunityReads>
@@ -53,7 +55,7 @@ export default class extends React.PureComponent<{
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShareArticle: (article: UserArticle) => void,
+	onShare: (data: ShareData) => ShareChannel[],
 	onSortChange: (sort: CommunityReadSort) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -75,7 +77,7 @@ export default class extends React.PureComponent<{
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 					onRead={this.props.onReadArticle}
-					onShare={this.props.onShareArticle}
+					onShare={this.props.onShare}
 					onToggleStar={this.props.onToggleArticleStar}
 					onViewComments={this.props.onViewComments}
 				/>
@@ -105,7 +107,7 @@ export default class extends React.PureComponent<{
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onRead={this.props.onReadArticle}
-									onShare={this.props.onShareArticle}
+									onShare={this.props.onShare}
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 								/>

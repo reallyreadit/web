@@ -15,6 +15,7 @@ import ToasterService, { State as ToasterState } from '../../../common/services/
 import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import AsyncTracker from '../../../common/AsyncTracker';
+import ShareChannel from '../../../common/sharing/ShareChannel';
 
 export default class extends React.Component<{}, ExtensionState & { toasts: Toast[] }> {
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
@@ -41,9 +42,6 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 				}
 			}));
 	};
-	private _showShareDialog = () => {
-		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments,  DialogKey.ShareArticle).createUrl(this.getArticleUrlParams()));
-	};
 	private _preventDefault = (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
 	};
@@ -56,6 +54,16 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => `${config.web.protocol}://${config.web.host}${path}`;
+
+	// sharing
+	// sharing
+	private readonly _handleShareRequest = () => {
+		return [
+			ShareChannel.Clipboard,
+			ShareChannel.Email,
+			ShareChannel.Twitter
+		];
+	};
 
 	// toasts
 	private readonly _toaster = new ToasterService({
@@ -122,7 +130,7 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 								onCopyTextToClipboard={this._clipboard.copyText}
 								onCreateAbsoluteUrl={this._createAbsoluteUrl}
 								onRead={this._preventDefault}
-								onShare={this._showShareDialog}
+								onShare={this._handleShareRequest}
 								onToggleStar={this._toggleStar}
 								onViewComments={this._goToComments}
 							/> :

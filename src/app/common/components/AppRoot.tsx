@@ -22,6 +22,9 @@ import UpdateToast from './UpdateToast';
 import AppClipboardService from '../../../common/services/AppClipboardService';
 import routes from '../../../common/routing/routes';
 import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
+import ShareChannel from '../../../common/sharing/ShareChannel';
+import ShareData from '../../../common/sharing/ShareData';
+import SemanticVersion from '../../../common/SemanticVersion';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -98,6 +101,19 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		this.replaceScreen(ScreenKey.Starred);
 	};
 
+	// sharing
+	private readonly _handleShareRequest = (data: ShareData) => {
+		if (
+			this.props.appApi.appVersion &&
+			this.props.appApi.appVersion.compareTo(new SemanticVersion('2.2.1')) >= 0
+		) {
+			this.props.appApi.share(data);
+			return [];
+		} else {
+			return [ShareChannel.Clipboard];
+		}
+	};
+	
 	// window
 	private readonly _handleVisibilityChange = () => {
 		if (!this._isUpdateAvailable && !window.document.hidden) {
@@ -129,7 +145,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			onReadArticle: this._readArticle,
 			onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 			onSetScreenState: this._setScreenState,
-			onShareArticle: this._shareArticle,
+			onShare: this._handleShareRequest,
 			onToggleArticleStar: this._toggleArticleStar
 		});
 		this._screenFactoryMap = {
@@ -142,7 +158,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onShareArticle: this._shareArticle,
+				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			}),
@@ -153,7 +169,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onShareArticle: this._shareArticle,
+				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			}),
@@ -169,7 +185,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onSendExtensionInstructions: this._sendExtensionInstructions,
-				onShareArticle: this._shareArticle,
+				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			})
