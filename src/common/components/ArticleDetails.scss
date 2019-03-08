@@ -51,7 +51,6 @@
 	padding-right: 5px;
 }
 .article-details_d2vnmv > .columns > .article > .title-link {
-	display: block;
 	font-size: 18px;
 	text-decoration: none;
 	font-weight: bold;
@@ -105,7 +104,7 @@
 		margin-right: 5px;
 	}
 	.article-details_d2vnmv > .small-title > .title-link {
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		font-size: 16px;
 		text-decoration: none;
 		font-weight: bold;
