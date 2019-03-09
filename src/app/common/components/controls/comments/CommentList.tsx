@@ -1,20 +1,20 @@
 import * as React from 'react';
-import Comment from '../../../../../common/models/Comment';
+import CommentThread from '../../../../../common/models/CommentThread';
 import CommentDetails from './CommentDetails';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
 
 export default class CommentList extends React.Component<{
-    comments: Comment[],
-    highlightedCommentId?: number,
+    comments: CommentThread[],
+    highlightedCommentId?: string,
     isAllowedToPost?: boolean,
     mode: 'reply' | 'link',
     onCopyTextToClipboard: (text: string, successMessage: string) => void,
     onCreateAbsoluteUrl: (path: string) => string,
-    onPostComment?: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
+    onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
     onShare: (data: ShareData) => ShareChannel[],
-    onViewThread?: (comment: Comment) => void,
-    parentCommentId?: number
+    onViewThread?: (comment: CommentThread) => void,
+    parentCommentId?: string
 }, {}> {
     public render() {
         return (

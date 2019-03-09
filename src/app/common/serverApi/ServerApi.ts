@@ -1,7 +1,7 @@
 import Fetchable from '../../../common/Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
 import BulkMailing from '../../../common/models/BulkMailing';
-import Comment from '../../../common/models/Comment';
+import CommentThread from '../../../common/models/CommentThread';
 import UserAccount from '../../../common/models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
@@ -84,10 +84,10 @@ export default abstract class {
 	public readonly signOut = () => {
 		return this.post<void>({ path: '/UserAccounts/SignOut' });
 	};
-	public readonly postComment = (text: string, articleId: number, parentCommentId?: number) => {
-		return this.post<Comment>({ path: '/Articles/PostComment', data: { text, articleId, parentCommentId } });
+	public readonly postComment = (text: string, articleId: number, parentCommentId?: string) => {
+		return this.post<CommentThread>({ path: '/Articles/PostComment', data: { text, articleId, parentCommentId } });
 	};
-	public readonly readReply = (commentId: number) => {
+	public readonly readReply = (commentId: string) => {
 		return this.post({ path: '/Articles/ReadReply', data: { commentId } });
 	};
 	public readonly deleteUserArticle = (articleId: number) => {
@@ -99,8 +99,8 @@ export default abstract class {
 	public readonly unstarArticle = (articleId: number) => {
 		return this.post<void>({ path: '/Articles/Unstar', data: { articleId } });
 	};
-	public readonly listReplies = (pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) => {
-		return this.get<PageResult<Comment>>({ path: '/Articles/ListReplies', data: { pageNumber } }, callback);
+	public readonly listReplies = (pageNumber: number, callback: (comments: Fetchable<PageResult<CommentThread>>) => void) => {
+		return this.get<PageResult<CommentThread>>({ path: '/Articles/ListReplies', data: { pageNumber } }, callback);
 	};
 	public readonly checkNewReplyNotification = (callback: (states: Fetchable<NewReplyNotification>) => void) => {
 		return this.get<NewReplyNotification>({ path: '/UserAccounts/CheckNewReplyNotification' }, callback);
@@ -135,7 +135,7 @@ export default abstract class {
 
 	// Articles
 	public readonly getArticle = this.createFetchFunctionWithParams<{ proofToken?: string, slug?: string }, UserArticle>('/Articles/Details');
-	public readonly getComments = this.createFetchFunctionWithParams <{ proofToken?: string, slug?: string }, Comment[]>('/Articles/ListComments');
+	public readonly getComments = this.createFetchFunctionWithParams<{ proofToken?: string, slug?: string }, CommentThread[]>('/Articles/ListComments');
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>('/Articles/CommunityReads');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');

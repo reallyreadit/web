@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
-import Comment from '../../../../common/models/Comment';
+import CommentThread from '../../../../common/models/CommentThread';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import CommentList from '../controls/comments/CommentList';
 import CommentBox from '../controls/comments/CommentBox';
@@ -19,11 +19,11 @@ import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 
-function findComment(id: number, comment: Comment) {
+function findComment(id: string, comment: CommentThread) {
 	if (comment.id === id) {
 		return comment;
 	}
-	let match: Comment = null;
+	let match: CommentThread = null;
 	for (let i = 0; match == null && i < comment.children.length; i++) {
 		match = findComment(id, comment.children[i]);
 	}
@@ -52,8 +52,8 @@ interface Props {
 	location: RouteLocation,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
-	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
+	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, CommentThread[]>,
+	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -63,7 +63,7 @@ interface Props {
 }
 export default class extends React.Component<
 	Props,
-	{ comments: Fetchable<Comment[]> }
+	{ comments: Fetchable<CommentThread[]> }
 > {
 	private readonly _addComment = (text: string, articleId: number) => {
 		return this.props
@@ -72,12 +72,12 @@ export default class extends React.Component<
 				this.setState({ comments: { ...this.state.comments, value: [comment, ...this.state.comments.value] } });
 			});
 	};
-	private readonly _addReply = (text: string, articleId: number, parentCommentId?: number) => {
+	private readonly _addReply = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props
 			.onPostComment(text, articleId, parentCommentId)
 			.then(comment => {
 				const comments = this.state.comments.value.slice();
-				let parent: Comment = null;
+				let parent: CommentThread = null;
 				for (let i = 0; parent == null && i < comments.length; i++) {
 					if (comments[i].id === comment.parentCommentId) {
 						parent = comments[i];
@@ -164,7 +164,7 @@ export default class extends React.Component<
 							this.state.comments.value.length ?
 								<CommentList
 									comments={this.state.comments.value}
-									highlightedCommentId={'commentId' in pathParams ? parseInt(pathParams.commentId) : null}
+									highlightedCommentId={'commentId' in pathParams ? pathParams['commentId'] : null}
 									isAllowedToPost={isAllowedToPost}
 									mode="reply"
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}

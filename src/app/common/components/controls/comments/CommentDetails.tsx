@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Comment from '../../../../../common/models/Comment';
+import CommentThread from '../../../../../common/models/CommentThread';
 import CommentList from './CommentList';
 import CommentBox from './CommentBox';
 import ActionLink from '../../../../../common/components/ActionLink';
@@ -13,22 +13,22 @@ import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
 
 interface Props {
-	comment: Comment,
-	highlightedCommentId?: number,
+	comment: CommentThread,
+	highlightedCommentId?: string,
 	isAllowedToPost?: boolean,
 	mode: 'reply' | 'link',
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onPostComment?: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
+	onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
-	onViewThread?: (comment: Comment) => void,
-	parentCommentId?: number
+	onViewThread?: (comment: CommentThread) => void,
+	parentCommentId?: string
 }
 export default class CommentDetails extends React.Component<Props, { showCommentBox: boolean }> {
 	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
 	private _showCommentBox = () => this.setState({ showCommentBox: true });
 	private _hideCommentBox = () => this.setState({ showCommentBox: false });
-	private _addComment = (text: string, articleId: number, parentCommentId?: number) => {
+	private _addComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props
 			.onPostComment(text, articleId, parentCommentId)
 			.then(() => {
@@ -46,7 +46,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 			shareUrl = this.props.onCreateAbsoluteUrl(
 				this._commentsScreenRoute.createUrl({
 					['articleSlug']: articleSlug,
-					['commentId']: this.props.comment.id.toString(),
+					['commentId']: this.props.comment.id,
 					['sourceSlug']: sourceSlug
 				})
 			);

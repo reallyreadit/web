@@ -12,7 +12,7 @@ import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
 import * as url from 'url';
 import PasswordResetRequest from '../../common/models/PasswordResetRequest';
-import Comment from '../../common/models/Comment';
+import CommentThread from '../../common/models/CommentThread';
 import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
@@ -272,7 +272,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 		params['token'] = replaceSpacesWithPlusSign(req.query['token']);
 	}
 	req.api
-		.fetchJson<Comment>('POST', { path, data: params })
+		.fetchJson<CommentThread>('POST', { path, data: params })
 		.then(comment => {
 			const slugParts = comment.articleSlug.split('_');
 			redirect(
@@ -282,7 +282,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 					.createUrl({
 						'sourceSlug': slugParts[0],
 						'articleSlug': slugParts[1],
-						'commentId': comment.id.toString()
+						'commentId': comment.id
 					})
 			);
 		})

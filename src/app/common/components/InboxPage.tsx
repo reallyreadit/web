@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Fetchable from '../../../common/Fetchable';
-import Comment from '../../../common/models/Comment';
+import CommentThread from '../../../common/models/CommentThread';
 import PageResult from '../../../common/models/PageResult';
 import CommentList from './controls/comments/CommentList';
 import PageSelector from './controls/PageSelector';
@@ -11,9 +11,9 @@ import ShareData from '../../../common/sharing/ShareData';
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<Comment>>) => void) => Fetchable<PageResult<Comment>>,
+	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<CommentThread>>) => void) => Fetchable<PageResult<CommentThread>>,
 	onShare: (data: ShareData) => ShareChannel[],
-	onViewThread: (comment: Comment) => void
+	onViewThread: (comment: CommentThread) => void
 }
 export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
 	return {
@@ -25,7 +25,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
 }
 export default class InboxPage extends React.Component<
 	Props,
-	{ replies: Fetchable<PageResult<Comment>> }
+	{ replies: Fetchable<PageResult<CommentThread>> }
 > {
 	private readonly _updatePageNumber = (pageNumber: number) => {
 		this.setState({

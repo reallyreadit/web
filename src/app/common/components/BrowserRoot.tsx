@@ -25,7 +25,7 @@ import UpdateToast from './UpdateToast';
 import Footer from './BrowserRoot/Footer';
 import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
-import Comment from '../../../common/models/Comment';
+import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 
@@ -109,7 +109,7 @@ export default class extends Root<Props, State, SharedState> {
 	private readonly _viewStarred = () => {
 		this.setState(this.replaceScreen(ScreenKey.Starred));
 	};
-	private readonly _viewThread = (comment: Comment) => {
+	private readonly _viewThread = (comment: CommentThread) => {
 		if (!comment.dateRead) {
 			this.props.serverApi.readReply(comment.id);
 		}
@@ -424,7 +424,7 @@ export default class extends Root<Props, State, SharedState> {
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: number) {
+	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {
@@ -432,7 +432,7 @@ export default class extends Root<Props, State, SharedState> {
 				['sourceSlug']: sourceSlug
 			};
 		if (highlightedCommentId != null) {
-			urlParams['commentId'] = highlightedCommentId.toString();
+			urlParams['commentId'] = highlightedCommentId;
 		}
 		this.setState(this.replaceScreen(
 			ScreenKey.Comments,

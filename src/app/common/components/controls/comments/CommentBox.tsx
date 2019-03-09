@@ -6,8 +6,8 @@ interface Props {
 	articleId: number,
 	isAllowedToPost: boolean,
 	onCancel?: () => void,
-	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<void>,
-	parentCommentId?: number
+	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	parentCommentId?: string
 }
 export default class extends React.PureComponent<Props, {
 	commentText: string,

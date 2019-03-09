@@ -1,5 +1,5 @@
-export default interface Comment {
-	id: number,
+export default interface CommentThread {
+	id: string,
 	dateCreated: string,
 	text: string,
 	articleId: number,
@@ -7,7 +7,7 @@ export default interface Comment {
 	articleSlug: string,
 	userAccountId: number,
 	userAccount: string,
-	children: Comment[],
+	children: CommentThread[],
 	dateRead: string,
-	parentCommentId: number
+	parentCommentId: string | null
 }

@@ -7,11 +7,11 @@ import ParseResult from '../../common/reading/ParseResult';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import Request from './Request';
 import { Cached, cache, isExpired } from './Cached';
-import Comment from '../../common/models/Comment';
 import SourceRule from '../../common/models/SourceRule';
 import { createUrl } from '../../common/HttpEndpoint';
 import Rating from '../../common/models/Rating';
 import { createQueryString } from '../../common/routing/queryString';
+import DesktopNotification from '../../common/models/DesktopNotification';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${config.version}`);
@@ -194,9 +194,9 @@ export default class ServerApi {
 			this._newReplyNotification.set(cache(notification, 50000));
 			if (!isNotificationStateEqual(current.value, notification)) {
 				if (shouldShowDesktopNotification(notification)) {
-					fetchJson<Comment>({ method: 'POST',  path: '/UserAccounts/CreateDesktopNotification' })
-						.then(reply => {
-							if (reply) {
+					fetchJson<DesktopNotification>({ method: 'POST',  path: '/UserAccounts/CreateDesktopNotification' })
+						.then(notification => {
+							if (notification) {
 								const now = Date.now();
 								this.processNewReplyNotification({
 									...this._newReplyNotification.get().value,
@@ -204,11 +204,11 @@ export default class ServerApi {
 									timestamp: now
 								});
 								chrome.notifications.create(
-									createUrl(config.web, '/viewReply/' + reply.id),
+									createUrl(config.web, '/viewReply' + createQueryString({ token: notification.token })),
 									{
 										type: 'basic',
 										iconUrl: '../icons/desktop-notification-icon.svg',
-										title: `${reply.userAccount} just replied to your comment re: ${reply.articleTitle}`,
+										title: `${notification.userName} just replied to your comment re: ${notification.articleTitle}`,
 										message: 'Click here to view the reply in the comment thread.',
 										isClickable: true
 									}

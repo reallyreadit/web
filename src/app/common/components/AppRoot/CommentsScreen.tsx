@@ -6,7 +6,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';
 import { Screen, SharedState } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import Comment from '../../../../common/models/Comment';
+import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import VerificationTokenData from '../../../../common/models/VerificationTokenData';
 import produce from 'immer';
@@ -18,8 +18,8 @@ interface Props {
 	location: RouteLocation,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, Comment[]>,
-	onPostComment: (text: string, articleId: number, parentCommentId?: number) => Promise<Comment>,
+	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, CommentThread[]>,
+	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,

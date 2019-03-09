@@ -105,7 +105,7 @@ export default abstract class Root<
 	protected readonly _clipboard: ClipboardService;
 
 	// comments
-	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: number) => {
+	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props.serverApi
 			.postComment(text, articleId, parentCommentId)
 			.then(comment => {
