@@ -37,10 +37,10 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.AdminPage
 	},
 	(function () {
-		const pathRegExp = /^\/articles\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/;
+		const pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/;
 		return {
 			createUrl: params => {
-				let url = `/articles/${params['sourceSlug']}/${params['articleSlug']}`;
+				let url = `/comments/${params['sourceSlug']}/${params['articleSlug']}`;
 				if (params['commentId']) {
 					url += `/${params['commentId']}`;
 				}

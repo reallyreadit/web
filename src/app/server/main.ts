@@ -143,6 +143,22 @@ server = server.get('/assets/update/ContentScript.js', (req, res) => {
 		res.sendStatus(200);
 	}
 });
+// url migration
+server = server.get('/articles/:sourceSlug/:articleSlug/:commentId?', (req, res) => {
+	let params: { [key: string]: string } = {
+		'sourceSlug': req.params['sourceSlug'],
+		'articleSlug': req.params['articleSlug']
+	};
+	if (req.params['commentId']) {
+		params['commentId'] = req.params['commentId'];
+	}
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Comments)
+			.createUrl(params)
+	);
+});
 // authenticate
 server = server.use((req, res, next) => {
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
@@ -259,7 +275,16 @@ server = server.get('/viewReply/:id?', (req, res) => {
 		.fetchJson<Comment>('POST', { path, data: params })
 		.then(comment => {
 			const slugParts = comment.articleSlug.split('_');
-			redirect(req, res, `/articles/${slugParts[0]}/${slugParts[1]}/${comment.id}`);
+			redirect(
+				req,
+				res,
+				findRouteByKey(routes, ScreenKey.Comments)
+					.createUrl({
+						'sourceSlug': slugParts[0],
+						'articleSlug': slugParts[1],
+						'commentId': comment.id.toString()
+					})
+			);
 		})
 		.catch(() => {
 			res.sendStatus(400);
