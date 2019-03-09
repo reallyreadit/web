@@ -190,11 +190,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							</div>
 						</div>
 					</div>
-					{this.props.isUserSignedIn ?
-						<div className="share">
-							<ShareControl {...{...shareControlProps, menuPosition: MenuPosition.MiddleLeft}} />
-						</div> :
-						null}
+					<div className="share">
+						<ShareControl {...{ ...shareControlProps, menuPosition: MenuPosition.MiddleLeft }} />
+					</div>
 				</div>
 			</div>
 		);
