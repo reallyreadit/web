@@ -134,23 +134,21 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		super('app-root_vc3j5h', AppClipboardService, props);
 
 		// screens
-		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
-			onCopyTextToClipboard: this._clipboard.copyText,
-			onCreateAbsoluteUrl: this._createAbsoluteUrl,
-			onGetArticle: this.props.serverApi.getArticle,
-			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
-			onGetComments: this.props.serverApi.getComments,
-			onPostComment: this._postComment,
-			onRateArticle: this._rateArticle,
-			onReadArticle: this._readArticle,
-			onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-			onSetScreenState: this._setScreenState,
-			onShare: this._handleShareRequest,
-			onToggleArticleStar: this._toggleArticleStar
-		});
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
-			[ScreenKey.Comments]: commentsScreenFactory,
+			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetArticle: this.props.serverApi.getArticle,
+				onGetComments: this.props.serverApi.getComments,
+				onPostComment: this._postComment,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onSetScreenState: this._setScreenState,
+				onShare: this._handleShareRequest,
+				onToggleArticleStar: this._toggleArticleStar
+			}),
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -177,7 +175,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onGetStats: this.props.serverApi.getUserStats,
 			}),
-			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,

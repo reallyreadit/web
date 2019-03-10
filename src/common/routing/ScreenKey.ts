@@ -9,7 +9,6 @@ enum ScreenKey {
 	Leaderboards,
 	Password,
 	PrivacyPolicy,
-	Proof,
 	Read,
 	Settings,
 	Starred

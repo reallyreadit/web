@@ -150,24 +150,22 @@ export default class extends Root<Props, State, SharedState> {
 		super('browser-root_6tjc3j', BrowserClipboardService, props);
 
 		// screens
-		const commentsScreenFactory = createCommentsScreenFactory(ScreenKey.Comments, {
-			onCopyTextToClipboard: this._clipboard.copyText,
-			onCreateAbsoluteUrl: this._createAbsoluteUrl,
-			onGetArticle: this.props.serverApi.getArticle,
-			onGetVerificationTokenData: this.props.serverApi.getVerificationTokenData,
-			onGetComments: this.props.serverApi.getComments,
-			onPostComment: this._postComment,
-			onRateArticle: this._rateArticle,
-			onReadArticle: this._readArticle,
-			onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-			onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
-			onSetScreenState: this._setScreenState,
-			onShare: this._handleShareRequest,
-			onToggleArticleStar: this._toggleArticleStar
-		});
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
-			[ScreenKey.Comments]: commentsScreenFactory,
+			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetArticle: this.props.serverApi.getArticle,
+				onGetComments: this.props.serverApi.getComments,
+				onPostComment: this._postComment,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onSetScreenState: this._setScreenState,
+				onShare: this._handleShareRequest,
+				onToggleArticleStar: this._toggleArticleStar
+			}),
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -207,7 +205,6 @@ export default class extends Root<Props, State, SharedState> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler
 			}),
-			[ScreenKey.Proof]: commentsScreenFactory,
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onGetArticle: this.props.serverApi.getArticle,

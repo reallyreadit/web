@@ -100,15 +100,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.PrivacyPolicy
 	},
 	(function () {
-		const pathRegExp = /^\/proof\/([^/]+)$/;
-		return {
-			createUrl: params => `/proof/${params['token']}`,
-			getPathParams: path => ({ 'token': path.match(pathRegExp)[1] }),
-			pathRegExp,
-			screenKey: ScreenKey.Proof
-		} as Route<DialogKey, ScreenKey>;
-	})(),
-	(function () {
 		const pathRegExp = /^\/read\/([^/]+)\/([^/]+)$/;
 		return {
 			createUrl: params => `/read/${params['sourceSlug']}/${params['articleSlug']}`,

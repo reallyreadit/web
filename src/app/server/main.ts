@@ -25,6 +25,7 @@ import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import * as path from 'path';
+import VerificationTokenData from '../../common/models/VerificationTokenData';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -143,22 +144,6 @@ server = server.get('/assets/update/ContentScript.js', (req, res) => {
 		res.sendStatus(200);
 	}
 });
-// url migration
-server = server.get('/articles/:sourceSlug/:articleSlug/:commentId?', (req, res) => {
-	let params: { [key: string]: string } = {
-		'sourceSlug': req.params['sourceSlug'],
-		'articleSlug': req.params['articleSlug']
-	};
-	if (req.params['commentId']) {
-		params['commentId'] = req.params['commentId'];
-	}
-	redirect(
-		req,
-		res,
-		findRouteByKey(routes, ScreenKey.Comments)
-			.createUrl(params)
-	);
-});
 // authenticate
 server = server.use((req, res, next) => {
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
@@ -217,6 +202,44 @@ server = server.use((req, res, next) => {
 	} else {
 		redirect(req, res, findRouteByKey(routes, ScreenKey.Home).createUrl());
 	}
+});
+// url migration
+server = server.get('/articles/:sourceSlug/:articleSlug/:commentId?', (req, res) => {
+	let params: { [key: string]: string } = {
+		'sourceSlug': req.params['sourceSlug'],
+		'articleSlug': req.params['articleSlug']
+	};
+	if (req.params['commentId']) {
+		params['commentId'] = req.params['commentId'];
+	}
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Comments)
+			.createUrl(params)
+	);
+});
+server = server.get('/proof/:token', (req, res) => {
+	req.api
+		.fetchJson<VerificationTokenData>(
+			'GET',
+			{
+				path: '/Articles/VerifyProofToken',
+				data: { token: req.params['token'] }
+			}
+		)
+		.then(data => {
+			const slugParts = data.article.slug.split('_');
+			redirect(
+				req,
+				res,
+				findRouteByKey(routes, ScreenKey.Comments)
+					.createUrl({
+						'sourceSlug': slugParts[0],
+						'articleSlug': slugParts[1]
+					})
+			);
+		});
 });
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {

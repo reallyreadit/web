@@ -6,24 +6,6 @@
 .comments-screen_udh2l6 {
 	min-height: 100%;
 }
-.comments-screen_udh2l6 > .proof {
-	display: flex;
-	margin-bottom: 20px;
-	padding: 10px;
-	justify-content: center;
-}
-.comments-screen_udh2l6 > .proof > .reader {
-	text-align: center;
-	font-size: 20pt;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 46%;
-}
-.comments-screen_udh2l6 > .proof > .stamp > img {
-	display: block;
-	width: 140px;
-}
 .comments-screen_udh2l6 > .article-details_d2vnmv {
 	margin-bottom: 15px;
 }
@@ -39,17 +21,4 @@
 }
 .comments-screen_udh2l6 > .comment-box_kaqbc2 {
 	margin-bottom: 10px;
-}
-
-@media (max-width: 499px) {
-	.comments-screen_udh2l6 > .proof {
-		flex-flow: column;
-	}
-	.comments-screen_udh2l6 > .proof > .reader {
-		margin-bottom: 20px;
-		width: auto;
-	}
-	.comments-screen_udh2l6 > .proof > .stamp > img {
-		margin: 0 auto;
-	}
 }

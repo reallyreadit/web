@@ -12,7 +12,6 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import VerificationTokenData from '../../../../common/models/VerificationTokenData';
 import { clientTypeQueryStringKey } from '../../../../common/routing/queryString';
 import RatingSelector from '../../../../common/components/RatingSelector';
 import Rating from '../../../../common/models/Rating';
@@ -31,34 +30,28 @@ function findComment(id: string, comment: CommentThread) {
 }
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey]).getPathParams(location.path);
-	if ('token' in params) {
-		return {
-			proofToken: params['token']
-		};
-	} else {
-		let result = {
-			slug: params['sourceSlug'] + '_' + params['articleSlug']
-		} as {
-			commentId?: string,
-			slug: string
-		};
-		if ('commentId' in params) {
-			result.commentId = params['commentId'];
-		}
-		return result;
+	let result = {
+		slug: params['sourceSlug'] + '_' + params['articleSlug']
+	} as {
+		commentId?: string,
+		slug: string
+	};
+	if ('commentId' in params) {
+		result.commentId = params['commentId'];
 	}
+	return result;
 }
 interface Props {
+	article: Fetchable<UserArticle>,
 	location: RouteLocation,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetComments: FetchFunctionWithParams<{ proofToken?: string, slug?: string }, CommentThread[]>,
+	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	tokenData: Fetchable<VerificationTokenData>,
 	user: UserAccount | null
 }
 export default class extends React.Component<
@@ -99,7 +92,7 @@ export default class extends React.Component<
 	private readonly _noop = () => { };
 	private readonly _selectRating = (score: number) => {
 		return this.props.onRateArticle(
-			this.props.tokenData.value.article,
+			this.props.article.value,
 			score
 		);
 	};
@@ -115,27 +108,15 @@ export default class extends React.Component<
 	public render() {
 		const
 			isUserSignedIn = !!this.props.user,
-			isAllowedToPost = this.props.tokenData.value && isUserSignedIn && this.props.tokenData.value.article.isRead,
+			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead,
 			pathParams = getPathParams(this.props.location);
 		return (
 			<div className="comments-screen_udh2l6">
-				{this.props.tokenData.isLoading || this.state.comments.isLoading ?
+				{this.props.article.isLoading || this.state.comments.isLoading ?
 					<LoadingOverlay /> :
 					<>
-						{this.props.tokenData.value.readerName ?
-							<div className="proof">
-								<div className="reader">
-									<div className="text">
-										<strong>{this.props.tokenData.value.readerName} read</strong> this article.
-									</div>
-								</div>
-								<div className="stamp">
-									<img src="/images/proof-stamp.svg" alt="Proof Stamp" />
-								</div>
-							</div> :
-							null}
 						<ArticleDetails
-							article={this.props.tokenData.value.article}
+							article={this.props.article.value}
 							isUserSignedIn={isUserSignedIn}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -144,11 +125,11 @@ export default class extends React.Component<
 							onToggleStar={this.props.onToggleArticleStar}
 							onViewComments={this._noop}
 						/>
-						{this.props.tokenData.value.article.isRead ?
+						{this.props.article.value.isRead ?
 							<RatingSelector
 								{
 									...{
-										...this.props.tokenData.value.article,
+										...this.props.article.value,
 										onSelectRating: this._selectRating
 									}
 								}
@@ -156,7 +137,7 @@ export default class extends React.Component<
 							null}
 						<h3>Comments</h3>
 						<CommentBox
-							articleId={this.props.tokenData.value.article.id}
+							articleId={this.props.article.value.id}
 							isAllowedToPost={isAllowedToPost}
 							onPostComment={this._addComment}
 						/>
