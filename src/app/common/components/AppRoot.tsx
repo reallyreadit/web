@@ -259,19 +259,28 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			} else {
 				const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
 				if (route.screenKey === ScreenKey.Read) {
-					const pathParams = route.getPathParams(this.props.initialLocation.path);
+					const
+						pathParams = route.getPathParams(this.props.initialLocation.path),
+						slug = pathParams['sourceSlug']+ '_' + pathParams['articleSlug'];
 					screen = this._screenFactoryMap[ScreenKey.Comments].create({
 						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
 					});
 					// iOS versions < 2.1 crash when calling readArticle using only the slug
-					this.props.serverApi.getArticle(
-						{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
-						result => {
-							if (result.value) {
-								this.props.appApi.readArticle(result.value);
+					if (
+						!this.props.appApi.appVersion ||
+						this.props.appApi.appVersion.compareTo(new SemanticVersion('2.1.1')) < 0
+					) {
+						this.props.serverApi.getArticle(
+							{ slug },
+							result => {
+								if (result.value) {
+									this.props.appApi.readArticle(result.value);
+								}
 							}
-						}
-					);
+						);
+					} else {
+						this.props.appApi.readArticle({ slug });
+					}
 				} else {
 					screen = this
 						.getLocationDependentState(this.props.initialLocation)
@@ -397,19 +406,28 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		// check for read url
 		const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
 		if (route.screenKey === ScreenKey.Read && this.props.initialUser) {
-			const pathParams = route.getPathParams(this.props.initialLocation.path);
+			const
+				pathParams = route.getPathParams(this.props.initialLocation.path),
+				slug = pathParams['sourceSlug']+ '_' + pathParams['articleSlug'];
 			// iOS versions < 2.1 crash when calling readArticle using only the slug
-			// can't call serverApi for new request until it's been initialized
-			window.setTimeout(() => {
-				this.props.serverApi.getArticle(
-					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
-					result => {
-						if (result.value) {
-							this.props.appApi.readArticle(result.value);
+			if (
+				!this.props.appApi.appVersion ||
+				this.props.appApi.appVersion.compareTo(new SemanticVersion('2.1.1')) < 0
+			) {
+				// can't call serverApi for new request until it's been initialized
+				window.setTimeout(() => {
+					this.props.serverApi.getArticle(
+						{ slug },
+						result => {
+							if (result.value) {
+								this.props.appApi.readArticle(result.value);
+							}
 						}
-					}
-				);
-			}, 0);
+					);
+				}, 0);
+			} else {
+				this.props.appApi.readArticle({ slug });
+			}
 		}
 	}
 	public componentWillUnmount() {
