@@ -64,7 +64,7 @@ export default class extends Root<Props, State, SharedState> {
 	private readonly _registerExtensionChangeEventHandler = (handler: (isInstalled: boolean) => void) => {
 		return this.registerEventHandler(this._extensionChangeEventHandlers, handler);
 	};
-	private readonly _registerUserChangeEventHandler = (handler: (newUser: UserAccount) => void) => {
+	private readonly _registerUserChangeEventHandler = (handler: (newUser: UserAccount | null) => void) => {
 		return this.registerEventHandler(this._userChangeEventHandlers, handler);
 	};
 
@@ -153,17 +153,23 @@ export default class extends Root<Props, State, SharedState> {
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
+				onInstallExtension: this._installExtension,
 				onPostComment: this._postComment,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShowCreateAccountDialog: this._openCreateAccountDialog,
+				onShowSignInDialog: this._openSignInDialog,
+				onViewHomeScreen: this._viewHome,
 				onToggleArticleStar: this._toggleArticleStar
 			}),
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
@@ -320,10 +326,16 @@ export default class extends Root<Props, State, SharedState> {
 			this._updateCheckInterval = null;
 		}
 	}
+	protected getSharedState() {
+		return {
+			isExtensionInstalled: this.state.isExtensionInstalled,
+			user: this.state.user
+		};
+	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
-	protected onUserChanged(userAccount: UserAccount, source: EventSource) {
+	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) {
 		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
 		if (screenAuthLevel != null && (!userAccount || userAccount.role !== screenAuthLevel)) {
 			this.setState({
@@ -360,25 +372,26 @@ export default class extends Root<Props, State, SharedState> {
 		window.location.href = '/';
 	}
 	protected renderBody() {
-		const screen = this.state.screens[0];
+		const
+			screen = this.state.screens[0],
+			sharedState = this.getSharedState();
 		return (
 			<>
 				{screen.key === ScreenKey.Read ?
-					this._screenFactoryMap[screen.key].render(screen, {
-						isExtensionInstalled: this.state.isExtensionInstalled,
-						user: this.state.user
-					}) :
+					this._screenFactoryMap[screen.key].render(screen, sharedState) :
 					<>
-						<Header
-							isUserSignedIn={!!this.state.user}
-							onOpenMenu={this._openMenu}
-							onShowCreateAccountDialog={this._openCreateAccountDialog}
-							onShowSignInDialog={this._openSignInDialog}
-							onViewHome={this._viewHome}
-							showNewReplyIndicator={this.state.showNewReplyIndicator}
-						/>
+						{screen.renderTemplate !== false ?
+							<Header
+								isUserSignedIn={!!this.state.user}
+								onOpenMenu={this._openMenu}
+								onShowCreateAccountDialog={this._openCreateAccountDialog}
+								onShowSignInDialog={this._openSignInDialog}
+								onViewHome={this._viewHome}
+								showNewReplyIndicator={this.state.showNewReplyIndicator}
+							/> :
+							null}
 						<main>
-							{this.state.user ?
+							{this.state.user && screen.renderTemplate !== false ?
 								<NavBar
 									onViewHistory={this._viewHistory}
 									onViewHome={this._viewHome}
@@ -389,10 +402,7 @@ export default class extends Root<Props, State, SharedState> {
 								/> :
 								null}
 							<div className="screen">
-								{this._screenFactoryMap[screen.key].render(screen, {
-									isExtensionInstalled: this.state.isExtensionInstalled,
-									user: this.state.user
-								})}
+								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
 								{!this.state.user ?
 									<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
 									null}

@@ -42,13 +42,14 @@ export interface Screen<T = any> {
 	componentState?: T,
 	key: ScreenKey,
 	location?: RouteLocation,
+	renderTemplate?: boolean,
 	title?: string,
 	titleContent?: React.ReactNode
 }
-export interface ScreenFactory<TRootState> {
-	create: (location: RouteLocation) => Screen,
-	render: (screenState: Screen, rootState: TRootState) => React.ReactNode,
-	renderHeaderContent?: (screenState: Screen, rootState: TRootState) => React.ReactNode
+export interface ScreenFactory<TSharedState> {
+	create: (location: RouteLocation, sharedState: TSharedState) => Screen,
+	render: (screenState: Screen, sharedState: TSharedState) => React.ReactNode,
+	renderHeaderContent?: (screenState: Screen, sharedState: TSharedState) => React.ReactNode
 }
 export interface State extends ToasterState {
 	dialog: React.ReactNode,
@@ -403,7 +404,7 @@ export default abstract class Root<
 		const
 			url = findRouteByKey(routes, key).createUrl(urlParams),
 			[path, queryString] = url.split('?'),
-			screen = this._screenFactoryMap[key].create({ path, queryString });
+			screen = this._screenFactoryMap[key].create({ path, queryString }, this.getSharedState());
 		if (title) {
 			screen.title = title;
 		}
@@ -415,9 +416,10 @@ export default abstract class Root<
 			dialog: route.dialogKey != null ?
 				this._dialogCreatorMap[route.dialogKey](location) :
 				null,
-			screen: this._screenFactoryMap[route.screenKey].create(location)
+			screen: this._screenFactoryMap[route.screenKey].create(location, this.getSharedState())
 		};
 	}
+	protected abstract getSharedState(): TSharedState;
 	protected onTitleChanged(title: string) { }
 	protected onUpdateAvailable() { }
 	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) { }

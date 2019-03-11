@@ -7,9 +7,7 @@ import CommentList from '../controls/comments/CommentList';
 import CommentBox from '../controls/comments/CommentBox';
 import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
-import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { clientTypeQueryStringKey } from '../../../../common/routing/queryString';
@@ -18,7 +16,7 @@ import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 
-function findComment(id: string, comment: CommentThread) {
+export function findComment(id: string, comment: CommentThread) {
 	if (comment.id === id) {
 		return comment;
 	}
@@ -41,54 +39,36 @@ export function getPathParams(location: RouteLocation) {
 	}
 	return result;
 }
-interface Props {
+export function mergeComment(comment: CommentThread, comments: CommentThread[]) {
+	if (comment.parentCommentId) {
+		let parent: CommentThread = null;
+		for (let i = 0; parent == null && i < comments.length; i++) {
+			if (comments[i].id === comment.parentCommentId) {
+				parent = comments[i];
+			} else {
+				parent = findComment(comment.parentCommentId, comments[i]);
+			}
+		}
+		parent.children.push(comment);
+	} else {
+		comments.unshift(comment);
+	}
+	return comments;
+}
+export interface Props {
 	article: Fetchable<UserArticle>,
-	location: RouteLocation,
+	comments: Fetchable<CommentThread[]>,
+	highlightedCommentId: string | null,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
+	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	user: UserAccount | null
 }
-export default class extends React.Component<
-	Props,
-	{ comments: Fetchable<CommentThread[]> }
-> {
-	private readonly _addComment = (text: string, articleId: number) => {
-		return this.props
-			.onPostComment(text, articleId)
-			.then(comment => {
-				this.setState({ comments: { ...this.state.comments, value: [comment, ...this.state.comments.value] } });
-			});
-	};
-	private readonly _addReply = (text: string, articleId: number, parentCommentId?: string) => {
-		return this.props
-			.onPostComment(text, articleId, parentCommentId)
-			.then(comment => {
-				const comments = this.state.comments.value.slice();
-				let parent: CommentThread = null;
-				for (let i = 0; parent == null && i < comments.length; i++) {
-					if (comments[i].id === comment.parentCommentId) {
-						parent = comments[i];
-					} else {
-						parent = findComment(comment.parentCommentId, comments[i]);
-					}
-				}
-				parent.children.push(comment);
-				this.setState({ comments: { ...this.state.comments, value: comments } });
-			});
-	};
-	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _loadComments = () => {
-		return this.props.onGetComments(
-			getPathParams(this.props.location),
-			this._asyncTracker.addCallback(comments => { this.setState({ comments }); })
-		);
-	};
+export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => { };
 	private readonly _selectRating = (score: number) => {
 		return this.props.onRateArticle(
@@ -96,23 +76,13 @@ export default class extends React.Component<
 			score
 		);
 	};
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			comments: this._loadComments()
-		};
-	}
-	public componentWillUnmount() {
-		this._asyncTracker.cancelAll();
-	}
 	public render() {
 		const
 			isUserSignedIn = !!this.props.user,
-			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead,
-			pathParams = getPathParams(this.props.location);
+			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead;
 		return (
 			<div className="comments-screen_udh2l6">
-				{this.props.article.isLoading || this.state.comments.isLoading ?
+				{this.props.article.isLoading || this.props.comments.isLoading ?
 					<LoadingOverlay /> :
 					<>
 						<ArticleDetails
@@ -139,18 +109,18 @@ export default class extends React.Component<
 						<CommentBox
 							articleId={this.props.article.value.id}
 							isAllowedToPost={isAllowedToPost}
-							onPostComment={this._addComment}
+							onPostComment={this.props.onPostComment}
 						/>
-						{this.state.comments.value ?
-							this.state.comments.value.length ?
+						{this.props.comments.value ?
+							this.props.comments.value.length ?
 								<CommentList
-									comments={this.state.comments.value}
-									highlightedCommentId={'commentId' in pathParams ? pathParams['commentId'] : null}
+									comments={this.props.comments.value}
+									highlightedCommentId={this.props.highlightedCommentId}
 									isAllowedToPost={isAllowedToPost}
 									mode="reply"
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onPostComment={this._addReply}
+									onPostComment={this.props.onPostComment}
 									onShare={this.props.onShare}
 								/> :
 								<span>No comments found! (Post one!)</span> :

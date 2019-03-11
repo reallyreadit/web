@@ -1,0 +1,106 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/OnboardingScreen
+	cssComponentId: onboarding-screen_ny0axb
+*/
+
+.onboarding-screen_ny0axb {
+	display: flex;
+	height: 100%;
+	padding-bottom: 90px;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	font-size: 16px;
+}
+.onboarding-screen_ny0axb > .content {
+	flex: 0 0 auto;
+	padding: 10px;
+	text-align: center;
+}
+.onboarding-screen_ny0axb > .content > .logo {
+	margin-bottom: 40px;
+}
+.onboarding-screen_ny0axb > .content > .logo > a {
+	display: block;
+}
+.onboarding-screen_ny0axb > .content > .logo > a > svg {
+	fill: #666;
+	height: 26px;
+	display: block;
+	margin: 0 auto;
+}
+.onboarding-screen_ny0axb > .content > .article {
+	margin-bottom: 40px;
+}
+.onboarding-screen_ny0axb > .content > .article > strong {
+	display: block;
+	margin-top: 10px;
+	font-size: 18px;
+}
+.onboarding-screen_ny0axb > .content > a {
+	text-decoration: underline;
+	cursor: pointer;
+}
+.onboarding-screen_ny0axb > .content > .download > a {
+	display: block;
+}
+.onboarding-screen_ny0axb > .content > .download > a > img {
+	display: block;
+	margin: 20px auto 0 auto;
+}
+.onboarding-screen_ny0axb > .content > .download.chrome > a > img {
+	width: 250px;
+}
+.onboarding-screen_ny0axb > .content > .download.ios > a > img {
+	width: 175px;
+}
+.onboarding-screen_ny0axb > .content > .download > .bypass {
+	margin-top: 20px;
+}
+.onboarding-screen_ny0axb > .content > .download > .bypass > a {
+	color: #666;
+	font-size: 13px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.onboarding-screen_ny0axb > .content > .authenticate > .buttons {
+	margin: 20px auto 0 auto;
+}
+.onboarding-screen_ny0axb > .content > .authenticate > .buttons > button {
+	height: 40px;
+	border: none;
+	outline: none;
+	padding: 0 20px;
+	background-color: transparent;
+	cursor: pointer;
+	font-size: 18px;
+}
+.onboarding-screen_ny0axb > .content > .authenticate > .buttons > button:not(.loud):hover {
+	background-color: #eaeaea;
+}
+.onboarding-screen_ny0axb > .content > .authenticate > .buttons > button:not(:last-child) {
+	margin-right: 20px;
+}
+.onboarding-screen_ny0axb > .content > .authenticate > .buttons > .loud {
+	background-color: black;
+	color: white;
+}
+.onboarding-screen_ny0axb > .content > .unsupported > .badges {
+	display: flex;
+	margin: 20px auto;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.onboarding-screen_ny0axb > .content > .unsupported > .badges > a {
+	margin: 0 10px 10px 10px;
+}
+.onboarding-screen_ny0axb > .content > .unsupported > .badges > a > img {
+	display: block;
+	height: 55px;
+}
+.onboarding-screen_ny0axb > .content > .unsupported > a {
+	color: #666;
+	font-size: 13px;
+	text-decoration: underline;
+	cursor: pointer;
+}

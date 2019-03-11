@@ -3,35 +3,88 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
-import CommentsScreen, { getPathParams } from '../screens/CommentsScreen';
-import { Screen, SharedState } from '../Root';
+import CommentsScreen, { getPathParams, mergeComment, Props as CommentScreenProps } from '../screens/CommentsScreen';
+import { Screen } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import Rating from '../../../../common/models/Rating';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
-import ShareData from '../../../../common/sharing/ShareData';
+import { SharedState } from '../BrowserRoot';
+import { formatFetchable } from '../../../../common/format';
+import OnboardingScreen from './OnboardingScreen';
 
-interface Props {
-	article: Fetchable<UserArticle>,
-	location: RouteLocation,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
-	onRegisterUserChangeHandler: (handler: () => void) => Function,
-	onReloadArticle: (params: { slug: string }) => void,
-	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
-	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	user: UserAccount | null
+function shouldShowComments(
+	highlightedCommentId: string | null,
+	user: UserAccount | null,
+	isExtensionInstalled: boolean | null,
+	hasDeclinedExtensionInstallPrompt?: boolean
+) {
+	return (
+		!highlightedCommentId ||
+		(
+			!!user &&
+			(
+				isExtensionInstalled === true ||
+				hasDeclinedExtensionInstallPrompt === true
+			)
+		)
+	);
 }
-class BrowserCommentsScreen extends React.Component<Props> {
+interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'comments' | 'onPostComment'>> {
+	articleSlug: string,
+	isBrowserCompatible: boolean | null,
+	isExtensionInstalled: boolean | null,
+	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
+	onInstallExtension: () => void,
+	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
+	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
+	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
+	onReloadArticle: (slug: string) => void,
+	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void,
+	onShowCreateAccountDialog: () => void,
+	onShowSignInDialog: () => void,
+	onViewHomeScreen: () => void
+}
+class BrowserCommentsScreen extends React.Component<
+	Props,
+	{
+		comments: Fetchable<CommentThread[]>,
+		hasDeclinedExtensionInstallPrompt: boolean
+	}
+> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _declineExtensionInstallLink = (
+		<a
+			onClick={
+				() => {
+					this.setState({ hasDeclinedExtensionInstallPrompt: true });
+					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+						currentState.renderTemplate = shouldShowComments(
+							this.props.highlightedCommentId,
+							this.props.user,
+							this.props.isExtensionInstalled,
+							true
+						);
+					}));
+				}
+			}
+		>
+			Skip
+		</a>
+	);
+	private readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
+		return this.props
+			.onPostComment(text, articleId, parentCommentId)
+			.then(comment => {
+				this.setState({
+					comments: {
+						...this.state.comments,
+						value: mergeComment(comment, this.state.comments.value.slice())
+					}
+				});
+			});
+	};
 	constructor(props: Props) {
 		super(props);
 		this._asyncTracker.addCancellationDelegate(
@@ -42,33 +95,72 @@ class BrowserCommentsScreen extends React.Component<Props> {
 					}));
 				}
 			}),
-			props.onRegisterUserChangeHandler(() => {
-				this.props.onReloadArticle(getPathParams(props.location));
+			props.onRegisterExtensionChangeHandler(isExtensionInstalled => {
+				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+					currentState.renderTemplate = shouldShowComments(
+						this.props.highlightedCommentId,
+						this.props.user,
+						isExtensionInstalled,
+						this.state.hasDeclinedExtensionInstallPrompt
+					);
+				}));
+			}),
+			props.onRegisterUserChangeHandler(user => {
+				this.props.onReloadArticle(this.props.articleSlug);
+				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+					currentState.renderTemplate = shouldShowComments(
+						this.props.highlightedCommentId,
+						user,
+						this.props.isExtensionInstalled,
+						this.state.hasDeclinedExtensionInstallPrompt
+					);
+				}));
 			})
 		);
+		this.state = {
+			comments: this.props.onGetComments(
+				{ slug: this.props.articleSlug },
+				this._asyncTracker.addCallback(comments => {
+					this.setState({ comments });
+				})
+			),
+			hasDeclinedExtensionInstallPrompt: false
+		};
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (
-			<CommentsScreen
-				article={this.props.article}
-				location={this.props.location}
-				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onGetComments={this.props.onGetComments}
-				onPostComment={this.props.onPostComment}
-				onRateArticle={this.props.onRateArticle}
-				onReadArticle={this.props.onReadArticle}
-				onShare={this.props.onShare}
-				onToggleArticleStar={this.props.onToggleArticleStar}
-				user={this.props.user}
-			/>
+			shouldShowComments(
+				this.props.highlightedCommentId,
+				this.props.user,
+				this.props.isExtensionInstalled,
+				this.state.hasDeclinedExtensionInstallPrompt
+			) ?
+				<CommentsScreen
+					{
+						...{
+							...this.props,
+							comments: this.state.comments,
+							onPostComment: this._postComment
+						}
+					}
+				/> :
+				<OnboardingScreen
+					{
+						...{
+							...this.props,
+							description: formatFetchable(this.props.article, article => `Comment on article: ${article.title}`, 'Loading...'),
+							extensionBypass: this._declineExtensionInstallLink,
+							unsupportedBypass: this._declineExtensionInstallLink
+						}
+					}
+				/>
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'onReloadArticle' | 'onSetScreenState' | 'user'>> & {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'isExtensionInstalled' | 'onReloadArticle' | 'onSetScreenState' | 'user'>> & {
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 };
@@ -76,15 +168,15 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 	const setScreenState = (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => {
 		deps.onSetScreenState(key, getNextState);
 	};
-	const reloadArticle = (params: { slug: string }) => {
-		deps.onGetArticle(params, article => {
+	const reloadArticle = (slug: string) => {
+		deps.onGetArticle({ slug }, article => {
 			setScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
 				currentState.componentState = article;
 			}));
 		});
 	};
 	return {
-		create: (location: RouteLocation) => {
+		create: (location: RouteLocation, sharedState: SharedState) => {
 			const
 				pathParams = getPathParams(location),
 				article = deps.onGetArticle({ slug: pathParams.slug }, article => {
@@ -94,30 +186,30 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 					}));
 				});
 			return {
+				componentState: article,
 				key,
 				location,
-				componentState: article,
-				title: article.value ? article.value.title : 'Loading...'
+				renderTemplate: shouldShowComments(pathParams.commentId, sharedState.user, sharedState.isExtensionInstalled),
+				title: formatFetchable(article, article => article.title, 'Loading...')
 			};
 		},
-		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => (
-			<BrowserCommentsScreen
-				article={state.componentState}
-				location={state.location}
-				onCopyTextToClipboard={deps.onCopyTextToClipboard}
-				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
-				onGetComments={deps.onGetComments}
-				onPostComment={deps.onPostComment}
-				onRateArticle={deps.onRateArticle}
-				onReadArticle={deps.onReadArticle}
-				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
-				onRegisterUserChangeHandler={deps.onRegisterUserChangeHandler}
-				onReloadArticle={reloadArticle}
-				onSetScreenState={setScreenState}
-				onShare={deps.onShare}
-				onToggleArticleStar={deps.onToggleArticleStar}
-				user={sharedState.user}
-			/>
-		)
+		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => {
+			const pathParams = getPathParams(state.location);
+			return (
+				<BrowserCommentsScreen
+					{
+						...{
+							...deps,
+							...sharedState,
+							article: state.componentState,
+							articleSlug: pathParams.slug,
+							highlightedCommentId: pathParams.commentId,
+							onReloadArticle: reloadArticle,
+							onSetScreenState: setScreenState
+						}
+					}
+				/>
+			);
+		}
 	};
 }

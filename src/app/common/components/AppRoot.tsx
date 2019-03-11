@@ -197,9 +197,12 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			if (props.initialUser) {
 				this._hasProcessedInitialLocation = true;
 				screens = [
-					this._screenFactoryMap[ScreenKey.Comments].create({
-						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(route.getPathParams(props.initialLocation.path))
-					})
+					this._screenFactoryMap[ScreenKey.Comments].create(
+						{
+							path: findRouteByKey(routes, ScreenKey.Comments).createUrl(route.getPathParams(props.initialLocation.path))
+						},
+						this.getSharedState()
+					)
 				];
 			} else {
 				this._hasProcessedInitialLocation = false;
@@ -246,6 +249,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			screens
 		});
 	}
+	protected getSharedState() {
+		return { user: this.state.user };
+	}
 	protected onUserChanged(userAccount: UserAccount) {
 		if (userAccount) {
 			let screen: Screen;
@@ -259,9 +265,12 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 					const
 						pathParams = route.getPathParams(this.props.initialLocation.path),
 						slug = pathParams['sourceSlug']+ '_' + pathParams['articleSlug'];
-					screen = this._screenFactoryMap[ScreenKey.Comments].create({
-						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
-					});
+					screen = this._screenFactoryMap[ScreenKey.Comments].create(
+						{
+							path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
+						},
+						this.getSharedState()
+					);
 					// iOS versions < 2.1 crash when calling readArticle using only the slug
 					if (
 						!this.props.appApi.appVersion ||
@@ -306,11 +315,11 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	}
 	protected renderBody() {
 		const
-			rootState = { user: this.state.user },
+			sharedState = this.getSharedState(),
 			topScreen = this.state.screens[this.state.screens.length - (this.state.isPoppingScreen ? 2 : 1)];
 		let headerContent: React.ReactNode | undefined;
 		if (topScreen && this._screenFactoryMap[topScreen.key].renderHeaderContent) {
-			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, rootState);
+			headerContent = this._screenFactoryMap[topScreen.key].renderHeaderContent(topScreen, sharedState);
 		}
 		return (
 			<>
@@ -332,7 +341,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 										key={screen.key}
 										onAnimationEnd={this._handleScreenAnimationEnd}
 									>
-										{this._screenFactoryMap[screen.key].render(screen, rootState)}
+										{this._screenFactoryMap[screen.key].render(screen, sharedState)}
 									</li>
 								))}
 							</ol>
