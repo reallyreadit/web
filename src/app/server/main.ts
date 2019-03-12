@@ -404,7 +404,6 @@ server = server.get('/*', (req, res) => {
 				version: version.app,
 				webServerEndpoint: config.webServer
 			},
-			iosAppId: config.iosAppId,
 			title: browserApi.getTitle()
 		}));
 	});
