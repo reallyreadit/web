@@ -23,7 +23,6 @@
     	contentRootPath: 'bin/dev/app/browser',
     	cookieDomain: 'dev.reallyread.it',
     	cookieName: 'devSessionKey',
-    	enableAnalytics: false,
     	enableCaptcha: false,	    
     	extensionId: 'YOUR-LOCAL-EXTENSION-ID-HERE',
     	logStream: null as {

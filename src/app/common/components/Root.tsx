@@ -107,18 +107,7 @@ export default abstract class Root<
 
 	// comments
 	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
-		return this.props.serverApi
-			.postComment(text, articleId, parentCommentId)
-			.then(comment => {
-				ga('send', {
-					hitType: 'event',
-					eventCategory: 'Comment',
-					eventAction: comment.parentCommentId ? 'reply' : 'post',
-					eventLabel: comment.articleTitle,
-					eventValue: comment.text.length
-				});
-				return comment;
-			});
+		return this.props.serverApi.postComment(text, articleId, parentCommentId);
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
 
@@ -227,12 +216,6 @@ export default abstract class Root<
 		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse, DateTime.local().zoneName)
 			.then(userAccount => {
-				ga('send', {
-					hitType: 'event',
-					eventCategory: 'UserAccount',
-					eventAction: 'create',
-					eventLabel: userAccount.name
-				});
 				this.onUserChanged(userAccount, EventSource.Original);
 			});
 	};

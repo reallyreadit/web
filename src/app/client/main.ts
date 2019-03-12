@@ -18,15 +18,11 @@ localStorage.removeItem('userAccount');
 
 // clean up cookies
 jsCookie.remove('hideHero');
+jsCookie.remove('_ga');
+jsCookie.remove('_gat');
+jsCookie.remove('_gid');
 
 const initData = window.reallyreadit.app.initData;
-
-ga('create', {
-	trackingId: 'UA-101617933-1',
-	cookieDomain: 'auto',
-	userId: initData.userAccount ? initData.userAccount.id : null
-});
-ga('send', 'pageview');
 
 const serverApi = new ServerApi(
 	initData.apiServerEndpoint,

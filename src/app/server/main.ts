@@ -391,7 +391,6 @@ server = server.get('/*', (req, res) => {
 		// return the content and init data
 		res.send(renderHtml({
 			content,
-			enableAnalytics: config.enableAnalytics,
 			extensionId: config.extensionId,
 			initData: {
 				apiServerEndpoint: config.apiServer,
