@@ -11,6 +11,7 @@ import routes from '../../../../../common/routing/routes';
 import ScreenKey from '../../../../../common/routing/ScreenKey';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
+import AsyncTracker from '../../../../../common/AsyncTracker';
 
 interface Props {
 	comment: CommentThread,
@@ -25,20 +26,24 @@ interface Props {
 	parentCommentId?: string
 }
 export default class CommentDetails extends React.Component<Props, { showCommentBox: boolean }> {
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
 	private _showCommentBox = () => this.setState({ showCommentBox: true });
 	private _hideCommentBox = () => this.setState({ showCommentBox: false });
 	private _addComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props
 			.onPostComment(text, articleId, parentCommentId)
-			.then(() => {
+			.then(this._asyncTracker.addCallback(() => {
 				this.setState({ showCommentBox: false });
-			});
+			}));
 	};
 	private _viewThread = () => this.props.onViewThread(this.props.comment);
 	constructor(props: Props) {
 		super(props);
 		this.state = { showCommentBox: false };
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
 	}
 	public render(): JSX.Element {
 		const

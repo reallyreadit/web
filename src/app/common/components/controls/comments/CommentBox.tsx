@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Button from '../../../../../common/components/Button';
 import classNames from 'classnames';
+import AsyncTracker from '../../../../../common/AsyncTracker';
 
 interface Props {
 	articleId: number,
@@ -9,7 +10,7 @@ interface Props {
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	parentCommentId?: string
 }
-export default class extends React.PureComponent<Props, {
+export default class CommentBox extends React.PureComponent<Props, {
 	commentText: string,
 	hasContent: boolean,
 	hasFocus: boolean,
@@ -17,6 +18,7 @@ export default class extends React.PureComponent<Props, {
 	isResizing: boolean,
 	isPosting: boolean
 }> {
+	private readonly _asyncTracker = new AsyncTracker();
 	private _updateCommentText = (e: React.FormEvent<HTMLTextAreaElement>) => this.setState({
 		commentText: e.currentTarget.value,
 		hasContent: e.currentTarget.value.trim() !== ''
@@ -46,13 +48,13 @@ export default class extends React.PureComponent<Props, {
 		this.setState({ isPosting: true });
 		this.props
 			.onPostComment(this.state.commentText, this.props.articleId, this.props.parentCommentId)
-			.then(() => {
+			.then(this._asyncTracker.addCallback(() => {
 				this.setState({
 					commentText: '',
 					hasContent: false,
 					isPosting: false
 				});
-			});
+			}));
 	};
 	private _cancel = () => {
 		this.setState({
@@ -73,6 +75,9 @@ export default class extends React.PureComponent<Props, {
 			isResizing: false,
 			isPosting: false
 		};
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		const textareaStyle: { [key: string]: string } = {};

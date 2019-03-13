@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
-import CommentsScreen, { getPathParams, mergeComment, Props as CommentScreenProps } from '../screens/CommentsScreen';
+import CommentsScreen, { getPathParams, mergeComment, Props as CommentScreenProps, findComment } from '../screens/CommentsScreen';
 import { Screen } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
@@ -131,33 +131,48 @@ class BrowserCommentsScreen extends React.Component<
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		return (
+		let screen: React.ReactNode;
+		if (
 			shouldShowComments(
 				this.props.highlightedCommentId,
 				this.props.user,
 				this.props.isExtensionInstalled,
 				this.state.hasDeclinedExtensionInstallPrompt
-			) ?
+			)
+		) {
+			screen = (
 				<CommentsScreen
 					{
-						...{
-							...this.props,
-							comments: this.state.comments,
-							onPostComment: this._postComment
-						}
+					...{
+						...this.props,
+						comments: this.state.comments,
+						onPostComment: this._postComment
 					}
-				/> :
-				<OnboardingScreen
-					{
-						...{
-							...this.props,
-							description: formatFetchable(this.props.article, article => `Comment on article: ${article.title}`, 'Loading...'),
-							extensionBypass: this._declineExtensionInstallLink,
-							unsupportedBypass: this._declineExtensionInstallLink
-						}
 					}
 				/>
-		);
+			);
+		} else {
+			let description: string;
+			if (this.props.article.value && this.state.comments.value) {
+				const comment = findComment(this.props.highlightedCommentId, this.state.comments.value);
+				description = `Taking you to ${comment.userAccount}'${comment.userAccount.endsWith('s') ? '' : 's'} comment on ${comment.articleTitle}`;
+			} else {
+				description = 'Loading...';
+			}
+			screen = (
+				<OnboardingScreen
+					{
+					...{
+						...this.props,
+						description,
+						extensionBypass: this._declineExtensionInstallLink,
+						unsupportedBypass: this._declineExtensionInstallLink
+					}
+					}
+				/>
+			);
+		}
+		return screen;
 	}
 }
 type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'isExtensionInstalled' | 'onReloadArticle' | 'onSetScreenState' | 'user'>> & {

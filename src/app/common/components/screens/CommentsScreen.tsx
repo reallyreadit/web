@@ -16,15 +16,17 @@ import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 
-export function findComment(id: string, comment: CommentThread) {
-	if (comment.id === id) {
-		return comment;
+export function findComment(id: string, threads: CommentThread[]): CommentThread | null {
+	for (const thread of threads) {
+		if (thread.id === id) {
+			return thread;
+		}
+		const match = findComment(id, thread.children);
+		if (match) {
+			return match;
+		}
 	}
-	let match: CommentThread = null;
-	for (let i = 0; match == null && i < comment.children.length; i++) {
-		match = findComment(id, comment.children[i]);
-	}
-	return match;
+	return null;
 }
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey]).getPathParams(location.path);
@@ -41,15 +43,9 @@ export function getPathParams(location: RouteLocation) {
 }
 export function mergeComment(comment: CommentThread, comments: CommentThread[]) {
 	if (comment.parentCommentId) {
-		let parent: CommentThread = null;
-		for (let i = 0; parent == null && i < comments.length; i++) {
-			if (comments[i].id === comment.parentCommentId) {
-				parent = comments[i];
-			} else {
-				parent = findComment(comment.parentCommentId, comments[i]);
-			}
-		}
-		parent.children.push(comment);
+		findComment(comment.parentCommentId, comments)
+			.children
+			.unshift(comment);
 	} else {
 		comments.unshift(comment);
 	}
