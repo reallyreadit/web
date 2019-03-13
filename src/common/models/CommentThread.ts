@@ -5,7 +5,6 @@ export default interface CommentThread {
 	articleId: number,
 	articleTitle: string,
 	articleSlug: string,
-	userAccountId: number,
 	userAccount: string,
 	children: CommentThread[],
 	dateRead: string,
