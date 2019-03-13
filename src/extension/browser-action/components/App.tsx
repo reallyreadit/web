@@ -12,10 +12,10 @@ import DialogKey from '../../../common/routing/DialogKey';
 import UserArticle from '../../../common/models/UserArticle';
 import Toaster, { Toast } from '../../../common/components/Toaster';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import AsyncTracker from '../../../common/AsyncTracker';
 import ShareChannel from '../../../common/sharing/ShareChannel';
+import ClipboardService from '../../../common/services/ClipboardService';
 
 export default class extends React.Component<{}, ExtensionState & { toasts: Toast[] }> {
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
@@ -48,9 +48,11 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
 
 	// clipboard
-	private readonly _clipboard = new BrowserClipboardService((content, intent) => {
-		this._toaster.addToast(content, intent);
-	});
+	private readonly _clipboard = new ClipboardService(
+		(content, intent) => {
+			this._toaster.addToast(content, intent);
+		}
+	);
 
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => `${config.web.protocol}://${config.web.host}${path}`;

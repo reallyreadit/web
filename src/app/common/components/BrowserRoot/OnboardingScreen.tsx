@@ -11,6 +11,7 @@ interface Props {
 	extensionBypass?: React.ReactNode,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
+	onCopyTextToClipboard: (text: string) => void,
 	onInstallExtension: () => void,
 	onViewHomeScreen: () => void,
 	onShowCreateAccountDialog: () => void,
@@ -19,6 +20,15 @@ interface Props {
 	user: UserAccount |  null
 }
 export default class OnboardingScreen extends React.Component<Props> {
+	private readonly _downloadApp = () => {
+		this.props.onCopyTextToClipboard(
+			'com.readup.nativeClientClipboardReferrer:' +
+			JSON.stringify({
+				path: window.location.pathname,
+				timestamp: Date.now()
+			})
+		);
+	};
 	private readonly _homeScreenUrl = findRouteByKey(routes, ScreenKey.Home).createUrl();
 	private readonly _viewHomeScreen = (ev: React.MouseEvent) => {
 		ev.preventDefault();
@@ -46,7 +56,10 @@ export default class OnboardingScreen extends React.Component<Props> {
 							</div>
 							{/(iPhone|iPad)/i.test(window.navigator.userAgent) ?
 								<div className="download ios">
-									<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+									<a
+										href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
+										onClick={this._downloadApp}
+									>
 										Download the app to continue
 										<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
 									</a>

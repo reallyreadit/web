@@ -292,7 +292,7 @@ export default abstract class Root<
 		this.reloadWindow();
 	};
 
-	constructor(className: ClassValue, clipboard: new (onAddToast: (content: string, intent: Intent) => void) => ClipboardService, props: P) {
+	constructor(className: ClassValue, props: P) {
 		super(props);
 		this._concreteClassName = className;
 
@@ -303,9 +303,11 @@ export default abstract class Root<
 		} as S;
 
 		// clipboard
-		this._clipboard = new clipboard((content, intent) => {
-			this._toaster.addToast(content, intent);
-		});
+		this._clipboard = new ClipboardService(
+			(content, intent) => {
+				this._toaster.addToast(content, intent);
+			}
+		);
 
 		// delegates
 		this._readArticle = this.readArticle.bind(this);

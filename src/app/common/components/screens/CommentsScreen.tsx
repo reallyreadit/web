@@ -59,7 +59,7 @@ export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,

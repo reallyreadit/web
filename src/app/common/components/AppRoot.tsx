@@ -19,7 +19,6 @@ import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
-import AppClipboardService from '../../../common/services/AppClipboardService';
 import routes from '../../../common/routing/routes';
 import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
@@ -131,7 +130,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	};
 
 	constructor(props: Props) {
-		super('app-root_vc3j5h', AppClipboardService, props);
+		super('app-root_vc3j5h', props);
 
 		// screens
 		this._screenFactoryMap = {

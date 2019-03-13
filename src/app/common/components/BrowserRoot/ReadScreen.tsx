@@ -17,6 +17,7 @@ interface Props {
 	articleSlug: string,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
+	onCopyTextToClipboard: (text: string) => void,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 	onInstallExtension: () => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,

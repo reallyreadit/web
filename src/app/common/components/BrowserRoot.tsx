@@ -23,7 +23,6 @@ import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import UpdateToast from './UpdateToast';
 import Footer from './BrowserRoot/Footer';
-import BrowserClipboardService from '../../../common/services/BrowserClipboardService';
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
@@ -147,7 +146,7 @@ export default class extends Root<Props, State, SharedState> {
 	};
 
 	constructor(props: Props) {
-		super('browser-root_6tjc3j', BrowserClipboardService, props);
+		super('browser-root_6tjc3j', props);
 
 		// screens
 		this._screenFactoryMap = {
@@ -213,6 +212,7 @@ export default class extends Root<Props, State, SharedState> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				onCopyTextToClipboard: this._clipboard.copyText,
 				onGetArticle: this.props.serverApi.getArticle,
 				onInstallExtension: this._installExtension,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
