@@ -4,6 +4,7 @@ import { createQueryString } from '../routing/queryString';
 import classNames from 'classnames';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
+import { truncateText } from '../format';
 
 export enum MenuPosition {
 	BottomLeft = 'bottom,left',
@@ -62,7 +63,7 @@ export default class ShareControl extends React.PureComponent<
 	};
 	private readonly _openTweetComposer = () => {
 		const queryString = createQueryString({
-			'text': this.props.data.subject,
+			'text': truncateText(this.props.data.text, 280 - 25),
 			'url': this.props.data.url
 		});
 		window.open(
@@ -89,8 +90,8 @@ export default class ShareControl extends React.PureComponent<
 	}
 	public render() {
 		const emailQueryString = createQueryString({
-			'body': this.props.data.url,
-			'subject': this.props.data.subject
+			'body': this.props.data.email.body,
+			'subject': this.props.data.email.subject
 		});
 		return (
 			<div

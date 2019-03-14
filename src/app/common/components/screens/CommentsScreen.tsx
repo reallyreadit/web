@@ -118,6 +118,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onPostComment={this.props.onPostComment}
 									onShare={this.props.onShare}
+									user={this.props.user}
 								/> :
 								<span>No comments found! (Post one!)</span> :
 							null}

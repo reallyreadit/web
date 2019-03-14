@@ -54,6 +54,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
+			shareUrl = this.props.onCreateAbsoluteUrl(
+				findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
+			),
 			commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments).createUrl(articleUrlParams),
 			star = (
 				<div className="star-container">
@@ -81,10 +84,12 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					/>
 				),
 				data: {
-					subject: this.props.article.title,
-					url: this.props.onCreateAbsoluteUrl(
-						findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
-					)
+					email: {
+						body: shareUrl,
+						subject: this.props.article.title,
+					},
+					text: `${this.props.article.title}\n\n${shareUrl}`,
+					url: shareUrl
 				},
 				onCopyTextToClipboard: this.props.onCopyTextToClipboard,
 				onShare: this.props.onShare

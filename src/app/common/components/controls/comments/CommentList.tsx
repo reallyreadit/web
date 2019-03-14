@@ -3,6 +3,7 @@ import CommentThread from '../../../../../common/models/CommentThread';
 import CommentDetails from './CommentDetails';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
+import UserAccount from '../../../../../common/models/UserAccount';
 
 export default class CommentList extends React.Component<{
     comments: CommentThread[],
@@ -14,7 +15,8 @@ export default class CommentList extends React.Component<{
     onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
     onShare: (data: ShareData) => ShareChannel[],
     onViewThread?: (comment: CommentThread) => void,
-    parentCommentId?: string
+    parentCommentId?: string,
+    user: UserAccount | null
 }, {}> {
     public render() {
         return (
@@ -32,6 +34,7 @@ export default class CommentList extends React.Component<{
                         onShare={this.props.onShare}
                         onViewThread={this.props.onViewThread}
                         parentCommentId={this.props.parentCommentId}
+                        user={this.props.user}
                     />)}
             </ul>
         );

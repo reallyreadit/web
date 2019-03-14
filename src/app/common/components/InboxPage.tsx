@@ -7,19 +7,32 @@ import PageSelector from './controls/PageSelector';
 import LoadingOverlay from './controls/LoadingOverlay';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
+import UserAccount from '../../../common/models/UserAccount';
+import { Screen, SharedState } from './Root';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetReplies: (pageNumber: number, callback: (comments: Fetchable<PageResult<CommentThread>>) => void) => Fetchable<PageResult<CommentThread>>,
 	onShare: (data: ShareData) => ShareChannel[],
-	onViewThread: (comment: CommentThread) => void
+	onViewThread: (comment: CommentThread) => void,
+	user: UserAccount | null
 }
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
+export function createScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+) {
 	return {
 		create: () => ({ key, title: 'Inbox' }),
-		render: () => (
-			<InboxPage {...deps} />
+		render: (state: Screen, sharedState: SharedState) => (
+			<InboxPage
+				{
+					...{
+						...deps,
+						...sharedState
+					}
+				}
+			/>
 		)
 	};
 }
@@ -59,6 +72,7 @@ export default class InboxPage extends React.Component<
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onShare={this.props.onShare}
 										onViewThread={this.props.onViewThread}
+										user={this.props.user}
 									/> :
 									<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
 								null}

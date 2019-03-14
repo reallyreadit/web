@@ -12,6 +12,8 @@ import ScreenKey from '../../../../../common/routing/ScreenKey';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
 import AsyncTracker from '../../../../../common/AsyncTracker';
+import UserAccount from '../../../../../common/models/UserAccount';
+import { formatPossessive } from '../../../../../common/format';
 
 interface Props {
 	comment: CommentThread,
@@ -23,7 +25,8 @@ interface Props {
 	onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
 	onViewThread?: (comment: CommentThread) => void,
-	parentCommentId?: string
+	parentCommentId?: string,
+	user: UserAccount | null
 }
 export default class CommentDetails extends React.Component<Props, { showCommentBox: boolean }> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -45,8 +48,11 @@ export default class CommentDetails extends React.Component<Props, { showComment
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
-	public render(): JSX.Element {
+	public render() {
 		const
+			articleTitle = this.props.comment.articleTitle,
+			commentAuthor = this.props.comment.userAccount,
+			commentText = this.props.comment.text,
 			[sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_'),
 			shareUrl = this.props.onCreateAbsoluteUrl(
 				this._commentsScreenRoute.createUrl({
@@ -91,7 +97,19 @@ export default class CommentDetails extends React.Component<Props, { showComment
 									null}
 								<ShareControl
 									data={{
-										subject: `Comment on article: ${this.props.comment.articleTitle}`,
+										email: {
+											body: `${commentText}\n\n${shareUrl}`,
+											subject: (
+												commentAuthor === this.props.user.name ?
+													`My comment on ${articleTitle}` :
+													`Check out ${formatPossessive(commentAuthor)} on ${articleTitle}`
+											)
+										},
+										text: (
+											commentAuthor === this.props.user.name ?
+												`${commentText}\n\n${shareUrl}` :
+												`Check out ${formatPossessive(commentAuthor)} on ${articleTitle}`
+										),
 										url: shareUrl
 									}}
 									menuPosition={MenuPosition.MiddleRight}
@@ -118,6 +136,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 						onShare={this.props.onShare}
 						onViewThread={this.props.onViewThread}
 						parentCommentId={this.props.comment.id}
+						user={this.props.user}
 					/> :
 					null}
 			</li>
