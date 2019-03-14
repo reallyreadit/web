@@ -155,7 +155,7 @@ class BrowserCommentsScreen extends React.Component<
 			let description: string;
 			if (this.props.article.value && this.state.comments.value) {
 				const comment = findComment(this.props.highlightedCommentId, this.state.comments.value);
-				description = `Taking you to ${comment.userAccount}'${comment.userAccount.endsWith('s') ? '' : 's'} comment on ${comment.articleTitle}`;
+				description = `${comment.userAccount}'${comment.userAccount.endsWith('s') ? '' : 's'} comment on ${comment.articleTitle}`;
 			} else {
 				description = 'Loading...';
 			}
