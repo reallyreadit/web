@@ -88,7 +88,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						body: shareUrl,
 						subject: this.props.article.title,
 					},
-					text: `${this.props.article.title}\n\n${shareUrl}`,
+					text: this.props.article.title,
 					url: shareUrl
 				},
 				onCopyTextToClipboard: this.props.onCopyTextToClipboard,

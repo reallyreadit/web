@@ -107,7 +107,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 										},
 										text: (
 											commentAuthor === this.props.user.name ?
-												`${commentText}\n\n${shareUrl}` :
+												commentText :
 												`Check out ${formatPossessive(commentAuthor)} on ${articleTitle}`
 										),
 										url: shareUrl
