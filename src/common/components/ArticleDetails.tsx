@@ -29,6 +29,25 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		onDelete: () => {},
 		showDeleteControl: false
 	};
+	private readonly _getShareData = () => {
+		const
+			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),
+			articleUrlParams = {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			},
+			shareUrl = this.props.onCreateAbsoluteUrl(
+				findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
+			);
+		return {
+			email: {
+				body: shareUrl,
+				subject: this.props.article.title,
+			},
+			text: this.props.article.title,
+			url: shareUrl
+		};
+	};
 	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		this.props.onRead(this.props.article, e);
 	};
@@ -54,9 +73,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
-			shareUrl = this.props.onCreateAbsoluteUrl(
-				findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
-			),
 			commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments).createUrl(articleUrlParams),
 			star = (
 				<div className="star-container">
@@ -83,15 +99,8 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						name="share"
 					/>
 				),
-				data: {
-					email: {
-						body: shareUrl,
-						subject: this.props.article.title,
-					},
-					text: this.props.article.title,
-					url: shareUrl
-				},
 				onCopyTextToClipboard: this.props.onCopyTextToClipboard,
+				onGetData: this._getShareData,
 				onShare: this.props.onShare
 			};
 		return (

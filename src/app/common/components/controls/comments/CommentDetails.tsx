@@ -40,6 +40,39 @@ export default class CommentDetails extends React.Component<Props, { showComment
 				this.setState({ showCommentBox: false });
 			}));
 	};
+	private readonly _getShareData = () => {
+		const
+			articleTitle = this.props.comment.articleTitle,
+			commentAuthor = this.props.comment.userAccount,
+			commentText = new DOMParser()
+				.parseFromString(this.props.comment.text, 'text/html')
+				.documentElement
+				.textContent,
+			[sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_'),
+			shareUrl = this.props.onCreateAbsoluteUrl(
+				this._commentsScreenRoute.createUrl({
+					['articleSlug']: articleSlug,
+					['commentId']: this.props.comment.id,
+					['sourceSlug']: sourceSlug
+				})
+			);
+		return {
+			email: {
+				body: `${commentText}\n\n${shareUrl}`,
+				subject: (
+					commentAuthor === this.props.user.name ?
+						`My comment on ${articleTitle}` :
+						`Check out ${formatPossessive(commentAuthor)} comment on ${articleTitle}`
+				)
+			},
+			text: (
+				commentAuthor === this.props.user.name ?
+					commentText :
+					`Check out ${formatPossessive(commentAuthor)} comment on ${articleTitle}`
+			),
+			url: shareUrl
+		};
+	};
 	private _viewThread = () => this.props.onViewThread(this.props.comment);
 	constructor(props: Props) {
 		super(props);
@@ -49,18 +82,6 @@ export default class CommentDetails extends React.Component<Props, { showComment
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const
-			articleTitle = this.props.comment.articleTitle,
-			commentAuthor = this.props.comment.userAccount,
-			commentText = this.props.comment.text,
-			[sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_'),
-			shareUrl = this.props.onCreateAbsoluteUrl(
-				this._commentsScreenRoute.createUrl({
-					['articleSlug']: articleSlug,
-					['commentId']: this.props.comment.id,
-					['sourceSlug']: sourceSlug
-				})
-			);
 		return (
 			<li
 				className={classNames(
@@ -96,24 +117,9 @@ export default class CommentDetails extends React.Component<Props, { showComment
 									<ActionLink text="Reply" iconLeft="backward" onClick={this._showCommentBox} /> :
 									null}
 								<ShareControl
-									data={{
-										email: {
-											body: `${commentText}\n\n${shareUrl}`,
-											subject: (
-												commentAuthor === this.props.user.name ?
-													`My comment on ${articleTitle}` :
-													`Check out ${formatPossessive(commentAuthor)} on ${articleTitle}`
-											)
-										},
-										text: (
-											commentAuthor === this.props.user.name ?
-												commentText :
-												`Check out ${formatPossessive(commentAuthor)} on ${articleTitle}`
-										),
-										url: shareUrl
-									}}
 									menuPosition={MenuPosition.MiddleRight}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onGetData={this._getShareData}
 									onShare={this.props.onShare}
 								>
 									<ActionLink

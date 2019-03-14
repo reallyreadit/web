@@ -13,22 +13,23 @@ export enum MenuPosition {
 }
 interface Props {
 	children: React.ReactNode,
-	data: ShareData,
 	menuPosition: MenuPosition,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onGetData: () => ShareData,
 	onShare: (data: ShareData) => ShareChannel[]
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
 	{
 		childElementWillReceiveFocus: boolean,
+		data: ShareData | null,
 		isMenuClosing: boolean,
-		menuOptions: ShareChannel[]
+		shareChannels: ShareChannel[]
 	}
 > {
 	private readonly _copyLink = () => {
 		this.props.onCopyTextToClipboard(
-			this.props.data.url,
+			this.props.onGetData().url,
 			'Link copied to clipboard'
 		);
 		// need to call closeMenu() to handle iOS touch behavior
@@ -37,8 +38,9 @@ export default class ShareControl extends React.PureComponent<
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
 		if (event.animationName.startsWith('share-control_mnbspk-pop-out')) {
 			this.setState({
+				data: null,
 				isMenuClosing: false,
-				menuOptions: []
+				shareChannels: []
 			});
 		}
 	};
@@ -50,21 +52,24 @@ export default class ShareControl extends React.PureComponent<
 		}
 	};
 	private readonly _handleChildrenClick = () => {
-		if (this.state.menuOptions.length) {
+		if (this.state.shareChannels.length) {
 			this.closeMenu();
 		} else {
-			const shareChannels = this.props.onShare(this.props.data);
+			const
+				data = this.props.onGetData(),
+				shareChannels = this.props.onShare(data);
 			if (shareChannels.length) {
 				this.setState({
-					menuOptions: shareChannels
+					data,
+					shareChannels
 				});
 			}
 		}
 	};
 	private readonly _openTweetComposer = () => {
 		const queryString = createQueryString({
-			'text': truncateText(this.props.data.text, 280 - 25),
-			'url': this.props.data.url
+			'text': truncateText(this.state.data.text, 280 - 25),
+			'url': this.state.data.url
 		});
 		window.open(
 			`https://twitter.com/intent/tweet${queryString}`,
@@ -79,8 +84,9 @@ export default class ShareControl extends React.PureComponent<
 		super(props);
 		this.state = {
 			childElementWillReceiveFocus: false,
+			data: null,
 			isMenuClosing: false,
-			menuOptions: []
+			shareChannels: []
 		};
 	}
 	private closeMenu() {
@@ -89,10 +95,6 @@ export default class ShareControl extends React.PureComponent<
 		});
 	}
 	public render() {
-		const emailQueryString = createQueryString({
-			'body': this.props.data.email.body,
-			'subject': this.props.data.email.subject
-		});
 		return (
 			<div
 				className="share-control_mnbspk"
@@ -106,7 +108,7 @@ export default class ShareControl extends React.PureComponent<
 				>
 					{this.props.children}
 				</div>
-				{this.state.menuOptions.length ?
+				{this.state.shareChannels.length ?
 					<div
 						className={
 							classNames(
@@ -117,7 +119,7 @@ export default class ShareControl extends React.PureComponent<
 						}
 						onMouseDown={this._registerImpendingChildFocusTransition}
 					>
-						{this.state.menuOptions.includes(ShareChannel.Clipboard) ?
+						{this.state.shareChannels.includes(ShareChannel.Clipboard) ?
 							<button
 								className="button"
 								onClick={this._copyLink}
@@ -126,17 +128,20 @@ export default class ShareControl extends React.PureComponent<
 								<label>Copy Link</label>
 							</button> :
 							null}
-						{this.state.menuOptions.includes(ShareChannel.Email) ?
+						{this.state.shareChannels.includes(ShareChannel.Email) ?
 							<a
 								className="button"
-								href={`mailto:${emailQueryString}`}
+								href={`mailto:${createQueryString({
+									'body': this.state.data.email.body,
+									'subject': this.state.data.email.subject
+								})}`}
 								target="_blank"
 							>
 								<Icon name="paper-plane" />
 								<label>Email</label>
 							</a> :
 							null}
-						{this.state.menuOptions.includes(ShareChannel.Twitter) ?
+						{this.state.shareChannels.includes(ShareChannel.Twitter) ?
 							<button
 								className="button"
 								onClick={this._openTweetComposer}
