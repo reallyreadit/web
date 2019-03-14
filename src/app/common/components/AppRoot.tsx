@@ -104,7 +104,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	private readonly _handleShareRequest = (data: ShareData) => {
 		if (
 			this.props.appApi.appVersion &&
-			this.props.appApi.appVersion.compareTo(new SemanticVersion('2.2.1')) >= 0
+			this.props.appApi.appVersion.compareTo(new SemanticVersion('2.2.1')) > 0
 		) {
 			this.props.appApi.share(data);
 			return [];
