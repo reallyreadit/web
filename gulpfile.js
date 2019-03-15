@@ -4,7 +4,8 @@ const
 	Server = require('./build/targets/Server'),
 	client = require('./build/targets/client'),
 	extension = require('./build/targets/extension'),
-	nativeClient = require('./build/targets/nativeClient');
+	nativeClientReader = require('./build/targets/nativeClient/reader'),
+	nativeClientShareExtension = require('./build/targets/nativeClient/shareExtension');
 
 /**
  * app
@@ -56,14 +57,27 @@ gulp.task('clean:prod:extension', () => extension.clean(project.env.prod));
 gulp.task('build:prod:extension', () => extension.build(project.env.prod));
 
 /**
- * native client
+ * native client reader
  */
-gulp.task('clean:dev:native-client', () => nativeClient.clean(project.env.dev));
-gulp.task('build:dev:native-client', () => nativeClient.build(project.env.dev));
-gulp.task('watch:dev:native-client', () => nativeClient.watch());
+gulp.task('clean:dev:native-client-reader', () => nativeClientReader.clean(project.env.dev));
+gulp.task('build:dev:native-client-reader', () => nativeClientReader.build(project.env.dev));
+gulp.task('watch:dev:native-client-reader', () => nativeClientReader.watch());
 
-gulp.task('clean:stage:native-client', () => nativeClient.clean(project.env.stage));
-gulp.task('build:stage:native-client', () => nativeClient.build(project.env.stage));
+gulp.task('clean:stage:native-client-reader', () => nativeClientReader.clean(project.env.stage));
+gulp.task('build:stage:native-client-reader', () => nativeClientReader.build(project.env.stage));
 
-gulp.task('clean:prod:native-client', () => nativeClient.clean(project.env.prod));
-gulp.task('build:prod:native-client', () => nativeClient.build(project.env.prod));
+gulp.task('clean:prod:native-client-reader', () => nativeClientReader.clean(project.env.prod));
+gulp.task('build:prod:native-client-reader', () => nativeClientReader.build(project.env.prod));
+
+/**
+ * native client share extension
+ */
+gulp.task('clean:dev:native-client-share-extension', () => nativeClientShareExtension.clean(project.env.dev));
+gulp.task('build:dev:native-client-share-extension', () => nativeClientShareExtension.build(project.env.dev));
+gulp.task('watch:dev:native-client-share-extension', () => nativeClientShareExtension.watch());
+
+gulp.task('clean:stage:native-client-share-extension', () => nativeClientShareExtension.clean(project.env.stage));
+gulp.task('build:stage:native-client-share-extension', () => nativeClientShareExtension.build(project.env.stage));
+
+gulp.task('clean:prod:native-client-share-extension', () => nativeClientShareExtension.clean(project.env.prod));
+gulp.task('build:prod:native-client-share-extension', () => nativeClientShareExtension.build(project.env.prod));
