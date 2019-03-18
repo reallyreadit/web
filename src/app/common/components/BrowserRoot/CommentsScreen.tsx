@@ -10,7 +10,7 @@ import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
 import { SharedState } from '../BrowserRoot';
-import { formatFetchable } from '../../../../common/format';
+import { formatFetchable, formatPossessive } from '../../../../common/format';
 import OnboardingScreen from './OnboardingScreen';
 
 function shouldShowComments(
@@ -155,7 +155,7 @@ class BrowserCommentsScreen extends React.Component<
 			let description: string;
 			if (this.props.article.value && this.state.comments.value) {
 				const comment = findComment(this.props.highlightedCommentId, this.state.comments.value);
-				description = `${comment.userAccount}'${comment.userAccount.endsWith('s') ? '' : 's'} comment on ${comment.articleTitle}`;
+				description = `${formatPossessive(comment.userAccount)} comment on "${comment.articleTitle}"`;
 			} else {
 				description = 'Loading...';
 			}

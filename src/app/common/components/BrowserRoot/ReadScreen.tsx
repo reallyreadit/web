@@ -66,7 +66,7 @@ class ReadScreen extends React.PureComponent<Props, { article: Fetchable<UserArt
 						...this.props,
 						description: (
 							!this.props.user || this.props.isExtensionInstalled === false ?
-								formatFetchable(this.state.article,  article => article.title, 'Loading...') :
+								formatFetchable(this.state.article, article => `"${article.title}"`, 'Loading...') :
 								null
 						),
 						unsupportedBypass: formatFetchable(
