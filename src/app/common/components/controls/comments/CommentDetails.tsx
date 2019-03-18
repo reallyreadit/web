@@ -60,13 +60,13 @@ export default class CommentDetails extends React.Component<Props, { showComment
 			email: {
 				body: `${commentText}\n\n${shareUrl}`,
 				subject: (
-					commentAuthor === this.props.user.name ?
+					this.props.user && this.props.user.name === commentAuthor ?
 						`My comment on ${articleTitle}` :
 						`Check out ${formatPossessive(commentAuthor)} comment on ${articleTitle}`
 				)
 			},
 			text: (
-				commentAuthor === this.props.user.name ?
+				this.props.user && this.props.user.name === commentAuthor ?
 					commentText :
 					`Check out ${formatPossessive(commentAuthor)} comment on ${articleTitle}`
 			),
