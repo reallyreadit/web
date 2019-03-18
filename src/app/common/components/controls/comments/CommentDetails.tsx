@@ -48,6 +48,10 @@ export default class CommentDetails extends React.Component<Props, { showComment
 				.parseFromString(this.props.comment.text, 'text/html')
 				.documentElement
 				.textContent,
+			quotedCommentText = commentText
+				.split(/\n\n+/)
+				.map((paragraph, index, paragraphs) => `"${paragraph}${index === paragraphs.length - 1 ? '"' : ''}`)
+				.join('\n\n'),
 			[sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_'),
 			shareUrl = this.props.onCreateAbsoluteUrl(
 				this._commentsScreenRoute.createUrl({
@@ -58,17 +62,17 @@ export default class CommentDetails extends React.Component<Props, { showComment
 			);
 		return {
 			email: {
-				body: `${commentText}\n\n${shareUrl}`,
+				body: `${quotedCommentText}\n\n${shareUrl}`,
 				subject: (
 					this.props.user && this.props.user.name === commentAuthor ?
-						`My comment on ${articleTitle}` :
-						`Check out ${formatPossessive(commentAuthor)} comment on ${articleTitle}`
+						`My comment on "${articleTitle}"` :
+						`Check out ${formatPossessive(commentAuthor)} comment on "${articleTitle}"`
 				)
 			},
 			text: (
 				this.props.user && this.props.user.name === commentAuthor ?
 					commentText :
-					`Check out ${formatPossessive(commentAuthor)} comment on ${articleTitle}`
+					`Check out ${formatPossessive(commentAuthor)} comment on "${articleTitle}"`
 			),
 			url: shareUrl
 		};

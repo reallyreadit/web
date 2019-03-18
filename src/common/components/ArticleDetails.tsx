@@ -42,9 +42,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		return {
 			email: {
 				body: shareUrl,
-				subject: this.props.article.title,
+				subject: `"${this.props.article.title}"`,
 			},
-			text: this.props.article.title,
+			text: `"${this.props.article.title}"`,
 			url: shareUrl
 		};
 	};
