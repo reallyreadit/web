@@ -385,9 +385,7 @@ server = server.get('/*', (req, res) => {
 		// call renderToString again to render with api request results
 		const content = ReactDOMServer.renderToString(rootElement);
 		// set the cache header
-		if (config.cacheEnabled && !req.sessionState.userAccount) {
-			res.setHeader('Cache-Control', 'max-age=5');
-		}
+		res.setHeader('Cache-Control', 'no-store');
 		// return the content and init data
 		res.send(renderHtml({
 			content,
