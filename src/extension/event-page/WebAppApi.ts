@@ -11,7 +11,7 @@ export default class {
 		chrome.tabs.query(
 			{},
 			tabs => tabs
-				.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
+				.filter(tab => tab.url && [config.web.host, 'readup.com'].includes(new URL(tab.url).hostname))
 				.forEach(tab => chrome.tabs.executeScript(
 					tab.id,
 					{ code: `window.postMessage('${stringifyForLiteral({ type, data })}', '*');` }

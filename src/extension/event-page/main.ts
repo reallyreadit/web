@@ -149,7 +149,7 @@ function getState() {
 		.then(result => {
 			const focusedChromeTab = result[0],
 				isAuthenticated = result[1],
-				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === config.web.host,
+				isOnHomePage = focusedChromeTab && focusedChromeTab.url && [config.web.host, 'readup.com'].includes(new URL(focusedChromeTab.url).hostname),
 				showNewReplyIndicator = serverApi.hasNewReply();
 			let focusedTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
