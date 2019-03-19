@@ -24,6 +24,7 @@
   },
   "externally_connectable": {
     "matches": [
+      "*://*.readup.com/*",
       "*://*.reallyread.it/*"
     ]
   },
