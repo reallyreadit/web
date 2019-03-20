@@ -9,8 +9,7 @@ const build = createBuild({
 	},
 	scss: [
 		`${project.srcDir}/app/{client,common}/**/*.{css,scss}`,
-		`${project.srcDir}/common/**/*.{css,scss}`,
-		'node_modules/react-responsive-carousel/lib/styles/carousel.css'
+		`${project.srcDir}/common/**/*.{css,scss}`
 	],
 	staticAssets: [
 		`${project.srcDir}/app/client/assets/**/*`,

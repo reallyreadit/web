@@ -11,7 +11,6 @@ import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
-import PromoCarousel from '../PromoCarousel';
 import WelcomeInfoBox from '../WelcomeInfoBox';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
@@ -112,14 +111,6 @@ class HomeScreen extends React.Component<Props, State> {
 						isBrowserCompatible={this.props.isBrowserCompatible}
 						onInstallExtension={this.props.onInstallExtension}
 					/> :
-					null}
-				{!this.props.user ?
-					<div className="promo-container">
-						<PromoCarousel showArrows />
-						<button onClick={this.props.onOpenCreateAccountDialog}>
-							Sign Up
-						</button>
-					</div> :
 					null}
 				{this.state.communityReads.isLoading ?
 					<LoadingOverlay position="static" /> :
