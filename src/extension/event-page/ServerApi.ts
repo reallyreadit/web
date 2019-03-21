@@ -46,11 +46,6 @@ function fetchJson<T>(request: Request) {
 					url: createUrl(config.api),
 					name: config.cookieName
 				});
-				// mirror reallyread.it auth cookie to readup.com
-				chrome.cookies.remove({
-					url: 'https://readup.com/',
-					name: 'sessionKey'
-				});
 				reject(['Unauthenticated']);
 			} else {
 				reject([]);
@@ -124,23 +119,6 @@ export default class ServerApi {
 				}
 				// fire handler
 				handlers.onAuthenticationStatusChanged(isAuthenticated);
-				// mirror reallyread.it auth cookie to readup.com
-				if (isAuthenticated) {
-					chrome.cookies.set({
-						url: 'https://readup.com/',
-						name: 'sessionKey',
-						value: changeInfo.cookie.value,
-						domain: '.readup.com',
-						secure: true,
-						httpOnly: true,
-						expirationDate: changeInfo.cookie.expirationDate
-					});
-				} else {
-					chrome.cookies.remove({
-						url: 'https://readup.com/',
-						name: 'sessionKey'
-					});
-				}
 			}
 		});
 		// external message

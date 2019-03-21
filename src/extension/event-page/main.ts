@@ -149,7 +149,7 @@ function getState() {
 		.then(result => {
 			const focusedChromeTab = result[0],
 				isAuthenticated = result[1],
-				isOnHomePage = focusedChromeTab && focusedChromeTab.url && [config.web.host, 'readup.com'].includes(new URL(focusedChromeTab.url).hostname),
+				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === config.web.host,
 				showNewReplyIndicator = serverApi.hasNewReply();
 			let focusedTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
@@ -204,20 +204,6 @@ chrome.runtime.onInstalled.addListener(details => {
 	getState().then(updateIcon);
 	// message rrit tabs
 	WebAppApi.notifyExtensionInstalled();
-	// mirror reallyread.it auth cookie to readup.com
-	chrome.cookies.get({ url: 'https://reallyread.it/', name: 'sessionKey' }, cookie => {
-		if (cookie) {
-			chrome.cookies.set({
-				url: 'https://readup.com/',
-				name: 'sessionKey',
-				value: cookie.value,
-				domain: '.readup.com',
-				secure: true,
-				httpOnly: true,
-				expirationDate: cookie.expirationDate
-			});
-		}
-	});
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
