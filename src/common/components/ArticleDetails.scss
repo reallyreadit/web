@@ -1,7 +1,7 @@
 .article-details_d2vnmv {
 	background-color: white;
 	border: 1px solid #e0e0e0;
-	padding: 7px;
+	padding: 10px 15px;
 }
 .article-details_d2vnmv > .small-title {
 	display: none;
@@ -31,15 +31,17 @@
 	cursor: pointer;
 }
 .article-details_d2vnmv > .columns > .stats > .stat > .count {
-	font-size: 18px;
+	font-family: 'Museo Sans (700)';
+	font-size: 14pt;
 }
 .article-details_d2vnmv > .columns > .stats > .stat > label {
 	display: block;
-	font-size: 11px;
 	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	margin-top: -4px;
+	font-family: 'Museo Sans (100)';
+	font-size: 9pt;
 }
 .article-details_d2vnmv > .columns > .star-container {
 	flex: 0 0 auto;
@@ -51,12 +53,14 @@
 	padding-right: 5px;
 }
 .article-details_d2vnmv > .columns > .article > .title-link {
-	font-size: 18px;
+	font-family: 'Cambria (bold)';
+	font-size: 16pt;
 	text-decoration: none;
-	font-weight: bold;
 }
 .article-details_d2vnmv > .columns > .article > .meta {
 	margin-top: 5px;
+	font-family: 'Museo Sans (300)';
+	font-size: 11pt;
 }
 .article-details_d2vnmv > .columns > .small-stats-article {
 	display: none;
@@ -79,6 +83,11 @@
 	top: 15%;
 	width: 100%;
 	text-align: center;
+	font-family: 'Museo Sans (300)';
+	font-size: 11pt;
+}
+.article-details_d2vnmv > .columns > .bubble > .container > .length > strong {
+	font-family: 'Museo Sans (900)';
 }
 .article-details_d2vnmv > .columns > .share {
 	flex: 0 0 auto;
@@ -94,6 +103,9 @@
 }
 
 @media (max-width: 450px) {
+	.article-details_d2vnmv {
+		padding: 10px;
+	}
 	.article-details_d2vnmv > .small-title {
 		display: flex;
 		margin-bottom: 2px;
@@ -104,9 +116,9 @@
 		margin-right: 5px;
 	}
 	.article-details_d2vnmv > .small-title > .title-link {
-		font-size: 16px;
+		font-family: 'Cambria (bold)';
+		font-size: 16pt;
 		text-decoration: none;
-		font-weight: bold;
 	}
 	.article-details_d2vnmv > .columns > .stats,
 	.article-details_d2vnmv > .columns > .star-container,
@@ -124,6 +136,8 @@
 	.article-details_d2vnmv > .columns > .small-stats-article > .meta {
 		flex: 0 0 auto;
 		margin-right: 5px;
+		font-family: 'Museo Sans (300)';
+		font-size: 11pt;
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .meta > .publisher,
 	.article-details_d2vnmv > .columns > .small-stats-article > .meta > .author-date {
@@ -160,7 +174,7 @@
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .reads-comments > .stat {
 		display: flex;
-		font-size: 15px;
+		font-size: 12pt;
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .reads-comments > .stat:not(:last-child) {
 		margin-right: 10px;

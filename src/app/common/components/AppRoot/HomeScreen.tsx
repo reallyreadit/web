@@ -4,7 +4,6 @@ import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
-import logoText from '../../../../common/svg/logoText';
 import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
@@ -143,10 +142,12 @@ export default function <TScreenKey>(
 		create: () => ({
 			key,
 			titleContent: (
-				<div
-					className="home-screen_an7vm5-title-content"
-					dangerouslySetInnerHTML={{ __html: logoText }}
-				></div>
+				<div className="home-screen_an7vm5-title-content">
+					<img
+						alt="logo"
+						src="/images/logo.svg"
+					/>
+				</div>
 			)
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (

@@ -9,6 +9,7 @@ import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
 import UserAccount from '../../../common/models/UserAccount';
 import { Screen, SharedState } from './Root';
+import ScreenContainer from './ScreenContainer';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -58,33 +59,35 @@ export default class InboxPage extends React.Component<
 	}
 	public render() {
 		return (
-			<div className="inbox-page_b8knhv">
-				{this.state.replies.isLoading ?
-					<LoadingOverlay /> :
-					<>
-						<div className="replies">
-							{this.state.replies.value ?
-								this.state.replies.value.items.length ?
-									<CommentList
-										comments={this.state.replies.value.items}
-										mode="link"
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-										onShare={this.props.onShare}
-										onViewThread={this.props.onViewThread}
-										user={this.props.user}
-									/> :
-									<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
-								null}
-						</div>
-						<PageSelector
-							pageNumber={this.state.replies.value ? this.state.replies.value.pageNumber : 1}
-							pageCount={this.state.replies.value ? this.state.replies.value.pageCount : 1}
-							onChange={this._updatePageNumber}
-							disabled={this.state.replies.isLoading}
-						/>
-					</>}
-			</div>
+			<ScreenContainer>
+				<div className="inbox-page_b8knhv">
+					{this.state.replies.isLoading ?
+						<LoadingOverlay /> :
+						<>
+							<div className="replies">
+								{this.state.replies.value ?
+									this.state.replies.value.items.length ?
+										<CommentList
+											comments={this.state.replies.value.items}
+											mode="link"
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onShare={this.props.onShare}
+											onViewThread={this.props.onViewThread}
+											user={this.props.user}
+										/> :
+										<span>No replies found. When someone replies to one of your comments it will show up here.</span> :
+									null}
+							</div>
+							<PageSelector
+								pageNumber={this.state.replies.value ? this.state.replies.value.pageNumber : 1}
+								pageCount={this.state.replies.value ? this.state.replies.value.pageCount : 1}
+								onChange={this._updatePageNumber}
+								disabled={this.state.replies.isLoading}
+							/>
+						</>}
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

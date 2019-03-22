@@ -7,6 +7,8 @@
 	display: flex;
 	flex-flow: column;
 	min-height: 100%;
+	padding: 20px;
+	box-sizing: border-box;
 }
 .home-screen_1sjipy > .info-box_whou0t {
 	flex: 0 0 auto;
@@ -20,4 +22,10 @@
 .home-screen_1sjipy > .loading-overlay_zfgtd1,
 .home-screen_1sjipy > .community-reads-list_g4cy3n {
 	flex: 1 1 auto;
+}
+
+@media (max-width: 499px) {
+	.home-screen_1sjipy {
+		padding: 10px;
+	}
 }

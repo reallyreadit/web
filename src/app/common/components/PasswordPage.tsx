@@ -3,6 +3,7 @@ import { Screen } from './Root';
 import routes from '../../../common/routing/routes';
 import { findRouteByKey } from '../../../common/routing/Route';
 import ScreenKey from '../../../common/routing/ScreenKey';
+import ScreenContainer from './ScreenContainer';
 
 const resultMessages: {
 	[key: string]: {
@@ -36,11 +37,13 @@ interface Props {
 export default class PasswordPage extends React.PureComponent<Props> {
 	public render() {
 		return (
-			<div className="password-page_c48od1">
-				<strong>
-					{resultMessages[this.props.action][this.props.result]}
-				</strong>
-			</div>
+			<ScreenContainer>
+				<div className="password-page_c48od1">
+					<strong>
+						{resultMessages[this.props.action][this.props.result]}
+					</strong>
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

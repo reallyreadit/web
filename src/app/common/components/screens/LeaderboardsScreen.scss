@@ -3,14 +3,10 @@
 	cssComponentId: leaderboards-screen_wuzsob
 */
 
-.leaderboards-screen_wuzsob {
-	min-height: 100%;
-}
 .leaderboards-screen_wuzsob > .panel {
 	background-color: white;
 	border: 1px solid #e0e0e0;
 	padding: 7px;
-
 }
 .leaderboards-screen_wuzsob > .panel:not(:last-child) {
 	margin-bottom: 10px;

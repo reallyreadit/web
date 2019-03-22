@@ -3,4 +3,3 @@
 /node_modules
 /src/app/server/config.ts
 /src/extension/common/config.*.json
-/src/extension/content-script/user-interface/config.*.json

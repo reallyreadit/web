@@ -1,5 +1,4 @@
 import * as React from 'react';
-import logoText from '../../../../common/svg/logoText';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
@@ -40,23 +39,28 @@ export default class OnboardingScreen extends React.Component<Props> {
 				<div className="content">
 					<div className="logo">
 						<a
-							dangerouslySetInnerHTML={{ __html: logoText }}
 							href={this._homeScreenUrl}
 							onClick={this._viewHomeScreen}
-						></a>
+						>
+							<img
+								alt="logo"
+								src="/images/logo.svg"
+							/>
+						</a>
 					</div>
 					{this.props.isExtensionInstalled == null || !this.props.description ?
 						<Spinner /> :
 						<>
-							<div className="article">
+							<div className="description">
 								<span>Taking you to:</span>
 								<strong>
 									{this.props.description}
 								</strong>
 							</div>
 							{/(iPhone|iPad)/i.test(window.navigator.userAgent) ?
-								<div className="download ios">
+								<div className="prompt download ios">
 									<a
+										className="text"
 										href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
 										onClick={this._downloadApp}
 									>
@@ -66,8 +70,11 @@ export default class OnboardingScreen extends React.Component<Props> {
 								</div> :
 								this.props.user ?
 									this.props.isBrowserCompatible ?
-										<div className="download chrome">
-											<a onClick={this.props.onInstallExtension}>
+										<div className="prompt download chrome">
+											<a
+												className="text"
+												onClick={this.props.onInstallExtension}
+											>
 												Add the Chrome extension to continue
 												<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
 											</a>
@@ -77,8 +84,8 @@ export default class OnboardingScreen extends React.Component<Props> {
 												</div> :
 												null}
 										</div> :
-										<div className="unsupported">
-											Get reallyread.it for iOS and Chrome
+										<div className="prompt unsupported">
+											<span className="text">Get Readup for iOS and Chrome</span>
 											<div className="badges">
 												<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
 													<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
@@ -89,8 +96,8 @@ export default class OnboardingScreen extends React.Component<Props> {
 											</div>
 											{this.props.unsupportedBypass}
 										</div> :
-									<div className="authenticate">
-										Sign up or log in to continue
+									<div className="prompt authenticate">
+										<span className="text">Sign up or log in to continue</span>
 										<div className="buttons">
 											<button
 												className="loud"

@@ -1,13 +1,32 @@
 @font-face {
-	font-family: 'Bitter';
-	src: url(data:font/ttf;charset=utf-8;base64,{BASE64_FONT});
+	font-family: 'Cambria (Bold)';
+	src: url('/fonts/cambria-bold.ttf');
+}
+@font-face {
+	font-family: 'Cambria (Regular)';
+	src: url('/fonts/cambria-regular.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (100)';
+	src: url('/fonts/museo-sans-100.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (300)';
+	src: url('/fonts/museo-sans-300.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (700)';
+	src: url('/fonts/museo-sans-700.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (900)';
+	src: url('/fonts/museo-sans-900.ttf');
 }
 
 #reallyreadit-footer-root {
-	font-family: 'Bitter';
-	font-size: 13px;
-	letter-spacing: 0.02em;
-	line-height: 1.2;
+	font-family: 'Museo Sans (100)';
+	font-size: 13pt;
+	color: #2A2326;
 }
 #reallyreadit-footer-root a,
 #reallyreadit-footer-root button,
@@ -17,5 +36,5 @@
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 #reallyreadit-footer-root a {
-	color: black;
+	color: #2A2326;
 }

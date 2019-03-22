@@ -14,6 +14,7 @@ import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncActionLink from './controls/AsyncActionLink';
+import ScreenContainer from './ScreenContainer';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -84,81 +85,83 @@ class SettingsPage extends React.PureComponent<Props> {
 	public render() {
 		const user = this.props.user;
 		return (
-			<div className="settings-page_ejwkk">
-				<ul>
-					<li>
-						<label>
-							<strong>Username</strong>
-							<Separator />
-							<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} />
-						</label>
-						{user.name}
-					</li>
-					<li>
-						<label>
-							<strong>Email Address</strong>
-							<Separator />
-							<ActionLink text="Change" iconLeft="write" onClick={this._openChangeEmailAddressDialog} />
-						</label>
-						{user.email}
-						{user.isEmailConfirmed ?
-							<div className="setting on">
-								<Icon name="checkmark" />
-								Confirmed
-							</div> :
-							<div className="setting warn">
-								<Icon name="exclamation" />
-								Not Confirmed
+			<ScreenContainer>
+				<div className="settings-page_ejwkk">
+					<ul>
+						<li>
+							<label>
+								<strong>Username</strong>
 								<Separator />
-								<AsyncActionLink
-									icon="email"
-									onClick={this.props.onResendConfirmationEmail}
-									text="Resend confirmation email"
-								/>
-							</div>}
-					</li>
-					<li>
-						<label>
-							<strong>Notifications</strong>
-							<Separator />
-							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditNotificationsDialog} />
-						</label>
-						When someone replies to my comment:
-						<div className={classNames('setting', user.receiveReplyEmailNotifications ? 'on' : 'off')}>
-							<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
-							Send me an email
-						</div>
-						<div className={classNames('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
-							<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
-							Show a desktop notification
-						</div>
-					</li>
-					<li>
-						<label>
-							<strong>Contact Preferences</strong>
-							<Separator />
-							<ActionLink text="Edit" iconLeft="write" onClick={this._openEditContactPreferencesDialog} />
-						</label>
-						Feel free to occasionally email me about the following:
-						<div className={classNames('setting', user.receiveWebsiteUpdates ? 'on' : 'off')}>
-							<Icon name={user.receiveWebsiteUpdates ? 'checkmark' : 'cancel'} />
-							Community updates
-						</div>
-						<div className={classNames('setting', user.receiveSuggestedReadings ? 'on' : 'off')}>
-							<Icon name={user.receiveSuggestedReadings ? 'checkmark' : 'cancel'} />
-							Suggested readings
-						</div>
-					</li>
-					<li>
-						<label>
-							<strong>Time Zone</strong>
-							<Separator />
-							<ActionLink text="Change" iconLeft="write" onClick={this._openChangeTimeZoneDialog} />
-						</label>
-						{user.timeZoneDisplayName}
-					</li>
-				</ul>
-			</div>
+								<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} />
+							</label>
+							{user.name}
+						</li>
+						<li>
+							<label>
+								<strong>Email Address</strong>
+								<Separator />
+								<ActionLink text="Change" iconLeft="write" onClick={this._openChangeEmailAddressDialog} />
+							</label>
+							{user.email}
+							{user.isEmailConfirmed ?
+								<div className="setting on">
+									<Icon name="checkmark" />
+									Confirmed
+								</div> :
+								<div className="setting warn">
+									<Icon name="exclamation" />
+									Not Confirmed
+									<Separator />
+									<AsyncActionLink
+										icon="email"
+										onClick={this.props.onResendConfirmationEmail}
+										text="Resend confirmation email"
+									/>
+								</div>}
+						</li>
+						<li>
+							<label>
+								<strong>Notifications</strong>
+								<Separator />
+								<ActionLink text="Edit" iconLeft="write" onClick={this._openEditNotificationsDialog} />
+							</label>
+							When someone replies to my comment:
+							<div className={classNames('setting', user.receiveReplyEmailNotifications ? 'on' : 'off')}>
+								<Icon name={user.receiveReplyEmailNotifications ? 'checkmark' : 'cancel'} />
+								Send me an email
+							</div>
+							<div className={classNames('setting', user.receiveReplyDesktopNotifications ? 'on' : 'off')}>
+								<Icon name={user.receiveReplyDesktopNotifications ? 'checkmark' : 'cancel'} />
+								Show a desktop notification
+							</div>
+						</li>
+						<li>
+							<label>
+								<strong>Contact Preferences</strong>
+								<Separator />
+								<ActionLink text="Edit" iconLeft="write" onClick={this._openEditContactPreferencesDialog} />
+							</label>
+							Feel free to occasionally email me about the following:
+							<div className={classNames('setting', user.receiveWebsiteUpdates ? 'on' : 'off')}>
+								<Icon name={user.receiveWebsiteUpdates ? 'checkmark' : 'cancel'} />
+								Community updates
+							</div>
+							<div className={classNames('setting', user.receiveSuggestedReadings ? 'on' : 'off')}>
+								<Icon name={user.receiveSuggestedReadings ? 'checkmark' : 'cancel'} />
+								Suggested readings
+							</div>
+						</li>
+						<li>
+							<label>
+								<strong>Time Zone</strong>
+								<Separator />
+								<ActionLink text="Change" iconLeft="write" onClick={this._openChangeTimeZoneDialog} />
+							</label>
+							{user.timeZoneDisplayName}
+						</li>
+					</ul>
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

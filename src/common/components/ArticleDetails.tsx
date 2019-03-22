@@ -96,7 +96,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				children: (
 					<Icon
 						className="icon"
-						name="share"
+						name="paper-plane"
 					/>
 				),
 				onCopyTextToClipboard: this.props.onCopyTextToClipboard,
@@ -136,7 +136,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								{this.props.article.source}
 							</span>
 							{this.props.article.authors.length || this.props.article.datePublished ?
-								<span> · </span> :
+								<span> | </span> :
 								null}
 							{this.props.article.authors.length ?
 								<span className="author">
@@ -144,7 +144,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								</span> :
 								null}
 							{this.props.article.authors.length && this.props.article.datePublished ?
-								<span> · </span> :
+								<span> | </span> :
 								null}
 							{this.props.article.datePublished ?
 								<span className="date">
@@ -165,7 +165,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									</span> :
 									null}
 								{this.props.article.authors.length && this.props.article.datePublished ?
-									<span className="spacer">·</span> :
+									<span className="spacer">|</span> :
 									null}
 								{this.props.article.datePublished ?
 									<span className="date">
@@ -200,7 +200,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								uuid={`article-details_d2vnmv-speech-bubble-${this.props.article.id}`}
 							/>
 							<div className="length">
-								{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))} min read
+								<strong>{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))}</strong> min read
 							</div>
 						</div>
 					</div>

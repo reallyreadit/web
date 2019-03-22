@@ -14,9 +14,9 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<div className="footer_ink40x">
-				<a href="https://blog.reallyread.it">Blog</a>
+				<a href="https://blog.readup.com">Blog</a>
 				<Separator />
-				<a href="https://blog.reallyread.it/beta/2017/07/12/FAQ.html">FAQ</a>
+				<a href="https://blog.readup.com/beta/2017/07/12/FAQ.html">FAQ</a>
 				<Separator />
 				<a
 					href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
@@ -25,7 +25,7 @@ export default class extends React.PureComponent<{
 					Privacy Policy
 					</a>
 				<br />
-				<a href="mailto:support@reallyread.it">support@reallyread.it</a>
+				<a href="mailto:support@readup.com">support@readup.com</a>
 			</div>
 		);
 	}

@@ -1,0 +1,55 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/MarketingScreen
+	cssComponentId: marketing-screen_n5a6wc
+*/
+
+.marketing-screen_n5a6wc {
+	height: 100%;
+}
+.marketing-screen_n5a6wc > .section {
+	font-family: 'Museo Sans (100)';
+	font-size: 14pt;
+	min-height: 100%;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+.marketing-screen_n5a6wc > .section > h1 {
+	font-weight: normal;
+	font-family: 'Cambria (regular)';
+	font-size: 42pt;
+	margin: 30px 0 20px;
+}
+.marketing-screen_n5a6wc > .section > .button_cn7dmh {
+	width: auto;
+	margin: 50px auto;
+}
+.marketing-screen_n5a6wc > .section > h2 {
+	font-weight: normal;
+	font-family: 'Cambria (regular)';
+	font-size: 36pt;
+	margin: 30px 0 20px;
+}
+.marketing-screen_n5a6wc > .section > p {
+	margin: 20px 0;
+}
+.marketing-screen_n5a6wc > .section > ol {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+.marketing-screen_n5a6wc > .section > ol > li {
+	min-width: 200px;
+	flex: 1 0;
+	text-align: center;
+	padding: 20px;
+}
+.marketing-screen_n5a6wc > .section > ol > li > img {
+	display: block;
+	margin: 0 auto 10px auto;
+	width: 50px;
+}
+.marketing-screen_n5a6wc > .section > ol > li > span {
+	
+}

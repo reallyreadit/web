@@ -70,7 +70,7 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<div className="community-reads-list_g4cy3n">
-				<h3>Article of the Day</h3>
+				<h3>Article of the day</h3>
 				<ArticleDetails
 					article={this.props.aotd}
 					isUserSignedIn={this.props.isUserSignedIn}

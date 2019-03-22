@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Footer from '../../../common/components/reader/Footer';
+import Logo from './components/Logo';
 
 export interface Props {
 	isRead: boolean,
@@ -10,7 +11,7 @@ export interface Props {
 }
 
 let root: HTMLDivElement | null;
-let lastProps: Props & { showLogo: boolean } | null;
+let lastProps: Props & { children: React.ReactNode } | null;
 
 window.reallyreadit.extension.contentScript.userInterface.set({
 	construct: (page, props) => {
@@ -21,10 +22,13 @@ window.reallyreadit.extension.contentScript.userInterface.set({
 		ReactDOM.render(
 			React.createElement(
 				Footer,
-				lastProps = { ...props, showLogo: true }
+				lastProps = {
+					...props,
+					children: React.createElement(Logo)
+				}
 			),
 			root
-		)
+		);
 	},
 	destruct: () => {
 		ReactDOM.unmountComponentAtNode(root);

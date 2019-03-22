@@ -8,6 +8,7 @@ import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../../../common/components/Toaster';
 import AsyncTracker from '../../../common/AsyncTracker';
 import { Screen, SharedState } from './Root';
+import ScreenContainer from './ScreenContainer';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -63,77 +64,79 @@ class AdminPage extends React.Component<
 	}
 	public render() {
 		return (
-			<div className="admin-page_czkowo">
-				<table>
-					<caption>
-						<div className="content">
-							<strong>User Stats</strong>
-						</div>
-					</caption>
-					<tbody>
-						{!this.state.userStats.isLoading ?
-							this.state.userStats.value ?
-								[
-									<tr key="total">
-										<th>Total Count</th>
-										<td>{this.state.userStats.value.totalCount}</td>
-									</tr>,
-									<tr key="confirmed">
-										<th>Confirmed Count</th>
-										<td>{this.state.userStats.value.confirmedCount}</td>
-									</tr>
-								] :
-								<tr>
-									<td>Error loading stats.</td>
-								</tr> :
-							<tr>
-								<td>Loading...</td>
-							</tr>}
-					</tbody>
-				</table>
-				<table>
-					<caption>
-						<div className="content">
-							<strong>Bulk Mailings</strong>
-							<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
-						</div>
-					</caption>
-					<thead>
-						<tr>
-							<th>Date Sent</th>
-							<th>Subject</th>
-							<th>Body</th>
-							<th>List</th>
-							<th>Sent By</th>
-							<th>Recipient Count</th>
-						</tr>
-					</thead>
-					<tbody>
-						{!this.state.mailings.isLoading ?
-							this.state.mailings.value ?
-								this.state.mailings.value.length ?
-									this.state.mailings.value.map(m => (
-										<tr key={m.id}>
-											<td>{m.dateSent}</td>
-											<td>{m.subject}</td>
-											<td>{m.body}</td>
-											<td>{m.list}</td>
-											<td>{m.userAccount}</td>
-											<td>{m.recipientCount - m.errorCount}/{m.recipientCount}</td>
+			<ScreenContainer>
+				<div className="admin-page_czkowo">
+					<table>
+						<caption>
+							<div className="content">
+								<strong>User Stats</strong>
+							</div>
+						</caption>
+						<tbody>
+							{!this.state.userStats.isLoading ?
+								this.state.userStats.value ?
+									[
+										<tr key="total">
+											<th>Total Count</th>
+											<td>{this.state.userStats.value.totalCount}</td>
+										</tr>,
+										<tr key="confirmed">
+											<th>Confirmed Count</th>
+											<td>{this.state.userStats.value.confirmedCount}</td>
 										</tr>
-									)) :
+									] :
 									<tr>
-										<td colSpan={6}>No mailings found.</td>
+										<td>Error loading stats.</td>
 									</tr> :
 								<tr>
-									<td colSpan={6}>Error loading mailings.</td>
-								</tr> :
+									<td>Loading...</td>
+								</tr>}
+						</tbody>
+					</table>
+					<table>
+						<caption>
+							<div className="content">
+								<strong>Bulk Mailings</strong>
+								<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
+							</div>
+						</caption>
+						<thead>
 							<tr>
-								<td colSpan={6}>Loading...</td>
-							</tr>}
-					</tbody>
-				</table>
-			</div>
+								<th>Date Sent</th>
+								<th>Subject</th>
+								<th>Body</th>
+								<th>List</th>
+								<th>Sent By</th>
+								<th>Recipient Count</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!this.state.mailings.isLoading ?
+								this.state.mailings.value ?
+									this.state.mailings.value.length ?
+										this.state.mailings.value.map(m => (
+											<tr key={m.id}>
+												<td>{m.dateSent}</td>
+												<td>{m.subject}</td>
+												<td>{m.body}</td>
+												<td>{m.list}</td>
+												<td>{m.userAccount}</td>
+												<td>{m.recipientCount - m.errorCount}/{m.recipientCount}</td>
+											</tr>
+										)) :
+										<tr>
+											<td colSpan={6}>No mailings found.</td>
+										</tr> :
+									<tr>
+										<td colSpan={6}>Error loading mailings.</td>
+									</tr> :
+								<tr>
+									<td colSpan={6}>Loading...</td>
+								</tr>}
+						</tbody>
+					</table>
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

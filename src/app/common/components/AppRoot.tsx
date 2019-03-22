@@ -71,7 +71,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 	private readonly _readFaq = () => {
 		this.props.appApi.readArticle({
 			title: 'FAQ',
-			url: 'https://blog.reallyread.it/beta/2017/07/12/FAQ.html'
+			url: 'https://blog.readup.com/beta/2017/07/12/FAQ.html'
 		} as Pick<UserArticle, 'title' | 'url'>);
 		this._closeMenu();
 	};

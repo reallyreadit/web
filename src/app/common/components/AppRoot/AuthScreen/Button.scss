@@ -4,15 +4,20 @@
 */
 
 .button_vp905n {
-	background-color: white;
-	border: 2px solid black;
-	font-weight: bold;
-	height: 42px;
-	width: 80%;
 	display: flex;
+	padding: 18px 30px;
+	width: 80%;
+	box-sizing: border-box;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	text-decoration: none;
+	color: #2A2326;
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+	text-transform: lowercase;
 	justify-content: center;
 	align-items: center;
-	font-size: 18px;
 	margin: 0 auto;
 }
 .button_vp905n[disabled] {
@@ -20,7 +25,7 @@
 	border-color: silver;
 }
 .button_vp905n.loud {
-	background-color: black;
+	background-color: #2A2326;
 	color: white;
 }
 .button_vp905n > .icon_rour3d,

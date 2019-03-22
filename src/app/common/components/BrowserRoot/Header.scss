@@ -17,27 +17,30 @@
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: space-between;
-	border-bottom: 3px solid black;
+	border-bottom: 1px solid black;
 	padding: 20px 30px;
 }
 .header_cvm3v7 > .logo-container {
 	display: flex;
 	align-items: center;
 }
-.header_cvm3v7 > .logo-container > svg {
+.header_cvm3v7 > .logo-container > img {
 	display: block;
-	height: 30px;
+	height: 71px;
 }
 .header_cvm3v7 > .menu-container {
 	display: flex;
 	align-items: center;
 }
 .header_cvm3v7 > .menu-container > button {
-	height: 40px;
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+	text-transform: lowercase;
+	height: 50px;
 	border: none;
+	outline: none;
 	padding: 0 20px;
 	background-color: transparent;
-	font-size: 16px;
 	cursor: pointer;
 }
 .header_cvm3v7 > .menu-container > button:not(.loud):hover {
@@ -50,7 +53,7 @@
 	margin-right: 10px;
 }
 .header_cvm3v7 > .menu-container > button.loud {
-	background-color: black;
+	background-color: #2A2326;
 	color: white;
 }
 .header_cvm3v7 > .menu-container > button > label {

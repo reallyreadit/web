@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "reallyread.it",
+  "name": "Readup",
   "description": "Read more. Read better.",
 	
   "icons": {
@@ -15,7 +15,7 @@
   },
   "browser_action": {
     "default_icon": "./icons/default-browser-action-icon.png",
-    "default_title": "reallyread.it",
+    "default_title": "Readup",
     "default_popup": "./browser-action/index.html"
   },
   "background": {
@@ -24,8 +24,7 @@
   },
   "externally_connectable": {
     "matches": [
-      "*://*.readup.com/*",
-      "*://*.reallyread.it/*"
+      "*://*.readup.com/*"
     ]
   },
   "content_scripts": [ 
@@ -48,6 +47,11 @@
   "web_accessible_resources": [
     "content-script/user-interface/bundle.css",
     "content-script/user-interface/bundle.js",
-    "content-script/user-interface/fonts/Bitter-Regular.ttf"
+    "content-script/user-interface/fonts/cambria-bold.ttf",
+    "content-script/user-interface/fonts/cambria-regular.ttf",
+    "content-script/user-interface/fonts/museo-sans-100.ttf",
+    "content-script/user-interface/fonts/museo-sans-300.ttf",
+    "content-script/user-interface/fonts/museo-sans-700.ttf",
+    "content-script/user-interface/fonts/museo-sans-900.ttf"
   ]
 }

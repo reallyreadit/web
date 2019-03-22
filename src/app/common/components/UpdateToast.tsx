@@ -18,7 +18,7 @@ export default class UpdateToast extends React.PureComponent<Props, { isReloadin
 	public render() {
 		return (
 			<>
-				<p>A new version of reallyread.it is available</p>
+				<p>A new version of Readup is available</p>
 				<p>
 					<ActionLink
 						iconLeft="refresh2"

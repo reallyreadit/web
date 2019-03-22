@@ -106,7 +106,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					<div className="footer">
 						Need help? Got feedback?<br />
 						<strong>Send us an email!</strong><br />
-						<a href="mailto:support@reallyread.it">support@reallyread.it</a>
+						<a href="mailto:support@readup.com">support@readup.com</a>
 						<a
 							href="#"
 							onClick={this._viewPrivacyPolicy}

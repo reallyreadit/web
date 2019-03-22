@@ -22,7 +22,6 @@ import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import UpdateToast from './UpdateToast';
-import Footer from './BrowserRoot/Footer';
 import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
@@ -195,7 +194,8 @@ export default class extends Root<Props, State, SharedState> {
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
+				onViewComments: this._viewComments,
+				onViewPrivacyPolicy: this._viewPrivacyPolicy
 			}),
 			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -403,9 +403,6 @@ export default class extends Root<Props, State, SharedState> {
 								null}
 							<div className="screen">
 								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
-								{!this.state.user ?
-									<Footer onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
-									null}
 							</div>
 						</main>
 						{this.state.menuState !== 'closed' ?

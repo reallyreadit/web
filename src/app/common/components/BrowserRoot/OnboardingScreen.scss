@@ -23,26 +23,32 @@
 .onboarding-screen_ny0axb > .content > .logo > a {
 	display: block;
 }
-.onboarding-screen_ny0axb > .content > .logo > a > svg {
-	fill: #666;
-	height: 26px;
+.onboarding-screen_ny0axb > .content > .logo > a > img {
+	height: 71px;
 	display: block;
 	margin: 0 auto;
 }
-.onboarding-screen_ny0axb > .content > .article {
+.onboarding-screen_ny0axb > .content > .description {
 	margin-bottom: 40px;
 }
-.onboarding-screen_ny0axb > .content > .article > strong {
+.onboarding-screen_ny0axb > .content > .description > span {
+	font-family: 'Museo Sans (300)';
+	font-size: 16pt;
+}
+.onboarding-screen_ny0axb > .content > .description > strong {
 	display: block;
 	margin-top: 10px;
-	font-size: 18px;
+	font-weight: normal;
+	font-family: 'Cambria (bold)';
+	font-size: 16pt;
 }
-.onboarding-screen_ny0axb > .content > a {
-	text-decoration: underline;
-	cursor: pointer;
+.onboarding-screen_ny0axb > .content > .prompt > .text {
+	font-family: 'Museo Sans (300)';
+	font-size: 16pt;
 }
 .onboarding-screen_ny0axb > .content > .download > a {
 	display: block;
+	cursor: pointer;
 }
 .onboarding-screen_ny0axb > .content > .download > a > img {
 	display: block;
@@ -67,13 +73,15 @@
 	margin: 20px auto 0 auto;
 }
 .onboarding-screen_ny0axb > .content > .authenticate > .buttons > button {
-	height: 40px;
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+	text-transform: lowercase;
+	height: 50px;
 	border: none;
 	outline: none;
 	padding: 0 20px;
 	background-color: transparent;
 	cursor: pointer;
-	font-size: 18px;
 }
 .onboarding-screen_ny0axb > .content > .authenticate > .buttons > button:not(.loud):hover {
 	background-color: #eaeaea;
@@ -82,7 +90,7 @@
 	margin-right: 20px;
 }
 .onboarding-screen_ny0axb > .content > .authenticate > .buttons > .loud {
-	background-color: black;
+	background-color: #2A2326;
 	color: white;
 }
 .onboarding-screen_ny0axb > .content > .unsupported > .badges {
@@ -93,6 +101,7 @@
 }
 .onboarding-screen_ny0axb > .content > .unsupported > .badges > a {
 	margin: 0 10px 10px 10px;
+	cursor: pointer;
 }
 .onboarding-screen_ny0axb > .content > .unsupported > .badges > a > img {
 	display: block;

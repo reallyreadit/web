@@ -15,6 +15,7 @@ import WelcomeInfoBox from '../WelcomeInfoBox';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import MarketingScreen from './MarketingScreen';
 
 interface Props {
 	isBrowserCompatible: boolean,
@@ -30,6 +31,7 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewPrivacyPolicy: () => void,
 	user: UserAccount | null
 }
 interface State {
@@ -104,6 +106,14 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (!this.props.user) {
+			return (
+				<MarketingScreen
+					onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+					onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
+				/>
+			);
+		}
 		return (
 			<div className="home-screen_1sjipy">
 				{this.props.user && this.props.isExtensionInstalled === false ?
@@ -119,7 +129,7 @@ class HomeScreen extends React.Component<Props, State> {
 							this.props.user &&
 							this.props.isExtensionInstalled &&
 							!this.state.communityReads.value.userStats
-						 ) ?
+						) ?
 							<WelcomeInfoBox /> :
 							null}
 						<CommunityReadsList

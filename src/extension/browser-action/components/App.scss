@@ -5,31 +5,19 @@
 
 .app_79z645 {
 	width: 375px;
-	font-family: 'Bitter';
-	font-size: 13px;
-	letter-spacing: 0.02em;
-}
-.app_79z645 > .ready-indicator {
-	border: 5px solid green;
-	padding: 12px 4px;
-	border-radius: 12px;
-	background: palegreen;
-}
-.app_79z645 > .ready-indicator > h1 {
-	text-align: center;
-	font-size: 17px;
-	color: green;
 }
 .app_79z645 > h1 {
 	padding: 5px 0;
 	text-align: center;
 }
 .app_79z645 > h1 > a {
-	display: inline-block;
-}
-.app_79z645 > h1 > a > svg {
 	display: block;
-	width: 170px;
+	width: 64px;
+	margin: 0 auto;
+}
+.app_79z645 > h1 > a > img {
+	display: block;
+	width: 100%;
 }
 .app_79z645 > .signed-out-warning {
 	display: flex;
@@ -38,13 +26,10 @@
 	border: 1px dashed gray;
 	padding: 5px;
 }
-.app_79z645 > .signed-out-warning > i {
+.app_79z645 > .signed-out-warning > img {
 	display: block;
 	width: 28px;
 	flex: 0 0 auto;
-}
-.app_79z645 > .signed-out-warning > i > svg {
-	display: block;
 }
 .app_79z645 > .signed-out-warning > span {
 	font-size: 12px;

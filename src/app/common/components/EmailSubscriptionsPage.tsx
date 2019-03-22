@@ -7,6 +7,7 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import { parseQueryString } from '../../../common/routing/queryString';
 import { Screen } from './Root';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import ScreenContainer from './ScreenContainer';
 
 interface Props {
 	onGetEmailSubscriptions: (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => Fetchable<EmailSubscriptionsRequest>,
@@ -113,62 +114,64 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<div className="email-subscriptions-page_tqh2pd">
-				{this.state.request ?
-					this.state.request.isLoading ?
-						<span>Loading...</span> :
-						this.state.request.value.isValid ?
-							<div className="form">
-								<h4>Email address: {this.state.request.value.emailAddress}</h4>
-								<h5>Notifications</h5>
-								<h6>Send me an email when:</h6>
-								<label>
-									<input
-										type="checkbox"
-										checked={this.state.values.commentReplyNotifications}
-										disabled={this.state.isSubmitting}
-										onChange={this._changeCommentReplyNotification}
+			<ScreenContainer>
+				<div className="email-subscriptions-page_tqh2pd">
+					{this.state.request ?
+						this.state.request.isLoading ?
+							<span>Loading...</span> :
+							this.state.request.value.isValid ?
+								<div className="form">
+									<h4>Email address: {this.state.request.value.emailAddress}</h4>
+									<h5>Notifications</h5>
+									<h6>Send me an email when:</h6>
+									<label>
+										<input
+											type="checkbox"
+											checked={this.state.values.commentReplyNotifications}
+											disabled={this.state.isSubmitting}
+											onChange={this._changeCommentReplyNotification}
+										/>
+										<span>Someone replies to my comment</span>
+									</label>
+									<h5>Contact Preferences</h5>
+									<h6>Feel free to occasionally email me about the following:</h6>
+									<label>
+										<input
+											type="checkbox"
+											checked={this.state.values.websiteUpdates}
+											disabled={this.state.isSubmitting}
+											onChange={this._changeWebsiteUpdates}
+										/>
+										<span>Community updates</span>
+									</label>
+									<label>
+										<input
+											type="checkbox"
+											checked={this.state.values.suggestedReadings}
+											disabled={this.state.isSubmitting}
+											onChange={this._changeSuggestedReadings}
+										/>
+										<span>Suggested readings</span>
+									</label>
+									{this.state.isUpdated && !this.state.isSubmitting ?
+										<span className="update-message">Your subscriptions have been updated. Thank you!</span> :
+										null}
+									<Button
+										iconLeft="checkmark"
+										text="Update Subscriptions"
+										style="preferred"
+										state={this.state.isSubmitting ?
+											'busy' :
+											this.isFormChanged() ?
+												'normal' :
+												'disabled'}
+										onClick={this._submit}
 									/>
-									<span>Someone replies to my comment</span>
-								</label>
-								<h5>Contact Preferences</h5>
-								<h6>Feel free to occasionally email me about the following:</h6>
-								<label>
-									<input
-										type="checkbox"
-										checked={this.state.values.websiteUpdates}
-										disabled={this.state.isSubmitting}
-										onChange={this._changeWebsiteUpdates}
-									/>
-									<span>Community updates</span>
-								</label>
-								<label>
-									<input
-										type="checkbox"
-										checked={this.state.values.suggestedReadings}
-										disabled={this.state.isSubmitting}
-										onChange={this._changeSuggestedReadings}
-									/>
-									<span>Suggested readings</span>
-								</label>
-								{this.state.isUpdated && !this.state.isSubmitting ?
-									<span className="update-message">Your subscriptions have been updated. Thank you!</span> :
-									null}
-								<Button
-									iconLeft="checkmark"
-									text="Update Subscriptions"
-									style="preferred"
-									state={this.state.isSubmitting ?
-										'busy' :
-										this.isFormChanged() ?
-											'normal' :
-											'disabled'}
-									onClick={this._submit}
-								/>
-							</div> :
-							<strong>Invalid token</strong> :
-					<strong>Invalid token</strong>}
-			</div>
+								</div> :
+								<strong>Invalid token</strong> :
+						<strong>Invalid token</strong>}
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

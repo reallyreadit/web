@@ -10,6 +10,7 @@ import { Screen, SharedState } from '../Root';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import ScreenContainer from '../ScreenContainer';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -78,21 +79,23 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="starred-screen_8khrr8">
-				{this.state.articles.isLoading ?
-					<LoadingOverlay /> :
-					<StarredScreen
-						articles={this.state.articles.value}
-						isUserSignedIn={!!this.props.user}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onLoadPage={this._loadPage}
-						onReadArticle={this.props.onReadArticle}
-						onShare={this.props.onShare}
-						onToggleArticleStar={this.props.onToggleArticleStar}
-						onViewComments={this.props.onViewComments}
-					/>}
-			</div>
+			<ScreenContainer>
+				<div className="starred-screen_8khrr8">
+					{this.state.articles.isLoading ?
+						<LoadingOverlay /> :
+						<StarredScreen
+							articles={this.state.articles.value}
+							isUserSignedIn={!!this.props.user}
+							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onLoadPage={this._loadPage}
+							onReadArticle={this.props.onReadArticle}
+							onShare={this.props.onShare}
+							onToggleArticleStar={this.props.onToggleArticleStar}
+							onViewComments={this.props.onViewComments}
+						/>}
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

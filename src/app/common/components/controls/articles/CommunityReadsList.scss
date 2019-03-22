@@ -14,10 +14,10 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 18px;
-	font-weight: normal;
 	margin-top: 10px;
-	text-transform: uppercase;
+	font-family: 'Cambria (regular)';
+	font-size: 18pt;
+	font-weight: normal;
 }
 .community-reads-list_g4cy3n > .article-details_d2vnmv {
 	flex: 0 0 auto;
@@ -30,18 +30,18 @@
 	margin: 25px 0 10px 0;
 }
 .community-reads-list_g4cy3n > .sort > button {
-	font-size: 18px;
+	font-family: 'Cambria (regular)';
+	font-size: 18pt;
 	cursor: pointer;
 	padding: 5px 10px;
 	background-color: transparent;
 	border: none;
 	outline: none;
 	color: #666;
-	text-transform: uppercase;
+	
 }
 .community-reads-list_g4cy3n > .sort > .selected {
-	font-weight: bold;
-	color: black;
+	color: #2A2326;
 }
 .community-reads-list_g4cy3n > .sort > .break {
 	width: 1px;

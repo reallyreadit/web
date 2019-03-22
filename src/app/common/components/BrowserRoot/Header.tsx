@@ -1,5 +1,4 @@
 import * as React from 'react';
-import logoText from '../../../../common/svg/logoText';
 import classNames from 'classnames';
 import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -24,10 +23,11 @@ export default class extends React.PureComponent<Props> {
 			<header className={classNames('header_cvm3v7', { authenticated: this.props.isUserSignedIn })}>
 				<a
 					className="logo-container"
-					dangerouslySetInnerHTML={{ __html: logoText }}
 					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
 					onClick={this._handleLogoClick}
-				></a>
+				>
+					<img src="/images/logo.svg" alt="logo" />
+				</a>
 				<div className="menu-container">
 					{this.props.isUserSignedIn ?
 						<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>
@@ -38,7 +38,7 @@ export default class extends React.PureComponent<Props> {
 						</div> :
 						<>
 							<button onClick={this.props.onShowSignInDialog}>
-								Log In
+								Login
 							</button>
 							<button
 								className="loud"

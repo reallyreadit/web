@@ -11,6 +11,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import ScreenContainer from '../ScreenContainer';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -58,35 +59,37 @@ class AppStarredScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="starred-screen_jocosv">
-				{this.state.articles.isLoading ?
-					<LoadingOverlay /> :
-					<>
-						<p>
-							{this.state.articles.value.items.length ?
-								<>
-									Pro tip: Add the Chrome extension to star articles from anywhere on the internet.
-									<AsyncActionLink
-										icon="email"
-										onClick={this.props.onSendExtensionInstructions}
-										text="Email me the link."
-									/>
-								</> :
-								null}
-						</p>
-						<StarredScreen
-							articles={this.state.articles.value}
-							isUserSignedIn={!!this.props.user}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onLoadPage={this._loadPage}
-							onReadArticle={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewComments={this.props.onViewComments}
-						/>
-					</>}
-			</div>
+			<ScreenContainer>
+				<div className="starred-screen_jocosv">
+					{this.state.articles.isLoading ?
+						<LoadingOverlay /> :
+						<>
+							<p>
+								{this.state.articles.value.items.length ?
+									<>
+										Pro tip: Add the Chrome extension to star articles from anywhere on the internet.
+										<AsyncActionLink
+											icon="email"
+											onClick={this.props.onSendExtensionInstructions}
+											text="Email me the link."
+										/>
+									</> :
+									null}
+							</p>
+							<StarredScreen
+								articles={this.state.articles.value}
+								isUserSignedIn={!!this.props.user}
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onLoadPage={this._loadPage}
+								onReadArticle={this.props.onReadArticle}
+								onShare={this.props.onShare}
+								onToggleArticleStar={this.props.onToggleArticleStar}
+								onViewComments={this.props.onViewComments}
+							/>
+						</>}
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

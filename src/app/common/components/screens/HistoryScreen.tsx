@@ -10,6 +10,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import InfoBox from '../controls/InfoBox';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import ScreenContainer from '../ScreenContainer';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -47,48 +48,50 @@ export default class extends React.PureComponent<{
 	};
 	public render() {
 		return (
-			<div className="history-screen_lcny0g">
-				{this.props.articles.isLoading ?
-					<LoadingOverlay /> :
-					this.props.articles.value.items.length ?
-						<>
-							<p>Note: Your personal reading history is private.</p>
-							<ArticleList>
-								{this.props.articles.value.items.map(article =>
-									<li key={article.id}>
-										<ArticleDetails
-											article={article}
-											isUserSignedIn={this.props.isUserSignedIn}
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onDelete={this._deleteArticle}
-											onRead={this.props.onReadArticle}
-											onShare={this.props.onShare}
-											onToggleStar={this.props.onToggleArticleStar}
-											onViewComments={this.props.onViewComments}
-											showDeleteControl
-										/>
-									</li>
-								)}
-							</ArticleList>
-							<PageSelector
-								pageNumber={this.props.articles.value.pageNumber}
-								pageCount={this.props.articles.value.pageCount}
-								onChange={this.props.onLoadPage}
-							/>
-						</> :
-						<InfoBox
-							position="absolute"
-							style="normal"
-						>
-							{this.props.isUserSignedIn ?
-								<>
-									<p>You've read 0 articles.</p>
-									<p><strong>Go read something!</strong></p>
-								</> :
-								<p>Sign up to track and improve your reading.</p>}
-						</InfoBox>}
-			</div>
+			<ScreenContainer>
+				<div className="history-screen_lcny0g">
+					{this.props.articles.isLoading ?
+						<LoadingOverlay /> :
+						this.props.articles.value.items.length ?
+							<>
+								<p>Note: Your personal reading history is private.</p>
+								<ArticleList>
+									{this.props.articles.value.items.map(article =>
+										<li key={article.id}>
+											<ArticleDetails
+												article={article}
+												isUserSignedIn={this.props.isUserSignedIn}
+												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onDelete={this._deleteArticle}
+												onRead={this.props.onReadArticle}
+												onShare={this.props.onShare}
+												onToggleStar={this.props.onToggleArticleStar}
+												onViewComments={this.props.onViewComments}
+												showDeleteControl
+											/>
+										</li>
+									)}
+								</ArticleList>
+								<PageSelector
+									pageNumber={this.props.articles.value.pageNumber}
+									pageCount={this.props.articles.value.pageCount}
+									onChange={this.props.onLoadPage}
+								/>
+							</> :
+							<InfoBox
+								position="absolute"
+								style="normal"
+							>
+								{this.props.isUserSignedIn ?
+									<>
+										<p>You've read 0 articles.</p>
+										<p><strong>Go read something!</strong></p>
+									</> :
+									<p>Sign up to track and improve your reading.</p>}
+							</InfoBox>}
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

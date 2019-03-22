@@ -43,10 +43,14 @@ const build = createBuild({
 										.readFileSync(path.join(buildInfo.outPath, 'bundle.css'))
 										.toString()
 										.replace(
-											'{BASE64_FONT}',
-											fs
-												.readFileSync(path.join(buildInfo.outPath, 'fonts/Bitter-Regular.ttf'))
-												.toString('base64')
+											/url\((['"])\/fonts\/(.+)\1\)/gi,
+											(match, quote, fileName) => (
+												'url(\'data:font/ttf;charset=utf-8;base64,' +
+												fs
+													.readFileSync(path.join(buildInfo.outPath, 'fonts', fileName))
+													.toString('base64') +
+												'\')'
+											)
 										)
 								)
 						)
@@ -68,7 +72,7 @@ const build = createBuild({
 		`${project.srcDir}/native-client/reader/**/*.{css,scss}`
 	],
 	staticAssets: [
-		`${project.srcDir}/native-client/reader/fonts/Bitter-Regular.ttf`,
+		`${project.srcDir}/native-client/reader/fonts/**/*.*`,
 		`${project.srcDir}/native-client/reader/templates/style.js`
 	],
 	webpack: {

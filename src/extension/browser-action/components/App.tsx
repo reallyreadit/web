@@ -2,8 +2,6 @@ import * as React from 'react';
 import EventPageApi from '../EventPageApi';
 import ExtensionState from '../../common/ExtensionState';
 import NavBar from '../../../common/components/NavBar';
-import logoText from '../../../common/svg/logoText';
-import warningTriangle from '../../../common/svg/warningTriangle';
 import ArticleDetails from '../../../common/components/ArticleDetails';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import routes from '../../../common/routing/routes';
@@ -58,7 +56,6 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	private readonly _createAbsoluteUrl = (path: string) => `${config.web.protocol}://${config.web.host}${path}`;
 
 	// sharing
-	// sharing
 	private readonly _handleShareRequest = () => {
 		return [
 			ShareChannel.Clipboard,
@@ -98,54 +95,61 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	}
 	public render() {
 		return (
-			this.state.isAuthenticated && this.state.isOnHomePage ?
-				<div className="app_79z645">
-					<div className="ready-indicator">
-						<h1>Go read something!</h1>
-					</div>
-				</div> :
-				<div className="app_79z645">
-					<h1>
-						<a href={this._createAbsoluteUrl('/')} target="_blank" dangerouslySetInnerHTML={{ __html: logoText }}></a>
-					</h1>
-					{!this.state.isAuthenticated ?
-						<div className="signed-out-warning">
-							<i dangerouslySetInnerHTML={{ __html: warningTriangle }}></i>
-							<span>You won't get credit for really reading until you sign in or create an account.</span>
-						</div> :
-						null}
-					<NavBar
-						isSignedIn={this.state.isAuthenticated}
-						showNewReplyIndicator={this.state.showNewReplyIndicator}
-						state={'normal'}
-						onSignIn={this._showSignInDialog}
-						onCreateAccount={this._showCreateAccountDialog}
-						onGoToInbox={this._goToInbox}
-						onGoToStarred={this._goToStarred}
-						onGoToHistory={this._goToHistory}
+			<div className="app_79z645">
+				<h1>
+					<a
+						href={this._createAbsoluteUrl('/')}
+						target="_blank"
+					>
+						<img
+							alt="logo"
+							src="./images/logo.svg"
 						/>
-					{this.state.isAuthenticated ?
-						this.state.userArticle ?
-							<ArticleDetails
-								article={this.state.userArticle}
-								isUserSignedIn={true}
-								onCopyTextToClipboard={this._clipboard.copyText}
-								onCreateAbsoluteUrl={this._createAbsoluteUrl}
-								onRead={this._preventDefault}
-								onShare={this._handleShareRequest}
-								onToggleStar={this._toggleStar}
-								onViewComments={this._goToComments}
-							/> :
+					</a>
+				</h1>
+				{!this.state.isAuthenticated ?
+					<div className="signed-out-warning">
+						<img
+							alt="logo"
+							src="./images/warning-triangle.svg"
+						/>
+						<span>You won't get credit for really reading until you sign in or create an account.</span>
+					</div> :
+					null}
+				<NavBar
+					isSignedIn={this.state.isAuthenticated}
+					showNewReplyIndicator={this.state.showNewReplyIndicator}
+					state={'normal'}
+					onSignIn={this._showSignInDialog}
+					onCreateAccount={this._showCreateAccountDialog}
+					onGoToInbox={this._goToInbox}
+					onGoToStarred={this._goToStarred}
+					onGoToHistory={this._goToHistory}
+					/>
+				{this.state.isAuthenticated ?
+					this.state.userArticle ?
+						<ArticleDetails
+							article={this.state.userArticle}
+							isUserSignedIn={true}
+							onCopyTextToClipboard={this._clipboard.copyText}
+							onCreateAbsoluteUrl={this._createAbsoluteUrl}
+							onRead={this._preventDefault}
+							onShare={this._handleShareRequest}
+							onToggleStar={this._toggleStar}
+							onViewComments={this._goToComments}
+						/> :
+						!this.state.isOnHomePage ?
 							<div className="article-placeholder">
 								No article found on page
 							</div> :
-						null}
-					<Toaster
-						onRemoveToast={this._toaster.removeToast}
-						toasts={this.state.toasts}
-					/>
-					<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
-				</div>
+							null :
+					null}
+				<Toaster
+					onRemoveToast={this._toaster.removeToast}
+					toasts={this.state.toasts}
+				/>
+				<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
+			</div>
 		);
 	}
 }

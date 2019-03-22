@@ -27,7 +27,7 @@ export default class RootErrorBoundary extends React.PureComponent<Props, { isRe
 						style="warning"
 					>
 						<p>An error occurred and caused the app to crash.</p>
-						<p>If this keeps happening please <a href="mailto:support@reallyread.it?subject=App%20Crash">let us know.</a></p>
+						<p>If this keeps happening please <a href="mailto:support@readup.com?subject=App%20Crash">let us know.</a></p>
 						<p>
 							<ActionLink
 								iconLeft="refresh2"

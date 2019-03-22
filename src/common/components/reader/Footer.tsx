@@ -1,13 +1,12 @@
 import * as React from 'react';
-import logoText from '../../svg/logoText';
 import RatingSelector from '../RatingSelector';
 
 interface Props {
+	children?: React.ReactNode,
 	isRead: boolean,
 	onSelectRating: (rating: number) => Promise<{}>,
 	percentComplete: number,
-	ratingScore: number | null,
-	showLogo: boolean
+	ratingScore: number | null
 }
 export default (props: Props) => (
 	<div className="footer_sg74y0">
@@ -15,11 +14,6 @@ export default (props: Props) => (
 			<div className="greeting-text">Nice work.</div> :
 			null}
 		<RatingSelector {...props} />
-		{props.showLogo ?
-			<div
-				className="logo-text"
-				dangerouslySetInnerHTML={{ __html: logoText }}>
-			</div> :
-			null}
+		{props.children}
 	</div>
 );

@@ -25,19 +25,14 @@
 	height: 100%;
 	overflow: scroll;
 	-webkit-overflow-scrolling: touch;
-	padding: 10px;
 	box-sizing: border-box;
-	background-color: ghostwhite;
+	background-color: #F7F6F5;
 }
 .app-root_vc3j5h > .content > .screens > .screen + .screen {
 	animation: app-root_vc3j5h-screen-slide-in 250ms forwards;
 }
 .app-root_vc3j5h > .content > .screens > .screen.slide-out {
 	animation: app-root_vc3j5h-screen-slide-out 250ms forwards;
-}
-.app-root_vc3j5h > .content > .screens > .screen > div {
-	max-width: 800px;
-	margin: 0 auto;
 }
 
 @keyframes app-root_vc3j5h-screen-slide-in {

@@ -7,6 +7,8 @@
 	display: flex;
 	flex-flow: column;
 	min-height: 100%;
+	padding: 20px;
+	box-sizing: border-box;
 }
 .home-screen_an7vm5 > .info-box_whou0t {
 	flex: 0 0 auto;
@@ -23,12 +25,15 @@
 	margin: 5px 0 10px 0;
 }
 
-.home-screen_an7vm5-title-content > svg {
-	height: 16px;
-	position: relative;
-	top: 3px;
-	fill: #666;
+.home-screen_an7vm5-title-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
+.home-screen_an7vm5-title-content > img {
+	height: 28px;
+}
+
 .home-screen_an7vm5-header-content {
 	display: flex;
 	align-items: center;
@@ -37,4 +42,10 @@
 }
 .home-screen_an7vm5-header-content > .icon_rour3d {
 	font-size: 22px;
+}
+
+@media (max-width: 499px) {
+	.home-screen_an7vm5 {
+		padding: 10px;
+	}
 }

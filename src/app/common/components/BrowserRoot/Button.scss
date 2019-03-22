@@ -5,15 +5,17 @@
 
 .button_cn7dmh {
 	display: flex;
-	padding: 20px 30px;
-	font-size: 16px;
+	padding: 18px 30px;
 	width: 100%;
 	box-sizing: border-box;
 	border: none;
 	background-color: transparent;
 	cursor: pointer;
 	text-decoration: none;
-	color: black;
+	color: #2A2326;
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+	text-transform: lowercase;
 }
 .button_cn7dmh:hover {
 	background-color: #eaeaea;
@@ -22,10 +24,10 @@
 	outline: none;
 }
 .button_cn7dmh:active {
-	color: black;
+	color: #2A2326;
 }
 .button_cn7dmh.loud {
-	background-color: black;
+	background-color: #2A2326;
 	color: white;
 }
 .button_cn7dmh > .icon_rour3d:first-child {

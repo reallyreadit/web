@@ -1,5 +1,4 @@
 import * as React from 'react';
-import logoText from '../../../../common/svg/logoText';
 import SignInCard from './AuthScreen/SignInCard';
 import Captcha from '../../Captcha';
 import classNames from 'classnames';
@@ -69,7 +68,13 @@ export default class extends React.PureComponent<Props, {
 		return (
 			<div className="auth-screen_gnq77a">
 				<div className="content">
-					<div className="logo" dangerouslySetInnerHTML={{ __html: logoText }}></div>
+					<div className="logo">
+						<img
+							alt="logo"
+							src="/images/logo.svg"
+						/>
+						<h1>Make yourself a better reader.</h1>
+					</div>
 					<div className="flip-container">
 						<div
 							className={classNames(

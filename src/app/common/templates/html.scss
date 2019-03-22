@@ -1,13 +1,32 @@
 @font-face {
-	font-family: 'Bitter';
-	src: url('/fonts/Bitter-Regular.ttf');
+	font-family: 'Cambria (bold)';
+	src: url('/fonts/cambria-bold.ttf');
+}
+@font-face {
+	font-family: 'Cambria (regular)';
+	src: url('/fonts/cambria-regular.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (100)';
+	src: url('/fonts/museo-sans-100.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (300)';
+	src: url('/fonts/museo-sans-300.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (700)';
+	src: url('/fonts/museo-sans-700.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (900)';
+	src: url('/fonts/museo-sans-900.ttf');
 }
 html {
-	font-family: 'Bitter';
-	font-size: 13px;
-	letter-spacing: 0.02em;
-	background-color: ghostwhite;
-	line-height: 1.2;
+	font-family: 'Museo Sans (100)';
+	font-size: 13pt;
+	color: #2A2326;
+	background-color: #F7F6F5;
 }
 html, body, #root {
 	height: 100%;
@@ -16,13 +35,13 @@ body {
 	overflow: hidden;
 }
 #root {
-	background-color: ghostwhite;
+	background-color: #F7F6F5;
 }
 a, button, div, span, svg {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 a {
-	color: black;
+	color: #2A2326;
 }
 html > body > div:not(#root) {
 	position: absolute;

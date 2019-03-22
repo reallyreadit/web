@@ -15,6 +15,7 @@ import RatingSelector from '../../../../common/components/RatingSelector';
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import ScreenContainer from '../ScreenContainer';
 
 export function findComment(id: string, threads: CommentThread[]): CommentThread | null {
 	for (const thread of threads) {
@@ -77,53 +78,55 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 			isUserSignedIn = !!this.props.user,
 			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead;
 		return (
-			<div className="comments-screen_udh2l6">
-				{this.props.article.isLoading || this.props.comments.isLoading ?
-					<LoadingOverlay /> :
-					<>
-						<ArticleDetails
-							article={this.props.article.value}
-							isUserSignedIn={isUserSignedIn}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onRead={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onToggleStar={this.props.onToggleArticleStar}
-							onViewComments={this._noop}
-						/>
-						{this.props.article.value.isRead ?
-							<RatingSelector
-								{
-									...{
-										...this.props.article.value,
-										onSelectRating: this._selectRating
+			<ScreenContainer>
+				<div className="comments-screen_udh2l6">
+					{this.props.article.isLoading || this.props.comments.isLoading ?
+						<LoadingOverlay /> :
+						<>
+							<ArticleDetails
+								article={this.props.article.value}
+								isUserSignedIn={isUserSignedIn}
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onRead={this.props.onReadArticle}
+								onShare={this.props.onShare}
+								onToggleStar={this.props.onToggleArticleStar}
+								onViewComments={this._noop}
+							/>
+							{this.props.article.value.isRead ?
+								<RatingSelector
+									{
+										...{
+											...this.props.article.value,
+											onSelectRating: this._selectRating
+										}
 									}
-								}
-							/> :
-							null}
-						<h3>Comments</h3>
-						<CommentBox
-							articleId={this.props.article.value.id}
-							isAllowedToPost={isAllowedToPost}
-							onPostComment={this.props.onPostComment}
-						/>
-						{this.props.comments.value ?
-							this.props.comments.value.length ?
-								<CommentList
-									comments={this.props.comments.value}
-									highlightedCommentId={this.props.highlightedCommentId}
-									isAllowedToPost={isAllowedToPost}
-									mode="reply"
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onPostComment={this.props.onPostComment}
-									onShare={this.props.onShare}
-									user={this.props.user}
 								/> :
-								<span>No comments found! (Post one!)</span> :
-							null}
-					</>}
-			</div>
+								null}
+							<h3>Comments</h3>
+							<CommentBox
+								articleId={this.props.article.value.id}
+								isAllowedToPost={isAllowedToPost}
+								onPostComment={this.props.onPostComment}
+							/>
+							{this.props.comments.value ?
+								this.props.comments.value.length ?
+									<CommentList
+										comments={this.props.comments.value}
+										highlightedCommentId={this.props.highlightedCommentId}
+										isAllowedToPost={isAllowedToPost}
+										mode="reply"
+										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onPostComment={this.props.onPostComment}
+										onShare={this.props.onShare}
+										user={this.props.user}
+									/> :
+									<span>No comments found! (Post one!)</span> :
+								null}
+						</>}
+				</div>
+			</ScreenContainer>
 		);
 	}
 }

@@ -8,6 +8,8 @@
 }
 .rating-selector_epcgq9 > .prompt-text {
 	margin-bottom: 10px;
+	font-family: 'Museo Sans (300)';
+	font-size: 14pt;
 }
 .rating-selector_epcgq9 > .rating-bar {
 	display: flex;
@@ -17,9 +19,9 @@
 }
 .rating-selector_epcgq9 > .rating-bar > label {
 	flex: 0 0 auto;
-	color: #666;
 	text-transform: uppercase;
-	font-size: smaller;
+	font-family: 'Museo Sans (700)';
+	font-size: 12pt;
 }
 .rating-selector_epcgq9 > .rating-bar > label:first-child {
 	padding-right: 10px;
@@ -36,17 +38,14 @@
 	width: 10%;
 	padding: 0;
 	margin: 0;
-	font-family: inherit;
 	height: 25px;
 	border-width: 1px 0 1px 1px;
 	border-style: solid;
-	border-color: #aaa;
+	border-color: #2A2326;
 	background-color: white;
 	cursor: pointer;
-	font-weight: normal;
-	letter-spacing: normal;
-	line-height: normal;
-	font-size: inherit;
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
 }
 .rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button:first-child {
 	border-radius: 5px 0 0 5px;
@@ -65,4 +64,5 @@
 }
 .rating-selector_epcgq9 > .status-text {
 	margin-top: 10px;
+	font-family: 'Museo Sans (300)';
 }

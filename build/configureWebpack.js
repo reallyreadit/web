@@ -60,6 +60,7 @@ function configureWebpack(params) {
 		config.api.host = JSON.stringify(config.api.host);
 		config.cookieDomain = JSON.stringify(config.cookieDomain);
 		config.cookieName = JSON.stringify(config.cookieName);
+		config.extensionId = JSON.stringify(config.extensionId);
 		config.web.protocol = JSON.stringify(config.web.protocol);
 		config.web.host = JSON.stringify(config.web.host);
 		define = Object.assign(define || {}, { config });
