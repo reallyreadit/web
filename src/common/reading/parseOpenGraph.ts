@@ -4,12 +4,12 @@ import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 function findMetaElementContent(property: string, elements: Element[]) {
 	return getElementAttribute<HTMLMetaElement>(
 		elements.find(e => e.getAttribute('property') === property),
-		e => e.content ? e.content.toLowerCase() : null
+		e => e.content
 	);
 }
 function parseOpenGraph(): ParseResult {
 	const elements = Array.from(document.getElementsByTagName('meta'));
-	if (findMetaElementContent('og:type', elements) === 'article') {
+	if (/article/i.test(findMetaElementContent('og:type', elements))) {
 		return {
 			url: findMetaElementContent('og:url', elements),
 			article: {
