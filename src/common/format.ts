@@ -33,3 +33,8 @@ export function truncateText(text: string, length: number) {
 export function formatPossessive(text: string) {
 	return `${text}'${text.endsWith('s') ? '' : 's'}`;
 }
+export function formatCountable(count: number, singular: string, plural?: string) {
+	return count === 1 ?
+		singular :
+		plural || singular + 's';
+}
