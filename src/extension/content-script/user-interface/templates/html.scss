@@ -15,6 +15,10 @@
 	src: url('chrome-extension://{EXTENSION_ID}/content-script/user-interface/fonts/museo-sans-300.ttf');
 }
 @font-face {
+	font-family: 'Museo Sans (500)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-script/user-interface/fonts/museo-sans-500.ttf');
+}
+@font-face {
 	font-family: 'Museo Sans (700)';
 	src: url('chrome-extension://{EXTENSION_ID}/content-script/user-interface/fonts/museo-sans-700.ttf');
 }
