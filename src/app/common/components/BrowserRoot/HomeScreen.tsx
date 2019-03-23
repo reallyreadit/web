@@ -163,7 +163,7 @@ export default function <TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'user'>>
 ) {
 	return {
-		create: () => ({ key, title: 'Home' }),
+		create: () => ({ key, title: 'Readup' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen {
 				...{
