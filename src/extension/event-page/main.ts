@@ -175,19 +175,20 @@ function updateIcon(state: ExtensionState) {
 			// content script tab
 			drawBrowserActionIcon(
 				'signedIn',
-				state.userArticle ? state.userArticle.percentComplete : 0,
-				state.userArticle && state.userArticle.isRead ? 'unlocked' : 'locked',
 				state.showNewReplyIndicator
 			);
-			browserActionBadgeApi.set(serverApi.getArticleLookupRequests(state.focusedTab.id).length ? 'loading' : state.userArticle ? state.userArticle.commentCount : null);
+			browserActionBadgeApi.set({
+				isLoading: !!serverApi.getArticleLookupRequests(state.focusedTab.id).length,
+				value: state.userArticle
+			});
 		} else {
 			// not one of our tabs
-			drawBrowserActionIcon('signedIn', 0, 'locked', state.showNewReplyIndicator);
+			drawBrowserActionIcon('signedIn', state.showNewReplyIndicator);
 			browserActionBadgeApi.set();
 		}
 	} else {
 		// signed out
-		drawBrowserActionIcon('signedOut', 0, 'locked', false);
+		drawBrowserActionIcon('signedOut', false);
 		browserActionBadgeApi.set();
 	}
 }

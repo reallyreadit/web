@@ -8,7 +8,10 @@ const build = createBuild({
 		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts'),
 		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json')
 	},
-	staticAssets: `${project.srcDir}/extension/{event-page,common}/**/*.{html,ttf}`,
+	staticAssets: [
+		`${project.srcDir}/extension/event-page/images/**/*.*`,
+		`${project.srcDir}/extension/event-page/index.html`
+	],
 	path: 'extension/event-page'
 });
 
