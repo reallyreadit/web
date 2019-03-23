@@ -185,7 +185,7 @@ export default class ServerApi {
 									createUrl(config.web, '/viewReply' + createQueryString({ token: notification.token })),
 									{
 										type: 'basic',
-										iconUrl: '../icons/desktop-notification-icon.svg',
+										iconUrl: '../icons/icon.svg',
 										title: `${notification.userName} just replied to your comment re: ${notification.articleTitle}`,
 										message: 'Click here to view the reply in the comment thread.',
 										isClickable: true
