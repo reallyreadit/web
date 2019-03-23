@@ -51,6 +51,7 @@
     "content-script/user-interface/fonts/cambria-regular.ttf",
     "content-script/user-interface/fonts/museo-sans-100.ttf",
     "content-script/user-interface/fonts/museo-sans-300.ttf",
+    "content-script/user-interface/fonts/museo-sans-500.ttf",
     "content-script/user-interface/fonts/museo-sans-700.ttf",
     "content-script/user-interface/fonts/museo-sans-900.ttf"
   ]
