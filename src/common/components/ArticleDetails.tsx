@@ -1,9 +1,8 @@
 import * as React from 'react';
 import UserArticle from '../models/UserArticle';
-import { formatTimestamp } from '../format';
+import { formatTimestamp, formatCountable } from '../format';
 import Star from './Star';
 import readingParameters from '../readingParameters';
-import SpeechBubble from './Logo/SpeechBubble';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
@@ -11,6 +10,7 @@ import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
+import classNames from 'classnames';
 
 interface Props {
 	article: UserArticle,
@@ -103,6 +103,20 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onGetData: this._getShareData,
 				onShare: this.props.onShare
 			};
+		const publisherMetadata = [this.props.article.source];
+		if (this.props.article.authors.length) {
+			publisherMetadata.push(
+				this.props.article.authors.join(', ')
+			);
+		}
+		if (this.props.article.datePublished) {
+			publisherMetadata.push(
+				formatTimestamp(this.props.article.datePublished)
+			);
+		}
+		publisherMetadata.push(
+			Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)) + ' min'
+		);
 		return (
 			<div className="article-details_d2vnmv">
 				<div className="small-title">
@@ -110,47 +124,23 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					{titleLink}
 				</div>
 				<div className="columns">
-					<div className="stats">
-						<div className="stat reads">
-							<div className="count">
-								{this.props.article.readCount}
-							</div>
-							<label>{this.props.article.readCount === 1 ? 'read' : 'reads'}</label>
-						</div>
-						<a
-							className="stat comments"
-							href={commentsLinkHref}
-							onClick={this._viewComments}
-						>
-							<div className="count">
-								{this.props.article.commentCount}
-							</div>
-							<label>{this.props.article.commentCount === 1 ? 'comment' : 'comments'}</label>
-						</a>
-					</div>
 					{star}
 					<div className="article">
 						{titleLink}
 						<div className="meta">
-							<span className="publisher">
-								{this.props.article.source}
-							</span>
-							{this.props.article.authors.length || this.props.article.datePublished ?
-								<span> | </span> :
-								null}
-							{this.props.article.authors.length ?
-								<span className="author">
-									{this.props.article.authors.join(', ')}
-								</span> :
-								null}
-							{this.props.article.authors.length && this.props.article.datePublished ?
-								<span> | </span> :
-								null}
-							{this.props.article.datePublished ?
-								<span className="date">
-									{formatTimestamp(this.props.article.datePublished)}
-								</span> :
-								null}
+							{publisherMetadata.join(' | ')}
+						</div>
+						<div className="stats">
+							<div className="stat reads">
+								<span className="count">{this.props.article.readCount}</span> {formatCountable(this.props.article.readCount, 'read')}
+							</div>
+							<a
+								className="stat comments"
+								href={commentsLinkHref}
+								onClick={this._viewComments}
+							>
+								<span className="count">{this.props.article.commentCount}</span> {formatCountable(this.props.article.commentCount, 'comment')}
+							</a>
 						</div>
 					</div>
 					<div className="small-stats-article">
@@ -158,7 +148,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							<div className="publisher">
 								{this.props.article.source}
 							</div>
-							<div className="author-date">
+							<div className="author-date-length">
 								{this.props.article.authors.length ?
 									<span className="author">
 										{this.props.article.authors.join(', ')}
@@ -172,35 +162,38 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 										{formatTimestamp(this.props.article.datePublished)}
 									</span> :
 									null}
+								{this.props.article.authors.length || this.props.article.datePublished ?
+									<span className="spacer">|</span> :
+									null}
+								<span className="length">
+									{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)) + ' min'}
+								</span>
 							</div>
 						</div>
 						<div className="stats">
 							<div className="reads-comments">
 								<div className="stat reads">
-									{this.props.article.readCount}
-									{this.props.article.readCount === 1 ? ' read' : ' reads'}
+									<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 								</div>
 								<a
 									className="stat comments"
 									href={commentsLinkHref}
 									onClick={this._viewComments}
 								>
-									{this.props.article.commentCount}
-									{this.props.article.commentCount === 1 ? ' comment' : ' comments'}
+									<span>{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}</span>
 								</a>
 							</div>
 							<ShareControl {...{ ...shareControlProps, menuPosition: MenuPosition.BottomLeft }} />
 						</div>
 					</div>
-					<div className="bubble">
-						<div className="container">
-							<SpeechBubble
-								percentComplete={this.props.article.percentComplete}
-								isRead={this.props.article.isRead}
-								uuid={`article-details_d2vnmv-speech-bubble-${this.props.article.id}`}
-							/>
-							<div className="length">
-								<strong>{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute))}</strong> min read
+					<div className="progress">
+						<div className="meter">
+							<div
+								className={classNames('fill', { 'read': this.props.article.isRead })}
+								style={{ height: this.props.article.percentComplete + '%' }}
+							></div>
+							<div className="description">
+								<strong>{Math.floor(this.props.article.percentComplete)}%</strong> complete
 							</div>
 						</div>
 					</div>
