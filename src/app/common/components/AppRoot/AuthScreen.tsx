@@ -96,7 +96,7 @@ export default class extends React.PureComponent<Props, {
 								/>
 								<Button
 									onClick={this._showSignInCard}
-									text="Log In"
+									text="Login"
 								/>
 							</div>
 							<div className="back">

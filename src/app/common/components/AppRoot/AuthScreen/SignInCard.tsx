@@ -72,7 +72,7 @@ export default class extends React.PureComponent<Props, {
 					busy={this.state.isSubmitting}
 					onClick={this._submit}
 					style="loud"
-					text="Log In"
+					text="Login"
 				/>
 				<ActionLink onClick={this.props.onOpenRequestPasswordResetDialog} text="Forgot Password?" />
 				<ActionLink onClick={this.props.onCancel} text="Cancel" />
