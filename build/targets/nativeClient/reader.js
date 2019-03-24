@@ -43,7 +43,7 @@ const build = createBuild({
 										.readFileSync(path.join(buildInfo.outPath, 'bundle.css'))
 										.toString()
 										.replace(
-											/url\((['"])\/fonts\/(.+)\1\)/gi,
+											/url\((['"]?)\/fonts\/([^)]+)\1\)/gi,
 											(match, quote, fileName) => (
 												'url(\'data:font/ttf;charset=utf-8;base64,' +
 												fs
