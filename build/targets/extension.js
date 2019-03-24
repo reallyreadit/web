@@ -26,7 +26,7 @@ const
 						.readFileSync('./package.json')
 						.toString()
 				);
-			manifest.version = package['it.reallyread'].version.extension.toString();
+			manifest.version = package['it.reallyread'].version.extension.toString().padEnd(4, '0');
 			fs.writeFileSync(
 				fileName,
 				JSON.stringify(manifest, null, 3)
