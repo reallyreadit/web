@@ -144,12 +144,22 @@ server = server.get('/assets/update/ContentScript.js', (req, res) => {
 		res.sendStatus(200);
 	}
 });
-// authenticate
+// readup redirect
 server = server.use((req, res, next) => {
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
+	if (clientType === ClientType.Browser) {
+		req.query['redirected'] = null;
+		res.redirect('https://readup.com' + req.path + createQueryString(req.query));
+	} else {
+		req.clientType = clientType;
+		next();
+	}
+});
+// authenticate
+server = server.use((req, res, next) => {
 	const api = new ServerApi(
 		config.apiServer,
-		clientType,
+		req.clientType,
 		version.app.toString(),
 		{
 			key: config.cookieName,
@@ -157,7 +167,6 @@ server = server.use((req, res, next) => {
 		}
 	);
 	req.api = api;
-	req.clientType = clientType;
 	if (api.hasAuthCookie()) {
 		api.fetchJson<SessionState>('GET', { path: '/UserAccounts/GetSessionState' })
 			.then(sessionState => {
