@@ -8,19 +8,28 @@
 	display: flex;
 	flex-flow: column;
 }
-.browser-root_6tjc3j > .email-confirmation-bar {
+.browser-root_6tjc3j > .redirect-banner {
 	flex: 0 0 auto;
+	background-color: #2A2326;
+	color: white;
+	font-family: 'Cambria (Regular)';
+	font-size: 18pt;
+	height: 80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
 }
-.browser-root_6tjc3j > .browser-header {
-	flex: 0 0 auto;
+.browser-root_6tjc3j > .redirect-banner > .icon {
+	cursor: pointer;
+	position: absolute;
+	right: 12px;
+	font-size: 20px;
 }
 .browser-root_6tjc3j > main {
 	flex: 1 1 auto;
 	display: flex;
 	overflow: hidden;
-}
-.browser-root_6tjc3j > main > .browser-nav {
-	flex: 0 0 auto;
 }
 .browser-root_6tjc3j > main > .screen {
 	flex: 1 1 auto;

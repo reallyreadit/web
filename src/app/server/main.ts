@@ -17,7 +17,7 @@ import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, redirectedQueryStringKey } from '../../common/routing/queryString';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
@@ -35,7 +35,7 @@ function findRouteByRequest(req: express.Request) {
 			path: req.path,
 			queryString: createQueryString(req.query)
 		},
-		[clientTypeQueryStringKey]
+		[clientTypeQueryStringKey, redirectedQueryStringKey]
 	);
 }
 

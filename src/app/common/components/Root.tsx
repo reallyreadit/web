@@ -5,7 +5,7 @@ import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
 import ResetPasswordDialog from './ResetPasswordDialog';
-import { parseQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, clientTypeQueryStringKey, redirectedQueryStringKey } from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
@@ -396,7 +396,7 @@ export default abstract class Root<
 		return { screen, url };
 	}
 	protected getLocationDependentState(location: RouteLocation) {
-		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey]);
+		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]);
 		return {
 			dialog: route.dialogKey != null ?
 				this._dialogCreatorMap[route.dialogKey](location) :

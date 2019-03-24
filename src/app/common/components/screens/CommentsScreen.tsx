@@ -10,7 +10,7 @@ import routes from '../../../../common/routing/routes';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { clientTypeQueryStringKey } from '../../../../common/routing/queryString';
+import { clientTypeQueryStringKey, redirectedQueryStringKey } from '../../../../common/routing/queryString';
 import RatingSelector from '../../../../common/components/RatingSelector';
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
@@ -30,7 +30,7 @@ export function findComment(id: string, threads: CommentThread[]): CommentThread
 	return null;
 }
 export function getPathParams(location: RouteLocation) {
-	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey]).getPathParams(location.path);
+	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]).getPathParams(location.path);
 	let result = {
 		slug: params['sourceSlug'] + '_' + params['articleSlug']
 	} as {

@@ -26,3 +26,4 @@ export function createQueryString(kvps: { [key: string]: string }) {
 	);
 }
 export const clientTypeQueryStringKey = 'clientType';
+export const redirectedQueryStringKey = 'redirected';

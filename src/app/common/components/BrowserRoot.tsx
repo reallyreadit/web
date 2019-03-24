@@ -26,6 +26,8 @@ import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
+import { parseQueryString, redirectedQueryStringKey } from '../../../common/routing/queryString';
+import Icon from '../../../common/components/Icon';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -35,7 +37,8 @@ interface Props extends RootProps {
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
 	menuState: 'opened' | 'closing' | 'closed',
-	showNewReplyIndicator: boolean
+	showNewReplyIndicator: boolean,
+	showRedirectBanner: boolean
 }
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 export default class extends Root<Props, State, SharedState> {
@@ -80,6 +83,11 @@ export default class extends Root<Props, State, SharedState> {
 	};
 	private readonly _openMenu = () => {
 		this.setState({ menuState: 'opened' });
+	};
+
+	// redirect notice
+	private readonly _dismissRedirectBanner = () => {
+		this.setState({ showRedirectBanner: false });
 	};
 
 	// screens
@@ -242,7 +250,8 @@ export default class extends Root<Props, State, SharedState> {
 			isExtensionInstalled: null,
 			menuState: 'closed',
 			screens: [locationState.screen],
-			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification)
+			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
+			showRedirectBanner: redirectedQueryStringKey in parseQueryString(props.initialLocation.queryString)
 		};
 
 		// BrowserApi
@@ -377,6 +386,16 @@ export default class extends Root<Props, State, SharedState> {
 			sharedState = this.getSharedState();
 		return (
 			<>
+				{this.state.showRedirectBanner ?
+					<div className="redirect-banner">
+						Heads up, we changed our name. reallyread.it is now Readup!
+						<Icon
+							className="icon"
+							name="cancel"
+							onClick={this._dismissRedirectBanner}
+						/>
+					</div> :
+					null}
 				{screen.key === ScreenKey.Read ?
 					this._screenFactoryMap[screen.key].render(screen, sharedState) :
 					<>
