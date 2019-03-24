@@ -39,7 +39,7 @@ function findRouteByRequest(req: express.Request) {
 	);
 }
 
-// redirect helper function
+// redirect helper functions
 const nodeUrl = url;
 function redirect(req: express.Request, res: express.Response, url: string) {
 	if (clientTypeQueryStringKey in req.query) {
@@ -53,6 +53,10 @@ function redirect(req: express.Request, res: express.Response, url: string) {
 		})
 	}
 	res.redirect(url);
+}
+// TODO: support adding an (error) message!
+function redirectToHomeScreen(req: express.Request, res: express.Response) {
+	redirect(req, res, findRouteByKey(routes, ScreenKey.Home).createUrl())
 }
 
 // token helper function
@@ -197,10 +201,8 @@ server = server.use((req, res, next) => {
 		(req.sessionState.userAccount && (req.sessionState.userAccount.role === route.authLevel || req.sessionState.userAccount.role === UserAccountRole.Admin))
 	) {
 		next();
-	} else if (route.authLevel === UserAccountRole.Admin) {
-		res.sendStatus(404);
 	} else {
-		redirect(req, res, findRouteByKey(routes, ScreenKey.Home).createUrl());
+		redirectToHomeScreen(req, res);
 	}
 });
 // url migration
@@ -257,7 +259,7 @@ server = server.get('/confirmEmail', (req, res) => {
 			if (redirectUrl) {
 				redirect(req, res, redirectUrl);
 			} else {
-				res.sendStatus(400);
+				redirectToHomeScreen(req, res);
 			}
 		});
 });
@@ -282,7 +284,7 @@ server = server.get('/resetPassword', (req, res) => {
 			if (redirectUrl) {
 				redirect(req, res, redirectUrl);
 			} else {
-				res.sendStatus(400);
+				redirectToHomeScreen(req, res);
 			}
 		});
 });
@@ -310,7 +312,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 			);
 		})
 		.catch(() => {
-			res.sendStatus(400);
+			redirectToHomeScreen(req, res);
 		});
 });
 // ack new reply notification
@@ -336,7 +338,7 @@ server = server.use((req, res, next) => {
 	if (findRouteByRequest(req)) {
 		next();
 	} else {
-		res.sendStatus(404);
+		redirectToHomeScreen(req, res);
 	}
 });
 // render the app
