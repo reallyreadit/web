@@ -14,19 +14,15 @@ import { formatFetchable, formatPossessive } from '../../../../common/format';
 import OnboardingScreen from './OnboardingScreen';
 
 function shouldShowComments(
-	highlightedCommentId: string | null,
 	user: UserAccount | null,
 	isExtensionInstalled: boolean | null,
 	hasDeclinedExtensionInstallPrompt?: boolean
 ) {
 	return (
-		!highlightedCommentId ||
+		!!user &&
 		(
-			!!user &&
-			(
-				isExtensionInstalled === true ||
-				hasDeclinedExtensionInstallPrompt === true
-			)
+			isExtensionInstalled === true ||
+			hasDeclinedExtensionInstallPrompt === true
 		)
 	);
 }
@@ -61,7 +57,6 @@ class BrowserCommentsScreen extends React.Component<
 					this.setState({ hasDeclinedExtensionInstallPrompt: true });
 					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
 						currentState.renderTemplate = shouldShowComments(
-							this.props.highlightedCommentId,
 							this.props.user,
 							this.props.isExtensionInstalled,
 							true
@@ -98,7 +93,6 @@ class BrowserCommentsScreen extends React.Component<
 			props.onRegisterExtensionChangeHandler(isExtensionInstalled => {
 				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
 					currentState.renderTemplate = shouldShowComments(
-						this.props.highlightedCommentId,
 						this.props.user,
 						isExtensionInstalled,
 						this.state.hasDeclinedExtensionInstallPrompt
@@ -109,7 +103,6 @@ class BrowserCommentsScreen extends React.Component<
 				this.props.onReloadArticle(this.props.articleSlug);
 				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
 					currentState.renderTemplate = shouldShowComments(
-						this.props.highlightedCommentId,
 						user,
 						this.props.isExtensionInstalled,
 						this.state.hasDeclinedExtensionInstallPrompt
@@ -134,7 +127,6 @@ class BrowserCommentsScreen extends React.Component<
 		let screen: React.ReactNode;
 		if (
 			shouldShowComments(
-				this.props.highlightedCommentId,
 				this.props.user,
 				this.props.isExtensionInstalled,
 				this.state.hasDeclinedExtensionInstallPrompt
@@ -204,7 +196,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				componentState: article,
 				key,
 				location,
-				renderTemplate: shouldShowComments(pathParams.commentId, sharedState.user, sharedState.isExtensionInstalled),
+				renderTemplate: shouldShowComments(sharedState.user, sharedState.isExtensionInstalled),
 				title: formatFetchable(article, article => article.title, 'Loading...')
 			};
 		},
