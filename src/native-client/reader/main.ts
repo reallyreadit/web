@@ -51,20 +51,43 @@ const
 					}
 				},
 				(article: UserArticle) => {
-					ReactDOM.render(
-						React.createElement(
-							Footer,
-							props = {
-								...props,
-								...article
-							}
-						),
-						root
-					);
+					if (article.isRead) {
+						if (props) {
+							ReactDOM.render(
+								React.createElement(
+									Footer,
+									props = {
+										...props,
+										...article
+									}
+								),
+								root
+							);
+						} else {
+							constructUserInterface(article);
+						}
+					}
 				}
 			)
 		}
 	);
+
+function constructUserInterface(article: UserArticle) {
+	const lastParagraph = page.elements[page.elements.length - 1].element;
+	root = lastParagraph.ownerDocument.createElement('div');
+	root.id = 'reallyreadit-footer-root';
+	lastParagraph.insertAdjacentElement('afterend', root);
+	ReactDOM.render(
+		React.createElement(
+			Footer,
+			props = {
+				...article,
+				onSelectRating: rateArticle
+			}
+		),
+		root
+	);
+}
 
 function rateArticle(score: number) {
 	return new Promise<{}>(resolve => {
@@ -106,19 +129,8 @@ messagingContext.sendMessage(
 		userPageId = lookupResult.userPage.id;
 		page.setReadState(lookupResult.userPage.readState);
 		reader.loadPage(page);
-		const lastParagraph = page.elements[page.elements.length - 1].element;
-		root = lastParagraph.ownerDocument.createElement('div');
-		root.id = 'reallyreadit-footer-root';
-		lastParagraph.insertAdjacentElement('afterend', root);
-		ReactDOM.render(
-			React.createElement(
-				Footer,
-				props = {
-					...lookupResult.userArticle,
-					onSelectRating: rateArticle
-				}
-			),
-			root
-		);
+		if (lookupResult.userArticle.isRead) {
+			constructUserInterface(lookupResult.userArticle);
+		}
 	}
 );
