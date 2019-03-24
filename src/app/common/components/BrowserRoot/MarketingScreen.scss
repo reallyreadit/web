@@ -5,50 +5,83 @@
 
 .marketing-screen_n5a6wc {
 	height: 100%;
-	max-width: 980px;
-	margin: 0 auto;
 }
 .marketing-screen_n5a6wc > .section {
+	min-height: 100%;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+}
+.marketing-screen_n5a6wc > .section:nth-child(even) {
+	background-color: #fcfbfa;
+}
+.marketing-screen_n5a6wc > .section > .content {
 	font-family: 'Museo Sans (100)';
 	font-size: 14pt;
-	min-height: 100%;
+	max-width: 820px;
+	padding: 0 10px;
+	margin: 0 auto;
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
 	align-items: center;
 }
-.marketing-screen_n5a6wc > .section > h1 {
+.marketing-screen_n5a6wc > .section > .content > h1 {
 	font-weight: normal;
 	font-family: 'Cambria (regular)';
 	font-size: 42pt;
 	margin: 30px 0 20px;
+	text-align: center;
 }
-.marketing-screen_n5a6wc > .section > .button_cn7dmh {
+.marketing-screen_n5a6wc > .section > .content > h3 {
+	font-weight: normal;
+	font-family: 'Museo Sans (100)';
+	font-size: 20pt;
+	margin: 20px 0 20px;
+	text-align: center;
+}
+.marketing-screen_n5a6wc > .section > .content > .button_cn7dmh {
 	width: auto;
 	margin: 50px auto;
 }
-.marketing-screen_n5a6wc > .section > h2 {
+.marketing-screen_n5a6wc > .section > .content > h2 {
 	font-weight: normal;
-	font-family: 'Cambria (regular)';
-	font-size: 36pt;
+	font-family: 'Museo Sans (700)';
 	margin: 30px 0 20px;
+	font-size: 30px;
+	text-align: center;
 }
-.marketing-screen_n5a6wc > .section > p {
+.marketing-screen_n5a6wc > .section > .content > p {
 	margin: 20px 0;
+	font-family: 'Cambria (Regular)';
+	font-size: 16pt;
 }
-.marketing-screen_n5a6wc > .section > ol {
+.marketing-screen_n5a6wc > .section > .content > ol {
 	width: 100%;
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: center;
 }
-.marketing-screen_n5a6wc > .section > ol > li {
-	min-width: 200px;
-	flex: 1 0;
+.marketing-screen_n5a6wc > .section > .content > ol > li {
+	flex: 0 1 220px;
 	text-align: center;
 	padding: 20px;
 }
-.marketing-screen_n5a6wc > .section > ol > li > img {
+.marketing-screen_n5a6wc > .section > .content > ol > li > img {
 	display: block;
 	margin: 0 auto 10px auto;
 	width: 50px;
+}
+.marketing-screen_n5a6wc > .community > .content > p {
+	text-align: center;
+}
+
+@media (max-width: 499px) {
+	.marketing-screen_n5a6wc > .section > .content > h1 {
+		font-size: 30pt;
+		margin: 30px 0 20px;
+	}
+	.marketing-screen_n5a6wc > .section > .content > h3 {
+		font-size: 15pt;
+	}
 }
