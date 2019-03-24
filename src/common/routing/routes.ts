@@ -74,6 +74,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.EmailSubscriptions
 	},
 	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/history',
 		pathRegExp: /^\/history$/,
 		screenKey: ScreenKey.History
@@ -85,6 +86,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Inbox
 	},
 	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/leaderboards',
 		pathRegExp: /^\/leaderboards$/,
 		screenKey: ScreenKey.Leaderboards
@@ -118,6 +120,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Settings
 	},
 	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/starred',
 		pathRegExp: /^\/starred$/,
 		screenKey: ScreenKey.Starred
