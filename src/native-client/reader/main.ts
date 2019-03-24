@@ -23,9 +23,7 @@ window.reallyreadit = {
 let
 	articleId: number | null,
 	props: {
-		isRead: boolean,
 		onSelectRating: (rating: number) => Promise<{}>,
-		percentComplete: number,
 		ratingScore: number | null
 	},
 	root: HTMLDivElement,
