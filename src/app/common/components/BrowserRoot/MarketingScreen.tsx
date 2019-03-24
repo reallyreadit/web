@@ -59,7 +59,7 @@ export default (
 					</li>
 					<li>
 						<img src="/images/bubble-emoji.svg" />
-						<span>Earn the right to comment by reading an article fully.</span>
+						<span>Earn the right to comment on an article by reading it fully.</span>
 					</li>
 					<li>
 						<img src="/images/group-circle.svg" />
