@@ -4,13 +4,14 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Spinner from './Spinner';
 import UserAccount from '../../../../common/models/UserAccount';
+import { isIosDevice } from '../../userAgent';
 
 interface Props {
 	description: string,
 	extensionBypass?: React.ReactNode,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
-	onCopyTextToClipboard: (text: string) => void,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onInstallExtension: () => void,
 	onViewHomeScreen: () => void,
 	onShowCreateAccountDialog: () => void,
@@ -19,15 +20,6 @@ interface Props {
 	user: UserAccount |  null
 }
 export default class OnboardingScreen extends React.Component<Props> {
-	private readonly _downloadApp = () => {
-		this.props.onCopyTextToClipboard(
-			'com.readup.nativeClientClipboardReferrer:' +
-			JSON.stringify({
-				path: window.location.pathname,
-				timestamp: Date.now()
-			})
-		);
-	};
 	private readonly _homeScreenUrl = findRouteByKey(routes, ScreenKey.Home).createUrl();
 	private readonly _viewHomeScreen = (ev: React.MouseEvent) => {
 		ev.preventDefault();
@@ -57,12 +49,12 @@ export default class OnboardingScreen extends React.Component<Props> {
 									{this.props.description}
 								</strong>
 							</div>
-							{/(iPhone|iPad)/i.test(window.navigator.userAgent) ?
+							{isIosDevice(window.navigator.userAgent) ?
 								<div className="prompt download ios">
 									<a
 										className="text"
 										href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
-										onClick={this._downloadApp}
+										onClick={this.props.onCopyAppReferrerTextToClipboard}
 									>
 										Download the app to continue
 										<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
@@ -85,7 +77,7 @@ export default class OnboardingScreen extends React.Component<Props> {
 												null}
 										</div> :
 										<div className="prompt unsupported">
-											<span className="text">Get Readup for iOS and Chrome</span>
+											<span className="text">Get Readup on iOS and Chrome</span>
 											<div className="badges">
 												<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
 													<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />

@@ -6,6 +6,15 @@
 .marketing-screen_n5a6wc {
 	height: 100%;
 }
+.marketing-screen_n5a6wc.loading {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.marketing-screen_n5a6wc.unsupported {
+	display: flex;
+	flex-flow: column;
+}
 .marketing-screen_n5a6wc > .section {
 	min-height: 100%;
 	display: flex;
@@ -44,6 +53,13 @@
 	width: auto;
 	margin: 50px auto;
 }
+.marketing-screen_n5a6wc > .section > .content > .download-app-button {
+	margin: 50px auto;
+}
+.marketing-screen_n5a6wc > .section > .content > .download-app-button > img {
+	display: block;
+	height: 50px;
+}
 .marketing-screen_n5a6wc > .section > .content > h2 {
 	font-weight: normal;
 	font-family: 'Museo Sans (700)';
@@ -72,8 +88,33 @@
 	margin: 0 auto 10px auto;
 	width: 50px;
 }
-.marketing-screen_n5a6wc > .community > .content > p {
+.marketing-screen_n5a6wc > .section.community > .content > p {
 	text-align: center;
+}
+.marketing-screen_n5a6wc.unsupported > .prompt {
+	flex: 1 1 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-flow: column;
+}
+.marketing-screen_n5a6wc.unsupported > .prompt > .text {
+	font-family: 'Museo Sans (300)';
+	font-size: 16pt;
+}
+.marketing-screen_n5a6wc.unsupported > .prompt > .badges {
+	display: flex;
+	margin: 20px auto;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.marketing-screen_n5a6wc.unsupported > .prompt > .badges > a {
+	margin: 0 10px 10px 10px;
+	cursor: pointer;
+}
+.marketing-screen_n5a6wc.unsupported > .prompt > .badges > a > img {
+	display: block;
+	height: 55px;
 }
 
 @media (max-width: 499px) {

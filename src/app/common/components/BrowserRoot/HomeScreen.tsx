@@ -7,7 +7,7 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen } from '../Root';
+import { Screen, TemplateSection } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
@@ -16,10 +16,17 @@ import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import MarketingScreen from './MarketingScreen';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
+function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
+	return user && isDesktopDevice;
+}
 interface Props {
+	isDesktopDevice: boolean,
 	isBrowserCompatible: boolean,
+	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>,
@@ -27,7 +34,8 @@ interface Props {
 	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
-	onRegisterUserChangeHandler: (handler: () => void) => Function,
+	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
+	onSetScreenState: (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -88,7 +96,7 @@ class HomeScreen extends React.Component<Props, State> {
 			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
 				updateCommunityReads.call(this, updatedArticle, isCompletionCommit);
 			}),
-			props.onRegisterUserChangeHandler(() => {
+			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
 				this.setState({
 					communityReads: props.onGetCommunityReads(
 						{ pageNumber: 1, pageSize: 40, sort: CommunityReadSort.Hot },
@@ -99,6 +107,11 @@ class HomeScreen extends React.Component<Props, State> {
 					isLoadingArticles: false,
 					sort: CommunityReadSort.Hot
 				});
+				this.props.onSetScreenState(() => ({
+					templateSection: shouldShowHomeScreen(user, this.props.isDesktopDevice) ?
+						null :
+						TemplateSection.Header
+				}));
 			})
 		);
 	}
@@ -106,70 +119,86 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		if (!this.props.user) {
+		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice)) {
 			return (
-				<MarketingScreen
-					onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
-					onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
-				/>
+				<div className="home-screen_1sjipy">
+					{this.props.user && this.props.isExtensionInstalled === false ?
+						<ReadReadinessInfoBox
+							isBrowserCompatible={this.props.isBrowserCompatible}
+							onInstallExtension={this.props.onInstallExtension}
+						/> :
+						null}
+					{this.state.communityReads.isLoading ?
+						<LoadingOverlay position="static" /> :
+						<>
+							{(
+								this.props.user &&
+								this.props.isExtensionInstalled &&
+								!this.state.communityReads.value.userStats
+							) ?
+								<WelcomeInfoBox /> :
+								null}
+							<CommunityReadsList
+								aotd={this.state.communityReads.value.aotd}
+								articles={this.state.communityReads.value.articles}
+								isLoadingArticles={this.state.isLoadingArticles}
+								isUserSignedIn={!!this.props.user}
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onReadArticle={this.props.onReadArticle}
+								onShare={this.props.onShare}
+								onSortChange={this._changeSort}
+								onToggleArticleStar={this.props.onToggleArticleStar}
+								onViewComments={this.props.onViewComments}
+								sort={this.state.sort}
+							/>
+							{!this.state.isLoadingArticles ?
+								<PageSelector
+									pageNumber={this.state.communityReads.value.articles.pageNumber}
+									pageCount={this.state.communityReads.value.articles.pageCount}
+									onChange={this._changePage}
+								/> :
+								null}
+						</>}
+				</div>
 			);
 		}
 		return (
-			<div className="home-screen_1sjipy">
-				{this.props.user && this.props.isExtensionInstalled === false ?
-					<ReadReadinessInfoBox
-						isBrowserCompatible={this.props.isBrowserCompatible}
-						onInstallExtension={this.props.onInstallExtension}
-					/> :
-					null}
-				{this.state.communityReads.isLoading ?
-					<LoadingOverlay position="static" /> :
-					<>
-						{(
-							this.props.user &&
-							this.props.isExtensionInstalled &&
-							!this.state.communityReads.value.userStats
-						) ?
-							<WelcomeInfoBox /> :
-							null}
-						<CommunityReadsList
-							aotd={this.state.communityReads.value.aotd}
-							articles={this.state.communityReads.value.articles}
-							isLoadingArticles={this.state.isLoadingArticles}
-							isUserSignedIn={!!this.props.user}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onReadArticle={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onSortChange={this._changeSort}
-							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewComments={this.props.onViewComments}
-							sort={this.state.sort}
-						/>
-						{!this.state.isLoadingArticles ?
-							<PageSelector
-								pageNumber={this.state.communityReads.value.articles.pageNumber}
-								pageCount={this.state.communityReads.value.articles.pageCount}
-								onChange={this._changePage}
-							/> :
-							null}
-					</>}
-			</div>
+			<MarketingScreen
+				isDesktopDevice={this.props.isDesktopDevice}
+				isIosDevice={this.props.isIosDevice}
+				isUserSignedIn={!!this.props.user}
+				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+				onInstallExtension={this.props.onInstallExtension}
+				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+				onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
+			/>
 		);
 	}
 }
-export default function <TScreenKey>(
+export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'isIosDevice' | 'onSetScreenState' | 'user'>> & {
+		onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
+	}
 ) {
+	const setScreenState = (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
+		deps.onSetScreenState(key, getNextState);
+	};
 	return {
-		create: () => ({ key, title: 'Readup' }),
+		create: (location: RouteLocation, sharedState: SharedState) => ({
+			key,
+			templateSection: shouldShowHomeScreen(sharedState.user, deps.isDesktopDevice) ?
+				null :
+				TemplateSection.Header,
+			title: 'Readup'
+		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen {
 				...{
 					...deps,
-					isExtensionInstalled: sharedState.isExtensionInstalled,
-					user: sharedState.user
+					...sharedState,
+					onSetScreenState: setScreenState
 				}}
 			/>
 		)

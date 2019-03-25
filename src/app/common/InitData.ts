@@ -4,11 +4,13 @@ import NewReplyNotification from '../../common/models/NewReplyNotification';
 import RouteLocation from '../../common/routing/RouteLocation';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import Exchange from './serverApi/Exchange';
+import DeviceType from './DeviceType';
 
 export default interface InitData {
 	apiServerEndpoint: HttpEndpoint,
 	captchaSiteKey: string | null,
 	clientType: ClientType,
+	deviceType: DeviceType,
 	extensionId: string,
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,

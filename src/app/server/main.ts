@@ -26,6 +26,7 @@ import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import * as path from 'path';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
+import DeviceType from '../common/DeviceType';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -64,6 +65,14 @@ function redirectToHomeScreen(req: express.Request, res: express.Response) {
 function replaceSpacesWithPlusSign(token: string) {
 	return token.replace(' ', '+');
 }
+
+// cloudfront device type headers
+const deviceTypeHeaderMap: { [key: string]: DeviceType } = {
+	'CloudFront-Is-Desktop-Viewer': DeviceType.Desktop,
+	'CloudFront-Is-Mobile-Viewer': DeviceType.Mobile,
+	'CloudFront-Is-SmartTV-Viewer': DeviceType.SmartTV,
+	'CloudFront-Is-Tablet-Viewer': DeviceType.Tablet
+};
 
 // read package.json version info
 const version = JSON
@@ -343,7 +352,22 @@ server = server.use((req, res, next) => {
 });
 // render the app
 server = server.get('/*', (req, res) => {
+	// prepare props
 	const browserApi = new BrowserApi();
+	const deviceType = (
+		Object
+			.keys(deviceTypeHeaderMap)
+			.reduce(
+				(deviceType, header) => {
+					if (req.header(header) === 'true') {
+						deviceType |= deviceTypeHeaderMap[header];
+					}
+					return deviceType;
+				},
+				DeviceType.None
+			) ||
+			DeviceType.Desktop
+	);
 	const rootProps = {
 		captcha: new Captcha(),
 		initialLocation: {
@@ -355,6 +379,7 @@ server = server.get('/*', (req, res) => {
 		version: version.app,
 		webServerEndpoint: config.webServer
 	};
+	// create root element
 	let rootElement: React.ReactElement<any>;
 	switch (req.clientType) {
 		case ClientType.App:
@@ -372,6 +397,7 @@ server = server.get('/*', (req, res) => {
 				{
 					...rootProps,
 					browserApi,
+					deviceType,
 					extensionApi: new ExtensionApi(config.extensionId),
 					newReplyNotification: req.sessionState.newReplyNotification
 				}
@@ -396,6 +422,7 @@ server = server.get('/*', (req, res) => {
 				apiServerEndpoint: config.apiServer,
 				captchaSiteKey: config.captchaSiteKey,
 				clientType: req.clientType,
+				deviceType,
 				exchanges: req.api.exchanges,
 				extensionId: config.extensionId,
 				newReplyNotification: req.sessionState.newReplyNotification,

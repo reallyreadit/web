@@ -69,12 +69,12 @@
 	.header_cvm3v7 {
 		padding: 10px;
 	}
-	.header_cvm3v7:not(.authenticated) {
+	.header_cvm3v7:not(.menu) {
 		flex-flow: column;
 		align-items: center;
 	}
-	.header_cvm3v7:not(.authenticated) > .logo-container {
-		margin-bottom: 10px;
+	.header_cvm3v7:not(.menu) > .menu-container {
+		margin-top: 10px;
 	}
 	.header_cvm3v7 > .logo-container > img {
 		height: 40px;

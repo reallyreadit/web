@@ -38,11 +38,17 @@ export interface Props {
 	version: number,
 	webServerEndpoint: HttpEndpoint
 }
+export enum TemplateSection {
+	None = 0,
+	Header = 1,
+	Navigation = 2,
+	Footer = 4
+}
 export interface Screen<T = any> {
 	componentState?: T,
 	key: ScreenKey,
 	location?: RouteLocation,
-	renderTemplate?: boolean,
+	templateSection?: TemplateSection,
 	title?: string,
 	titleContent?: React.ReactNode
 }

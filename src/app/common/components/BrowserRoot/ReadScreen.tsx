@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Screen } from '../Root';
+import { Screen, TemplateSection } from '../Root';
 import { SharedState } from '../BrowserRoot';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
@@ -17,7 +17,7 @@ interface Props {
 	articleSlug: string,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
-	onCopyTextToClipboard: (text: string) => void,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 	onInstallExtension: () => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
@@ -87,7 +87,11 @@ export default function createReadScreenFactory<TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'articleSlug' | 'isExtensionInstalled' | 'user'>>
 ) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Read Article' }),
+		create: (location: RouteLocation) => ({
+			key, location,
+			templateSection: TemplateSection.None,
+			title: 'Read Article'
+		}),
 		render: (screenState: Screen, sharedState: SharedState) => {
 			const pathParams = findRouteByKey(routes, ScreenKey.Read).getPathParams(screenState.location.path);
 			return (

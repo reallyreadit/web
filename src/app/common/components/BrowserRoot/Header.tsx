@@ -6,6 +6,8 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 
 interface Props {
+	isDesktopDevice: boolean,
+	isIosDevice: boolean | null,
 	isUserSignedIn: boolean,
 	onOpenMenu: () => void,
 	onShowCreateAccountDialog: () => void,
@@ -19,8 +21,16 @@ export default class extends React.PureComponent<Props> {
 		this.props.onViewHome();
 	};
 	public render() {
+		const
+			showAuthButtons = !this.props.isUserSignedIn && this.props.isDesktopDevice,
+			showMenu = this.props.isUserSignedIn && this.props.isDesktopDevice;
 		return (
-			<header className={classNames('header_cvm3v7', { authenticated: this.props.isUserSignedIn })}>
+			<header className={
+				classNames(
+					'header_cvm3v7',
+					{ 'menu': showMenu }
+				)
+			}>
 				<a
 					className="logo-container"
 					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
@@ -28,26 +38,31 @@ export default class extends React.PureComponent<Props> {
 				>
 					<img src="/images/logo.svg" alt="logo" />
 				</a>
-				<div className="menu-container">
-					{this.props.isUserSignedIn ?
-						<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>
-							<Icon
-								name="user"
-								onClick={this.props.onOpenMenu}
-							/>
-						</div> :
-						<>
-							<button onClick={this.props.onShowSignInDialog}>
-								Login
-							</button>
-							<button
-								className="loud"
-								onClick={this.props.onShowCreateAccountDialog}
-							>
-								Sign Up
-							</button>
-						</>}
-				</div>
+				{showAuthButtons || showMenu ?
+					<div className="menu-container">
+						{showMenu ?
+							<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>
+								<Icon
+									name="user"
+									onClick={this.props.onOpenMenu}
+								/>
+							</div> :
+							null}
+						{showAuthButtons ?
+							<>
+								<button onClick={this.props.onShowSignInDialog}>
+									Login
+								</button>
+								<button
+									className="loud"
+									onClick={this.props.onShowCreateAccountDialog}
+								>
+									Sign Up
+								</button>
+							</> :
+							null}
+					</div> :
+					null}
 			</header>
 		);
 	}

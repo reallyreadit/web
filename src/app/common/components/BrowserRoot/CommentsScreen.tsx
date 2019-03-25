@@ -4,7 +4,7 @@ import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams, mergeComment, Props as CommentScreenProps, findComment } from '../screens/CommentsScreen';
-import { Screen } from '../Root';
+import { Screen, TemplateSection } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -30,6 +30,7 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	articleSlug: string,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onInstallExtension: () => void,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
@@ -56,11 +57,13 @@ class BrowserCommentsScreen extends React.Component<
 				() => {
 					this.setState({ hasDeclinedExtensionInstallPrompt: true });
 					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-						currentState.renderTemplate = shouldShowComments(
-							this.props.user,
-							this.props.isExtensionInstalled,
-							true
-						);
+						currentState.templateSection = shouldShowComments(
+								this.props.user,
+								this.props.isExtensionInstalled,
+								true
+							) ?
+								null :
+								TemplateSection.None;
 					}));
 				}
 			}
@@ -92,21 +95,25 @@ class BrowserCommentsScreen extends React.Component<
 			}),
 			props.onRegisterExtensionChangeHandler(isExtensionInstalled => {
 				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-					currentState.renderTemplate = shouldShowComments(
-						this.props.user,
-						isExtensionInstalled,
-						this.state.hasDeclinedExtensionInstallPrompt
-					);
+					currentState.templateSection = shouldShowComments(
+							this.props.user,
+							isExtensionInstalled,
+							this.state.hasDeclinedExtensionInstallPrompt
+						) ?
+							null :
+							TemplateSection.None;
 				}));
 			}),
 			props.onRegisterUserChangeHandler(user => {
 				this.props.onReloadArticle(this.props.articleSlug);
 				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-					currentState.renderTemplate = shouldShowComments(
-						user,
-						this.props.isExtensionInstalled,
-						this.state.hasDeclinedExtensionInstallPrompt
-					);
+					currentState.templateSection = shouldShowComments(
+							user,
+							this.props.isExtensionInstalled,
+							this.state.hasDeclinedExtensionInstallPrompt
+						) ?
+							null :
+							TemplateSection.None;
 				}));
 			})
 		);
@@ -147,7 +154,11 @@ class BrowserCommentsScreen extends React.Component<
 			let description: string;
 			if (this.props.article.value && this.state.comments.value) {
 				const comment = findComment(this.props.highlightedCommentId, this.state.comments.value);
-				description = `${formatPossessive(comment.userAccount)} comment on "${comment.articleTitle}"`;
+				if (comment) {
+					description = `${formatPossessive(comment.userAccount)} comment on "${comment.articleTitle}"`;
+				} else {
+					description = `Comments on "${this.props.article.value.title}"`;
+				}
 			} else {
 				description = 'Loading...';
 			}
@@ -196,7 +207,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				componentState: article,
 				key,
 				location,
-				renderTemplate: shouldShowComments(sharedState.user, sharedState.isExtensionInstalled),
+				templateSection: shouldShowComments(sharedState.user, sharedState.isExtensionInstalled) ? null : TemplateSection.None,
 				title: formatFetchable(article, article => article.title, 'Loading...')
 			};
 		},

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
@@ -28,22 +28,41 @@ import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { parseQueryString, redirectedQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
+import DeviceType from '../DeviceType';
+import { isIosDevice } from '../userAgent';
+import Footer from './BrowserRoot/Footer';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
+	deviceType: DeviceType,
 	extensionApi: ExtensionApi,
 	newReplyNotification: NewReplyNotification | null
 }
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
+	isIosDevice: boolean | null,
 	menuState: 'opened' | 'closing' | 'closed',
 	showNewReplyIndicator: boolean,
 	showRedirectBanner: boolean
 }
-export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
+export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled' | 'isIosDevice'>;
 export default class extends Root<Props, State, SharedState> {
 	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
+
+	// app
+	private readonly _copyAppReferrerTextToClipboard = () => {
+		this._clipboard.copyText(
+			'com.readup.nativeClientClipboardReferrer:' +
+			JSON.stringify({
+				path: window.location.pathname,
+				timestamp: Date.now()
+			})
+		);
+	};
+
+	// device
+	private readonly _isDesktopDevice: boolean;
 
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
@@ -155,11 +174,15 @@ export default class extends Root<Props, State, SharedState> {
 	constructor(props: Props) {
 		super('browser-root_6tjc3j', props);
 
+		// device type
+		this._isDesktopDevice = !!(props.deviceType & DeviceType.Desktop);
+
 		// screens
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetArticle: this.props.serverApi.getArticle,
@@ -191,7 +214,9 @@ export default class extends Root<Props, State, SharedState> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				isDesktopDevice: this._isDesktopDevice,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
@@ -200,6 +225,7 @@ export default class extends Root<Props, State, SharedState> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
@@ -220,7 +246,7 @@ export default class extends Root<Props, State, SharedState> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
-				onCopyTextToClipboard: this._clipboard.copyText,
+				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
 				onInstallExtension: this._installExtension,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
@@ -248,6 +274,11 @@ export default class extends Root<Props, State, SharedState> {
 			...this.state,
 			dialog: locationState.dialog,
 			isExtensionInstalled: null,
+			isIosDevice: (
+				this._isDesktopDevice ?
+					false :
+					null
+			),
 			menuState: 'closed',
 			screens: [locationState.screen],
 			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
@@ -338,6 +369,7 @@ export default class extends Root<Props, State, SharedState> {
 	protected getSharedState() {
 		return {
 			isExtensionInstalled: this.state.isExtensionInstalled,
+			isIosDevice: this.state.isIosDevice,
 			user: this.state.user
 		};
 	}
@@ -396,49 +428,71 @@ export default class extends Root<Props, State, SharedState> {
 						/>
 					</div> :
 					null}
-				{screen.key === ScreenKey.Read ?
-					this._screenFactoryMap[screen.key].render(screen, sharedState) :
-					<>
-						{screen.renderTemplate !== false ?
-							<Header
-								isUserSignedIn={!!this.state.user}
-								onOpenMenu={this._openMenu}
-								onShowCreateAccountDialog={this._openCreateAccountDialog}
-								onShowSignInDialog={this._openSignInDialog}
-								onViewHome={this._viewHome}
-								showNewReplyIndicator={this.state.showNewReplyIndicator}
+				{(
+					screen.templateSection == null ||
+					(screen.templateSection & TemplateSection.Header)
+				 ) ?
+					<Header
+						isDesktopDevice={this._isDesktopDevice}
+						isIosDevice={this.state.isIosDevice}
+						isUserSignedIn={!!this.state.user}
+						onOpenMenu={this._openMenu}
+						onShowCreateAccountDialog={this._openCreateAccountDialog}
+						onShowSignInDialog={this._openSignInDialog}
+						onViewHome={this._viewHome}
+						showNewReplyIndicator={this.state.showNewReplyIndicator}
+					/> :
+					null}
+				<main>
+					{(
+						(
+							screen.templateSection == null ||
+							(screen.templateSection & TemplateSection.Navigation)
+						) &&
+						this.state.user &&
+						this._isDesktopDevice
+					) ?
+						<NavBar
+							onViewHistory={this._viewHistory}
+							onViewHome={this._viewHome}
+							onViewLeaderboards={this._viewLeaderboards}
+							onViewPrivacyPolicy={this._viewPrivacyPolicy}
+							onViewStarred={this._viewStarred}
+							selectedScreenKey={screen.key}
+						/> :
+						null}
+					<div className="screen">
+						{this._screenFactoryMap[screen.key].render(screen, sharedState)}
+						{(
+							(
+								screen.templateSection == null ||
+								(screen.templateSection & TemplateSection.Footer)
+							) &&
+							(
+								!this.state.user ||
+								!this._isDesktopDevice
+							)
+						) ?
+							<Footer
+								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							/> :
 							null}
-						<main>
-							{this.state.user && screen.renderTemplate !== false ?
-								<NavBar
-									onViewHistory={this._viewHistory}
-									onViewHome={this._viewHome}
-									onViewLeaderboards={this._viewLeaderboards}
-									onViewPrivacyPolicy={this._viewPrivacyPolicy}
-									onViewStarred={this._viewStarred}
-									selectedScreenKey={screen.key}
-								/> :
-								null}
-							<div className="screen">
-								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
-							</div>
-						</main>
-						{this.state.menuState !== 'closed' ?
-							<Menu
-								isClosing={this.state.menuState === 'closing'}
-								onClose={this._closeMenu}
-								onClosed={this._hideMenu}
-								onSignOut={this._signOut}
-								onViewAdminPage={this._viewAdminPage}
-								onViewInbox={this._viewInbox}
-								onViewSettings={this._viewSettings}
-								selectedScreenKey={this.state.screens[0].key}
-								showNewReplyNotification={this.state.showNewReplyIndicator}
-								userAccount={this.state.user}
-							/> :
-							null}
-					</>}
+					</div>
+				</main>
+				{this.state.menuState !== 'closed' ?
+					<Menu
+						isClosing={this.state.menuState === 'closing'}
+						onClose={this._closeMenu}
+						onClosed={this._hideMenu}
+						onSignOut={this._signOut}
+						onViewAdminPage={this._viewAdminPage}
+						onViewInbox={this._viewInbox}
+						onViewSettings={this._viewSettings}
+						selectedScreenKey={this.state.screens[0].key}
+						showNewReplyNotification={this.state.showNewReplyIndicator}
+						userAccount={this.state.user}
+					/> :
+					null}
 				<DialogManager dialog={this.state.dialog} />
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
@@ -483,6 +537,12 @@ export default class extends Root<Props, State, SharedState> {
 		// update the extension with the latest notification data
 		if (this.props.newReplyNotification) {
 			this.props.extensionApi.updateNewReplyNotification(this.props.newReplyNotification);
+		}
+		// check user agent for device type
+		if (this.state.isIosDevice == null) {
+			this.setState({
+				isIosDevice: isIosDevice(window.navigator.userAgent)
+			});
 		}
 	}
 	public componentWillUnmount() {
