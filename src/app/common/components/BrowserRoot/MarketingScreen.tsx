@@ -45,7 +45,7 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 					<div className="section">
 						<div className="content">
 							<h1>Make yourself a better reader.</h1>
-							<h3>Readup gives you the tools you need to track and improve your online habits, making it easier to stay focused and read more articles to completion.</h3>
+							<h3>Tools you need to track and improve your online reading habits and improve your focus.</h3>
 							{button}
 							{this.props.isDesktopDevice || this.props.isIosDevice === false ?
 								<div className="platforms">
