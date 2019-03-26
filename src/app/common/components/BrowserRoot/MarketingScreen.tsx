@@ -2,6 +2,7 @@ import * as React from 'react';
 import Button from './Button';
 import Spinner from './Spinner';
 import Footer from './Footer';
+import Icon from '../../../../common/components/Icon';
 
 interface Props {
 	isDesktopDevice: boolean,
@@ -13,6 +14,17 @@ interface Props {
 	onViewPrivacyPolicy: () => void
 } 
 export default class MarketingScreen extends React.PureComponent<Props> {
+	private readonly _secondSectionElementRef: React.RefObject<HTMLDivElement>;
+	private readonly _scrollDown = () => {
+		this._secondSectionElementRef.current.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start'
+		});
+	};
+	constructor(props: Props) {
+		super(props);
+		this._secondSectionElementRef = React.createRef();
+	}
 	public render () {
 		if (
 			this.props.isDesktopDevice ||
@@ -51,7 +63,10 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 								<div className="platforms">
 									<span className="text">Available on iOS and Chrome</span>
 									<div className="badges">
-										<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+										<a
+											href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
+											target="_blank"
+										>
 											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
 										</a>
 										<a onClick={this.props.onInstallExtension}>
@@ -61,8 +76,18 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 								</div> :
 								null}
 						</div>
+						<div className="read-more">
+							<Icon
+								className="icon"
+								name="chevron-down"
+								onClick={this._scrollDown}
+							/>
+						</div>
 					</div>
-					<div className="section">
+					<div
+						className="section"
+						ref={this._secondSectionElementRef}
+					>
 						<div className="content">
 							<h2>Fight the urge to skim.</h2>
 							<p>See what happens if you read every single word of these three paragraphs. Off the bat, it might not seem challenging. You might even find yourself enjoying the rhythm of a particularly long sentence, like this one, that revs up with a bright, simple idea and then before you know it - bam! - some ominous image begins creepy-crawling into your mind’s eye, complicating things, and suddenly you wonder what you’re doing here. What <em>are</em> you doing here?</p>
