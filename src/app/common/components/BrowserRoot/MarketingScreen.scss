@@ -53,6 +53,28 @@
 	width: auto;
 	margin: 50px auto;
 }
+.marketing-screen_n5a6wc > .section > .content > .platforms {
+	margin-top: 50px;
+	text-align: center;
+}
+.marketing-screen_n5a6wc > .section > .content > .platforms > .text {
+	font-family: 'Museo Sans (300)';
+	font-size: 16pt;
+}
+.marketing-screen_n5a6wc > .section > .content > .platforms > .badges {
+	display: flex;
+	margin: 20px auto;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.marketing-screen_n5a6wc > .section > .content > .platforms > .badges > a {
+	margin: 0 10px 10px 10px;
+	cursor: pointer;
+}
+.marketing-screen_n5a6wc > .section > .content > .platforms > .badges > a > img {
+	display: block;
+	height: 55px;
+}
 .marketing-screen_n5a6wc > .section > .content > .download-app-button {
 	margin: 50px auto;
 }

@@ -47,6 +47,19 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 							<h1>Make yourself a better reader.</h1>
 							<h3>Readup gives you the tools you need to track and improve your online habits, making it easier to stay focused and read more articles to completion.</h3>
 							{button}
+							{this.props.isDesktopDevice || this.props.isIosDevice === false ?
+								<div className="platforms">
+									<span className="text">Available on iOS and Chrome</span>
+									<div className="badges">
+										<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+										</a>
+										<a onClick={this.props.onInstallExtension}>
+											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+										</a>
+									</div>
+								</div> :
+								null}
 						</div>
 					</div>
 					<div className="section">
