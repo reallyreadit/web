@@ -6,7 +6,7 @@
     "version": {
       "app": 0.96,
       "contentScript": 0.22,
-      "extension": 0.60,
+      "extension": 0.6,
       "native-client": {
         "reader": "1.0.1",
         "share-extension": "1.0.1"
@@ -24,6 +24,7 @@
     "@types/react": "^16.7.13",
     "@types/react-dom": "^16.0.11",
     "@types/request": "^2.47.1",
+    "@types/smoothscroll-polyfill": "^0.3.1",
     "ansi-colors": "^3.1.0",
     "del": "^3.0.0",
     "fancy-log": "^1.3.2",
@@ -52,6 +53,7 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "request": "^2.88.0",
+    "smoothscroll-polyfill": "^0.4.4",
     "timeago.js": "^3.0.2"
   }
 }

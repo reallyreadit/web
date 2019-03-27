@@ -10,6 +10,7 @@ import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import * as jsCookie from 'js-cookie';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
+import * as smoothscroll from 'smoothscroll-polyfill';
 
 // clean up localStorage
 localStorage.removeItem('challenge');
@@ -84,3 +85,5 @@ ReactDOM.hydrate(
 );
 
 serverApi.initialize();
+
+smoothscroll.polyfill();

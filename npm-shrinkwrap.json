@@ -245,6 +245,12 @@
         "@types/mime": "*"
       }
     },
+    "@types/smoothscroll-polyfill": {
+      "version": "0.3.1",
+      "resolved": "https://registry.npmjs.org/@types/smoothscroll-polyfill/-/smoothscroll-polyfill-0.3.1.tgz",
+      "integrity": "sha512-+KkHw4y+EyeCtVXET7woHUhIbfWFCflc0E0mZnSV+ZdjPQeHt/9KPEuT7gSW/kFQ8O3EG30PLO++YhChDt8+Ag==",
+      "dev": true
+    },
     "@types/tough-cookie": {
       "version": "2.3.3",
       "resolved": "https://registry.npmjs.org/@types/tough-cookie/-/tough-cookie-2.3.3.tgz",
@@ -7425,6 +7431,11 @@
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/slash/-/slash-1.0.0.tgz",
       "integrity": "sha1-xB8vbDn8FtHNF61LXYlhFK5HDVU="
+    },
+    "smoothscroll-polyfill": {
+      "version": "0.4.4",
+      "resolved": "https://registry.npmjs.org/smoothscroll-polyfill/-/smoothscroll-polyfill-0.4.4.tgz",
+      "integrity": "sha512-TK5ZA9U5RqCwMpfoMq/l1mrH0JAR7y7KRvOBx0n2869aLxch+gT9GhN3yUfjiw+d/DiF1mKo14+hd62JyMmoBg=="
     },
     "snapdragon": {
       "version": "0.8.2",
