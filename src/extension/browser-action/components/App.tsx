@@ -137,6 +137,7 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 							onShare={this._handleShareRequest}
 							onToggleStar={this._toggleStar}
 							onViewComments={this._goToComments}
+							useAbsoluteUrls
 						/> :
 						!this.state.isOnHomePage ?
 							<div className="article-placeholder">

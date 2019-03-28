@@ -22,7 +22,8 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	showDeleteControl?: boolean
+	showDeleteControl?: boolean,
+	useAbsoluteUrls?: boolean
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps = {
@@ -73,7 +74,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
-			commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments).createUrl(articleUrlParams),
 			star = (
 				<div className="star-container">
 					<Star
@@ -103,6 +103,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onGetData: this._getShareData,
 				onShare: this.props.onShare
 			};
+		// publisher metadata
 		const publisherMetadata = [this.props.article.source];
 		if (this.props.article.authors.length) {
 			publisherMetadata.push(
@@ -117,6 +118,12 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		publisherMetadata.push(
 			Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)) + ' min'
 		);
+		// comments link
+		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
+			.createUrl(articleUrlParams);
+		if (this.props.useAbsoluteUrls) {
+			commentsLinkHref = this.props.onCreateAbsoluteUrl(commentsLinkHref);
+		}
 		return (
 			<div className="article-details_d2vnmv">
 				<div className="small-title">
