@@ -6,7 +6,7 @@
     "version": {
       "app": 0.97,
       "contentScript": 0.22,
-      "extension": 0.6,
+      "extension": 0.61,
       "native-client": {
         "reader": "1.0.1",
         "share-extension": "1.0.1"
