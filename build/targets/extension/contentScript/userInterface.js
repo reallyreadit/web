@@ -48,7 +48,7 @@ const build = createBuild({
 						.readFileSync(jsBundleFileName)
 						.toString()
 						.replace(
-							/src: (['"])\/images\/(.+)\1/gi,
+							/src:\s*(['"])\/images\/(.+)\1/gi,
 							(match, quote, fileName) => (
 								'src: "data:image/svg+xml;base64,' +
 								fs
