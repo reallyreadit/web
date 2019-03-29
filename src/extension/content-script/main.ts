@@ -7,6 +7,8 @@ import ContentElement from '../../common/reading/ContentElement';
 import { ParseMode } from '../../common/reading/parseDocumentContent';
 import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
+import UserArticle from '../../common/models/UserArticle';
+import { calculateEstimatedReadTime } from '../../common/calculate';
 
 window.reallyreadit = {
 	extension: {
@@ -84,6 +86,13 @@ function rateArticle(score: number) {
 	}
 }
 
+function shouldConstructUserInterface(article: UserArticle) {
+	return (
+		article.isRead &&
+		(calculateEstimatedReadTime(article.wordCount) > 2)
+	);
+}
+
 // reader
 const reader = new Reader(
 	event => {
@@ -103,7 +112,7 @@ const reader = new Reader(
 							.then(ui => {
 								if (ui.isConstructed()) {
 									ui.update(userArticle);
-								} else {
+								} else if (shouldConstructUserInterface(userArticle)) {
 									ui.construct(
 										context.page,
 										{
@@ -158,7 +167,7 @@ function loadPage() {
 									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
-									if (lookupResult.userArticle.isRead) {
+									if (shouldConstructUserInterface(lookupResult.userArticle)) {
 										userInterface
 											.get()
 											.then(ui => {
