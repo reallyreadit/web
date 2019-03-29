@@ -2,7 +2,6 @@ import * as React from 'react';
 import UserArticle from '../models/UserArticle';
 import { formatTimestamp, formatCountable } from '../format';
 import Star from './Star';
-import readingParameters from '../readingParameters';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
@@ -11,6 +10,7 @@ import Icon from './Icon';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import classNames from 'classnames';
+import { calculateEstimatedReadTime } from '../calculate';
 
 interface Props {
 	article: UserArticle,
@@ -92,6 +92,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					{this.props.article.title}
 				</a>
 			),
+			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min',
 			shareControlProps = {
 				children: (
 					<Icon
@@ -115,9 +116,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				formatTimestamp(this.props.article.datePublished)
 			);
 		}
-		publisherMetadata.push(
-			Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)) + ' min'
-		);
+		publisherMetadata.push(estimatedReadTime);
 		// comments link
 		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
 			.createUrl(articleUrlParams);
@@ -173,7 +172,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									<span className="spacer">|</span> :
 									null}
 								<span className="length">
-									{Math.max(1, Math.floor(this.props.article.wordCount / readingParameters.averageWordsPerMinute)) + ' min'}
+									{estimatedReadTime}
 								</span>
 							</div>
 						</div>
