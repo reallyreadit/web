@@ -122,9 +122,6 @@ export default abstract class {
 	public readonly updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
 		return this.post({ path: '/UserAccounts/UpdateEmailSubscriptions', data: { token, ...subscriptions } });
 	};
-	public readonly shareArticle = (articleId: number, emailAddresses: string[], message: string, captchaResponse: string) => {
-		return this.post({ path: '/Articles/Share', data: { articleId, emailAddresses, message, captchaResponse } });
-	};
 	public readonly getUserAccountStats = (callback: (state: Fetchable<UserAccountStats>) => void) => {
 		return this.get<UserAccountStats>({ path: '/UserAccounts/Stats' }, callback);
 	};
