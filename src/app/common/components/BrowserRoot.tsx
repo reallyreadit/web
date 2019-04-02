@@ -204,7 +204,6 @@ export default class extends Root<Props, State, SharedState> {
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onDeleteArticle: this._deleteArticle,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,

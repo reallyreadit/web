@@ -34,18 +34,12 @@ export default class extends React.PureComponent<{
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onDeleteArticle: (article: UserArticle) => void
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void
 }> {
-	private readonly _deleteArticle = (article: UserArticle) => {
-		if (window.confirm('Are you sure you want to delete this article?')) {
-			this.props.onDeleteArticle(article);
-		}
-	};
 	public render() {
 		return (
 			<ScreenContainer>
@@ -63,12 +57,10 @@ export default class extends React.PureComponent<{
 												isUserSignedIn={this.props.isUserSignedIn}
 												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onDelete={this._deleteArticle}
 												onRead={this.props.onReadArticle}
 												onShare={this.props.onShare}
 												onToggleStar={this.props.onToggleArticleStar}
 												onViewComments={this.props.onViewComments}
-												showDeleteControl
 											/>
 										</li>
 									)}

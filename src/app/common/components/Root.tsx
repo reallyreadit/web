@@ -225,9 +225,6 @@ export default abstract class Root<
 				this.onUserChanged(userAccount, EventSource.Original);
 			});
 	};
-	protected readonly _deleteArticle = (article: UserArticle) => {
-		this.props.serverApi.deleteUserArticle(article.id);
-	};
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
 			.resetPassword(token, password)

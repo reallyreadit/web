@@ -13,7 +13,6 @@ import ShareData from '../../../../common/sharing/ShareData';
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onDeleteArticle: (article: UserArticle) => void,
 	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
@@ -61,7 +60,6 @@ class AppHistoryScreen extends React.Component<Props, State> {
 				isUserSignedIn={!!this.props.user}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onDeleteArticle={this.props.onDeleteArticle}
 				onLoadPage={this._loadPage}
 				onReadArticle={this.props.onReadArticle}
 				onShare={this.props.onShare}

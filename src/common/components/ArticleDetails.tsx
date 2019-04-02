@@ -17,19 +17,13 @@ interface Props {
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onDelete?: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	showDeleteControl?: boolean,
 	useAbsoluteUrls?: boolean
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
-	public static defaultProps = {
-		onDelete: () => {},
-		showDeleteControl: false
-	};
 	private readonly _getShareData = () => {
 		const
 			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),

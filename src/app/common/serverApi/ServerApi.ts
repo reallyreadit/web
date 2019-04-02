@@ -89,9 +89,6 @@ export default abstract class {
 	public readonly readReply = (commentId: string) => {
 		return this.post({ path: '/Articles/ReadReply', data: { commentId } });
 	};
-	public readonly deleteUserArticle = (articleId: number) => {
-		return this.post({ path: '/Articles/UserDelete', data: { articleId } });
-	};
 	public readonly starArticle = (articleId: number) => {
 		return this.post<void>({ path: '/Articles/Star', data: { articleId } });
 	};
