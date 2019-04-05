@@ -18,6 +18,13 @@ import ShareData from '../../../../common/sharing/ShareData';
 import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 
+const
+	pageSize = 40,
+	defaultQueryParams = {
+		pageNumber: 1,
+		pageSize,
+		sort: CommunityReadSort.Hot
+	};
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
 	return user && isDesktopDevice;
 }
@@ -43,16 +50,20 @@ interface Props {
 	user: UserAccount | null
 }
 interface State {
-	communityReads: Fetchable<CommunityReads>,
+	communityReads?: Fetchable<CommunityReads>,
 	isLoadingArticles: boolean,
-	sort: CommunityReadSort
+	sort?: CommunityReadSort
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changePage = (pageNumber: number) => {
 		this.setState({ isLoadingArticles: true });
 		this.props.onGetCommunityReads(
-			{ pageNumber: pageNumber, pageSize: 40, sort: this.state.sort },
+			{
+				pageNumber: pageNumber,
+				pageSize,
+				sort: this.state.sort
+			},
 			this._asyncTracker.addCallback(communityReads => {
 				this.setState({
 					communityReads,
@@ -69,7 +80,7 @@ class HomeScreen extends React.Component<Props, State> {
 		this.props.onGetCommunityReads(
 			{
 				pageNumber: 1,
-				pageSize: 40,
+				pageSize,
 				sort
 			},
 			this._asyncTracker.addCallback(communityReads => {
@@ -82,36 +93,51 @@ class HomeScreen extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
-		this.state = {
-			communityReads: props.onGetCommunityReads(
-				{ pageNumber: 1, pageSize: 40, sort: CommunityReadSort.Hot },
-				this._asyncTracker.addCallback(communityReads => {
-					this.setState({ communityReads });
-				})
-			),
-			isLoadingArticles: false,
-			sort: CommunityReadSort.Hot
-		};
+		if (shouldShowHomeScreen(props.user, props.isDesktopDevice)) {
+			this.state = {
+				communityReads: props.onGetCommunityReads(
+					defaultQueryParams,
+					this._asyncTracker.addCallback(communityReads => {
+						this.setState({ communityReads });
+					})
+				),
+				isLoadingArticles: false,
+				sort: CommunityReadSort.Hot
+			};
+		} else {
+			this.state = {
+				isLoadingArticles: false
+			};
+		}
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
 				updateCommunityReads.call(this, updatedArticle, isCompletionCommit);
 			}),
 			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
-				this.setState({
-					communityReads: props.onGetCommunityReads(
-						{ pageNumber: 1, pageSize: 40, sort: CommunityReadSort.Hot },
-						this._asyncTracker.addCallback(communityReads => {
-							this.setState({ communityReads });
-						})
-					),
-					isLoadingArticles: false,
-					sort: CommunityReadSort.Hot
-				});
-				this.props.onSetScreenState(() => ({
-					templateSection: shouldShowHomeScreen(user, this.props.isDesktopDevice) ?
-						null :
-						TemplateSection.Header
-				}));
+				if (shouldShowHomeScreen(user, this.props.isDesktopDevice)) {
+					this.setState({
+						communityReads: props.onGetCommunityReads(
+							defaultQueryParams,
+							this._asyncTracker.addCallback(communityReads => {
+								this.setState({ communityReads });
+							})
+						),
+						isLoadingArticles: false,
+						sort: CommunityReadSort.Hot
+					});
+					this.props.onSetScreenState(() => ({
+						templateSection: null
+					}));
+				} else {
+					this.setState({
+						communityReads: null,
+						isLoadingArticles: false,
+						sort: null
+					});
+					this.props.onSetScreenState(() => ({
+						templateSection: TemplateSection.Header
+					}));
+				}
 			})
 		);
 	}
@@ -119,7 +145,7 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice)) {
+		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice) && this.state.communityReads && this.state.sort != null) {
 			return (
 				<div className="home-screen_1sjipy">
 					{this.props.user && this.props.isExtensionInstalled === false ?
