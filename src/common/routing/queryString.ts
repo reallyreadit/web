@@ -21,7 +21,13 @@ export function createQueryString(kvps: { [key: string]: string }) {
 	return (
 		'?' +
 		keys
-			.map(key => kvps[key] ? `${encodeURIComponent(key)}=${encodeURIComponent(kvps[key])}` : encodeURIComponent(key))
+			.map(
+				key => encodeURIComponent(key) + (
+					kvps[key] != null ?
+						'=' + encodeURIComponent(kvps[key]) :
+						''
+				)
+			)
 			.join('&')
 	);
 }
