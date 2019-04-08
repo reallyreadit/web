@@ -17,6 +17,7 @@ import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
+import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 
 const
 	pageSize = 40,
@@ -36,7 +37,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>,
+	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow }, CommunityReads>,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -52,7 +53,8 @@ interface Props {
 interface State {
 	communityReads?: Fetchable<CommunityReads>,
 	isLoadingArticles: boolean,
-	sort?: CommunityReadSort
+	sort?: CommunityReadSort,
+	timeWindow?: CommunityReadTimeWindow
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -62,7 +64,8 @@ class HomeScreen extends React.Component<Props, State> {
 			{
 				pageNumber: pageNumber,
 				pageSize,
-				sort: this.state.sort
+				sort: this.state.sort,
+				timeWindow: this.state.timeWindow
 			},
 			this._asyncTracker.addCallback(communityReads => {
 				this.setState({
@@ -72,16 +75,18 @@ class HomeScreen extends React.Component<Props, State> {
 			})
 		);
 	};
-	private readonly _changeSort = (sort: CommunityReadSort) => {
+	private readonly _changeSort = (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => {
 		this.setState({
 			isLoadingArticles: true,
-			sort
+			sort,
+			timeWindow
 		});
 		this.props.onGetCommunityReads(
 			{
 				pageNumber: 1,
 				pageSize,
-				sort
+				sort,
+				timeWindow
 			},
 			this._asyncTracker.addCallback(communityReads => {
 				this.setState({
@@ -132,7 +137,8 @@ class HomeScreen extends React.Component<Props, State> {
 					this.setState({
 						communityReads: null,
 						isLoadingArticles: false,
-						sort: null
+						sort: null,
+						timeWindow: null
 					});
 					this.props.onSetScreenState(() => ({
 						templateSection: TemplateSection.Header
@@ -177,6 +183,7 @@ class HomeScreen extends React.Component<Props, State> {
 								onToggleArticleStar={this.props.onToggleArticleStar}
 								onViewComments={this.props.onViewComments}
 								sort={this.state.sort}
+								timeWindow={this.state.timeWindow}
 							/>
 							{!this.state.isLoadingArticles ?
 								<PageSelector

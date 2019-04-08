@@ -15,11 +15,12 @@ import WelcomeInfoBox from '../WelcomeInfoBox';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>,
+	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow }, CommunityReads>,
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => Function,
@@ -31,20 +32,23 @@ interface Props {
 interface State {
 	communityReads: Fetchable<CommunityReads>,
 	isLoadingArticles: boolean,
-	sort: CommunityReadSort
+	sort: CommunityReadSort,
+	timeWindow?: CommunityReadTimeWindow
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeSort = (sort: CommunityReadSort) => {
+	private readonly _changeSort = (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => {
 		this.setState({
 			isLoadingArticles: true,
-			sort
+			sort,
+			timeWindow
 		});
 		this.props.onGetCommunityReads(
 			{
 				pageNumber: 1,
 				pageSize: 10,
-				sort
+				sort,
+				timeWindow
 			},
 			this._asyncTracker.addCallback(communityReads => {
 				this.setState({
@@ -60,7 +64,8 @@ class HomeScreen extends React.Component<Props, State> {
 				{
 					pageNumber: this.state.communityReads.value.articles.pageNumber + 1,
 					pageSize: 10,
-					sort: this.state.sort
+					sort: this.state.sort,
+					timeWindow: this.state.timeWindow
 				},
 				this._asyncTracker.addCallback(communityReads => {
 					resolve();
@@ -122,6 +127,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onToggleArticleStar={this.props.onToggleArticleStar}
 							onViewComments={this.props.onViewComments}
 							sort={this.state.sort}
+							timeWindow={this.state.timeWindow}
 						/>
 						{!this.state.isLoadingArticles ?
 							<AsyncActionLink

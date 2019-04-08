@@ -18,6 +18,7 @@ import Leaderboards from '../../../common/models/Leaderboards';
 import CommunityReadSort from '../../../common/models/CommunityReadSort';
 import Rating from '../../../common/models/Rating';
 import ClientType from '../ClientType';
+import CommunityReadTimeWindow from '../../../common/models/CommunityReadTimeWindow';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -129,7 +130,7 @@ export default abstract class {
 	// Articles
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
 	public readonly getComments = this.createFetchFunctionWithParams<{ slug: string }, CommentThread[]>('/Articles/ListComments');
-	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort }, CommunityReads>('/Articles/CommunityReads');
+	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow }, CommunityReads>('/Articles/CommunityReads');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly rateArticle = (id: number, score: number) => this.post<Rating>({ path: '/Articles/Rate', data: { articleId: id, score } });

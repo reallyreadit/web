@@ -8,10 +8,24 @@ import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
 import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import LoadingOverlay from '../LoadingOverlay';
-import classNames from 'classnames';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
+import CommunityReadTimeWindow from '../../../../../common/models/CommunityReadTimeWindow';
 
+const sortOptions: { [key: string]: CommunityReadSort } = {
+	'Hot': CommunityReadSort.Hot,
+	'Most Read': CommunityReadSort.MostRead,
+	'Most Comments': CommunityReadSort.MostComments,
+	'Top Rated': CommunityReadSort.HighestRated,
+	'Hall of Fame': CommunityReadSort.Top
+};
+const timeWindowOptions: { [key: string]: CommunityReadTimeWindow } = {
+	'Past 24 Hours': CommunityReadTimeWindow.PastDay,
+	'Past Week': CommunityReadTimeWindow.PastWeek,
+	'Past Month': CommunityReadTimeWindow.PastMonth,
+	'Past Year': CommunityReadTimeWindow.PastYear,
+	'Of All Time': CommunityReadTimeWindow.AllTime
+};
 interface State {
 	communityReads: Fetchable<CommunityReads>
 }
@@ -56,16 +70,26 @@ export default class extends React.PureComponent<{
 	onCreateAbsoluteUrl: (path: string) => string,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
-	onSortChange: (sort: CommunityReadSort) => void,
+	onSortChange: (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	sort: CommunityReadSort
+	sort: CommunityReadSort,
+	timeWindow?: CommunityReadTimeWindow
 }, {}> {
-	private readonly _sortByHot = () => {
-		this.props.onSortChange(CommunityReadSort.Hot);
+	private readonly _changeSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const sort = parseInt(e.target.value) as CommunityReadSort;
+		let timeWindow: CommunityReadTimeWindow;
+		if (sort === CommunityReadSort.Hot || sort === CommunityReadSort.Top) {
+			timeWindow = null;
+		} else {
+			timeWindow = this.props.timeWindow != null ?
+				this.props.timeWindow :
+				CommunityReadTimeWindow.PastDay;
+		}
+		this.props.onSortChange(sort, timeWindow);
 	};
-	private readonly _sortByTop = () => {
-		this.props.onSortChange(CommunityReadSort.Top);
+	private readonly _changeTimeWindow = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		this.props.onSortChange(this.props.sort, parseInt(e.target.value));
 	};
 	public render() {
 		return (
@@ -82,19 +106,39 @@ export default class extends React.PureComponent<{
 					onViewComments={this.props.onViewComments}
 				/>
 				<div className="sort">
-					<button
-						className={classNames({ 'selected': this.props.sort === CommunityReadSort.Hot })}
-						onClick={this._sortByHot}
+					<label>Sort</label>
+					<select
+						onChange={this._changeSort}
+						value={this.props.sort}
 					>
-						Hot
-					</button>
-					<div className="break"></div>
-					<button
-						className={classNames({ 'selected': this.props.sort === CommunityReadSort.Top })}
-						onClick={this._sortByTop}
-					>
-						Top
-					</button>
+						{Object
+							.keys(sortOptions)
+							.map(key => (
+								<option
+									key={key}
+									value={sortOptions[key]}
+								>
+									{key}
+								</option>
+							))}
+					</select>
+					{this.props.timeWindow != null ?
+						<select
+							onChange={this._changeTimeWindow}
+							value={this.props.timeWindow}
+						>
+							{Object
+								.keys(timeWindowOptions)
+								.map(key => (
+									<option
+										key={key}
+										value={timeWindowOptions[key]}
+									>
+										{key}
+									</option>
+								))}
+						</select> :
+						null}
 				</div>
 				{this.props.isLoadingArticles ?
 					<LoadingOverlay position="static" /> :
