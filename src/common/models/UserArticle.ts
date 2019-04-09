@@ -13,6 +13,7 @@ export default interface UserArticle {
 	wordCount: number,
 	commentCount: number,
 	readCount: number,
+	averageRatingScore: number | null,
 	dateCreated: string | null,
 	percentComplete: number,
 	isRead: boolean,
