@@ -25,12 +25,8 @@
 .community-reads-list_g4cy3n > .sort {
 	flex: 0 0 auto;
 	display: flex;
-	justify-content: flex-end;
 	align-items: center;
 	margin: 25px 0 10px 0;
-}
-.community-reads-list_g4cy3n > .sort > label {
-	margin-right: 5px;
 }
 .community-reads-list_g4cy3n > .sort > select {
 	-webkit-appearance: none;
@@ -46,7 +42,10 @@
 	outline: none;
 	padding: 5px 23px 5px 5px;
 	font-family: inherit;
-	margin-left: 5px;
+	font-size: 12pt;
+}
+.community-reads-list_g4cy3n > .sort > select:not(:last-child) {
+	margin-right: 5px;
 }
 .community-reads-list_g4cy3n > .loading-overlay_zfgtd1 {
 	flex: 1 1 auto;

@@ -6,11 +6,12 @@
 .comment-box_kaqbc2 {
 	text-align: right;
 	max-width: 600px;
+	margin: 0 auto;
 }
 .comment-box_kaqbc2 > textarea {
 	box-sizing: border-box;
 	width: 100%;
-	height: 32px;
+	height: 64px;
 	padding: 5px;
 	margin-bottom: 5px;
 	font-family: inherit;
@@ -48,6 +49,6 @@
 	cursor: pointer;
 	text-decoration: underline;
 }
-.comment-box_kaqbc2 > .button_ovrlmi:last-child {
-	margin-left: (8 + 6) + px;
+.comment-box_kaqbc2 > .button_ovrlmi:not(:last-child) {
+	margin-right: (8 + 6) + px;
 }

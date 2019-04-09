@@ -106,7 +106,6 @@ export default class extends React.PureComponent<{
 					onViewComments={this.props.onViewComments}
 				/>
 				<div className="sort">
-					<label>Sort</label>
 					<select
 						onChange={this._changeSort}
 						value={this.props.sort}

@@ -103,27 +103,36 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									}
 								/> :
 								null}
-							<h3>Comments</h3>
-							<CommentBox
-								articleId={this.props.article.value.id}
-								isAllowedToPost={isAllowedToPost}
-								onPostComment={this.props.onPostComment}
-							/>
-							{this.props.comments.value ?
-								this.props.comments.value.length ?
-									<CommentList
-										comments={this.props.comments.value}
-										highlightedCommentId={this.props.highlightedCommentId}
+							<div className="comments">
+								{isAllowedToPost ?
+									<CommentBox
+										articleId={this.props.article.value.id}
 										isAllowedToPost={isAllowedToPost}
-										mode="reply"
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onPostComment={this.props.onPostComment}
-										onShare={this.props.onShare}
-										user={this.props.user}
 									/> :
-									<span>No comments found! (Post one!)</span> :
-								null}
+									<div className="locked">
+										<img
+											alt="Padlock"
+											src="/images/padlock.svg"
+										/>
+										You must read the article before you can comment.
+									</div>}
+								{this.props.comments.value ?
+									this.props.comments.value.length ?
+										<CommentList
+											comments={this.props.comments.value}
+											highlightedCommentId={this.props.highlightedCommentId}
+											isAllowedToPost={isAllowedToPost}
+											mode="reply"
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onPostComment={this.props.onPostComment}
+											onShare={this.props.onShare}
+											user={this.props.user}
+										/> :
+										<span className="no-comments">No comments yet</span> :
+									null}
+							</div>
 						</>}
 				</div>
 			</ScreenContainer>

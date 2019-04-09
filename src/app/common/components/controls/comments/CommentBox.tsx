@@ -83,7 +83,7 @@ export default class CommentBox extends React.PureComponent<Props, {
 		const textareaStyle: { [key: string]: string } = {};
 		if (!this.state.hasFocus && !this.state.hasContent) {
 			textareaStyle['width'] = '100%';
-			textareaStyle['height'] = this.props.parentCommentId ? '130px' : '32px';
+			textareaStyle['height'] = this.props.parentCommentId ? '130px' : '64px';
 		}
 		return (
 			<div className="comment-box_kaqbc2">
@@ -93,7 +93,6 @@ export default class CommentBox extends React.PureComponent<Props, {
 						resizing: this.state.isResizing
 					})}
 					value={this.state.commentText}
-					placeholder={!this.props.parentCommentId ? 'Post a new comment...' : ''}
 					onChange={this._updateCommentText}
 					autoFocus={!!this.props.parentCommentId}
 					onFocus={this._focus}
@@ -108,21 +107,21 @@ export default class CommentBox extends React.PureComponent<Props, {
 						You must really read the article before you can comment
 					</span> :
 					null}
+				{this.props.parentCommentId ?
+					<Button
+						text="Cancel"
+						state={
+							this.state.isPosting ?
+								'disabled' :
+								(this.props.isAllowedToPost && this.state.hasContent) || this.props.parentCommentId ?
+									'normal' :
+									'disabled'
+						}
+						onClick={this._cancel}
+					/> :
+					null}
 				<Button
-					text="Cancel"
-					iconLeft="forbid"
-					state={
-						this.state.isPosting ?
-							'disabled' :
-							(this.props.isAllowedToPost && this.state.hasContent) || this.props.parentCommentId ?
-								'normal' :
-								'disabled'
-					}
-					onClick={this._cancel}
-				/>
-				<Button
-					text={`Post ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
-					iconLeft={this.props.isAllowedToPost ? 'checkmark' : 'locked'}
+					text={`Add ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
 					style="preferred"
 					state={
 						this.state.isPosting ?
