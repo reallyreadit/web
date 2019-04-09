@@ -68,15 +68,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
-			star = (
-				<div className="star-container">
-					<Star
-						starred={!!this.props.article.dateStarred}
-						busy={this.state.isStarring}
-						onClick={this._toggleStar}
-					/>
-				</div>
-			),
 			titleLink = (
 				<a
 					className="title-link"
@@ -87,17 +78,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				</a>
 			),
 			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min',
-			shareControlProps = {
-				children: (
-					<Icon
-						className="icon"
-						name="paper-plane"
-					/>
-				),
-				onCopyTextToClipboard: this.props.onCopyTextToClipboard,
-				onGetData: this._getShareData,
-				onShare: this.props.onShare
-			};
+			averageRatingScore = this.props.article.averageRatingScore != null && this.props.article.averageRatingScore < 10 ?
+				this.props.article.averageRatingScore.toFixed(1) :
+				this.props.article.averageRatingScore;
 		// publisher metadata
 		const publisherMetadata = [this.props.article.source];
 		if (this.props.article.authors.length) {
@@ -119,59 +102,82 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		}
 		return (
 			<div className="article-details_d2vnmv">
-				<div className="small-title">
-					{star}
-					{titleLink}
-				</div>
-				<div className="columns">
-					{star}
-					<div className="article">
-						{titleLink}
-						<div className="meta">
-							{publisherMetadata.join(' | ')}
-						</div>
-						<div className="stats">
-							<div className="stat reads">
-								<span className="count">{this.props.article.readCount}</span> {formatCountable(this.props.article.readCount, 'read')}
-							</div>
-							<a
-								className="stat comments"
-								href={commentsLinkHref}
-								onClick={this._viewComments}
-							>
-								<span className="count">{this.props.article.commentCount}</span> {formatCountable(this.props.article.commentCount, 'comment')}
-							</a>
-						</div>
+				<div className="actions">
+					<div className="star-container">
+						<Star
+							starred={!!this.props.article.dateStarred}
+							busy={this.state.isStarring}
+							onClick={this._toggleStar}
+						/>
 					</div>
-					<div className="small-stats-article">
-						<div className="meta">
-							<div className="publisher">
-								{this.props.article.source}
+					<ShareControl
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onGetData={this._getShareData}
+						onShare={this.props.onShare}
+						menuPosition={MenuPosition.MiddleRight}
+					>
+						<Icon
+							className="icon"
+							name="share"
+						/>
+					</ShareControl>
+				</div>
+				<div className="info">
+					<div className="small-title">
+						{titleLink}
+					</div>
+					<div className="columns">
+						<div className="article">
+							{titleLink}
+							<div className="meta">
+								{publisherMetadata.join(' | ')}
 							</div>
-							<div className="author-date-length">
-								{this.props.article.authors.length ?
-									<span className="author">
-										{this.props.article.authors.join(', ')}
-									</span> :
+							<div className="stats">
+								<div className="stat reads">
+									<span className="count">{this.props.article.readCount}</span> {formatCountable(this.props.article.readCount, 'read')}
+								</div>
+								<a
+									className="stat comments"
+									href={commentsLinkHref}
+									onClick={this._viewComments}
+								>
+									<span className="count">{this.props.article.commentCount}</span> {formatCountable(this.props.article.commentCount, 'comment')}
+								</a>
+								{averageRatingScore != null ?
+									<div className="stat rating">
+										<span>{averageRatingScore}</span>
+									</div> :
 									null}
-								{this.props.article.authors.length && this.props.article.datePublished ?
-									<span className="spacer">|</span> :
-									null}
-								{this.props.article.datePublished ?
-									<span className="date">
-										{formatTimestamp(this.props.article.datePublished)}
-									</span> :
-									null}
-								{this.props.article.authors.length || this.props.article.datePublished ?
-									<span className="spacer">|</span> :
-									null}
-								<span className="length">
-									{estimatedReadTime}
-								</span>
 							</div>
 						</div>
-						<div className="stats">
-							<div className="reads-comments">
+						<div className="small-stats-article">
+							<div className="meta">
+								<div className="publisher">
+									{this.props.article.source}
+								</div>
+								<div className="author-date-length">
+									{this.props.article.authors.length ?
+										<span className="author">
+											{this.props.article.authors.join(', ')}
+										</span> :
+										null}
+									{this.props.article.authors.length && this.props.article.datePublished ?
+										<span className="spacer">|</span> :
+										null}
+									{this.props.article.datePublished ?
+										<span className="date">
+											{formatTimestamp(this.props.article.datePublished)}
+										</span> :
+										null}
+									{this.props.article.authors.length || this.props.article.datePublished ?
+										<span className="spacer">|</span> :
+										null}
+									<span className="length">
+										{estimatedReadTime}
+									</span>
+								</div>
+							</div>
+							<div className="stats">
 								<div className="stat reads">
 									<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 								</div>
@@ -182,23 +188,24 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								>
 									<span>{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}</span>
 								</a>
-							</div>
-							<ShareControl {...{ ...shareControlProps, menuPosition: MenuPosition.BottomLeft }} />
-						</div>
-					</div>
-					<div className="progress">
-						<div className="meter">
-							<div
-								className={classNames('fill', { 'read': this.props.article.isRead })}
-								style={{ height: this.props.article.percentComplete + '%' }}
-							></div>
-							<div className="description">
-								<strong>{Math.floor(this.props.article.percentComplete)}%</strong> complete
+								{averageRatingScore != null ?
+									<div className="stat rating">
+										<span>{averageRatingScore}</span>
+									</div> :
+									null}
 							</div>
 						</div>
-					</div>
-					<div className="share">
-						<ShareControl {...{ ...shareControlProps, menuPosition: MenuPosition.MiddleLeft }} />
+						<div className="progress">
+							<div className="meter">
+								<div
+									className={classNames('fill', { 'read': this.props.article.isRead })}
+									style={{ height: this.props.article.percentComplete + '%' }}
+								></div>
+								<div className="description">
+									<strong>{Math.floor(this.props.article.percentComplete)}%</strong> complete
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
