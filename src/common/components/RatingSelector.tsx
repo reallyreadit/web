@@ -2,6 +2,7 @@ import * as React from 'react';
 import classNames from 'classnames';
 
 interface Props {
+	children?: React.ReactNode,
 	onSelectRating: (rating: number) => Promise<{}>,
 	ratingScore: number | null
 }
@@ -32,6 +33,7 @@ export default class extends React.PureComponent<
 	public render() {
 		return (
 			<div className="rating-selector_epcgq9">
+				{this.props.children}
 				<div className="prompt-text">
 					<strong>Would you recommend this article to others?</strong>
 				</div>

@@ -5,11 +5,13 @@
 
 .rating-selector_epcgq9 {
 	text-align: center;
+	padding: 10px;
+	background-color: white;
+	border: 1px solid #e0e0e0;
 }
 .rating-selector_epcgq9 > .prompt-text {
 	margin-bottom: 10px;
 	font-family: 'Museo Sans (300)';
-	font-size: 14pt;
 }
 .rating-selector_epcgq9 > .rating-bar {
 	display: flex;
@@ -45,7 +47,6 @@
 	background-color: white;
 	cursor: pointer;
 	font-family: 'Museo Sans (700)';
-	font-size: 16pt;
 }
 .rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button:first-child {
 	border-radius: 5px 0 0 5px;
