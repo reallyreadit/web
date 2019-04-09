@@ -3,188 +3,53 @@
 	cssComponentId: button_ovrlmi
 */
 
-$button-height: 26;
-$bevel-height: 6;
-$bevel-width: 6;
-$border-color: #000;
-$disabled-border-color: #ccc;
-
-@mixin end-cap($width) {
-	content: "";
-	display: block;
-	position: absolute;
-	box-sizing: border-box;
-	top: 0;
-	height: 100%;
-	border-width: ($width + px) 0;
-	border-style: solid;
-	border-top-color: transparent;
-	border-bottom-color: transparent;
-}
-@mixin end-cap-left($width, $color) {
-	left: (-$width) + px;
-	border-right-width: $width + px;
-	border-right-color: $color;
-}
-@mixin end-cap-right($width, $color) {
-	right: (-$width) + px;
-	border-left-width: $width + px;
-	border-left-color: $color;
-}
-
 .button_ovrlmi {
-    display: inline-block;
-    position: relative;
-	z-index: 1;
-    padding: 1px 0;
-    margin: 0 ($bevel-width + px);
-    border-width: 0;
-	background-color: $border-color;
-    cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
-	.content {
-		position: relative;
-		z-index: 4;
-    	height: ($button-height - 2) + px;
-		background-color: #fff;
-		display: flex;
-		align-items: center;
-	}
-	.content::before,
-	.content::after { @include end-cap($bevel-height - 1); }
-	.content::before { @include end-cap-left($bevel-width - 1, #fff); }
-	.content::after { @include end-cap-right($bevel-width - 1, #fff); }
-	.icon-wrapper {
-		position: relative;
-	}
-	.icon-wrapper.indicator::after {
-		content: "";
-		position: absolute;
-		border: 4px solid red;
-		border-radius: 4px;
-		top: 0;
-		right: 0;
-	}
-	.icon_rour3d {
-		margin-right: 3px;
-	}
-	.content-left {
-		display: inline;
-		margin-right: 3px;
-	}
-	.text.error {
-		text-decoration: underline dotted red;
-	}
+	display: inline-flex;
+	align-items: center;
+	height: 32px;
+	box-sizing: border-box;
+	padding: 0 10px;
+	border: none;
+	background-color: white;
+	cursor: pointer;
+	font-family: 'Museo Sans (500)';
+	text-transform: lowercase;
+	position: relative;
 }
-.button_ovrlmi::before,
-.button_ovrlmi::after { @include end-cap($bevel-height); }
-.button_ovrlmi::before { @include end-cap-left($bevel-width, $border-color); }
-.button_ovrlmi::after { @include end-cap-right($bevel-width, $border-color); }
-.button_ovrlmi:focus {
-	outline: none;
-}
-.button_ovrlmi:focus {
-	.text {
-		text-decoration: underline;
-	}
-}
-.button_ovrlmi:not(.disabled):active,
-.button_ovrlmi:not(.disabled).active {
-	.content {
-		background-color: #000;
-		color: #fff;
-	}
-	.content::before { border-right-color: #000; }
-	.content::after { border-left-color: #000; }
-}
-
 .button_ovrlmi.preferred {
-	font-weight: bold;
-	margin: 0 (($bevel-width + 2) + px);
-	.inner-wrap {
-		position: relative;
-		z-index: 2;
-		padding: 1px 0;
-		background-color: $border-color;
-	}
-	.inner-wrap::before,
-	.inner-wrap::after { @include end-cap($bevel-height); }
-	.inner-wrap::before { @include end-cap-left($bevel-width, $border-color); }
-	.inner-wrap::after { @include end-cap-right($bevel-width, $border-color); }
-	.outer-wrap {
-		position: relative;
-		z-index: 3;
-		padding: 1px 0;
-		background-color: #fff;
-	}
-	.outer-wrap::before,
-	.outer-wrap::after { @include end-cap($bevel-height + 1); }
-	.outer-wrap::before { @include end-cap-left($bevel-width + 1, #fff); }
-	.outer-wrap::after { @include end-cap-right($bevel-width + 1, #fff); }
+	border: 2px solid #2A2326;
+	font-family: 'Museo Sans (700)';
 }
-.button_ovrlmi.preferred::before,
-.button_ovrlmi.preferred::after { @include end-cap($bevel-height + 2); }
-.button_ovrlmi.preferred::before { @include end-cap-left($bevel-width + 2, $border-color); }
-.button_ovrlmi.preferred::after { @include end-cap-right($bevel-width + 2, $border-color); }
-.button_ovrlmi.preferred:not(.disabled):active,
-.button_ovrlmi.preferred:not(.disabled).active {
-	.outer-wrap { background-color: #000; }
-	.outer-wrap::before,
-	.outer-wrap::after { @include end-cap($bevel-height + 1); }
-	.outer-wrap::before { @include end-cap-left($bevel-width + 1, #000); }
-	.outer-wrap::after { @include end-cap-right($bevel-width + 1, #000); }
-}
-
 .button_ovrlmi.disabled {
-	cursor: default;
-	color: #ccc;
-	background-color: $disabled-border-color;
+	color: silver;
+	border-color: silver;
 }
-.button_ovrlmi.disabled::before,
-.button_ovrlmi.disabled::after { @include end-cap($bevel-height); }
-.button_ovrlmi.disabled::before { @include end-cap-left($bevel-width, $disabled-border-color); }
-.button_ovrlmi.disabled::after { @include end-cap-right($bevel-width, $disabled-border-color); }
-
-.button_ovrlmi.preferred.disabled {
-	.inner-wrap { background-color: $disabled-border-color; }
-	.inner-wrap::before,
-	.inner-wrap::after { @include end-cap($bevel-height); }
-	.inner-wrap::before { @include end-cap-left($bevel-width, $disabled-border-color); }
-	.inner-wrap::after { @include end-cap-right($bevel-width, $disabled-border-color); }
+.button_ovrlmi.indicator::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-width: 5px;
+	border-style: solid;
+	border-color: red red transparent transparent;
 }
-.button_ovrlmi.preferred.disabled::before,
-.button_ovrlmi.preferred.disabled::after { @include end-cap($bevel-height + 2); }
-.button_ovrlmi.preferred.disabled::before { @include end-cap-left($bevel-width + 2, $disabled-border-color); }
-.button_ovrlmi.preferred.disabled::after { @include end-cap-right($bevel-width + 2, $disabled-border-color); }
-
-.button_ovrlmi.busy {
-	.loading {
-		position: absolute;
-		bottom: -1px;
-		left: 50%;
-		transform: translateX(-50%);
-		line-height: normal;
-		text-align: left;
-	}
-	.loading::before {
-		content: "...";
-  		visibility: hidden;
-	}
-	.loading::after {
-		content: "";
-		position: absolute;
-		left: 0;
-		width: 100%;
-		animation: button_ovrlmi-ellipsis 750ms steps(1) infinite;
-	}
+.button_ovrlmi > .icon_rour3d {
+	margin-right: 5px;
+	width: 16px;
+	height: 16px;
 }
-
-@keyframes button_ovrlmi-ellipsis {
-	0% { content: ""; }
-	16% { content: "."; }
-	32% { content: ".."; }
-	50% { content: "..."; }
-	68% { content: ".."; text-align: right; }
-	84% { content: "."; text-align: right; }
-	100% { content: ""; }
+.button_ovrlmi > .loading {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.button_ovrlmi > .loading > .icon_rour3d {
+	width: 16px;
+	height: 16px;
 }
