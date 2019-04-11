@@ -11,6 +11,16 @@ function addPlugin(webpackConfig, plugin) {
 	}
 	webpackConfig.plugins.push(plugin);
 }
+function stringifyProperties(object) {
+	for (let key in object) {
+		const value = object[key];
+		if (typeof value !== 'object') {
+			object[key] = JSON.stringify(value);
+		} else {
+			stringifyProperties(object[key]);
+		}
+	}
+}
 function configureWebpack(params) {
 	const
 		tsConfig = {
@@ -46,24 +56,19 @@ function configureWebpack(params) {
 			enforce: 'pre',
 			loader: 'source-map-loader'
 		});
+	} else {
+		webpackConfig.devtool = false;
 	}
 	if (params.appConfig) {
-		const config = JSON.parse(fs.readFileSync(params.appConfig.replace('{env}', params.env)).toString());
+		const config = JSON.parse(fs.readFileSync(params.appConfig.path.replace('{env}', params.env)).toString());
 		const package = JSON.parse(
 			fs
 				.readFileSync('./package.json')
 				.toString()
 		);
 		config.version = package['it.reallyread'].version.extension.toString();
-		// TODO: FIX THIS!!!
-		config.api.protocol = JSON.stringify(config.api.protocol);
-		config.api.host = JSON.stringify(config.api.host);
-		config.cookieDomain = JSON.stringify(config.cookieDomain);
-		config.cookieName = JSON.stringify(config.cookieName);
-		config.extensionId = JSON.stringify(config.extensionId);
-		config.web.protocol = JSON.stringify(config.web.protocol);
-		config.web.host = JSON.stringify(config.web.host);
-		define = Object.assign(define || {}, { config });
+		stringifyProperties(config);
+		define = Object.assign(define || {}, { [params.appConfig.key]: config });
 	}
 	if (params.minify) {
 		webpackConfig.optimization = { minimize: true };
@@ -71,9 +76,7 @@ function configureWebpack(params) {
 	if (params.env !== project.env.dev) {
 		// https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
 		define = Object.assign(define || {}, {
-			'process.env': {
-				NODE_ENV: JSON.stringify('production')
-			}
+			'process.env.NODE_ENV': JSON.stringify('production')
 		});
 	}
 	if (define) {
