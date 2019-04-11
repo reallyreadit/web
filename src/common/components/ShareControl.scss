@@ -41,6 +41,12 @@
 	transform: translate(13px, -50%);
 	animation: share-control_mnbspk-pop-in-right 250ms;
 }
+.share-control_mnbspk > .menu.center.top {
+	bottom: 100%;
+	left: 50%;
+	transform: translate(-50%, -13px);
+	animation: share-control_mnbspk-pop-in-center-top 250ms;
+}
 .share-control_mnbspk > .menu.middle.left.closing {
 	animation: share-control_mnbspk-pop-out-middle-left 250ms;
 }
@@ -49,6 +55,9 @@
 }
 .share-control_mnbspk > .menu.right.closing {
 	animation: share-control_mnbspk-pop-out-right 250ms;
+}
+.share-control_mnbspk > .menu.center.top.closing {
+	animation: share-control_mnbspk-pop-out-center-top 250ms;
 }
 .share-control_mnbspk > .menu::before,
 .share-control_mnbspk > .menu::after {
@@ -84,6 +93,12 @@
 	transform: rotate(45deg) translate(-4px, -4px);
 	transform-origin: bottom right;
 }
+.share-control_mnbspk > .menu.center.top::before,
+.share-control_mnbspk > .menu.center.top::after {
+	border-right: 16px solid transparent;
+	transform: rotate(-45deg) translate(-8px, -8px);
+	transform-origin: top left;
+}
 .share-control_mnbspk > .menu::before {
 	border-bottom-color: #e0e0e0;
 	box-shadow: 0px 0px 1px -1px black;
@@ -94,6 +109,10 @@
 .share-control_mnbspk > .menu.right::before {
 	left: -17px;
 }
+.share-control_mnbspk > .menu.center.top::before {
+	top: 100%;
+	left: 50%;
+}
 .share-control_mnbspk > .menu::after {
 	border-bottom-color: white;
 }
@@ -103,13 +122,16 @@
 .share-control_mnbspk > .menu.right::after {
 	left: -16px;
 }
+.share-control_mnbspk > .menu.center.top::after {
+	left: 50%;
+}
 .share-control_mnbspk > .menu > .button {
 	display: flex;
 	position: relative;
 	box-sizing: border-box;
 	width: 100%;
 	align-items: center;
-	padding: 4px 10px;
+	padding: 3px 10px;
 	background-color: white;
 	border: none;
 	outline: none;
@@ -155,4 +177,13 @@
 @keyframes share-control_mnbspk-pop-out-right {
 	0% { transform: translate(13px, -50%) scale(1, 1); }
 	100% { transform: translate(13px, -50%) scale(0, 0); }
+}
+@keyframes share-control_mnbspk-pop-in-center-top {
+	0% { transform: translate(-50%, -13px) scale(0, 0); }
+	75% { transform: translate(-50%, -13px) scale(1.15, 1.15); }
+	100% { transform: translate(-50%, -13px) scale(1, 1); }
+}
+@keyframes share-control_mnbspk-pop-out-center-top {
+	0% { transform: translate(-50%, -13px) scale(1, 1); }
+	100% { transform: translate(-50%, -13px) scale(0, 0); }
 }

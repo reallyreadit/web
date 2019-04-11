@@ -8,6 +8,7 @@ import { truncateText } from '../format';
 
 export enum MenuPosition {
 	BottomLeft = 'bottom,left',
+	CenterTop = 'center,top',
 	MiddleLeft = 'middle,left',
 	MiddleRight = 'middle,right'
 }
