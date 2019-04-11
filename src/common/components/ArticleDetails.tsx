@@ -11,6 +11,7 @@ import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import classNames from 'classnames';
 import { calculateEstimatedReadTime } from '../calculate';
+import getShareData from '../sharing/getShareData';
 
 interface Props {
 	article: UserArticle,
@@ -25,23 +26,10 @@ interface Props {
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	private readonly _getShareData = () => {
-		const
-			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),
-			articleUrlParams = {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			},
-			shareUrl = this.props.onCreateAbsoluteUrl(
-				findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
-			);
-		return {
-			email: {
-				body: shareUrl,
-				subject: `"${this.props.article.title}"`,
-			},
-			text: `"${this.props.article.title}"`,
-			url: shareUrl
-		};
+		return getShareData(
+			this.props.article,
+			this.props.onCreateAbsoluteUrl
+		);
 	};
 	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		this.props.onRead(this.props.article, e);
