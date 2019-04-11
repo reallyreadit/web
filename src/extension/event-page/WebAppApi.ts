@@ -11,7 +11,7 @@ export default class {
 		chrome.tabs.query(
 			{},
 			tabs => tabs
-				.filter(tab => tab.url && new URL(tab.url).hostname === config.web.host)
+				.filter(tab => tab.url && new URL(tab.url).hostname === window.reallyreadit.extension.config.web.host)
 				.forEach(tab => chrome.tabs.executeScript(
 					tab.id,
 					{ code: `window.postMessage('${stringifyForLiteral({ type, data })}', '*');` }

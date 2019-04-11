@@ -1,4 +1,5 @@
 import Page from './reading/Page';
+import HttpEndpoint from './HttpEndpoint';
 
 declare global {
 	interface AppWindow { }
@@ -8,6 +9,14 @@ declare global {
 		reallyreadit: {
 			app?: AppWindow,
 			extension?: {
+				config?: {
+					api: HttpEndpoint,
+					cookieName: string,
+					cookieDomain: string,
+					extensionId: string,
+					web: HttpEndpoint,
+					version: string
+				},
 				contentScript: ContentScriptWindow
 			},
 			nativeClient?: {

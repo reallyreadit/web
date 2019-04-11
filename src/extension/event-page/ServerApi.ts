@@ -14,7 +14,7 @@ import { createQueryString } from '../../common/routing/queryString';
 import DesktopNotification from '../../common/models/DesktopNotification';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
-	req.setRequestHeader('X-Readup-Client', `web/extension@${config.version}`);
+	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
 	if (params.context) {
 		req.setRequestHeader('X-Readup-Context', params.context);
 	}
@@ -23,7 +23,7 @@ function fetchJson<T>(request: Request) {
 	return new Promise<T>((resolve, reject) => {
 		const
 			req = new XMLHttpRequest(),
-			url = createUrl(config.api, request.path);
+			url = createUrl(window.reallyreadit.extension.config.api, request.path);
 		req.withCredentials = true;
 		req.addEventListener('load', function () {
 			if (this.status === 200 || this.status === 400) {
@@ -43,8 +43,8 @@ function fetchJson<T>(request: Request) {
 				}
 			} else if (this.status === 401) {
 				chrome.cookies.remove({
-					url: createUrl(config.api),
-					name: config.cookieName
+					url: createUrl(window.reallyreadit.extension.config.api),
+					name: window.reallyreadit.extension.config.cookieName
 				});
 				reject(['Unauthenticated']);
 			} else {
@@ -108,7 +108,7 @@ export default class ServerApi {
 		});
 		// cookie change
 		chrome.cookies.onChanged.addListener(changeInfo => {
-			if (changeInfo.cookie.domain === '.' + config.cookieDomain && changeInfo.cookie.name === config.cookieName) {
+			if (changeInfo.cookie.domain === '.' + window.reallyreadit.extension.config.cookieDomain && changeInfo.cookie.name === window.reallyreadit.extension.config.cookieName) {
 				const isAuthenticated = !changeInfo.removed;
 				// clear user specific cache
 				this._newReplyNotification.clear();
@@ -182,7 +182,7 @@ export default class ServerApi {
 									timestamp: now
 								});
 								chrome.notifications.create(
-									createUrl(config.web, '/viewReply' + createQueryString({ token: notification.token })),
+									createUrl(window.reallyreadit.extension.config.web, '/viewReply' + createQueryString({ token: notification.token })),
 									{
 										type: 'basic',
 										iconUrl: '../icons/icon.svg',
@@ -260,8 +260,8 @@ export default class ServerApi {
 	}
 	public getAuthStatus() {
 		return new Promise<boolean>(resolve => chrome.cookies.get({
-			url: createUrl(config.api),
-			name: config.cookieName
+			url: createUrl(window.reallyreadit.extension.config.api),
+			name: window.reallyreadit.extension.config.cookieName
 		}, cookie => resolve(!!cookie)));
 	}
 	public hasNewReply() {

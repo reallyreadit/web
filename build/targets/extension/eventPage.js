@@ -6,7 +6,10 @@ const project = require('../../project'),
 const build = createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts'),
-		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json')
+		appConfig: {
+			path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
+			key: 'window.reallyreadit.extension.config'
+		}
 	},
 	staticAssets: [
 		`${project.srcDir}/extension/event-page/images/**/*.*`,

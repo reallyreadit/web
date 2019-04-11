@@ -9,8 +9,10 @@ const
 const mainBuild = createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'extension/browser-action/main.ts'),
-		appConfig: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
-		htmlTemplate: path.posix.join(project.srcDir, 'extension/browser-action/templates/html.ts')
+		appConfig: {
+			path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
+			key: 'window.reallyreadit.extension.config'
+		}
 	},
 	scss: [
 		`${project.srcDir}/extension/browser-action/**/*.{css,scss}`,
