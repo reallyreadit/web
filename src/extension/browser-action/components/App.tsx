@@ -14,6 +14,7 @@ import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import AsyncTracker from '../../../common/AsyncTracker';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ClipboardService from '../../../common/services/ClipboardService';
+import { createUrl } from '../../../common/HttpEndpoint';
 
 export default class extends React.Component<{}, ExtensionState & { toasts: Toast[] }> {
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
@@ -53,7 +54,7 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	);
 
 	// routing
-	private readonly _createAbsoluteUrl = (path: string) => `${config.web.protocol}://${config.web.host}${path}`;
+	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
 
 	// sharing
 	private readonly _handleShareRequest = () => {
