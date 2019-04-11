@@ -64,6 +64,9 @@
 	border-left-color: blue;
 }
 .rating-selector_epcgq9 > .status-text {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	margin-top: 10px;
 	font-family: 'Museo Sans (300)';
 }

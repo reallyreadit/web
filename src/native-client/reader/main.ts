@@ -7,10 +7,13 @@ import createPageParseResult from '../../common/reading/createPageParseResult';
 import Reader from '../../common/reading/Reader';
 import * as ReactDOM from 'react-dom';
 import * as  React from 'react';
-import Footer from '../../common/components/reader/Footer';
+import Footer, { Props as FooterProps } from '../../common/components/reader/Footer';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import Rating from '../../common/models/Rating';
 import UserArticle from '../../common/models/UserArticle';
+import ShareData from '../../common/sharing/ShareData';
+import ShareChannel from '../../common/sharing/ShareChannel';
+import { createUrl } from '../../common/HttpEndpoint';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -20,12 +23,23 @@ window.reallyreadit = {
 	}
 };
 
+function copyTextToClipboard() {
+	// we don't need this since we're using native sharing
+}
+function createAbsoluteUrl(path: string) {
+	return createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
+}
+function share(data: ShareData) {
+	messagingContext.sendMessage({
+		type: 'share',
+		data
+	});
+	return [] as ShareChannel[];
+}
+
 let
 	articleId: number | null,
-	props: {
-		onSelectRating: (rating: number) => Promise<{}>,
-		ratingScore: number | null
-	},
+	props: FooterProps,
 	root: HTMLDivElement,
 	userPageId: number | null;
 
@@ -79,8 +93,11 @@ function constructUserInterface(article: UserArticle) {
 		React.createElement(
 			Footer,
 			props = {
-				...article,
-				onSelectRating: rateArticle
+				article,
+				onCopyTextToClipboard: copyTextToClipboard,
+				onCreateAbsoluteUrl: createAbsoluteUrl,
+				onSelectRating: rateArticle,
+				onShare: share
 			}
 		),
 		root
@@ -104,7 +121,10 @@ function rateArticle(score: number) {
 						Footer,
 						props = {
 							...props,
-							ratingScore: rating.score
+							article: {
+								...props.article,
+								ratingScore: rating.score
+							}
 						}
 					),
 					root

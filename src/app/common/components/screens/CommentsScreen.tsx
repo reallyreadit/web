@@ -95,12 +95,11 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 							/>
 							{this.props.article.value.isRead ?
 								<RatingSelector
-									{
-										...{
-											...this.props.article.value,
-											onSelectRating: this._selectRating
-										}
-									}
+									article={this.props.article.value}
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onSelectRating={this._selectRating}
+									onShare={this.props.onShare}
 								/> :
 								null}
 							<div className="comments">

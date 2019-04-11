@@ -16,8 +16,7 @@ export default class ContentScriptApi {
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
 		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void,
-		onLoadContentParser: (tabId: number) => void,
-		onLoadUserInterface: (tabId: number) => void
+		onLoadContentParser: (tabId: number) => void
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -51,9 +50,6 @@ export default class ContentScriptApi {
 						break;
 					case 'loadContentParser':
 						handlers.onLoadContentParser(sender.tab.id);
-						break;
-					case 'loadUserInterface':
-						handlers.onLoadUserInterface(sender.tab.id);
 						break;
 				}
 			}

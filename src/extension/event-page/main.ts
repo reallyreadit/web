@@ -128,10 +128,6 @@ const contentScriptApi = new ContentScriptApi({
 	},
 	onLoadContentParser: tabId => {
 		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
-	},
-	onLoadUserInterface: tabId => {
-		chrome.tabs.executeScript(tabId, { file: './content-script/user-interface/bundle.js' });
-		chrome.tabs.insertCSS(tabId, { file: './content-script/user-interface/bundle.css' });
 	}
 });
 
@@ -149,7 +145,7 @@ function getState() {
 		.then(result => {
 			const focusedChromeTab = result[0],
 				isAuthenticated = result[1],
-				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === config.web.host,
+				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
 				showNewReplyIndicator = serverApi.hasNewReply();
 			let focusedTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {

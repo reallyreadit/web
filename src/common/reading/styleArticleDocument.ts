@@ -1,30 +1,38 @@
 const styleContent = `
-html {
+#rrit-article {
 	font-family: serif;
-	font-size: 16pt;
-	line-height: 1.35em;
 	color: #222;
-}
-body {
-	margin: 10px auto;
+	margin: 0 auto;
 	padding: 0 10px 100px 10px;
 	max-width: 600px;
 }
-body * {
+#rrit-article * {
 	max-width: 100%;
 }
-img {
-	height: auto !important;
-}
-#rrit-title {
-	font-size: 20pt;
+#rrit-article #rrit-title {
 	font-family: sans-serif;
-	line-height: 1.25em;
-	margin: 20px 0 10px 0;
+	font-size: 20pt;
 }
-#rrit-byline {
+#rrit-article #rrit-byline {
+	font-size: 18pt;
 	font-style: italic;
-	margin-bottom: 20px;
+	font-weight: normal;
+}
+#rrit-article h1,
+#rrit-article h2,
+#rrit-article h3,
+#rrit-article h4,
+#rrit-article h5,
+#rrit-article h6,
+#rrit-article p {
+	margin: 1em 0;
+}
+#rrit-article p {
+	font-size: 16pt;
+	line-height: 1.35em;
+}
+#rrit-article img {
+	height: auto !important;
 }
 `;
 function createAbsoluteUrl(baseUrl: string, attrValue: string) {
@@ -141,6 +149,8 @@ export default (document: Document, title: string | null, byline: string | null)
 				}
 			}
 		});
+	// add custom classes
+	document.body.id = 'rrit-article';
 	// add styles
 	const styleElement = document.createElement('style');
 	styleElement.type = 'text/css';
@@ -148,7 +158,7 @@ export default (document: Document, title: string | null, byline: string | null)
 	document.body.appendChild(styleElement);
 	// add title and byline
 	if (byline) {
-		const bylineElement = document.createElement('div');
+		const bylineElement = document.createElement('h2');
 		bylineElement.id = 'rrit-byline';
 		bylineElement.textContent = byline;
 		document.body.insertBefore(bylineElement, document.body.children[0]);

@@ -62,7 +62,4 @@ export default class EventPageApi {
 	public loadContentParser() {
 		sendMessage('loadContentParser');
 	}
-	public loadUserInterface() {
-		sendMessage('loadUserInterface');
-	}
 }

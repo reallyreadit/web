@@ -42,6 +42,7 @@ const build = createBuild({
 									fs
 										.readFileSync(path.join(buildInfo.outPath, 'bundle.css'))
 										.toString()
+										.replace(/`/g, '\\`')
 										.replace(
 											/url\((['"]?)\/fonts\/([^)]+)\1\)/gi,
 											(match, quote, fileName) => (
@@ -67,8 +68,10 @@ const build = createBuild({
 	}()),
 	path: 'native-client/reader',
 	scss: [
+		`${project.srcDir}/common/components/ActionLink.scss`,
 		`${project.srcDir}/common/components/RatingSelector.scss`,
-		`${project.srcDir}/common/components/reader/Footer.scss`,
+		`${project.srcDir}/common/components/ShareControl.scss`,
+		`${project.srcDir}/common/templates/global.css`,
 		`${project.srcDir}/native-client/reader/**/*.{css,scss}`
 	],
 	staticAssets: [
@@ -76,6 +79,10 @@ const build = createBuild({
 		`${project.srcDir}/native-client/reader/templates/style.js`
 	],
 	webpack: {
+		appConfig: {
+			path: path.posix.join(project.srcDir, 'native-client/reader/config.{env}.json'),
+			key: 'window.reallyreadit.nativeClient.reader.config'
+		},
 		entry: path.posix.join(project.srcDir, 'native-client/reader/main.ts'),
 		fileName: jsBundleFileName,
 		sourceMaps: false

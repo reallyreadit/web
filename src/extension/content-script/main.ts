@@ -9,21 +9,19 @@ import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import UserArticle from '../../common/models/UserArticle';
 import { calculateEstimatedReadTime } from '../../common/calculate';
+import IframeMessagingContext from './embed/IframeMessagingContext';
 
 window.reallyreadit = {
 	extension: {
 		contentScript: {
 			contentParser: new LazyScript(() => {
 				eventPageApi.loadContentParser();
-			}),
-			userInterface: new LazyScript(() => {
-				eventPageApi.loadUserInterface();
 			})
 		}
 	}
 };
 
-const { contentParser, userInterface } = window.reallyreadit.extension.contentScript;
+const { contentParser } = window.reallyreadit.extension.contentScript;
 
 let
 	context: {
@@ -67,26 +65,55 @@ const eventPageApi = new EventPageApi({
 	}
 });
 
-function rateArticle(score: number) {
-	if (context) {
-		return eventPageApi
-			.rateArticle(context.articleId, score)
-			.then(rating => {
-				userInterface
-					.get()
-					.then(ui => {
-						ui.update({
-							ratingScore: rating.score
-						});
-					});
-				return rating;
-			});
-	} else {
-		return Promise.reject();
+let iframe: HTMLIFrameElement;
+let iframeMessagingContext: IframeMessagingContext;
+function insertEmbed(onLoad: () => void) {
+	iframe = window.document.createElement('iframe');
+	iframe.src = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/embed/index.html#` + encodeURIComponent(window.location.protocol + '//' + window.location.host);
+	iframe.onload = function () {
+		if (onLoad) {
+			onLoad();
+		}
+	};
+	iframe.style.width = '100%';
+	iframe.style.minWidth = '320px';
+	iframe.style.height = '150px';
+	iframe.style.border = 'none';
+	iframe.style.margin = '50px 0';
+	context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
+		'afterend',
+		iframe
+	);
+	iframeMessagingContext = new IframeMessagingContext(
+		iframe.contentWindow,
+		'chrome-extension://' + window.reallyreadit.extension.config.extensionId
+	);
+	iframeMessagingContext.addListener((message, sendResponse) => {
+		switch (message.type) {
+			case 'rateArticle':
+				if (context) {
+					eventPageApi
+						.rateArticle(context.articleId, message.data)
+						.then(sendResponse);
+				} else {
+					sendResponse(null);
+				}
+				break;
+		}
+	});
+}
+function removeEmbed() {
+	if (iframe) {
+		iframe.remove();
+		iframe = null;
+	}
+	if (iframeMessagingContext) {
+		iframeMessagingContext.destruct();
+		iframeMessagingContext = null;
 	}
 }
 
-function shouldConstructUserInterface(article: UserArticle) {
+function shouldShowEmbed(article: UserArticle) {
 	return (
 		article.isRead &&
 		(calculateEstimatedReadTime(article.wordCount) > 2)
@@ -105,23 +132,21 @@ const reader = new Reader(
 					},
 					event.isCompletionCommit
 				)
-				.then(userArticle => {
-					if (userArticle.isRead) {
-						userInterface
-							.get()
-							.then(ui => {
-								if (ui.isConstructed()) {
-									ui.update(userArticle);
-								} else if (shouldConstructUserInterface(userArticle)) {
-									ui.construct(
-										context.page,
-										{
-											...userArticle,
-											onSelectRating: rateArticle
-										}
-									);
-								}
+				.then(article => {
+					if (article.isRead) {
+						if (iframe) {
+							iframeMessagingContext.sendMessage({
+								type: 'updateArticle',
+								data:  article
 							});
+						} else if (shouldShowEmbed(article)) {
+							insertEmbed(() => {
+								iframeMessagingContext.sendMessage({
+									type: 'updateArticle',
+									data: article
+								});
+							});
+						}
 					}
 				});
 		}
@@ -167,18 +192,15 @@ function loadPage() {
 									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
-									if (shouldConstructUserInterface(lookupResult.userArticle)) {
-										userInterface
-											.get()
-											.then(ui => {
-												ui.construct(
-													page,
-													{
-														...lookupResult.userArticle,
-														onSelectRating: rateArticle
-													}
-												);
-											});
+									if (shouldShowEmbed(lookupResult.userArticle)) {
+										insertEmbed(() => {
+											iframeMessagingContext.sendMessage(
+												{
+													type: 'updateArticle',
+													data: lookupResult.userArticle
+												}
+											);
+										});
 									}
 								})
 								.catch(() => {
@@ -192,11 +214,9 @@ function loadPage() {
 }
 function unloadPage() {
 	if (context) {
-		userInterface
-			.get()
-			.then(ui => {
-				ui.destruct();
-			});
+		if (iframe) {
+			removeEmbed();
+		}
 		reader.unloadPage();
 		context.page.remove();
 		context = null;
