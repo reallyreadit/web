@@ -67,7 +67,7 @@ class AppStarredScreen extends React.Component<Props, State> {
 							<p>
 								{this.state.articles.value.items.length ?
 									<>
-										Pro tip: Add the Chrome extension to star articles from anywhere on the internet.
+										Pro tip: Add the Chrome extension to star articles from your computer.
 										<AsyncActionLink
 											icon="email"
 											onClick={this.props.onSendExtensionInstructions}
