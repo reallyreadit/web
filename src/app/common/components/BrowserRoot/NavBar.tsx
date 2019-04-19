@@ -25,7 +25,7 @@ export default class NavBar extends React.PureComponent<{
 							style={this.props.selectedScreenKey === ScreenKey.Home ? 'loud' : 'normal'}
 						>
 							<Icon name="books" />
-							<label>Home</label>
+							<label>Community</label>
 						</Button>
 					</li>
 					<li>

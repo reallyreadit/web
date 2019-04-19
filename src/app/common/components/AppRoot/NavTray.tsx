@@ -16,7 +16,7 @@ export default (props: {
 				onClick={props.onViewHome}
 			>
 				<Icon name="books" />
-				<label>Home</label>
+				<label>Community</label>
 			</button>
 		</li>
 		<li>
