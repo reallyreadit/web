@@ -105,7 +105,10 @@ export default class extends React.PureComponent<{
 					onToggleStar={this.props.onToggleArticleStar}
 					onViewComments={this.props.onViewComments}
 				/>
-				<div className="sort">
+				<form
+					autoComplete="off"
+					className="sort"
+				>
 					<select
 						onChange={this._changeSort}
 						value={this.props.sort}
@@ -138,7 +141,7 @@ export default class extends React.PureComponent<{
 								))}
 						</select> :
 						null}
-				</div>
+				</form>
 				{this.props.isLoadingArticles ?
 					<LoadingOverlay position="static" /> :
 					<ArticleList>
