@@ -7,20 +7,20 @@ import { Screen, SharedState } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import produce from 'immer';
 import { mergeComment } from '../../../../common/comments';
 
-interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'comments' | 'onPostComment'>> {
+interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'onPostComment'>> {
 	articleSlug: string,
+	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
-	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
-	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
+	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function
 }
 class AppCommentsScreen extends React.Component<
 	Props,
 	{
+		article: Fetchable<UserArticle>,
 		comments: Fetchable<CommentThread[]>
 	}
 > {
@@ -41,14 +41,17 @@ class AppCommentsScreen extends React.Component<
 		super(props);
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(updatedArticle => {
-				if (this.props.article.value && this.props.article.value.id === updatedArticle.id) {
-					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-						currentState.componentState.value = updatedArticle;
-					}));
+				if (this.state.article.value && this.state.article.value.id === updatedArticle.id) {
+					this.setState({
+						article: {
+							...this.state.article,
+							value: updatedArticle
+						}
+					});
 				}
 			}),
 			props.onRegisterCommentPostedHandler(comment => {
-				if (this.props.article.value && this.props.article.value.id === comment.articleId && this.state.comments.value) {
+				if (this.state.article.value && this.state.article.value.id === comment.articleId && this.state.comments.value) {
 					this.setState({
 						comments: {
 							...this.state.comments,
@@ -59,6 +62,12 @@ class AppCommentsScreen extends React.Component<
 			})
 		);
 		this.state = {
+			article: this.props.onGetArticle(
+				{ slug: this.props.articleSlug },
+				this._asyncTracker.addCallback(article => {
+					this.setState({ article });
+				})
+			),
 			comments: this.props.onGetComments(
 				{ slug: this.props.articleSlug },
 				this._asyncTracker.addCallback(comments => {
@@ -76,7 +85,7 @@ class AppCommentsScreen extends React.Component<
 				{
 					...{
 						...this.props,
-						comments: this.state.comments,
+						...this.state,
 						onPostComment: this._postComment
 					}
 				}
@@ -84,42 +93,23 @@ class AppCommentsScreen extends React.Component<
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'onSetScreenState' | 'user'>> & {
-	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
-	onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
-};
-export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
-	const setScreenState = (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => {
-		deps.onSetScreenState(key, getNextState);
-	};
+type Dependencies = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'user'>>;
+export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies) {
 	return {
-		create: (location: RouteLocation) => {
-			const
-				pathParams = getPathParams(location),
-				article = deps.onGetArticle({ slug: pathParams.slug }, article => {
-					setScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-						currentState.componentState = article;
-						currentState.title = article.value.title;
-					}));
-				});
-			return {
-				key,
-				location,
-				componentState: article,
-				title: article.value ? article.value.title : 'Loading...'
-			};
-		},
-		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => {
+		create: (location: RouteLocation) => ({
+			key,
+			location,
+			title: 'Comments'
+		}),
+		render: (state: Screen, sharedState: SharedState) => {
 			const pathParams = getPathParams(state.location);
 			return (
 				<AppCommentsScreen
 					{
 						...{
 							...deps,
-							article: state.componentState,
 							articleSlug: pathParams.slug,
 							highlightedCommentId: pathParams.commentId,
-							onSetScreenState: setScreenState,
 							user: sharedState.user
 						}
 					}

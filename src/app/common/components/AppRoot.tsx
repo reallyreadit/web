@@ -145,7 +145,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
-				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar
 			}),
@@ -396,8 +395,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 			{
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
-			},
-			article.title
+			}
 		);
 	}
 	public componentDidMount() {
