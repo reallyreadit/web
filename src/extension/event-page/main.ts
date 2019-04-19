@@ -61,8 +61,7 @@ const contentScriptApi = new ContentScriptApi({
 				{
 					...serverApi.getUserArticle(articleId),
 					ratingScore: rating.score
-				}
-				,
+				},
 				false
 			);
 			return rating;
@@ -130,7 +129,17 @@ const contentScriptApi = new ContentScriptApi({
 		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
 	},
 	onGetComments: serverApi.getComments,
-	onPostComment: serverApi.postComment
+	onPostComment: form => {
+		return serverApi
+			.postComment(form)
+			.then(comment => {
+				const article = serverApi.getUserArticle(comment.articleId);
+				article.commentCount++;
+				WebAppApi.updateArticle(article, false);
+				WebAppApi.postComment(comment);
+				return comment;
+			});
+	}
 });
 
 // query current state

@@ -15,6 +15,7 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 }
 class AppCommentsScreen extends React.Component<
@@ -44,6 +45,16 @@ class AppCommentsScreen extends React.Component<
 					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
 						currentState.componentState.value = updatedArticle;
 					}));
+				}
+			}),
+			props.onRegisterCommentPostedHandler(comment => {
+				if (this.props.article.value && this.props.article.value.id === comment.articleId && this.state.comments.value) {
+					this.setState({
+						comments: {
+							...this.state.comments,
+							value: mergeComment(comment, this.state.comments.value.slice())
+						}
+					});
 				}
 			})
 		);

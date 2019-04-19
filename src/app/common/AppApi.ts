@@ -1,15 +1,13 @@
-import UserArticle from '../../common/models/UserArticle';
 import EventEmitter from './EventEmitter';
 import ShareData from '../../common/sharing/ShareData';
 import SemanticVersion from '../../common/SemanticVersion';
+import CommentThread from '../../common/models/CommentThread';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 
-export interface ArticleUpdatedEvent {
-	article: UserArticle,
-	isCompletionCommit: boolean
-}
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
-	'articleUpdated': ArticleUpdatedEvent
+	'articleUpdated': ArticleUpdatedEvent,
+	'commentPosted': CommentThread
 }> {
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract share(data: ShareData): void;

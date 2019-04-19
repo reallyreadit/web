@@ -29,6 +29,7 @@ import ToasterService, { State as ToasterState } from '../../../common/services/
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import HttpEndpoint from '../../../common/HttpEndpoint';
 import ClipboardService from '../../../common/services/ClipboardService';
+import CommentThread from '../../../common/models/CommentThread';
 
 export interface Props {
 	captcha: Captcha,
@@ -167,8 +168,12 @@ export default abstract class Root<
 
 	// events
 	protected readonly _articleChangeEventHandlers: ((updatedArticle: UserArticle, isCompletionCommit: boolean) => void)[] = [];
+	protected readonly _commentPostedEventHandlers: ((comment: CommentThread) => void)[] = [];
 	protected readonly _registerArticleChangeEventHandler = (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => {
 		return this.registerEventHandler(this._articleChangeEventHandlers, handler);
+	};
+	protected readonly _registerCommentPostedEventHandler = (handler: (comment: CommentThread) => void) => {
+		return this.registerEventHandler(this._commentPostedEventHandlers, handler);
 	};
 
 	// routing

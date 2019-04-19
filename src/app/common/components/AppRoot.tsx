@@ -144,6 +144,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar
@@ -226,11 +227,17 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 		};
 
 		// AppApi
-		props.appApi.addListener('articleUpdated', ev => {
-			this._articleChangeEventHandlers.forEach(handler => {
-				handler(ev.article, ev.isCompletionCommit);
+		props.appApi
+			.addListener('articleUpdated', ev => {
+				this._articleChangeEventHandlers.forEach(handler => {
+					handler(ev.article, ev.isCompletionCommit);
+				});
+			})
+			.addListener('commentPosted', comment => {
+				this._commentPostedEventHandlers.forEach(handler => {
+					handler(comment);
+				});
 			});
-		});
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		this.setScreensState([

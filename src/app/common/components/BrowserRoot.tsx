@@ -192,6 +192,7 @@ export default class extends Root<Props, State, SharedState> {
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
 				onSetScreenState: this._setScreenState,
@@ -317,6 +318,11 @@ export default class extends Root<Props, State, SharedState> {
 				this.setState({ isExtensionInstalled });
 				this._extensionChangeEventHandlers.forEach(handler => {
 					handler(isExtensionInstalled);
+				});
+			})
+			.addListener('commentPosted', comment => {
+				this._commentPostedEventHandlers.forEach(handler => {
+					handler(comment);
 				});
 			});
 	}

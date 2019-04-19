@@ -28,6 +28,9 @@ export default class extends ExtensionApi {
                     case 'articleUpdated':
                         this.emitEvent('articleUpdated', message.data);
                         break;
+                    case 'commentPosted':
+                        this.emitEvent('commentPosted', message.data);
+                        break;
                 }
             }
         });

@@ -1,10 +1,12 @@
 import EventEmitter from './EventEmitter';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
-import UserArticle from '../../common/models/UserArticle';
+import CommentThread from '../../common/models/CommentThread';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 
 export default abstract class extends EventEmitter<{
-	'articleUpdated': { article: UserArticle, isCompletionCommit: boolean },
-	'change': boolean
+	'articleUpdated': ArticleUpdatedEvent,
+	'change': boolean,
+	'commentPosted': CommentThread
 }> {
 	protected readonly _extensionId: string;
 	constructor(extensionId: string) {

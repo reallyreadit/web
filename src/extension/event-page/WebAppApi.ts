@@ -1,4 +1,5 @@
 import UserArticle from "../../common/models/UserArticle";
+import CommentThread from "../../common/models/CommentThread";
 
 function stringifyForLiteral(obj: {}) {
 	return JSON
@@ -20,6 +21,9 @@ export default class {
 	}
 	public static notifyExtensionInstalled() {
 		this.sendMessage('extensionInstalled');
+	}
+	public static postComment(comment: CommentThread) {
+		this.sendMessage('commentPosted', comment);
 	}
 	public static updateArticle(article: UserArticle, isCompletionCommit: boolean) {
 		this.sendMessage('articleUpdated', { article, isCompletionCommit });

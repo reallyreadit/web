@@ -14,6 +14,9 @@ export default class extends AppApi {
 				case 'articleUpdated':
 					this.emitEvent('articleUpdated', message.data);
 					break;
+				case 'commentPosted':
+					this.emitEvent('commentPosted', message.data);
+					break;
 			}
 		});
 		messagingContext.sendMessage(
