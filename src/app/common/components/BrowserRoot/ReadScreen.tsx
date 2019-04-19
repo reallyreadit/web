@@ -5,20 +5,20 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { findRouteByKey } from '../../../../common/routing/Route';
+import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
-import ScreenKey from '../../../../common/routing/ScreenKey';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import OnboardingScreen from './OnboardingScreen';
 import { formatFetchable } from '../../../../common/format';
+import produce from 'immer';
+import { clientTypeQueryStringKey, redirectedQueryStringKey } from '../../../../common/routing/queryString';
 
 interface Props {
-	articleSlug: string,
+	article: Fetchable<UserArticle>,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
 	onCopyAppReferrerTextToClipboard: () => void,
-	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 	onInstallExtension: () => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
@@ -27,18 +27,10 @@ interface Props {
 	onViewHomeScreen: () => void,
 	user: UserAccount | null
 }
-class ReadScreen extends React.PureComponent<Props, { article: Fetchable<UserArticle> }> {
+class ReadScreen extends React.PureComponent<Props> {
 	private readonly _asyncTracker = new AsyncTracker();
 	constructor(props: Props) {
 		super(props);
-		this.state = {
-			article: props.onGetArticle(
-				{ slug: props.articleSlug },
-				article => {
-					this.setState({ article });
-				}
-			)
-		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterExtensionChangeHandler((isInstalled: boolean) => {
 				if (isInstalled && this.props.user) {
@@ -53,7 +45,7 @@ class ReadScreen extends React.PureComponent<Props, { article: Fetchable<UserArt
 		);
 	}
 	private navigateToArticle() {
-		window.location.href = this.state.article.value.url;
+		window.location.href = this.props.article.value.url;
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -66,11 +58,11 @@ class ReadScreen extends React.PureComponent<Props, { article: Fetchable<UserArt
 						...this.props,
 						description: (
 							!this.props.user || this.props.isExtensionInstalled === false ?
-								formatFetchable(this.state.article, article => `"${article.title}"`, 'Loading...') :
+								formatFetchable(this.props.article, article => `"${article.title}"`, 'Loading...') :
 								null
 						),
 						unsupportedBypass: formatFetchable(
-							this.state.article,
+							this.props.article,
 							article => (
 								<a href={article.url}>Continue to publisher's site</a>
 							),
@@ -84,22 +76,39 @@ class ReadScreen extends React.PureComponent<Props, { article: Fetchable<UserArt
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'articleSlug' | 'isExtensionInstalled' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'isExtensionInstalled' | 'user'>> & {
+		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
+		onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
+	}
 ) {
 	return {
-		create: (location: RouteLocation) => ({
-			key, location,
-			templateSection: TemplateSection.None,
-			title: 'Read Article'
-		}),
-		render: (screenState: Screen, sharedState: SharedState) => {
-			const pathParams = findRouteByKey(routes, ScreenKey.Read).getPathParams(screenState.location.path);
+		create: (location: RouteLocation) => {
+			const
+				pathParams = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]).getPathParams(location.path),
+				article = deps.onGetArticle(
+					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
+					article => {
+						deps.onSetScreenState(key, produce<Screen<Fetchable<UserArticle>>>(currentState => {
+							currentState.componentState = article;
+							currentState.title = article.value.title;
+						}));
+					}
+				);
+			return {
+				componentState: article,
+				key,
+				location,
+				templateSection: TemplateSection.None,
+				title: formatFetchable(article, article => article.title, 'Loading...')
+			};
+		},
+		render: (screenState: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => {
 			return (
 				<ReadScreen {
 					...{
 						...deps,
 						...sharedState,
-						articleSlug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+						article: screenState.componentState
 					}
 				} />
 			);

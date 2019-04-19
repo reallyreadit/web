@@ -251,6 +251,7 @@ export default class extends Root<Props, State, SharedState> {
 				onInstallExtension: this._installExtension,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onSetScreenState: this._setScreenState,
 				onShowCreateAccountDialog: this._openCreateAccountDialog,
 				onShowSignInDialog: this._openSignInDialog,
 				onViewHomeScreen: this._viewHome
