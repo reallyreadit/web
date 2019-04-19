@@ -13,7 +13,7 @@ import ShareData from '../../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../../common/models/CommunityReadTimeWindow';
 
 const sortOptions: { [key: string]: CommunityReadSort } = {
-	'Hot': CommunityReadSort.Hot,
+	'Trending': CommunityReadSort.Hot,
 	'Most Read': CommunityReadSort.MostRead,
 	'Most Comments': CommunityReadSort.MostComments,
 	'Top Rated': CommunityReadSort.HighestRated,
