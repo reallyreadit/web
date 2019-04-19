@@ -104,6 +104,7 @@ export default class CommentComposer extends React.PureComponent<Props, {
 					onMouseDown={this._mousedown}
 					onMouseMove={this._mousemove}
 					onMouseUp={this._mouseup}
+					placeholder="Share your thoughts."
 					style={textareaStyle}
 				/>
 				{this.props.articleId && !this.props.isAllowedToPost ?

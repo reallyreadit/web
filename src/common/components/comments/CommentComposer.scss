@@ -27,10 +27,10 @@
 }
 .comment-composer_fgo1ny > textarea::placeholder {
 	position: relative;
-	top: 3px;
+	top: 0.25em;
 	color: lightgray;
 	font-style: italic;
-	text-indent: 5px;
+	text-indent: 0.25em;
 }
 .comment-composer_fgo1ny > textarea:focus::placeholder {
 	visibility: hidden;
