@@ -1,5 +1,4 @@
 import UserArticle from '../../common/models/UserArticle';
-import UserPage from '../../common/models/UserPage';
 import NewReplyNotification, { isStateEqual as isNotificationStateEqual, shouldShowDesktopNotification } from '../../common/models/NewReplyNotification';
 import SetStore from '../../common/webStorage/SetStore';
 import ObjectStore from '../../common/webStorage/ObjectStore';
@@ -12,6 +11,9 @@ import { createUrl } from '../../common/HttpEndpoint';
 import Rating from '../../common/models/Rating';
 import { createQueryString } from '../../common/routing/queryString';
 import DesktopNotification from '../../common/models/DesktopNotification';
+import ArticleLookupResult from '../../common/models/ArticleLookupResult';
+import CommentThread from '../../common/models/CommentThread';
+import PostCommentForm from '../../common/models/PostCommentForm';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -222,10 +224,7 @@ export default class ServerApi {
 			});
 	}
 	public registerPage(tabId: number, data: ParseResult) {
-		const request = this.logRequest<{
-				userArticle: UserArticle,
-				userPage: UserPage
-			}>({ method: 'POST', path: '/Extension/GetUserArticle', data, id: tabId }, this._articleLookupRequests)
+		const request = this.logRequest<ArticleLookupResult>({ method: 'POST', path: '/Extension/GetUserArticle', data, id: tabId }, this._articleLookupRequests)
 			.then(result => {
 				this._onArticleLookupRequestChanged();
 				this.cacheArticle(result.userArticle);
@@ -247,6 +246,20 @@ export default class ServerApi {
 				.catch(() => {});
 		}
 		return userArticle && userArticle.value;
+	}
+	public getComments(slug: string) {
+		return fetchJson<CommentThread[]>({
+			method: 'GET',
+			path: '/Articles/ListComments',
+			data: { slug }
+		});
+	}
+	public postComment(form: PostCommentForm) {
+		return fetchJson<CommentThread>({
+			method: 'POST',
+			path: '/Articles/PostComment',
+			data: form
+		});
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
 		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/CommitReadState', data })

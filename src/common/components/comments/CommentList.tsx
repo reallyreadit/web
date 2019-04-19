@@ -1,9 +1,9 @@
 import * as React from 'react';
-import CommentThread from '../../../../../common/models/CommentThread';
+import CommentThread from '../../models/CommentThread';
 import CommentDetails from './CommentDetails';
-import ShareChannel from '../../../../../common/sharing/ShareChannel';
-import ShareData from '../../../../../common/sharing/ShareData';
-import UserAccount from '../../../../../common/models/UserAccount';
+import ShareChannel from '../../sharing/ShareChannel';
+import ShareData from '../../sharing/ShareData';
+import UserAccount from '../../models/UserAccount';
 
 export default class CommentList extends React.Component<{
     comments: CommentThread[],
@@ -20,7 +20,7 @@ export default class CommentList extends React.Component<{
 }, {}> {
     public render() {
         return (
-            <ul className="comment-list_3zfaer">
+            <ul className="comment-list_ba2upz">
                 {this.props.comments.map(comment =>
                     <CommentDetails
                         key={comment.id}

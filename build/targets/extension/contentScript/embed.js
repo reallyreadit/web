@@ -9,13 +9,7 @@ const
 const mainBuild = createBuild({
 	path: 'extension/content-script/embed',
 	scss: [
-		`${project.srcDir}/common/components/ActionLink.scss`,
-		`${project.srcDir}/common/components/ClipboardTextInput.scss`,
-		`${project.srcDir}/common/components/Icon.scss`,
-		`${project.srcDir}/common/components/RatingSelector.scss`,
-		`${project.srcDir}/common/components/ShareControl.scss`,
-		`${project.srcDir}/common/components/Toaster.scss`,
-		`${project.srcDir}/common/templates/global.css`,
+		`${project.srcDir}/common/**/*.{css,scss}`,
 		`${project.srcDir}/extension/content-script/embed/**/*.{css,scss}`
 	],
 	staticAssets: [

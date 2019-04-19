@@ -3,7 +3,7 @@ const styleContent = `
 	font-family: serif;
 	color: #222;
 	margin: 0 auto;
-	padding: 0 10px 100px 10px;
+	padding: 0 10px 350px 10px;
 	max-width: 600px;
 }
 #rrit-article * {

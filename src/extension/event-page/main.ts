@@ -128,7 +128,9 @@ const contentScriptApi = new ContentScriptApi({
 	},
 	onLoadContentParser: tabId => {
 		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
-	}
+	},
+	onGetComments: serverApi.getComments,
+	onPostComment: serverApi.postComment
 });
 
 // query current state

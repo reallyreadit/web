@@ -1,0 +1,25 @@
+/*
+	componentPath: src/common/components/reader/Footer
+	cssComponentId: footer_sg74y0
+*/
+
+.footer_sg74y0 > .rating-selector_epcgq9 {
+	position: relative;
+	z-index: 1;
+}
+.footer_sg74y0 > .comments-box_o5c6fe {
+	position: relative;
+	margin-top: 15px;
+	animation: footer_sg74y0-comments-slide-down 750ms forwards;
+}
+
+@keyframes footer_sg74y0-comments-slide-down {
+	from {
+		top: -15px;
+		transform: translateY(-100%);
+	}
+	to {
+		top: 0;
+		transform: translateY(0);
+	}
+}

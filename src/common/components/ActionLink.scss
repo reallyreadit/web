@@ -6,14 +6,12 @@
 .action-link_ftamt8 {
 	text-decoration: underline;
 	cursor: pointer;
-	display: inline-flex;
-	align-items: center;
-	vertical-align: middle;
 }
 .action-link_ftamt8.disabled {
 	color: #ccc;
 	cursor: default;
 }
 .action-link_ftamt8 > .icon_rour3d {
-	margin-right: 3px;
+	margin-right: 0.2em;
+	vertical-align: text-top;
 }

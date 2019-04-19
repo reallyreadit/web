@@ -10,6 +10,8 @@ import createPageParseResult from '../../common/reading/createPageParseResult';
 import UserArticle from '../../common/models/UserArticle';
 import { calculateEstimatedReadTime } from '../../common/calculate';
 import IframeMessagingContext from './embed/IframeMessagingContext';
+import { Props as EmbedProps } from './embed/components/App';
+import UserAccount from '../../common/models/UserAccount';
 
 window.reallyreadit = {
 	extension: {
@@ -28,7 +30,8 @@ let
 		articleId: number,
 		page: Page,
 		path: string,
-		userPageId: number
+		userPageId: number,
+		user: UserAccount
 	} | null,
 	initData: {
 		parseMode: ParseMode,
@@ -65,52 +68,99 @@ const eventPageApi = new EventPageApi({
 	}
 });
 
+// embed
+type EmbedState = Pick<EmbedProps, Exclude<keyof EmbedProps, 'onPostComment' | 'onSelectRating'>>
 let iframe: HTMLIFrameElement;
-let iframeMessagingContext: IframeMessagingContext;
-function insertEmbed(onLoad: () => void) {
+let embed: IframeMessagingContext;
+let hasLoadedComments = false;
+function insertEmbed(article: UserArticle) {
+	// create iframe
 	iframe = window.document.createElement('iframe');
 	iframe.src = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/embed/index.html#` + encodeURIComponent(window.location.protocol + '//' + window.location.host);
-	iframe.onload = function () {
-		if (onLoad) {
-			onLoad();
-		}
-	};
 	iframe.style.width = '100%';
 	iframe.style.minWidth = '320px';
-	iframe.style.height = '150px';
+	iframe.style.height = '0';
 	iframe.style.border = 'none';
 	iframe.style.margin = '50px 0';
+	iframe.addEventListener('load', () => {
+		const state: EmbedState = {
+			article,
+			user: context.user
+		};
+		if (article.ratingScore != null) {
+			loadComments(article.slug);
+			state.comments = { isLoading: true };
+		}
+		embed.sendMessage({
+			type: 'pushState',
+			data: state
+		});
+	});
 	context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
 		'afterend',
 		iframe
 	);
-	iframeMessagingContext = new IframeMessagingContext(
+	// create messaging context
+	embed = new IframeMessagingContext(
 		iframe.contentWindow,
 		'chrome-extension://' + window.reallyreadit.extension.config.extensionId
 	);
-	iframeMessagingContext.addListener((message, sendResponse) => {
+	embed.addListener((message, sendResponse) => {
 		switch (message.type) {
+			case 'postComment':
+				eventPageApi
+					.postComment(message.data)
+					.then(sendResponse);
+				break;
 			case 'rateArticle':
-				if (context) {
-					eventPageApi
-						.rateArticle(context.articleId, message.data)
-						.then(sendResponse);
-				} else {
-					sendResponse(null);
-				}
+				eventPageApi
+					.rateArticle(context.articleId, message.data)
+					.then(rating => {
+						if (!hasLoadedComments) {
+							loadComments(article.slug);
+							embed.sendMessage({
+								type: 'pushState',
+								data: {
+									comments: { isLoading: true }
+								}
+							});
+						}
+						sendResponse(rating);
+					});
+				break;
+			case 'setHeight':
+				// add 160px to account for CommentComposer expanding textarea and additional overflow
+				iframe.style.height = (message.data + 160) + 'px';
 				break;
 		}
 	});
+}
+function loadComments(slug: string) {
+	eventPageApi
+		.getComments(slug)
+		.then(comments => {
+			embed.sendMessage({
+				type: 'pushState',
+				data: {
+					comments: {
+						isLoading: false,
+						value: comments
+					}
+				}
+			});
+		});
+	hasLoadedComments = true;
 }
 function removeEmbed() {
 	if (iframe) {
 		iframe.remove();
 		iframe = null;
 	}
-	if (iframeMessagingContext) {
-		iframeMessagingContext.destruct();
-		iframeMessagingContext = null;
+	if (embed) {
+		embed.destruct();
+		embed = null;
 	}
+	hasLoadedComments = false;
 }
 
 function shouldShowEmbed(article: UserArticle) {
@@ -134,18 +184,13 @@ const reader = new Reader(
 				)
 				.then(article => {
 					if (article.isRead) {
-						if (iframe) {
-							iframeMessagingContext.sendMessage({
-								type: 'updateArticle',
-								data:  article
+						if (embed) {
+							embed.sendMessage({
+								type: 'pushState',
+								data:  { article }
 							});
 						} else if (shouldShowEmbed(article)) {
-							insertEmbed(() => {
-								iframeMessagingContext.sendMessage({
-									type: 'updateArticle',
-									data: article
-								});
-							});
+							insertEmbed(article);
 						}
 					}
 				});
@@ -188,19 +233,13 @@ function loadPage() {
 										articleId: lookupResult.userArticle.id,
 										page,
 										path,
-										userPageId: lookupResult.userPage.id
+										userPageId: lookupResult.userPage.id,
+										user: lookupResult.user
 									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
 									if (shouldShowEmbed(lookupResult.userArticle)) {
-										insertEmbed(() => {
-											iframeMessagingContext.sendMessage(
-												{
-													type: 'updateArticle',
-													data: lookupResult.userArticle
-												}
-											);
-										});
+										insertEmbed(lookupResult.userArticle);
 									}
 								})
 								.catch(() => {

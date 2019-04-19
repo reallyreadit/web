@@ -2,7 +2,7 @@ import * as React from 'react';
 import Fetchable from '../../../common/Fetchable';
 import CommentThread from '../../../common/models/CommentThread';
 import PageResult from '../../../common/models/PageResult';
-import CommentList from './controls/comments/CommentList';
+import CommentList from '../../../common/components/comments/CommentList';
 import PageSelector from './controls/PageSelector';
 import LoadingOverlay from './controls/LoadingOverlay';
 import ShareChannel from '../../../common/sharing/ShareChannel';

@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
-import CommentsScreen, { getPathParams, mergeComment, Props as CommentScreenProps, findComment } from '../screens/CommentsScreen';
+import CommentsScreen, { getPathParams, Props as CommentScreenProps } from '../screens/CommentsScreen';
 import { Screen, TemplateSection } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
@@ -12,6 +12,7 @@ import produce from 'immer';
 import { SharedState } from '../BrowserRoot';
 import { formatFetchable, formatPossessive } from '../../../../common/format';
 import OnboardingScreen from './OnboardingScreen';
+import { mergeComment, findComment } from '../../../../common/comments';
 
 function shouldShowComments(
 	user: UserAccount | null,

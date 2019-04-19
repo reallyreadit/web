@@ -1,19 +1,19 @@
 import * as React from 'react';
-import CommentThread from '../../../../../common/models/CommentThread';
+import CommentThread from '../../models/CommentThread';
 import CommentList from './CommentList';
-import CommentBox from './CommentBox';
-import ActionLink from '../../../../../common/components/ActionLink';
+import CommentComposer from './CommentComposer';
+import ActionLink from '../ActionLink';
 import classNames from 'classnames';
 import timeago from 'timeago.js';
-import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
-import { findRouteByKey } from '../../../../../common/routing/Route';
-import routes from '../../../../../common/routing/routes';
-import ScreenKey from '../../../../../common/routing/ScreenKey';
-import ShareChannel from '../../../../../common/sharing/ShareChannel';
-import ShareData from '../../../../../common/sharing/ShareData';
-import AsyncTracker from '../../../../../common/AsyncTracker';
-import UserAccount from '../../../../../common/models/UserAccount';
-import { formatPossessive } from '../../../../../common/format';
+import ShareControl, { MenuPosition } from '../ShareControl';
+import { findRouteByKey } from '../../routing/Route';
+import routes from '../../routing/routes';
+import ScreenKey from '../../routing/ScreenKey';
+import ShareChannel from '../../sharing/ShareChannel';
+import ShareData from '../../sharing/ShareData';
+import AsyncTracker from '../../AsyncTracker';
+import UserAccount from '../../models/UserAccount';
+import { formatPossessive } from '../../format';
 
 interface Props {
 	comment: CommentThread,
@@ -28,16 +28,16 @@ interface Props {
 	parentCommentId?: string,
 	user: UserAccount | null
 }
-export default class CommentDetails extends React.Component<Props, { showCommentBox: boolean }> {
+export default class CommentDetails extends React.Component<Props, { showComposer: boolean }> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
-	private _showCommentBox = () => this.setState({ showCommentBox: true });
-	private _hideCommentBox = () => this.setState({ showCommentBox: false });
+	private _showComposer = () => this.setState({ showComposer: true });
+	private _hideComposer = () => this.setState({ showComposer: false });
 	private _addComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props
 			.onPostComment(text, articleId, parentCommentId)
 			.then(this._asyncTracker.addCallback(() => {
-				this.setState({ showCommentBox: false });
+				this.setState({ showComposer: false });
 			}));
 	};
 	private readonly _getShareData = () => {
@@ -80,7 +80,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 	private _viewThread = () => this.props.onViewThread(this.props.comment);
 	constructor(props: Props) {
 		super(props);
-		this.state = { showCommentBox: false };
+		this.state = { showComposer: false };
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -89,7 +89,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 		return (
 			<li
 				className={classNames(
-					'comment-details_xrpqq3',
+					'comment-details_qker1u',
 					{
 						unread: this.props.mode === 'link' && !this.props.comment.dateRead,
 						highlight: this.props.comment.id === this.props.highlightedCommentId
@@ -106,11 +106,11 @@ export default class CommentDetails extends React.Component<Props, { showComment
 					className={classNames('text', { 'preview': this.props.mode === 'link' })}
 					dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}>
 				</div>
-				{this.state.showCommentBox ? 
-					<CommentBox
+				{this.state.showComposer ? 
+					<CommentComposer
 						articleId={this.props.comment.articleId}
 						isAllowedToPost={this.props.isAllowedToPost}
-						onCancel={this._hideCommentBox}
+						onCancel={this._hideComposer}
 						onPostComment={this._addComment}
 						parentCommentId={this.props.comment.id}
 					/> :
@@ -118,7 +118,7 @@ export default class CommentDetails extends React.Component<Props, { showComment
 						{this.props.mode === 'reply' ?
 							<>
 								{this.props.isAllowedToPost ?
-									<ActionLink text="Reply" iconLeft="backward" onClick={this._showCommentBox} /> :
+									<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
 									null}
 								<ShareControl
 									menuPosition={MenuPosition.MiddleRight}

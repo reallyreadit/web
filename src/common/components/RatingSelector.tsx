@@ -9,6 +9,7 @@ import getShareData from '../sharing/getShareData';
 
 interface Props {
 	article: UserArticle,
+	autoHideStatusText?: boolean,
 	children?: React.ReactNode,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -19,6 +20,9 @@ export default class extends React.PureComponent<
 	Props,
 	{ isSelectingRating: boolean }
 > {
+	public static defaultProps: Partial<Props> = {
+		autoHideStatusText: true
+	};
 	private readonly _getShareData = () => {
 		return getShareData(
 			this.props.article,
@@ -77,26 +81,35 @@ export default class extends React.PureComponent<
 					</div>
 					<label>Yes</label>
 				</div>
-				{this.state.isSelectingRating ?
-					<div className="status-text">Saving rating...</div> :
-					this.props.article.ratingScore != null ?
-						<div className="status-text">
-							{this.props.article.ratingScore >= 8 ?
+				<div className={
+					classNames(
+						'status-text',
+						this.props.autoHideStatusText &&
+						!this.state.isSelectingRating &&
+						this.props.article.ratingScore == null ?
+							'hidden' :
+							null
+					)
+				}>
+					{this.state.isSelectingRating ?
+						'Saving rating...' :
+						this.props.article.ratingScore != null ?
+							this.props.article.ratingScore >= 8 ?
 								<>
 									Awesome.&nbsp;
 									<ShareControl
-										menuPosition={MenuPosition.CenterTop}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onGetData={this._getShareData}
-										onShare={this.props.onShare}
-									>
-										<ActionLink text="Share it" />
-									</ShareControl>
-									&nbsp;widely!
+											menuPosition={MenuPosition.CenterTop}
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onGetData={this._getShareData}
+											onShare={this.props.onShare}
+										>
+											<ActionLink text="Share it" />
+										</ShareControl>
+										&nbsp;widely!
 								</> :
-								'Thanks for your feedback.'}
-						</div> :
-						null}
+								'Thanks for your feedback.' :
+							<>&nbsp;</>}
+				</div>
 			</div>
 		);
 	}

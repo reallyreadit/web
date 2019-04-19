@@ -3,8 +3,6 @@ import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
 import CommentThread from '../../../../common/models/CommentThread';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
-import CommentList from '../controls/comments/CommentList';
-import CommentBox from '../controls/comments/CommentBox';
 import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -16,19 +14,8 @@ import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
+import CommentsBox from '../../../../common/components/comments/CommentsBox';
 
-export function findComment(id: string, threads: CommentThread[]): CommentThread | null {
-	for (const thread of threads) {
-		if (thread.id === id) {
-			return thread;
-		}
-		const match = findComment(id, thread.children);
-		if (match) {
-			return match;
-		}
-	}
-	return null;
-}
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]).getPathParams(location.path);
 	let result = {
@@ -41,16 +28,6 @@ export function getPathParams(location: RouteLocation) {
 		result.commentId = params['commentId'];
 	}
 	return result;
-}
-export function mergeComment(comment: CommentThread, comments: CommentThread[]) {
-	if (comment.parentCommentId) {
-		findComment(comment.parentCommentId, comments)
-			.children
-			.unshift(comment);
-	} else {
-		comments.unshift(comment);
-	}
-	return comments;
 }
 export interface Props {
 	article: Fetchable<UserArticle>,
@@ -74,9 +51,6 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 		);
 	};
 	public render() {
-		const
-			isUserSignedIn = !!this.props.user,
-			isAllowedToPost = this.props.article.value && isUserSignedIn && this.props.article.value.isRead;
 		return (
 			<ScreenContainer>
 				<div className="comments-screen_udh2l6">
@@ -85,7 +59,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 						<>
 							<ArticleDetails
 								article={this.props.article.value}
-								isUserSignedIn={isUserSignedIn}
+								isUserSignedIn={!!this.props.user}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 								onRead={this.props.onReadArticle}
@@ -102,36 +76,17 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									onShare={this.props.onShare}
 								/> :
 								null}
-							<div className="comments">
-								{isAllowedToPost ?
-									<CommentBox
-										articleId={this.props.article.value.id}
-										isAllowedToPost={isAllowedToPost}
-										onPostComment={this.props.onPostComment}
-									/> :
-									<div className="locked">
-										<img
-											alt="Padlock"
-											src="/images/padlock.svg"
-										/>
-										You must read the article before you can comment.
-									</div>}
-								{this.props.comments.value ?
-									this.props.comments.value.length ?
-										<CommentList
-											comments={this.props.comments.value}
-											highlightedCommentId={this.props.highlightedCommentId}
-											isAllowedToPost={isAllowedToPost}
-											mode="reply"
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onPostComment={this.props.onPostComment}
-											onShare={this.props.onShare}
-											user={this.props.user}
-										/> :
-										<span className="no-comments">No comments yet</span> :
-									null}
-							</div>
+							<CommentsBox
+								article={this.props.article.value}
+								comments={this.props.comments.value}
+								highlightedCommentId={this.props.highlightedCommentId}
+								imagePath="/images"
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onPostComment={this.props.onPostComment}
+								onShare={this.props.onShare}
+								user={this.props.user}
+							/>
 						</>}
 				</div>
 			</ScreenContainer>

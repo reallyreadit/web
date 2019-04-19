@@ -4,6 +4,8 @@ import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import Rating from '../../common/models/Rating';
+import CommentThread from '../../common/models/CommentThread';
+import PostCommentForm from '../../common/models/PostCommentForm';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'eventPage', type, data }, responseCallback);
@@ -61,5 +63,11 @@ export default class EventPageApi {
 	}
 	public loadContentParser() {
 		sendMessage('loadContentParser');
+	}
+	public getComments(slug: string) {
+		return sendMessageAwaitingResponse<CommentThread[]>('getComments', slug);
+	}
+	public postComment(form: PostCommentForm) {
+		return sendMessageAwaitingResponse<CommentThread>('postComment', form);
 	}
 }

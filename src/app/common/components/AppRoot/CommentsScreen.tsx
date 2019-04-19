@@ -2,12 +2,13 @@ import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import CommentsScreen, { getPathParams, mergeComment, Props as CommentScreenProps } from '../screens/CommentsScreen';
+import CommentsScreen, { getPathParams, Props as CommentScreenProps } from '../screens/CommentsScreen';
 import { Screen, SharedState } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
+import { mergeComment } from '../../../../common/comments';
 
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'comments' | 'onPostComment'>> {
 	articleSlug: string,

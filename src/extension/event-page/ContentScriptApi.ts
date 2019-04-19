@@ -4,6 +4,8 @@ import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import Rating from '../../common/models/Rating';
+import CommentThread from '../../common/models/CommentThread';
+import PostCommentForm from '../../common/models/PostCommentForm';
 
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
@@ -16,7 +18,9 @@ export default class ContentScriptApi {
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
 		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void,
-		onLoadContentParser: (tabId: number) => void
+		onLoadContentParser: (tabId: number) => void,
+		onGetComments: (slug: string) => Promise<CommentThread[]>,
+		onPostComment: (form: PostCommentForm) => Promise<CommentThread>
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -51,6 +55,16 @@ export default class ContentScriptApi {
 					case 'loadContentParser':
 						handlers.onLoadContentParser(sender.tab.id);
 						break;
+					case 'getComments':
+						handlers
+							.onGetComments(message.data)
+							.then(sendResponse);
+						return true;
+					case 'postComment':
+						handlers
+							.onPostComment(message.data)
+							.then(sendResponse);
+						return true;
 				}
 			}
 			return undefined;

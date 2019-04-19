@@ -1,14 +1,14 @@
 /*
-	componentPath: src/app/common/components/controls/comments/CommentBox
-	cssComponentId: comment-box_kaqbc2
+	componentPath: src/common/components/comments/CommentComposer
+	cssComponentId: comment-composer_fgo1ny
 */
 
-.comment-box_kaqbc2 {
+.comment-composer_fgo1ny {
 	text-align: right;
 	max-width: 600px;
 	margin: 0 auto;
 }
-.comment-box_kaqbc2 > textarea {
+.comment-composer_fgo1ny > textarea {
 	box-sizing: border-box;
 	width: 100%;
 	height: 64px;
@@ -19,23 +19,23 @@
 	outline: none;
 	transition: width 250ms, height 250ms;
 }
-.comment-box_kaqbc2 > textarea.expanded {
+.comment-composer_fgo1ny > textarea.expanded {
 	height: 130px;
 }
-.comment-box_kaqbc2 > textarea.resizing {
+.comment-composer_fgo1ny > textarea.resizing {
 	transition: none;
 }
-.comment-box_kaqbc2 > textarea::placeholder {
+.comment-composer_fgo1ny > textarea::placeholder {
 	position: relative;
 	top: 3px;
 	color: lightgray;
 	font-style: italic;
 	text-indent: 5px;
 }
-.comment-box_kaqbc2 > textarea:focus::placeholder {
+.comment-composer_fgo1ny > textarea:focus::placeholder {
 	visibility: hidden;
 }
-.comment-box_kaqbc2 > .comment-warning {
+.comment-composer_fgo1ny > .comment-warning {
 	display: block;
 	text-align: center;
 	background-color: red;
@@ -44,11 +44,11 @@
 	padding: 2px;
 	margin-bottom: 3px;
 }
-.comment-box_kaqbc2 > .comment-warning > a {
+.comment-composer_fgo1ny > .comment-warning > a {
 	color: white;
 	cursor: pointer;
 	text-decoration: underline;
 }
-.comment-box_kaqbc2 > .button_ovrlmi:not(:last-child) {
+.comment-composer_fgo1ny > .button_ovrlmi:not(:last-child) {
 	margin-right: (8 + 6) + px;
 }

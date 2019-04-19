@@ -14,6 +14,8 @@ import UserArticle from '../../common/models/UserArticle';
 import ShareData from '../../common/sharing/ShareData';
 import ShareChannel from '../../common/sharing/ShareChannel';
 import { createUrl } from '../../common/HttpEndpoint';
+import CommentThread from '../../common/models/CommentThread';
+import { mergeComment } from '../../common/comments';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -37,11 +39,7 @@ function share(data: ShareData) {
 	return [] as ShareChannel[];
 }
 
-let
-	articleId: number | null,
-	props: FooterProps,
-	root: HTMLDivElement,
-	userPageId: number | null;
+let lookupResult: ArticleLookupResult;
 
 const
 	contentParseResult = parseDocumentContent('mutate'),
@@ -57,26 +55,17 @@ const
 					data: {
 						commitData: {
 							readState: event.readStateArray,
-							userPageId
+							userPageId: lookupResult.userPage.id
 						},
 						isCompletionCommit: event.isCompletionCommit
 					}
 				},
 				(article: UserArticle) => {
 					if (article.isRead) {
-						if (props) {
-							ReactDOM.render(
-								React.createElement(
-									Footer,
-									props = {
-										...props,
-										...article
-									}
-								),
-								root
-							);
+						if (embedRootElement) {
+							render({ article });
 						} else {
-							constructUserInterface(article);
+							insertEmbed();
 						}
 					}
 				}
@@ -84,24 +73,88 @@ const
 		}
 	);
 
-function constructUserInterface(article: UserArticle) {
-	const lastParagraph = page.elements[page.elements.length - 1].element;
-	root = lastParagraph.ownerDocument.createElement('div');
-	root.id = 'reallyreadit-footer-root';
-	lastParagraph.insertAdjacentElement('afterend', root);
+// embed
+let
+	footerProps: Partial<FooterProps> = {
+		onCopyTextToClipboard: copyTextToClipboard,
+		onCreateAbsoluteUrl: createAbsoluteUrl,
+		onPostComment: postComment,
+		onSelectRating: rateArticle,
+		onShare: share
+	},
+	embedRootElement: HTMLDivElement,
+	hasLoadedComments = false;
+function insertEmbed() {
+	// create root element
+	embedRootElement = window.document.createElement('div');
+	embedRootElement.id = 'reallyreadit-footer-root';
+	page.elements[page.elements.length - 1].element.insertAdjacentElement(
+		'afterend',
+		embedRootElement
+	);
+	// initial render
+	const initialProps: Pick<FooterProps, 'article' | 'comments' | 'user'> = {
+		article: lookupResult.userArticle,
+		user: lookupResult.user
+	};
+	if (lookupResult.userArticle.ratingScore != null) {
+		loadComments();
+		initialProps.comments = { isLoading: true };
+	}
+	render(initialProps);
+}
+function loadComments() {
+	messagingContext.sendMessage(
+		{
+			type: 'getComments',
+			data: lookupResult.userArticle.slug
+		},
+		(comments: CommentThread[]) => {
+			render({
+				comments: {
+					...footerProps.comments,
+					value: comments
+				}
+			});
+		}
+	);
+	hasLoadedComments = true;
+}
+function render(props: Partial<FooterProps>) {
 	ReactDOM.render(
 		React.createElement(
 			Footer,
-			props = {
-				article,
-				onCopyTextToClipboard: copyTextToClipboard,
-				onCreateAbsoluteUrl: createAbsoluteUrl,
-				onSelectRating: rateArticle,
-				onShare: share
-			}
+			footerProps = {
+				...footerProps,
+				...props
+			} as FooterProps
 		),
-		root
+		embedRootElement
 	);
+}
+
+function postComment(text: string, articleId: number, parentCommentId?: string) {
+	return new Promise<void>(resolve => {
+		messagingContext.sendMessage(
+			{
+				type: 'postComment',
+				data: {
+					articleId,
+					parentCommentId,
+					text
+				}
+			},
+			(comment: CommentThread) => {
+				resolve();
+				render({
+					comments: {
+						...footerProps.comments,
+						value: mergeComment(comment, footerProps.comments.value)
+					}
+				});
+			}
+		);
+	});
 }
 
 function rateArticle(score: number) {
@@ -110,25 +163,23 @@ function rateArticle(score: number) {
 			{
 				type: 'rateArticle',
 				data: {
-					articleId,
+					articleId: lookupResult.userArticle.id,
 					score
 				}
 			},
 			(rating: Rating) => {
 				resolve();
-				ReactDOM.render(
-					React.createElement(
-						Footer,
-						props = {
-							...props,
-							article: {
-								...props.article,
-								ratingScore: rating.score
-							}
-						}
-					),
-					root
-				);
+				const newProps: Pick<FooterProps, 'article' | 'comments'> = {
+					article: {
+						...footerProps.article,
+						ratingScore: rating.score
+					}
+				};
+				if (!hasLoadedComments) {
+					loadComments();
+					newProps.comments = { isLoading: true };
+				}
+				render(newProps);
 			}
 		);
 	});
@@ -142,13 +193,12 @@ messagingContext.sendMessage(
 			contentParseResult
 		)
 	},
-	(lookupResult: ArticleLookupResult) => {
-		articleId = lookupResult.userArticle.id;
-		userPageId = lookupResult.userPage.id;
-		page.setReadState(lookupResult.userPage.readState);
+	(result: ArticleLookupResult) => {
+		lookupResult = result;
+		page.setReadState(result.userPage.readState);
 		reader.loadPage(page);
-		if (lookupResult.userArticle.isRead) {
-			constructUserInterface(lookupResult.userArticle);
+		if (result.userArticle.isRead) {
+			insertEmbed();
 		}
 	}
 );

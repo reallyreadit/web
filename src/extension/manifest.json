@@ -54,6 +54,8 @@
     "content-script/embed/fonts/museo-sans-500.ttf",
     "content-script/embed/fonts/museo-sans-700.ttf",
     "content-script/embed/fonts/museo-sans-900.ttf",
+    "content-script/embed/images/logo.svg",
+    "content-script/embed/images/padlock.svg",
     "content-script/embed/index.html"
   ]
 }

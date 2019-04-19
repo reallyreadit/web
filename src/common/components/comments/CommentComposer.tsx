@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Button from '../../../../../common/components/Button';
+import Button from '../Button';
 import classNames from 'classnames';
-import AsyncTracker from '../../../../../common/AsyncTracker';
+import AsyncTracker from '../../AsyncTracker';
 
 interface Props {
 	articleId: number,
@@ -10,7 +10,7 @@ interface Props {
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	parentCommentId?: string
 }
-export default class CommentBox extends React.PureComponent<Props, {
+export default class CommentComposer extends React.PureComponent<Props, {
 	commentText: string,
 	hasContent: boolean,
 	hasFocus: boolean,
@@ -32,17 +32,21 @@ export default class CommentBox extends React.PureComponent<Props, {
 	private _focus = () => {
 		this.setState({ hasFocus: true });
 		// iOS keyboard scroll bug
-		window.reallyreadit.app.isFocusedOnField = true;
+		if (window.reallyreadit && window.reallyreadit.app) {
+			window.reallyreadit.app.isFocusedOnField = true;
+		}
 	};
 	private _blur = () => {
 		this.setState({ hasFocus: false });
 		// iOS keyboard scroll bug
-		window.reallyreadit.app.isFocusedOnField = false;
-		window.setTimeout(() => {
-			if (!window.reallyreadit.app.isFocusedOnField && window.scrollY !== 0) {
-				window.scrollTo(0, 0);
-			}
-		}, 100);
+		if (window.reallyreadit && window.reallyreadit.app) {
+			window.reallyreadit.app.isFocusedOnField = false;
+			window.setTimeout(() => {
+				if (!window.reallyreadit.app.isFocusedOnField && window.scrollY !== 0) {
+					window.scrollTo(0, 0);
+				}
+			}, 100);
+		}
 	};
 	private _postComment = () => {
 		this.setState({ isPosting: true });
@@ -86,7 +90,7 @@ export default class CommentBox extends React.PureComponent<Props, {
 			textareaStyle['height'] = this.props.parentCommentId ? '130px' : '64px';
 		}
 		return (
-			<div className="comment-box_kaqbc2">
+			<div className="comment-composer_fgo1ny">
 				<textarea
 					className={classNames({
 						expanded: !!(this.props.parentCommentId || this.state.hasFocus || this.state.hasContent),

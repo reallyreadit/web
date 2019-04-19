@@ -1,0 +1,29 @@
+/*
+	componentPath: src/common/components/comments/CommentsBox
+	cssComponentId: comments-box_o5c6fe
+*/
+
+.comments-box_o5c6fe {
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	padding: 10px 15px;
+}
+.comments-box_o5c6fe > .locked {
+	margin: 10px 0 20px 0;
+	text-align: center;
+	font-family: 'Museo Sans (700)';
+}
+.comments-box_o5c6fe > .locked > img {
+	display: block;
+	margin: 10px auto;
+	width: 48px;
+}
+.comments-box_o5c6fe > .comment-composer_fgo1ny {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+.comments-box_o5c6fe > .no-comments {
+	display: block;
+	margin-bottom: 10px;
+	text-align: center;
+}
