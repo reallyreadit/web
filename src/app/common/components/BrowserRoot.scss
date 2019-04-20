@@ -31,9 +31,17 @@
 	display: flex;
 	overflow: hidden;
 }
-.browser-root_6tjc3j > main > .screen {
+.browser-root_6tjc3j > main > .screens {
 	flex: 1 1 auto;
-	overflow: auto;
+	overflow: hidden;
 	position: relative;
+}
+.browser-root_6tjc3j > main > .screens > .screen {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
 	-webkit-overflow-scrolling: touch;
+	box-sizing: border-box;
+	background-color: #F7F6F5;
 }

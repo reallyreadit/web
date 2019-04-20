@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
@@ -17,7 +17,7 @@ import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
 import createStarredScreenFactory from './BrowserRoot/StarredScreen';
 import BrowserApi from '../BrowserApi';
 import ExtensionApi from '../ExtensionApi';
-import { findRouteByKey } from '../../../common/routing/Route';
+import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
@@ -41,10 +41,11 @@ interface Props extends RootProps {
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
 	isIosDevice: boolean | null,
-	menuState: 'opened' | 'closing' | 'closed',
+	menuState: MenuState,
 	showNewReplyIndicator: boolean,
 	showRedirectBanner: boolean
 }
+type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled' | 'isIosDevice'>;
 export default class extends Root<Props, State, SharedState> {
 	private _isUpdateAvailable: boolean = false;
@@ -111,28 +112,52 @@ export default class extends Root<Props, State, SharedState> {
 
 	// screens
 	private readonly _viewAdminPage = () => {
-		this.setState(this.replaceScreen(ScreenKey.AdminPage));
+		this.setScreenState({
+			key: ScreenKey.AdminPage,
+			method: 'replace'
+		});
 	};
 	private readonly _viewHistory = () => {
-		this.setState(this.replaceScreen(ScreenKey.History));
+		this.setScreenState({
+			key: ScreenKey.History,
+			method: 'replace'
+		});
 	};
 	private readonly _viewHome = () => {
-		this.setState(this.replaceScreen(ScreenKey.Home));
+		this.setScreenState({
+			key: ScreenKey.Home,
+			method: 'replace'
+		});
 	};
 	private readonly _viewInbox = () => {
-		this.setState(this.replaceScreen(ScreenKey.Inbox));
+		this.setScreenState({
+			key: ScreenKey.Inbox,
+			method: 'replace'
+		});
 	};
 	private readonly _viewLeaderboards = () => {
-		this.setState(this.replaceScreen(ScreenKey.Leaderboards));
+		this.setScreenState({
+			key: ScreenKey.Leaderboards,
+			method: 'replace'
+		});
 	};
 	private readonly _viewPrivacyPolicy = () => {
-		this.setState(this.replaceScreen(ScreenKey.PrivacyPolicy));
+		this.setScreenState({
+			key: ScreenKey.PrivacyPolicy,
+			method: 'replace'
+		});
 	};
 	private readonly _viewSettings = () => {
-		this.setState(this.replaceScreen(ScreenKey.Settings));
+		this.setScreenState({
+			key: ScreenKey.Settings,
+			method: 'replace'
+		});
 	};
 	private readonly _viewStarred = () => {
-		this.setState(this.replaceScreen(ScreenKey.Starred));
+		this.setScreenState({
+			key: ScreenKey.Starred,
+			method: 'replace'
+		});
 	};
 	private readonly _viewThread = (comment: CommentThread) => {
 		if (!comment.dateRead) {
@@ -158,9 +183,14 @@ export default class extends Root<Props, State, SharedState> {
 
 	// window
 	private readonly _handleHistoryPopState = () => {
-		const screen = this.getLocationDependentState({ path: window.location.pathname }).screen;
-		this.setState({ screens: [screen] });
-		this.props.browserApi.setTitle(screen.title);
+		if (this.state.screens.length > 1) {
+			this.setScreenState({ method: 'pop' });
+		} else {
+			this.setScreenState({
+				key: findRouteByLocation(routes, { path: window.location.pathname }).screenKey,
+				method: 'replace'
+			});
+		}
 	};
 	private readonly _handleVisibilityChange = () => {
 		if (!window.document.hidden) {
@@ -337,18 +367,51 @@ export default class extends Root<Props, State, SharedState> {
 			});
 		}
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string): Pick<State, 'menuState' | 'screens'> {
-		const { screen, url } = this.createScreen(key, urlParams, title);
-		this.props.browserApi.setTitle(screen.title);
-		window.history.pushState(
-			null,
-			screen.title,
-			url
-		);
-		return {
+	private setScreenState(
+		options: (
+			(
+				{
+					key: ScreenKey,
+					method: 'push' | 'replace',
+					title?: string,
+					urlParams?: { [key: string]: string }
+				} | {
+					method: 'pop'
+				}
+			) & {
+				supplementaryState?: Partial<Pick<State, keyof Exclude<State, 'menuState' | 'screens'>>>,
+			}
+		)
+	) {
+		let screens: Screen[];
+		let title: string;
+		if (options.method === 'pop') {
+			screens = this.state.screens.slice(0, this.state.screens.length - 1);
+			title = this.state.screens[this.state.screens.length - 1].title;
+		} else {
+			const { screen, url } = this.createScreen(
+				options.key,
+				options.urlParams,
+				options.title
+			);
+			screens = (
+				options.method === 'push' ?
+					[...this.state.screens, screen] :
+					[screen]
+			);
+			title = screen.title;
+			window.history.pushState(
+				null,
+				screen.title,
+				url
+			)
+		}
+		this.props.browserApi.setTitle(title);
+		this.setState({
+			...options.supplementaryState as State,
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
-			screens: [screen]
-		};
+			screens
+		});
 	}
 	private setUpdateAvailable() {
 		this._isUpdateAvailable = true;
@@ -385,9 +448,12 @@ export default class extends Root<Props, State, SharedState> {
 	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) {
 		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
 		if (screenAuthLevel != null && (!userAccount || userAccount.role !== screenAuthLevel)) {
-			this.setState({
-				...this.replaceScreen(ScreenKey.Home),
-				user: userAccount
+			this.setScreenState({
+				key: ScreenKey.Home,
+				method: 'replace',
+				supplementaryState: {
+					user: userAccount
+				}
 			});
 		} else {
 			this.setState({ user: userAccount }, () => {
@@ -420,7 +486,7 @@ export default class extends Root<Props, State, SharedState> {
 	}
 	protected renderBody() {
 		const
-			screen = this.state.screens[0],
+			topScreen = this.state.screens[this.state.screens.length - 1],
 			sharedState = this.getSharedState();
 		return (
 			<>
@@ -435,8 +501,8 @@ export default class extends Root<Props, State, SharedState> {
 					</div> :
 					null}
 				{(
-					screen.templateSection == null ||
-					(screen.templateSection & TemplateSection.Header)
+					topScreen.templateSection == null ||
+					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
 					<Header
 						isDesktopDevice={this._isDesktopDevice}
@@ -452,8 +518,8 @@ export default class extends Root<Props, State, SharedState> {
 				<main>
 					{(
 						(
-							screen.templateSection == null ||
-							(screen.templateSection & TemplateSection.Navigation)
+							topScreen.templateSection == null ||
+							(topScreen.templateSection & TemplateSection.Navigation)
 						) &&
 						this.state.user &&
 						this._isDesktopDevice
@@ -464,26 +530,33 @@ export default class extends Root<Props, State, SharedState> {
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewStarred={this._viewStarred}
-							selectedScreenKey={screen.key}
+							selectedScreenKey={this.state.screens[0].key}
 						/> :
 						null}
-					<div className="screen">
-						{this._screenFactoryMap[screen.key].render(screen, sharedState)}
-						{(
-							(
-								screen.templateSection == null ||
-								(screen.templateSection & TemplateSection.Footer)
-							) &&
-							(
-								!this.state.user ||
-								!this._isDesktopDevice
-							)
-						) ?
-							<Footer
-								onViewPrivacyPolicy={this._viewPrivacyPolicy}
-							/> :
-							null}
-					</div>
+					<ol className="screens">
+						{this.state.screens.map(screen => (
+							<li
+								className="screen"
+								key={screen.key}
+							>
+								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
+								{(
+									(
+										screen.templateSection == null ||
+										(screen.templateSection & TemplateSection.Footer)
+									) &&
+									(
+										!this.state.user ||
+										!this._isDesktopDevice
+									)
+								) ?
+									<Footer
+										onViewPrivacyPolicy={this._viewPrivacyPolicy}
+									/> :
+									null}
+							</li>
+						))}
+					</ol>
 				</main>
 				{this.state.menuState !== 'closed' ?
 					<Menu
@@ -517,11 +590,12 @@ export default class extends Root<Props, State, SharedState> {
 		if (highlightedCommentId != null) {
 			urlParams['commentId'] = highlightedCommentId;
 		}
-		this.setState(this.replaceScreen(
-			ScreenKey.Comments,
-			urlParams,
-			article.title
-		));
+		this.setScreenState({
+			key: ScreenKey.Comments,
+			method: 'push',
+			title: article.title,
+			urlParams
+		});
 	}
 	public componentDidMount() {
 		super.componentDidMount();
