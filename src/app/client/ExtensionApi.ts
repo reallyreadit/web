@@ -5,7 +5,7 @@ export default class extends ExtensionApi {
     private _isInstalled: boolean | null = null;
     constructor(extensionId: string) {
         super(extensionId);
-        this.sendMessage('ping')
+        this.sendMessageAwaitingResponse('ping')
             .then(response => {
                 const isInstalled = !!response;
                 this._isInstalled = isInstalled;
@@ -35,24 +35,27 @@ export default class extends ExtensionApi {
             }
         });
     }
-    private sendMessage<T>(type: string, data?: {}) {
+    private sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
         if (this.isBrowserCompatible) {
-            return new Promise<T>((resolve, reject) => {
-                try {
-                    window.chrome.runtime.sendMessage(this._extensionId, { type, data }, resolve);
-                } catch (ex) {
-                    reject();
-                }
-            });
+            try {
+                window.chrome.runtime.sendMessage(this._extensionId, { type, data }, responseCallback);
+                return true;
+            } catch (ex) { }
         }
-        return Promise.reject('NotSupported');
+        return false;
+    }
+    private sendMessageAwaitingResponse<T>(type: string, data?: {}) {
+        return new Promise<T>((resolve, reject) => {
+            if (!this.sendMessage(type, data, resolve)) {
+                reject('NotSupported');
+            }
+        });
     }
     public install() {
         window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');
     }
     public updateNewReplyNotification(notification: NewReplyNotification) {
-        this.sendMessage('updateNewReplyNotification', notification)
-            .catch(() => {});
+        this.sendMessage('updateNewReplyNotification', notification);
     }
     public get isInstalled() {
         return this._isInstalled;
