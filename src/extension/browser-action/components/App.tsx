@@ -131,6 +131,7 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 					this.state.userArticle ?
 						<ArticleDetails
 							article={this.state.userArticle}
+							imagePath='./images'
 							isUserSignedIn={true}
 							onCopyTextToClipboard={this._clipboard.copyText}
 							onCreateAbsoluteUrl={this._createAbsoluteUrl}

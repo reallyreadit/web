@@ -15,6 +15,7 @@ import getShareData from '../sharing/getShareData';
 
 interface Props {
 	article: UserArticle,
+	imagePath?: string,
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -25,6 +26,9 @@ interface Props {
 	useAbsoluteUrls?: boolean
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
+	public static defaultProps: Partial<Props> = {
+		imagePath: '/images'
+	};
 	private readonly _getShareData = () => {
 		return getShareData(
 			this.props.article,
@@ -88,6 +92,10 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		if (this.props.useAbsoluteUrls) {
 			commentsLinkHref = this.props.onCreateAbsoluteUrl(commentsLinkHref);
 		}
+		// rating image
+		const ratingStyle = {
+			backgroundImage: `url(${this.props.imagePath}/rating-seal.svg)`
+		};
 		return (
 			<div className="article-details_d2vnmv">
 				<div className="actions">
@@ -132,7 +140,10 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									<span className="count">{this.props.article.commentCount}</span> {formatCountable(this.props.article.commentCount, 'comment')}
 								</a>
 								{averageRatingScore != null ?
-									<div className="stat rating">
+									<div
+										className="stat rating"
+										style={ratingStyle}
+									>
 										<span>{averageRatingScore}</span>
 									</div> :
 									null}
@@ -177,7 +188,10 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									<span>{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}</span>
 								</a>
 								{averageRatingScore != null ?
-									<div className="stat rating">
+									<div
+										className="stat rating"
+										style={ratingStyle}
+									>
 										<span>{averageRatingScore}</span>
 									</div> :
 									null}
