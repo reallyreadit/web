@@ -131,10 +131,12 @@ class HomeScreen extends React.Component<Props, State> {
 							timeWindow={this.state.timeWindow}
 						/>
 						{!this.state.isLoadingArticles ?
-							<AsyncActionLink
-								text="Show more"
-								onClick={this._loadMore}
-							/> :
+							<div className="show-more">
+								<AsyncActionLink
+									text="Show more"
+									onClick={this._loadMore}
+								/>
+							</div> :
 							null}
 					</>}
 			</div>
