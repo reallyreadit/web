@@ -6,7 +6,9 @@ export interface IncomingMessageHandlers {
 }
 export default class WebViewMessagingContext extends MessagingContext {
 	protected postMessage(envelope: Envelope) {
-		window.webkit.messageHandlers.reallyreadit.postMessage(envelope);
+		if (window.webkit) {
+			window.webkit.messageHandlers.reallyreadit.postMessage(envelope);
+		}
 	}
 	public createIncomingMessageHandlers() {
 		const processMessage = (jsonMessage: string) => {
