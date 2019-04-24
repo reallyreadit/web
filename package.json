@@ -4,11 +4,11 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": 0.98,
+      "app": "1.0.0",
       "contentScript": 0.22,
-      "extension": 0.62,
+      "extension": "1.0.0",
       "native-client": {
-        "reader": "2.0.0",
+        "reader": "3.0.0",
         "share-extension": "2.0.0"
       }
     }
