@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
@@ -31,6 +31,7 @@ import Icon from '../../../common/components/Icon';
 import DeviceType from '../DeviceType';
 import { isIosDevice } from '../userAgent';
 import Footer from './BrowserRoot/Footer';
+import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -47,7 +48,10 @@ interface State extends RootState {
 }
 type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled' | 'isIosDevice'>;
-export default class extends Root<Props, State, SharedState> {
+type Events = SharedEvents & {
+	'extensionInstallationStatusChanged': boolean
+};
+export default class extends Root<Props, State, SharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
 
@@ -80,13 +84,8 @@ export default class extends Root<Props, State, SharedState> {
 	};
 
 	// events
-	private readonly _extensionChangeEventHandlers: ((isInstalled: boolean) => void)[] = [];
-	private readonly _userChangeEventHandlers: ((newUser: UserAccount) => void)[] = [];
 	private readonly _registerExtensionChangeEventHandler = (handler: (isInstalled: boolean) => void) => {
-		return this.registerEventHandler(this._extensionChangeEventHandlers, handler);
-	};
-	private readonly _registerUserChangeEventHandler = (handler: (newUser: UserAccount | null) => void) => {
-		return this.registerEventHandler(this._userChangeEventHandlers, handler);
+		return this._eventManager.addListener('extensionInstallationStatusChanged', handler);
 	};
 
 	// extension
@@ -224,7 +223,7 @@ export default class extends Root<Props, State, SharedState> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShowCreateAccountDialog: this._openCreateAccountDialog,
@@ -238,7 +237,7 @@ export default class extends Root<Props, State, SharedState> {
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -254,7 +253,7 @@ export default class extends Root<Props, State, SharedState> {
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
@@ -272,7 +271,7 @@ export default class extends Root<Props, State, SharedState> {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onGetStats: this.props.serverApi.getUserStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
@@ -280,7 +279,7 @@ export default class extends Root<Props, State, SharedState> {
 				onGetArticle: this.props.serverApi.getArticle,
 				onInstallExtension: this._installExtension,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShowCreateAccountDialog: this._openCreateAccountDialog,
 				onShowSignInDialog: this._openSignInDialog,
@@ -292,7 +291,7 @@ export default class extends Root<Props, State, SharedState> {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerUserChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -319,55 +318,45 @@ export default class extends Root<Props, State, SharedState> {
 		// BrowserApi
 		props.browserApi.setTitle(locationState.screen.title);
 		props.browserApi
-			.addListener('articleUpdated', article => {
-				// TODO: upate articles from other tabs
+			.addListener('articleUpdated', event => {
+				this.onArticleUpdated(event, EventSource.Remote);
+			})
+			.addListener('commentPosted', comment => {
+				this.onCommentPosted(comment, EventSource.Remote);
 			})
 			.addListener('updateAvailable', version => {
-				if (!this._isUpdateAvailable && version > this.props.version) {
+				if (!this._isUpdateAvailable && version.compareTo(this.props.version) > 0) {
 					this.setUpdateAvailable();
 				}
 			})
+			.addListener('userSignedIn', user => {
+				this.onUserSignedIn(user, EventSource.Remote);
+			})
+			.addListener('userSignedOut', () => {
+				this.onUserSignedOut(EventSource.Remote);
+			})
 			.addListener('userUpdated', user => {
-				if (
-					(this.state.user && !user) ||
-					(!this.state.user && user)
-				) {
-					this.onUserChanged(user, EventSource.Sync);
-				} else {
-					this.setState({ user });
-				}
+				this.onUserUpdated(user, EventSource.Remote);
 			});
 
 		// ExtensionApi
 		props.extensionApi
-			.addListener('articleUpdated', ev => {
-				this._articleChangeEventHandlers.forEach(handler => {
-					handler(ev.article, ev.isCompletionCommit);
-				});
+			.addListener('articleUpdated', event => {
+				this.onArticleUpdated(event, EventSource.Remote);
 			})
 			.addListener('change', isExtensionInstalled => {
-				this.setState({ isExtensionInstalled });
-				this._extensionChangeEventHandlers.forEach(handler => {
-					handler(isExtensionInstalled);
-				});
+				this.setState(
+					{ isExtensionInstalled },
+					() => {
+						this._eventManager.triggerEvent('extensionInstallationStatusChanged', isExtensionInstalled);
+					}
+				);
 			})
 			.addListener('commentPosted', comment => {
-				this._commentPostedEventHandlers.forEach(handler => {
-					handler(comment);
-				});
+				this.onCommentPosted(comment, EventSource.Remote);
 			});
 	}
-	private checkForUpdate() {
-		if (!this._isUpdateAvailable) {
-			this.fetchUpdateStatus().then(status => {
-				if (status.isAvailable) {
-					this.setUpdateAvailable();
-					this.props.browserApi.updateAvailable(status.version);
-				}
-			});
-		}
-	}
-	private setScreenState(
+	private changeScreen(
 		options: (
 			(
 				{
@@ -378,9 +367,7 @@ export default class extends Root<Props, State, SharedState> {
 				} | {
 					method: 'pop'
 				}
-			) & {
-				supplementaryState?: Partial<Pick<State, keyof Exclude<State, 'menuState' | 'screens'>>>,
-			}
+			)
 		)
 	) {
 		let screens: Screen[];
@@ -407,11 +394,38 @@ export default class extends Root<Props, State, SharedState> {
 			)
 		}
 		this.props.browserApi.setTitle(title);
-		this.setState({
-			...options.supplementaryState as State,
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
+		return {
+			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
-		});
+		};
+	}
+	private checkForUpdate() {
+		if (!this._isUpdateAvailable) {
+			this.fetchUpdateStatus().then(status => {
+				if (status.isAvailable) {
+					this.setUpdateAvailable();
+					this.props.browserApi.updateAvailable(status.version);
+				}
+			});
+		}
+	}
+	private setScreenState(
+		options: (
+			(
+				{
+					key: ScreenKey,
+					method: 'push' | 'replace',
+					title?: string,
+					urlParams?: { [key: string]: string }
+				} | {
+					method: 'pop'
+				}
+			)
+		)
+	) {
+		this.setState(
+			this.changeScreen(options)
+		);
 	}
 	private setUpdateAvailable() {
 		this._isUpdateAvailable = true;
@@ -442,29 +456,56 @@ export default class extends Root<Props, State, SharedState> {
 			user: this.state.user
 		};
 	}
+	protected onArticleUpdated(event: ArticleUpdatedEvent, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.articleUpdated(event);
+			this.props.extensionApi.articleUpdated(event);
+		}
+		super.onArticleUpdated(event);
+	}
+	protected onCommentPosted(comment: CommentThread, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.commentPosted(comment);
+			this.props.extensionApi.commentPosted(comment);
+		}
+		super.onCommentPosted(comment);
+	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
-	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) {
+	protected onUserSignedIn(user: UserAccount, eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.userSignedIn(user);
+		}
 		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
-		if (screenAuthLevel != null && (!userAccount || userAccount.role !== screenAuthLevel)) {
-			this.setScreenState({
+		let supplementaryState: Partial<State>;
+		if (screenAuthLevel != null && user.role !== screenAuthLevel) {
+			supplementaryState = this.changeScreen({
 				key: ScreenKey.Home,
-				method: 'replace',
-				supplementaryState: {
-					user: userAccount
-				}
-			});
-		} else {
-			this.setState({ user: userAccount }, () => {
-				this._userChangeEventHandlers.forEach(handler => {
-					handler(userAccount);
-				});
+				method: 'replace'
 			});
 		}
-		if (source === EventSource.Original) {
-			this.props.browserApi.updateUser(userAccount);
+		super.onUserSignedIn(user, supplementaryState);
+	}
+	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.userSignedOut()
 		}
+		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
+		let supplementaryState: Partial<State>;
+		if (screenAuthLevel != null) {
+			supplementaryState = this.changeScreen({
+				key: ScreenKey.Home,
+				method: 'replace'
+			});
+		}
+		super.onUserSignedOut(supplementaryState);
+	}
+	protected onUserUpdated(user: UserAccount, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.userUpdated(user);
+		}
+		super.onUserUpdated(user);
 	}
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
 		if (!this.state.user || !this.props.extensionApi.isInstalled) {
@@ -613,10 +654,10 @@ export default class extends Root<Props, State, SharedState> {
 			this.startUpdateCheckInterval();
 		}
 		// update other tabs with the latest user data
-		this.props.browserApi.updateUser(this.state.user);
+		this.props.browserApi.userUpdated(this.state.user);
 		// update the extension with the latest notification data
 		if (this.props.newReplyNotification) {
-			this.props.extensionApi.updateNewReplyNotification(this.props.newReplyNotification);
+			this.props.extensionApi.newReplyNotificationUpdated(this.props.newReplyNotification);
 		}
 		// check user agent for device type
 		if (this.state.isIosDevice == null) {

@@ -85,16 +85,16 @@ export default abstract class {
 		return this.post<void>({ path: '/UserAccounts/SignOut' });
 	};
 	public readonly postComment = (text: string, articleId: number, parentCommentId?: string) => {
-		return this.post<CommentThread>({ path: '/Articles/PostComment', data: { text, articleId, parentCommentId } });
+		return this.post<{ article: UserArticle, comment: CommentThread }>({ path: '/Articles/PostComment', data: { text, articleId, parentCommentId } });
 	};
 	public readonly readReply = (commentId: string) => {
 		return this.post({ path: '/Articles/ReadReply', data: { commentId } });
 	};
 	public readonly starArticle = (articleId: number) => {
-		return this.post<void>({ path: '/Articles/Star', data: { articleId } });
+		return this.post<UserArticle>({ path: '/Articles/Star', data: { articleId } });
 	};
 	public readonly unstarArticle = (articleId: number) => {
-		return this.post<void>({ path: '/Articles/Unstar', data: { articleId } });
+		return this.post<UserArticle>({ path: '/Articles/Unstar', data: { articleId } });
 	};
 	public readonly listReplies = (pageNumber: number, callback: (comments: Fetchable<PageResult<CommentThread>>) => void) => {
 		return this.get<PageResult<CommentThread>>({ path: '/Articles/ListReplies', data: { pageNumber } }, callback);
@@ -133,7 +133,7 @@ export default abstract class {
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow }, CommunityReads>('/Articles/CommunityReads');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>('/Articles/ListHistory');
-	public readonly rateArticle = (id: number, score: number) => this.post<Rating>({ path: '/Articles/Rate', data: { articleId: id, score } });
+	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });

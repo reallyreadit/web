@@ -6,13 +6,14 @@ import UserArticle from '../../common/models/UserArticle';
 import Rating from '../../common/models/Rating';
 import CommentThread from '../../common/models/CommentThread';
 import PostCommentForm from '../../common/models/PostCommentForm';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
 }
 export default class ContentScriptApi {
 	constructor(handlers: {
-		onRateArticle: (tabId: number, articleId: number, score: number) => Promise<Rating>,
+		onRateArticle: (tabId: number, articleId: number, score: number) => Promise<{ article: UserArticle, rating: Rating }>,
 		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
@@ -20,7 +21,7 @@ export default class ContentScriptApi {
 		onUnregisterContentScript: (tabId: number) => void,
 		onLoadContentParser: (tabId: number) => void,
 		onGetComments: (slug: string) => Promise<CommentThread[]>,
-		onPostComment: (form: PostCommentForm) => Promise<CommentThread>
+		onPostComment: (form: PostCommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -69,6 +70,12 @@ export default class ContentScriptApi {
 			}
 			return undefined;
 		});
+	}
+	public articleUpdated(tabId: number, event: ArticleUpdatedEvent) {
+		sendMessage(tabId, 'articleUpdated', event);
+	}
+	public commentPosted(tabId: number, comment: CommentThread) {
+		sendMessage(tabId, 'commentPosted', comment);
 	}
 	public loadPage(tabId: number) {
 		sendMessage(tabId, 'loadPage');

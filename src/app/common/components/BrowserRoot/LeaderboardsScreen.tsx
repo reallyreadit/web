@@ -7,12 +7,12 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, SharedState } from '../Root';
 import Leaderboards from '../../../../common/models/Leaderboards';
-import UserArticle from '../../../../common/models/UserArticle';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
 	onGetStats: FetchFunction<UserStats | null>,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	user: UserAccount | null
 }
@@ -30,8 +30,8 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 				{ isLoading: false }
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler((article, isCompletionCommit) => {
-				if (isCompletionCommit) {
+			props.onRegisterArticleChangeHandler(event => {
+				if (event.isCompletionCommit) {
 					props.onGetStats(this._asyncTracker.addCallback(stats => { this.setState({ stats }); }));
 					props.onGetLeaderboards(this._asyncTracker.addCallback(leaderboards => { this.setState({ leaderboards }); }));
 				}

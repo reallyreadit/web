@@ -16,6 +16,7 @@ import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -23,7 +24,7 @@ interface Props {
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow }, CommunityReads>,
 	onOpenMenu: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -94,8 +95,8 @@ class HomeScreen extends React.Component<Props, State> {
 			sort: CommunityReadSort.Hot
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
-				updateCommunityReads.call(this, updatedArticle, isCompletionCommit);
+			props.onRegisterArticleChangeHandler(event => {
+				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
 			})
 		);
 	}

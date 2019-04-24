@@ -13,6 +13,7 @@ import { SharedState } from '../BrowserRoot';
 import { formatFetchable, formatPossessive } from '../../../../common/format';
 import OnboardingScreen from './OnboardingScreen';
 import { mergeComment, findComment } from '../../../../common/comments';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
 function shouldShowComments(
 	user: UserAccount | null,
@@ -35,7 +36,7 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onInstallExtension: () => void,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
@@ -76,22 +77,15 @@ class BrowserCommentsScreen extends React.Component<
 	private readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props
 			.onPostComment(text, articleId, parentCommentId)
-			.then(comment => {
-				this.setState({
-					comments: {
-						...this.state.comments,
-						value: mergeComment(comment, this.state.comments.value.slice())
-					}
-				});
-			});
+			.then(() => { });
 	};
 	constructor(props: Props) {
 		super(props);
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(updatedArticle => {
-				if (this.props.article.value && this.props.article.value.id === updatedArticle.id) {
+			props.onRegisterArticleChangeHandler(event => {
+				if (this.props.article.value && this.props.article.value.id === event.article.id) {
 					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-						currentState.componentState.value = updatedArticle;
+						currentState.componentState.value = event.article;
 					}));
 				}
 			}),

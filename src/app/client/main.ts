@@ -11,6 +11,7 @@ import ExtensionApi from './ExtensionApi';
 import * as jsCookie from 'js-cookie';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import * as smoothscroll from 'smoothscroll-polyfill';
+import SemanticVersion from '../../common/SemanticVersion';
 
 // clean up localStorage
 localStorage.removeItem('challenge');
@@ -44,7 +45,7 @@ const rootProps = {
 	initialLocation: initData.initialLocation,
 	initialUser: initData.userAccount,
 	serverApi,
-	version: initData.version,
+	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint
 };
 let rootElement: React.ReactElement<any>;

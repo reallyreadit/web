@@ -1,5 +1,5 @@
 enum EventSource {
-	Original,
-	Sync
+	Local,
+	Remote
 }
 export default EventSource;

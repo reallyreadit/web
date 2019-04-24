@@ -27,6 +27,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import DeviceType from '../common/DeviceType';
+import SemanticVersion from '../../common/SemanticVersion';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -79,9 +80,9 @@ const version = JSON
 	.parse(fs.readFileSync(config.packageFilePath, { encoding: 'utf8' }))
 	['it.reallyread']
 	.version as {
-		app: number,
+		app: string,
 		contentScript: number,
-		extension: number
+		extension: string
 	};
 
 // set up logger
@@ -126,7 +127,7 @@ server = server.get('/apple-app-site-association', (req, res) => {
 });
 // version check
 server = server.get('/version', (req, res) => {
-	res.status(200).send(version.app.toString());
+	res.status(200).send(version.app);
 });
 // app content script updating
 server = server.get('/assets/update/contentScript', (req, res) => {
@@ -376,7 +377,7 @@ server = server.get('/*', (req, res) => {
 		},
 		initialUser: req.sessionState.userAccount,
 		serverApi: req.api,
-		version: version.app,
+		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
 	};
 	// create root element

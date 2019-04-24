@@ -8,13 +8,14 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { mergeComment } from '../../../../common/comments';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function
 }
 class AppCommentsScreen extends React.Component<
@@ -28,24 +29,17 @@ class AppCommentsScreen extends React.Component<
 	private readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.props
 			.onPostComment(text, articleId, parentCommentId)
-			.then(comment => {
-				this.setState({
-					comments: {
-						...this.state.comments,
-						value: mergeComment(comment, this.state.comments.value.slice())
-					}
-				});
-			});
+			.then(() => { });
 	};
 	constructor(props: Props) {
 		super(props);
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(updatedArticle => {
-				if (this.state.article.value && this.state.article.value.id === updatedArticle.id) {
+			props.onRegisterArticleChangeHandler(event => {
+				if (this.state.article.value && this.state.article.value.id === event.article.id) {
 					this.setState({
 						article: {
 							...this.state.article,
-							value: updatedArticle
+							value: event.article
 						}
 					});
 				}

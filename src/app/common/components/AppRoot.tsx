@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from './DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -28,11 +28,12 @@ import SemanticVersion from '../../../common/SemanticVersion';
 interface Props extends RootProps {
 	appApi: AppApi
 }
+type MenuState = 'opened' | 'closing' | 'closed';
 interface State extends RootState {
 	isPoppingScreen: boolean,
-	menuState: 'opened' | 'closing' | 'closed',
+	menuState: MenuState,
 }
-export default class extends Root<Props, State, Pick<State, 'user'>> {
+export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvents> {
 	private _isUpdateAvailable: boolean = false;
 
 	// extension
@@ -227,88 +228,84 @@ export default class extends Root<Props, State, Pick<State, 'user'>> {
 
 		// AppApi
 		props.appApi
-			.addListener('articleUpdated', ev => {
-				this._articleChangeEventHandlers.forEach(handler => {
-					handler(ev.article, ev.isCompletionCommit);
-				});
+			.addListener('articleUpdated', event => {
+				this.onArticleUpdated(event);
 			})
 			.addListener('commentPosted', comment => {
-				this._commentPostedEventHandlers.forEach(handler => {
-					handler(comment);
-				});
+				this.onCommentPosted(comment);
 			});
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
-		this.setScreensState([
+		this.setScreenState([
 			...this.state.screens,
 			this.createScreen(key, urlParams, title).screen
 		]);
 	}
 	private replaceScreen(key: ScreenKey) {
-		this.setScreensState([this.createScreen(key).screen]);
+		this.setScreenState([this.createScreen(key).screen]);
 	}
-	private setScreensState(screens: Screen[]) {
+	private setScreenState(screens: Screen[]) {
 		this.setState({
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed',
+			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
 		});
 	}
 	protected getSharedState() {
 		return { user: this.state.user };
 	}
-	protected onUserChanged(userAccount: UserAccount) {
-		if (userAccount) {
-			let screen: Screen;
-			if (this._hasProcessedInitialLocation) {
-				screen = this
-					.createScreen(ScreenKey.Home)
-					.screen;
-			} else {
-				const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
-				if (route.screenKey === ScreenKey.Read) {
-					const
-						pathParams = route.getPathParams(this.props.initialLocation.path),
-						slug = pathParams['sourceSlug']+ '_' + pathParams['articleSlug'];
-					screen = this._screenFactoryMap[ScreenKey.Comments].create(
-						{
-							path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
-						},
-						this.getSharedState()
-					);
-					// iOS versions < 2.1 crash when calling readArticle using only the slug
-					if (
-						!this.props.appApi.appVersion ||
-						this.props.appApi.appVersion.compareTo(new SemanticVersion('2.1.1')) < 0
-					) {
-						this.props.serverApi.getArticle(
-							{ slug },
-							result => {
-								if (result.value) {
-									this.props.appApi.readArticle(result.value);
-								}
-							}
-						);
-					} else {
-						this.props.appApi.readArticle({ slug });
-					}
-				} else {
-					screen = this
-						.getLocationDependentState(this.props.initialLocation)
-						.screen;
-				}
-				this._hasProcessedInitialLocation = true;
-			}
-			this.setState({
-				screens: [screen],
-				user: userAccount
-			});
+	protected onUserSignedIn(user: UserAccount) {
+		let screen: Screen;
+		if (this._hasProcessedInitialLocation) {
+			screen = this
+				.createScreen(ScreenKey.Home)
+				.screen;
 		} else {
-			this.setState({
-				menuState: 'closed',
-				screens: [],
-				user: null
-			});
+			const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
+			if (route.screenKey === ScreenKey.Read) {
+				const
+					pathParams = route.getPathParams(this.props.initialLocation.path),
+					slug = pathParams['sourceSlug'] + '_' + pathParams['articleSlug'];
+				screen = this._screenFactoryMap[ScreenKey.Comments].create(
+					{
+						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
+					},
+					this.getSharedState()
+				);
+				// iOS versions < 2.1 crash when calling readArticle using only the slug
+				if (
+					!this.props.appApi.appVersion ||
+					this.props.appApi.appVersion.compareTo(new SemanticVersion('2.1.1')) < 0
+				) {
+					this.props.serverApi.getArticle(
+						{ slug },
+						result => {
+							if (result.value) {
+								this.props.appApi.readArticle(result.value);
+							}
+						}
+					);
+				} else {
+					this.props.appApi.readArticle({ slug });
+				}
+			} else {
+				screen = this
+					.getLocationDependentState(this.props.initialLocation)
+					.screen;
+			}
+			this._hasProcessedInitialLocation = true;
 		}
+		super.onUserSignedIn(
+			user,
+			{ screens: [screen] }
+		);
+	}
+	protected onUserSignedOut() {
+		super.onUserSignedOut(
+			{
+				menuState: 'closed',
+				screens: []
+			}
+		);
 	}
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
 		ev.preventDefault();

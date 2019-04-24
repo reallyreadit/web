@@ -164,43 +164,6 @@ export default class ServerApi {
 		this._onArticleLookupRequestChanged = handlers.onArticleLookupRequestChanged;
 		this._onCacheUpdated = handlers.onCacheUpdated;
 	}
-	private cacheArticle(userArticle: UserArticle) {
-		this._articles.set(cache(userArticle, 60000));
-		this._onCacheUpdated();
-	}
-	private processNewReplyNotification(notification: NewReplyNotification) {
-		const current = this._newReplyNotification.get();
-		if (notification.timestamp > current.value.timestamp) {
-			this._newReplyNotification.set(cache(notification, 50000));
-			if (!isNotificationStateEqual(current.value, notification)) {
-				if (shouldShowDesktopNotification(notification)) {
-					fetchJson<DesktopNotification>({ method: 'POST',  path: '/UserAccounts/CreateDesktopNotification' })
-						.then(notification => {
-							if (notification) {
-								const now = Date.now();
-								this.processNewReplyNotification({
-									...this._newReplyNotification.get().value,
-									lastNewReplyDesktopNotification: now,
-									timestamp: now
-								});
-								chrome.notifications.create(
-									createUrl(window.reallyreadit.extension.config.web, '/viewReply' + createQueryString({ token: notification.token })),
-									{
-										type: 'basic',
-										iconUrl: '../icons/icon.svg',
-										title: `${notification.userName} just replied to your comment re: ${notification.articleTitle}`,
-										message: 'Click here to view the reply in the comment thread.',
-										isClickable: true
-									}
-								);
-							}
-						})
-						.catch(() => {});
-				}
-				this._onCacheUpdated();
-			}
-		}
-	}
 	private checkSourceRulesCache() {
 		if (isExpired(this._sourceRules.get())) {
 			fetchJson<SourceRule[]>({ method: 'GET', path: '/Extension/GetSourceRules' })
@@ -222,6 +185,43 @@ export default class ServerApi {
 				removeRequest();
 				throw reason;
 			});
+	}
+	public cacheArticle(userArticle: UserArticle) {
+		this._articles.set(cache(userArticle, 60000));
+		this._onCacheUpdated();
+	}
+	public processNewReplyNotification(notification: NewReplyNotification) {
+		const current = this._newReplyNotification.get();
+		if (notification.timestamp > current.value.timestamp) {
+			this._newReplyNotification.set(cache(notification, 50000));
+			if (!isNotificationStateEqual(current.value, notification)) {
+				if (shouldShowDesktopNotification(notification)) {
+					fetchJson<DesktopNotification>({ method: 'POST', path: '/UserAccounts/CreateDesktopNotification' })
+						.then(notification => {
+							if (notification) {
+								const now = Date.now();
+								this.processNewReplyNotification({
+									...this._newReplyNotification.get().value,
+									lastNewReplyDesktopNotification: now,
+									timestamp: now
+								});
+								chrome.notifications.create(
+									createUrl(window.reallyreadit.extension.config.web, '/viewReply' + createQueryString({ token: notification.token })),
+									{
+										type: 'basic',
+										iconUrl: '../icons/icon.svg',
+										title: `${notification.userName} just replied to your comment re: ${notification.articleTitle}`,
+										message: 'Click here to view the reply in the comment thread.',
+										isClickable: true
+									}
+								);
+							}
+						})
+						.catch(() => { });
+				}
+				this._onCacheUpdated();
+			}
+		}
 	}
 	public registerPage(tabId: number, data: ParseResult) {
 		const request = this.logRequest<ArticleLookupResult>({ method: 'POST', path: '/Extension/GetUserArticle', data, id: tabId }, this._articleLookupRequests)
@@ -255,11 +255,18 @@ export default class ServerApi {
 		});
 	}
 	public postComment(form: PostCommentForm) {
-		return fetchJson<CommentThread>({
-			method: 'POST',
-			path: '/Articles/PostComment',
-			data: form
-		});
+		return fetchJson<{
+				article: UserArticle,
+				comment: CommentThread
+			}>({
+				method: 'POST',
+				path: '/Articles/PostComment',
+				data: form
+			})
+			.then(result => {
+				this.cacheArticle(result.article);
+				return result;
+			});
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
 		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/CommitReadState', data })
@@ -303,10 +310,17 @@ export default class ServerApi {
 			.catch(() => {});
 	}
 	public rateArticle(articleId: number, score: number) {
-		return fetchJson<Rating>({
-			method: 'POST',
-			path: '/Articles/Rate',
-			data: { articleId, score }
-		});
+		return fetchJson<{
+				article: UserArticle,
+				rating: Rating
+			}>({
+				method: 'POST',
+				path: '/Articles/Rate',
+				data: { articleId, score }
+			})
+			.then(result => {
+				this.cacheArticle(result.article);
+				return result;
+			});
 	}
 }

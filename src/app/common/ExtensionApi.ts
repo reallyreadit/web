@@ -13,8 +13,10 @@ export default abstract class extends EventEmitter<{
 		super();
 		this._extensionId = extensionId;
 	}
+	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
+	public abstract commentPosted(comment: CommentThread): void;
 	public abstract install(): void;
-	public abstract updateNewReplyNotification(notification: NewReplyNotification): void;
+	public abstract newReplyNotificationUpdated(notification: NewReplyNotification): void;
 	public abstract get isInstalled(): boolean | undefined;
 	public abstract get isBrowserCompatible(): boolean | undefined;
 }

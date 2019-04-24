@@ -20,7 +20,6 @@ import { createScreenFactory as createPrivacyPolicyScreenFactory } from './Priva
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
-import EventSource from '../EventSource';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
 import classNames, { ClassValue } from 'classnames';
@@ -30,13 +29,16 @@ import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import HttpEndpoint from '../../../common/HttpEndpoint';
 import ClipboardService from '../../../common/services/ClipboardService';
 import CommentThread from '../../../common/models/CommentThread';
+import SemanticVersion from '../../../common/SemanticVersion';
+import EventManager from '../EventManager';
+import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 
 export interface Props {
 	captcha: Captcha,
 	initialLocation: RouteLocation,
 	initialUser: UserAccount | null,
 	serverApi: ServerApi,
-	version: number,
+	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
 }
 export enum TemplateSection {
@@ -64,10 +66,16 @@ export interface State extends ToasterState {
 	user: UserAccount | null
 }
 export type SharedState = Pick<State, 'user'>;
+export type SharedEvents = {
+	'articleUpdated': ArticleUpdatedEvent,
+	'authChanged': UserAccount | null,
+	'commentPosted': CommentThread
+};
 export default abstract class Root<
 	P extends Props,
 	S extends State,
-	TSharedState extends SharedState
+	TSharedState extends SharedState,
+	TEvents extends SharedEvents
 > extends React.Component<P, S> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _concreteClassName: ClassValue;
@@ -76,17 +84,14 @@ export default abstract class Root<
 	protected readonly _rateArticle = (article: UserArticle, score: number) => {
 		return this.props.serverApi
 			.rateArticle(article.id, score)
-			.then(rating => {
-				this._articleChangeEventHandlers.forEach(handler => {
-					handler(
-						{
-							...article,
-							ratingScore: rating.score
-						},
-						false
-					);
-				});
-				return rating;
+			.then(result => {
+				this.onArticleUpdated(
+					{
+						article: result.article,
+						isCompletionCommit: false
+					}
+				);
+				return result.rating;
 			});
 	};
 	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
@@ -96,16 +101,13 @@ export default abstract class Root<
 				this.props.serverApi.unstarArticle :
 				this.props.serverApi.starArticle
 			)(article.id)
-			.then(() => {
-				this._articleChangeEventHandlers.forEach(handler => {
-					handler(
-						{
-							...article,
-							dateStarred: article.dateStarred ? null : new Date().toISOString()
-						},
-						false
-					);
-				});
+			.then(article => {
+				this.onArticleUpdated(
+					{
+						article,
+						isCompletionCommit: false
+					}
+				)
 			});
 	};
 
@@ -114,7 +116,18 @@ export default abstract class Root<
 
 	// comments
 	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
-		return this.props.serverApi.postComment(text, articleId, parentCommentId);
+		return this.props.serverApi
+			.postComment(text, articleId, parentCommentId)
+			.then(result => {
+				this.onArticleUpdated(
+					{
+						article: result.article,
+						isCompletionCommit: false
+					}
+				);
+				this.onCommentPosted(result.comment);
+				return result.comment;
+			});
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
 
@@ -167,13 +180,15 @@ export default abstract class Root<
 	};
 
 	// events
-	protected readonly _articleChangeEventHandlers: ((updatedArticle: UserArticle, isCompletionCommit: boolean) => void)[] = [];
-	protected readonly _commentPostedEventHandlers: ((comment: CommentThread) => void)[] = [];
-	protected readonly _registerArticleChangeEventHandler = (handler: (updatedArticle: UserArticle, isCompletionCommit: boolean) => void) => {
-		return this.registerEventHandler(this._articleChangeEventHandlers, handler);
+	protected readonly _eventManager = new EventManager<TEvents>();
+	protected readonly _registerArticleChangeEventHandler = (handler: (event: ArticleUpdatedEvent) => void) => {
+		return this._eventManager.addListener('articleUpdated', handler);
+	};
+	protected readonly _registerAuthChangedEventHandler = (handler: (user: UserAccount | null) => void) => {
+		return this._eventManager.addListener('authChanged', handler);
 	};
 	protected readonly _registerCommentPostedEventHandler = (handler: (comment: CommentThread) => void) => {
-		return this.registerEventHandler(this._commentPostedEventHandlers, handler);
+		return this._eventManager.addListener('commentPosted', handler);
 	};
 
 	// routing
@@ -210,7 +225,7 @@ export default abstract class Root<
 		return this.props.serverApi
 			.changeEmailAddress(email)
 			.then(user => {
-				this.setState({ user });
+				this.onUserUpdated(user);
 			});
 	};
 	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
@@ -220,21 +235,21 @@ export default abstract class Root<
 		return this.props.serverApi
 			.changeTimeZone(timeZone)
 			.then(user => {
-				this.setState({ user });
+				this.onUserUpdated(user);
 			});
 	};
 	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.props.serverApi
 			.createUserAccount(name, email, password, captchaResponse, DateTime.local().zoneName)
-			.then(userAccount => {
-				this.onUserChanged(userAccount, EventSource.Original);
+			.then(user => {
+				this.onUserSignedIn(user);
 			});
 	};
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
 			.resetPassword(token, password)
-			.then(userAccount => {
-				this.onUserChanged(userAccount, EventSource.Original);
+			.then(user => {
+				this.onUserSignedIn(user);
 			});
 	};
 	protected readonly _resendConfirmationEmail = () => {
@@ -255,25 +270,25 @@ export default abstract class Root<
 	protected readonly _signIn = (email: string, password: string) => {
 		return this.props.serverApi
 			.signIn(email, password)
-			.then(userAccount => {
-				if (userAccount.timeZoneId == null) {
+			.then(user => {
+				if (user.timeZoneId == null) {
 					this.setTimeZone();
 				}
-				this.onUserChanged(userAccount, EventSource.Original);
+				this.onUserSignedIn(user);
 			});
 	};
 	protected readonly _signOut = () => {
 		return this.props.serverApi
 			.signOut()
 			.then(() => {
-				this.onUserChanged(null, EventSource.Original);
+				this.onUserSignedOut();
 			});
 	};
 	protected readonly _updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
 		return this.props.serverApi
 			.updateContactPreferences(receiveWebsiteUpdates, receiveSuggestedReadings)
 			.then(user => {
-				this.setState({ user });
+				this.onUserUpdated(user);
 			});
 	};
 	protected readonly _updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
@@ -282,7 +297,7 @@ export default abstract class Root<
 			.then(() => {
 				if (this.state.user) {
 					this.props.serverApi.getUserAccount(user => {
-						this.setState({ user: user.value });
+						this.onUserUpdated(user.value);
 					});
 				}
 			});
@@ -291,7 +306,7 @@ export default abstract class Root<
 		return this.props.serverApi
 			.updateNotificationPreferences(receiveEmailNotifications, receiveDesktopNotifications)
 			.then(user => {
-				this.setState({ user });
+				this.onUserUpdated(user);
 			});
 	};
 
@@ -360,7 +375,18 @@ export default abstract class Root<
 	private setTimeZone() {
 		return this._changeTimeZone({ name: DateTime.local().zoneName });
 	}
-	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: number }> {
+	private setUserAuthChangedState(user: UserAccount | null, supplementaryState?: Partial<S>) {
+		this.setState(
+			{
+				...supplementaryState as State,
+				user
+			},
+			() => {
+				this._eventManager.triggerEvent('authChanged', user);
+			}
+		);
+	}
+	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: SemanticVersion }> {
 		const
 			now = Date.now(),
 			lastCheck = localStorage.getItem('lastUpdateCheck');
@@ -372,9 +398,9 @@ export default abstract class Root<
 			return fetch('/version')
 				.then(res => {
 					if (res.ok) {
-						return res.text().then(text => {
-							const version = parseFloat(text);
-							if (this.props.version < version) {
+						return res.text().then(versionString => {
+							const version = new SemanticVersion(versionString);
+							if (this.props.version.compareTo(version) < 0) {
 								return {
 									isAvailable: true,
 									version
@@ -413,17 +439,24 @@ export default abstract class Root<
 		};
 	}
 	protected abstract getSharedState(): TSharedState;
+	protected onArticleUpdated(event: ArticleUpdatedEvent) {
+		this._eventManager.triggerEvent('articleUpdated', event);
+	}
+	protected onCommentPosted(comment: CommentThread) {
+		this._eventManager.triggerEvent('commentPosted', comment);
+	}
 	protected onTitleChanged(title: string) { }
-	protected onUpdateAvailable() { }
-	protected onUserChanged(userAccount: UserAccount | null, source: EventSource) { }
+	protected onUserSignedIn(user: UserAccount, supplementaryState?: Partial<S>) {
+		this.setUserAuthChangedState(user, supplementaryState);
+	}
+	protected onUserSignedOut(supplementaryState?: Partial<S>) {
+		this.setUserAuthChangedState(null, supplementaryState);
+	}
+	protected onUserUpdated(user: UserAccount) {
+		this.setState({ user });
+	}
 	protected abstract readArticle(article: UserArticle, ev: React.MouseEvent): void;
 	protected abstract reloadWindow(): void;
-	protected registerEventHandler<T>(handlers: T[], handler: T) {
-		handlers.push(handler);
-		return () => {
-			handlers.splice(handlers.indexOf(handler), 1);
-		};
-	}
 	protected abstract renderBody(): React.ReactNode;
 	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>): void;
 	public componentDidMount() {

@@ -1,5 +1,6 @@
-import UserArticle from "../../common/models/UserArticle";
-import CommentThread from "../../common/models/CommentThread";
+import CommentThread from '../../common/models/CommentThread';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import NewReplyNotification from '../../common/models/NewReplyNotification';
 
 function stringifyForLiteral(obj: {}) {
 	return JSON
@@ -7,25 +8,50 @@ function stringifyForLiteral(obj: {}) {
 		.replace(/\\/g, '\\\\')
 		.replace(/'/g, '\\\'');
 }
-export default class {
-	private static sendMessage(type: string, data: {} = null) {
-		chrome.tabs.query(
-			{},
-			tabs => tabs
-				.filter(tab => tab.url && new URL(tab.url).hostname === window.reallyreadit.extension.config.web.host)
-				.forEach(tab => chrome.tabs.executeScript(
-					tab.id,
-					{ code: `window.postMessage('${stringifyForLiteral({ type, data })}', '*');` }
-				))
-		);
+function sendMessage(type: string, data: {} = null) {
+	chrome.tabs.query(
+		{},
+		tabs => tabs
+			.filter(tab => tab.url && new URL(tab.url).hostname === window.reallyreadit.extension.config.web.host)
+			.forEach(tab => chrome.tabs.executeScript(
+				tab.id,
+				{ code: `window.postMessage('${stringifyForLiteral({ type, data })}', '*');` }
+			))
+	);
+}
+export default class WebAppApi {
+	constructor(
+		handlers: {
+			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
+			onCommentPosted: (comment: CommentThread) => void,
+			onNewReplyNotificationUpdated: (notification: NewReplyNotification) => void
+		}
+	) {
+		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+			switch (message.type) {
+				case 'articleUpdated':
+					handlers.onArticleUpdated(message.data);
+					break;
+				case 'commentPosted':
+					handlers.onCommentPosted(message.data);
+					break;
+				case 'newReplyNotificationUpdated':
+					handlers.onNewReplyNotificationUpdated(message.data);
+					break;
+				case 'ping':
+					sendResponse(true);
+					return true;
+			}
+			return false;
+		});
 	}
-	public static notifyExtensionInstalled() {
-		this.sendMessage('extensionInstalled');
+	public articleUpdated(event: ArticleUpdatedEvent) {
+		sendMessage('articleUpdated', event);
 	}
-	public static postComment(comment: CommentThread) {
-		this.sendMessage('commentPosted', comment);
+	public commentPosted(comment: CommentThread) {
+		sendMessage('commentPosted', comment);
 	}
-	public static updateArticle(article: UserArticle, isCompletionCommit: boolean) {
-		this.sendMessage('articleUpdated', { article, isCompletionCommit });
+	public extensionInstalled() {
+		sendMessage('extensionInstalled');
 	}
 }

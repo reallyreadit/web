@@ -6,6 +6,7 @@ import UserArticle from '../../common/models/UserArticle';
 import Rating from '../../common/models/Rating';
 import CommentThread from '../../common/models/CommentThread';
 import PostCommentForm from '../../common/models/PostCommentForm';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'eventPage', type, data }, responseCallback);
@@ -21,6 +22,8 @@ function sendMessageAwaitingResponse<T>(type: string, data ?: {}) {
 }
 export default class EventPageApi {
 	constructor(handlers: {
+		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
+		onCommentPosted: (comment: CommentThread) => void,
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
 		onShowOverlay: (value: boolean) => void,
@@ -28,6 +31,12 @@ export default class EventPageApi {
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
+				case 'articleUpdated':
+					handlers.onArticleUpdated(message.data);
+					break;
+				case 'commentPosted':
+					handlers.onCommentPosted(message.data);
+					break;
 				case 'loadPage':
 					handlers.onLoadPage();
 					break;
@@ -44,7 +53,7 @@ export default class EventPageApi {
 		});
 	}
 	public rateArticle(articleId: number, score: number) {
-		return sendMessageAwaitingResponse<Rating>('rateArticle', { articleId, score });
+		return sendMessageAwaitingResponse<{ article: UserArticle, rating: Rating }>('rateArticle', { articleId, score });
 	}
 	public registerContentScript(location: Location) {
 		return sendMessageAwaitingResponse<ContentScriptInitData>('registerContentScript', location.toString());
@@ -68,6 +77,6 @@ export default class EventPageApi {
 		return sendMessageAwaitingResponse<CommentThread[]>('getComments', slug);
 	}
 	public postComment(form: PostCommentForm) {
-		return sendMessageAwaitingResponse<CommentThread>('postComment', form);
+		return sendMessageAwaitingResponse<{ article: UserArticle, comment: CommentThread }>('postComment', form);
 	}
 }

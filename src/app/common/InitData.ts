@@ -16,6 +16,6 @@ export default interface InitData {
 	initialLocation: RouteLocation,
 	newReplyNotification: NewReplyNotification,
 	userAccount: UserAccount,
-	version: number,
+	version: string,
 	webServerEndpoint: HttpEndpoint
 }

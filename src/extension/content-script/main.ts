@@ -47,6 +47,27 @@ let
 let historyStateUpdatedTimeout: number;
 
 const eventPageApi = new EventPageApi({
+	onArticleUpdated: event => {
+		if (embed) {
+			const state: EmbedState = { article: event.article };
+			if (!hasLoadedComments && event.article.ratingScore != null) {
+				loadComments(event.article.slug);
+				state.comments = { isLoading: true };
+			}
+			embed.sendMessage({
+				type: 'pushState',
+				data: state
+			});
+		}
+	},
+	onCommentPosted: comment => {
+		if (embed && hasLoadedComments) {
+			embed.sendMessage({
+				type: 'commentPosted',
+				data: comment
+			});
+		}
+	},
 	onLoadPage: loadPage,
 	onUnloadPage: unloadPage,
 	onShowOverlay: value => {
@@ -115,7 +136,7 @@ function insertEmbed(article: UserArticle) {
 			case 'rateArticle':
 				eventPageApi
 					.rateArticle(context.articleId, message.data)
-					.then(rating => {
+					.then(result => {
 						if (!hasLoadedComments) {
 							loadComments(article.slug);
 							embed.sendMessage({
@@ -125,7 +146,7 @@ function insertEmbed(article: UserArticle) {
 								}
 							});
 						}
-						sendResponse(rating);
+						sendResponse(result);
 					});
 				break;
 			case 'setHeight':

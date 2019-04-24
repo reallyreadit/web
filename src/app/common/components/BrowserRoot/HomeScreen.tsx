@@ -18,6 +18,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
 const
 	pageSize = 40,
@@ -41,7 +42,7 @@ interface Props {
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle, isCompletionCommit: boolean) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onSetScreenState: (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -115,8 +116,8 @@ class HomeScreen extends React.Component<Props, State> {
 			};
 		}
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler((updatedArticle, isCompletionCommit) => {
-				updateCommunityReads.call(this, updatedArticle, isCompletionCommit);
+			props.onRegisterArticleChangeHandler(event => {
+				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
 			}),
 			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
 				if (shouldShowHomeScreen(user, this.props.isDesktopDevice)) {

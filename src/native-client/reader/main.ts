@@ -144,12 +144,13 @@ function postComment(text: string, articleId: number, parentCommentId?: string) 
 					text
 				}
 			},
-			(comment: CommentThread) => {
+			(result: { article: UserArticle, comment: CommentThread }) => {
 				resolve();
 				render({
+					article: result.article,
 					comments: {
 						...footerProps.comments,
-						value: mergeComment(comment, footerProps.comments.value)
+						value: mergeComment(result.comment, footerProps.comments.value)
 					}
 				});
 			}
@@ -167,13 +168,10 @@ function rateArticle(score: number) {
 					score
 				}
 			},
-			(rating: Rating) => {
+			(result: { article: UserArticle, rating: Rating }) => {
 				resolve();
 				const newProps: Pick<FooterProps, 'article' | 'comments'> = {
-					article: {
-						...footerProps.article,
-						ratingScore: rating.score
-					}
+					article: result.article
 				};
 				if (!hasLoadedComments) {
 					loadComments();

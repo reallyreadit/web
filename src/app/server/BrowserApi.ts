@@ -1,22 +1,33 @@
 import BrowserApi from '../common/BrowserApi';
-import UserArticle from '../../common/models/UserArticle';
 import UserAccount from '../../common/models/UserAccount';
+import SemanticVersion from '../../common/SemanticVersion';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import CommentThread from '../../common/models/CommentThread';
 
 export default class extends BrowserApi {
 	private _title: string;
 	public setTitle(title: string) {
 		this._title = title;
 	}
+	public articleUpdated(event: ArticleUpdatedEvent) {
+		throw new Error('Operation not supported in server environment');
+	}
+	public commentPosted(comment: CommentThread) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public getTitle() {
 		return this._title;
 	}
-	public updateArticle(article: UserArticle) {
+	public updateAvailable(version: SemanticVersion) {
 		throw new Error('Operation not supported in server environment');
 	}
-	public updateAvailable(version: number) {
+	public userSignedIn(user: UserAccount) {
 		throw new Error('Operation not supported in server environment');
 	}
-	public updateUser(user: UserAccount) {
+	public userSignedOut() {
+		throw new Error('Operation not supported in server environment');
+	}
+	public userUpdated(user: UserAccount) {
 		throw new Error('Operation not supported in server environment');
 	}
 }

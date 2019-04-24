@@ -1,5 +1,7 @@
 import ExtensionApi from '../common/ExtensionApi';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import CommentThread from '../../common/models/CommentThread';
 
 export default class extends ExtensionApi {
     private _isInstalled: boolean | null = null;
@@ -51,11 +53,17 @@ export default class extends ExtensionApi {
             }
         });
     }
+    public articleUpdated(event: ArticleUpdatedEvent) {
+        this.sendMessage('articleUpdated', event);
+    }
+    public commentPosted(comment: CommentThread) {
+        this.sendMessage('commentPosted', comment);
+    }
     public install() {
         window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');
     }
-    public updateNewReplyNotification(notification: NewReplyNotification) {
-        this.sendMessage('updateNewReplyNotification', notification);
+    public newReplyNotificationUpdated(notification: NewReplyNotification) {
+        this.sendMessage('newReplyNotificationUpdated', notification);
     }
     public get isInstalled() {
         return this._isInstalled;

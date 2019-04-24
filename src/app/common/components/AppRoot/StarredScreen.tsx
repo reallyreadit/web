@@ -12,13 +12,14 @@ import AsyncActionLink from '../controls/AsyncActionLink';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (article: UserArticle) => void) => Function,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onSendExtensionInstructions: () => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -41,8 +42,8 @@ class AppStarredScreen extends React.Component<Props, State> {
 			articles: this.fetchArticles(1)
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(updatedArticle => {
-				updateArticles.call(this, updatedArticle);
+			props.onRegisterArticleChangeHandler(event => {
+				updateArticles.call(this, event.article);
 			})
 		);
 	}

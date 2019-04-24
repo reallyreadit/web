@@ -47,7 +47,7 @@ const browserActionApi = new BrowserActionApi({
 		.setStarred(articleId, isStarred)
 		.then(article => {
 			if (article) {
-				WebAppApi.updateArticle(article, false);
+				webAppApi.articleUpdated({ article, isCompletionCommit: false });
 			}
 		})
 });
@@ -56,15 +56,12 @@ const browserActionApi = new BrowserActionApi({
 const contentScriptApi = new ContentScriptApi({
 	onRateArticle: (tabId, articleId, score) => serverApi
 		.rateArticle(articleId, score)
-		.then(rating => {
-			WebAppApi.updateArticle(
-				{
-					...serverApi.getUserArticle(articleId),
-					ratingScore: rating.score
-				},
-				false
-			);
-			return rating;
+		.then(result => {
+			webAppApi.articleUpdated({
+				article: result.article,
+				isCompletionCommit: false
+			});
+			return result;
 		}),
 	onRegisterContentScript: (tabId, url) => {
 		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
@@ -104,11 +101,11 @@ const contentScriptApi = new ContentScriptApi({
 		// commit read state
 		return serverApi
 			.commitReadState(tabId, commitData)
-			.then(userArticle => {
-				if (userArticle) {
-					WebAppApi.updateArticle(userArticle, isCompletionCommit);
+			.then(article => {
+				if (article) {
+					webAppApi.articleUpdated({ article, isCompletionCommit });
 				}
-				return userArticle;
+				return article;
 			});
 	},
 	onUnregisterPage: tabId => {
@@ -132,13 +129,42 @@ const contentScriptApi = new ContentScriptApi({
 	onPostComment: form => {
 		return serverApi
 			.postComment(form)
-			.then(comment => {
-				const article = serverApi.getUserArticle(comment.articleId);
-				article.commentCount++;
-				WebAppApi.updateArticle(article, false);
-				WebAppApi.postComment(comment);
-				return comment;
+			.then(result => {
+				webAppApi.articleUpdated({
+					article: result.article,
+					isCompletionCommit: false
+				});
+				webAppApi.commentPosted(result.comment);
+				return result;
 			});
+	}
+});
+
+// web app
+const webAppApi = new WebAppApi({
+	onArticleUpdated: event => {
+		// update browser action
+		serverApi.cacheArticle(event.article);
+		// update content script
+		tabs
+			.getAll()
+			.filter(tab => tab.articleId === event.article.id)
+			.forEach(tab => {
+				contentScriptApi.articleUpdated(tab.id, event);
+			});
+	},
+	onCommentPosted: comment => {
+		// update content script
+		tabs
+			.getAll()
+			.filter(tab => tab.articleId === comment.articleId)
+			.forEach(tab => {
+				contentScriptApi.commentPosted(tab.id, comment);
+			});
+	},
+	onNewReplyNotificationUpdated: notification => {
+		// process
+		serverApi.processNewReplyNotification(notification);
 	}
 });
 
@@ -211,7 +237,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	// update icon
 	getState().then(updateIcon);
 	// message rrit tabs
-	WebAppApi.notifyExtensionInstalled();
+	webAppApi.extensionInstalled();
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
@@ -234,11 +260,6 @@ chrome.windows.onFocusChanged.addListener(
 		}
 	}
 );
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-	if (message.type === 'ping') {
-		sendResponse(true);
-	}
-});
 chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
 	if (details.transitionType === 'link' && tabs.get(details.tabId)) {
 		console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
