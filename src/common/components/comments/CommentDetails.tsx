@@ -100,7 +100,7 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 					<div className="article-title">{this.props.comment.articleTitle}</div> :
 					null}
 				<div className="title">
-					<strong>{this.props.comment.userAccount}</strong> <span>-</span> {timeago().format(this.props.comment.dateCreated + 'Z')}
+					<strong>{this.props.comment.userAccount}</strong> <span>-</span> {timeago().format(this.props.comment.dateCreated.replace(/([^Z])$/, '$1Z'))}
 				</div>
 				<div
 					className={classNames('text', { 'preview': this.props.mode === 'link' })}
