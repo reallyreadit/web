@@ -88,10 +88,7 @@ function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
 	embedRootElement.id = 'reallyreadit-footer-root';
-	page.elements[page.elements.length - 1].element.insertAdjacentElement(
-		'afterend',
-		embedRootElement
-	);
+	window.document.body.append(embedRootElement);
 	// initial render
 	const initialProps: Pick<FooterProps, 'article' | 'comments' | 'user'> = {
 		article: lookupResult.userArticle,
