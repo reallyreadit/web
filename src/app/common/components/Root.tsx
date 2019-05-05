@@ -345,6 +345,7 @@ export default abstract class Root<
 				onCloseDialog: this._closeDialog,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
+				onGetKeyMetrics: this.props.serverApi.getKeyMetrics,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
 				onOpenDialog: this._openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,

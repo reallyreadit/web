@@ -19,6 +19,7 @@ import CommunityReadSort from '../../../common/models/CommunityReadSort';
 import Rating from '../../../common/models/Rating';
 import ClientType from '../ClientType';
 import CommunityReadTimeWindow from '../../../common/models/CommunityReadTimeWindow';
+import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -126,6 +127,9 @@ export default abstract class {
 	public readonly getUserAccountStats = (callback: (state: Fetchable<UserAccountStats>) => void) => {
 		return this.get<UserAccountStats>({ path: '/UserAccounts/Stats' }, callback);
 	};
+
+	// Analytics
+	public readonly getKeyMetrics = this.createFetchFunctionWithParams<{ startDate: string, endDate: string }, KeyMetricsReportRow[]>('/Analytics/KeyMetrics');
 
 	// Articles
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
