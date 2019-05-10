@@ -152,7 +152,7 @@ export default class ServerApi {
 		});
 		chrome.alarms.create(ServerApi._alarms.checkNewReplyNotification, {
 			when: Date.now(),
-			periodInMinutes: 1
+			periodInMinutes: 20
 		});
 		chrome.alarms.create(ServerApi._alarms.getSourceRules, {
 			when: Date.now(),
