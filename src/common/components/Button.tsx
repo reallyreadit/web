@@ -4,7 +4,7 @@ import Icon, { IconName } from './Icon';
 import Spinner from './Spinner';
 
 export default class Button extends React.PureComponent<{
-	text: string,
+	text?: string,
 	iconLeft?: IconName,
 	style?: 'normal' | 'preferred',
 	state?: 'normal' | 'disabled' | 'busy',

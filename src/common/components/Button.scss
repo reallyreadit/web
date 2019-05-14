@@ -33,9 +33,11 @@
 	border-color: red red transparent transparent;
 }
 .button_ovrlmi > .icon_rour3d {
-	margin-right: 5px;
 	width: 16px;
 	height: 16px;
+}
+.button_ovrlmi > .icon_rour3d + .text {
+	margin-left: 5px;
 }
 .button_ovrlmi > .loading {
 	position: absolute;
