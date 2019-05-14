@@ -1,12 +1,10 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
-import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import HistoryScreen, { updateArticles } from '../screens/HistoryScreen';
-import { Screen, SharedState } from '../Root';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
@@ -14,28 +12,40 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
+	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	user: UserAccount | null
+	onViewComments: (article: UserArticle) => void
 }
 interface State {
-	articles: Fetchable<PageResult<UserArticle>>
+	articles: Fetchable<PageResult<UserArticle>>,
+	isLoadingArticles: boolean,
+	maxLength: number | null,
+	minLength: number | null
 }
 class AppHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _loadPage = (pageNumber: number) => {
+	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
-			articles: this.fetchArticles(pageNumber)
+			isLoadingArticles: true,
+			minLength,
+			maxLength
 		});
+		this.fetchArticles(1, minLength, maxLength);
+	};
+	private readonly _loadPage = (pageNumber: number) => {
+		this.setState({ isLoadingArticles: true });
+		this.fetchArticles(pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			articles: this.fetchArticles(1)
+			articles: this.fetchArticles(1, null, null),
+			isLoadingArticles: true,
+			maxLength: null,
+			minLength: null
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
@@ -43,11 +53,11 @@ class AppHistoryScreen extends React.Component<Props, State> {
 			})
 		);
 	}
-	private fetchArticles(pageNumber: number) {
+	private fetchArticles(pageNumber: number, minLength: number | null, maxLength: number | null) {
 		return this.props.onGetUserArticleHistory(
-			{ pageNumber },
+			{ pageNumber, minLength, maxLength },
 			this._asyncTracker.addCallback(articles => {
-				this.setState({ articles });
+				this.setState({ articles, isLoadingArticles: false });
 			})
 		);
 	}
@@ -58,7 +68,10 @@ class AppHistoryScreen extends React.Component<Props, State> {
 		return (
 			<HistoryScreen
 				articles={this.state.articles}
-				isUserSignedIn={!!this.props.user}
+				isLoadingArticles={this.state.isLoadingArticles}
+				maxLength={this.state.maxLength}
+				minLength={this.state.minLength}
+				onLengthRangeChange={this._changeLengthRange}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onLoadPage={this._loadPage}
@@ -72,12 +85,12 @@ class AppHistoryScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+	deps: Props
 ) {
 	return {
 		create: () => ({ key, title: 'History' }),
-		render: (screenState: Screen, sharedState: SharedState) => (
-			<AppHistoryScreen {...{ ...deps, user: sharedState.user }} />
+		render: () => (
+			<AppHistoryScreen {...deps} />
 		)
 	};
 }

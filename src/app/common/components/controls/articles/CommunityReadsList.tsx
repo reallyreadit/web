@@ -11,6 +11,7 @@ import LoadingOverlay from '../LoadingOverlay';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../../common/models/CommunityReadTimeWindow';
+import ArticleLengthFilter from '../ArticleLengthFilter';
 
 const sortOptions: { [key: string]: CommunityReadSort } = {
 	'Trending': CommunityReadSort.Hot,
@@ -68,11 +69,14 @@ export default class extends React.PureComponent<{
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onLengthRangeChange: (min: number, max: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onSortChange: (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	maxLength: number | null,
+	minLength: number | null,
 	sort: CommunityReadSort,
 	timeWindow?: CommunityReadTimeWindow
 }, {}> {
@@ -105,43 +109,52 @@ export default class extends React.PureComponent<{
 					onToggleStar={this.props.onToggleArticleStar}
 					onViewComments={this.props.onViewComments}
 				/>
-				<form
-					autoComplete="off"
-					className="sort"
-				>
-					<select
-						onChange={this._changeSort}
-						value={this.props.sort}
+				<div className="controls">
+					<form
+						autoComplete="off"
+						className="sort"
 					>
-						{Object
-							.keys(sortOptions)
-							.map(key => (
-								<option
-									key={key}
-									value={sortOptions[key]}
-								>
-									{key}
-								</option>
-							))}
-					</select>
-					{this.props.timeWindow != null ?
 						<select
-							onChange={this._changeTimeWindow}
-							value={this.props.timeWindow}
+							onChange={this._changeSort}
+							value={this.props.sort}
 						>
 							{Object
-								.keys(timeWindowOptions)
+								.keys(sortOptions)
 								.map(key => (
 									<option
 										key={key}
-										value={timeWindowOptions[key]}
+										value={sortOptions[key]}
 									>
 										{key}
 									</option>
 								))}
-						</select> :
-						null}
-				</form>
+						</select>
+						{this.props.timeWindow != null ?
+							<select
+								onChange={this._changeTimeWindow}
+								value={this.props.timeWindow}
+							>
+								{Object
+									.keys(timeWindowOptions)
+									.map(key => (
+										<option
+											key={key}
+											value={timeWindowOptions[key]}
+										>
+											{key}
+										</option>
+									))}
+							</select> :
+							null}
+					</form>
+					<div className="filter-container">
+						<ArticleLengthFilter
+							max={this.props.maxLength}
+							min={this.props.minLength}
+							onChange={this.props.onLengthRangeChange}
+						/>
+					</div>
+				</div>
 				{this.props.isLoadingArticles ?
 					<LoadingOverlay position="static" /> :
 					<ArticleList>

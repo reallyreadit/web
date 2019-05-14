@@ -9,6 +9,8 @@ import InfoBox from '../controls/InfoBox';
 import Fetchable from '../../../../common/Fetchable';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
+import ArticleLengthFilter from '../controls/ArticleLengthFilter';
+import LoadingOverlay from '../controls/LoadingOverlay';
 
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>
@@ -29,50 +31,60 @@ export function updateArticles(this: React.Component<{}, State>, updatedArticle:
 }
 export default (props: {
 	articles: PageResult<UserArticle>,
-	isUserSignedIn: boolean,
+	isLoadingArticles: boolean,
+	onLengthRangeChange: (min: number, max: number) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onLoadPage: (pageNumber: number) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	maxLength: number | null,
+	minLength: number | null
 }) => (
 	<div className="starred-screen_v6yb53">
-		{props.articles.items.length ?
+		{props.isLoadingArticles || props.articles.items.length || props.minLength != null || props.maxLength != null ?
 			<>
-				<ArticleList>
-					{props.articles.items.map(article =>
-						<li key={article.id}>
-							<ArticleDetails
-								article={article}
-								isUserSignedIn={props.isUserSignedIn}
-								onCopyTextToClipboard={props.onCopyTextToClipboard}
-								onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
-								onRead={props.onReadArticle}
-								onShare={props.onShare}
-								onToggleStar={props.onToggleArticleStar}
-								onViewComments={props.onViewComments}
-							/>
-						</li>
-					)}
-				</ArticleList>
-				<PageSelector
-					pageNumber={props.articles.pageNumber}
-					pageCount={props.articles.pageCount}
-					onChange={props.onLoadPage}
-				/>
+				<div className="controls">
+					<ArticleLengthFilter
+						max={props.maxLength}
+						min={props.minLength}
+						onChange={props.onLengthRangeChange}
+					/>
+				</div>
+				{!props.isLoadingArticles ?
+					<>
+						<ArticleList>
+							{props.articles.items.map(article =>
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										isUserSignedIn
+										onCopyTextToClipboard={props.onCopyTextToClipboard}
+										onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
+										onRead={props.onReadArticle}
+										onShare={props.onShare}
+										onToggleStar={props.onToggleArticleStar}
+										onViewComments={props.onViewComments}
+									/>
+								</li>
+							)}
+						</ArticleList>
+						<PageSelector
+							pageNumber={props.articles.pageNumber}
+							pageCount={props.articles.pageCount}
+							onChange={props.onLoadPage}
+						/>
+					</> :
+					<LoadingOverlay position="static" />}
 			</> :
 			<InfoBox
-				position="absolute"
+				position="static"
 				style="normal"
 			>
-				{props.isUserSignedIn ?
-					<>
-						<p>You have 0 starred articles.</p>
-						<p><strong>Star articles to save them for later.</strong></p>
-					</> :
-					<p>Sign up to save articles to your starred list.</p>}
+				<p>You have 0 starred articles.</p>
+				<p><strong>Star articles to save them for later.</strong></p>
 			</InfoBox>}
 	</div>
 );

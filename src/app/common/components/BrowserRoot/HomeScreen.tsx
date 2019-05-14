@@ -19,6 +19,7 @@ import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import ScreenContainer from '../ScreenContainer';
 
 const
 	pageSize = 40,
@@ -38,7 +39,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow }, CommunityReads>,
+	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -54,11 +55,36 @@ interface Props {
 interface State {
 	communityReads?: Fetchable<CommunityReads>,
 	isLoadingArticles: boolean,
+	maxLength?: number,
+	minLength?: number,
 	sort?: CommunityReadSort,
 	timeWindow?: CommunityReadTimeWindow
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changeLengthRange = (minLength?: number, maxLength?: number) => {
+		this.setState({
+			isLoadingArticles: true,
+			maxLength,
+			minLength
+		});
+		this.props.onGetCommunityReads(
+			{
+				pageNumber: 1,
+				pageSize,
+				sort: this.state.sort,
+				timeWindow: this.state.timeWindow,
+				minLength,
+				maxLength
+			},
+			this._asyncTracker.addCallback(communityReads => {
+				this.setState({
+					communityReads,
+					isLoadingArticles: false
+				});
+			})
+		);
+	};
 	private readonly _changePage = (pageNumber: number) => {
 		this.setState({ isLoadingArticles: true });
 		this.props.onGetCommunityReads(
@@ -66,7 +92,9 @@ class HomeScreen extends React.Component<Props, State> {
 				pageNumber: pageNumber,
 				pageSize,
 				sort: this.state.sort,
-				timeWindow: this.state.timeWindow
+				timeWindow: this.state.timeWindow,
+				minLength: this.state.minLength,
+				maxLength: this.state.maxLength
 			},
 			this._asyncTracker.addCallback(communityReads => {
 				this.setState({
@@ -87,7 +115,9 @@ class HomeScreen extends React.Component<Props, State> {
 				pageNumber: 1,
 				pageSize,
 				sort,
-				timeWindow
+				timeWindow,
+				minLength: this.state.minLength,
+				maxLength: this.state.maxLength
 			},
 			this._asyncTracker.addCallback(communityReads => {
 				this.setState({
@@ -95,7 +125,7 @@ class HomeScreen extends React.Component<Props, State> {
 					isLoadingArticles: false
 				});
 			})
-		)
+		);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -139,7 +169,9 @@ class HomeScreen extends React.Component<Props, State> {
 						communityReads: null,
 						isLoadingArticles: false,
 						sort: null,
-						timeWindow: null
+						timeWindow: null,
+						minLength: null,
+						maxLength: null
 					});
 					this.props.onSetScreenState(() => ({
 						templateSection: TemplateSection.Header
@@ -154,7 +186,7 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice) && this.state.communityReads && this.state.sort != null) {
 			return (
-				<div className="home-screen_1sjipy">
+				<ScreenContainer className="home-screen_1sjipy">
 					{this.props.user && this.props.isExtensionInstalled === false ?
 						<ReadReadinessInfoBox
 							isBrowserCompatible={this.props.isBrowserCompatible}
@@ -176,8 +208,11 @@ class HomeScreen extends React.Component<Props, State> {
 								articles={this.state.communityReads.value.articles}
 								isLoadingArticles={this.state.isLoadingArticles}
 								isUserSignedIn={!!this.props.user}
+								maxLength={this.state.maxLength}
+								minLength={this.state.minLength}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onLengthRangeChange={this._changeLengthRange}
 								onReadArticle={this.props.onReadArticle}
 								onShare={this.props.onShare}
 								onSortChange={this._changeSort}
@@ -194,7 +229,7 @@ class HomeScreen extends React.Component<Props, State> {
 								/> :
 								null}
 						</>}
-				</div>
+				</ScreenContainer>
 			);
 		}
 		return (

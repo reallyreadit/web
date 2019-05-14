@@ -237,7 +237,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
@@ -291,7 +290,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments

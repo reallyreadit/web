@@ -1,12 +1,10 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
-import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import PageResult from '../../../../common/models/PageResult';
 import StarredScreen, { updateArticles } from '../screens/StarredScreen';
-import { Screen, SharedState } from '../Root';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
@@ -16,62 +14,52 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number }, PageResult<UserArticle>>,
+	onGetStarredArticles: FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	user: UserAccount | null
+	onViewComments: (article: UserArticle) => void
 }
 interface State {
-	articles: Fetchable<PageResult<UserArticle>>
+	articles: Fetchable<PageResult<UserArticle>>,
+	isLoadingArticles: boolean,
+	maxLength: number | null,
+	minLength: number | null
 }
-const emptyPageResult = {
-	isLoading: false,
-	value: {
-		items: [] as UserArticle[],
-		pageCount: 0,
-		pageNumber: 0,
-		pageSize: 0,
-		totalCount: 0
-	}
-};
 class BrowserStarredScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _loadPage = (pageNumber: number) => {
+	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
-			articles: this.fetchArticles(pageNumber)
+			isLoadingArticles: true,
+			minLength,
+			maxLength
 		});
+		this.fetchArticles(1, minLength, maxLength);
+	};
+	private readonly _loadPage = (pageNumber: number) => {
+		this.setState({ isLoadingArticles: true });
+		this.fetchArticles(pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			articles: props.user ?
-				this.fetchArticles(1) :
-				emptyPageResult
+			articles: this.fetchArticles(1, null, null),
+			isLoadingArticles: true,
+			maxLength: null,
+			minLength: null
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
 				updateArticles.call(this, event.article);
-			}),
-			props.onRegisterUserChangeHandler(user => {
-				if (user) {
-					this._loadPage(1);
-				} else {
-					this.setState({
-						articles: emptyPageResult
-					});
-				}
 			})
 		);
 	}
-	private fetchArticles(pageNumber: number) {
+	private fetchArticles(pageNumber: number, minLength: number | null, maxLength: number | null) {
 		return this.props.onGetStarredArticles(
-			{ pageNumber },
+			{ pageNumber, minLength, maxLength },
 			this._asyncTracker.addCallback(articles => {
-				this.setState({ articles });
+				this.setState({ articles, isLoadingArticles: false });
 			})
 		);
 	}
@@ -80,34 +68,35 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer>
-				<div className="starred-screen_8khrr8">
-					{this.state.articles.isLoading ?
-						<LoadingOverlay /> :
-						<StarredScreen
-							articles={this.state.articles.value}
-							isUserSignedIn={!!this.props.user}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onLoadPage={this._loadPage}
-							onReadArticle={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewComments={this.props.onViewComments}
-						/>}
-				</div>
+			<ScreenContainer className="starred-screen_8khrr8">
+				{this.state.articles.isLoading ?
+					<LoadingOverlay position="static" /> :
+					<StarredScreen
+						articles={this.state.articles.value}
+						isLoadingArticles={this.state.isLoadingArticles}
+						maxLength={this.state.maxLength}
+						minLength={this.state.minLength}
+						onLengthRangeChange={this._changeLengthRange}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onLoadPage={this._loadPage}
+						onReadArticle={this.props.onReadArticle}
+						onShare={this.props.onShare}
+						onToggleArticleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
+					/>}
 			</ScreenContainer>
 		);
 	}
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+	deps: Props
 ) {
 	return {
 		create: () => ({ key, title: 'Starred' }),
-		render: (screenState: Screen, sharedState: SharedState) => (
-			<BrowserStarredScreen {...{ ...deps, user: sharedState.user }} />
+		render: () => (
+			<BrowserStarredScreen {...deps} />
 		)
 	};
 }

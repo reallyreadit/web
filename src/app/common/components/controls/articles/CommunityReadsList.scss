@@ -22,13 +22,19 @@
 .community-reads-list_g4cy3n > .article-details_d2vnmv {
 	flex: 0 0 auto;
 }
-.community-reads-list_g4cy3n > .sort {
+.community-reads-list_g4cy3n > .controls {
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
-	margin: 25px 0 10px 0;
+	margin: 15px 0 10px 0;
+	flex-wrap: wrap;
+	justify-content: space-between;
 }
-.community-reads-list_g4cy3n > .sort > select {
+.community-reads-list_g4cy3n > .controls > .sort {
+	margin-top: 10px;
+	width: 300px;
+}
+.community-reads-list_g4cy3n > .controls > .sort > select {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
@@ -44,8 +50,11 @@
 	font-family: inherit;
 	font-size: 12pt;
 }
-.community-reads-list_g4cy3n > .sort > select:not(:last-child) {
+.community-reads-list_g4cy3n > .controls > .sort > select:not(:last-child) {
 	margin-right: 5px;
+}
+.community-reads-list_g4cy3n > .controls > .filter-container {
+	margin-top: 10px;
 }
 .community-reads-list_g4cy3n > .loading-overlay_zfgtd1 {
 	flex: 1 1 auto;
