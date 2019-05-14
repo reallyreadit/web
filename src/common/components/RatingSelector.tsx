@@ -98,7 +98,7 @@ export default class extends React.PureComponent<
 								<>
 									Awesome.&nbsp;
 									<ShareControl
-											menuPosition={MenuPosition.CenterTop}
+											menuPosition={MenuPosition.TopCenter}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onGetData={this._getShareData}
 											onShare={this.props.onShare}

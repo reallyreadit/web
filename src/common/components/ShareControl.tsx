@@ -1,17 +1,12 @@
 import * as React from 'react';
 import Icon from './Icon';
 import { createQueryString } from '../routing/queryString';
-import classNames from 'classnames';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import { truncateText } from '../format';
+import Popover, { MenuPosition, MenuState } from './Popover';
 
-export enum MenuPosition {
-	BottomLeft = 'bottom,left',
-	CenterTop = 'center,top',
-	MiddleLeft = 'middle,left',
-	MiddleRight = 'middle,right'
-}
+export { MenuPosition } from './Popover';
 interface Props {
 	children: React.ReactNode,
 	menuPosition: MenuPosition,
@@ -22,49 +17,39 @@ interface Props {
 export default class ShareControl extends React.PureComponent<
 	Props,
 	{
-		childElementWillReceiveFocus: boolean,
 		data: ShareData | null,
-		isMenuClosing: boolean,
+		menuState: MenuState,
 		shareChannels: ShareChannel[]
 	}
-> {
+	> {
+	private readonly _beginClosingMenu = () => {
+		this.setState({ menuState: MenuState.Closing });
+	};
 	private readonly _copyLink = () => {
 		this.props.onCopyTextToClipboard(
 			this.props.onGetData().url,
 			'Link copied to clipboard'
 		);
 		// need to call closeMenu() to handle iOS touch behavior
-		this.closeMenu();
+		this._beginClosingMenu();
 	};
-	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
-		if (event.animationName.startsWith('share-control_mnbspk-pop-out')) {
+	private readonly _closeMenu = () => {
+		this.setState({
+			data: null,
+			menuState: MenuState.Closed,
+			shareChannels: []
+		});
+	};
+	private readonly _openMenu = () => {
+		const
+			data = this.props.onGetData(),
+			shareChannels = this.props.onShare(data);
+		if (shareChannels.length) {
 			this.setState({
-				data: null,
-				isMenuClosing: false,
-				shareChannels: []
+				data,
+				menuState: MenuState.Opened,
+				shareChannels
 			});
-		}
-	};
-	private readonly _handleBlur = () => {
-		if (!this.state.childElementWillReceiveFocus) {
-			this.closeMenu();
-		} else {
-			this.setState({ childElementWillReceiveFocus: false });
-		}
-	};
-	private readonly _handleChildrenClick = () => {
-		if (this.state.shareChannels.length) {
-			this.closeMenu();
-		} else {
-			const
-				data = this.props.onGetData(),
-				shareChannels = this.props.onShare(data);
-			if (shareChannels.length) {
-				this.setState({
-					data,
-					shareChannels
-				});
-			}
 		}
 	};
 	private readonly _openTweetComposer = () => {
@@ -78,48 +63,20 @@ export default class ShareControl extends React.PureComponent<
 			'height=300,location=0,menubar=0,toolbar=0,width=500'
 		);
 	};
-	private readonly _registerImpendingChildFocusTransition = () => {
-		this.setState({ childElementWillReceiveFocus: true });
-	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			childElementWillReceiveFocus: false,
 			data: null,
-			isMenuClosing: false,
+			menuState: MenuState.Closed,
 			shareChannels: []
 		};
 	}
-	private closeMenu() {
-		this.setState({
-			isMenuClosing: true
-		});
-	}
 	public render() {
 		return (
-			<div
+			<Popover
 				className="share-control_mnbspk"
-				onAnimationEnd={this._handleAnimationEnd}
-				onBlur={this._handleBlur}
-				tabIndex={-1}
-			>
-				<div
-					className="children"
-					onClick={this._handleChildrenClick}
-				>
-					{this.props.children}
-				</div>
-				{this.state.shareChannels.length ?
-					<div
-						className={
-							classNames(
-								'menu',
-								this.props.menuPosition.split(','),
-								{ 'closing': this.state.isMenuClosing }
-							)
-						}
-						onMouseDown={this._registerImpendingChildFocusTransition}
-					>
+				menuChildren={
+					<>
 						{this.state.shareChannels.includes(ShareChannel.Clipboard) ?
 							<button
 								className="button"
@@ -151,9 +108,16 @@ export default class ShareControl extends React.PureComponent<
 								<label>Tweet</label>
 							</button> :
 							null}
-					</div> :
-					null}
-			</div>
+					</>
+				}
+				menuPosition={this.props.menuPosition}
+				menuState={this.state.menuState}
+				onBeginClosing={this._beginClosingMenu}
+				onClose={this._closeMenu}
+				onOpen={this._openMenu}
+			>
+				{this.props.children}
+			</Popover>
 		);
 	}
 }

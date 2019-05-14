@@ -110,7 +110,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onGetData={this._getShareData}
 						onShare={this.props.onShare}
-						menuPosition={MenuPosition.MiddleRight}
+						menuPosition={MenuPosition.RightMiddle}
 					>
 						<Icon
 							className="icon"

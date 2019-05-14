@@ -1,0 +1,171 @@
+/*
+	componentPath: src/common/components/Popover/Menu
+	cssComponentId: menu_qla37i
+*/
+
+.menu_qla37i {
+	position: absolute;
+	z-index: 100;
+	white-space: nowrap;
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	border-radius: 3px;
+	box-shadow: 0px 0px 1px -1px black;
+	animation: menu_qla37i-pop-in 250ms;
+}
+.menu_qla37i.closing {
+	animation: menu_qla37i-pop-out 250ms;
+}
+.menu_qla37i.position-top {
+	bottom: -13px;
+}
+.menu_qla37i.position-right {
+	left: calc(100% + 13px);
+}
+.menu_qla37i.position-bottom {
+	top: calc(100% + 13px);
+}
+.menu_qla37i.position-left {
+	right: -13px;
+}
+.menu_qla37i.align-left {
+	left: 0;
+}
+.menu_qla37i.align-center {
+	left: 50%;
+	transform: translateX(-50%);
+	animation: menu_qla37i-pop-in-align-center 250ms;
+}
+.menu_qla37i.align-center.closing {
+	animation: menu_qla37i-pop-out-align-center 250ms;
+}
+.menu_qla37i.align-right {
+	right: 100%
+}
+.menu_qla37i.align-top {
+	top: 0;
+}
+.menu_qla37i.align-middle {
+	top: 50%;
+	transform: translateY(-50%);
+	animation: menu_qla37i-pop-in-align-middle 250ms;
+}
+.menu_qla37i.align-middle.closing {
+	animation: menu_qla37i-pop-out-align-middle 250ms;
+}
+.menu_qla37i.align-bottom {
+	bottom: 0;
+}
+.menu_qla37i::before,
+.menu_qla37i::after {
+	content: "";
+	display: block;
+	position: absolute;
+	border-width: 0 16px 16px 0;
+	border-style: solid;
+	border-color: transparent;
+	transform-origin: top left;
+}
+.menu_qla37i::before {
+	box-shadow: 0px 0px 1px -1px black;
+}
+.menu_qla37i.position-top::before,
+.menu_qla37i.position-right::before {
+	border-bottom-color: #e0e0e0;
+}
+.menu_qla37i.position-top::after,
+.menu_qla37i.position-right::after {
+	border-bottom-color: white;
+}
+.menu_qla37i.position-bottom::before,
+.menu_qla37i.position-left::before {
+	border-right-color: #e0e0e0;
+}
+.menu_qla37i.position-bottom::after,
+.menu_qla37i.position-left::after {
+	border-right-color: white;
+}
+.menu_qla37i.position-top::before,
+.menu_qla37i.position-top::after {
+	top: 100%;
+	transform: rotate(-45deg);
+}
+.menu_qla37i.position-top::before {
+	top: calc(100% + 1px);
+}
+.menu_qla37i.position-right::before,
+.menu_qla37i.position-right::after {
+	left: 0;
+	transform: rotate(45deg);
+}
+.menu_qla37i.position-right::before {
+	left: -1px;
+}
+.menu_qla37i.position-bottom::before,
+.menu_qla37i.position-bottom::after {
+	top: 0;
+	transform: rotate(-45deg);
+}
+.menu_qla37i.position-bottom::before {
+	top: -1px;
+}
+.menu_qla37i.position-left::before,
+.menu_qla37i.position-left::after {
+	right: 100%;
+	transform: rotate(45deg);
+}
+.menu_qla37i.position-left::before {
+	right: calc(100% + 1px);
+}
+.menu_qla37i.align-left::before,
+.menu_qla37i.align-left::after {
+	left: 5px;
+}
+.menu_qla37i.align-center::before,
+.menu_qla37i.align-center::after {
+	left: calc(50% - 11.3137px);;
+}
+.menu_qla37i.align-right::before,
+.menu_qla37i.align-right::after {
+	right: calc(100% - 5px);
+}
+.menu_qla37i.align-top::before,
+.menu_qla37i.align-top::after {
+	top: 5px;
+}
+.menu_qla37i.align-middle::before,
+.menu_qla37i.align-middle::after {
+	top: calc(50% - 11.3137px);
+}
+.menu_qla37i.align-bottom::before,
+.menu_qla37i.align-bottom::after {
+	bottom: 5px;
+}
+
+@keyframes menu_qla37i-pop-in {
+	0% { transform: scale(0, 0); }
+	75% { transform: scale(1.15, 1.15); }
+	100% { transform: scale(1, 1); }
+}
+@keyframes menu_qla37i-pop-in-align-center {
+	0% { transform: translateX(-50%) scale(0, 0); }
+	75% { transform: translateX(-50%) scale(1.15, 1.15); }
+	100% { transform: translateX(-50%) scale(1, 1); }
+}
+@keyframes menu_qla37i-pop-in-align-middle {
+	0% { transform: translateY(-50%) scale(0, 0); }
+	75% { transform: translateY(-50%) scale(1.15, 1.15); }
+	100% { transform: translateY(-50%) scale(1, 1); }
+}
+@keyframes menu_qla37i-pop-out {
+	0% { transform: scale(1, 1); }
+	100% { transform: scale(0, 0); }
+}
+@keyframes menu_qla37i-pop-out-align-center {
+	0% { transform: translateX(-50%) scale(1, 1); }
+	100% { transform: translateX(-50%) scale(0, 0); }
+}
+@keyframes menu_qla37i-pop-out-align-middle {
+	0% { transform: translateY(-50%) scale(1, 1); }
+	100% { transform: translateY(-50%) scale(0, 0); }
+}

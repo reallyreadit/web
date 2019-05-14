@@ -121,7 +121,7 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 									<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
 									null}
 								<ShareControl
-									menuPosition={MenuPosition.MiddleRight}
+									menuPosition={MenuPosition.RightMiddle}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onGetData={this._getShareData}
 									onShare={this.props.onShare}
