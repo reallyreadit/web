@@ -43,9 +43,10 @@ class BrowserStarredScreen extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
+		const articles = this.fetchArticles(1, null, null);
 		this.state = {
-			articles: this.fetchArticles(1, null, null),
-			isLoadingArticles: true,
+			articles,
+			isLoadingArticles: articles.isLoading,
 			maxLength: null,
 			minLength: null
 		};
