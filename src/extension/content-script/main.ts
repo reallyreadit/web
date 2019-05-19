@@ -12,6 +12,7 @@ import { calculateEstimatedReadTime } from '../../common/calculate';
 import IframeMessagingContext from './embed/IframeMessagingContext';
 import { Props as EmbedProps } from './embed/components/App';
 import UserAccount from '../../common/models/UserAccount';
+import insertBookmarkPrompt from './insertBookmarkPrompt';
 
 window.reallyreadit = {
 	extension: {
@@ -261,6 +262,16 @@ function loadPage() {
 									reader.loadPage(page);
 									if (shouldShowEmbed(lookupResult.userArticle)) {
 										insertEmbed(lookupResult.userArticle);
+									} else if (
+										!lookupResult.userArticle.isRead &&
+										calculateEstimatedReadTime(lookupResult.userArticle.wordCount) >= 10 &&
+										calculateEstimatedReadTime(lookupResult.userPage.wordsRead) >= 5
+									) {
+										insertBookmarkPrompt({
+											onConfirm: () => {
+												page.scrollWindowToResumeReading();
+											}
+										});
 									}
 								})
 								.catch(() => {

@@ -16,6 +16,9 @@ import ShareChannel from '../../common/sharing/ShareChannel';
 import { createUrl } from '../../common/HttpEndpoint';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment } from '../../common/comments';
+import BookmarkPrompt from './components/BookmarkPrompt';
+import * as smoothscroll from 'smoothscroll-polyfill';
+import { calculateEstimatedReadTime } from '../../common/calculate';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -72,6 +75,49 @@ const
 			)
 		}
 	);
+
+// bookmark prompt
+function insertBookmarkPrompt() {
+	// create root element
+	const rootElement = window.document.createElement('div');
+	rootElement.addEventListener(
+		'animationend',
+		event => {
+			if (event.animationName === 'bookmark-prompt_3dkh9o-pop-out') {
+				rootElement.remove();
+			}
+		}
+	);
+	window.document.body.append(rootElement);
+	// props helper
+	function beginClosingPrompt() {
+		ReactDOM.render(
+			React.createElement(
+				BookmarkPrompt,
+				props = {
+					...props,
+					isClosing: true
+				}
+			),
+			rootElement
+		);
+	}
+	// initial render
+	let props = {
+		isClosing: false,
+		onCancel: beginClosingPrompt,
+		onConfirm: () => {
+			page.scrollWindowToResumeReading();
+			beginClosingPrompt();
+		}
+	};
+	ReactDOM.render(
+		React.createElement(BookmarkPrompt, props),
+		rootElement
+	);
+	// smooth scrolling
+	smoothscroll.polyfill();
+}
 
 // embed
 let
@@ -194,6 +240,11 @@ messagingContext.sendMessage(
 		reader.loadPage(page);
 		if (result.userArticle.isRead) {
 			insertEmbed();
+		} else if (
+			calculateEstimatedReadTime(result.userArticle.wordCount) >= 10 &&
+			calculateEstimatedReadTime(lookupResult.userPage.wordsRead) >= 5
+		) {
+			insertBookmarkPrompt();
 		}
 	}
 );

@@ -1,5 +1,6 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
+import Line from './Line';
 
 export default class Page {
 	private _contentEls: ContentElement[];
@@ -40,6 +41,38 @@ export default class Page {
 			return block.readWord();
 		}
 		return false;
+	}
+	public scrollWindowToResumeReading() {
+		const readState = this.getReadState();
+		const lastReadLine = this._contentEls
+			.reduce(
+				(lines, paragraph) => lines.concat(paragraph.lines),
+				[] as Line[]
+			)
+			.reduce(
+				(searchableLines, line) => {
+					if (searchableLines.reduce((sum, line) => sum + line.readState.wordCount, 0) < readState.wordsRead) {
+						return searchableLines.concat(line);
+					}
+					return searchableLines;
+				},
+				[] as Line[]
+			)
+			.reverse()
+			.find(line => line.readState.wordsRead > 0);
+		if (lastReadLine) {
+			window.scrollTo({
+				behavior: 'smooth',
+				top: Math.max(
+					0,
+					(
+						this._contentEls.find(paragraph => paragraph.lines.includes(lastReadLine)).offsetTop +
+						lastReadLine.top -
+						(window.innerHeight * 0.25)
+					)
+				)
+			});
+		}
 	}
 	public showOverlay(value: boolean) {
 		this._contentEls.forEach(block => block.showOverlay(value));

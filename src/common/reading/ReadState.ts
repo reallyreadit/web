@@ -95,6 +95,9 @@ export default class ReadState {
     public get wordCount() {
         return this._wordCount;
     }
+    public get wordsRead() {
+        return this._wordsRead;
+    }
     public get readStateArray() {
         return this._state;
     }

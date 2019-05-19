@@ -1,0 +1,41 @@
+/*
+	componentPath: src/native-client/reader/components/BookmarkPrompt
+	cssComponentId: bookmark-prompt_3dkh9o
+*/
+
+.bookmark-prompt_3dkh9o {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 10px;
+	text-align: center;
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	border-radius: 3px;
+	box-shadow: 0px 0px 1px -1px black;
+	font-family: 'Museo Sans (300)';
+	font-size: 13pt;
+	animation: bookmark-prompt_3dkh9o-pop-in 250ms;
+}
+.bookmark-prompt_3dkh9o.closing {
+	animation: bookmark-prompt_3dkh9o-pop-out 250ms;
+}
+.bookmark-prompt_3dkh9o > .prompt-text {
+	width: 180px;
+	margin-bottom: 15px;
+}
+.bookmark-prompt_3dkh9o > .button-container {
+	display: flex;
+	justify-content: space-between;
+}
+
+@keyframes bookmark-prompt_3dkh9o-pop-in {
+	0% { transform: translate(-50%, -50%) scale(0, 0); }
+	75% { transform: translate(-50%, -50%) scale(1.25, 1.25); }
+	100% { transform: translate(-50%, -50%) scale(1, 1); }
+}
+@keyframes bookmark-prompt_3dkh9o-pop-out {
+	0% { transform: translate(-50%, -50%) scale(1, 1); }
+	100% { transform: translate(-50%, -50%) scale(0, 0); }
+}

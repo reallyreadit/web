@@ -146,6 +146,9 @@ export default class ContentElement {
     public get element() {
         return this._element;
     }
+    public get lines() {
+        return this._lines;
+    }
     public get offsetTop() {
         return this._contentRect.top;
     }
