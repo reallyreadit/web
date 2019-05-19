@@ -17,7 +17,7 @@
 	animation: menu_qla37i-pop-out 250ms;
 }
 .menu_qla37i.position-top {
-	bottom: -13px;
+	bottom: calc(100% + 13px);;
 }
 .menu_qla37i.position-right {
 	left: calc(100% + 13px);
@@ -26,7 +26,7 @@
 	top: calc(100% + 13px);
 }
 .menu_qla37i.position-left {
-	right: -13px;
+	right: calc(100% + 13px);
 }
 .menu_qla37i.align-left {
 	left: 0;
@@ -40,7 +40,7 @@
 	animation: menu_qla37i-pop-out-align-center 250ms;
 }
 .menu_qla37i.align-right {
-	right: 100%
+	right: 0
 }
 .menu_qla37i.align-top {
 	top: 0;
@@ -111,11 +111,11 @@
 }
 .menu_qla37i.position-left::before,
 .menu_qla37i.position-left::after {
-	right: 100%;
+	right: -16px;
 	transform: rotate(45deg);
 }
 .menu_qla37i.position-left::before {
-	right: calc(100% + 1px);
+	right: -17px;
 }
 .menu_qla37i.align-left::before,
 .menu_qla37i.align-left::after {
@@ -127,7 +127,7 @@
 }
 .menu_qla37i.align-right::before,
 .menu_qla37i.align-right::after {
-	right: calc(100% - 5px);
+	right: 11.6274px;
 }
 .menu_qla37i.align-top::before,
 .menu_qla37i.align-top::after {
@@ -139,7 +139,7 @@
 }
 .menu_qla37i.align-bottom::before,
 .menu_qla37i.align-bottom::after {
-	bottom: 5px;
+	bottom: 11.6274px;
 }
 
 @keyframes menu_qla37i-pop-in {
