@@ -1,4 +1,5 @@
 export default interface ContentScriptTab {
+	articleId: number | null,
 	id: number,
-	articleId?: number
+	isReaderModeActivated: boolean
 }

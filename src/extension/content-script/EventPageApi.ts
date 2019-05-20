@@ -22,8 +22,10 @@ function sendMessageAwaitingResponse<T>(type: string, data ?: {}) {
 }
 export default class EventPageApi {
 	constructor(handlers: {
+		onActivateReaderMode: () => void,
 		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
 		onCommentPosted: (comment: CommentThread) => void,
+		onDeactivateReaderMode: () => void,
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
 		onShowOverlay: (value: boolean) => void,
@@ -31,11 +33,17 @@ export default class EventPageApi {
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
+				case 'activateReaderMode':
+					handlers.onActivateReaderMode();
+					break;
 				case 'articleUpdated':
 					handlers.onArticleUpdated(message.data);
 					break;
 				case 'commentPosted':
 					handlers.onCommentPosted(message.data);
+					break;
+				case 'deactivateReaderMode':
+					handlers.onDeactivateReaderMode();
 					break;
 				case 'loadPage':
 					handlers.onLoadPage();

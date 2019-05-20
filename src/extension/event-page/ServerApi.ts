@@ -302,12 +302,10 @@ export default class ServerApi {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
-		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/SetStarred', data: { articleId, isStarred } })
-			.then(userArticle => {
-				this.cacheArticle(userArticle);
-				return userArticle;
-			})
-			.catch(() => {});
+		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/SetStarred', data: { articleId, isStarred } }).then(userArticle => {
+			this.cacheArticle(userArticle);
+			return userArticle;
+		});
 	}
 	public rateArticle(articleId: number, score: number) {
 		return fetchJson<{

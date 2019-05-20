@@ -71,11 +71,17 @@ export default class ContentScriptApi {
 			return undefined;
 		});
 	}
+	public activateReaderMode(tabId: number) {
+		sendMessage(tabId, 'activateReaderMode');
+	}
 	public articleUpdated(tabId: number, event: ArticleUpdatedEvent) {
 		sendMessage(tabId, 'articleUpdated', event);
 	}
 	public commentPosted(tabId: number, comment: CommentThread) {
 		sendMessage(tabId, 'commentPosted', comment);
+	}
+	public deactivateReaderMode(tabId: number) {
+		sendMessage(tabId, 'deactivateReaderMode');
 	}
 	public loadPage(tabId: number) {
 		sendMessage(tabId, 'loadPage');

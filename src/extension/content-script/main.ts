@@ -11,8 +11,8 @@ import UserArticle from '../../common/models/UserArticle';
 import { calculateEstimatedReadTime } from '../../common/calculate';
 import IframeMessagingContext from './embed/IframeMessagingContext';
 import { Props as EmbedProps } from './embed/components/App';
-import UserAccount from '../../common/models/UserAccount';
 import insertBookmarkPrompt from './insertBookmarkPrompt';
+import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 
 window.reallyreadit = {
 	extension: {
@@ -28,11 +28,9 @@ const { contentParser } = window.reallyreadit.extension.contentScript;
 
 let
 	context: {
-		articleId: number,
+		lookupResult: ArticleLookupResult,
 		page: Page,
 		path: string,
-		userPageId: number,
-		user: UserAccount
 	} | null,
 	initData: {
 		parseMode: ParseMode,
@@ -48,7 +46,35 @@ let
 let historyStateUpdatedTimeout: number;
 
 const eventPageApi = new EventPageApi({
+	onActivateReaderMode: () => {
+		// cache existing state
+		const readState = context.page.getReadState();
+		// clean up existing references
+		if (iframe) {
+			removeEmbed();
+		}
+		reader.unloadPage();
+		context.page.remove();
+		// re-parse using mutate
+		contentParser
+			.get()
+			.then(parser => {
+				const content = parser.parse('mutate');
+				const page = new Page(
+					content.elements.map(el => new ContentElement(el.element, el.wordCount)),
+					initData.showOverlay
+				);
+				context.page = page;
+				page.setReadState(readState.readStateArray);
+				reader.loadPage(page);
+				// embed and bookmarks
+				loadUserInterface();
+			});
+	},
 	onArticleUpdated: event => {
+		if (context && context.lookupResult) {
+			context.lookupResult.userArticle = event.article;
+		}
 		if (embed) {
 			const state: EmbedState = { article: event.article };
 			if (!hasLoadedComments && event.article.ratingScore != null) {
@@ -68,6 +94,9 @@ const eventPageApi = new EventPageApi({
 				data: comment
 			});
 		}
+	},
+	onDeactivateReaderMode: () => {
+		window.location.reload();
 	},
 	onLoadPage: loadPage,
 	onUnloadPage: unloadPage,
@@ -107,7 +136,7 @@ function insertEmbed(article: UserArticle) {
 	iframe.addEventListener('load', () => {
 		const state: EmbedState = {
 			article,
-			user: context.user
+			user: context.lookupResult.user
 		};
 		if (article.ratingScore != null) {
 			loadComments(article.slug);
@@ -132,11 +161,14 @@ function insertEmbed(article: UserArticle) {
 			case 'postComment':
 				eventPageApi
 					.postComment(message.data)
-					.then(sendResponse);
+					.then(result => {
+						context.lookupResult.userArticle = result.article;
+						sendResponse(result);
+					});
 				break;
 			case 'rateArticle':
 				eventPageApi
-					.rateArticle(context.articleId, message.data)
+					.rateArticle(context.lookupResult.userArticle.id, message.data)
 					.then(result => {
 						if (!hasLoadedComments) {
 							loadComments(article.slug);
@@ -147,6 +179,7 @@ function insertEmbed(article: UserArticle) {
 								}
 							});
 						}
+						context.lookupResult.userArticle = result.article;
 						sendResponse(result);
 					});
 				break;
@@ -200,7 +233,7 @@ const reader = new Reader(
 				.commitReadState(
 					{
 						readState: event.readStateArray,
-						userPageId: context.userPageId
+						userPageId: context.lookupResult.userPage.id
 					},
 					event.isCompletionCommit
 				)
@@ -251,28 +284,16 @@ function loadPage() {
 							eventPageApi
 								.registerPage(createPageParseResult(metaParseResult, content))
 								.then(lookupResult => {
+									// set the context
 									context = { 
-										articleId: lookupResult.userArticle.id,
+										lookupResult,
 										page,
-										path,
-										userPageId: lookupResult.userPage.id,
-										user: lookupResult.user
+										path
 									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
-									if (shouldShowEmbed(lookupResult.userArticle)) {
-										insertEmbed(lookupResult.userArticle);
-									} else if (
-										!lookupResult.userArticle.isRead &&
-										calculateEstimatedReadTime(lookupResult.userArticle.wordCount) >= 10 &&
-										calculateEstimatedReadTime(lookupResult.userPage.wordsRead) >= 5
-									) {
-										insertBookmarkPrompt({
-											onConfirm: () => {
-												page.scrollWindowToResumeReading();
-											}
-										});
-									}
+									// load the user interface
+									loadUserInterface();
 								})
 								.catch(() => {
 									unloadPage();
@@ -282,6 +303,23 @@ function loadPage() {
 			}
 		}
 	});
+}
+function loadUserInterface() {
+	if (context) {
+		if (shouldShowEmbed(context.lookupResult.userArticle)) {
+			insertEmbed(context.lookupResult.userArticle);
+		} else if (
+			!context.lookupResult.userArticle.isRead &&
+			calculateEstimatedReadTime(context.lookupResult.userArticle.wordCount) >= 10 &&
+			calculateEstimatedReadTime(context.lookupResult.userPage.wordsRead) >= 5
+		) {
+			insertBookmarkPrompt({
+				onConfirm: () => {
+					context.page.scrollWindowToResumeReading();
+				}
+			});
+		}
+	}
 }
 function unloadPage() {
 	if (context) {

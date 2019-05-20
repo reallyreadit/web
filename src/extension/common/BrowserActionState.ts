@@ -1,11 +1,11 @@
 import ContentScriptTab from './ContentScriptTab';
 import UserArticle from '../../common/models/UserArticle';
 
-interface ExtensionState {
+export default interface BrowserActionState {
+	activeTab?: ContentScriptTab,
+	article?: UserArticle,
 	isAuthenticated: boolean,
 	isOnHomePage: boolean,
 	showNewReplyIndicator: boolean,
-	focusedTab?: ContentScriptTab,
-	userArticle?: UserArticle
+	url: string
 }
-export default ExtensionState;

@@ -5,7 +5,7 @@ import ContentScriptTab from '../common/ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
 import BrowserActionApi from './BrowserActionApi';
-import ExtensionState from '../common/ExtensionState';
+import BrowserActionState from '../common/BrowserActionState';
 import WebAppApi from './WebAppApi';
 
 console.log('loading main.ts...');
@@ -41,14 +41,27 @@ const tabs = new SetStore<number, ContentScriptTab>('tabs', t => t.id);
 
 // browser action
 const browserActionApi = new BrowserActionApi({
+	onActivateReaderMode: tabId => {
+		contentScriptApi.activateReaderMode(tabId);
+		tabs.set({
+			...tabs.get(tabId),
+			isReaderModeActivated: true
+		});
+	},
+	onDeactivateReaderMode: tabId => {
+		contentScriptApi.deactivateReaderMode(tabId);
+		tabs.set({
+			...tabs.get(tabId),
+			isReaderModeActivated: false
+		});
+	},
 	onLoad: () => getState(),
 	onAckNewReply: () => serverApi.ackNewReply(),
 	onSetStarred: (articleId, isStarred) => serverApi
 		.setStarred(articleId, isStarred)
 		.then(article => {
-			if (article) {
-				webAppApi.articleUpdated({ article, isCompletionCommit: false });
-			}
+			webAppApi.articleUpdated({ article, isCompletionCommit: false });
+			return article;
 		})
 });
 
@@ -66,7 +79,11 @@ const contentScriptApi = new ContentScriptApi({
 	onRegisterContentScript: (tabId, url) => {
 		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
 		// update tabs
-		tabs.set({ id: tabId });
+		tabs.set({
+			articleId: null,
+			id: tabId,
+			isReaderModeActivated: false
+		});
 		// update icon
 		getState().then(updateIcon);
 		// return config
@@ -87,9 +104,10 @@ const contentScriptApi = new ContentScriptApi({
 			.then(result => {
 				// update tabs
 				tabs.set({
+					articleId: result.userArticle.id,
 					id: tabId,
-					articleId: result.userArticle.id
-				})
+					isReaderModeActivated: false
+				});
 				// update icon
 				getState().then(updateIcon);
 				// return page init data
@@ -111,7 +129,11 @@ const contentScriptApi = new ContentScriptApi({
 	onUnregisterPage: tabId => {
 		console.log(`contentScriptApi.onUnregisterPage (tabId: ${tabId})`);
 		// update tabs
-		tabs.set({ id: tabId });
+		tabs.set({
+			articleId: null,
+			id: tabId,
+			isReaderModeActivated: false
+		});
 		// update icon
 		getState().then(updateIcon);
 	},
@@ -169,7 +191,7 @@ const webAppApi = new WebAppApi({
 });
 
 // query current state
-function getState() {
+function getState(): Promise<BrowserActionState> {
 	return Promise.all<chrome.tabs.Tab, boolean>([
 			new Promise<chrome.tabs.Tab>(resolve => {
 				chrome.tabs.query({
@@ -184,35 +206,41 @@ function getState() {
 				isAuthenticated = result[1],
 				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
 				showNewReplyIndicator = serverApi.hasNewReply();
-			let focusedTab: ContentScriptTab;
-			if (isAuthenticated && focusedChromeTab && (focusedTab = tabs.get(focusedChromeTab.id))) {
+			let activeTab: ContentScriptTab;
+			if (isAuthenticated && focusedChromeTab && (activeTab = tabs.get(focusedChromeTab.id))) {
+				return Promise.resolve({
+					activeTab,
+					article: serverApi.getUserArticle(activeTab.articleId),
+					isAuthenticated,
+					isOnHomePage,
+					showNewReplyIndicator,
+					url: focusedChromeTab.url
+				});
+			} else {
 				return Promise.resolve({
 					isAuthenticated,
 					isOnHomePage,
 					showNewReplyIndicator,
-					focusedTab,
-					userArticle: serverApi.getUserArticle(focusedTab.articleId)
+					url: focusedChromeTab.url
 				});
-			} else {
-				return Promise.resolve({ isAuthenticated, isOnHomePage, showNewReplyIndicator });
 			}
 		});
 }
 
 // icon interface
 const browserActionBadgeApi = new BrowserActionBadgeApi();
-function updateIcon(state: ExtensionState) {
+function updateIcon(state: BrowserActionState) {
 	console.log('\tupdateIcon');
 	if (state.isAuthenticated) {
-		if (state.focusedTab) {
+		if (state.activeTab) {
 			// content script tab
 			drawBrowserActionIcon(
 				'signedIn',
 				state.showNewReplyIndicator
 			);
 			browserActionBadgeApi.set({
-				isLoading: !!serverApi.getArticleLookupRequests(state.focusedTab.id).length,
-				value: state.userArticle
+				isLoading: !!serverApi.getArticleLookupRequests(state.activeTab.id).length,
+				value: state.article
 			});
 		} else {
 			// not one of our tabs

@@ -1,7 +1,5 @@
 import * as React from 'react';
-import EventPageApi from '../EventPageApi';
-import ExtensionState from '../../common/ExtensionState';
-import NavBar from '../../../common/components/NavBar';
+import BrowserActionState from '../../common/BrowserActionState';
 import ArticleDetails from '../../../common/components/ArticleDetails';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import routes from '../../../common/routing/routes';
@@ -15,36 +13,44 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ClipboardService from '../../../common/services/ClipboardService';
 import { createUrl } from '../../../common/HttpEndpoint';
+import Button from '../../../common/components/Button';
+import { createQueryString } from '../../../common/routing/queryString';
 
-export default class extends React.Component<{}, ExtensionState & { toasts: Toast[] }> {
+export type Props = BrowserActionState & {
+	onAckNewReply: () => void,
+	onActivateReaderMode: () => void,
+	onDeactivateReaderMode: () => void,
+	onToggleStar: () => Promise<void>
+};
+export default class extends React.Component<
+	Props,
+	{ toasts: Toast[] }
+> {
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
 	private _showSignInDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.SignIn).createUrl());
 	private _showCreateAccountDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.CreateAccount).createUrl());
 	private _goToInbox = () => {
-		if (this.state.showNewReplyIndicator) {
-			this._eventPageApi.ackNewReply();
+		if (this.props.showNewReplyIndicator) {
+			this.props.onAckNewReply();
 		}
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
 	};
-	private _goToStarred = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Starred).createUrl());
-	private _goToHistory = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.History).createUrl());
 	private _goToComments = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments).createUrl(this.getArticleUrlParams()));
 	};
+	private readonly _toggleReaderMode = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (event.target.checked) {
+			this.props.onActivateReaderMode();
+		} else {
+			this.props.onDeactivateReaderMode();
+		}
+	};
 	private _toggleStar = () => {
-		return this._eventPageApi
-			.setStarred(this.state.userArticle.id, !this.state.userArticle.dateStarred)
-			.then(() => this.setState({
-				userArticle: {
-					...this.state.userArticle,
-					dateStarred: this.state.userArticle.dateStarred ? null : new Date().toISOString()
-				}
-			}));
+		return this.props.onToggleStar();
 	};
 	private _preventDefault = (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
 	};
-	private _eventPageApi = new EventPageApi({ onPushState: state => this.setState(state) });
 
 	// clipboard
 	private readonly _clipboard = new ClipboardService(
@@ -73,22 +79,14 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 		}
 	});
 
-	constructor(props: {}) {
+	constructor(props: Props) {
 		super(props);
 		this.state = {
-			isAuthenticated: false,
-			isOnHomePage: false,
-			showNewReplyIndicator: false,
-			focusedTab: null,
-			toasts: [],
-			userArticle: null
+			toasts: []
 		};
-		this._eventPageApi
-			.load()
-			.then(state => this.setState(state));
 	}
 	private getArticleUrlParams()  {
-		const [sourceSlug, articleSlug] = this.state.userArticle.slug.split('_');
+		const [sourceSlug, articleSlug] = this.props.article.slug.split('_');
 		return {
 			['articleSlug']: articleSlug,
 			['sourceSlug']: sourceSlug
@@ -97,7 +95,7 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 	public render() {
 		return (
 			<div className="app_79z645">
-				<h1>
+				<header>
 					<a
 						href={this._createAbsoluteUrl('/')}
 						target="_blank"
@@ -107,46 +105,73 @@ export default class extends React.Component<{}, ExtensionState & { toasts: Toas
 							src="./images/logo.svg"
 						/>
 					</a>
-				</h1>
-				{!this.state.isAuthenticated ?
-					<div className="signed-out-warning">
-						<img
-							alt="logo"
-							src="./images/warning-triangle.svg"
-						/>
-						<span>You won't get credit for really reading until you sign in or create an account.</span>
-					</div> :
-					null}
-				<NavBar
-					isSignedIn={this.state.isAuthenticated}
-					showNewReplyIndicator={this.state.showNewReplyIndicator}
-					state={'normal'}
-					onSignIn={this._showSignInDialog}
-					onCreateAccount={this._showCreateAccountDialog}
-					onGoToInbox={this._goToInbox}
-					onGoToStarred={this._goToStarred}
-					onGoToHistory={this._goToHistory}
-					/>
-				{this.state.isAuthenticated ?
-					this.state.userArticle ?
-						<ArticleDetails
-							article={this.state.userArticle}
-							imagePath='./images'
-							isUserSignedIn={true}
-							onCopyTextToClipboard={this._clipboard.copyText}
-							onCreateAbsoluteUrl={this._createAbsoluteUrl}
-							onRead={this._preventDefault}
-							onShare={this._handleShareRequest}
-							onToggleStar={this._toggleStar}
-							onViewComments={this._goToComments}
-							useAbsoluteUrls
+					{this.props.showNewReplyIndicator ?
+						<Button
+							text="Inbox"
+							iconLeft="box"
+							onClick={this._goToInbox}
+							showIndicator
 						/> :
-						!this.state.isOnHomePage ?
-							<div className="article-placeholder">
-								No article found on page
-							</div> :
-							null :
-					null}
+						null}
+				</header>
+				{!this.props.isAuthenticated ?
+					<div className="unauthenticated">
+						<div className="signed-out-warning">
+							<img
+								alt="logo"
+								src="./images/warning-triangle.svg"
+							/>
+							<span>Log in or sign up to get started.</span>
+						</div>
+						<div className="buttons">
+							<Button
+								text="Log In"
+								onClick={this._showSignInDialog}
+							/>
+							<Button
+								text="Sign Up"
+								onClick={this._showCreateAccountDialog}
+								style="preferred"
+							/>
+						</div>
+					</div> :
+					this.props.activeTab && this.props.article ?
+						<>
+							<div className="controls">
+								<label className="reader-toggle">
+									<span className="text">Reader Mode</span>
+									<span className="toggle-switch">
+										<input
+											type="checkbox"
+											checked={this.props.activeTab.isReaderModeActivated}
+											onChange={this._toggleReaderMode}
+										/>
+										<span className="switch"></span>
+									</span>
+								</label>
+							</div>
+							<ArticleDetails
+								article={this.props.article}
+								imagePath='./images'
+								isUserSignedIn={true}
+								onCopyTextToClipboard={this._clipboard.copyText}
+								onCreateAbsoluteUrl={this._createAbsoluteUrl}
+								onRead={this._preventDefault}
+								onShare={this._handleShareRequest}
+								onToggleStar={this._toggleStar}
+								onViewComments={this._goToComments}
+								useAbsoluteUrls
+							/>
+						</> :
+						<>
+							<div className="tip">Open this pop-up when you're reading an article to view your progress or star it for later.</div>
+							{!this.props.isOnHomePage ?
+								<div className="no-article">
+									<div className="notice">No article detected on this web page.</div>
+									<div className="report">Is this a mistake? Please <a href={'mailto:support@readup.com' + createQueryString({ subject: 'Extension issue: Article not detected', body: this.props.url })} target="_blank">let us know.</a></div>
+								</div> :
+								null}
+						</>}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
