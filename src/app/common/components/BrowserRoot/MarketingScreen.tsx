@@ -141,7 +141,6 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 							<p>“WOW. This content is crazy good.” <em>-Natalie</em></p>
 							<p>“From a mindfulness perspective, I enjoy seeing how much my monkey mind tries to make me skip sections and how good a practice it is to stick with it anyway.” <em>-Leo</em></p>
 							<p>“I love how thoughtful the comments are.” <em>-Crystal Hana Kim, novelist.</em></p>
-							<p>“I’m really enjoying being a user!” <em>-Aram, Director, Ad Tech, Washington Post</em></p>
 							{button}
 						</div>
 					</div>
