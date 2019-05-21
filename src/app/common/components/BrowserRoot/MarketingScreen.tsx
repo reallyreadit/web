@@ -121,7 +121,7 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 								</li>
 								<li>
 									<img src="/images/read.svg" />
-									<span>No ads. No links. 100% distraction-free. (iOS app only. Chrome soon!)</span>
+									<span>No ads. No links. 100% distraction-free.</span>
 								</li>
 								<li>
 									<img src="/images/bubble-emoji.svg" />
