@@ -51,7 +51,7 @@ export default class extends React.PureComponent<{
 					<LoadingOverlay position="static" /> :
 					this.props.isLoadingArticles || this.props.articles.value.items.length || this.props.minLength != null || this.props.maxLength != null ?
 						<>
-							<p>Note: Your personal reading history is private.</p>
+							<p>Your personal reading history is private.</p>
 							<div className="controls">
 								<ArticleLengthFilter
 									max={this.props.maxLength}
