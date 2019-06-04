@@ -12,7 +12,7 @@ import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
-import createHistoryScreenFactory from './BrowserRoot/HistoryScreen';
+import createHistoryScreenFactory from './screens/HistoryScreen';
 import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
 import createStarredScreenFactory from './BrowserRoot/StarredScreen';
 import BrowserApi from '../BrowserApi';
@@ -234,6 +234,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,

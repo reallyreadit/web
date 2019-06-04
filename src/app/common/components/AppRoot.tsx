@@ -10,7 +10,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
-import createHistoryScreenFactory from './AppRoot/HistoryScreen';
+import createHistoryScreenFactory from './screens/HistoryScreen';
 import createLeaderboardsScreenFactory from './AppRoot/LeaderboardsScreen';
 import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
@@ -152,6 +152,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
