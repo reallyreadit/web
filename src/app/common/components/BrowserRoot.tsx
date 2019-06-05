@@ -158,6 +158,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
+	private readonly _viewStats = () => {
+		this.setScreenState({
+			key: ScreenKey.Stats,
+			method: 'replace'
+		});
+	};
 	private readonly _viewThread = (comment: CommentThread) => {
 		if (!comment.dateRead) {
 			this.props.serverApi.readReply(comment.id);
@@ -234,7 +240,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,
@@ -570,6 +575,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewStarred={this._viewStarred}
+							onViewStats={this._viewStats}
 							selectedScreenKey={this.state.screens[0].key}
 						/> :
 						null}

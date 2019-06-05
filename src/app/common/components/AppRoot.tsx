@@ -100,6 +100,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _viewStarred = () => {
 		this.replaceScreen(ScreenKey.Starred);
 	};
+	private readonly _viewStats = () => {
+		this.replaceScreen(ScreenKey.Stats);
+	};
 
 	// sharing
 	private readonly _handleShareRequest = (data: ShareData) => {
@@ -152,7 +155,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -353,6 +355,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewStarred={this._viewStarred}
+							onViewStats={this._viewStats}
 							selectedScreenKey={this.state.screens[0].key}
 						/>
 						{this.state.menuState !== 'closed' ?

@@ -7,6 +7,7 @@ export default (props: {
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
 	onViewStarred: () => void,
+	onViewStats: () => void,
 	selectedScreenKey: ScreenKey
 }) => (
 	<ol className="nav-tray_2tc8">
@@ -16,7 +17,7 @@ export default (props: {
 				onClick={props.onViewHome}
 			>
 				<Icon name="books" />
-				<label>Community</label>
+				<label>Discover</label>
 			</button>
 		</li>
 		<li>
@@ -35,6 +36,15 @@ export default (props: {
 			>
 				<Icon name="history" />
 				<label>History</label>
+			</button>
+		</li>
+		<li>
+			<button
+				className={props.selectedScreenKey === ScreenKey.Stats ? 'selected' : null}
+				onClick={props.onViewStats}
+			>
+				<Icon name="line-chart" />
+				<label>Stats</label>
 			</button>
 		</li>
 		<li>

@@ -32,6 +32,7 @@ import CommentThread from '../../../common/models/CommentThread';
 import SemanticVersion from '../../../common/SemanticVersion';
 import EventManager from '../EventManager';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
+import { createScreenFactory as createStatsScreenFactory } from './screens/StatsScreen';
 
 export interface Props {
 	captcha: Captcha,
@@ -370,6 +371,9 @@ export default abstract class Root<
 				onShowToast: this._toaster.addToast,
 				onUpdateContactPreferences: this._updateContactPreferences,
 				onUpdateNotificationPreferences: this._updateNotificationPreferences
+			}),
+			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
+				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats
 			})
 		};
 	}

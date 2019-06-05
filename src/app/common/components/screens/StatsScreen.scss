@@ -1,0 +1,53 @@
+/*
+	componentPath: src/app/common/components/screens/StatsScreen
+	cssComponentId: stats-screen_mqbxl8
+*/
+
+.stats-screen_mqbxl8 > .reading-time > form {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.stats-screen_mqbxl8 > .reading-time > form > .title {
+	font-family: 'Museo Sans (500)';
+}
+.stats-screen_mqbxl8 > .reading-time > .loading-container {
+	position: relative;
+	padding-top: 50%;
+}
+.stats-screen_mqbxl8 > .reading-time > .chart {
+	position: relative;
+	font-size: 10pt;
+}
+.stats-screen_mqbxl8 > .reading-time > .chart > .y-label {
+	position: absolute;
+	top: calc(50% - 17px);
+	left: 0;
+	transform-origin: top left;
+	transform: rotate(-90deg) translateX(-50%);
+}
+.stats-screen_mqbxl8 > .reading-time > .key {
+	font-size: 12pt;
+}
+.stats-screen_mqbxl8 > .reading-time > .key > li {
+	text-align: center;
+}
+.stats-screen_mqbxl8 > .reading-time > .key > li:first-child {
+	margin-bottom: 5px;
+}
+.stats-screen_mqbxl8 > .reading-time > .key > li::before {
+	content: "";
+	width: 25px;
+	height: 10px;
+	margin-right: 10px;
+	display: inline-block;
+	vertical-align: middle;
+}
+.stats-screen_mqbxl8 > .reading-time > .key > li:nth-child(1)::before {
+	background-color: #c3d7ef;
+	border: 1px solid #9bbde4;
+}
+.stats-screen_mqbxl8 > .reading-time > .key > li:nth-child(2)::before {
+	background-color: #73a3d9;
+	border: 1px solid #4b88ce;
+}

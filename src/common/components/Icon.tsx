@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames, { ClassValue } from 'classnames';
 
-export type IconName = 'article-details-star' | 'backward' | 'books' | 'box' | 'cancel' | 'checkmark' | 'chevron-down' | 'chevron-left' | 'clock' | 'comments' | 'email' | 'exclamation' | 'forbid' | 'history' | 'link' | 'locked' | 'paper-plane' | 'plus' | 'podium' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'twitter' | 'user' | 'warning' | 'write';
+export type IconName = 'article-details-star' | 'backward' | 'books' | 'box' | 'cancel' | 'checkmark' | 'chevron-down' | 'chevron-left' | 'clock' | 'comments' | 'email' | 'exclamation' | 'forbid' | 'history' | 'line-chart' | 'link' | 'locked' | 'paper-plane' | 'plus' | 'podium' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'twitter' | 'user' | 'warning' | 'write';
 export default (props: {
 	name: IconName,
 	title?: string,

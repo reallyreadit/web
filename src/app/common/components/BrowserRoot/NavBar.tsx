@@ -12,6 +12,7 @@ export default class NavBar extends React.PureComponent<{
 	onViewLeaderboards: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewStarred: () => void,
+	onViewStats: () => void,
 	selectedScreenKey: ScreenKey
 }> {
 	public render() {
@@ -25,7 +26,7 @@ export default class NavBar extends React.PureComponent<{
 							style={this.props.selectedScreenKey === ScreenKey.Home ? 'loud' : 'normal'}
 						>
 							<Icon name="books" />
-							<label>Community</label>
+							<label>Discover</label>
 						</Button>
 					</li>
 					<li>
@@ -46,6 +47,16 @@ export default class NavBar extends React.PureComponent<{
 						>
 							<Icon name="history" />
 							<label>History</label>
+						</Button>
+					</li>
+					<li>
+						<Button
+							href={findRouteByKey(routes, ScreenKey.Stats).createUrl()}
+							onClick={this.props.onViewStats}
+							style={this.props.selectedScreenKey === ScreenKey.Stats ? 'loud' : 'normal'}
+						>
+							<Icon name="line-chart" />
+							<label>Stats</label>
 						</Button>
 					</li>
 					<li>

@@ -124,6 +124,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/starred',
 		pathRegExp: /^\/starred$/,
 		screenKey: ScreenKey.Starred
+	},
+	{
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/stats',
+		pathRegExp: /^\/stats$/,
+		screenKey: ScreenKey.Stats
 	}
 ];
 export default routes;

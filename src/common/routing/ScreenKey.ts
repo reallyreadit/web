@@ -11,6 +11,7 @@ enum ScreenKey {
 	PrivacyPolicy,
 	Read,
 	Settings,
-	Starred
+	Starred,
+	Stats
 }
 export default ScreenKey;

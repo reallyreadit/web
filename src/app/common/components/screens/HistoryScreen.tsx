@@ -12,8 +12,6 @@ import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
 import ArticleLengthFilter from '../controls/ArticleLengthFilter';
-import ReadingTimeTotalsRow from '../../../../common/models/ReadingTimeTotalsRow';
-import ReadingTimeTotalsTimeWindow from '../../../../common/models/ReadingTimeTotalsTimeWindow';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -21,7 +19,6 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetReadingTimeStats: FetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeTotalsRow[]>,
 	onGetUserArticleHistory: FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
@@ -33,9 +30,7 @@ interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
 	isLoadingArticles: boolean,
 	maxLength: number | null,
-	minLength: number | null,
-	readingTimeStats: Fetchable<ReadingTimeTotalsRow[]>,
-	readingTimeWindow: ReadingTimeTotalsTimeWindow
+	minLength: number | null
 }
 class HistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -51,25 +46,14 @@ class HistoryScreen extends React.Component<Props, State> {
 		this.setState({ isLoadingArticles: true });
 		this.fetchArticles(pageNumber, this.state.minLength, this.state.maxLength);
 	};
-	private readonly _changeReadingTimeWindow = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		const timeWindow = parseInt(event.target.value, 10) as ReadingTimeTotalsTimeWindow;
-		this.setState({
-			readingTimeStats: this.fetchReadingTimeStats(timeWindow),
-			readingTimeWindow: timeWindow
-		});
-	};
 	constructor(props: Props) {
 		super(props);
-		const
-			articles = this.fetchArticles(1, null, null),
-			readingTimeWindow = ReadingTimeTotalsTimeWindow.PastWeek;
+		const articles = this.fetchArticles(1, null, null);
 		this.state = {
 			articles,
 			isLoadingArticles: articles.isLoading,
 			maxLength: null,
-			minLength: null,
-			readingTimeStats: this.fetchReadingTimeStats(readingTimeWindow),
-			readingTimeWindow
+			minLength: null
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
@@ -96,16 +80,6 @@ class HistoryScreen extends React.Component<Props, State> {
 			})
 		);
 	}
-	private fetchReadingTimeStats(timeWindow: ReadingTimeTotalsTimeWindow) {
-		return this.props.onGetReadingTimeStats(
-			{ timeWindow },
-			this._asyncTracker.addCallback(
-				readingTimeTotals => {
-					this.setState({ readingTimeStats: readingTimeTotals });
-				}
-			)
-		);
-	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
@@ -116,41 +90,6 @@ class HistoryScreen extends React.Component<Props, State> {
 					<LoadingOverlay position="static" /> :
 					this.state.isLoadingArticles || this.state.articles.value.items.length || this.state.minLength != null || this.state.maxLength != null ?
 						<>
-							<div>
-								<form autoComplete="off">
-									<select
-										onChange={this._changeReadingTimeWindow}
-										value={this.state.readingTimeWindow}
-									>
-										<option value={0}>All Time</option>
-										<option value={1}>Past Week</option>
-										<option value={2}>Past Month</option>
-										<option value={3}>Past Year</option>
-									</select>
-								</form>
-								{this.state.readingTimeStats.isLoading ?
-									<span>Loading...</span> :
-									<table>
-										<thead>
-											<tr>
-												<th>Date</th>
-												<th>Minutes Reading</th>
-												<th>Minutes Reading to Completion</th>
-											</tr>
-										</thead>
-										<tbody>
-											{this.state.readingTimeStats.value.map(
-												row => (
-													<tr key={row.date}>
-														<td>{row.date}</td>
-														<td>{row.minutesReading}</td>
-														<td>{row.minutesReadingToCompletion}</td>
-													</tr>
-												)
-											)}
-										</tbody>
-									</table>}
-							</div>
 							<p>Your personal reading history is private.</p>
 							<div className="controls">
 								<ArticleLengthFilter
