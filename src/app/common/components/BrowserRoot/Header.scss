@@ -17,8 +17,9 @@
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: space-between;
-	border-bottom: 1px solid black;
 	padding: 20px 30px;
+	border-bottom: 1px solid #ccc;
+	background-color: #eaeaea;
 }
 .header_cvm3v7 > .logo-container {
 	display: flex;
@@ -26,7 +27,7 @@
 }
 .header_cvm3v7 > .logo-container > img {
 	display: block;
-	height: 71px;
+	height: 60px;
 }
 .header_cvm3v7 > .menu-container {
 	display: flex;
