@@ -34,23 +34,7 @@
 	margin-top: 10px;
 	width: 300px;
 }
-.community-reads-list_g4cy3n > .controls > .sort > select {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	background-color: white;
-	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLjU0NCA2LjA0NGwtOS41NDQgOS41NDEtOS41NDQtOS41NDEtMS40MTYgMS40MTYgMTAuMjUgMTAuMjVjMC4xOTQgMC4xOTQgMC40NSAwLjI5NCAwLjcwNiAwLjI5NHMwLjUxMy0wLjA5NyAwLjcwNi0wLjI5NGwxMC4yNS0xMC4yNS0xLjQwOS0xLjQxNnoiPjwvcGF0aD48L3N2Zz4=);
-	background-repeat: no-repeat;
-	background-size: 15px;
-	background-position: right 5px center;
-	border: 1px solid #2A2326;
-	border-radius: 0;
-	outline: none;
-	padding: 5px 23px 5px 5px;
-	font-family: inherit;
-	font-size: 12pt;
-}
-.community-reads-list_g4cy3n > .controls > .sort > select:not(:last-child) {
+.community-reads-list_g4cy3n > .controls > .sort > .select-list_guiajx:not(:last-child) {
 	margin-right: 5px;
 }
 .community-reads-list_g4cy3n > .controls > .filter-container {

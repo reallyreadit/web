@@ -12,6 +12,7 @@ import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../../common/models/CommunityReadTimeWindow';
 import ArticleLengthFilter from '../ArticleLengthFilter';
+import SelectList from '../../../../../common/components/SelectList';
 
 const sortOptions: { [key: string]: CommunityReadSort } = {
 	'Trending': CommunityReadSort.Hot,
@@ -114,37 +115,31 @@ export default class extends React.PureComponent<{
 						autoComplete="off"
 						className="sort"
 					>
-						<select
+						<SelectList
 							onChange={this._changeSort}
+							options={
+								Object
+									.keys(sortOptions)
+									.map(key => ({
+										key,
+										value: sortOptions[key]
+									}))
+							}
 							value={this.props.sort}
-						>
-							{Object
-								.keys(sortOptions)
-								.map(key => (
-									<option
-										key={key}
-										value={sortOptions[key]}
-									>
-										{key}
-									</option>
-								))}
-						</select>
+						/>
 						{this.props.timeWindow != null ?
-							<select
+							<SelectList
 								onChange={this._changeTimeWindow}
+								options={
+									Object
+										.keys(timeWindowOptions)
+										.map(key => ({
+											key,
+											value: timeWindowOptions[key]
+										}))
+								}
 								value={this.props.timeWindow}
-							>
-								{Object
-									.keys(timeWindowOptions)
-									.map(key => (
-										<option
-											key={key}
-											value={timeWindowOptions[key]}
-										>
-											{key}
-										</option>
-									))}
-							</select> :
+							/> :
 							null}
 					</form>
 					<div className="filter-container">

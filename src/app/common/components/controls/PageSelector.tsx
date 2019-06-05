@@ -1,4 +1,5 @@
 import * as React from 'react';
+import SelectList from '../../../../common/components/SelectList';
 
 interface Props {
 	pageNumber: number,
@@ -18,9 +19,14 @@ export default class PageSelector extends React.PureComponent<Props> {
 				className="page-selector_a8tbpb"
 			>
 				Page
-				<select value={this.props.pageNumber} onChange={this._updatePageNumber} disabled={this.props.disabled}>
-					{Array.from(new Array(this.props.pageCount), (x, i) => <option key={i}>{i + 1}</option>)}
-				</select>
+				<SelectList
+					disabled={this.props.disabled}
+					onChange={this._updatePageNumber}
+					options={
+						Array.from(new Array(this.props.pageCount), (x, i) => ({ key: i + 1 }))
+					}
+					value={this.props.pageNumber}
+				/>
 			</form>
 		);
 	}
