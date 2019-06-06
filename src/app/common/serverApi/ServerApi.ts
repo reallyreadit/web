@@ -21,7 +21,7 @@ import ClientType from '../ClientType';
 import CommunityReadTimeWindow from '../../../common/models/CommunityReadTimeWindow';
 import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import ReadingTimeTotalsTimeWindow from '../../../common/models/ReadingTimeTotalsTimeWindow';
-import ReadingTimeTotalsRow from '../../../common/models/ReadingTimeTotalsRow';
+import ReadingTimeStats from '../../../common/models/ReadingTimeStats';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -145,7 +145,7 @@ export default abstract class {
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });
 
 	// Stats
-	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeTotalsRow[]>('/Stats/ReadingTime');
+	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeStats>('/Stats/ReadingTime');
 	public readonly getLeaderboards = this.createFetchFunction<Leaderboards>('/Stats/Leaderboards');
 	public readonly getUserStats = this.createFetchFunction<UserStats | null>('/Stats/UserStats');
 

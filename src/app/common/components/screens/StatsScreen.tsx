@@ -2,29 +2,32 @@ import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ScreenContainer from '../ScreenContainer';
-import ReadingTimeTotalsRow from '../../../../common/models/ReadingTimeTotalsRow';
 import ReadingTimeTotalsTimeWindow from '../../../../common/models/ReadingTimeTotalsTimeWindow';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { DateTime } from 'luxon';
 import SelectList from '../../../../common/components/SelectList';
+import ReadingTimeStats from '../../../../common/models/ReadingTimeStats';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 
-interface ReadingTimeStats {
+interface ReadingTimeStatsData {
 	dataset: {
 		xLabel: string,
 		timeReading: number,
 		timeReadingToCompletion: number
 	}[],
+	isNewUser: boolean,
 	yLabel: string
 }
 interface Props {
-	onGetReadingTimeStats: FetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeTotalsRow[]>
+	onGetReadingTimeStats: FetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeStats>,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 }
 interface State {
 	componentDidMount: boolean,
 	isScreenLoading: boolean,
-	stats: Fetchable<ReadingTimeStats>,
+	stats: Fetchable<ReadingTimeStatsData>,
 	timeWindow: ReadingTimeTotalsTimeWindow
 }
 function formatReadingTime(interval: 'month' | 'day', minutes: number) {
@@ -34,9 +37,9 @@ function formatReadingTime(interval: 'month' | 'day', minutes: number) {
 			minutes / 60
 	);
 }
-function mapReadingTimeTotalRows(timeWindow: ReadingTimeTotalsTimeWindow, rows: Fetchable<ReadingTimeTotalsRow[]>) {
-	let value: ReadingTimeStats | undefined;
-	if (rows.value) {
+function mapData(timeWindow: ReadingTimeTotalsTimeWindow, stats: Fetchable<ReadingTimeStats>) {
+	let value: ReadingTimeStatsData | undefined;
+	if (stats.value) {
 		const interval = (
 			(
 				timeWindow === ReadingTimeTotalsTimeWindow.AllTime ||
@@ -50,12 +53,12 @@ function mapReadingTimeTotalRows(timeWindow: ReadingTimeTotalsTimeWindow, rows: 
 					'ccc' :
 					timeWindow === ReadingTimeTotalsTimeWindow.PastMonth ?
 						'L/d' :
-						DateTime.fromISO(rows.value[0].date).year === DateTime.fromISO(rows.value[rows.value.length - 1].date).year ?
+						DateTime.fromISO(stats.value.rows[0].date).year === DateTime.fromISO(stats.value.rows[stats.value.rows.length - 1].date).year ?
 							'LLL' :
 							'LLL yy'
 			);
 		value = {
-			dataset: rows.value.map(
+			dataset: stats.value.rows.map(
 				row => ({
 					xLabel: DateTime
 						.fromISO(row.date)
@@ -64,11 +67,12 @@ function mapReadingTimeTotalRows(timeWindow: ReadingTimeTotalsTimeWindow, rows: 
 					timeReadingToCompletion: formatReadingTime(interval, row.minutesReadingToCompletion)
 				})
 			),
+			isNewUser: !stats.value.userStats,
 			yLabel: interval === 'day' ? 'Minutes' : 'Hours'
 		};
 	}
 	return {
-		...rows,
+		...stats,
 		value
 	};
 }
@@ -109,9 +113,24 @@ class StatsScreen extends React.Component<Props, State> {
 			stats,
 			timeWindow: readingTimeWindow
 		};
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterArticleChangeHandler(
+				event => {
+					if (
+						this.state.stats.value &&
+						this.state.stats.value.isNewUser &&
+						event.isCompletionCommit
+					) {
+						this.setState({
+							stats: this.fetchStats(this.state.timeWindow)
+						});
+					}
+				}
+			)
+		);
 	}
 	private fetchStats(timeWindow: ReadingTimeTotalsTimeWindow) {
-		return mapReadingTimeTotalRows(
+		return mapData(
 			timeWindow,
 			this.props.onGetReadingTimeStats(
 				{ timeWindow },
@@ -119,7 +138,7 @@ class StatsScreen extends React.Component<Props, State> {
 					readingTimeTotals => {
 						this.setState({
 							isScreenLoading: false,
-							stats: mapReadingTimeTotalRows(timeWindow, readingTimeTotals)
+							stats: mapData(timeWindow, readingTimeTotals)
 						});
 					}
 				)
@@ -143,6 +162,7 @@ class StatsScreen extends React.Component<Props, State> {
 						<form autoComplete="off">
 							<span className="title">Time Spent Reading</span>
 							<SelectList
+								disabled={!this.state.stats.value || this.state.stats.value.isNewUser}
 								onChange={this._changeReadingTimeWindow}
 								options={[
 									{
@@ -198,10 +218,21 @@ class StatsScreen extends React.Component<Props, State> {
 											minTickGap={1}
 											width={30}
 										/>
-										<Tooltip formatter={this._formatToolTip} />
+										{!this.state.stats.value.isNewUser ?
+											<Tooltip formatter={this._formatToolTip} /> :
+											null}
 									</AreaChart>
 								</ResponsiveContainer>
 								<div className="y-label">{this.state.stats.value.yLabel}</div>
+								{this.state.stats.value.isNewUser ?
+									<div className="placeholder">
+										<img
+											alt="Padlock"
+											src={'/images/padlock.svg'}
+										/>
+										Read at least one full article to unlock stats.
+									</div> :
+									null}
 							</div>}
 						<ol className="key">
 							<li>Total</li>

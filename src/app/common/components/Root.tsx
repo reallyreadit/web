@@ -373,7 +373,8 @@ export default abstract class Root<
 				onUpdateNotificationPreferences: this._updateNotificationPreferences
 			}),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
-				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats
+				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
 			})
 		};
 	}
