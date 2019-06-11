@@ -45,6 +45,8 @@ function share(data: ShareData) {
 let lookupResult: ArticleLookupResult;
 
 const
+	// metadata parsing must happen before mutating content parsing
+	metadataParseResult = parseDocumentMetadata(),
 	contentParseResult = parseDocumentContent('mutate'),
 	page = new Page(
 		contentParseResult.elements.map(el => new ContentElement(el.element, el.wordCount)),
@@ -229,10 +231,7 @@ function rateArticle(score: number) {
 messagingContext.sendMessage(
 	{
 		type: 'parseResult',
-		data: createPageParseResult(
-			parseDocumentMetadata(),
-			contentParseResult
-		)
+		data: createPageParseResult(metadataParseResult, contentParseResult)
 	},
 	(result: ArticleLookupResult) => {
 		lookupResult = result;
