@@ -380,7 +380,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			screens = this.state.screens.slice(0, this.state.screens.length - 1);
 			title = this.state.screens[this.state.screens.length - 1].title;
 		} else {
-			const { screen, url } = this.createScreen(
+			const screen = this.createScreen(
 				options.key,
 				options.urlParams,
 				options.title
@@ -394,7 +394,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			window.history.pushState(
 				null,
 				screen.title,
-				url
+				screen.location.path + (screen.location.queryString || '')
 			)
 		}
 		this.props.browserApi.setTitle(title);

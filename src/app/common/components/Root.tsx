@@ -427,13 +427,14 @@ export default abstract class Root<
 	}
 	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		const
-			url = findRouteByKey(routes, key).createUrl(urlParams),
-			[path, queryString] = url.split('?'),
+			[path, queryString] = findRouteByKey(routes, key)
+				.createUrl(urlParams)
+				.split('?'),
 			screen = this._screenFactoryMap[key].create({ path, queryString }, this.getSharedState());
 		if (title) {
 			screen.title = title;
 		}
-		return { screen, url };
+		return screen;
 	}
 	protected getLocationDependentState(location: RouteLocation) {
 		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]);

@@ -241,11 +241,11 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		this.setScreenState([
 			...this.state.screens,
-			this.createScreen(key, urlParams, title).screen
+			this.createScreen(key, urlParams, title)
 		]);
 	}
 	private replaceScreen(key: ScreenKey) {
-		this.setScreenState([this.createScreen(key).screen]);
+		this.setScreenState([this.createScreen(key)]);
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
@@ -259,9 +259,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	protected onUserSignedIn(user: UserAccount) {
 		let screen: Screen;
 		if (this._hasProcessedInitialLocation) {
-			screen = this
-				.createScreen(ScreenKey.Home)
-				.screen;
+			screen = this.createScreen(ScreenKey.Home);
 		} else {
 			const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
 			if (route.screenKey === ScreenKey.Read) {
