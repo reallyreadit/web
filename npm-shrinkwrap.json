@@ -193,6 +193,12 @@
         "@types/node": "*"
       }
     },
+    "@types/gtag.js": {
+      "version": "0.0.0",
+      "resolved": "https://registry.npmjs.org/@types/gtag.js/-/gtag.js-0.0.0.tgz",
+      "integrity": "sha512-CELflfjpDL6pthp74HVpNWn19Uv/qopdPZ6J85hKl1zCxUVJ7fMEaTtr3PTRA3oMvj2hMOQdChbUBH/F4XwLCQ==",
+      "dev": true
+    },
     "@types/jquery": {
       "version": "2.0.50",
       "resolved": "https://registry.npmjs.org/@types/jquery/-/jquery-2.0.50.tgz",

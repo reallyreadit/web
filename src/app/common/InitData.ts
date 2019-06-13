@@ -7,6 +7,7 @@ import Exchange from './serverApi/Exchange';
 import DeviceType from './DeviceType';
 
 export default interface InitData {
+	analyticsTrackingCode: string | null,
 	apiServerEndpoint: HttpEndpoint,
 	captchaSiteKey: string | null,
 	clientType: ClientType,

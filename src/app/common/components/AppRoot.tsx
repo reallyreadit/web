@@ -33,6 +33,10 @@ interface State extends RootState {
 	isPoppingScreen: boolean,
 	menuState: MenuState,
 }
+const authScreenPageviewParams = {
+	title: 'Auth',
+	path: '/'
+};
 export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvents> {
 	private _isUpdateAvailable: boolean = false;
 
@@ -59,10 +63,15 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	// screens
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
+			// copy the screens array minus the top screen
+			const screens = this.state.screens.slice(0, this.state.screens.length - 1);
+			// pop the top screen
 			this.setState({
 				isPoppingScreen: false,
-				screens: this.state.screens.slice(0, this.state.screens.length - 1)
+				screens
 			});
+			// send the pageview
+			this.props.analytics.sendPageview(screens[screens.length - 1]);
 		}
 	};
 	private _hasProcessedInitialLocation: boolean;
@@ -239,13 +248,23 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			});
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+		// create the new screen
+		const screen = this.createScreen(key, urlParams, title);
+		// push the screen
 		this.setScreenState([
 			...this.state.screens,
-			this.createScreen(key, urlParams, title)
+			screen
 		]);
+		// send the pageview
+		this.props.analytics.sendPageview(screen);
 	}
 	private replaceScreen(key: ScreenKey) {
-		this.setScreenState([this.createScreen(key)]);
+		// create the new screen
+		const screen = this.createScreen(key);
+		// replace the screen
+		this.setScreenState([screen]);
+		// send the pageview
+		this.props.analytics.sendPageview(screen);
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
@@ -299,6 +318,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			user,
 			{ screens: [screen] }
 		);
+		// update analytics
+		this.props.analytics.setUserId(user.id);
+		this.props.analytics.sendPageview(screen);
 	}
 	protected onUserSignedOut() {
 		super.onUserSignedOut(
@@ -307,6 +329,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				screens: []
 			}
 		);
+		// update analytics
+		this.props.analytics.setUserId(null);
+		this.props.analytics.sendPageview(authScreenPageviewParams);
 	}
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
 		ev.preventDefault();
@@ -398,25 +423,38 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		);
 	}
 	public componentDidMount() {
+		// super
 		super.componentDidMount();
+		// get the initial route
+		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
+		// replace initial route in history
 		window.history.replaceState(
 			null,
 			null,
 			'/' + createQueryString({ [clientTypeQueryStringKey]: ClientType.App })
 		);
+		// add visibility change listener
 		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
+		// send the initial pageview
+		this.props.analytics.sendPageview(
+			this.props.initialUser ?
+				{
+					title: initialRoute.analyticsName,
+					path: this.props.initialLocation.path
+				} :
+				authScreenPageviewParams
+		);
 		// iOS keyboard scroll bug
 		window.setTimeout(() => {
 			if (window.scrollY !== 0) {
 				window.scrollTo(0, 0);
 			}
 		}, 100);
-		// check for read url
-		const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
-		if (route.screenKey === ScreenKey.Read && this.props.initialUser) {
+		// check for read url (the following condition can only be true in old iOS clients)
+		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUser) {
 			const
-				pathParams = route.getPathParams(this.props.initialLocation.path),
-				slug = pathParams['sourceSlug']+ '_' + pathParams['articleSlug'];
+				pathParams = initialRoute.getPathParams(this.props.initialLocation.path),
+				slug = pathParams['sourceSlug'] + '_' + pathParams['articleSlug'];
 			// iOS versions < 2.1 crash when calling readArticle using only the slug
 			if (
 				!this.props.appApi.appVersion ||

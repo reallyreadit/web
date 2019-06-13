@@ -6,7 +6,17 @@ export default (model: {
 	extensionId: string,
 	initData: InitData,
 	title: string
-}) => (
+}) => {
+	let gtagConfig: {
+		send_page_view: boolean,
+		user_id?: string
+	} = {
+		send_page_view: false
+	};
+	if (model.initData.userAccount) {
+		gtagConfig.user_id = model.initData.userAccount.id.toString();
+	}
+	return (
 `<!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -16,6 +26,21 @@ export default (model: {
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
 		<title>${model.title}</title>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		${model.initData.analyticsTrackingCode ?
+			`<script async src="https://www.googletagmanager.com/gtag/js?id=${model.initData.analyticsTrackingCode}"></script>` :
+			'<!-- analytics disabled in dev mode -->'}
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag(
+				'config',
+				'${model.initData.analyticsTrackingCode}',
+				${JSON.stringify(gtagConfig)}
+			);
+		</script>
 	</head>
 	<body>
 		${icons}
@@ -33,4 +58,5 @@ export default (model: {
 			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`
-);
+	);
+}

@@ -398,6 +398,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			)
 		}
 		this.props.browserApi.setTitle(title);
+		// send the pageview for the top screen
+		this.props.analytics.sendPageview(screens[screens.length - 1]);
+		// return the new state object
 		return {
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
@@ -478,6 +481,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.props.browserApi.setTitle(title);
 	}
 	protected onUserSignedIn(user: UserAccount, eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+		// update analytics before potentially changing the screen
+		this.props.analytics.setUserId(user.id);
+		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedIn(user);
 		}
@@ -492,6 +498,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserSignedIn(user, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+		// update analytics before potentially changing the screen
+		this.props.analytics.setUserId(null);
+		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedOut()
 		}
@@ -670,6 +679,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				isIosDevice: isIosDevice(window.navigator.userAgent)
 			});
 		}
+		// send the initial pageview
+		this.props.analytics.sendPageview(this.state.screens[0]);
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

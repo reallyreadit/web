@@ -33,8 +33,10 @@ import SemanticVersion from '../../../common/SemanticVersion';
 import EventManager from '../EventManager';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import { createScreenFactory as createStatsScreenFactory } from './screens/StatsScreen';
+import Analytics from '../Analytics';
 
 export interface Props {
+	analytics: Analytics,
 	captcha: Captcha,
 	initialLocation: RouteLocation,
 	initialUser: UserAccount | null,

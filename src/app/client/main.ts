@@ -12,6 +12,7 @@ import * as jsCookie from 'js-cookie';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import * as smoothscroll from 'smoothscroll-polyfill';
 import SemanticVersion from '../../common/SemanticVersion';
+import Analytics from './Analytics';
 
 // clean up localStorage
 localStorage.removeItem('challenge');
@@ -34,6 +35,12 @@ const serverApi = new ServerApi(
 );
 
 const rootProps = {
+	analytics: new Analytics({
+		trackingCode: initData.analyticsTrackingCode,
+		userId: initData.userAccount ?
+			initData.userAccount.id :
+			null
+	}),
 	captcha: new Captcha(
 		initData.captchaSiteKey,
 		onLoadHandler => {

@@ -3,6 +3,7 @@ import { parseQueryString } from './queryString';
 import UserAccountRole from '../models/UserAccountRole';
 
 export interface Route<TDialogKey, TScreenKey> {
+	analyticsName: string,
 	authLevel?: UserAccountRole,
 	createUrl: (params?: { [key: string]: string }) => string,
 	dialogKey?: TDialogKey,

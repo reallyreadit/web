@@ -28,6 +28,7 @@ import * as path from 'path';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import DeviceType from '../common/DeviceType';
 import SemanticVersion from '../../common/SemanticVersion';
+import Analytics from './Analytics';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -370,6 +371,7 @@ server = server.get('/*', (req, res) => {
 			DeviceType.Desktop
 	);
 	const rootProps = {
+		analytics: new Analytics(),
 		captcha: new Captcha(),
 		initialLocation: {
 			path: req.path,
@@ -420,6 +422,11 @@ server = server.get('/*', (req, res) => {
 			content,
 			extensionId: config.extensionId,
 			initData: {
+				analyticsTrackingCode: (
+					config.analyticsTrackingCodes ?
+						config.analyticsTrackingCodes[req.clientType] :
+						null
+				),
 				apiServerEndpoint: config.apiServer,
 				captchaSiteKey: config.captchaSiteKey,
 				clientType: req.clientType,
