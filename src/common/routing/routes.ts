@@ -34,7 +34,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		authLevel: UserAccountRole.Admin,
 		createUrl: () => '/admin',
 		pathRegExp: /^\/admin$/,
-		screenKey: ScreenKey.AdminPage
+		screenKey: ScreenKey.Admin
 	},
 	(function () {
 		const pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/;

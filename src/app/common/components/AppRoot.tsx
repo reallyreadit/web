@@ -77,7 +77,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		this._closeMenu();
 	};
 	private readonly _viewAdminPage = () => {
-		this.pushScreen(ScreenKey.AdminPage);
+		this.pushScreen(ScreenKey.Admin);
 	};
 	private readonly _viewHistory = () => {
 		this.replaceScreen(ScreenKey.History);

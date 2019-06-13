@@ -78,9 +78,9 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						{user.role === UserAccountRole.Admin ?
 							<li>
 								<Button
-									href={findRouteByKey(routes, ScreenKey.AdminPage).createUrl()}
+									href={findRouteByKey(routes, ScreenKey.Admin).createUrl()}
 									onClick={this.props.onViewAdminPage}
-									style={this.props.selectedScreenKey === ScreenKey.AdminPage ? 'loud' : 'normal'}
+									style={this.props.selectedScreenKey === ScreenKey.Admin ? 'loud' : 'normal'}
 								>
 									Admin
 								</Button>

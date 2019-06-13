@@ -74,7 +74,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						{user.role === UserAccountRole.Admin ?
 							<li>
 								<button
-									className={this.props.selectedScreenKey === ScreenKey.AdminPage ? 'selected' : null}
+									className={this.props.selectedScreenKey === ScreenKey.Admin ? 'selected' : null}
 									onClick={this.props.onViewAdminPage}
 								>
 									Admin

@@ -112,7 +112,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	// screens
 	private readonly _viewAdminPage = () => {
 		this.setScreenState({
-			key: ScreenKey.AdminPage,
+			key: ScreenKey.Admin,
 			method: 'replace'
 		});
 	};

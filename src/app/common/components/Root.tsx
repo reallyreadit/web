@@ -342,7 +342,7 @@ export default abstract class Root<
 
 		// screens
 		this._screenFactoryMap = {
-			[ScreenKey.AdminPage]: createAdminPageScreenFactory(ScreenKey.AdminPage, {
+			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
 				onCloseDialog: this._closeDialog,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
