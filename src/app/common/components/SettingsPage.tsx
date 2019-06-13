@@ -15,6 +15,7 @@ import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListIte
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncActionLink from './controls/AsyncActionLink';
 import ScreenContainer from './ScreenContainer';
+import RouteLocation from '../../../common/routing/RouteLocation';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -167,7 +168,7 @@ class SettingsPage extends React.PureComponent<Props> {
 }
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: () => ({ key, title: 'Settings' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}

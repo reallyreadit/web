@@ -15,6 +15,7 @@ import ArticleLengthFilter from '../controls/ArticleLengthFilter';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import AsyncTracker from '../../../../common/AsyncTracker';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -142,7 +143,7 @@ export default function createScreenFactory<TScreenKey>(
 	deps: Props
 ) {
 	return {
-		create: () => ({ key, title: 'History' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'History' }),
 		render: () => (
 			<HistoryScreen {...deps} />
 		)

@@ -11,6 +11,7 @@ import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -111,7 +112,7 @@ export default function <TScreenKey>(
 	deps: Props
 ) {
 	return {
-		create: () => ({ key, title: 'Starred' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Starred' }),
 		render: () => (
 			<AppStarredScreen {...deps} />
 		)

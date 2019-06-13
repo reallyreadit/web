@@ -1,5 +1,6 @@
 import * as React from 'react';
 import ScreenContainer from './ScreenContainer';
+import RouteLocation from '../../../common/routing/RouteLocation';
 
 const privacyPolicyPage = () => (
 	<ScreenContainer>
@@ -61,7 +62,7 @@ const privacyPolicyPage = () => (
 );
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: () => ({ key, title: 'Privacy Policy' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Privacy Policy' }),
 		render: () => React.createElement(privacyPolicyPage)
 	};
 }

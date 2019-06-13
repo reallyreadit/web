@@ -12,6 +12,7 @@ import ScreenContainer from './ScreenContainer';
 import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import { DateTime } from 'luxon';
+import RouteLocation from '../../../common/routing/RouteLocation';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -264,7 +265,7 @@ class AdminPage extends React.Component<
 }
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: () => ({ key, title: 'Admin' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Admin' }),
 		render: (screenState: Screen, sharedState: SharedState) => {
 			return (
 				<AdminPage

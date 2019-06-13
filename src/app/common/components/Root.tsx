@@ -51,7 +51,7 @@ export enum TemplateSection {
 export interface Screen<T = any> {
 	componentState?: T,
 	key: ScreenKey,
-	location?: RouteLocation,
+	location: RouteLocation,
 	templateSection?: TemplateSection,
 	title?: string,
 	titleContent?: React.ReactNode

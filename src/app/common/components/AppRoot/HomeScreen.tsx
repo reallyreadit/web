@@ -18,6 +18,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -181,8 +182,9 @@ export default function <TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
-		create: () => ({
+		create: (location: RouteLocation) => ({
 			key,
+			location,
 			titleContent: (
 				<div className="home-screen_an7vm5-title-content">
 					<img

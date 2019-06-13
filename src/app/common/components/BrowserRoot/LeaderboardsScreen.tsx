@@ -8,6 +8,7 @@ import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, SharedState } from '../Root';
 import Leaderboards from '../../../../common/models/Leaderboards';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
@@ -66,7 +67,7 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 }
 export default function<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: () => ({ key, title: 'Leaderboards' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Leaderboards' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<BrowserLeaderboardsScreen {...{ ...deps, user: sharedState.user }} />
 		)

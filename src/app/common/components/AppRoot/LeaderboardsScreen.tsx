@@ -7,6 +7,7 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import LeaderboardsScreen from '../screens/LeaderboardsScreen';
 import { Screen, SharedState } from '../Root';
 import Leaderboards from '../../../../common/models/Leaderboards';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
@@ -40,7 +41,7 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 }
 export default function<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: () => ({ key, title: 'Leaderboards' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Leaderboards' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<AppLeaderboardsScreen {...{ ...deps, user: sharedState.user }} />
 		)

@@ -257,6 +257,7 @@ export default function createScreenFactory<TScreenKey>(
 	return {
 		create: (location: RouteLocation, sharedState: SharedState) => ({
 			key,
+			location,
 			templateSection: shouldShowHomeScreen(sharedState.user, deps.isDesktopDevice) ?
 				null :
 				TemplateSection.Header,

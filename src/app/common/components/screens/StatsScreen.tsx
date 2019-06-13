@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import SelectList from '../../../../common/components/SelectList';
 import ReadingTimeStats from '../../../../common/models/ReadingTimeStats';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface ReadingTimeStatsData {
 	dataset: {
@@ -248,7 +249,7 @@ export function createScreenFactory<TScreenKey>(
 	deps: Props
 ) {
 	return {
-		create: () => ({ key, title: 'Stats' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Stats' }),
 		render: () => (
 			<StatsScreen {...deps} />
 		)

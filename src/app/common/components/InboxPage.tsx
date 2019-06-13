@@ -10,6 +10,7 @@ import ShareData from '../../../common/sharing/ShareData';
 import UserAccount from '../../../common/models/UserAccount';
 import { Screen, SharedState } from './Root';
 import ScreenContainer from './ScreenContainer';
+import RouteLocation from '../../../common/routing/RouteLocation';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -24,7 +25,7 @@ export function createScreenFactory<TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
-		create: () => ({ key, title: 'Inbox' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Inbox' }),
 		render: (state: Screen, sharedState: SharedState) => (
 			<InboxPage
 				{
