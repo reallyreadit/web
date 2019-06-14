@@ -34,6 +34,7 @@ import EventManager from '../EventManager';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import { createScreenFactory as createStatsScreenFactory } from './screens/StatsScreen';
 import Analytics from '../Analytics';
+import createExtensionRemovalScreenFactory from './ExtensionRemovalScreen';
 
 export interface Props {
 	analytics: Analytics,
@@ -359,6 +360,9 @@ export default abstract class Root<
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
 				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
 				onUpdateEmailSubscriptions: this._updateEmailSubscriptions
+			}),
+			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
+				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
 			[ScreenKey.Password]: createEmailConfirmationScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),

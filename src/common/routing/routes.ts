@@ -82,6 +82,19 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.EmailSubscriptions
 	},
 	{
+		analyticsName: 'ExtensionRemoval',
+		createUrl: () => `/extension/uninstall`,
+		pathRegExp: /^\/extension\/uninstall$/,
+		screenKey: ScreenKey.ExtensionRemoval
+	},
+	{
+		analyticsName: 'ExtensionRemoval',
+		createUrl: params => `/extension/uninstall?installationId=${params['installationId']}`,
+		pathRegExp: /^\/extension\/uninstall$/,
+		queryStringKeys: ['installationId'],
+		screenKey: ScreenKey.ExtensionRemoval
+	},
+	{
 		analyticsName: 'History',
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/history',

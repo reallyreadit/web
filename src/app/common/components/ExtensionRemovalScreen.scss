@@ -1,0 +1,22 @@
+/*
+	componentPath: src/app/common/components/ExtensionRemovalScreen
+	cssComponentId: extension-removal-screen_6csgkd
+*/
+
+.extension-removal-screen_6csgkd {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+.extension-removal-screen_6csgkd > strong {
+	font-size: 18pt;
+}
+.extension-removal-screen_6csgkd > span {
+	margin-top: 20px;
+}
+.extension-removal-screen_6csgkd > textarea {
+	margin: 20px 0;
+	min-width: 360px;
+	height: 100px;
+}

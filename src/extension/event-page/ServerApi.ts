@@ -321,4 +321,11 @@ export default class ServerApi {
 				return result;
 			});
 	}
+	public logExtensionInstallation(platformInfo: Pick<chrome.runtime.PlatformInfo, 'arch' | 'os'>) {
+		return fetchJson<{ installationId: string }>({
+			method: 'POST',
+			path: '/Extension/Install',
+			data: platformInfo
+		});
+	}
 }

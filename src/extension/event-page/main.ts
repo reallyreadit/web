@@ -7,6 +7,7 @@ import ServerApi from './ServerApi';
 import BrowserActionApi from './BrowserActionApi';
 import BrowserActionState from '../common/BrowserActionState';
 import WebAppApi from './WebAppApi';
+import { createUrl } from '../../common/HttpEndpoint';
 
 console.log('loading main.ts...');
 
@@ -266,6 +267,29 @@ chrome.runtime.onInstalled.addListener(details => {
 	getState().then(updateIcon);
 	// message rrit tabs
 	webAppApi.extensionInstalled();
+	// log new installations or old unrecorded ones
+	if (
+		details.reason === 'install' ||
+		(
+			details.reason === 'update' &&
+			!localStorage.getItem('installationId')
+		)
+	) {
+		console.log('chrome.runtime.onInstalled (new installation)')
+		chrome.runtime.getPlatformInfo(platformInfo => {
+			serverApi
+				.logExtensionInstallation(platformInfo)
+				.then(result => {
+					chrome.runtime.setUninstallURL(
+						createUrl(window.reallyreadit.extension.config.web, '/extension/uninstall', { installationId: result.installationId })
+					);
+					localStorage.setItem('installationId', result.installationId);
+				})
+				.catch(() => {
+					console.log('chrome.runtime.onInstalled (error logging installation)')
+				});
+		});
+	}
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');

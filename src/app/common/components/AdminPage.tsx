@@ -96,8 +96,11 @@ class AdminPage extends React.Component<
 				.minus({ minutes: localNow.offset }),
 			startDate = utcNowDate
 				.minus({ days: 30 })
-				.toISO(),
-			endDate = utcNowDate.toISO();
+				.toISO()
+				.replace(/Z$/, ''),
+			endDate = utcNowDate
+				.toISO()
+				.replace(/Z$/, '');
 		this.state = {
 			keyMetrics: {
 				startDate,
@@ -177,6 +180,7 @@ class AdminPage extends React.Component<
 								<th colSpan={3}>Accounts Created</th>
 								<th colSpan={3}>Articles Read</th>
 								<th colSpan={3}>Comments Created</th>
+								<th colSpan={2}>Extensions</th>
 							</tr>
 							<tr>
 								<th>Date</th>
@@ -189,6 +193,8 @@ class AdminPage extends React.Component<
 								<th>App</th>
 								<th>Browser</th>
 								<th>Unknown</th>
+								<th>Installed</th>
+								<th>Uninstalled</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -197,22 +203,24 @@ class AdminPage extends React.Component<
 									this.state.keyMetrics.data.value.map(row => (
 										<tr key={row.day}>
 											<td>{row.day}</td>
-											<td>{row.userAccountsAppCount}</td>
-											<td>{row.userAccountsBrowserCount}</td>
-											<td>{row.userAccountsUnknownCount}</td>
-											<td>{row.readsAppCount}</td>
-											<td>{row.readsBrowserCount}</td>
-											<td>{row.readsUnknownCount}</td>
-											<td>{row.commentsAppCount}</td>
-											<td>{row.commentsBrowserCount}</td>
-											<td>{row.commentsUnknownCount}</td>
+											<td>{row.userAccountAppCount}</td>
+											<td>{row.userAccountBrowserCount}</td>
+											<td>{row.userAccountUnknownCount}</td>
+											<td>{row.readAppCount}</td>
+											<td>{row.readBrowserCount}</td>
+											<td>{row.readUnknownCount}</td>
+											<td>{row.commentAppCount}</td>
+											<td>{row.commentBrowserCount}</td>
+											<td>{row.commentUnknownCount}</td>
+											<td>{row.extensionInstallationCount}</td>
+											<td>{row.extensionRemovalCount}</td>
 										</tr>
 									)) :
 									<tr>
-										<td colSpan={10}>Error loading key metrics.</td>
+										<td colSpan={12}>Error loading key metrics.</td>
 									</tr> :
 								<tr>
-									<td colSpan={10}>Loading...</td>
+									<td colSpan={12}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>

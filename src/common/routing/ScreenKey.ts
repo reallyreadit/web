@@ -3,6 +3,7 @@ enum ScreenKey {
 	Comments,
 	EmailConfirmation,
 	EmailSubscriptions,
+	ExtensionRemoval,
 	History,
 	Home,
 	Inbox,

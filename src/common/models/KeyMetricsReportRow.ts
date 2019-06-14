@@ -1,12 +1,14 @@
 export default interface KeyMetricsReportRow {
 	day: string,
-	userAccountsAppCount: number,
-	userAccountsBrowserCount: number,
-	userAccountsUnknownCount: number,
-	readsAppCount: number,
-	readsBrowserCount: number,
-	readsUnknownCount: number,
-	commentsAppCount: number,
-	commentsBrowserCount: number,
-	commentsUnknownCount: number
+	userAccountAppCount: number,
+	userAccountBrowserCount: number,
+	userAccountUnknownCount: number,
+	readAppCount: number,
+	readBrowserCount: number,
+	readUnknownCount: number,
+	commentAppCount: number,
+	commentBrowserCount: number,
+	commentUnknownCount: number,
+	extensionInstallationCount: number,
+	extensionRemovalCount: number
 }

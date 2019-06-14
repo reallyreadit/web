@@ -326,7 +326,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 			redirectToHomeScreen(req, res);
 		});
 });
-// ack new reply notification
+// process GET side effects
 server = server.get('/inbox', (req, res, next) => {
 	if (hasNewUnreadReply(req.sessionState.newReplyNotification)) {
 		req.api
@@ -343,6 +343,14 @@ server = server.get('/inbox', (req, res, next) => {
 	} else {
 		next();
 	}
+});
+server = server.get('/extension/uninstall', (req, res, next) => {
+	if ('installationId' in req.query) {
+		req.api
+			.logExtensionRemoval(req.query['installationId'])
+			.catch(() => {});
+	}
+	next();
 });
 // render matched route or return 404
 server = server.use((req, res, next) => {
