@@ -1,3 +1,5 @@
+import { createQueryString } from "./routing/queryString";
+
 const defaultPortConfigs = [
 	{
 		protocol: 'http',
@@ -8,7 +10,7 @@ const defaultPortConfigs = [
 		port: 443
 	}
 ];
-export function createUrl(endpoint: HttpEndpoint, path: string | null = null) {
+export function createUrl(endpoint: HttpEndpoint, path?: string, query?: { [key: string]: string }) {
 	let url = endpoint.protocol + '://' + endpoint.host;
 	if (endpoint.port != null) {
 		const defaultPortConfig = defaultPortConfigs.filter(config => config.protocol === endpoint.protocol)[0];
@@ -24,6 +26,9 @@ export function createUrl(endpoint: HttpEndpoint, path: string | null = null) {
 			url += '/';
 		}
 		url += path;
+	}
+	if (query) {
+		url += createQueryString(query);
 	}
 	return url;
 }
