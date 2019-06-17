@@ -4,6 +4,7 @@ import routes from '../../../common/routing/routes';
 import { findRouteByKey } from '../../../common/routing/Route';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import ScreenContainer from './ScreenContainer';
+import RouteLocation from '../../../common/routing/RouteLocation';
 
 const resultMessages: {
 	[key: string]: {
@@ -17,7 +18,7 @@ const resultMessages: {
 };
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: Location) => ({ key, location, title: 'Password Reset' }),
+		create: (location: RouteLocation) => ({ key, location, title: 'Password Reset' }),
 		render: (state: Screen) => {
 			const [, action, result] = state.location.path
 				.match(findRouteByKey(routes, ScreenKey.Password).pathRegExp);
