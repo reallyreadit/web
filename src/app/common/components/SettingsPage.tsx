@@ -16,6 +16,9 @@ import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncActionLink from './controls/AsyncActionLink';
 import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import UserStats from '../../../common/models/UserStats';
+import Fetchable from '../../../common/Fetchable';
+import AsyncTracker from '../../../common/AsyncTracker';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -23,6 +26,7 @@ interface Props {
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
+	onGetUserStats: FetchFunction<UserStats | null>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
@@ -30,7 +34,13 @@ interface Props {
 	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>,
 	user: UserAccount
 }
-class SettingsPage extends React.PureComponent<Props> {
+class SettingsPage extends React.Component<
+	Props,
+	{
+		userStats: Fetchable<UserStats>
+	}
+> {
+	private readonly _asyncTracker = new AsyncTracker();
 	private _openChangePasswordDialog = () => {
 		this.props.onOpenDialog(
 			<ChangePasswordDialog
@@ -83,6 +93,21 @@ class SettingsPage extends React.PureComponent<Props> {
 			/>
 		);
 	};
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			userStats: props.onGetUserStats(
+				this._asyncTracker.addCallback(
+					userStats => {
+						this.setState({ userStats });
+					}
+				)
+			)
+		};
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
+	}
 	public render() {
 		const user = this.props.user;
 		return (
@@ -96,6 +121,12 @@ class SettingsPage extends React.PureComponent<Props> {
 								<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} />
 							</label>
 							{user.name}
+							{this.state.userStats.value ?
+								<>
+									<br />
+									<small>(Account # {this.props.user.id} of {this.state.userStats.value.userCount}.)</small>
+								</> :
+								null}
 						</li>
 						<li>
 							<label>
@@ -177,6 +208,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onOpenDialog={deps.onOpenDialog}
 				onGetTimeZones={deps.onGetTimeZones}
+				onGetUserStats={deps.onGetUserStats}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onShowToast={deps.onShowToast}
 				onUpdateContactPreferences={deps.onUpdateContactPreferences}
