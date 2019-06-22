@@ -142,7 +142,7 @@ class HomeScreen extends React.Component<Props, State> {
 					<>
 						{(
 							this.props.user &&
-							!this.state.communityReads.value.userStats
+							!this.state.communityReads.value.userReadCount
 						) ?
 							<WelcomeInfoBox /> :
 							null}

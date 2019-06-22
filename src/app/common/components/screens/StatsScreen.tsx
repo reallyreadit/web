@@ -68,7 +68,7 @@ function mapData(timeWindow: ReadingTimeTotalsTimeWindow, stats: Fetchable<Readi
 					timeReadingToCompletion: formatReadingTime(interval, row.minutesReadingToCompletion)
 				})
 			),
-			isNewUser: !stats.value.userStats,
+			isNewUser: !stats.value.userReadCount,
 			yLabel: interval === 'day' ? 'Minutes' : 'Hours'
 		};
 	}

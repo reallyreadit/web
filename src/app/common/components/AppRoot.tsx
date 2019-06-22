@@ -183,8 +183,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onGetStats: this.props.serverApi.getUserStats,
+				onGetLeaderboards: this.props.serverApi.getLeaderboards
 			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onCopyTextToClipboard: this._clipboard.copyText,

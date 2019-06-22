@@ -16,7 +16,6 @@ import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncActionLink from './controls/AsyncActionLink';
 import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import UserStats from '../../../common/models/UserStats';
 import Fetchable from '../../../common/Fetchable';
 import AsyncTracker from '../../../common/AsyncTracker';
 
@@ -26,7 +25,7 @@ interface Props {
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
-	onGetUserStats: FetchFunction<UserStats | null>,
+	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
@@ -34,10 +33,10 @@ interface Props {
 	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>,
 	user: UserAccount
 }
-class SettingsPage extends React.Component<
+class SettingsPage extends React.PureComponent<
 	Props,
 	{
-		userStats: Fetchable<UserStats>
+		userCount: Fetchable<{ userCount: number }>
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -96,10 +95,10 @@ class SettingsPage extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			userStats: props.onGetUserStats(
+			userCount: props.onGetUserCount(
 				this._asyncTracker.addCallback(
-					userStats => {
-						this.setState({ userStats });
+					userCount => {
+						this.setState({ userCount });
 					}
 				)
 			)
@@ -121,10 +120,10 @@ class SettingsPage extends React.Component<
 								<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} />
 							</label>
 							{user.name}
-							{this.state.userStats.value ?
+							{this.state.userCount.value ?
 								<>
 									<br />
-									<small>(Account # {this.props.user.id} of {this.state.userStats.value.userCount}.)</small>
+									<small>(Account # {this.props.user.id} of {this.state.userCount.value.userCount}.)</small>
 								</> :
 								null}
 						</li>
@@ -208,7 +207,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onOpenDialog={deps.onOpenDialog}
 				onGetTimeZones={deps.onGetTimeZones}
-				onGetUserStats={deps.onGetUserStats}
+				onGetUserCount={deps.onGetUserCount}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onShowToast={deps.onShowToast}
 				onUpdateContactPreferences={deps.onUpdateContactPreferences}

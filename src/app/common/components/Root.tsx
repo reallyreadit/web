@@ -373,7 +373,7 @@ export default abstract class Root<
 				onChangePassword: this._changePassword,
 				onChangeTimeZone: this._changeTimeZone,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
-				onGetUserStats: this.props.serverApi.getUserStats,
+				onGetUserCount: this.props.serverApi.getUserCount,
 				onOpenDialog: this._openDialog,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShowToast: this._toaster.addToast,
