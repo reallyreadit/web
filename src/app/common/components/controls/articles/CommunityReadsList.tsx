@@ -38,7 +38,7 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 			[this.state.communityReads.value.aotd]
 				.concat(this.state.communityReads.value.articles.items)
 				.some(article => article.id === updatedArticle.id) ||
-			(!this.state.communityReads.value.userStats && isCompletionCommit)
+			(!this.state.communityReads.value.userReadCount && isCompletionCommit)
 		)
 	) {
 		this.setState(produce<State>(prevState => {
@@ -50,15 +50,8 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 					articles.splice(articles.indexOf(article), 1, updatedArticle);
 				}
 			});
-			if (!prevState.communityReads.value.userStats && isCompletionCommit) {
-				// ugly hack to dismiss welcome info box
-				prevState.communityReads.value.userStats = {
-					readCount: 1,
-					readCountRank: 0,
-					streak: null,
-					streakRank: null,
-					userCount: 0
-				};
+			if (!prevState.communityReads.value.userReadCount && isCompletionCommit) {
+				prevState.communityReads.value.userReadCount = 1;
 			}
 		}));
 	}

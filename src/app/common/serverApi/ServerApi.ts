@@ -13,7 +13,6 @@ import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptions
 import CommunityReads from '../../../common/models/CommunityReads';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import UserAccountStats from '../../../common/models/UserAccountStats';
-import UserStats from '../../../common/models/UserStats';
 import Leaderboards from '../../../common/models/Leaderboards';
 import CommunityReadSort from '../../../common/models/CommunityReadSort';
 import Rating from '../../../common/models/Rating';
@@ -149,7 +148,7 @@ export default abstract class {
 	// Stats
 	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeStats>('/Stats/ReadingTime');
 	public readonly getLeaderboards = this.createFetchFunction<Leaderboards>('/Stats/Leaderboards');
-	public readonly getUserStats = this.createFetchFunction<UserStats | null>('/Stats/UserStats');
+	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// UserAccounts
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });

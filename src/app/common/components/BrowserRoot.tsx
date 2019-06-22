@@ -274,9 +274,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onGetStats: this.props.serverApi.getUserStats,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,

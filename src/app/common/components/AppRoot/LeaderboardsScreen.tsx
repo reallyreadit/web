@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
-import UserStats from '../../../../common/models/UserStats';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -11,19 +10,16 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
-	onGetStats: FetchFunction<UserStats | null>,
 	user: UserAccount | null
 }
 class AppLeaderboardsScreen extends React.Component<Props, {
-	leaderboards: Fetchable<Leaderboards>,
-	stats: Fetchable<UserStats | null>
+	leaderboards: Fetchable<Leaderboards>
 }> {
 	private readonly _asyncTracker = new AsyncTracker();
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			leaderboards: props.onGetLeaderboards(this._asyncTracker.addCallback(leaderboards => { this.setState({ leaderboards }) })),
-			stats: props.onGetStats(this._asyncTracker.addCallback(stats => { this.setState({ stats }) }))
+			leaderboards: props.onGetLeaderboards(this._asyncTracker.addCallback(leaderboards => { this.setState({ leaderboards }) }))
 		};
 	}
 	public componentWillUnmount() {
@@ -33,7 +29,6 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
-				stats={this.state.stats}
 				user={this.props.user}
 			/>
 		);
