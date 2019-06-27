@@ -38,3 +38,13 @@ export function formatCountable(count: number, singular: string, plural?: string
 		singular :
 		plural || singular + 's';
 }
+export function pad(input: string, direction: 'left' | 'right', padding: string, spaces: number) {
+	while (padding.length < spaces) {
+		padding += padding;
+	}
+	if (direction === 'left') {
+		return (padding + input).slice(-spaces);
+	} else {
+		return (input + padding).slice(0, Math.max(input.length, spaces));
+	}
+}

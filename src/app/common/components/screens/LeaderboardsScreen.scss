@@ -3,41 +3,172 @@
 	cssComponentId: leaderboards-screen_wuzsob
 */
 
-.leaderboards-screen_wuzsob > .panel {
+.leaderboards-screen_wuzsob {
+	position: relative;
+}
+.leaderboards-screen_wuzsob > .placeholder {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 13pt;
+	text-align: center;
+	font-family: 'Museo Sans (700)';
+	width: 80%;
+}
+.leaderboards-screen_wuzsob > .placeholder > img {
+	display: block;
+	margin: 10px auto;
+	width: 48px;
+}
+.leaderboards-screen_wuzsob > .leaderboards {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: flex-start;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard {
+	flex: 1 1 0;
+	box-sizing: border-box;
+	min-width: 320px;
+	margin: 0 5px 10px 5px;
 	background-color: white;
 	border: 1px solid #e0e0e0;
-	padding: 7px;
+	padding: 10px 15px;
 }
-.leaderboards-screen_wuzsob > .panel:not(:last-child) {
-	margin-bottom: 10px;
-}
-.leaderboards-screen_wuzsob > .panel > ol:not(:last-child) {
-	margin-bottom: 10px;
-}
-.leaderboards-screen_wuzsob > .panel > ol > li:first-child {
-	font-size: 16px;
-	margin-bottom: 5px;
-}
-.leaderboards-screen_wuzsob > .panel > ol > li:last-child {
-	font-size: 12px;
-}
-.leaderboards-screen_wuzsob > .leaderboard > table {
-	width: 100%;
-}
-.leaderboards-screen_wuzsob > .leaderboard > table > caption {
-	font-weight: bold;
-}
-.leaderboards-screen_wuzsob > .leaderboard > table > caption,
-.leaderboards-screen_wuzsob > .leaderboard > table > thead > tr > th {
-	padding-bottom: 10px;
-	border-bottom: 1px solid silver;
-}
-.leaderboards-screen_wuzsob > .leaderboard > table > tbody > tr > td {
-	padding: 5px;
-}
-.leaderboards-screen_wuzsob > .leaderboard > table > tbody > tr > td:nth-child(2) {
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .title {
+	padding: 5px 0 10px 0;
 	text-align: center;
 }
-.leaderboards-screen_wuzsob > .leaderboard > table > tbody > tr:nth-child(even) > td {
-	background-color: #f6f6f6;
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .title > .icon {
+	display: inline-block;
+	vertical-align: middle;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .title > .icon:first-child {
+	margin-right: 10px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .title > .icon:last-child {
+	margin-left: 10px;
+	cursor: pointer;
+	color: #999;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .title > .text {
+	font-weight: bold;
+	vertical-align: middle;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container {
+	height: 150px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container.overflowing {
+	height: 165px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container.overflowing::after {
+	content: "";
+	display: block;
+	position: -webkit-sticky;
+	position: sticky;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 12px;
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+	background-size: cover;
+	pointer-events: none;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table,
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table {
+	width: 100%;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td,
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td {
+	height: 30px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td:nth-child(1),
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td:nth-child(1) {
+	text-align: center;
+	width: 35px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td:nth-child(2),
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td:nth-child(2) {
+	text-align: left;
+	padding: 0 5px 0 3%;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td:nth-child(3),
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td:nth-child(3) {
+	text-align: center;
+	width: 100px;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td > .cell-liner,
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td > .cell-liner {
+	display: block;
+	position: relative;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td > .cell-liner > .overflow-container,
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td > .cell-liner > .overflow-container {
+	position: absolute;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	transform: translateY(-50%);
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .break {
+	margin: 0 0 5px 0;
+	border-style: solid;
+	border-width: 1px 0 0 0;
+	border-color: #ccc;
+}
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard .streak-status {
+	text-align: center;
+	padding: 10px 0 5px 0;
+	border-top: 1px solid #ccc;
+	margin-top: 5px;
+	font-family: 'Museo Sans (700)';
+	font-size: 12pt;
+}
+.leaderboards-screen_wuzsob > .explainer {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: rgba(255,255,255,0.5)
+}
+.leaderboards-screen_wuzsob > .explainer > .content {
+	position: -webkit-sticky;
+	position: sticky;
+	box-sizing: border-box;
+	top: 15%;
+	max-width: 280px;
+	padding: 10px;
+	margin: 0 auto;
+	background-color: white;
+	border: 3px solid black;
+}
+.leaderboards-screen_wuzsob > .explainer > .content > .title {
+	position: relative;
+	text-align: center;
+	font-family: 'Museo Sans (500)';
+	font-size: 18pt;
+	margin-bottom: 10px;
+}
+.leaderboards-screen_wuzsob > .explainer > .content > .title > .close {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
+	cursor: pointer;
+	font-size: 13pt;
+}
+.leaderboards-screen_wuzsob > .explainer > .content > p {
+	margin: 5px 0;
+	line-height: 1.35em;
+}
+
+@media (max-width: 659px) {
+	.leaderboards-screen_wuzsob > .leaderboards > .leaderboard {
+		min-width: 300px;
+	}
 }

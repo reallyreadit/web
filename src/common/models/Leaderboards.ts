@@ -1,16 +1,12 @@
-import CurrentStreakLeaderboardRow from './CurrentStreakLeaderboardRow';
-import ReadCountLeaderboardRow from './ReadCountLeaderboardRow';
-import LongestReadLeaderboardRow from './LongestReadLeaderboardRow';
-import ScoutLeaderboardRow from './ScoutLeaderboardRow';
-import ScribeLeaderboardRow from './ScribeLeaderboardRow';
 import UserLeaderboardRankings from './UserLeaderboardRankings';
+import LeaderboardRanking from './LeaderboardRanking';
 
 export default interface Leaderboards {
-	longestRead: LongestReadLeaderboardRow[],
-	readCount: ReadCountLeaderboardRow[],
-	scout: ScoutLeaderboardRow[],
-	scribe: ScribeLeaderboardRow[],
-	streak: CurrentStreakLeaderboardRow[],
+	longestRead: LeaderboardRanking[],
+	readCount: LeaderboardRanking[],
+	scout: LeaderboardRanking[],
+	scribe: LeaderboardRanking[],
+	streak: LeaderboardRanking[],
 	userRankings: UserLeaderboardRankings,
-	weeklyReadCount: ReadCountLeaderboardRow[]
+	weeklyReadCount: LeaderboardRanking[]
 }

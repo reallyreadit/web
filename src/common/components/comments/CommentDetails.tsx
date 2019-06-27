@@ -14,6 +14,8 @@ import ShareData from '../../sharing/ShareData';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
 import { formatPossessive } from '../../format';
+import LeaderboardBadge from '../../models/LeaderboardBadge';
+import Icon, { IconName } from '../Icon';
 
 interface Props {
 	comment: CommentThread,
@@ -86,6 +88,46 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		let badges:{
+			iconName: IconName,
+			title: string
+		}[] = [];
+		if (this.props.comment.badge & LeaderboardBadge.WeeklyReadCount) {
+			badges.push({
+				iconName: 'medal',
+				title: 'Top reader this week'
+			});
+		}
+		if (this.props.comment.badge & LeaderboardBadge.ReadCount) {
+			badges.push({
+				iconName: 'trophy',
+				title: 'Top reader of all time'
+			});
+		}
+		if (this.props.comment.badge & LeaderboardBadge.Streak) {
+			badges.push({
+				iconName: 'fire',
+				title: 'Reading streak'
+			});
+		}
+		if (this.props.comment.badge & LeaderboardBadge.LongestRead) {
+			badges.push({
+				iconName: 'graduation',
+				title: 'Longest recent read'
+			});
+		}
+		if (this.props.comment.badge & LeaderboardBadge.Scout) {
+			badges.push({
+				iconName: 'binoculars',
+				title: 'Scout'
+			});
+		}
+		if (this.props.comment.badge & LeaderboardBadge.Scribe) {
+			badges.push({
+				iconName: 'quill',
+				title: 'Scribe'
+			});
+		}
 		return (
 			<li
 				className={classNames(
@@ -100,7 +142,9 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 					<div className="article-title">{this.props.comment.articleTitle}</div> :
 					null}
 				<div className="title">
-					<strong>{this.props.comment.userAccount}</strong> <span>-</span> {timeago().format(this.props.comment.dateCreated.replace(/([^Z])$/, '$1Z'))}
+					<span className="user-name">{this.props.comment.userAccount}</span>
+					{badges.map(badge => <Icon className="badge" key={badge.iconName} name={badge.iconName} title={badge.title} />)}
+					<span className="age">{timeago().format(this.props.comment.dateCreated.replace(/([^Z])$/, '$1Z'))}</span>
 				</div>
 				<div
 					className={classNames('text', { 'preview': this.props.mode === 'link' })}

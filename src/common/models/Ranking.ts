@@ -1,4 +1,4 @@
 export default interface Ranking {
-	value: number,
+	score: number,
 	rank: number
 }

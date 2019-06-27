@@ -1,3 +1,5 @@
+import LeaderboardBadge from './LeaderboardBadge';
+
 export default interface CommentThread {
 	id: string,
 	dateCreated: string,
@@ -6,6 +8,7 @@ export default interface CommentThread {
 	articleTitle: string,
 	articleSlug: string,
 	userAccount: string,
+	badge: LeaderboardBadge,
 	children: CommentThread[],
 	dateRead: string,
 	parentCommentId: string | null

@@ -25,10 +25,23 @@
 	content: "Re: ";
 }
 .comment-details_qker1u > .title {
-	color: darkgray;
-	border-bottom: 1px solid lavender;
+	padding: 3px 5px;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	color: #999;
 	background-color: whitesmoke;
-	padding: 0 3px;
+}
+.comment-details_qker1u > .title > .user-name {
+	font-family: 'Museo Sans (700)';
+	margin-right: 5px;
+}
+.comment-details_qker1u > .title > .badge {
+	margin: 0 4px;
+	font-size: 12pt;
+}
+.comment-details_qker1u > .title > .age {
+	margin-left: 5px;
 }
 .comment-details_qker1u > .text {
 	padding: 3px 3px 0 3px;

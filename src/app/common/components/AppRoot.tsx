@@ -78,12 +78,17 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _popScreen = () => {
 		this.setState({ isPoppingScreen: true });
 	};
-	private readonly _readFaq = () => {
+	private readonly _readFaq = (event?: React.MouseEvent<HTMLAnchorElement>) => {
+		if (event) {
+			event.preventDefault();
+		}
 		this.props.appApi.readArticle({
 			title: 'FAQ',
 			url: 'https://blog.readup.com/beta/2017/07/12/FAQ.html'
 		} as Pick<UserArticle, 'title' | 'url'>);
-		this._closeMenu();
+		if (this.state.menuState === 'opened') {
+			this._closeMenu();
+		}
 	};
 	private readonly _viewAdminPage = () => {
 		this.pushScreen(ScreenKey.Admin);
@@ -183,7 +188,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onGetLeaderboards: this.props.serverApi.getLeaderboards
+				onGetLeaderboards: this.props.serverApi.getLeaderboards,
+				onReadFaq: this._readFaq
 			}),
 			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
 				onCopyTextToClipboard: this._clipboard.copyText,
