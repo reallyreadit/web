@@ -199,16 +199,6 @@ export default class LeaderboardsScreen extends React.PureComponent<
 							</div>
 							<div className="leaderboard">
 								{renderTable({
-									title: 'Longest recent reads',
-									iconName: 'graduation',
-									scoreUnit: 'min',
-									rankings: this.props.leaderboards.value.longestRead,
-									userRanking: this.props.leaderboards.value.userRankings.longestRead,
-									userName: this.props.user.name
-								})}
-							</div>
-							<div className="leaderboard">
-								{renderTable({
 									title: 'Scouts',
 									iconName: 'binoculars',
 									scoreUnit: 'AOTD',
@@ -230,6 +220,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 									onOpenExplainer: this._openScribeExplainer
 								})}
 							</div>
+							<div className="leaderboard hidden"></div>
 						</div>}
 				{explainer ?
 							<div className="explainer">
