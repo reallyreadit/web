@@ -214,8 +214,8 @@ export default class LeaderboardsScreen extends React.PureComponent<
 									iconName: 'quill',
 									scoreUnit: 'reply',
 									pluralScoreUnit: 'replies',
-									rankings: this.props.leaderboards.value.scout,
-									userRanking: this.props.leaderboards.value.userRankings.scoutCount,
+									rankings: this.props.leaderboards.value.scribe,
+									userRanking: this.props.leaderboards.value.userRankings.scribeCount,
 									userName: this.props.user.name,
 									onOpenExplainer: this._openScribeExplainer
 								})}
