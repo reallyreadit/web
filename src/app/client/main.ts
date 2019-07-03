@@ -8,22 +8,10 @@ import BrowserRoot from '../common/components/BrowserRoot';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
-import * as jsCookie from 'js-cookie';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import * as smoothscroll from 'smoothscroll-polyfill';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
-
-// clean up localStorage
-localStorage.removeItem('challenge');
-localStorage.removeItem('newReplyNotification');
-localStorage.removeItem('userAccount');
-
-// clean up cookies
-jsCookie.remove('hideHero');
-jsCookie.remove('_ga');
-jsCookie.remove('_gat');
-jsCookie.remove('_gid');
 
 const initData = window.reallyreadit.app.initData;
 
