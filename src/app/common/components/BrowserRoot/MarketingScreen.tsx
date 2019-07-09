@@ -11,7 +11,8 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: () => void,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
-	onViewPrivacyPolicy: () => void
+	onViewPrivacyPolicy: () => void,
+	variant: number
 } 
 export default class MarketingScreen extends React.PureComponent<Props> {
 	private readonly _secondSectionElementRef: React.RefObject<HTMLDivElement>;

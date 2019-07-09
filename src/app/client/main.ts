@@ -39,6 +39,8 @@ const rootProps = {
 	),
 	initialLocation: initData.initialLocation,
 	initialUser: initData.userAccount,
+	iosReferrerUrl: initData.iosReferrerUrl,
+	marketingScreenVariant: initData.marketingScreenVariant,
 	serverApi,
 	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint
@@ -67,7 +69,7 @@ switch (initData.clientType) {
 				browserApi: new BrowserApi(),
 				deviceType: initData.deviceType,
 				extensionApi: new ExtensionApi(initData.extensionId),
-				newReplyNotification: initData.newReplyNotification
+				newReplyNotification: initData.newReplyNotification 
 			}
 		);
 		break;

@@ -13,12 +13,14 @@ import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import { DateTime } from 'luxon';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import UserAccountCreation from '../../../common/models/UserAccountCreation';
 
 interface Props {
 	onCloseDialog: () => void,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetKeyMetrics: FetchFunctionWithParams<{ startDate: string, endDate: string }, KeyMetricsReportRow[]>,
+	onGetUserAccountCreations: FetchFunctionWithParams<{ startDate: string, endDate: string }, UserAccountCreation[]>,
 	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
@@ -33,6 +35,11 @@ class AdminPage extends React.Component<
 			startDate: string,
 			endDate: string,
 			data: Fetchable<KeyMetricsReportRow[]>
+		},
+		userAccountCreations: {
+			startDate: string,
+			endDate: string,
+			data: Fetchable<UserAccountCreation[]>
 		},
 		userStats: Fetchable<UserAccountStats>,
 		mailings: Fetchable<BulkMailing[]>
@@ -58,7 +65,7 @@ class AdminPage extends React.Component<
 			/>
 		);
 	};
-	private readonly _setStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _setKeyMetricsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
 			keyMetrics: {
 				...this.state.keyMetrics,
@@ -66,10 +73,26 @@ class AdminPage extends React.Component<
 			}
 		});
 	};
-	private readonly _setEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _setKeyMetricsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
 			keyMetrics: {
 				...this.state.keyMetrics,
+				endDate: event.target.value
+			}
+		});
+	};
+	private readonly _setUserAccountCreationsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			userAccountCreations: {
+				...this.state.userAccountCreations,
+				startDate: event.target.value
+			}
+		});
+	};
+	private readonly _setUserAccountCreationsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			userAccountCreations: {
+				...this.state.userAccountCreations,
 				endDate: event.target.value
 			}
 		});
@@ -79,6 +102,14 @@ class AdminPage extends React.Component<
 			keyMetrics: {
 				...this.state.keyMetrics,
 				data: this.fetchKeyMetrics(this.state.keyMetrics.startDate, this.state.keyMetrics.endDate)
+			}
+		});
+	};
+	private readonly _fetchUserAccountCreations = () => {
+		this.setState({
+			userAccountCreations: {
+				...this.state.userAccountCreations,
+				data: this.fetchUserAccountCreations(this.state.userAccountCreations.startDate, this.state.userAccountCreations.endDate)
 			}
 		});
 	};
@@ -98,14 +129,23 @@ class AdminPage extends React.Component<
 				.minus({ days: 30 })
 				.toISO()
 				.replace(/Z$/, ''),
-			endDate = utcNowDate
+			keyMetricsEndDate = utcNowDate
+				.toISO()
+				.replace(/Z$/, ''),
+			userAccountCreationsEndDate = utcNowDate
+				.plus({ days: 1 })
 				.toISO()
 				.replace(/Z$/, '');
 		this.state = {
 			keyMetrics: {
 				startDate,
-				endDate,
-				data: this.fetchKeyMetrics(startDate, endDate)
+				endDate: keyMetricsEndDate,
+				data: this.fetchKeyMetrics(startDate, keyMetricsEndDate)
+			},
+			userAccountCreations: {
+				startDate,
+				endDate: userAccountCreationsEndDate,
+				data: this.fetchUserAccountCreations(startDate, userAccountCreationsEndDate)
 			},
 			userStats: props.onGetUserStats(
 				this._asyncTracker.addCallback(userStats => { this.setState({ userStats }); })
@@ -119,6 +159,12 @@ class AdminPage extends React.Component<
 		return this.props.onGetKeyMetrics(
 			{ startDate, endDate },
 			this._asyncTracker.addCallback(keyMetrics => { this.setState({ keyMetrics: { ...this.state.keyMetrics, data: keyMetrics } }); })
+		);
+	}
+	private fetchUserAccountCreations(startDate: string, endDate: string) {
+		return this.props.onGetUserAccountCreations(
+			{ startDate, endDate },
+			this._asyncTracker.addCallback(userAccountCreations => { this.setState({ userAccountCreations: { ...this.state.userAccountCreations, data: userAccountCreations } }); })
 		);
 	}
 	public componentWillUnmount() {
@@ -163,12 +209,12 @@ class AdminPage extends React.Component<
 									<input
 										type="text"
 										value={this.state.keyMetrics.startDate}
-										onChange={this._setStartDate}
+										onChange={this._setKeyMetricsStartDate}
 									/>
 									<input
 										type="text"
 										value={this.state.keyMetrics.endDate}
-										onChange={this._setEndDate}
+										onChange={this._setKeyMetricsEndDate}
 									/>
 									<button onClick={this._fetchKeyMetrics}>Run Report</button>
 								</div>
@@ -221,6 +267,60 @@ class AdminPage extends React.Component<
 									</tr> :
 								<tr>
 									<td colSpan={12}>Loading...</td>
+								</tr>}
+						</tbody>
+					</table>
+					<table>
+						<caption>
+							<div className="content">
+								<strong>User Account Creations</strong>
+								<div>
+									<input
+										type="text"
+										value={this.state.userAccountCreations.startDate}
+										onChange={this._setUserAccountCreationsStartDate}
+									/>
+									<input
+										type="text"
+										value={this.state.userAccountCreations.endDate}
+										onChange={this._setUserAccountCreationsEndDate}
+									/>
+									<button onClick={this._fetchUserAccountCreations}>Run Report</button>
+								</div>
+							</div>
+						</caption>
+						<thead>
+							<tr>
+								<th>Date Created</th>
+								<th>Id</th>
+								<th>Name</th>
+								<th>Time Zone Name</th>
+								<th>Client Mode</th>
+								<th>Marketing Screen Variant</th>
+								<th>Referrer Url</th>
+								<th>Initial Path</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!this.state.userAccountCreations.data.isLoading ?
+								this.state.userAccountCreations.data.value ?
+									this.state.userAccountCreations.data.value.map(row => (
+										<tr key={row.id}>
+											<td>{row.dateCreated}</td>
+											<td>{row.id}</td>
+											<td>{row.name}</td>
+											<td>{row.timeZoneName}</td>
+											<td>{row.clientMode}</td>
+											<td>{row.marketingScreenVariant}</td>
+											<td>{row.referrerUrl}</td>
+											<td>{row.initialPath}</td>
+										</tr>
+									)) :
+									<tr>
+										<td colSpan={8}>Error loading user account creations.</td>
+									</tr> :
+								<tr>
+									<td colSpan={8}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>
@@ -281,6 +381,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}
 					onGetKeyMetrics={deps.onGetKeyMetrics}
+					onGetUserAccountCreations={deps.onGetUserAccountCreations}
 					onGetUserStats={deps.onGetUserStats}
 					onOpenDialog={deps.onOpenDialog}
 					onSendBulkMailing={deps.onSendBulkMailing}

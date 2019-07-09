@@ -60,7 +60,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this._clipboard.copyText(
 			'com.readup.nativeClientClipboardReferrer:' +
 			JSON.stringify({
+				marketingScreenVariant: this.props.marketingScreenVariant,
 				path: window.location.pathname,
+				referrerUrl: window.document.referrer,
 				timestamp: Date.now()
 			})
 		);
@@ -250,6 +252,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isDesktopDevice: this._isDesktopDevice,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				marketingScreenVariant: this.props.marketingScreenVariant,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,

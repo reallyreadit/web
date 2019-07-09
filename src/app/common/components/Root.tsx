@@ -5,7 +5,7 @@ import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
 import ResetPasswordDialog from './ResetPasswordDialog';
-import { parseQueryString, clientTypeQueryStringKey, redirectedQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys } from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
@@ -42,6 +42,8 @@ export interface Props {
 	captcha: Captcha,
 	initialLocation: RouteLocation,
 	initialUser: UserAccount | null,
+	iosReferrerUrl: string | null
+	marketingScreenVariant: number,
 	serverApi: ServerApi,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
@@ -245,7 +247,16 @@ export default abstract class Root<
 	};
 	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.props.serverApi
-			.createUserAccount(name, email, password, captchaResponse, DateTime.local().zoneName)
+			.createUserAccount(
+				name, 
+				email,
+				password,
+				captchaResponse,
+				DateTime.local().zoneName,
+				this.props.marketingScreenVariant,
+				this.props.iosReferrerUrl || window.document.referrer,
+				this.props.initialLocation.path
+			)
 			.then(user => {
 				this.onUserSignedIn(user);
 			});
@@ -351,6 +362,7 @@ export default abstract class Root<
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetKeyMetrics: this.props.serverApi.getKeyMetrics,
+				onGetUserAccountCreations: this.props.serverApi.getUserAccountCreations,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
 				onOpenDialog: this._openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
@@ -445,7 +457,7 @@ export default abstract class Root<
 		return screen;
 	}
 	protected getLocationDependentState(location: RouteLocation) {
-		const route = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]);
+		const route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
 		return {
 			dialog: route.dialogKey != null ?
 				this._dialogCreatorMap[route.dialogKey](location) :

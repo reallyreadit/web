@@ -15,7 +15,9 @@ export default interface InitData {
 	extensionId: string,
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,
+	marketingScreenVariant: number,
 	newReplyNotification: NewReplyNotification,
+	iosReferrerUrl: string,
 	userAccount: UserAccount,
 	version: string,
 	webServerEndpoint: HttpEndpoint

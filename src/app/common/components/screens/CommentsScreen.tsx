@@ -8,7 +8,7 @@ import routes from '../../../../common/routing/routes';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { clientTypeQueryStringKey, redirectedQueryStringKey } from '../../../../common/routing/queryString';
+import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import RatingSelector from '../../../../common/components/RatingSelector';
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
@@ -17,7 +17,7 @@ import ScreenContainer from '../ScreenContainer';
 import CommentsBox from '../../../../common/components/comments/CommentsBox';
 
 export function getPathParams(location: RouteLocation) {
-	const params = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]).getPathParams(location.path);
+	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
 	let result = {
 		slug: params['sourceSlug'] + '_' + params['articleSlug']
 	} as {

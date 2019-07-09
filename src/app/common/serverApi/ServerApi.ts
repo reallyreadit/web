@@ -21,6 +21,7 @@ import CommunityReadTimeWindow from '../../../common/models/CommunityReadTimeWin
 import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import ReadingTimeTotalsTimeWindow from '../../../common/models/ReadingTimeTotalsTimeWindow';
 import ReadingTimeStats from '../../../common/models/ReadingTimeStats';
+import UserAccountCreation from '../../../common/models/UserAccountCreation';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -44,10 +45,10 @@ export default abstract class {
 	}
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
-	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string, timeZoneName: string) => {
+	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string, timeZoneName: string, marketingScreenVariant: number, referrerUrl: string, initialPath: string) => {
 		return this.post<UserAccount>({
 			path: '/UserAccounts/CreateAccount',
-			data: { name, email, password, captchaResponse, timeZoneName }
+			data: { name, email, password, captchaResponse, timeZoneName, marketingScreenVariant, referrerUrl, initialPath }
 		});
 	};
 	public readonly resendConfirmationEmail = () => {
@@ -131,6 +132,7 @@ export default abstract class {
 
 	// Analytics
 	public readonly getKeyMetrics = this.createFetchFunctionWithParams<{ startDate: string, endDate: string }, KeyMetricsReportRow[]>('/Analytics/KeyMetrics');
+	public readonly getUserAccountCreations = this.createFetchFunctionWithParams<{ startDate: string, endDate: string }, UserAccountCreation[]>('/Analytics/UserAccountCreations');
 	public readonly logExtensionRemoval = (installationId: string) => this.post({ path: '/Extension/Uninstall', data: { installationId } });
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
 

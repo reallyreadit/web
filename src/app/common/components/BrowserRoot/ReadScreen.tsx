@@ -12,7 +12,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import OnboardingScreen from './OnboardingScreen';
 import { formatFetchable } from '../../../../common/format';
 import produce from 'immer';
-import { clientTypeQueryStringKey, redirectedQueryStringKey } from '../../../../common/routing/queryString';
+import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -84,7 +84,7 @@ export default function createReadScreenFactory<TScreenKey>(
 	return {
 		create: (location: RouteLocation) => {
 			const
-				pathParams = findRouteByLocation(routes, location, [clientTypeQueryStringKey, redirectedQueryStringKey]).getPathParams(location.path),
+				pathParams = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path),
 				article = deps.onGetArticle(
 					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
 					article => {

@@ -17,7 +17,7 @@ import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey, redirectedQueryStringKey } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys } from '../../common/routing/queryString';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
@@ -38,7 +38,7 @@ function findRouteByRequest(req: express.Request) {
 			path: req.path,
 			queryString: createQueryString(req.query)
 		},
-		[clientTypeQueryStringKey, redirectedQueryStringKey]
+		unroutableQueryStringKeys
 	);
 }
 
@@ -362,6 +362,23 @@ server = server.use((req, res, next) => {
 });
 // render the app
 server = server.get('/*', (req, res) => {
+	// marketing screen variation
+	const marketingScreenVariations = [1, 2, 3];
+	let marketingScreenVariant = parseInt(req.cookies[marketingScreenVariantQueryStringKey] || req.query[marketingScreenVariantQueryStringKey]);
+	if (!marketingScreenVariations.includes(marketingScreenVariant)) {
+		marketingScreenVariant = marketingScreenVariations[Math.floor(Math.random() * marketingScreenVariations.length)];
+		res.cookie(
+			marketingScreenVariantQueryStringKey,
+			marketingScreenVariant,
+			{
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: true,
+				secure: config.secureCookie
+			}
+		);
+	}
+	// referrer url from ios browser via ios app clipboard referrer
+	const iosReferrerUrl = req.query[referrerUrlQueryStringKey];
 	// prepare props
 	const browserApi = new BrowserApi();
 	const deviceType = (
@@ -386,6 +403,8 @@ server = server.get('/*', (req, res) => {
 			queryString: createQueryString(req.query)
 		},
 		initialUser: req.sessionState.userAccount,
+		iosReferrerUrl,
+		marketingScreenVariant,
 		serverApi: req.api,
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
@@ -441,8 +460,10 @@ server = server.get('/*', (req, res) => {
 				deviceType,
 				exchanges: req.api.exchanges,
 				extensionId: config.extensionId,
+				marketingScreenVariant,
 				newReplyNotification: req.sessionState.newReplyNotification,
 				initialLocation: rootProps.initialLocation,
+				iosReferrerUrl,
 				userAccount: req.sessionState.userAccount,
 				version: version.app,
 				webServerEndpoint: config.webServer

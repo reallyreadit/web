@@ -16,7 +16,7 @@ import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
-import { createQueryString, clientTypeQueryStringKey } from '../../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
@@ -207,7 +207,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		// state
 		let screens: Screen[];
 		let dialog: React.ReactNode;
-		const route = findRouteByLocation(routes, props.initialLocation, [clientTypeQueryStringKey]);
+		const route = findRouteByLocation(routes, props.initialLocation, unroutableQueryStringKeys);
 		if (route.screenKey === ScreenKey.Read) {
 			dialog = null;
 			if (props.initialUser) {
@@ -285,7 +285,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		if (this._hasProcessedInitialLocation) {
 			screen = this.createScreen(ScreenKey.Home);
 		} else {
-			const route = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
+			const route = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
 			if (route.screenKey === ScreenKey.Read) {
 				const
 					pathParams = route.getPathParams(this.props.initialLocation.path),
@@ -431,7 +431,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		// super
 		super.componentDidMount();
 		// get the initial route
-		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, [clientTypeQueryStringKey]);
+		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
 		// replace initial route in history
 		window.history.replaceState(
 			null,

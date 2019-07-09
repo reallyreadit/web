@@ -36,6 +36,7 @@ interface Props {
 	isBrowserCompatible: boolean,
 	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
+	marketingScreenVariant: number,
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -241,6 +242,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onInstallExtension={this.props.onInstallExtension}
 				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
 				onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
+				variant={this.props.marketingScreenVariant}
 			/>
 		);
 	}
