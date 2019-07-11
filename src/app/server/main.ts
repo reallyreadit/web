@@ -363,7 +363,7 @@ server = server.use((req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	// marketing screen variation
-	const marketingScreenVariations = [1, 2, 3];
+	const marketingScreenVariations = [1];
 	let marketingScreenVariant = parseInt(req.cookies[marketingScreenVariantQueryStringKey] || req.query[marketingScreenVariantQueryStringKey]);
 	if (!marketingScreenVariations.includes(marketingScreenVariant)) {
 		marketingScreenVariant = marketingScreenVariations[Math.floor(Math.random() * marketingScreenVariations.length)];
@@ -371,7 +371,7 @@ server = server.get('/*', (req, res) => {
 			marketingScreenVariantQueryStringKey,
 			marketingScreenVariant,
 			{
-				maxAge: 30 * 24 * 60 * 60 * 1000,
+				maxAge: 7 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 				secure: config.secureCookie
 			}
