@@ -129,7 +129,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 					content: (
 						<>
 							<p><strong>Thoughtful, interesting conversation is the heart and soul of Readup. Scribes are the top commenters of the past month.</strong></p>
-							<p>Scribes rearn replies in two ways: (1) by replying to others and (2) by getting replies on their comments.</p>
+							<p>Scribes earn replies in two ways: (1) by replying to others and (2) by getting replies on their comments.</p>
 						</>
 					)
 				};
