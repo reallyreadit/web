@@ -63,10 +63,24 @@ function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): 
 		}
 	};
 }
+const articleElementAttributeBlacklistRegex = /((^|\W)comments?($|\W))/i;
 export default function parseDocumentMetadata() {
 	let isArticle = false;
 	// misc
 	const misc = parseMiscMetadata();
+	if (
+		Array
+			.from(document.getElementsByTagName('article'))
+			.filter(
+				element => !(
+					articleElementAttributeBlacklistRegex.test(element.id) ||
+					articleElementAttributeBlacklistRegex.test(element.classList.value)
+				)
+			)
+			.length === 1
+	) {
+		isArticle = true;
+	}
 	// OpenGraph
 	let openGraph = parseOpenGraph();
 	if (openGraph) {
