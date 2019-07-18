@@ -2,6 +2,7 @@ import ParseResult from './ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 
 export default function parseMiscMetadata(): ParseResult {
+	const articleTitleElements = document.querySelectorAll('article h1');
 	return {
 		url: (
 			matchGetAbsoluteUrl(
@@ -13,7 +14,11 @@ export default function parseMiscMetadata(): ParseResult {
 			window.location.href.split(/\?|#/)[0]
 		),
 		article: {
-			title: document.title,
+			title: (
+				articleTitleElements.length === 1 ?
+					articleTitleElements[0].textContent.trim() :
+					document.title
+			),
 			source: {
 				url: (
 					matchGetAbsoluteUrl(
