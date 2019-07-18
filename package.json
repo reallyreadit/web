@@ -8,8 +8,8 @@
       "contentScript": 0.22,
       "extension": "1.4.1",
       "native-client": {
-        "reader": "3.2.0",
-        "share-extension": "2.0.0"
+        "reader": "3.2.1",
+        "share-extension": "2.0.1"
       }
     }
   },
