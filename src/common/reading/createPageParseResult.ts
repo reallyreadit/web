@@ -1,17 +1,18 @@
 import { MetadataParseResult } from './parseDocumentMetadata';
-import { ContentParseResult } from './parseDocumentContent';
+import ParseResult from '../contentParsing/ParseResult';
 
 export default function createPageParseResult(
 	metadata: MetadataParseResult,
-	content: ContentParseResult
+	content: ParseResult
 ) {
+	const wordCount = content.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0);
 	return {
 		...metadata.metadata,
-		wordCount: content.wordCount,
-		readableWordCount: content.elements.reduce((sum, el) => sum + el.wordCount, 0),
+		wordCount,
+		readableWordCount: wordCount,
 		article: {
 			...metadata.metadata.article,
-			description: metadata.metadata.article.description || content.excerpt
+			description: metadata.metadata.article.description
 		}
 	};
 }

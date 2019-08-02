@@ -63,7 +63,13 @@ const browserActionApi = new BrowserActionApi({
 		.then(article => {
 			webAppApi.articleUpdated({ article, isCompletionCommit: false });
 			return article;
-		})
+		}),
+	onToggleContentIdentificationDisplay: tabId => {
+		contentScriptApi.toggleContentIdentificationDisplay(tabId);
+	},
+	onToggleReadStateDisplay: tabId => {
+		contentScriptApi.toggleReadStateDisplay(tabId);
+	}
 });
 
 // content script
@@ -90,12 +96,12 @@ const contentScriptApi = new ContentScriptApi({
 		// return config
 		return serverApi
 			.getAuthStatus()
-			.then(isAuthenticated => ({
-				loadPage: isAuthenticated,
-				parseMode: JSON.parse(localStorage.getItem('parseMode')),
-				showOverlay: JSON.parse(localStorage.getItem('showOverlay')),
-				sourceRules: serverApi.getSourceRules(new URL(url).hostname)
-			}));
+			.then(
+				isAuthenticated => ({
+					loadPage: isAuthenticated,
+					sourceRules: serverApi.getSourceRules(new URL(url).hostname)
+				})
+			);
 	},
 	onRegisterPage: (tabId, data) => {
 		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
@@ -144,9 +150,6 @@ const contentScriptApi = new ContentScriptApi({
 		tabs.remove(tabId)
 		// update icon
 		getState().then(updateIcon);
-	},
-	onLoadContentParser: tabId => {
-		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
 	},
 	onGetComments: serverApi.getComments,
 	onPostComment: form => {
@@ -203,7 +206,9 @@ function getState(): Promise<BrowserActionState> {
 			serverApi.getAuthStatus()
 		])
 		.then(result => {
-			const focusedChromeTab = result[0],
+			const
+				debug = JSON.parse(localStorage.getItem('debug')) as boolean,
+				focusedChromeTab = result[0],
 				isAuthenticated = result[1],
 				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
 				showNewReplyIndicator = serverApi.hasNewReply();
@@ -212,6 +217,7 @@ function getState(): Promise<BrowserActionState> {
 				return Promise.resolve({
 					activeTab,
 					article: serverApi.getUserArticle(activeTab.articleId),
+					debug,
 					isAuthenticated,
 					isOnHomePage,
 					showNewReplyIndicator,
@@ -219,6 +225,7 @@ function getState(): Promise<BrowserActionState> {
 				});
 			} else {
 				return Promise.resolve({
+					debug,
 					isAuthenticated,
 					isOnHomePage,
 					showNewReplyIndicator,
@@ -259,8 +266,9 @@ function updateIcon(state: BrowserActionState) {
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('chrome.runtime.onInstalled');
 	// initialize settings
-	localStorage.setItem('parseMode', JSON.stringify('analyze'));
-	localStorage.setItem('showOverlay', JSON.stringify(false));
+	localStorage.removeItem('parseMode');
+	localStorage.removeItem('showOverlay');
+	localStorage.setItem('debug', JSON.stringify(true));
 	// clear storage
 	tabs.clear();
 	// update icon

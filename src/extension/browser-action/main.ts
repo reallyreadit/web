@@ -16,6 +16,8 @@ eventPageApi
 			onAckNewReply: ackNewReply,
 			onActivateReaderMode: activateReaderMode,
 			onDeactivateReaderMode: deactiveReaderMode,
+			onToggleContentIdentificationDisplay: toggleContentIdentificationDisplay,
+			onToggleReadStateDisplay: toggleReadStateDisplay,
 			onToggleStar: toggleArticleStar
 		});
 	});
@@ -54,6 +56,16 @@ function toggleArticleStar() {
 			});
 	}
 	return Promise.reject();
+}
+function toggleContentIdentificationDisplay() {
+	if (props.activeTab) {
+		eventPageApi.toggleContentIdentificationDisplay(props.activeTab.id);
+	}
+}
+function toggleReadStateDisplay() {
+	if (props.activeTab) {
+		eventPageApi.toggleReadStateDisplay(props.activeTab.id);
+	}
 }
 
 let props: Props;

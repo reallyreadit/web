@@ -18,7 +18,7 @@ export default class ContentElement {
         width: number,
         height: number
     };
-    private _showOverlay: boolean;
+    private _showOverlay = false;
     constructor(element: HTMLElement, wordCount: number) {
         // assign the element before executing any other methods
         this._element = element;
@@ -103,15 +103,19 @@ export default class ContentElement {
                 this._setLines(this.getReadState());
         }		
     }
-    public showOverlay(value: boolean) {
-        if (value) {
+    public toggleReadStateDisplay() {
+        if (this._showOverlay = !this._showOverlay) {
             this._element.style.boxShadow = 'inset 0 0 0 3px red';
             this._setBackgroundProgress();
         } else {
             this._element.style.boxShadow = '';
             this._element.style.backgroundImage = '';
         }
-        this._showOverlay = value;
+    }
+    public disableReadStateDisplay() {
+        if (this._showOverlay) {
+            this.toggleReadStateDisplay();
+        }
     }
     public isReadable() {
         return this._lines.some(line => this.isLineReadable(line));

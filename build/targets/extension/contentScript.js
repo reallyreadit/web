@@ -5,7 +5,6 @@ const
 const
 	project = require('../../project'),
 	createBuild = require('../../createBuild'),
-	contentParserBuild = require('./contentScript/contentParser'),
 	embedBuild = require('./contentScript/embed');
 
 const
@@ -27,14 +26,12 @@ function clean(env) {
 function build(env) {
 	return Promise.all([
 		contentScriptBuild.build(env),
-		contentParserBuild.build(env),
 		embedBuild.build(env)
 	]);
 }
 function watch() {
 	return Promise.all([
 		contentScriptBuild.watch(),
-		contentParserBuild.watch(),
 		embedBuild.watch()
 	]);
 }
