@@ -19,7 +19,7 @@ export function isValidContent(element: Element) {
 	return (
 		!nodeNameBlacklist.some(nodeName => element.nodeName === nodeName) &&
 		(
-			nodeNameWhitelist.some(nodeName => element.nodeName === nodeName || element.getElementsByTagName(nodeName).length) ||
+			nodeNameWhitelist.some(nodeName => element.nodeName === nodeName || !!element.getElementsByTagName(nodeName).length) ||
 			!getChildNodesTextContent(element).trim()
 		) &&
 		!findWordsInAttributes(element).some(word => attributeBlacklist.includes(word))
