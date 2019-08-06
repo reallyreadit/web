@@ -1,4 +1,4 @@
-export default interface TranspositionConfig {
+export default interface SerializedTranspositionRule {
 	elementSelectors: string[],
 	parentElementSelector: string
 }

@@ -55,9 +55,30 @@ const styleContent = `
 	overflow: hidden;
 	border-radius: 0.5em;
 }
+#rrit-article code,
+#rrit-article pre {
+	margin: 1em 0;
+	border: 1px solid #ddd;
+	padding: 1em;
+	background-color: #fafafa;
+	overflow: auto;
+	font-family: monospace;
+	font-size: 11pt;
+}
+#rrit-article p code,
+#rrit-article p pre,
+#rrit-article li code,
+#rrit-article li pre {
+	margin: 0;
+	border: none;
+	padding: 0 0.2em;
+}
+#rrit-article mark {
+	background-color: inherit;
+	color: inherit;
+}
 #rrit-article img {
 	display: block;
-	min-width: 75%;
 	height: auto !important;
 	margin: 0 auto;
 }

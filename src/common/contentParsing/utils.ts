@@ -31,6 +31,14 @@ export function isImageContainerElement(node: Node): node is Element {
 		node.nodeName === 'PICTURE'
 	);
 }
+export function isValidImgElement(imgElement: HTMLImageElement) {
+	return (
+		(imgElement.naturalWidth <= 1 && imgElement.naturalHeight <= 1) || (
+			(imgElement.naturalWidth >= 200 && imgElement.naturalHeight >= 100) ||
+			(imgElement.naturalWidth >= 100 && imgElement.naturalHeight >= 200)
+		)
+	);
+}
 export function zipContentLineages(containers: ContentContainer[]) {
 	return containers
 		.reduce<Node[][]>(

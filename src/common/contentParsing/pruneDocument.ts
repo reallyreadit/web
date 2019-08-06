@@ -20,7 +20,6 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 		if (isImageContainer) {
 			const image = images.find(image => image.containerElement === element);
 			if (image) {
-				image.containerElement.removeAttribute('style');
 				image.containerElement.classList.add('rrit-image-container');
 				if (image.credit) {
 					const credit = document.createElement('div');
@@ -35,7 +34,8 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 					(element as HTMLElement).insertAdjacentElement('afterend', caption);
 				}
 			}
-		} else if (isInsideImageContainer && isElement(element)) {
+		}
+		if (isElement(element)) {
 			element.removeAttribute('style');
 		}
 		Array

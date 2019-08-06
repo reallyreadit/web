@@ -1,7 +1,8 @@
-import TranspositionConfig from './TranspositionConfig';
+import TranspositionRule from './TranspositionRule';
 
 export default interface PublisherConfig {
-	hostnameRegex: RegExp,
-	transpositions: TranspositionConfig[],
-	imageSearchAttributeBlacklist: string[]
+	hostname: string,
+	transpositions: TranspositionRule[],
+	imageSearchAttributeBlacklist: string[],
+	textSearchAttributeWhitelist: string[]
 }

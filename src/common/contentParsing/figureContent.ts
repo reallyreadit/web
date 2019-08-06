@@ -1,4 +1,4 @@
-import { findWordsInAttributes } from './utils';
+import { findWordsInAttributes, isValidImgElement } from './utils';
 
 const
 	nodeNameBlacklist = ['BUTTON'],
@@ -22,6 +22,11 @@ export function isValidContent(element: Element) {
 			nodeNameWhitelist.some(nodeName => element.nodeName === nodeName || !!element.getElementsByTagName(nodeName).length) ||
 			!getChildNodesTextContent(element).trim()
 		) &&
-		!findWordsInAttributes(element).some(word => attributeBlacklist.includes(word))
+		!findWordsInAttributes(element).some(word => attributeBlacklist.includes(word)) &&
+		(
+			element.nodeName === 'IMG' ?
+				isValidImgElement(element as HTMLImageElement) :
+				true
+		)
 	);
 }
