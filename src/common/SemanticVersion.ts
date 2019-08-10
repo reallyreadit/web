@@ -1,4 +1,7 @@
 export default class SemanticVersion {
+	public static greatest(...versions: SemanticVersion[]) {
+		return versions.sort((a, b) => b.compareTo(a))[0];
+	}
 	private readonly _major: number;
 	private readonly _minor: number;
 	private readonly _patch: number;
@@ -10,6 +13,18 @@ export default class SemanticVersion {
 		this._major = parseInt(match[1]);
 		this._minor = parseInt(match[2]);
 		this._patch = parseInt(match[3]);
+	}
+	public canUpgradeTo(version: SemanticVersion) {
+		return (
+			version.major === this._major &&
+			(
+				version.minor > this._minor ||
+				(
+					version.minor === this._minor &&
+					version.patch > this._patch
+				)
+			)
+		);
 	}
 	public compareTo(version: SemanticVersion) {
 		if (this._major !== version._major) {
