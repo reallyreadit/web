@@ -16,6 +16,7 @@ import TextContainerSelectionConfig from './configuration/TextContainerSelection
 import TextContainerSearchConfig from './configuration/TextContainerSearchConfig';
 import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
 import configs from './configuration/configs';
+import { findPublisherConfig } from './configuration/PublisherConfig';
 
 // regular expressions
 const wordRegex = /\S+/g;
@@ -443,7 +444,7 @@ function findChildren(parent: Node, depth: number, edge: GraphEdge, searchArea: 
 }
 
 export default function parseDocumentContent(): ParseResult {
-	const publisherConfig = configs.publishers.find(config => location.hostname.endsWith(config.hostname));
+	const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
 
 	const contentSearchRootElement = selectContentSearchRootElement(
 		publisherConfig ?

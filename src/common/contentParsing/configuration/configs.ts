@@ -1,5 +1,6 @@
 import UniversalConfig from './UniversalConfig';
 import PublisherConfig from './PublisherConfig';
+import { LazyImageStrategy } from '../processLazyImages';
 
 export default {
 	universal: {
@@ -27,9 +28,9 @@ export default {
 		imageContainerMetadata: {
 			contentRegexBlacklist: [/audm/i],
 			contentRegexWhitelist: [],
-			captionSelectors: ['figcaption', '[class*="caption"i]'],
-			creditSelectors: ['[class*="credit"i]', '[class*="source"i]'],
-			imageWrapperAttributeWordParts: ['image', 'img']
+			captionSelectors: ['figcaption', '[class*="caption"i]', '[itemProp*="caption"i]', '[itemProp*="description"i]'],
+			creditSelectors: ['[class*="credit"i]', '[class*="source"i]', '[itemProp*="copyrightHolder"i]'],
+			imageWrapperAttributeWordParts: ['image', 'img', 'photo']
 		},
 		imageContainerContent: {
 			nodeNameBlacklist: ['BUTTON'],
@@ -52,7 +53,12 @@ export default {
 					],
 					parentElementSelector: '.lead + div'
 				}
-			]
+			],
+			imageStrategy: LazyImageStrategy.PostLoadImgTag
+		},
+		{
+			hostname: 'atlantic.com',
+			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrc
 		},
 		{
 			hostname: 'churchofjesuschrist.org',
@@ -91,6 +97,10 @@ export default {
 			]
 		},
 		{
+			hostname: 'insider.com',
+			imageStrategy: LazyImageStrategy.PostLoadImgTag
+		},
+		{
 			hostname: 'medium.com',
 			textContainerSearch: {
 				attributeWhitelist: ['ad']
@@ -105,7 +115,8 @@ export default {
 					],
 					parentElementSelector: '.story-body-2'
 				}
-			]
+			],
+			imageStrategy: LazyImageStrategy.NytFigureImageObject
 		},
 		{
 			hostname: 'sciencedaily.com',

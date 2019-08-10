@@ -8,6 +8,7 @@ import TranspositionRule from './TranspositionRule';
 import ContainerSearchConfig from './ContainerSearchConfig';
 import ImageContainerContentConfig from './ImageContainerContentConfig';
 import { buildLineage } from '../utils';
+import { LazyImageStrategy } from '../processLazyImages';
 
 export default class Config {
 	private readonly _textContainerSearch: TextContainerSearchConfig;
@@ -19,6 +20,7 @@ export default class Config {
 	private readonly _contentSearchRootElementSelector: string | null;
 	private readonly _transpositions: TranspositionRule[];
 	private readonly _wordCountTraversalPathSearchLimitMultiplier: number;
+	private readonly _imageStrategy: LazyImageStrategy | null;
 	constructor(universal: UniversalConfig, publisher: PublisherConfig | null, contentSearchRootElement: Element) {
 		this._textContainerContent = universal.textContainerContent;
 		this._imageContainerMetadata = universal.imageContainerMetadata;
@@ -78,6 +80,7 @@ export default class Config {
 			} else {
 				this._transpositions = [];
 			}
+			this._imageStrategy = publisher.imageStrategy;
 		} else {
 			this._textContainerSearch = {
 				...universal.textContainerSearch,
@@ -116,5 +119,8 @@ export default class Config {
 	}
 	public get wordCountTraversalPathSearchLimitMultiplier() {
 		return this._wordCountTraversalPathSearchLimitMultiplier;
+	}
+	public get imageStrategy() {
+		return this._imageStrategy;
 	}
 }

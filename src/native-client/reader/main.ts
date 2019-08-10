@@ -21,6 +21,9 @@ import { calculateEstimatedReadTime } from '../../common/calculate';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
+import procesLazyImages from '../../common/contentParsing/processLazyImages';
+import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
+import configs from '../../common/contentParsing/configuration/configs';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -47,7 +50,6 @@ function share(data: ShareData) {
 let lookupResult: ArticleLookupResult;
 
 const
-	// metadata parsing must happen before mutating content parsing
 	metadataParseResult = parseDocumentMetadata(),
 	contentParseResult = parseDocumentContent(),
 	page = new Page(
@@ -63,6 +65,11 @@ styleArticleDocument(
 		.filter(name => name ? !!name.trim() : false)
 		.join(', ')
 );
+
+const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
+if (publisherConfig && publisherConfig.imageStrategy != null) {
+	procesLazyImages(publisherConfig.imageStrategy);
+}
 
 const reader = new Reader(
 	event => {
