@@ -27,12 +27,22 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 					const credit = document.createElement('div');
 					credit.classList.add('rrit-image-credit');
 					credit.textContent = image.credit;
+					if (image.caption) {
+						credit.textContent = credit.textContent.replace(image.caption, '');
+					}
+					credit.textContent = credit.textContent
+						.replace(/^credit:?\s*/i, '')
+						.trim();
 					(element as HTMLElement).insertAdjacentElement('afterend', credit);
 				}
 				if (image.caption) {
 					const caption = document.createElement('div');
 					caption.classList.add('rrit-image-caption');
 					caption.textContent = image.caption;
+					if (image.credit) {
+						caption.textContent = caption.textContent.replace(image.credit, '');
+					}
+					caption.textContent = caption.textContent.trim();
 					(element as HTMLElement).insertAdjacentElement('afterend', caption);
 				}
 			}
