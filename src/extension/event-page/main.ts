@@ -8,6 +8,7 @@ import BrowserActionApi from './BrowserActionApi';
 import BrowserActionState from '../common/BrowserActionState';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
+import SemanticVersion from '../../common/SemanticVersion';
 
 console.log('loading main.ts...');
 
@@ -150,6 +151,22 @@ const contentScriptApi = new ContentScriptApi({
 		tabs.remove(tabId)
 		// update icon
 		getState().then(updateIcon);
+	},
+	onLoadContentParser: tabId => {
+		try {
+			if (
+				new SemanticVersion(localStorage.getItem('contentParserVersion'))
+					.compareTo(new SemanticVersion(window.reallyreadit.extension.config.contentParserVersion)) > 0
+			) {
+				console.log(`contentScriptApi.onLoadContentParser (loading content parser from localStorage, tabId: ${tabId})`);
+				chrome.tabs.executeScript(tabId, { code: localStorage.getItem('contentParserScript') });
+				return;
+			}
+		} catch {
+			// fall back to bundled script
+		}
+		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
+		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
 	},
 	onGetComments: serverApi.getComments,
 	onPostComment: form => {
@@ -298,6 +315,22 @@ chrome.runtime.onInstalled.addListener(details => {
 				});
 		});
 	}
+	// create alarms
+	chrome.alarms.create(
+		'updateContentParser',
+		{
+			when: Date.now(),
+			periodInMinutes: 120
+		}
+	);
+	chrome.alarms.create(ServerApi.alarms.checkNewReplyNotification, {
+		when: Date.now(),
+		periodInMinutes: 20
+	});
+	chrome.alarms.create(ServerApi.alarms.getSourceRules, {
+		when: Date.now(),
+		periodInMinutes: 120
+	});
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
@@ -326,3 +359,49 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
 		contentScriptApi.updateHistoryState(details.tabId, details.url);
 	}
 });
+chrome.alarms.onAlarm.addListener(
+	alarm => {
+		if (alarm.name === 'updateContentParser') {
+			const currentVersion = SemanticVersion.greatest(
+				...[
+					window.reallyreadit.extension.config.contentParserVersion,
+					localStorage.getItem('contentParserVersion')
+				]
+				.filter(string => !!string)
+				.map(versionString => new SemanticVersion(versionString))
+			);
+			console.log(`chrome.alarms.onAlarm (updateContentParser: checking for new version. current version: ${currentVersion.toString()})`);
+			fetch(createUrl(window.reallyreadit.extension.config.static, '/extension/content-parser.txt'))
+				.then(res => res.text())
+				.then(text => {
+					const newVersionInfo = text
+						.split('\n')
+						.filter(line => !!line)
+						.map(
+							fileName => ({
+								fileName,
+								version: new SemanticVersion(fileName)
+							})
+						)
+						.find(versionInfo => currentVersion.canUpgradeTo(versionInfo.version));
+					if (newVersionInfo) {
+						console.log(`chrome.alarms.onAlarm (updateContentParser: updating to version: ${newVersionInfo.version.toString()})`);
+						fetch(createUrl(window.reallyreadit.extension.config.static, '/extension/content-parser/' + newVersionInfo.fileName))
+							.then(res => res.text())
+							.then(text => {
+								localStorage.setItem('contentParserScript', text);
+								localStorage.setItem('contentParserVersion', newVersionInfo.version.toString());
+							})
+							.catch(() => {
+								console.log('chrome.alarms.onAlarm (updateContentParser: error updating to new version)');
+							});
+					} else {
+						console.log('chrome.alarms.onAlarm (updateContentParser: no new version)');	
+					}
+				})
+				.catch(() => {
+					console.log('chrome.alarms.onAlarm (updateContentParser: error checking for new version)');
+				});
+		}
+	}
+);

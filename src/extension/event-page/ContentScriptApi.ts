@@ -19,6 +19,7 @@ export default class ContentScriptApi {
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
 		onUnregisterPage: (tabId: number) => void,
 		onUnregisterContentScript: (tabId: number) => void,
+		onLoadContentParser: (tabId: number) => void,
 		onGetComments: (slug: string) => Promise<CommentThread[]>,
 		onPostComment: (form: PostCommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>
 	}) {
@@ -51,6 +52,9 @@ export default class ContentScriptApi {
 						return true;
 					case 'unregisterContentScript':
 						handlers.onUnregisterContentScript(sender.tab.id);
+						break;
+					case 'loadContentParser':
+						handlers.onLoadContentParser(sender.tab.id);
 						break;
 					case 'getComments':
 						handlers

@@ -20,6 +20,7 @@ import * as smoothscroll from 'smoothscroll-polyfill';
 import { calculateEstimatedReadTime } from '../../common/calculate';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
+import pruneDocument from '../../common/contentParsing/pruneDocument';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -53,10 +54,14 @@ const
 		contentParseResult.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
 	);
 
+pruneDocument(contentParseResult);
 styleArticleDocument(
 	window.document,
 	metadataParseResult.metadata.article.title,
-	metadataParseResult.metadata.article.authors.join(', ')
+	metadataParseResult.metadata.article.authors
+		.map(author => author.name)
+		.filter(name => name ? !!name.trim() : false)
+		.join(', ')
 );
 
 const reader = new Reader(

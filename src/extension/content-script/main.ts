@@ -12,16 +12,27 @@ import { Props as EmbedProps } from './embed/components/App';
 import insertBookmarkPrompt from './insertBookmarkPrompt';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import ParseResult from '../../common/contentParsing/ParseResult';
-import pruneDocument from '../../common/contentParsing/pruneDocument';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
-import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
+import LazyScript from './LazyScript';
+
+window.reallyreadit = {
+	extension: {
+		contentScript: {
+			contentParser: new LazyScript(() => {
+				eventPageApi.loadContentParser();
+			})
+		}
+	}
+};
+
+const { contentParser } = window.reallyreadit.extension.contentScript;
 
 let
+	path = window.location.pathname,
 	context: {
 		contentParseResult: ParseResult,
 		lookupResult: ArticleLookupResult,
 		page: Page,
-		path: string,
 		isContentIdentificationDisplayEnabled: boolean
 	} | null,
 	initData: {
@@ -41,11 +52,14 @@ const eventPageApi = new EventPageApi({
 		document.body.style.opacity = '0';
 		setTimeout(
 			() => {
-				pruneDocument(context.contentParseResult);
-				styleArticleDocument(document, context.lookupResult.userArticle.title, context.lookupResult.userArticle.authors.join(', '))
-				document.body.style.opacity = '1';
+				contentParser
+					.get()
+					.then(parser => {
+						parser.prune(context.contentParseResult);
+						styleArticleDocument(document, context.lookupResult.userArticle.title, context.lookupResult.userArticle.authors.join(', '));
+					});
 			},
-			1000
+			500
 		);
 	},
 	onArticleUpdated: event => {
@@ -132,8 +146,9 @@ const eventPageApi = new EventPageApi({
 		window.clearTimeout(historyStateUpdatedTimeout);
 		historyStateUpdatedTimeout = window.setTimeout(() => {
 			const newPath = new URL(url).pathname;
-			if (!context || newPath !== context.path) {
+			if (newPath !== path) {
 				// TODO: gotta come up with a more robust way to detect page changes
+				path = newPath;
 				setTimeout(loadPage, 2000);
 			}
 		}, 250);
@@ -278,7 +293,6 @@ const reader = new Reader(
 // page lifecycle
 function loadPage() {
 	unloadPage().then(() => {
-		const path = window.location.pathname;
 		// check for matching source rules
 		const rule = initData.sourceRules
 			.filter(rule => rule.path.test(path))
@@ -291,34 +305,37 @@ function loadPage() {
 				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
 				(rule && rule.action === SourceRuleAction.Read)
 			) {
-				const content = parseDocumentContent();
-				if (
-					content.primaryTextContainers.length &&
-					(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
-				) {
-					const page = new Page(
-						content.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
-					);
-					eventPageApi
-						.registerPage(createPageParseResult(metaParseResult, content))
-						.then(lookupResult => {
-							// set the context
-							context = {
-								contentParseResult: content,
-								lookupResult,
-								page,
-								path,
-								isContentIdentificationDisplayEnabled: false
-							};
-							page.setReadState(lookupResult.userPage.readState);
-							reader.loadPage(page);
-							// load the user interface
-							loadUserInterface();
-						})
-						.catch(() => {
-							unloadPage();
-						});
-				}
+				contentParser
+					.get()
+					.then(parser => {
+						const content = parser.parse();
+						if (
+							content.primaryTextContainers.length &&
+							(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
+						) {
+							const page = new Page(
+								content.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
+							);
+							eventPageApi
+								.registerPage(createPageParseResult(metaParseResult, content))
+								.then(lookupResult => {
+									// set the context
+									context = {
+										contentParseResult: content,
+										lookupResult,
+										page,
+										isContentIdentificationDisplayEnabled: false
+									};
+									page.setReadState(lookupResult.userPage.readState);
+									reader.loadPage(page);
+									// load the user interface
+									loadUserInterface();
+								})
+								.catch(() => {
+									unloadPage();
+								});
+						}
+					});
 			}
 		}
 	});

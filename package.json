@@ -6,10 +6,13 @@
     "version": {
       "app": "1.5.0",
       "contentScript": 0.22,
-      "extension": "2.0.0",
+      "extension": {
+        "package": "2.0.0",
+        "content-parser": "1.0.0"
+      },
       "native-client": {
-        "reader": "3.2.1",
-        "share-extension": "2.0.1"
+        "reader": "4.0.0",
+        "share-extension": "3.0.0"
       }
     }
   },

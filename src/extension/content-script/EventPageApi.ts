@@ -82,6 +82,9 @@ export default class EventPageApi {
 	public unregisterContentScript() {
 		sendMessage('unregisterContentScript');
 	}
+	public loadContentParser() {
+		sendMessage('loadContentParser');
+	}
 	public getComments(slug: string) {
 		return sendMessageAwaitingResponse<CommentThread[]>('getComments', slug);
 	}

@@ -3,8 +3,10 @@ import ContentContainer from './ContentContainer';
 import { buildLineage, zipContentLineages, isImageContainerElement, isElement } from './utils';
 import ImageContainer from './ImageContainer';
 import { isValidContent } from './figureContent';
+import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
+import configs from './configuration/configs';
 
-function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[]) {
+function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[], config: ImageContainerContentConfig) {
 	if (
 		isElement(element) &&
 		element.id.startsWith('com_readup_')
@@ -12,7 +14,7 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 		return;
 	} else if (
 		(depth > content.length - 1 || !content[depth].includes(element)) &&
-		(!(isInsideImageContainer && isElement(element) && isValidContent(element)))
+		(!(isInsideImageContainer && isElement(element) && isValidContent(element, config)))
 	) {
 		element.remove();
 	} else {
@@ -41,7 +43,7 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 		Array
 			.from(element.childNodes)
 			.forEach(child => {
-				prune(child, depth + 1, isImageContainer || isInsideImageContainer, content, images);
+				prune(child, depth + 1, isImageContainer || isInsideImageContainer, content, images, config);
 			});
 	}
 }
@@ -89,6 +91,16 @@ export default function pruneDocument(parseResult: ParseResult) {
 						.concat(imageContainers)
 				)
 			),
-		imageContainers
+		imageContainers,
+		configs.universal.imageContainerContent
 	);
+	if (document.body.children.length === 1) {
+		let contentRoot: Element = document.body.children[0];
+		while (contentRoot.children.length === 1) {
+			contentRoot = contentRoot.children[0];
+		}
+		if (contentRoot !== document.body.children[0]) {
+			document.body.replaceChild(contentRoot, document.body.children[0]);
+		}
+	}
 }

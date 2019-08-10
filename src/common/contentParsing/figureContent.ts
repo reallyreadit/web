@@ -1,9 +1,5 @@
 import { findWordsInAttributes, isValidImgElement } from './utils';
-
-const
-	nodeNameBlacklist = ['BUTTON'],
-	nodeNameWhitelist = ['IMG', 'META', 'PICTURE', 'SOURCE'],
-	attributeBlacklist = ['expand', 'icon', 'share'];
+import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
 
 function getChildNodesTextContent(element: Element) {
 	let text = '';
@@ -15,14 +11,14 @@ function getChildNodesTextContent(element: Element) {
 	return text;
 }
 
-export function isValidContent(element: Element) {
+export function isValidContent(element: Element, config: ImageContainerContentConfig) {
 	return (
-		!nodeNameBlacklist.some(nodeName => element.nodeName === nodeName) &&
+		!config.nodeNameBlacklist.some(nodeName => element.nodeName === nodeName) &&
 		(
-			nodeNameWhitelist.some(nodeName => element.nodeName === nodeName || !!element.getElementsByTagName(nodeName).length) ||
+			config.nodeNameWhitelist.some(nodeName => element.nodeName === nodeName || !!element.getElementsByTagName(nodeName).length) ||
 			!getChildNodesTextContent(element).trim()
 		) &&
-		!findWordsInAttributes(element).some(word => attributeBlacklist.includes(word)) &&
+		!findWordsInAttributes(element).some(word => config.attributeBlacklist.includes(word)) &&
 		(
 			element.nodeName === 'IMG' ?
 				isValidImgElement(element as HTMLImageElement) :
