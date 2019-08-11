@@ -48,18 +48,33 @@ let historyStateUpdatedTimeout: number;
 
 const eventPageApi = new EventPageApi({
 	onActivateReaderMode: () => {
-		document.body.style.transition = 'opacity 500ms';
+		// transition animation
+		document.body.style.transition = 'opacity 350ms';
 		document.body.style.opacity = '0';
+		document.body.classList.add('com_readup_activating_reader_mode');
 		setTimeout(
 			() => {
 				contentParser
 					.get()
 					.then(parser => {
+						// remove iframe since pruning destorys its state
+						const isEmbedInserted = !!iframe;
+						if (isEmbedInserted) {
+							removeEmbed();
+						}
+						// prune and style
 						parser.prune(context.contentParseResult);
 						styleArticleDocument(document, context.lookupResult.userArticle.title, context.lookupResult.userArticle.authors.join(', '));
+						// restore iframe
+						if (isEmbedInserted) {
+							insertEmbed(context.lookupResult.userArticle);
+						}
+						// transition animation
+						document.body.style.opacity = '1';
+						document.body.classList.remove('com_readup_activating_reader_mode');
 					});
 			},
-			500
+			350
 		);
 	},
 	onArticleUpdated: event => {

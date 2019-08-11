@@ -110,19 +110,22 @@ export default (document: Document, title: string | null, byline: string | null)
 				style.remove();	
 			}
 		});
-	Array
-		.from(document.querySelectorAll('[style]:not(body)'))
-		.forEach(
-			element => {
-				element.removeAttribute('style');
-			}
-		);
 	const
 		bodyOpacity = document.body.style.opacity,
 		bodyTransition = document.body.style.transition;
-	document.body.removeAttribute('style');
-	document.body.style.opacity = bodyOpacity;
-	document.body.style.transition = bodyTransition;
+	Array
+		.from(document.querySelectorAll('[style]'))
+		.forEach(
+			element => {
+				if (!element.id.startsWith('com_readup_')) {
+					element.removeAttribute('style');
+				}
+			}
+	);
+	if (document.body.classList.contains('com_readup_activating_reader_mode')) {
+		document.body.style.opacity = bodyOpacity;
+		document.body.style.transition = bodyTransition;
+	}
 	// strip links
 	Array
 		.from(document.getElementsByTagName('a'))

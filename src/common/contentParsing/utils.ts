@@ -40,30 +40,27 @@ export function isValidImgElement(imgElement: HTMLImageElement) {
 	);
 }
 export function zipContentLineages(containers: ContentContainer[]) {
-	return containers
-		.reduce<Node[][]>(
-			(depths, container) => {
-				container.contentLineages.forEach(lineage => {
-					lineage.forEach((node, index) => {
-						if (!depths[index].includes(node)) {
-							depths[index].push(node);
-						}
-					})
-				});
-				return depths;
-			},
-			Array
-				.from(
-					new Array(
-						Math.max(
-							...containers.map(
-								container => Math.max(
-									...container.contentLineages.map(lineage => lineage.length)
-								)
-							)
-						)
-					)
-				)
-				.map(() => ([]))
-		);
+	return zipLineages(
+		containers.reduce<ReadonlyArray<ReadonlyArray<Node>>>(
+			(lineages, container) => lineages.concat(container.contentLineages),
+			[]
+		)
+	);
+}
+export function zipLineages(lineages: ReadonlyArray<ReadonlyArray<Node>>) {
+	return lineages.reduce<Node[][]>(
+		(depths, lineage) => {
+			lineage.forEach(
+				(node, index) => {
+					if (!depths[index].includes(node)) {
+						depths[index].push(node);
+					}
+				}
+			);
+			return depths;
+		},
+		Array
+			.from(new Array(Math.max(...lineages.map(lineage => lineage.length))))
+			.map(() => ([]))
+	);
 }
