@@ -255,6 +255,20 @@ server = server.get('/proof/:token', (req, res) => {
 			);
 		});
 });
+server = server.get('/history', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.MyReads).createUrl()
+	);
+});
+server = server.get('/starred', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.MyReads).createUrl()
+	);
+});
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api

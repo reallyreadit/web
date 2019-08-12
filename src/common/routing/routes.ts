@@ -95,13 +95,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
-		analyticsName: 'History',
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/history',
-		pathRegExp: /^\/history$/,
-		screenKey: ScreenKey.History
-	},
-	{
 		analyticsName: 'Inbox',
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/inbox',
@@ -116,6 +109,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Leaderboards
 	},
 	{
+		analyticsName: 'MyReads',
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/reads',
+		pathRegExp: /^\/reads$/,
+		screenKey: ScreenKey.MyReads
+	},
+	{
 		analyticsName: 'PasswordReset',
 		createUrl: params => `/password/${params['action']}/${params['result']}`,
 		pathRegExp: /^\/password\/([^/]+)\/([^/]+)$/,
@@ -127,6 +127,20 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/privacy-policy$/,
 		screenKey: ScreenKey.PrivacyPolicy
 	},
+	(function () {
+		const pathRegExp = /^\/(@[^/]+)$/;
+		return {
+			analyticsName: 'Profile',
+			createUrl: params => `/@${params['userName']}`,
+			getPathParams: path => {
+				return {
+					userName: path.match(pathRegExp)[1]
+				};
+			},
+			pathRegExp,
+			screenKey: ScreenKey.Profile
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	(function () {
 		const pathRegExp = /^\/read\/([^/]+)\/([^/]+)$/;
 		return {
@@ -146,13 +160,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/settings',
 		pathRegExp: /^\/settings$/,
 		screenKey: ScreenKey.Settings
-	},
-	{
-		analyticsName: 'Starred',
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/starred',
-		pathRegExp: /^\/starred$/,
-		screenKey: ScreenKey.Starred
 	},
 	{
 		analyticsName: 'Stats',

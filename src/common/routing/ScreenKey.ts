@@ -4,15 +4,15 @@ enum ScreenKey {
 	EmailConfirmation,
 	EmailSubscriptions,
 	ExtensionRemoval,
-	History,
 	Home,
 	Inbox,
 	Leaderboards,
+	MyReads,
 	Password,
 	PrivacyPolicy,
+	Profile,
 	Read,
 	Settings,
-	Starred,
 	Stats
 }
 export default ScreenKey;

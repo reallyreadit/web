@@ -10,9 +10,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
-import createHistoryScreenFactory from './screens/HistoryScreen';
 import createLeaderboardsScreenFactory from './AppRoot/LeaderboardsScreen';
-import createStarredScreenFactory from './AppRoot/StarredScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
@@ -24,6 +22,8 @@ import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Rou
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
+import createMyReadsScreenFactory from './screens/MyReadsScreen';
+import createProfileScreenFactory from './screens/ProfileScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -39,15 +39,6 @@ const authScreenPageviewParams = {
 };
 export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvents> {
 	private _isUpdateAvailable: boolean = false;
-
-	// extension
-	private readonly _sendExtensionInstructions = () => {
-		return this.props.serverApi
-			.sendExtensionInstructions()
-			.then(() => {
-				this._toaster.addToast('Email sent', Intent.Success);
-			});
-	};
 
 	// menu
 	private readonly _closeMenu = () => {
@@ -93,9 +84,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _viewAdminPage = () => {
 		this.pushScreen(ScreenKey.Admin);
 	};
-	private readonly _viewHistory = () => {
-		this.replaceScreen(ScreenKey.History);
-	};
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
 	};
@@ -105,14 +93,20 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
 	};
+	private readonly _viewMyReads = () => {
+		this.replaceScreen(ScreenKey.MyReads);
+	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
+	private readonly _viewProfile = () => {
+		this.replaceScreen(
+			ScreenKey.Profile,
+			{ userName: this.state.user.name }
+		);
+	};
 	private readonly _viewSettings = () => {
 		this.pushScreen(ScreenKey.Settings);
-	};
-	private readonly _viewStarred = () => {
-		this.replaceScreen(ScreenKey.Starred);
 	};
 	private readonly _viewStats = () => {
 		this.replaceScreen(ScreenKey.Stats);
@@ -166,16 +160,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar
 			}),
-			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
-				onCopyTextToClipboard: this._clipboard.copyText,
-				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
-				onReadArticle: this._readArticle,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onShare: this._handleShareRequest,
-				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
-			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -191,17 +175,18 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onReadFaq: this._readFaq
 			}),
-			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
+			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
+				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onSendExtensionInstructions: this._sendExtensionInstructions,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
-			})
+			}),
+			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, { })
 		};
 
 		// state
@@ -263,9 +248,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		// send the pageview
 		this.props.analytics.sendPageview(screen);
 	}
-	private replaceScreen(key: ScreenKey) {
+	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
 		// create the new screen
-		const screen = this.createScreen(key);
+		const screen = this.createScreen(key, urlParams);
 		// replace the screen
 		this.setScreenState([screen]);
 		// send the pageview
@@ -379,10 +364,10 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 							</ol>
 						</div>
 						<NavTray
-							onViewHistory={this._viewHistory}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
-							onViewStarred={this._viewStarred}
+							onViewMyReads={this._viewMyReads}
+							onViewProfile={this._viewProfile}
 							onViewStats={this._viewStats}
 							selectedScreenKey={this.state.screens[0].key}
 						/>

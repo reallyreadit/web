@@ -5,15 +5,17 @@ import Button from './Button';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import Footer from './Footer';
+import UserAccount from '../../../../common/models/UserAccount';
 
 export default class NavBar extends React.PureComponent<{
-	onViewHistory: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
+	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
-	onViewStarred: () => void,
+	onViewProfile: () => void,
 	onViewStats: () => void,
-	selectedScreenKey: ScreenKey
+	selectedScreenKey: ScreenKey,
+	user: UserAccount
 }> {
 	public render() {
 		return (
@@ -31,22 +33,22 @@ export default class NavBar extends React.PureComponent<{
 					</li>
 					<li>
 						<Button
-							href={findRouteByKey(routes, ScreenKey.Starred).createUrl()}
-							onClick={this.props.onViewStarred}
-							style={this.props.selectedScreenKey === ScreenKey.Starred ? 'loud' : 'normal'}
+							href={findRouteByKey(routes, ScreenKey.MyReads).createUrl()}
+							onClick={this.props.onViewMyReads}
+							style={this.props.selectedScreenKey === ScreenKey.MyReads ? 'loud' : 'normal'}
 						>
 							<Icon name="star" />
-							<label>Starred</label>
+							<label>My Reads</label>
 						</Button>
 					</li>
 					<li>
 						<Button
-							href={findRouteByKey(routes, ScreenKey.History).createUrl()}
-							onClick={this.props.onViewHistory}
-							style={this.props.selectedScreenKey === ScreenKey.History ? 'loud' : 'normal'}
+							href={findRouteByKey(routes, ScreenKey.Profile).createUrl({ userName: this.props.user.name })}
+							onClick={this.props.onViewProfile}
+							style={this.props.selectedScreenKey === ScreenKey.Profile ? 'loud' : 'normal'}
 						>
-							<Icon name="history" />
-							<label>History</label>
+							<Icon name="user" />
+							<label>Profile</label>
 						</Button>
 					</li>
 					<li>

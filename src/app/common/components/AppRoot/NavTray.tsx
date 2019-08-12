@@ -3,10 +3,10 @@ import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 
 export default (props: {
-	onViewHistory: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
-	onViewStarred: () => void,
+	onViewMyReads: () => void,
+	onViewProfile: () => void,
 	onViewStats: () => void,
 	selectedScreenKey: ScreenKey
 }) => (
@@ -22,20 +22,20 @@ export default (props: {
 		</li>
 		<li>
 			<button
-				className={props.selectedScreenKey === ScreenKey.Starred ? 'selected' : null}
-				onClick={props.onViewStarred}
+				className={props.selectedScreenKey === ScreenKey.MyReads ? 'selected' : null}
+				onClick={props.onViewMyReads}
 			>
 				<Icon name="star" />
-				<label>Starred</label>
+				<label>My Reads</label>
 			</button>
 		</li>
 		<li>
 			<button
-				className={props.selectedScreenKey === ScreenKey.History ? 'selected' : null}
-				onClick={props.onViewHistory}
+				className={props.selectedScreenKey === ScreenKey.Profile ? 'selected' : null}
+				onClick={props.onViewProfile}
 			>
-				<Icon name="history" />
-				<label>History</label>
+				<Icon name="user" />
+				<label>Profile</label>
 			</button>
 		</li>
 		<li>

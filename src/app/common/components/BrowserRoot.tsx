@@ -12,9 +12,7 @@ import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
-import createHistoryScreenFactory from './screens/HistoryScreen';
 import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
-import createStarredScreenFactory from './BrowserRoot/StarredScreen';
 import BrowserApi from '../BrowserApi';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
@@ -32,6 +30,8 @@ import DeviceType from '../DeviceType';
 import { isIosDevice } from '../userAgent';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
+import createMyReadsScreenFactory from './screens/MyReadsScreen';
+import createProfileScreenFactory from './screens/ProfileScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -118,12 +118,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
-	private readonly _viewHistory = () => {
-		this.setScreenState({
-			key: ScreenKey.History,
-			method: 'replace'
-		});
-	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
@@ -142,21 +136,28 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
+	private readonly _viewMyReads = () => {
+		this.setScreenState({
+			key: ScreenKey.MyReads,
+			method: 'replace'
+		});
+	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
 			method: 'replace'
 		});
 	};
+	private readonly _viewProfile = () => {
+		this.setScreenState({
+			key: ScreenKey.Profile,
+			method: 'replace',
+			urlParams: { userName: this.state.user.name }
+		});
+	};
 	private readonly _viewSettings = () => {
 		this.setScreenState({
 			key: ScreenKey.Settings,
-			method: 'replace'
-		});
-	};
-	private readonly _viewStarred = () => {
-		this.setScreenState({
-			key: ScreenKey.Starred,
 			method: 'replace'
 		});
 	};
@@ -239,16 +240,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewHomeScreen: this._viewHome,
 				onToggleArticleStar: this._toggleArticleStar
 			}),
-			[ScreenKey.History]: createHistoryScreenFactory(ScreenKey.History, {
-				onCopyTextToClipboard: this._clipboard.copyText,
-				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
-				onReadArticle: this._readArticle,
-				onRegisterArticleChangeHandler:this._registerArticleChangeEventHandler,
-				onShare: this._handleShareRequest,
-				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
-			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isDesktopDevice: this._isDesktopDevice,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
@@ -279,6 +270,18 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
 			}),
+			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetStarredArticles: this.props.serverApi.getStarredArticles,
+				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShare: this._handleShareRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			}),
+			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -290,16 +293,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShowCreateAccountDialog: this._openCreateAccountDialog,
 				onShowSignInDialog: this._openSignInDialog,
 				onViewHomeScreen: this._viewHome
-			}),
-			[ScreenKey.Starred]: createStarredScreenFactory(ScreenKey.Starred, {
-				onCopyTextToClipboard: this._clipboard.copyText,
-				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetStarredArticles: this.props.serverApi.getStarredArticles,
-				onReadArticle: this._readArticle,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onShare: this._handleShareRequest,
-				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
 			})
 		};
 
@@ -580,13 +573,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 						this._isDesktopDevice
 					) ?
 						<NavBar
-							onViewHistory={this._viewHistory}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
+							onViewMyReads={this._viewMyReads}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
-							onViewStarred={this._viewStarred}
+							onViewProfile={this._viewProfile}
 							onViewStats={this._viewStats}
 							selectedScreenKey={this.state.screens[0].key}
+							user={this.state.user}
 						/> :
 						null}
 					<ol className="screens">
