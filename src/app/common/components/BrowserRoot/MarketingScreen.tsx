@@ -13,7 +13,14 @@ interface Props {
 	onOpenCreateAccountDialog: () => void,
 	onViewPrivacyPolicy: () => void,
 	variant: number
-} 
+}
+export const variants: {
+	[key: number]: string
+} = {
+	1: 'Make yourself a better reader.',
+	2: 'Read with friends.',
+	3: 'Social media for people who read.'
+};
 export default class MarketingScreen extends React.PureComponent<Props> {
 	private readonly _secondSectionElementRef: React.RefObject<HTMLDivElement>;
 	private readonly _scrollDown = () => {
@@ -57,8 +64,7 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 				<div className="marketing-screen_n5a6wc">
 					<div className="section">
 						<div className="content">
-							<h1>Make yourself a better reader.</h1>
-							<h3>Tools you need to track and improve your online reading habits and improve your focus.</h3>
+							<h1>{variants[this.props.variant]}</h1>
 							{button}
 							{this.props.isDesktopDevice || this.props.isIosDevice === false ?
 								<div className="platforms">
@@ -90,10 +96,8 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 						ref={this._secondSectionElementRef}
 					>
 						<div className="content">
-							<h2>Fight the urge to skim.</h2>
-							<p>See what happens if you read every single word of these three paragraphs. Off the bat, it might not seem challenging. You might even find yourself enjoying the rhythm of a particularly long sentence, like this one, that revs up with a bright, simple idea and then before you know it - bam! - some ominous image begins creepy-crawling into your mind’s eye, complicating things, and suddenly you wonder what you’re doing here. What <em>are</em> you doing here?</p>
-							<p>The answer to that question has something to do with a belief in the inherent value of focus. You know you could skip ahead, but then you’d miss the point. When the brain skims text, it can’t grasp complexity, nuance, beauty. On the other hand, when neuroscientists scan the brain in the act of reading deeply, they see fireworks: critical thinking, empathy, creativity, short- and long-term memory, all kinds of random stuff from your childhood. Reading unlocks everything. No wonder it makes you smarter, happier, healthier, and even more successful in your career. It’s the most effective way to transform information into knowledge and wisdom.</p>
-							<p>There’s a widespread misperception that you learn to read as a kid and that’s that. In reality, reading is more like exercise, a lifelong practice, a skill that must be maintained and can always be improved. Readup is a community of people who believe in a moonshot idea: that reading can revitalize the internet, make it more sane, more human. We believe this because we experience it, every day, in all its glory: the meditation, the escape, the joy. Three paragraphs of text probably didn’t change your life. But wouldn’t it be crazy if it did?</p>
+							<h2>What is Readup?</h2>
+							<p>Readup is a reading platform that incentivizes thoughtful, deep reading of the world's best free content. We are a community that believes in a moonshot idea: that reading can revitalize the internet, make it more sane, more human.</p>
 						</div>
 					</div>
 					<div className="section">
@@ -101,32 +105,20 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 							<h2>How it works</h2>
 							<ol>
 								<li>
-									<img src="/images/certificate.svg" />
-									<span>Get credit for reading things fully.</span>
+									<img src="/images/read.svg" />
+									<span>Read anything you want without distractions. No ads. No links.</span>
 								</li>
 								<li>
 									<img src="/images/projector-screen-chart.svg" />
-									<span>Track and improve your performance over time.</span>
-								</li>
-								<li>
-									<img src="/images/stairs.svg" />
-									<span>Go on a streak by reading a full article every day.</span>
-								</li>
-								<li>
-									<img src="/images/priority-increase.svg" />
-									<span>Vote with your attention. Reads are like upvotes.</span>
-								</li>
-								<li>
-									<img src="/images/robot-arm.svg" />
-									<span>Exceptional articles and stories thanks to exceptional data.</span>
-								</li>
-								<li>
-									<img src="/images/read.svg" />
-									<span>No ads. No links. 100% distraction-free.</span>
+									<span>Track and improve your online reading habits.</span>
 								</li>
 								<li>
 									<img src="/images/bubble-emoji.svg" />
-									<span>Earn the right to comment on an article by reading it fully.</span>
+									<span>Have conversations with others about articles you've read.</span>
+								</li>
+								<li>
+									<img src="/images/priority-increase.svg" />
+									<span>Vote with your attention. Reads are like "upvotes" or "likes."</span>
 								</li>
 								<li>
 									<img src="/images/group-circle.svg" />

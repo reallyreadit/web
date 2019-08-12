@@ -29,6 +29,7 @@ import VerificationTokenData from '../../common/models/VerificationTokenData';
 import DeviceType from '../common/DeviceType';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
+import { variants as marketingScreenVariants } from '../common/components/BrowserRoot/MarketingScreen';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -363,10 +364,12 @@ server = server.use((req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	// marketing screen variation
-	const marketingScreenVariations = [1];
+	const marketingScreenVariantKeys = Object
+		.keys(marketingScreenVariants)
+		.map(key => parseInt(key));
 	let marketingScreenVariant = parseInt(req.cookies[marketingScreenVariantQueryStringKey] || req.query[marketingScreenVariantQueryStringKey]);
-	if (!marketingScreenVariations.includes(marketingScreenVariant)) {
-		marketingScreenVariant = marketingScreenVariations[Math.floor(Math.random() * marketingScreenVariations.length)];
+	if (!marketingScreenVariantKeys.includes(marketingScreenVariant)) {
+		marketingScreenVariant = marketingScreenVariantKeys[Math.floor(Math.random() * marketingScreenVariantKeys.length)];
 		res.cookie(
 			marketingScreenVariantQueryStringKey,
 			marketingScreenVariant,

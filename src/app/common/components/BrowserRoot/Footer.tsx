@@ -5,7 +5,7 @@ import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 
 export default class extends React.PureComponent<{
-	onViewPrivacyPolicy: () => void,
+	onViewPrivacyPolicy: () => void
 }> {
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
@@ -15,8 +15,6 @@ export default class extends React.PureComponent<{
 		return (
 			<div className="footer_ink40x">
 				<a href="https://blog.readup.com">Blog</a>
-				<Separator />
-				<a href="https://blog.readup.com/beta/2017/07/12/FAQ.html">FAQ</a>
 				<Separator />
 				<a
 					href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
