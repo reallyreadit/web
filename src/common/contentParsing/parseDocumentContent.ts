@@ -242,11 +242,13 @@ function findTraversalPaths(group: TextContainerDepthGroup) {
 
 // image processing
 const findImageContainers = (function () {
-	function getTextContent(elements: Element[]) {
+	function getVisibleText(elements: Element[]) {
 		for (const element of elements) {
-			const text = element.textContent.trim();
-			if (text) {
-				return text;
+			if (element instanceof HTMLElement) {
+				const text = element.innerText.trim();
+				if (text) {
+					return text;
+				}
 			}
 		}
 		return null;
@@ -320,8 +322,8 @@ const findImageContainers = (function () {
 						contentElements.map(
 							child => (lineage as Node[]).concat(buildLineage({ descendant: child, ancestor: element }))
 						),
-						getTextContent(findDescendantsMatchingQuerySelectors(metaSearchRoot, config.imageContainerMetadata.captionSelectors)),
-						getTextContent(findDescendantsMatchingQuerySelectors(metaSearchRoot, config.imageContainerMetadata.creditSelectors))
+						getVisibleText(findDescendantsMatchingQuerySelectors(metaSearchRoot, config.imageContainerMetadata.captionSelectors)),
+						getVisibleText(findDescendantsMatchingQuerySelectors(metaSearchRoot, config.imageContainerMetadata.creditSelectors))
 					)
 				);
 			}

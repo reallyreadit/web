@@ -11,6 +11,13 @@ const whitelistedScriptTypes = [
 	'application/ld+json',
 	'text/x-readup-disabled-javascript'
 ];
+function formatImageMetadata(text: string) {
+	return text
+		.split('\n')
+		.map(line => line.trim())
+		.filter(line => !!line)
+		.join('<br /><br />');
+}
 function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[], config: ImageContainerContentConfig) {
 	if (
 		isElement(element) &&
@@ -28,26 +35,27 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 			const image = images.find(image => image.containerElement === element);
 			if (image) {
 				image.containerElement.classList.add('rrit-image-container');
-				if (image.credit) {
+				if (
+					image.credit &&
+					(!image.caption || image.credit !== image.caption)
+				) {
 					const credit = document.createElement('div');
 					credit.classList.add('rrit-image-credit');
 					credit.textContent = image.credit;
 					if (image.caption) {
 						credit.textContent = credit.textContent.replace(image.caption, '');
 					}
-					credit.textContent = credit.textContent
-						.replace(/^credit:?\s*/i, '')
-						.trim();
+					credit.innerHTML = formatImageMetadata(credit.textContent);
 					(element as HTMLElement).insertAdjacentElement('afterend', credit);
 				}
 				if (image.caption) {
 					const caption = document.createElement('div');
 					caption.classList.add('rrit-image-caption');
 					caption.textContent = image.caption;
-					if (image.credit) {
+					if (image.credit && image.caption !== image.credit) {
 						caption.textContent = caption.textContent.replace(image.credit, '');
 					}
-					caption.textContent = caption.textContent.trim();
+					caption.innerHTML = formatImageMetadata(caption.textContent);
 					(element as HTMLElement).insertAdjacentElement('afterend', caption);
 				}
 			}
