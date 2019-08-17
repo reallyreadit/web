@@ -4,6 +4,7 @@ import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	isDesktopDevice: boolean,
@@ -50,15 +51,17 @@ export default class extends React.PureComponent<Props> {
 							null}
 						{showAuthButtons ?
 							<>
-								<button onClick={this.props.onShowSignInDialog}>
-									Login
-								</button>
-								<button
-									className="loud"
+								<Button
+									text="Login"
+									size="large"
+									onClick={this.props.onShowSignInDialog}
+								/>
+								<Button
+									text="Sign Up"
+									size="large"
+									style="loud"
 									onClick={this.props.onShowCreateAccountDialog}
-								>
-									Sign Up
-								</button>
+								/>
 							</> :
 							null}
 					</div> :

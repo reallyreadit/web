@@ -2,10 +2,10 @@ import * as React from 'react';
 import Captcha from '../../../Captcha';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
-import Button from './Button';
 import UsernameField from '../../controls/authentication/UsernameField';
 import ActionLink from '../../../../../common/components/ActionLink';
 import { Intent } from '../../../../../common/components/Toaster';
+import Button from '../../../../../common/components/Button';
 
 export interface Props {
 	captcha: Captcha,
@@ -112,10 +112,13 @@ export default class extends React.PureComponent<Props, State> {
 					value={this.state.password}
 				/>
 				<Button
-					busy={this.state.isSubmitting}
+					state={this.state.isSubmitting ? 'busy' : 'normal'}
 					onClick={this._submit}
 					style="loud"
 					text="Sign Up"
+					display="block"
+					align="center"
+					size="x-large"
 				/>
 				<ActionLink onClick={this._cancel} text="Cancel" />
 			</div>

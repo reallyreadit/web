@@ -61,10 +61,12 @@
 	flex-flow: column;
 	justify-content: center;
 }
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_vp905n {
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_ovrlmi.block {
 	flex: 0 0 auto;
+	width: 80%;
+	margin: 0 auto;
 }
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_vp905n:not(:last-child) {
+.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_ovrlmi:not(:last-child) {
 	margin-bottom: 20px;
 }
 .auth-screen_gnq77a > .content > .flip-container > .flipper > .back {

@@ -3,11 +3,10 @@ import UserAccount from '../../../../common/models/UserAccount';
 import Icon from '../../../../common/components/Icon';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import classNames from 'classnames';
-import Spinner from '../../../../common/components/Spinner';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import Button from './Button';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	isClosing: boolean,
@@ -80,9 +79,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 									href={findRouteByKey(routes, ScreenKey.Admin).createUrl()}
 									onClick={this.props.onViewAdminPage}
 									style={this.props.selectedScreenKey === ScreenKey.Admin ? 'loud' : 'normal'}
-								>
-									Admin
-								</Button>
+									text="Admin"
+									size="x-large"
+									display="block"
+									hoverStyle
+								/>
 							</li> :
 							null}
 						<li>
@@ -90,17 +91,21 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}
 								onClick={this.props.onViewSettings}
 								style={this.props.selectedScreenKey === ScreenKey.Settings ? 'loud' : 'normal'}
-							>
-								Settings
-							</Button>
+								text="Settings"
+								size="x-large"
+								display="block"
+								hoverStyle
+							/>
 						</li>
 						<li>
-							<Button onClick={this._signOut}>
-								<label>Log Out</label>
-								{this.state.isSigningOut ?
-									<Spinner /> :
-									null}
-							</Button>
+							<Button
+								onClick={this._signOut}
+								state={this.state.isSigningOut ? 'busy': 'normal'}
+								text="Log Out"
+								size="x-large"
+								display="block"
+								hoverStyle
+							/>
 						</li>
 					</ol>
 				</div>

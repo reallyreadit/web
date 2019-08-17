@@ -1,8 +1,8 @@
 import * as React from 'react';
 import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import PasswordField from '../../controls/authentication/PasswordField';
-import Button from './Button';
 import ActionLink from '../../../../../common/components/ActionLink';
+import Button from '../../../../../common/components/Button';
 
 interface Props {
 	onCancel: () => void,
@@ -69,10 +69,13 @@ export default class extends React.PureComponent<Props, {
 					value={this.state.password}
 				/>
 				<Button
-					busy={this.state.isSubmitting}
+					state={this.state.isSubmitting ? 'busy' : 'normal'}
 					onClick={this._submit}
 					style="loud"
 					text="Login"
+					display="block"
+					align="center"
+					size="x-large"
 				/>
 				<ActionLink onClick={this.props.onOpenRequestPasswordResetDialog} text="Forgot Password?" />
 				<ActionLink onClick={this.props.onCancel} text="Cancel" />

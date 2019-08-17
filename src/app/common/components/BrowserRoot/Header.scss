@@ -33,31 +33,8 @@
 	display: flex;
 	align-items: center;
 }
-.header_cvm3v7 > .menu-container > button {
-	font-family: 'Museo Sans (700)';
-	font-size: 16pt;
-	height: 50px;
-	border: none;
-	outline: none;
-	padding: 0 20px;
-	background-color: transparent;
-	cursor: pointer;
-}
-.header_cvm3v7 > .menu-container > button:not(.loud):hover {
-	background-color: #eaeaea;
-}
-.header_cvm3v7 > .menu-container > button:focus {
-	outline: none;
-}
-.header_cvm3v7 > .menu-container > button:not(:last-child) {
-	margin-right: 10px;
-}
-.header_cvm3v7 > .menu-container > button.loud {
-	background-color: #2A2326;
-	color: white;
-}
-.header_cvm3v7 > .menu-container > button > label {
-	cursor: pointer;
+.header_cvm3v7 > .menu-container > .button_ovrlmi + .button_ovrlmi {
+	margin-left: 10px;
 }
 .header_cvm3v7 > .menu-container > .menu-icon-container > .icon_rour3d {
 	display: block;

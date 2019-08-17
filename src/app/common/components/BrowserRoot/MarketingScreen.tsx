@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Button from './Button';
 import Spinner from './Spinner';
 import Footer from './Footer';
 import Icon from '../../../../common/components/Icon';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	isDesktopDevice: boolean,
@@ -53,11 +53,11 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 			} else {
 				button = (
 					<Button
+						size="x-large"
 						style="loud"
+						text="Get Started"
 						onClick={this.props.onOpenCreateAccountDialog}
-					>
-						Get Started
-					</Button>
+					/>
 				);
 			}
 			return (

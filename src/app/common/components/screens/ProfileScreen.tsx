@@ -102,11 +102,13 @@ export class ProfileScreen extends React.Component<Props, State> {
 							{this.props.userAccount && this.props.userAccount.name === this.props.userName ?
 								<Button
 									text="Get Followers"
-									style="preferred"
+									style="loud"
+									size="large"
 								/> :
 								<Button
 									text="Follow"
-									style="preferred"
+									style="loud"
+									size="large"
 								/>}
 							{this.state.profile.value.followers.length ?
 								<span>{formatCountable(this.state.profile.value.followers.length, 'follower')}</span> :

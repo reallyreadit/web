@@ -4,20 +4,56 @@
 */
 
 .button_ovrlmi {
-	display: inline-flex;
 	align-items: center;
 	height: 32px;
 	box-sizing: border-box;
 	padding: 0 10px;
 	border: none;
-	background-color: white;
+	outline: none;
+	background-color: transparent;
 	cursor: pointer;
 	font-family: 'Museo Sans (500)';
 	position: relative;
+	text-decoration: none;
+}
+.button_ovrlmi.inline {
+	display: inline-flex;
+}
+.button_ovrlmi.block {
+	display: flex;
+	width: 100%;
+}
+.button_ovrlmi.left {
+	justify-content: flex-start;
+}
+.button_ovrlmi.center {
+	justify-content: center;
+}
+.button_ovrlmi.right {
+	justify-content: flex-end;
 }
 .button_ovrlmi.preferred {
 	border: 2px solid #2A2326;
 	font-family: 'Museo Sans (700)';
+}
+.button_ovrlmi.loud {
+	background-color: #2A2326;
+	color: white;
+}
+.button_ovrlmi.large {
+	height: 50px;
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+	padding: 0 20px;
+}
+.button_ovrlmi.x-large {
+	height: 60px;
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+	padding: 0 30px;
+}
+.button_ovrlmi.hover:not(.loud):hover {
+	background-color: #eaeaea;
 }
 .button_ovrlmi.disabled {
 	color: silver;
@@ -32,12 +68,12 @@
 	border-style: solid;
 	border-color: red red transparent transparent;
 }
-.button_ovrlmi > .icon_rour3d {
-	width: 16px;
-	height: 16px;
+.button_ovrlmi.busy > .text,
+.button_ovrlmi.busy > .icon_rour3d {
+	visibility: hidden;
 }
 .button_ovrlmi > .icon_rour3d + .text {
-	margin-left: 5px;
+	margin-left: 0.5em;
 }
 .button_ovrlmi > .loading {
 	position: absolute;
@@ -45,12 +81,7 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background-color: white;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-}
-.button_ovrlmi > .loading > .icon_rour3d {
-	width: 16px;
-	height: 16px;
 }

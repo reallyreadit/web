@@ -4,7 +4,7 @@ import Captcha from '../../Captcha';
 import classNames from 'classnames';
 import CreateAccountCard from './AuthScreen/CreateAccountCard';
 import { Intent } from '../../../../common/components/Toaster';
-import Button from './AuthScreen/Button';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	captcha: Captcha,
@@ -93,10 +93,16 @@ export default class extends React.PureComponent<Props, {
 									onClick={this._showCreateAccountCard}
 									style="loud"
 									text="Sign Up"
+									display="block"
+									align="center"
+									size="x-large"
 								/>
 								<Button
 									onClick={this._showSignInCard}
 									text="Login"
+									display="block"
+									align="center"
+									size="x-large"
 								/>
 							</div>
 							<div className="back">

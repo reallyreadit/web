@@ -1,12 +1,11 @@
 import * as React from 'react';
-import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import Button from './Button';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import Footer from './Footer';
 import UserAccount from '../../../../common/models/UserAccount';
 import { Screen } from '../Root';
+import Button from '../../../../common/components/Button';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
@@ -32,20 +31,22 @@ export default (props: {
 					href={homeUrl}
 					onClick={props.onViewHome}
 					style={props.selectedScreen.key === ScreenKey.Home ? 'loud' : 'normal'}
-				>
-					<Icon name="earth" />
-					<label>Discover</label>
-				</Button>
+					iconLeft="earth"
+					text="Discover"
+					size="x-large"
+					display="block"
+				/>
 			</li>
 			<li>
 				<Button
 					href={myReadsUrl}
 					onClick={props.onViewMyReads}
 					style={props.selectedScreen.key === ScreenKey.MyReads ? 'loud' : 'normal'}
-				>
-					<Icon name="star" />
-					<label>My Reads</label>
-				</Button>
+					iconLeft="star"
+					text="My Reads"
+					size="x-large"
+					display="block"
+				/>
 			</li>
 			<li>
 				<Button
@@ -59,30 +60,33 @@ export default (props: {
 							'loud' :
 							'normal'
 					}
-				>
-					<Icon name="user" />
-					<label>Profile</label>
-				</Button>
+					iconLeft="user"
+					text="Profile"
+					size="x-large"
+					display="block"
+				/>
 			</li>
 			<li>
 				<Button
 					href={statsUrl}
 					onClick={props.onViewStats}
 					style={props.selectedScreen.key === ScreenKey.Stats ? 'loud' : 'normal'}
-				>
-					<Icon name="line-chart" />
-					<label>Stats</label>
-				</Button>
+					iconLeft="line-chart"
+					text="Stats"
+					size="x-large"
+					display="block"
+				/>
 			</li>
 			<li>
 				<Button
 					href={leaderboardsUrl}
 					onClick={props.onViewLeaderboards}
 					style={props.selectedScreen.key === ScreenKey.Leaderboards ? 'loud' : 'normal'}
-				>
-					<Icon name="podium" />
-					<label>Leaderboards</label>
-				</Button>
+					iconLeft="podium"
+					text="Leaderboards"
+					size="x-large"
+					display="block"
+				/>
 			</li>
 		</ol>
 		<Footer onViewPrivacyPolicy={props.onViewPrivacyPolicy} />
