@@ -15,6 +15,8 @@ import UserAccount from '../../models/UserAccount';
 import { formatPossessive } from '../../format';
 import LeaderboardBadges from '../LeaderboardBadges';
 import ContentBox from '../ContentBox';
+import Icon from '../Icon';
+import LeaderboardBadge from '../../models/LeaderboardBadge';
 
 interface Props {
 	comment: CommentThread,
@@ -95,8 +97,18 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 			>
 				<div className="title">
 					<span className="user-name">{this.props.comment.userAccount}</span>
-					<LeaderboardBadges badge={this.props.comment.badge} />
+					{this.props.comment.badge !== LeaderboardBadge.None ?
+						<LeaderboardBadges badge={this.props.comment.badge} /> :
+						null}
 					<span className="age">{timeago().format(this.props.comment.dateCreated.replace(/([^Z])$/, '$1Z'))}</span>
+					<ShareControl
+						menuPosition={MenuPosition.RightMiddle}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onGetData={this._getShareData}
+						onShare={this.props.onShare}
+					>
+						<Icon name="share" />
+					</ShareControl>
 				</div>
 				<div
 					className="text"
@@ -110,22 +122,9 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 						onPostComment={this._addComment}
 						parentCommentId={this.props.comment.id}
 					/> :
-					<div className="links">
-						{this.props.isAllowedToPost ?
-							<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
-							null}
-						<ShareControl
-							menuPosition={MenuPosition.RightMiddle}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-							onGetData={this._getShareData}
-							onShare={this.props.onShare}
-						>
-							<ActionLink
-								text="Share"
-								iconLeft="share"
-							/>
-						</ShareControl>
-					</div>}
+					this.props.isAllowedToPost ?
+						<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
+						null}
 				{this.props.comment.children.length ?
 					<ul className="replies">
 						{this.props.comment.children.map(
