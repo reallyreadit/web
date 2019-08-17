@@ -22,6 +22,12 @@ import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import ReadingTimeTotalsTimeWindow from '../../../common/models/ReadingTimeTotalsTimeWindow';
 import ReadingTimeStats from '../../../common/models/ReadingTimeStats';
 import UserAccountCreation from '../../../common/models/UserAccountCreation';
+import UserNameForm from '../../../common/models/social/UserNameForm';
+import PostForm from '../../../common/models/social/PostForm';
+import Post from '../../../common/models/social/Post';
+import PostsQuery from '../../../common/models/social/PostsQuery';
+import ProfileQuery from '../../../common/models/social/ProfileQuery';
+import Profile from '../../../common/models/social/Profile';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -146,6 +152,13 @@ export default abstract class {
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });
+
+	// Social
+	public readonly followUser = (data : UserNameForm) => this.post({ path: '/Social/Follow', data });
+	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
+	public readonly getPosts = this.createFetchFunctionWithParams<PostsQuery, PageResult<Post>>('/Social/Posts');
+	public readonly getProfile = this.createFetchFunctionWithParams<ProfileQuery, Profile>('/Social/Profile');
+	public readonly unfollowUser = (data: UserNameForm) => this.post({ path: '/Social/Unfollow', data });
 
 	// Stats
 	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeStats>('/Stats/ReadingTime');

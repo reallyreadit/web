@@ -77,7 +77,6 @@ function renderTable(
 }
 interface Props {
 	leaderboards: Fetchable<Leaderboards>,
-	onReadFaq?: (event: React.MouseEvent<HTMLAnchorElement>) => void,
 	user: UserAccount
 }
 export default class LeaderboardsScreen extends React.PureComponent<
@@ -116,10 +115,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 				explainer = {
 					title: 'What\'s a scout?',
 					content: (
-						<>
-							<p><strong>Scouts find the good stuff. They're the first ones to read <em>and rate</em> new articles that go on to become Article of the Day (AOTD). The leaderboard shows the top Scouts of the last month.</strong></p>
-							<p>You can scout articles using the mobile app, the Chrome extension, or both. The trick is to understand how trending works on Readup. For more info, read the <a href="https://blog.readup.com/beta/2017/07/12/FAQ.html" onClick={this.props.onReadFaq}>FAQ.</a></p>
-						</>
+						<p><strong>Scouts find the good stuff. They're the first ones to read <em>and rate</em> new articles that go on to become Article of the Day (AOTD). The leaderboard shows the top Scouts of the last month.</strong></p>
 					)
 				};
 				break;

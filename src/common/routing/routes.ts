@@ -95,13 +95,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
-		analyticsName: 'Inbox',
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/inbox',
-		pathRegExp: /^\/inbox$/,
-		screenKey: ScreenKey.Inbox
-	},
-	{
 		analyticsName: 'Leaderboards',
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/leaderboards',
@@ -128,7 +121,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.PrivacyPolicy
 	},
 	(function () {
-		const pathRegExp = /^\/(@[^/]+)$/;
+		const pathRegExp = /^\/@([^/]+)$/;
 		return {
 			analyticsName: 'Profile',
 			createUrl: params => `/@${params['userName']}`,

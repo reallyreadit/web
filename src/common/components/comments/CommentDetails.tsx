@@ -1,6 +1,5 @@
 import * as React from 'react';
 import CommentThread from '../../models/CommentThread';
-import CommentList from './CommentList';
 import CommentComposer from './CommentComposer';
 import ActionLink from '../ActionLink';
 import classNames from 'classnames';
@@ -14,19 +13,17 @@ import ShareData from '../../sharing/ShareData';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
 import { formatPossessive } from '../../format';
-import LeaderboardBadge from '../../models/LeaderboardBadge';
-import Icon, { IconName } from '../Icon';
+import LeaderboardBadges from '../LeaderboardBadges';
+import ContentBox from '../ContentBox';
 
 interface Props {
 	comment: CommentThread,
 	highlightedCommentId?: string,
 	isAllowedToPost?: boolean,
-	mode: 'reply' | 'link',
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
-	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,
 	user: UserAccount | null
 }
@@ -79,7 +76,6 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 			url: shareUrl
 		};
 	};
-	private _viewThread = () => this.props.onViewThread(this.props.comment);
 	constructor(props: Props) {
 		super(props);
 		this.state = { showComposer: false };
@@ -88,66 +84,22 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		let badges:{
-			iconName: IconName,
-			title: string
-		}[] = [];
-		if (this.props.comment.badge & LeaderboardBadge.WeeklyReadCount) {
-			badges.push({
-				iconName: 'medal',
-				title: 'Top reader this week'
-			});
-		}
-		if (this.props.comment.badge & LeaderboardBadge.ReadCount) {
-			badges.push({
-				iconName: 'trophy',
-				title: 'Top reader of all time'
-			});
-		}
-		if (this.props.comment.badge & LeaderboardBadge.Streak) {
-			badges.push({
-				iconName: 'fire',
-				title: 'Reading streak'
-			});
-		}
-		if (this.props.comment.badge & LeaderboardBadge.LongestRead) {
-			badges.push({
-				iconName: 'graduation',
-				title: 'Longest recent read'
-			});
-		}
-		if (this.props.comment.badge & LeaderboardBadge.Scout) {
-			badges.push({
-				iconName: 'binoculars',
-				title: 'Scout'
-			});
-		}
-		if (this.props.comment.badge & LeaderboardBadge.Scribe) {
-			badges.push({
-				iconName: 'quill',
-				title: 'Scribe'
-			});
-		}
 		return (
-			<li
+			<ContentBox
 				className={classNames(
 					'comment-details_qker1u',
 					{
-						unread: this.props.mode === 'link' && !this.props.comment.dateRead,
 						highlight: this.props.comment.id === this.props.highlightedCommentId
 					}
 				)}
 			>
-				{this.props.mode === 'link' ?
-					<div className="article-title">{this.props.comment.articleTitle}</div> :
-					null}
 				<div className="title">
 					<span className="user-name">{this.props.comment.userAccount}</span>
-					{badges.map(badge => <Icon className="badge" key={badge.iconName} name={badge.iconName} title={badge.title} />)}
+					<LeaderboardBadges badge={this.props.comment.badge} />
 					<span className="age">{timeago().format(this.props.comment.dateCreated.replace(/([^Z])$/, '$1Z'))}</span>
 				</div>
 				<div
-					className={classNames('text', { 'preview': this.props.mode === 'link' })}
+					className="text"
 					dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}>
 				</div>
 				{this.state.showComposer ? 
@@ -159,41 +111,43 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 						parentCommentId={this.props.comment.id}
 					/> :
 					<div className="links">
-						{this.props.mode === 'reply' ?
-							<>
-								{this.props.isAllowedToPost ?
-									<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
-									null}
-								<ShareControl
-									menuPosition={MenuPosition.RightMiddle}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onGetData={this._getShareData}
-									onShare={this.props.onShare}
-								>
-									<ActionLink
-										text="Share"
-										iconLeft="share"
-									/>
-								</ShareControl>
-							</> :
-							<ActionLink text="View Thread" iconLeft="comments" onClick={this._viewThread} />}
+						{this.props.isAllowedToPost ?
+							<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
+							null}
+						<ShareControl
+							menuPosition={MenuPosition.RightMiddle}
+							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onGetData={this._getShareData}
+							onShare={this.props.onShare}
+						>
+							<ActionLink
+								text="Share"
+								iconLeft="share"
+							/>
+						</ShareControl>
 					</div>}
 				{this.props.comment.children.length ?
-					<CommentList
-						comments={this.props.comment.children}
-						highlightedCommentId={this.props.highlightedCommentId}
-						isAllowedToPost={this.props.isAllowedToPost}
-						mode={this.props.mode}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onPostComment={this.props.onPostComment}
-						onShare={this.props.onShare}
-						onViewThread={this.props.onViewThread}
-						parentCommentId={this.props.comment.id}
-						user={this.props.user}
-					/> :
+					<ul className="replies">
+						{this.props.comment.children.map(
+							comment => (
+								<li key={comment.id}>
+									<CommentDetails
+										comment={comment}
+										highlightedCommentId={this.props.highlightedCommentId}
+										isAllowedToPost={this.props.isAllowedToPost}
+										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onPostComment={this.props.onPostComment}
+										onShare={this.props.onShare}
+										parentCommentId={this.props.comment.id}
+										user={this.props.user}
+									/>
+								</li>
+							)
+						)}
+					</ul> :
 					null}
-			</li>
+			</ContentBox>
 		);
 	}
 }

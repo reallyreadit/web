@@ -12,6 +12,7 @@ import ShareChannel from '../sharing/ShareChannel';
 import classNames from 'classnames';
 import { calculateEstimatedReadTime } from '../calculate';
 import getShareData from '../sharing/getShareData';
+import ContentBox from './ContentBox';
 
 interface Props {
 	article: UserArticle,
@@ -97,7 +98,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			backgroundImage: `url(${this.props.imagePath}/rating-seal.svg)`
 		};
 		return (
-			<div className="article-details_d2vnmv">
+			<ContentBox className="article-details_d2vnmv">
 				<div className="actions">
 					<div className="star-container">
 						<Star
@@ -210,7 +211,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						</div>
 					</div>
 				</div>
-			</div>
+			</ContentBox>
 		);
 	}
 }

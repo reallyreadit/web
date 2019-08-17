@@ -10,10 +10,8 @@ interface Props {
 	isClosing: boolean,
 	onClose: () => void,
 	onClosed: () => void,
-	onReadFaq: () => void,
 	onSignOut: () => void,
 	onViewAdminPage: () => void,
-	onViewInbox: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewSettings: () => void,
 	selectedScreenKey: ScreenKey,
@@ -81,11 +79,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								</button>
 							</li> :
 							null}
-						<li>
-							<button onClick={this.props.onReadFaq}>
-								FAQ
-							</button>
-						</li>
 						<li>
 							<button
 								className={this.props.selectedScreenKey === ScreenKey.Settings ? 'selected' : null}

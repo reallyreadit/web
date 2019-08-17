@@ -3,13 +3,6 @@
 	cssComponentId: comment-details_qker1u
 */
 
-.comment-details_qker1u {
-	margin: 5px 0;
-}
-.comment-details_qker1u.unread {
-	border-left: 4px solid gold;
-	padding-left: 6px;
-}
 .comment-details_qker1u.highlight {
 	outline: 4px solid gold;
 }
@@ -36,8 +29,7 @@
 	font-family: 'Museo Sans (700)';
 	margin-right: 5px;
 }
-.comment-details_qker1u > .title > .badge {
-	margin: 0 4px;
+.comment-details_qker1u > .title > .leaderboard-badges_s4o6nj {
 	font-size: 12pt;
 }
 .comment-details_qker1u > .title > .age {
@@ -46,13 +38,8 @@
 .comment-details_qker1u > .text {
 	padding: 3px 3px 0 3px;
 }
-.comment-details_qker1u > .text.preview {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 .comment-details_qker1u > .links {
-	margin: 5px 0 10px 0;
+	margin-top: 5px;
 }
 .comment-details_qker1u > .links > .action-link_ftamt8 {
 	margin-right: 10px;
@@ -68,13 +55,13 @@
 .comment-details_qker1u > .comment-composer_fgo1ny {
 	margin: 5px 0 10px 0;
 }
-.comment-details_qker1u > .comment-list_ba2upz {
+.comment-details_qker1u > .replies {
 	padding-left: 20px;
 	border-left: 1px dotted darkgray;
 }
 
 @media (max-width: 499px) {
-	.comment-details_qker1u > .comment-list_ba2upz {
+	.comment-details_qker1u > .replies {
 		padding-left: 10px;
 	}
 }

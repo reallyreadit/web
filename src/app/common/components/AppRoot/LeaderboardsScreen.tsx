@@ -10,7 +10,6 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
-	onReadFaq: (event: React.MouseEvent<HTMLAnchorElement>) => void,
 	user: UserAccount | null
 }
 class AppLeaderboardsScreen extends React.Component<Props, {
@@ -30,7 +29,6 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
-				onReadFaq={this.props.onReadFaq}
 				user={this.props.user}
 			/>
 		);

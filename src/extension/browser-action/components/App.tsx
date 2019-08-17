@@ -29,12 +29,6 @@ export default class extends React.Component<
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
 	private _showSignInDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.SignIn).createUrl());
 	private _showCreateAccountDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.CreateAccount).createUrl());
-	private _goToInbox = () => {
-		if (this.props.showNewReplyIndicator) {
-			this.props.onAckNewReply();
-		}
-		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
-	};
 	private _goToComments = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments).createUrl(this.getArticleUrlParams()));
 	};
@@ -105,14 +99,6 @@ export default class extends React.Component<
 							src="./images/logo.svg"
 						/>
 					</a>
-					{this.props.showNewReplyIndicator ?
-						<Button
-							text="Inbox"
-							iconLeft="box"
-							onClick={this._goToInbox}
-							showIndicator
-						/> :
-						null}
 				</header>
 				{!this.props.isAuthenticated ?
 					<div className="unauthenticated">

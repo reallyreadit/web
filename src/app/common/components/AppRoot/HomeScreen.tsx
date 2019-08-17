@@ -4,7 +4,6 @@ import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
-import Icon from '../../../../common/components/Icon';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -185,25 +184,10 @@ export default function <TScreenKey>(
 		create: (location: RouteLocation) => ({
 			key,
 			location,
-			titleContent: (
-				<div className="home-screen_an7vm5-title-content">
-					<img
-						alt="logo"
-						src="/images/logo.svg"
-					/>
-				</div>
-			)
+			title: 'Discover'
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen {...{ ...deps, user: sharedState.user }} />
-		),
-		renderHeaderContent: () => (
-			<div
-				className="home-screen_an7vm5-header-content"
-				onClick={deps.onOpenMenu}
-			>
-				<Icon name="user" />
-			</div>
 		)
 	};
 }

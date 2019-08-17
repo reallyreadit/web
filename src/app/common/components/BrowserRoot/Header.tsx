@@ -43,7 +43,7 @@ export default class extends React.PureComponent<Props> {
 						{showMenu ?
 							<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>
 								<Icon
-									name="user"
+									name="menu2"
 									onClick={this.props.onOpenMenu}
 								/>
 							</div> :

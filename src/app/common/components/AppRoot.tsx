@@ -23,7 +23,7 @@ import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
-import createProfileScreenFactory from './screens/ProfileScreen';
+import createProfileScreenFactory from './AppRoot/ProfileScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -69,26 +69,11 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _popScreen = () => {
 		this.setState({ isPoppingScreen: true });
 	};
-	private readonly _readFaq = (event?: React.MouseEvent<HTMLAnchorElement>) => {
-		if (event) {
-			event.preventDefault();
-		}
-		this.props.appApi.readArticle({
-			title: 'FAQ',
-			url: 'https://blog.readup.com/beta/2017/07/12/FAQ.html'
-		} as Pick<UserArticle, 'title' | 'url'>);
-		if (this.state.menuState === 'opened') {
-			this._closeMenu();
-		}
-	};
 	private readonly _viewAdminPage = () => {
 		this.pushScreen(ScreenKey.Admin);
 	};
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
-	};
-	private readonly _viewInbox = () => {
-		this.replaceScreen(ScreenKey.Inbox);
 	};
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
@@ -172,8 +157,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onReadFaq: this._readFaq
+				onGetLeaderboards: this.props.serverApi.getLeaderboards
 			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -186,7 +170,18 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			}),
-			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, { })
+			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetPosts: this.props.serverApi.getPosts,
+				onGetProfile: this.props.serverApi.getProfile,
+				onOpenMenu: this._openMenu,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShare: this._handleShareRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			})
 		};
 
 		// state
@@ -369,17 +364,16 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 							onViewMyReads={this._viewMyReads}
 							onViewProfile={this._viewProfile}
 							onViewStats={this._viewStats}
-							selectedScreenKey={this.state.screens[0].key}
+							selectedScreen={this.state.screens[0]}
+							user={this.state.user}
 						/>
 						{this.state.menuState !== 'closed' ?
 							<Menu
 								isClosing={this.state.menuState === 'closing'}
 								onClose={this._closeMenu}
 								onClosed={this._hideMenu}
-								onReadFaq={this._readFaq}
 								onSignOut={this._signOut}
 								onViewAdminPage={this._viewAdminPage}
-								onViewInbox={this._viewInbox}
 								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 								onViewSettings={this._viewSettings}
 								selectedScreenKey={this.state.screens[0].key}

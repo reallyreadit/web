@@ -2,3 +2,36 @@
 	componentPath: src/app/common/components/screens/ProfileScreen
 	cssComponentId: profile-screen_1u1j1e
 */
+
+.profile-screen_1u1j1e {
+	display: flex;
+	flex-flow: column;
+}
+.profile-screen_1u1j1e > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}
+.profile-screen_1u1j1e > .profile,
+.profile-screen_1u1j1e > .article-list_o9uw1n,
+.profile-screen_1u1j1e > .page-selector_a8tbpb {
+	flex: 0 0 auto;
+}
+.profile-screen_1u1j1e > .profile {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	margin: 10px 0 20px;
+}
+.profile-screen_1u1j1e > .profile > .user-name {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 15px;
+}
+.profile-screen_1u1j1e > .profile > .user-name > .name {
+	font-family: 'Museo Sans (700)';
+	font-size: 22pt;
+}
+.profile-screen_1u1j1e > .profile > .user-name > .leaderboard-badges_s4o6nj {
+	font-size: 16pt;
+	margin-left: 15px;
+}

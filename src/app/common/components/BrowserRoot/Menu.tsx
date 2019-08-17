@@ -15,7 +15,6 @@ interface Props {
 	onClosed: () => void,
 	onSignOut: () => Promise<void>,
 	onViewAdminPage: () => void,
-	onViewInbox: () => void,
 	onViewSettings: () => void,
 	selectedScreenKey: ScreenKey,
 	showNewReplyNotification: boolean,
@@ -86,15 +85,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								</Button>
 							</li> :
 							null}
-						<li>
-							<Button
-								href={findRouteByKey(routes, ScreenKey.Inbox).createUrl()}
-								onClick={this.props.onViewInbox}
-								style={this.props.selectedScreenKey === ScreenKey.Inbox ? 'loud' : 'normal'}
-							>
-								Inbox
-							</Button>
-						</li>
 						<li>
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}

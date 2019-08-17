@@ -20,7 +20,6 @@ import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import UpdateToast from './UpdateToast';
-import { createScreenFactory as createInboxPageScreenFactory } from './InboxPage';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
@@ -124,12 +123,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
-	private readonly _viewInbox = () => {
-		this.setScreenState({
-			key: ScreenKey.Inbox,
-			method: 'replace'
-		});
-	};
 	private readonly _viewLeaderboards = () => {
 		this.setScreenState({
 			key: ScreenKey.Leaderboards,
@@ -166,18 +159,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			key: ScreenKey.Stats,
 			method: 'replace'
 		});
-	};
-	private readonly _viewThread = (comment: CommentThread) => {
-		if (!comment.dateRead) {
-			this.props.serverApi.readReply(comment.id);
-		}
-		this.viewComments(
-			{
-				slug: comment.articleSlug,
-				title: comment.articleTitle
-			},
-			comment.id
-		);
 	};
 
 	// sharing
@@ -259,13 +240,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewComments: this._viewComments,
 				onViewPrivacyPolicy: this._viewPrivacyPolicy
 			}),
-			[ScreenKey.Inbox]: createInboxPageScreenFactory(ScreenKey.Inbox, {
-				onCopyTextToClipboard: this._clipboard.copyText,
-				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetReplies: this.props.serverApi.listReplies,
-				onShare: this._handleShareRequest,
-				onViewThread: this._viewThread
-			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
@@ -281,7 +255,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments
 			}),
-			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {}),
+			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetPosts: this.props.serverApi.getPosts,
+				onGetProfile: this.props.serverApi.getProfile,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShare: this._handleShareRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments
+			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -579,7 +563,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewProfile={this._viewProfile}
 							onViewStats={this._viewStats}
-							selectedScreenKey={this.state.screens[0].key}
+							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 						/> :
 						null}
@@ -615,7 +599,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onClosed={this._hideMenu}
 						onSignOut={this._signOut}
 						onViewAdminPage={this._viewAdminPage}
-						onViewInbox={this._viewInbox}
 						onViewSettings={this._viewSettings}
 						selectedScreenKey={this.state.screens[0].key}
 						showNewReplyNotification={this.state.showNewReplyIndicator}

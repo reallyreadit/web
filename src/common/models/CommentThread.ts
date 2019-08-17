@@ -10,6 +10,5 @@ export default interface CommentThread {
 	userAccount: string,
 	badge: LeaderboardBadge,
 	children: CommentThread[],
-	dateRead: string,
 	parentCommentId: string | null
 }

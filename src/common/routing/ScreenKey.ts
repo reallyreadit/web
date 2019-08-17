@@ -5,7 +5,6 @@ enum ScreenKey {
 	EmailSubscriptions,
 	ExtensionRemoval,
 	Home,
-	Inbox,
 	Leaderboards,
 	MyReads,
 	Password,

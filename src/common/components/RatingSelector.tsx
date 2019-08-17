@@ -6,6 +6,7 @@ import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import UserArticle from '../models/UserArticle';
 import getShareData from '../sharing/getShareData';
+import ContentBox from './ContentBox';
 
 interface Props {
 	article: UserArticle,
@@ -51,7 +52,7 @@ export default class extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<div className="rating-selector_epcgq9">
+			<ContentBox className="rating-selector_epcgq9">
 				{this.props.children}
 				<div className="prompt-text">
 					<strong>Would you recommend this article to others?</strong>
@@ -110,7 +111,7 @@ export default class extends React.PureComponent<
 								'Thanks for your feedback.' :
 							<>&nbsp;</>}
 				</div>
-			</div>
+			</ContentBox>
 		);
 	}
 }

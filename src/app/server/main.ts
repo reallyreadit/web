@@ -6,7 +6,6 @@ import renderHtml from '../common/templates/html';
 import UserAccountRole from '../../common/models/UserAccountRole';
 import SessionState from '../../common/models/SessionState';
 import config from './config';
-import { hasNewUnreadReply } from '../../common/models/NewReplyNotification';
 import routes from '../../common/routing/routes';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
@@ -269,6 +268,13 @@ server = server.get('/starred', (req, res) => {
 		findRouteByKey(routes, ScreenKey.MyReads).createUrl()
 	);
 });
+server = server.get('/inbox', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Home).createUrl()
+	);
+});
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api
@@ -340,24 +346,6 @@ server = server.get('/viewReply/:id?', (req, res) => {
 		.catch(() => {
 			redirectToHomeScreen(req, res);
 		});
-});
-// process GET side effects
-server = server.get('/inbox', (req, res, next) => {
-	if (hasNewUnreadReply(req.sessionState.newReplyNotification)) {
-		req.api
-			.ackNewReply()
-			.then(() => {
-				const now = Date.now();
-				req.sessionState.newReplyNotification = {
-					...req.sessionState.newReplyNotification,
-					lastNewReplyAck: now,
-					timestamp: now
-				};
-				next();
-			});
-	} else {
-		next();
-	}
 });
 server = server.get('/extension/uninstall', (req, res, next) => {
 	if ('installationId' in req.query) {

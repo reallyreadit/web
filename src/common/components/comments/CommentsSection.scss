@@ -1,0 +1,23 @@
+/*
+	componentPath: src/common/components/comments/CommentsSection
+	cssComponentId: comments-section_mqmgnd
+*/
+
+.comments-section_mqmgnd > .post {
+	margin-bottom: 15px;
+}
+.comments-section_mqmgnd > .post > .locked {
+	text-align: center;
+	font-family: 'Museo Sans (700)';
+}
+.comments-section_mqmgnd > .post > .locked > img {
+	display: block;
+	margin: 0 auto 10px auto;
+	width: 48px;
+}
+.comments-section_mqmgnd > .comments > li + li {
+	margin-top: 15px;
+}
+.comments-section_mqmgnd > .no-comments {
+	text-align: center;
+}

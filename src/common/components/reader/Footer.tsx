@@ -5,7 +5,7 @@ import ShareData from '../../sharing/ShareData';
 import ShareChannel from '../../sharing/ShareChannel';
 import CommentThread from '../../models/CommentThread';
 import Fetchable from '../../Fetchable';
-import CommentsBox from '../comments/CommentsBox';
+import CommentsSection from '../comments/CommentsSection';
 import UserAccount from '../../models/UserAccount';
 
 export interface Props {
@@ -32,7 +32,7 @@ const render: React.SFC<Props> = (props: Props) => (
 			onShare={props.onShare}
 		/>
 		{props.comments && props.comments.value ?
-			<CommentsBox
+			<CommentsSection
 				article={props.article}
 				comments={props.comments.value}
 				imagePath="./images"

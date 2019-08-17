@@ -1,0 +1,11 @@
+/*
+	componentPath: src/common/components/LeaderboardBadges
+	cssComponentId: leaderboard-badges_s4o6nj
+*/
+
+.leaderboard-badges_s4o6nj {
+	display: flex;
+}
+.leaderboard-badges_s4o6nj > .badge + .badge {
+	margin-left: 0.25em;
+}

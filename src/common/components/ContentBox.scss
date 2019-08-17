@@ -1,0 +1,21 @@
+/*
+	componentPath: src/common/components/ContentBox
+	cssComponentId: content-box_kkp9lc
+*/
+
+.content-box_kkp9lc {
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	padding: 10px 15px;
+}
+.content-box_kkp9lc .content-box_kkp9lc {
+	background-color: transparent;
+	border: none;
+	padding: 0;
+}
+
+@media (max-width: 450px) {
+	.content-box_kkp9lc {
+		padding: 10px;
+	}
+}

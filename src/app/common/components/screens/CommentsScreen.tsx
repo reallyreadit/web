@@ -14,7 +14,7 @@ import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
-import CommentsBox from '../../../../common/components/comments/CommentsBox';
+import CommentsSection from '../../../../common/components/comments/CommentsSection';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -76,7 +76,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									onShare={this.props.onShare}
 								/> :
 								null}
-							<CommentsBox
+							<CommentsSection
 								article={this.props.article.value}
 								comments={this.props.comments.value}
 								highlightedCommentId={this.props.highlightedCommentId}
