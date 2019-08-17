@@ -33,7 +33,7 @@ export default (props: {
 					onClick={props.onViewHome}
 					style={props.selectedScreen.key === ScreenKey.Home ? 'loud' : 'normal'}
 				>
-					<Icon name="books" />
+					<Icon name="earth" />
 					<label>Discover</label>
 				</Button>
 			</li>

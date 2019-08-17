@@ -23,7 +23,7 @@ export default (props: {
 				className={props.selectedScreen.key === ScreenKey.Home ? 'selected' : null}
 				onClick={props.onViewHome}
 			>
-				<Icon name="books" />
+				<Icon name="earth" />
 				<label>Discover</label>
 			</button>
 		</li>
