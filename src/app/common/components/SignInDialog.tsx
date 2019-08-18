@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from './controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
 import EmailAddressField from './controls/authentication/EmailAddressField';
 import PasswordField from './controls/authentication/PasswordField';
 
@@ -7,7 +7,7 @@ interface Props {
 	onOpenPasswordResetDialog: () => void,
 	onSignIn: (emailAddress: string, password: string) => Promise<void>
 }
-export default class extends Dialog<void, Props, Partial<State> & {
+export default class SignInDialog extends FormDialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string,
 	password?: string,
@@ -15,7 +15,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 }> {
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Log In',

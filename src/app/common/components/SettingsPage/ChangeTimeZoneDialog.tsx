@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../../../common/Fetchable';
@@ -11,7 +11,7 @@ interface Props {
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>
 }
-export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<State> & {
+export default class ChangeTimeZoneDialog extends FormDialog<void, Props, Partial<State> & {
 	timeZoneSelectListItems: Fetchable<TimeZoneSelectListItem[]>,
 	timeZoneSelection: {
 		id: number,
@@ -33,7 +33,7 @@ export default class ChangeTimeZoneDialog extends Dialog<void, Props, Partial<St
 		});
 	};
 	private readonly _timeZoneName = DateTime.local().zoneName;
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Change Time Zone',

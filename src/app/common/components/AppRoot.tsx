@@ -180,10 +180,12 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				onCloseDialog: this._closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetPosts: this.props.serverApi.getPosts,
 				onGetProfile: this.props.serverApi.getProfile,
+				onOpenDialog: this._openDialog,
 				onOpenMenu: this._openMenu,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,

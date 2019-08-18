@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from './controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
 import EmailAddressField from './controls/authentication/EmailAddressField';
 import PasswordField from './controls/authentication/PasswordField';
 import UsernameField from './controls/authentication/UsernameField';
@@ -10,7 +10,7 @@ interface Props {
 	captcha: Captcha,
 	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>
 }
-export default class extends Dialog<void, Props, Partial<State> & {
+export default class CreateAccountDialog extends FormDialog<void, Props, Partial<State> & {
 	name?: string,
 	nameError?: string,
 	email?: string,
@@ -21,7 +21,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 	private _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Sign Up',

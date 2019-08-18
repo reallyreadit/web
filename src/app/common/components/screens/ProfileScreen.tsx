@@ -25,13 +25,16 @@ import Button from '../../../../common/components/Button';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import PostDetails from '../../../../common/components/PostDetails';
 import ActionLink from '../../../../common/components/ActionLink';
+import GetFollowersDialog from './ProfileScreen/GetFollowersDialog';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetProfile: FetchFunctionWithParams<ProfileQuery, Profile>,
 	onGetPosts: FetchFunctionWithParams<PostsQuery, PageResult<Post>>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -47,6 +50,16 @@ interface State {
 }
 export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _openGetFollowersDialog = () => {
+		this.props.onOpenDialog(
+			<GetFollowersDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+				onShare={this.props.onShare}
+				userName={this.props.userAccount.name}
+			/>
+		);
+	};
 	private readonly _showFollowers = () => {
 
 	};
@@ -109,6 +122,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 							</div>
 							{this.props.userAccount && this.props.userAccount.name === this.props.userName ?
 								<Button
+									onClick={this._openGetFollowersDialog}
 									text="Get Followers"
 									style="loud"
 									size="large"

@@ -1,13 +1,13 @@
 import * as React from 'react';
 import InputField from './controls/InputField';
-import Dialog, { Props as DialogProps, State } from './controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
 
 interface Props {
 	email: string,
 	onResetPassword: (token: string, email: string) => Promise<void>
 	token: string
 }
-export default class extends Dialog<void, Props, Partial<State> & {
+export default class ResetPasswordDialog extends FormDialog<void, Props, Partial<State> & {
 	password1?: string,
 	password1Error?: string,
 	password2?: string,
@@ -15,7 +15,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 }> {
 	private _handlePassword1Change = (password1: string, password1Error: string) => this.setState({ password1, password1Error });
 	private _handlePassword2Change = (password2: string, password2Error: string) => this.setState({ password2, password2Error });
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Change Password',

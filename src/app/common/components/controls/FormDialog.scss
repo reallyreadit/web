@@ -1,0 +1,17 @@
+/*
+	componentPath: src/app/common/components/controls/FormDialog
+	cssComponentId: form-dialog_bdppnq
+*/
+
+.form-dialog_bdppnq > .error-message {
+	padding-bottom: 10px;
+	text-align: center;
+	color: crimson;
+}
+.form-dialog_bdppnq > .buttons {
+	margin-top: 15px;
+	text-align: right;
+}
+.form-dialog_bdppnq > .buttons > .button_ovrlmi:last-child {
+	margin-left: (8 + 6) + px; 
+}

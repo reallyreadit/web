@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
 
 interface Values {
 	receiveWebsiteUpdates: boolean,
@@ -8,10 +8,10 @@ interface Values {
 interface Props extends Values {
 	onUpdateContactPreferences: (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => Promise<void>
 }
-export default class extends Dialog<void, Props, Partial<State> & Values> {
+export default class EditContactPreferencesDialog extends FormDialog<void, Props, Partial<State> & Values> {
 	private _changeWebsiteUpdates = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ receiveWebsiteUpdates: e.currentTarget.checked });
 	private _changeSuggestedReadings = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ receiveSuggestedReadings: e.currentTarget.checked });
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Edit Contact Preferences',

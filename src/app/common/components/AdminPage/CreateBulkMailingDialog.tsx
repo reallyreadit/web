@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
 import Fetchable from '../../../../common/Fetchable';
 import ActionLink from '../../../../common/components/ActionLink';
 import { Intent } from '../../../../common/components/Toaster';
@@ -10,7 +10,7 @@ interface Props {
 	onSendTest: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
 	onSent: () => void
 }
-export default class extends Dialog<void, Props, Partial<State> & {
+export default class CreateBulkMailingDialog extends FormDialog<void, Props, Partial<State> & {
 	lists: Fetchable<{ key: string, value: string }[]>,
 	list: string,
 	subject: string
@@ -37,7 +37,7 @@ export default class extends Dialog<void, Props, Partial<State> & {
 				this.setState({ sendingTestEmail: false });
 			});
 	};
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Create Bulk Mailing',

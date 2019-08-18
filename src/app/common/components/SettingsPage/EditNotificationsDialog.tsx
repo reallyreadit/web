@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog, { Props as DialogProps, State } from '../controls/Dialog';
+import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
 
 interface Values {
 	receiveEmailNotifications: boolean,
@@ -8,10 +8,10 @@ interface Values {
 interface Props extends Values {
 	onUpdateNotificationPreferences: (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => Promise<void>
 }
-export default class extends Dialog<void, Props, Partial<State> & Values> {
+export default class EditNotificationsDialog extends FormDialog<void, Props, Partial<State> & Values> {
 	private _handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ receiveEmailNotifications: e.currentTarget.checked });
 	private _handleDesktopChange = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ receiveDesktopNotifications: e.currentTarget.checked });
-	constructor(props: Props & DialogProps) {
+	constructor(props: Props & FormDialogProps) {
 		super(
 			{
 				title: 'Edit Notifications',
