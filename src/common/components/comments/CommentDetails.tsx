@@ -3,8 +3,6 @@ import CommentThread from '../../models/CommentThread';
 import CommentComposer from './CommentComposer';
 import ActionLink from '../ActionLink';
 import classNames from 'classnames';
-import timeago from 'timeago.js';
-import ShareControl, { MenuPosition } from '../ShareControl';
 import { findRouteByKey } from '../../routing/Route';
 import routes from '../../routing/routes';
 import ScreenKey from '../../routing/ScreenKey';
@@ -13,10 +11,8 @@ import ShareData from '../../sharing/ShareData';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
 import { formatPossessive } from '../../format';
-import LeaderboardBadges from '../LeaderboardBadges';
 import ContentBox from '../ContentBox';
-import Icon from '../Icon';
-import LeaderboardBadge from '../../models/LeaderboardBadge';
+import PostHeader from '../PostHeader';
 
 interface Props {
 	comment: CommentThread,
@@ -95,21 +91,14 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 					}
 				)}
 			>
-				<div className="title">
-					<span className="user-name">{this.props.comment.userAccount}</span>
-					{this.props.comment.badge !== LeaderboardBadge.None ?
-						<LeaderboardBadges badge={this.props.comment.badge} /> :
-						null}
-					<span className="age">{timeago().format(this.props.comment.dateCreated.replace(/([^Z])$/, '$1Z'))}</span>
-					<ShareControl
-						menuPosition={MenuPosition.RightMiddle}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onGetData={this._getShareData}
-						onShare={this.props.onShare}
-					>
-						<Icon name="share" />
-					</ShareControl>
-				</div>
+				<PostHeader
+					userName={this.props.comment.userAccount}
+					leaderboardBadge={this.props.comment.badge}
+					date={this.props.comment.dateCreated}
+					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+					onGetShareData={this._getShareData}
+					onShare={this.props.onShare}
+				/>
 				<div
 					className="text"
 					dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}>

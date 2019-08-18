@@ -6,8 +6,8 @@ import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import CommentDetails from './comments/CommentDetails';
 import UserAccount from '../models/UserAccount';
-import timeago from 'timeago.js';
 import ContentBox from './ContentBox';
+import PostHeader from './PostHeader';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -42,10 +42,11 @@ export default class PostDetails extends React.Component<Props> {
 						onShare={this.props.onShare}
 						user={this.props.user}
 					/> :
-					<div className="silent-post">
-						<span className="user-name">{this.props.post.userName}</span>
-						<span className="age">{timeago().format(this.props.post.date.replace(/([^Z])$/, '$1Z'))}</span>
-					</div>}
+					<PostHeader
+						userName={this.props.post.userName}
+						leaderboardBadge={this.props.post.badge}
+						date={this.props.post.date}
+					/>}
 			</ContentBox>
 		);
 	}

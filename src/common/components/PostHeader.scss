@@ -1,0 +1,30 @@
+/*
+	componentPath: src/common/components/PostHeader
+	cssComponentId: post-header_f4a846
+*/
+
+.post-header_f4a846 {
+	padding: 5px;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	color: #999;
+	background-color: whitesmoke;
+}
+.post-header_f4a846 > .user-name {
+	font-family: 'Museo Sans (700)';
+	margin-right: 10px;
+}
+.post-header_f4a846 > .leaderboard-badges_s4o6nj {
+	font-size: 12pt;
+	margin-right: 10px;
+}
+.post-header_f4a846 > .share-control_mnbspk {
+	margin-left: 10px;	
+}
+.post-header_f4a846 > .share-control_mnbspk > .children > .action-link_ftamt8 {
+	color: darkgray;
+}
+.post-header_f4a846 > .share-control_mnbspk > .children > .action-link_ftamt8:hover {
+	color: black;
+}
