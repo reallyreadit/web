@@ -126,7 +126,7 @@ export default class CommentComposer extends React.PureComponent<Props, {
 					/> :
 					null}
 				<Button
-					text={`Add ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
+					text={`Post ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
 					style="preferred"
 					state={
 						this.state.isPosting ?
