@@ -3,6 +3,9 @@
 	cssComponentId: share-control_mnbspk
 */
 
+.share-control_mnbspk > .children {
+	cursor: pointer;
+}
 .share-control_mnbspk > .menu > .button {
 	display: flex;
 	position: relative;
