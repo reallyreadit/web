@@ -24,6 +24,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Button from '../../../../common/components/Button';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import PostDetails from '../../../../common/components/PostDetails';
+import ActionLink from '../../../../common/components/ActionLink';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
@@ -46,6 +47,9 @@ interface State {
 }
 export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _showFollowers = () => {
+
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -89,6 +93,10 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		let followersText;
+		if (this.state.profile.value) {
+			followersText = this.state.profile.value.followers.length + ' ' + formatCountable(this.state.profile.value.followers.length, 'follower');
+		}
 		return (
 			<ScreenContainer className="profile-screen_1u1j1e">
 				{this.state.profile.isLoading || this.state.posts.isLoading ?
@@ -111,8 +119,12 @@ export class ProfileScreen extends React.Component<Props, State> {
 									size="large"
 								/>}
 							{this.state.profile.value.followers.length ?
-								<span>{formatCountable(this.state.profile.value.followers.length, 'follower')}</span> :
-								null}
+								<ActionLink
+									className="followers"
+									onClick={this._showFollowers}
+									text={followersText}
+								/> :
+								<span className="followers">{followersText}</span>}
 						</div>
 						<ArticleList>
 							{this.state.posts.value.items.map(
