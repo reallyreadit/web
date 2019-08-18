@@ -248,7 +248,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewPrivacyPolicy: this._viewPrivacyPolicy
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
+				onCloseDialog: this._closeDialog,
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
+				onOpenDialog: this._openDialog,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onViewProfile: this._viewProfile
 			}),

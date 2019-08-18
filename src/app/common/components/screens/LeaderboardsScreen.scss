@@ -138,44 +138,6 @@
 	font-family: 'Museo Sans (700)';
 	font-size: 12pt;
 }
-.leaderboards-screen_wuzsob > .explainer {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background-color: rgba(255,255,255,0.5)
-}
-.leaderboards-screen_wuzsob > .explainer > .content {
-	position: -webkit-sticky;
-	position: sticky;
-	box-sizing: border-box;
-	top: 15%;
-	max-width: 280px;
-	padding: 10px;
-	margin: 0 auto;
-	background-color: white;
-	border: 3px solid black;
-}
-.leaderboards-screen_wuzsob > .explainer > .content > .title {
-	position: relative;
-	text-align: center;
-	font-family: 'Museo Sans (500)';
-	font-size: 18pt;
-	margin-bottom: 10px;
-}
-.leaderboards-screen_wuzsob > .explainer > .content > .title > .close {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	transform: translateY(-50%);
-	cursor: pointer;
-	font-size: 13pt;
-}
-.leaderboards-screen_wuzsob > .explainer > .content > p {
-	margin: 5px 0;
-	line-height: 1.35em;
-}
 
 @media (max-width: 659px) {
 	.leaderboards-screen_wuzsob > .leaderboards > .leaderboard {

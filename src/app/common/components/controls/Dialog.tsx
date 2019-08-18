@@ -7,10 +7,11 @@ export default (
 		children: React.ReactNode,
 		className?: ClassValue,
 		onClose?: () => void,
+		size?: 'small',
 		title: string
 	}
 ) => (
-	<div className={classNames('dialog_k09mus', props.className)}>
+	<div className={classNames('dialog_k09mus', props.className, { 'small': props.size === 'small' })}>
 		<div className="header">
 			<div className="title">{props.title}</div>
 			{props.onClose ?
@@ -23,4 +24,4 @@ export default (
 		</div>
 		{props.children}
 	</div>
-);	
+);

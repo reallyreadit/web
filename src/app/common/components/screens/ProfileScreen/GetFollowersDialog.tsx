@@ -30,6 +30,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 			<Dialog
 				className="get-followers-dialog_woa1zs"
 				onClose={this.props.onCloseDialog}
+				size="small"
 				title="Get Followers"
 			>
 				<p><strong>Reading with friends is more fun than reading alone.</strong></p>

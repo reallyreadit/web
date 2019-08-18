@@ -9,7 +9,9 @@ import Leaderboards from '../../../../common/models/Leaderboards';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
+	onCloseDialog: () => void,
 	onGetLeaderboards: FetchFunction<Leaderboards>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }
@@ -30,6 +32,8 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
+				onCloseDialog={this.props.onCloseDialog}
+				onOpenDialog={this.props.onOpenDialog}
 				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}
 			/>

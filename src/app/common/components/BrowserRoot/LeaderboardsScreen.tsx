@@ -10,7 +10,9 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
+	onCloseDialog: () => void,
 	onGetLeaderboards: FetchFunction<Leaderboards>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
@@ -39,6 +41,8 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
+				onCloseDialog={this.props.onCloseDialog}
+				onOpenDialog={this.props.onOpenDialog}
 				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}
 			/>

@@ -11,6 +11,7 @@ import Ranking from '../../../../common/models/Ranking';
 import classNames from 'classnames';
 import StreakTimer from './LeaderboardScreen/StreakTimer';
 import ProfileLink from '../../../../common/components/ProfileLink';
+import Dialog from '../controls/Dialog';
 
 function renderTable(
 	{ title, iconName, scoreUnit, pluralScoreUnit, rankings, userRanking, userName, onOpenExplainer, onViewProfile }: {
@@ -85,63 +86,42 @@ function renderTable(
 		</>
 	);
 }
-interface Props {
+export default class LeaderboardsScreen extends React.PureComponent<{
 	leaderboards: Fetchable<Leaderboards>,
+	onCloseDialog: () => void,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount
-}
-export default class LeaderboardsScreen extends React.PureComponent<
-	Props,
-	{
-		explainer: 'scout' | 'scribe' | null
-	}
-> {
-	private readonly _closeExplainer = () => {
-		this.setState({ explainer: null });
-	};
+}> {
 	private readonly _openScoutExplainer = () => {
-		this.setState({ explainer: 'scout' });
+		this.props.onOpenDialog(
+			<Dialog
+				onClose={this.props.onCloseDialog}
+				size="small"
+				title="What's a scout?"
+			>
+				<p><strong>Scouts find the good stuff. They're the first ones to read <em>and rate</em> new articles that go on to become Article of the Day (AOTD). The leaderboard shows the top Scouts of the last month.</strong></p>
+			</Dialog>
+		);
 	};
 	private readonly _openScribeExplainer = () => {
-		this.setState({ explainer: 'scribe' });
+		this.props.onOpenDialog(
+			<Dialog
+				onClose={this.props.onCloseDialog}
+				size="small"
+				title="What's a scribe?"
+			>
+				<p><strong>Thoughtful, interesting conversation is the heart and soul of Readup. Scribes are the top commenters of the past month.</strong></p>
+				<p>Scribes earn replies in two ways: (1) by replying to others and (2) by getting replies on their comments.</p>
+			</Dialog>
+		);
 	};
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			explainer: null
-		};
-	}
 	public render() {
 		const streak = (
 			this.props.leaderboards.value ?
 				this.props.leaderboards.value.userRankings.streak :
 				null
 		);
-		let explainer: {
-			title: string,
-			content: React.ReactNode
-		};
-		switch (this.state.explainer) {
-			case 'scout':
-				explainer = {
-					title: 'What\'s a scout?',
-					content: (
-						<p><strong>Scouts find the good stuff. They're the first ones to read <em>and rate</em> new articles that go on to become Article of the Day (AOTD). The leaderboard shows the top Scouts of the last month.</strong></p>
-					)
-				};
-				break;
-			case 'scribe':
-				explainer = {
-					title: 'What\'s a scribe?',
-					content: (
-						<>
-							<p><strong>Thoughtful, interesting conversation is the heart and soul of Readup. Scribes are the top commenters of the past month.</strong></p>
-							<p>Scribes earn replies in two ways: (1) by replying to others and (2) by getting replies on their comments.</p>
-						</>
-					)
-				};
-				break;
-		}
 		return (
 			<ScreenContainer className="leaderboards-screen_wuzsob">
 				{this.props.leaderboards.isLoading ?
@@ -234,21 +214,6 @@ export default class LeaderboardsScreen extends React.PureComponent<
 							</div>
 							<div className="leaderboard hidden"></div>
 						</div>}
-				{explainer ?
-							<div className="explainer">
-								<div className="content">
-									<div className="title">
-										{explainer.title}
-										<Icon
-											className="close"
-											name="cancel"
-											onClick={this._closeExplainer}
-										/>
-									</div>
-									{explainer.content}
-								</div>
-							</div> :
-							null}
 			</ScreenContainer>
 		);
 	}

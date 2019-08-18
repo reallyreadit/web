@@ -165,7 +165,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
+				onCloseDialog: this._closeDialog,
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
+				onOpenDialog: this._openDialog,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {

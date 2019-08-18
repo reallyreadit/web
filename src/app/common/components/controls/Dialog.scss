@@ -9,8 +9,11 @@
 	z-index: 100;
 	background: #fff;
 	border: 3px solid black;;
-	max-width: 100%;
+	max-width: calc(100% - 30px);
 	box-sizing: border-box;
+}
+.dialog_k09mus.small {
+	max-width: 400px;
 }
 .dialog_k09mus > .header {
 	position: relative;
