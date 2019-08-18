@@ -175,9 +175,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (this.state.screens.length > 1) {
 			this.setScreenState({ method: 'pop' });
 		} else {
+			const route = findRouteByLocation(routes, { path: window.location.pathname });
 			this.setScreenState({
-				key: findRouteByLocation(routes, { path: window.location.pathname }).screenKey,
-				method: 'replace'
+				key: route.screenKey,
+				method: 'replace',
+				urlParams: (
+					route.getPathParams ?
+						route.getPathParams(window.location.pathname) :
+						null
+				)
 			});
 		}
 	};
