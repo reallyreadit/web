@@ -276,7 +276,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
+				onViewComments: this._viewComments,
+				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,

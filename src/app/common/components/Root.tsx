@@ -137,6 +137,15 @@ export default abstract class Root<
 			});
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
+	protected readonly _viewThread = (comment: CommentThread) => {
+		this.viewComments(
+			{
+				slug: comment.articleSlug,
+				title: comment.articleTitle
+			},
+			comment.id
+		);
+	};
 
 	// dialogs
 	protected readonly _closeDialog = () => {
@@ -485,7 +494,7 @@ export default abstract class Root<
 	protected abstract readArticle(article: UserArticle, ev: React.MouseEvent): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
-	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>): void;
+	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string): void;
 	public componentDidMount() {
 		if (this.state.user && this.state.user.timeZoneId == null) {
 			this.setTimeZone();

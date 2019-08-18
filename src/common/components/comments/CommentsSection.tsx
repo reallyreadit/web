@@ -20,16 +20,13 @@ export default (props: {
 	onViewProfile?: (userName: string) => void,
 	user: UserAccount | null
 }) => {
-	const
-		isUserSignedIn = !!props.user,
-		isAllowedToPost = props.article && isUserSignedIn && props.article.isRead;
+	const isAllowedToPost = props.article && props.user && props.article.isRead;
 	return (
 		<div className="comments-section_mqmgnd">
 			<ContentBox className="post">
 				{isAllowedToPost ?
 					<CommentComposer
 						articleId={props.article.id}
-						isAllowedToPost={isAllowedToPost}
 						onPostComment={props.onPostComment}
 					/> :
 					<div className="locked">
@@ -48,10 +45,13 @@ export default (props: {
 								<CommentDetails
 									comment={comment}
 									highlightedCommentId={props.highlightedCommentId}
-									isAllowedToPost={isAllowedToPost}
 									onCopyTextToClipboard={props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
-									onPostComment={props.onPostComment}
+									onPostComment={
+										isAllowedToPost ?
+											props.onPostComment :
+											null
+									}
 									onShare={props.onShare}
 									onViewProfile={props.onViewProfile}
 									user={props.user}

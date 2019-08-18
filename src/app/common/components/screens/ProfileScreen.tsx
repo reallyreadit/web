@@ -26,6 +26,7 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import PostDetails from '../../../../common/components/PostDetails';
 import ActionLink from '../../../../common/components/ActionLink';
 import GetFollowersDialog from './ProfileScreen/GetFollowersDialog';
+import CommentThread from '../../../../common/models/CommentThread';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
@@ -40,6 +41,7 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewThread: (comment: CommentThread) => void,
 	userAccount: UserAccount | null,
 	userName: string
 }
@@ -151,6 +153,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 											onShare={this.props.onShare}
 											onToggleStar={this.props.onToggleArticleStar}
 											onViewComments={this.props.onViewComments}
+											onViewThread={this.props.onViewThread}
 											post={post}
 											user={this.props.userAccount}
 										/>

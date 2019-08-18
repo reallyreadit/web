@@ -5,7 +5,6 @@ import AsyncTracker from '../../AsyncTracker';
 
 interface Props {
 	articleId: number,
-	isAllowedToPost: boolean,
 	onCancel?: () => void,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	parentCommentId?: string
@@ -107,20 +106,13 @@ export default class CommentComposer extends React.PureComponent<Props, {
 					placeholder="Share your thoughts."
 					style={textareaStyle}
 				/>
-				{this.props.articleId && !this.props.isAllowedToPost ?
-					<span className="comment-warning">
-						You must really read the article before you can comment
-					</span> :
-					null}
 				{this.props.parentCommentId ?
 					<Button
 						text="Cancel"
 						state={
 							this.state.isPosting ?
 								'disabled' :
-								(this.props.isAllowedToPost && this.state.hasContent) || this.props.parentCommentId ?
-									'normal' :
-									'disabled'
+								'normal'
 						}
 						onClick={this._cancel}
 					/> :
@@ -131,7 +123,7 @@ export default class CommentComposer extends React.PureComponent<Props, {
 					state={
 						this.state.isPosting ?
 							'busy' :
-							this.props.isAllowedToPost && this.state.hasContent ?
+							this.state.hasContent ?
 								'normal' :
 								'disabled'
 					}

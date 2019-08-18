@@ -17,12 +17,12 @@ import PostHeader from '../PostHeader';
 interface Props {
 	comment: CommentThread,
 	highlightedCommentId?: string,
-	isAllowedToPost?: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
 	onViewProfile?: (userName: string) => void,
+	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,
 	user: UserAccount | null
 }
@@ -75,6 +75,9 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 			url: shareUrl
 		};
 	};
+	private readonly _viewThread = () => {
+		this.props.onViewThread(this.props.comment);
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = { showComposer: false };
@@ -108,14 +111,23 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 				{this.state.showComposer ? 
 					<CommentComposer
 						articleId={this.props.comment.articleId}
-						isAllowedToPost={this.props.isAllowedToPost}
 						onCancel={this._hideComposer}
 						onPostComment={this._addComment}
 						parentCommentId={this.props.comment.id}
 					/> :
-					this.props.isAllowedToPost ?
-						<ActionLink text="Reply" iconLeft="backward" onClick={this._showComposer} /> :
-						null}
+					this.props.onPostComment ?
+						<ActionLink
+							text="Reply"
+							iconLeft="backward"
+							onClick={this._showComposer}
+						/> :
+						this.props.onViewThread ?
+							<ActionLink
+								text="View Thread"
+								iconLeft="comments"
+								onClick={this._viewThread} 
+							/> :
+							null}
 				{this.props.comment.children.length ?
 					<ul className="replies">
 						{this.props.comment.children.map(
@@ -124,12 +136,12 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 									<CommentDetails
 										comment={comment}
 										highlightedCommentId={this.props.highlightedCommentId}
-										isAllowedToPost={this.props.isAllowedToPost}
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onPostComment={this.props.onPostComment}
 										onShare={this.props.onShare}
 										onViewProfile={this.props.onViewProfile}
+										onViewThread={this.props.onViewThread}
 										parentCommentId={this.props.comment.id}
 										user={this.props.user}
 									/>

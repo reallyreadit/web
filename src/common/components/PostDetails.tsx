@@ -8,6 +8,7 @@ import CommentDetails from './comments/CommentDetails';
 import UserAccount from '../models/UserAccount';
 import ContentBox from './ContentBox';
 import PostHeader from './PostHeader';
+import CommentThread from '../models/CommentThread';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -17,6 +18,7 @@ interface Props {
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile?: (userName: string) => void,
+	onViewThread: (comment: CommentThread) => void,
 	post: Post,
 	user: UserAccount | null
 }
@@ -48,11 +50,11 @@ export default class PostDetails extends React.Component<Props> {
 							children: [],
 							parentCommentId: null
 						}}
-						isAllowedToPost={this.props.user && this.props.post.article.isRead}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onShare={this.props.onShare}
 						onViewProfile={this.props.onViewProfile}
+						onViewThread={this.props.onViewThread}
 						user={this.props.user}
 					/> :
 					<PostHeader

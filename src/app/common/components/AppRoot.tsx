@@ -193,7 +193,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
+				onViewComments: this._viewComments,
+				onViewThread: this._viewThread
 			})
 		};
 
@@ -409,14 +410,19 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>) {
-		const [sourceSlug, articleSlug] = article.slug.split('_');
-		this.pushScreen(
-			ScreenKey.Comments,
-			{
+	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string) {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			urlParams: { [key: string]: string } = {
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
-			}
+			};
+		if (highlightedCommentId != null) {
+			urlParams['commentId'] = highlightedCommentId;
+		}
+		this.pushScreen(
+			ScreenKey.Comments,
+			urlParams
 		);
 	}
 	public componentDidMount() {
