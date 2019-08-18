@@ -15,7 +15,7 @@ export default class EditContactPreferencesDialog extends FormDialog<void, Props
 		super(
 			{
 				title: 'Edit Contact Preferences',
-				submitButtonText: 'Save Changes',
+				submitButtonText: 'Save',
 				successMessage: 'Contact preferences updated'
 			},
 			props

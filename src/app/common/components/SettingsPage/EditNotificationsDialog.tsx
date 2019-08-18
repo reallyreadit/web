@@ -15,7 +15,7 @@ export default class EditNotificationsDialog extends FormDialog<void, Props, Par
 		super(
 			{
 				title: 'Edit Notifications',
-				submitButtonText: 'Save Changes',
+				submitButtonText: 'Save',
 				successMessage: 'Notification preferences updated'
 			},
 			props
