@@ -141,11 +141,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
-	private readonly _viewProfile = () => {
+	private readonly _viewProfile = (userName?: string) => {
 		this.setScreenState({
 			key: ScreenKey.Profile,
-			method: 'replace',
-			urlParams: { userName: this.state.user.name }
+			method: userName ? 'push' : 'replace',
+			urlParams: { userName: userName || this.state.user.name }
 		});
 	};
 	private readonly _viewSettings = () => {
@@ -219,7 +219,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShowCreateAccountDialog: this._openCreateAccountDialog,
 				onShowSignInDialog: this._openSignInDialog,
 				onViewHomeScreen: this._viewHome,
-				onToggleArticleStar: this._toggleArticleStar
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isDesktopDevice: this._isDesktopDevice,
@@ -242,7 +243,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,

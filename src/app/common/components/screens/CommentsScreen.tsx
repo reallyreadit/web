@@ -40,6 +40,7 @@ export interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }
 export default class CommentsScreen extends React.PureComponent<Props> {
@@ -85,6 +86,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 								onPostComment={this.props.onPostComment}
 								onShare={this.props.onShare}
+								onViewProfile={this.props.onViewProfile}
 								user={this.props.user}
 							/>
 						</>}

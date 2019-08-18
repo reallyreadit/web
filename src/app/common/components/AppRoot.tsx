@@ -84,11 +84,18 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
-	private readonly _viewProfile = () => {
-		this.replaceScreen(
-			ScreenKey.Profile,
-			{ userName: this.state.user.name }
-		);
+	private readonly _viewProfile = (userName?: string) => {
+		if (userName) {
+			this.pushScreen(
+				ScreenKey.Profile,
+				{ userName }
+			);
+		} else {
+			this.replaceScreen(
+				ScreenKey.Profile,
+				{ userName: this.state.user.name }
+			);
+		}
 	};
 	private readonly _viewSettings = () => {
 		this.pushScreen(ScreenKey.Settings);
@@ -143,7 +150,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onShare: this._handleShareRequest,
-				onToggleArticleStar: this._toggleArticleStar
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -157,7 +165,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onGetLeaderboards: this.props.serverApi.getLeaderboards
+				onGetLeaderboards: this.props.serverApi.getLeaderboards,
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,

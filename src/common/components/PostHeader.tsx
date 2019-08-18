@@ -6,6 +6,7 @@ import LeaderboardBadges from './LeaderboardBadges';
 import timeago from 'timeago.js';
 import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
+import ProfileLink from './ProfileLink';
 
 export default (
 	props: {
@@ -14,11 +15,18 @@ export default (
 		date: string
 		onCopyTextToClipboard?: (text: string, successMessage: string) => void,
 		onGetShareData?: () => ShareData,
-		onShare?: (data: ShareData) => ShareChannel[]
+		onShare?: (data: ShareData) => ShareChannel[],
+		onViewProfile?: (userName: string) => void
 	}
 ) => (
 	<div className="post-header_f4a846">
-		<span className="user-name">{props.userName}</span>
+		{props.onViewProfile ?
+			<ProfileLink
+				className="user-name"
+				onViewProfile={props.onViewProfile}
+				userName={props.userName}
+			/> :
+			<span className="user-name">{props.userName}</span>}
 		{props.leaderboardBadge !== LeaderboardBadge.None ?
 			<LeaderboardBadges badge={props.leaderboardBadge} /> :
 			null}

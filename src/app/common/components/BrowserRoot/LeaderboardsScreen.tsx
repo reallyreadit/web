@@ -12,6 +12,7 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }
 class BrowserLeaderboardsScreen extends React.Component<Props, {
@@ -38,6 +39,7 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
+				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}
 			/>
 		);

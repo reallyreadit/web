@@ -10,9 +10,10 @@ import LeaderboardRanking from '../../../../common/models/LeaderboardRanking';
 import Ranking from '../../../../common/models/Ranking';
 import classNames from 'classnames';
 import StreakTimer from './LeaderboardScreen/StreakTimer';
+import ProfileLink from '../../../../common/components/ProfileLink';
 
 function renderTable(
-	{ title, iconName, scoreUnit, pluralScoreUnit, rankings, userRanking, userName, onOpenExplainer }: {
+	{ title, iconName, scoreUnit, pluralScoreUnit, rankings, userRanking, userName, onOpenExplainer, onViewProfile }: {
 		title: string,
 		iconName: IconName,
 		scoreUnit: string,
@@ -20,7 +21,8 @@ function renderTable(
 		rankings: LeaderboardRanking[],
 		userRanking: Ranking,
 		userName: string,
-		onOpenExplainer?: () => void
+		onOpenExplainer?: () => void,
+		onViewProfile: (userName: string) => void
 	}
 ) {
 	return (
@@ -48,7 +50,15 @@ function renderTable(
 									<td>{ranking.rank}</td>
 									<td>
 										<span className="cell-liner">
-											<span className="overflow-container">{ranking.userName}</span>
+											<span className="overflow-container">
+												{ranking.userName !== userName ?
+													<ProfileLink
+														className="profile-link"
+														onViewProfile={onViewProfile}
+														userName={ranking.userName}
+													/> :
+													ranking.userName}
+											</span>
 										</span>
 									</td>
 									<td>{ranking.score} {formatCountable(ranking.score, scoreUnit, pluralScoreUnit)}</td>
@@ -77,6 +87,7 @@ function renderTable(
 }
 interface Props {
 	leaderboards: Fetchable<Leaderboards>,
+	onViewProfile: (userName: string) => void,
 	user: UserAccount
 }
 export default class LeaderboardsScreen extends React.PureComponent<
@@ -148,6 +159,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 								{renderTable({
 									title: 'Top readers this week',
 									iconName: 'medal',
+									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'read',
 									rankings: this.props.leaderboards.value.weeklyReadCount,
 									userRanking: this.props.leaderboards.value.userRankings.weeklyReadCount,
@@ -158,6 +170,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 								{renderTable({
 									title: 'Top readers of all time',
 									iconName: 'trophy',
+									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'read',
 									rankings: this.props.leaderboards.value.readCount,
 									userRanking: this.props.leaderboards.value.userRankings.readCount,
@@ -168,6 +181,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 								{renderTable({
 									title: 'Reading streaks',
 									iconName: 'fire',
+									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'day',
 									rankings: this.props.leaderboards.value.streak,
 									userRanking: {
@@ -197,6 +211,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 								{renderTable({
 									title: 'Scouts',
 									iconName: 'binoculars',
+									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'AOTD',
 									rankings: this.props.leaderboards.value.scout,
 									userRanking: this.props.leaderboards.value.userRankings.scoutCount,
@@ -208,6 +223,7 @@ export default class LeaderboardsScreen extends React.PureComponent<
 								{renderTable({
 									title: 'Scribes',
 									iconName: 'quill',
+									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'reply',
 									pluralScoreUnit: 'replies',
 									rankings: this.props.leaderboards.value.scribe,

@@ -16,6 +16,7 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewProfile?: (userName: string) => void,
 	post: Post,
 	user: UserAccount | null
 }
@@ -35,17 +36,30 @@ export default class PostDetails extends React.Component<Props> {
 				/>
 				{this.props.post.comment ?
 					<CommentDetails
-						comment={this.props.post.comment}
+						comment={{
+							id: this.props.post.comment.id,
+							dateCreated: this.props.post.date,
+							text: this.props.post.comment.text,
+							articleId: this.props.post.article.id,
+							articleTitle: this.props.post.article.title,
+							articleSlug: this.props.post.article.slug,
+							userAccount: this.props.post.userName,
+							badge: this.props.post.badge,
+							children: [],
+							parentCommentId: null
+						}}
 						isAllowedToPost={this.props.user && this.props.post.article.isRead}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onShare={this.props.onShare}
+						onViewProfile={this.props.onViewProfile}
 						user={this.props.user}
 					/> :
 					<PostHeader
 						userName={this.props.post.userName}
 						leaderboardBadge={this.props.post.badge}
 						date={this.props.post.date}
+						onViewProfile={this.props.onViewProfile}
 					/>}
 			</ContentBox>
 		);

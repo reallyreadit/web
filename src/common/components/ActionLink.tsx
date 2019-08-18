@@ -1,9 +1,10 @@
 import * as React from 'react';
-import classNames from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 import Icon, { IconName } from './Icon';
 import Spinner from './Spinner';
 
 export default class extends React.PureComponent<{
+	className?: ClassValue,
 	href?: string,
 	iconLeft?: IconName,
 	onClick?: (e: React.MouseEvent<HTMLElement>, href?: string) => void,
@@ -20,6 +21,7 @@ export default class extends React.PureComponent<{
 		const
 			cssClass = classNames(
 				'action-link_ftamt8',
+				this.props.className,
 				{
 					disabled: this.props.state === 'disabled' || this.props.state === 'busy',
 					busy: this.props.state === 'busy'

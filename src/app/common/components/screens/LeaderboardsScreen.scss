@@ -117,6 +117,13 @@
 	white-space: nowrap;
 	transform: translateY(-50%);
 }
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > table > tbody > tr > td > .cell-liner > .overflow-container > .profile-link,
+.leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .table-container > table > tbody > tr > td > .cell-liner > .overflow-container > .profile-link {
+	display: inline-block;
+	text-decoration: none;
+	border-bottom: 1px solid #ccc;
+	line-height: 1.025em;
+}
 .leaderboards-screen_wuzsob > .leaderboards > .leaderboard > .break {
 	margin: 0 0 5px 0;
 	border-style: solid;

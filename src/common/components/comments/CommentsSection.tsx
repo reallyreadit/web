@@ -17,6 +17,7 @@ export default (props: {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
+	onViewProfile?: (userName: string) => void,
 	user: UserAccount | null
 }) => {
 	const
@@ -52,6 +53,7 @@ export default (props: {
 									onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 									onPostComment={props.onPostComment}
 									onShare={props.onShare}
+									onViewProfile={props.onViewProfile}
 									user={props.user}
 								/>
 							</li>

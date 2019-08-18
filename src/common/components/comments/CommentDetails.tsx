@@ -22,6 +22,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
+	onViewProfile?: (userName: string) => void,
 	parentCommentId?: string,
 	user: UserAccount | null
 }
@@ -98,6 +99,7 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onGetShareData={this._getShareData}
 					onShare={this.props.onShare}
+					onViewProfile={this.props.onViewProfile}
 				/>
 				<div
 					className="text"
@@ -127,6 +129,7 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onPostComment={this.props.onPostComment}
 										onShare={this.props.onShare}
+										onViewProfile={this.props.onViewProfile}
 										parentCommentId={this.props.comment.id}
 										user={this.props.user}
 									/>

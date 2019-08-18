@@ -10,6 +10,7 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onGetLeaderboards: FetchFunction<Leaderboards>,
+	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }
 class AppLeaderboardsScreen extends React.Component<Props, {
@@ -29,6 +30,7 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 		return (
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
+				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}
 			/>
 		);
