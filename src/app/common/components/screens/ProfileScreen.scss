@@ -35,8 +35,13 @@
 	font-size: 16pt;
 	margin-left: 15px;
 }
-.profile-screen_1u1j1e > .profile > .followers {
-	margin-top: 15px;
+.profile-screen_1u1j1e > .profile > .following-count {
 	font-family: 'Museo Sans (500)';
 	font-size: 15pt;
+}
+.profile-screen_1u1j1e > .profile > .following-count.followees {
+	margin-bottom: 15px;
+}
+.profile-screen_1u1j1e > .profile > .following-count.followers {
+	margin-top: 15px;
 }

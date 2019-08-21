@@ -30,6 +30,8 @@ import CommentThread from '../../../../common/models/CommentThread';
 import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
+import FollowingListDialog from './ProfileScreen/FollowingListDialog';
+import produce from 'immer';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
@@ -37,7 +39,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
-	onGetFollowees: FetchFunction<string[]>,
+	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<PostsQuery, PageResult<Post>>,
 	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
@@ -64,16 +66,24 @@ export class ProfileScreen extends React.Component<Props, State> {
 			.onFollowUser(form)
 			.then(
 				() => {
-					this.setState({
-						profile: {
-							...this.state.profile,
-							value: {
-								...this.state.profile.value,
-								isFollowed: true,
-								followerCount: this.state.profile.value.followerCount + 1
-							}
-						}
-					});
+					if (this.isOwnProfile()) {
+						this.setState(
+							produce(
+								(state: State) => {
+									state.profile.value.followeeCount++;
+								}
+							)
+						);
+					} else {
+						this.setState(
+							produce(
+								(state: State) => {
+									state.profile.value.isFollowed = true;
+									state.profile.value.followerCount++;
+								}
+							)
+						);
+					}
 				}
 			);
 	};
@@ -87,29 +97,59 @@ export class ProfileScreen extends React.Component<Props, State> {
 			/>
 		);
 	};
+	private readonly _showFollowees = () => {
+		this.props.onOpenDialog(
+			<FollowingListDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onFollowUser={this._followUser}
+				onGetFollowings={this.props.onGetFollowees}
+				onUnfollowUser={this._unfollowUser}
+				title="Following"
+				userAccount={this.props.userAccount}
+			/>
+		);
+	};
 	private readonly _showFollowers = () => {
-		this.props.onGetFollowers(
-			{ userName: this.state.profile.value.userName },
-			result => {
-				console.log(result.value.map(following => JSON.stringify(following)).join(','));
-			}
-		)
+		this.props.onOpenDialog(
+			<FollowingListDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onFollowUser={this._followUser}
+				onGetFollowings={
+					(callback: (value: Fetchable<Following[]>) => void) => this.props.onGetFollowers({ userName: this.props.userName }, callback)
+				}
+				onUnfollowUser={this._unfollowUser}
+				title={
+					this.isOwnProfile() ?
+						"Followers" :
+						`Following ${this.props.userName}`
+				}
+				userAccount={this.props.userAccount}
+			/>
+		);
 	};
 	private readonly _unfollowUser = (form: UserNameForm) => {
 		return this.props
 			.onUnfollowUser(form)
 			.then(
 				() => {
-					this.setState({
-						profile: {
-							...this.state.profile,
-							value: {
-								...this.state.profile.value,
-								isFollowed: false,
-								followerCount: this.state.profile.value.followerCount - 1
-							}
-						}
-					});
+					if (this.isOwnProfile()) {
+						this.setState(
+							produce(
+								(state: State) => {
+									state.profile.value.followeeCount--;
+								}
+							)
+						);
+					} else {
+						this.setState(
+							produce(
+								(state: State) => {
+									state.profile.value.isFollowed = false;
+									state.profile.value.followerCount--;
+								}
+							)
+						);
+					}
 				}
 			);
 	};
@@ -144,6 +184,9 @@ export class ProfileScreen extends React.Component<Props, State> {
 			)
 		);
 	}
+	private isOwnProfile() {
+		return this.props.userAccount && this.props.userAccount.name === this.props.userName;
+	}
 	public componentDidUpdate(prevProps: Props) {
 		if (
 			this.props.userName !== prevProps.userName ||
@@ -163,8 +206,11 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		let followersText;
+		let
+			followeesText: string,
+			followersText: string;
 		if (this.state.profile.value) {
+			followeesText = `Following ${this.state.profile.value.followeeCount}`;
 			followersText = this.state.profile.value.followerCount + ' ' + formatCountable(this.state.profile.value.followerCount, 'follower');
 		}
 		return (
@@ -177,13 +223,22 @@ export class ProfileScreen extends React.Component<Props, State> {
 								<span className="name">{this.state.profile.value.userName}</span>
 								<LeaderboardBadges badge={this.state.profile.value.leaderboardBadge} />
 							</div>
-							{this.props.userAccount && this.props.userAccount.name === this.props.userName ?
-								<Button
-									onClick={this._openGetFollowersDialog}
-									text="Get Followers"
-									style="loud"
-									size="large"
-								/> :
+							{this.isOwnProfile() ?
+								<>
+									{this.state.profile.value.followeeCount ?
+										<ActionLink
+											className="following-count followees"
+											onClick={this._showFollowees}
+											text={followeesText}
+										/> :
+										<span className="following-count followees">{followeesText}</span>}
+									<Button
+										onClick={this._openGetFollowersDialog}
+										text="Get Followers"
+										style="loud"
+										size="large"
+									/>
+								</> :
 								<FollowButton
 									following={this.state.profile.value}
 									onFollow={this._followUser}
@@ -192,11 +247,11 @@ export class ProfileScreen extends React.Component<Props, State> {
 								/>}
 							{this.state.profile.value.followerCount ?
 								<ActionLink
-									className="followers"
+									className="following-count followers"
 									onClick={this._showFollowers}
 									text={followersText}
 								/> :
-								<span className="followers">{followersText}</span>}
+								<span className="following-count followers">{followersText}</span>}
 						</div>
 						<ArticleList>
 							{this.state.posts.value.items.map(

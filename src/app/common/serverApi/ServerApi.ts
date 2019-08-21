@@ -156,7 +156,7 @@ export default abstract class {
 
 	// Social
 	public readonly followUser = (data : UserNameForm) => this.post({ path: '/Social/Follow', data });
-	public readonly getFollowees = this.createFetchFunction<string[]>('/Social/Followees');
+	public readonly getFollowees = this.createFetchFunction<Following[]>('/Social/Followees');
 	public readonly getFollowers = this.createFetchFunctionWithParams<UserNameQuery, Following[]>('/Social/Followers');
 	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
 	public readonly getPosts = this.createFetchFunctionWithParams<PostsQuery, PageResult<Post>>('/Social/Posts');

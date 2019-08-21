@@ -1,0 +1,30 @@
+/*
+	componentPath: src/app/common/components/screens/ProfileScreen/FollowingListDialog
+	cssComponentId: following-list-dialog_sscllo
+*/
+
+.following-list-dialog_sscllo {
+	min-width: 300px;
+}
+.following-list-dialog_sscllo > .followings {
+	max-height: 500px;
+	overflow-y: auto;
+}
+.following-list-dialog_sscllo > .followings > .following {
+	display: flex;
+	align-items: center;
+}
+.following-list-dialog_sscllo > .followings > .following + .following {
+	margin-top: 5px;
+}
+.following-list-dialog_sscllo > .followings > .following > .user-name {
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.following-list-dialog_sscllo > .followings > .following > .button {
+	flex: 0 0 auto;
+	width: 110px;
+	text-align: center;
+}
