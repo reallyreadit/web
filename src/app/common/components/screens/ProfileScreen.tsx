@@ -145,7 +145,14 @@ export class ProfileScreen extends React.Component<Props, State> {
 		);
 	}
 	public componentDidUpdate(prevProps: Props) {
-		if (this.props.userName !== prevProps.userName) {
+		if (
+			this.props.userName !== prevProps.userName ||
+			(
+				this.props.userAccount ?
+					!prevProps.userAccount || prevProps.userAccount.id !== this.props.userAccount.id :
+					!!prevProps.userAccount
+			)
+		) {
 			this.setState({
 				profile: this.fetchProfile(),
 				posts: this.fetchPosts(1)
