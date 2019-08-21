@@ -172,20 +172,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// window
 	private readonly _handleHistoryPopState = () => {
-		if (this.state.screens.length > 1) {
-			this.setScreenState({ method: 'pop' });
-		} else {
-			const route = findRouteByLocation(routes, { path: window.location.pathname });
-			this.setScreenState({
-				key: route.screenKey,
-				method: 'replace',
-				urlParams: (
-					route.getPathParams ?
-						route.getPathParams(window.location.pathname) :
-						null
-				)
-			});
-		}
+		this.setScreenState({ method: 'pop' });
 	};
 	private readonly _handleVisibilityChange = () => {
 		if (!window.document.hidden) {
@@ -372,8 +359,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 		let screens: Screen[];
 		let title: string;
 		if (options.method === 'pop') {
-			screens = this.state.screens.slice(0, this.state.screens.length - 1);
-			title = this.state.screens[this.state.screens.length - 1].title;
+			if (this.state.screens.length > 1) {
+				screens = this.state.screens.slice(0, this.state.screens.length - 1);
+				title = this.state.screens[this.state.screens.length - 1].title;
+			} else {
+				const
+					route = findRouteByLocation(routes, { path: window.location.pathname }),
+					screen = this.createScreen(
+						route.screenKey,
+						(
+							route.getPathParams ?
+								route.getPathParams(window.location.pathname) :
+								null
+						)
+					);
+				screens = [screen];
+				title = screen.title;
+			}
 		} else {
 			const screen = this.createScreen(
 				options.key,
