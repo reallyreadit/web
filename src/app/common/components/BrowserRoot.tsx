@@ -269,6 +269,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCloseDialog: this._closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onFollowUser: this._followUser,
+				onGetFollowees: this.props.serverApi.getFollowees,
+				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPosts,
 				onGetProfile: this.props.serverApi.getProfile,
 				onOpenDialog: this._openDialog,
@@ -276,6 +279,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
+				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
 				onViewThread: this._viewThread
 			}),

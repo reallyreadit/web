@@ -36,6 +36,7 @@ import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import { createScreenFactory as createStatsScreenFactory } from './screens/StatsScreen';
 import Analytics from '../Analytics';
 import createExtensionRemovalScreenFactory from './ExtensionRemovalScreen';
+import UserNameForm from '../../../common/models/social/UserNameForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -212,6 +213,10 @@ export default abstract class Root<
 
 	// screens
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
+
+	// social
+	protected readonly _followUser = (form: UserNameForm) => this.props.serverApi.followUser(form);
+	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi.unfollowUser(form);
 
 	// state
 	protected readonly _setScreenState = (key: ScreenKey, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {

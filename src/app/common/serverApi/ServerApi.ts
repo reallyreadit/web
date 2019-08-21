@@ -26,8 +26,9 @@ import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
 import PostsQuery from '../../../common/models/social/PostsQuery';
-import ProfileQuery from '../../../common/models/social/ProfileQuery';
+import UserNameQuery from '../../../common/models/social/UserNameQuery';
 import Profile from '../../../common/models/social/Profile';
+import Following from '../../../common/models/social/Following';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -155,9 +156,11 @@ export default abstract class {
 
 	// Social
 	public readonly followUser = (data : UserNameForm) => this.post({ path: '/Social/Follow', data });
+	public readonly getFollowees = this.createFetchFunction<string[]>('/Social/Followees');
+	public readonly getFollowers = this.createFetchFunctionWithParams<UserNameQuery, Following[]>('/Social/Followers');
 	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
 	public readonly getPosts = this.createFetchFunctionWithParams<PostsQuery, PageResult<Post>>('/Social/Posts');
-	public readonly getProfile = this.createFetchFunctionWithParams<ProfileQuery, Profile>('/Social/Profile');
+	public readonly getProfile = this.createFetchFunctionWithParams<UserNameQuery, Profile>('/Social/Profile');
 	public readonly unfollowUser = (data: UserNameForm) => this.post({ path: '/Social/Unfollow', data });
 
 	// Stats

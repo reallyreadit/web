@@ -1,19 +1,24 @@
 import * as React from 'react';
-import classNames from 'classnames';
+import classNames, { ClassValue } from 'classnames';
 import Icon, { IconName } from './Icon';
 import Spinner from './Spinner';
 
+export type ButtonSize = 'normal' | 'large' | 'x-large';
 interface Props {
 	align: 'left' | 'center' | 'right',
+	className?: ClassValue,
 	display?: 'block' | 'inline',
 	text?: string,
 	iconLeft?: IconName,
 	href?: string,
 	style?: 'normal' | 'preferred' | 'loud',
 	state?: 'normal' | 'disabled' | 'busy',
-	size?: 'normal' | 'large' | 'x-large',
+	size?: ButtonSize,
+	intent?: 'normal' | 'warning'
 	showIndicator?: boolean,
 	onClick?: () => void,
+	onMouseEnter?: () => void,
+	onMouseLeave?: () => void,
 	hoverStyle?: boolean
 }
 export default class Button extends React.PureComponent<Props> {
@@ -49,10 +54,12 @@ export default class Button extends React.PureComponent<Props> {
 			),
 			className: classNames(
 				'button_ovrlmi',
+				this.props.className,
 				this.props.style,
 				this.props.size,
 				this.props.display,
 				this.props.align,
+				this.props.intent,
 				{
 					busy: this.props.state === 'busy',
 					disabled: this.props.state === 'disabled' || this.props.state === 'busy',
@@ -60,7 +67,9 @@ export default class Button extends React.PureComponent<Props> {
 					hover: this.props.hoverStyle
 				}
 			),
-			onClick: this._click
+			onClick: this._click,
+			onMouseEnter: this.props.onMouseEnter,
+			onMouseLeave: this.props.onMouseLeave
 		};
 		if (this.props.href) {
 			return (

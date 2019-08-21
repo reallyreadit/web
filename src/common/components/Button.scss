@@ -35,9 +35,16 @@
 .button_ovrlmi.preferred {
 	border: 2px solid #2A2326;
 	font-family: 'Museo Sans (700)';
+	background-color: white;
 }
 .button_ovrlmi.loud {
 	background-color: #2A2326;
+	color: white;
+}
+.button_ovrlmi.warning,
+.button_ovrlmi.preferred.warning,
+.button_ovrlmi.loud.warning {
+	background-color: darkred;
 	color: white;
 }
 .button_ovrlmi.large {

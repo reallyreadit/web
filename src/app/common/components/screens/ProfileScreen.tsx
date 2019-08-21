@@ -2,8 +2,8 @@ import * as React from 'react';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import UserAccount from '../../../../common/models/UserAccount';
-import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import ProfileQuery from '../../../../common/models/social/ProfileQuery';
+import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
+import UserNameQuery from '../../../../common/models/social/UserNameQuery';
 import Profile from '../../../../common/models/social/Profile';
 import PostsQuery from '../../../../common/models/social/PostsQuery';
 import PageResult from '../../../../common/models/PageResult';
@@ -27,19 +27,26 @@ import PostDetails from '../../../../common/components/PostDetails';
 import ActionLink from '../../../../common/components/ActionLink';
 import GetFollowersDialog from './ProfileScreen/GetFollowersDialog';
 import CommentThread from '../../../../common/models/CommentThread';
+import UserNameForm from '../../../../common/models/social/UserNameForm';
+import Following from '../../../../common/models/social/Following';
+import FollowButton from '../../../../common/components/FollowButton';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetProfile: FetchFunctionWithParams<ProfileQuery, Profile>,
+	onFollowUser: (form: UserNameForm) => Promise<void>,
+	onGetFollowees: FetchFunction<string[]>,
+	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<PostsQuery, PageResult<Post>>,
+	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewThread: (comment: CommentThread) => void,
 	userAccount: UserAccount | null,
@@ -52,6 +59,24 @@ interface State {
 }
 export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _followUser = (form: UserNameForm) => {
+		return this.props
+			.onFollowUser(form)
+			.then(
+				() => {
+					this.setState({
+						profile: {
+							...this.state.profile,
+							value: {
+								...this.state.profile.value,
+								isFollowed: true,
+								followerCount: this.state.profile.value.followerCount + 1
+							}
+						}
+					});
+				}
+			);
+	};
 	private readonly _openGetFollowersDialog = () => {
 		this.props.onOpenDialog(
 			<GetFollowersDialog
@@ -63,7 +88,30 @@ export class ProfileScreen extends React.Component<Props, State> {
 		);
 	};
 	private readonly _showFollowers = () => {
-
+		this.props.onGetFollowers(
+			{ userName: this.state.profile.value.userName },
+			result => {
+				console.log(result.value.map(following => JSON.stringify(following)).join(','));
+			}
+		)
+	};
+	private readonly _unfollowUser = (form: UserNameForm) => {
+		return this.props
+			.onUnfollowUser(form)
+			.then(
+				() => {
+					this.setState({
+						profile: {
+							...this.state.profile,
+							value: {
+								...this.state.profile.value,
+								isFollowed: false,
+								followerCount: this.state.profile.value.followerCount - 1
+							}
+						}
+					});
+				}
+			);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -110,7 +158,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 	public render() {
 		let followersText;
 		if (this.state.profile.value) {
-			followersText = this.state.profile.value.followers.length + ' ' + formatCountable(this.state.profile.value.followers.length, 'follower');
+			followersText = this.state.profile.value.followerCount + ' ' + formatCountable(this.state.profile.value.followerCount, 'follower');
 		}
 		return (
 			<ScreenContainer className="profile-screen_1u1j1e">
@@ -129,12 +177,13 @@ export class ProfileScreen extends React.Component<Props, State> {
 									style="loud"
 									size="large"
 								/> :
-								<Button
-									text="Follow"
-									style="loud"
+								<FollowButton
+									following={this.state.profile.value}
+									onFollow={this._followUser}
+									onUnfollow={this._unfollowUser}
 									size="large"
 								/>}
-							{this.state.profile.value.followers.length ?
+							{this.state.profile.value.followerCount ?
 								<ActionLink
 									className="followers"
 									onClick={this._showFollowers}
