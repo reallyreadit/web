@@ -100,6 +100,12 @@ export default {
 			imageStrategy: LazyImageStrategy.PostLoadImgTag
 		},
 		{
+			hostname: 'invisionapp.com',
+			imageContainerSearch: {
+				attributeFullWordBlacklist: 'quotecomponent'
+			}
+		},
+		{
 			hostname: 'kotaku.com',
 			imageStrategy: LazyImageStrategy.FigureImgDataSrc
 		},
