@@ -154,7 +154,10 @@ export default function pruneDocument(parseResult: ParseResult) {
 	// trim the lineage if possible (this might break some sites. required on React sites that trash the root on script errors)
 	if (document.body.children.length === 1) {
 		let contentRoot: Element = document.body.children[0];
-		while (contentRoot.children.length === 1) {
+		while (
+			contentRoot.children.length === 1 &&
+			!parseResult.primaryTextContainers.some(container => container.containerElement === contentRoot)
+		) {
 			contentRoot = contentRoot.children[0];
 		}
 		if (contentRoot !== document.body.children[0]) {
