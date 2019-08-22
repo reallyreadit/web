@@ -285,7 +285,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	// initialize settings
 	localStorage.removeItem('parseMode');
 	localStorage.removeItem('showOverlay');
-	localStorage.setItem('debug', JSON.stringify(true));
+	localStorage.setItem('debug', JSON.stringify(false));
 	// clear storage
 	tabs.clear();
 	// update icon
