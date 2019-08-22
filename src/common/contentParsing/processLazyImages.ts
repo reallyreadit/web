@@ -1,5 +1,7 @@
 export enum LazyImageStrategy {
-	AtlanticFigureImgDataSrc,
+	AtlanticFigureImgDataSrcset,
+	FigureImgDataSrc,
+	MediumScaleUp,
 	NytFigureImageObject,
 	PostLoadImgTag
 }
@@ -48,13 +50,49 @@ function createObserver(elements: HTMLCollectionOf<Element> | NodeListOf<Element
 }
 export default function procesLazyImages(strategy: LazyImageStrategy) {
 	switch (strategy) {
-		case LazyImageStrategy.AtlanticFigureImgDataSrc:
+		case LazyImageStrategy.AtlanticFigureImgDataSrcset:
 			createObserver(
 				document.querySelectorAll('figure'),
 				target => {
 					const img = target.getElementsByTagName('img')[0];
 					if (!img.hasAttribute('srcset') && img.hasAttribute('data-srcset')) {
 						img.srcset = img.getAttribute('data-srcset');
+					}
+				}
+			);
+			break;
+		case LazyImageStrategy.FigureImgDataSrc:
+			createObserver(
+				document.querySelectorAll('figure'),
+				target => {
+					Array
+						.from(target.querySelectorAll('[data-src], [data-srcset]'))
+						.forEach(
+							element => {
+								if (element.hasAttribute('data-src') && element.getAttribute('data-src') !== element.getAttribute('src')) {
+									element.setAttribute('src', element.getAttribute('data-src'));
+								}
+								if (element.hasAttribute('data-srcset') && element.getAttribute('data-srcset') !== element.getAttribute('srcset')) {
+									element.setAttribute('srcset', element.getAttribute('data-srcset'));
+								}
+								if (element.hasAttribute('src') && element.getAttribute('src').startsWith('data:')) {
+									element.removeAttribute('src');
+								}
+							}
+						);
+				}
+			);
+			break;
+		case LazyImageStrategy.MediumScaleUp:
+			createObserver(
+				document.querySelectorAll('figure'),
+				target => {
+					const img = target.getElementsByTagName('img')[0];
+					if (img.src) {
+						const match = img.src.match(/(https:\/\/[^\/]+)\/.*\/([^\/?]+)/);
+						if (match) {
+							img.src = `${match[1]}/max/${img.getAttribute('width')}/${match[2]}`;
+						}
 					}
 				}
 			);

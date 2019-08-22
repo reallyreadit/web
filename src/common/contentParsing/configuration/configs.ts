@@ -45,32 +45,14 @@ export default {
 	} as UniversalConfig,
 	publishers: [
 		{
-			hostname: 'article-test.dev.readup.com',
-			transpositions: [
-				{
-					elementSelectors: [
-						'.lead'
-					],
-					parentElementSelector: '.lead + div'
-				}
-			],
-			imageStrategy: LazyImageStrategy.PostLoadImgTag
+			hostname: '99u.adobe.com',
+			textContainerSearch: {
+				attributeFullWordBlacklist: ['blockquote']
+			}
 		},
 		{
 			hostname: 'atlantic.com',
-			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrc
-		},
-		{
-			hostname: 'churchofjesuschrist.org',
-			transpositions: [
-				{
-					elementSelectors: [
-						'.body-block > p',
-						'.body-block > section:first-of-type > header > h2'
-					],
-					parentElementSelector: '.body-block > section:first-of-type'
-				}
-			]
+			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrcset
 		},
 		{
 			hostname: 'cnn.com',
@@ -84,6 +66,12 @@ export default {
 					parentElementSelector: '.zn-body__read-all'
 				}
 			]
+		},
+		{
+			hostname: 'abcnews.go.com',
+			textContainerSearch: {
+				attributeFullWordBlacklist: 'insert'
+			}
 		},
 		{
 			hostname: 'huffpost.com',
@@ -101,10 +89,15 @@ export default {
 			imageStrategy: LazyImageStrategy.PostLoadImgTag
 		},
 		{
+			hostname: 'kotaku.com',
+			imageStrategy: LazyImageStrategy.FigureImgDataSrc
+		},
+		{
 			hostname: 'medium.com',
 			textContainerSearch: {
-				attributeWhitelist: ['ad']
-			}
+				attributeFullWordWhitelist: ['ad']
+			},
+			imageStrategy: LazyImageStrategy.MediumScaleUp
 		},
 		{
 			hostname: 'nytimes.com',
@@ -116,7 +109,29 @@ export default {
 					parentElementSelector: '.story-body-2'
 				}
 			],
-			imageStrategy: LazyImageStrategy.NytFigureImageObject
+			imageStrategy: LazyImageStrategy.NytFigureImageObject,
+			textContainerSearch: {
+				classBlacklist: ['epkadsg3', 'etfikam0', 'ez3869y0']
+			},
+			imageContainerSearch: {
+				classBlacklist: ['epkadsg3', 'etfikam0', 'ez3869y0']
+			}
+		},
+		{
+			hostname: 'politico.com',
+			contentSearchRootElementSelector: 'article.story-main-content'
+		},
+		{
+			hostname: 'article-test.dev.readup.com',
+			transpositions: [
+				{
+					elementSelectors: [
+						'.lead'
+					],
+					parentElementSelector: '.lead + div'
+				}
+			],
+			imageStrategy: LazyImageStrategy.PostLoadImgTag
 		},
 		{
 			hostname: 'sciencedaily.com',
@@ -130,9 +145,70 @@ export default {
 			]
 		},
 		{
+			hostname: 'techcrunch.com',
+			textContainerSearch: {
+				attributeFullWordWhitelist: 'subscription'
+			}
+		},
+		{
+			hostname: 'theatlantic.com',
+			imageContainerSearch: {
+				attributeFullWordBlacklist: ['callout']
+			}
+		},
+		{
+			hostname: 'topic.com',
+			textContainerSearch: {
+				attributeFullWordWhitelist: ['essay']
+			}
+		},
+		{
+			hostname: 'variety.com',
+			contentSearchRootElementSelector: 'article.c-content'
+		},
+		{
+			hostname: 'wired.com',
+			textContainerSearch: {
+				attributeFullWordBlacklist: ['inset']
+			},
+			imageContainerSearch: {
+				attributeFullWordBlacklist: ['inset']
+			}
+		},
+		{
+			hostname: 'news.harvard.edu',
+			textContainerSearch: {
+				attributeFullWordBlacklist: ['explore']
+			}
+		},
+		{
+			hostname: 'dark-mountain.net',
+			transpositions: [
+				{
+					elementSelectors: [
+						'.entry-content > div > .component--drop-cap',
+						'.entry-content > div > p'
+					],
+					parentElementSelector: '.entry-content'
+				}
+			]
+		},
+		{
+			hostname: 'churchofjesuschrist.org',
+			transpositions: [
+				{
+					elementSelectors: [
+						'.body-block > p',
+						'.body-block > section:first-of-type > header > h2'
+					],
+					parentElementSelector: '.body-block > section:first-of-type'
+				}
+			]
+		},
+		{
 			hostname: 'stanfordmag.org',
 			textContainerSearch: {
-				attributeWhitelist: ['image']
+				attributeFullWordWhitelist: ['image']
 			}
 		},
 		{
@@ -145,24 +221,6 @@ export default {
 					parentElementSelector: '#mainBodyArea > .body'
 				}
 			]
-		},
-		{
-			hostname: 'theatlantic.com',
-			imageContainerSearch: {
-				attributeBlacklist: ['callout']
-			}
-		},
-		{
-			hostname: 'topic.com',
-			textContainerSearch: {
-				attributeWhitelist: ['essay']
-			}
-		},
-		{
-			hostname: 'wired.com',
-			textContainerSearch: {
-				attributeBlacklist: ['inset']
-			}
 		}
 	] as PublisherConfig[]
 };
