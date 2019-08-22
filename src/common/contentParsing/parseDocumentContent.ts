@@ -103,6 +103,9 @@ function shouldSearchForContent(element: Element, config: ContainerSearchConfig)
 	if (config.itempropValueBlacklist.includes(element.getAttribute('itemprop'))) {
 		return false;
 	}
+	if (config.classBlacklist.some(value => element.classList.contains(value))) {
+		return false;
+	}
 	const words = findWordsInAttributes(element);
 	return !(
 		words.some(

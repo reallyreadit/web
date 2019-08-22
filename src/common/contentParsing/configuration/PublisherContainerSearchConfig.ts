@@ -1,4 +1,5 @@
 export default interface PublisherContainerSearchConfig {
-	attributeBlacklist?: string[],
-	attributeWhitelist?: string[]
+	attributeFullWordBlacklist?: string[],
+	attributeFullWordWhitelist?: string[],
+	classBlacklist?: string[],
 }

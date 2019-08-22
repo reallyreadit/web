@@ -31,25 +31,29 @@ export default class Config {
 			if (publisher.textContainerSearch) {
 				this._textContainerSearch = {
 					...universal.textContainerSearch,
-					attributeFullWordBlacklist: universal.textContainerSearch.attributeFullWordBlacklist.concat(publisher.textContainerSearch.attributeBlacklist || []),
-					attributeFullWordWhitelist: publisher.textContainerSearch.attributeWhitelist || []
+					attributeFullWordBlacklist: universal.textContainerSearch.attributeFullWordBlacklist.concat(publisher.textContainerSearch.attributeFullWordBlacklist || []),
+					attributeFullWordWhitelist: publisher.textContainerSearch.attributeFullWordWhitelist || [],
+					classBlacklist: publisher.textContainerSearch.classBlacklist || []
 				};
 			} else {
 				this._textContainerSearch = {
 					...universal.textContainerSearch,
-					attributeFullWordWhitelist: []
+					attributeFullWordWhitelist: [],
+					classBlacklist: []
 				};
 			}
 			if (publisher.imageContainerSearch) {
 				this._imageContainerSearch = {
 					...universal.imageContainerSearch,
-					attributeFullWordBlacklist: universal.imageContainerSearch.attributeFullWordBlacklist.concat(publisher.imageContainerSearch.attributeBlacklist || []),
-					attributeFullWordWhitelist: publisher.imageContainerSearch.attributeWhitelist || []
+					attributeFullWordBlacklist: universal.imageContainerSearch.attributeFullWordBlacklist.concat(publisher.imageContainerSearch.attributeFullWordBlacklist || []),
+					attributeFullWordWhitelist: publisher.imageContainerSearch.attributeFullWordWhitelist || [],
+					classBlacklist: publisher.imageContainerSearch.classBlacklist || []
 				};
 			} else {
 				this._imageContainerSearch = {
 					...universal.imageContainerSearch,
-					attributeFullWordWhitelist: []
+					attributeFullWordWhitelist: [],
+					classBlacklist: []
 				};
 			}
 			this._contentSearchRootElementSelector = publisher.contentSearchRootElementSelector;
@@ -84,11 +88,13 @@ export default class Config {
 		} else {
 			this._textContainerSearch = {
 				...universal.textContainerSearch,
-				attributeFullWordWhitelist: []
+				attributeFullWordWhitelist: [],
+				classBlacklist: []
 			};
 			this._imageContainerSearch = {
 				...universal.imageContainerSearch,
-				attributeFullWordWhitelist: []
+				attributeFullWordWhitelist: [],
+				classBlacklist: []
 			};
 			this._transpositions = [];
 		}
