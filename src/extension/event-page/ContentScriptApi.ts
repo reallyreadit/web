@@ -89,8 +89,11 @@ export default class ContentScriptApi {
 	public unloadPage(tabId: number) {
 		sendMessage(tabId, 'unloadPage');
 	}
-	public showOverlay(tabId: number, value: boolean) {
-		sendMessage(tabId, 'showOverlay', value);
+	public toggleContentIdentificationDisplay(tabId: number) {
+		sendMessage(tabId, 'toggleContentIdentificationDisplay');
+	}
+	public toggleReadStateDisplay(tabId: number) {
+		sendMessage(tabId, 'toggleReadStateDisplay');
 	}
 	public updateHistoryState(tabId: number, url: string) {
 		sendMessage(tabId, 'updateHistoryState', url);

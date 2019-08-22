@@ -2,9 +2,7 @@ import Page from '../../common/reading/Page';
 import EventPageApi from './EventPageApi';
 import { SourceRuleAction } from '../../common/models/SourceRule';
 import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
-import LazyScript from './LazyScript';
 import ContentElement from '../../common/reading/ContentElement';
-import { ParseMode } from '../../common/reading/parseDocumentContent';
 import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import UserArticle from '../../common/models/UserArticle';
@@ -13,6 +11,9 @@ import IframeMessagingContext from './embed/IframeMessagingContext';
 import { Props as EmbedProps } from './embed/components/App';
 import insertBookmarkPrompt from './insertBookmarkPrompt';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
+import ParseResult from '../../common/contentParsing/ParseResult';
+import styleArticleDocument from '../../common/reading/styleArticleDocument';
+import LazyScript from './LazyScript';
 
 window.reallyreadit = {
 	extension: {
@@ -27,14 +28,14 @@ window.reallyreadit = {
 const { contentParser } = window.reallyreadit.extension.contentScript;
 
 let
+	path = window.location.pathname,
 	context: {
+		contentParseResult: ParseResult,
 		lookupResult: ArticleLookupResult,
 		page: Page,
-		path: string,
+		isContentIdentificationDisplayEnabled: boolean
 	} | null,
 	initData: {
-		parseMode: ParseMode,
-		showOverlay: boolean,
 		sourceRules: {
 			path: RegExp,
 			priority: number,
@@ -47,29 +48,34 @@ let historyStateUpdatedTimeout: number;
 
 const eventPageApi = new EventPageApi({
 	onActivateReaderMode: () => {
-		// cache existing state
-		const readState = context.page.getReadState();
-		// clean up existing references
-		if (iframe) {
-			removeEmbed();
-		}
-		reader.unloadPage();
-		context.page.remove();
-		// re-parse using mutate
-		contentParser
-			.get()
-			.then(parser => {
-				const content = parser.parse('mutate');
-				const page = new Page(
-					content.elements.map(el => new ContentElement(el.element, el.wordCount)),
-					initData.showOverlay
-				);
-				context.page = page;
-				page.setReadState(readState.readStateArray);
-				reader.loadPage(page);
-				// embed and bookmarks
-				loadUserInterface();
-			});
+		// transition animation
+		document.body.style.transition = 'opacity 350ms';
+		document.body.style.opacity = '0';
+		document.body.classList.add('com_readup_activating_reader_mode');
+		setTimeout(
+			() => {
+				contentParser
+					.get()
+					.then(parser => {
+						// remove iframe since pruning destorys its state
+						const isEmbedInserted = !!iframe;
+						if (isEmbedInserted) {
+							removeEmbed();
+						}
+						// prune and style
+						parser.prune(context.contentParseResult);
+						styleArticleDocument(document, context.lookupResult.userArticle.title, context.lookupResult.userArticle.authors.join(', '));
+						// restore iframe
+						if (isEmbedInserted) {
+							insertEmbed(context.lookupResult.userArticle);
+						}
+						// transition animation
+						document.body.style.opacity = '1';
+						document.body.classList.remove('com_readup_activating_reader_mode');
+					});
+			},
+			350
+		);
 	},
 	onArticleUpdated: event => {
 		if (context && context.lookupResult) {
@@ -100,10 +106,54 @@ const eventPageApi = new EventPageApi({
 	},
 	onLoadPage: loadPage,
 	onUnloadPage: unloadPage,
-	onShowOverlay: value => {
-		initData.showOverlay = value;
+	onToggleContentIdentificationDisplay: () => {
 		if (context) {
-			context.page.showOverlay(value);
+			let styles: {
+				primaryTextRootNodeBackgroundColor?: string,
+				depthGroupWithMostWordsBackgroundColor?: string,
+				primaryTextContainerBackgroundColor?: string,
+				imageBorder?: string,
+				imageCaptionBackgroundColor?: string,
+				imageCreditBackgroundColor?: string,
+				additionalTextBackgroundColor?: string
+			};
+			if (context.isContentIdentificationDisplayEnabled = !context.isContentIdentificationDisplayEnabled) {
+				styles = {
+					primaryTextRootNodeBackgroundColor: 'green',
+					depthGroupWithMostWordsBackgroundColor: 'red',
+					primaryTextContainerBackgroundColor: 'lime',
+					imageBorder: '3px solid magenta',
+					additionalTextBackgroundColor: 'yellow'
+				};
+			} else {
+				styles = { };
+			}
+			(context.contentParseResult.primaryTextRootNode as HTMLElement).style.backgroundColor = styles.primaryTextRootNodeBackgroundColor || '';
+			context.contentParseResult.depthGroupWithMostWords.members.forEach(
+				member => {
+					(member.containerElement as HTMLElement).style.backgroundColor = styles.depthGroupWithMostWordsBackgroundColor || ''
+				}
+			);
+			context.contentParseResult.primaryTextContainerSearchResults.forEach(
+				result => {
+					(result.textContainer.containerElement as HTMLElement).style.backgroundColor = styles.primaryTextContainerBackgroundColor || '';
+				}
+			);
+			context.contentParseResult.imageContainers.forEach(
+				image => {
+					(image.containerElement as HTMLElement).style.border = styles.imageBorder || '';
+				}
+			);
+			context.contentParseResult.additionalPrimaryTextContainers.forEach(
+				container => {
+					(container.containerElement as HTMLElement).style.backgroundColor = styles.additionalTextBackgroundColor || '';
+				}
+			);
+		}
+	},
+	onToggleReadStateDisplay: () => {
+		if (context) {
+			context.page.toggleReadStateDisplay();
 		}
 	},
 	onHistoryStateUpdated: url => {
@@ -111,8 +161,9 @@ const eventPageApi = new EventPageApi({
 		window.clearTimeout(historyStateUpdatedTimeout);
 		historyStateUpdatedTimeout = window.setTimeout(() => {
 			const newPath = new URL(url).pathname;
-			if (!context || newPath !== context.path) {
+			if (newPath !== path) {
 				// TODO: gotta come up with a more robust way to detect page changes
+				path = newPath;
 				setTimeout(loadPage, 2000);
 			}
 		}, 250);
@@ -127,6 +178,7 @@ let hasLoadedComments = false;
 function insertEmbed(article: UserArticle) {
 	// create iframe
 	iframe = window.document.createElement('iframe');
+	iframe.id = 'com_readup_embed'
 	iframe.src = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/embed/index.html#` + encodeURIComponent(window.location.protocol + '//' + window.location.host);
 	iframe.style.width = '100%';
 	iframe.style.minWidth = '320px';
@@ -256,7 +308,6 @@ const reader = new Reader(
 // page lifecycle
 function loadPage() {
 	unloadPage().then(() => {
-		const path = window.location.pathname;
 		// check for matching source rules
 		const rule = initData.sourceRules
 			.filter(rule => rule.path.test(path))
@@ -272,23 +323,23 @@ function loadPage() {
 				contentParser
 					.get()
 					.then(parser => {
-						const content = parser.parse(initData.parseMode);
+						const content = parser.parse();
 						if (
-							content.elements.length &&
+							content.primaryTextContainers.length &&
 							(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
 						) {
 							const page = new Page(
-								content.elements.map(el => new ContentElement(el.element, el.wordCount)),
-								initData.showOverlay
+								content.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
 							);
 							eventPageApi
 								.registerPage(createPageParseResult(metaParseResult, content))
 								.then(lookupResult => {
 									// set the context
-									context = { 
+									context = {
+										contentParseResult: content,
 										lookupResult,
 										page,
-										path
+										isContentIdentificationDisplayEnabled: false
 									};
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);

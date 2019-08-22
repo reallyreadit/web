@@ -1,10 +1,11 @@
 import LazyScript from './LazyScript';
-import { ContentParseResult, ParseMode } from '../../common/reading/parseDocumentContent';
+import ParseResult from '../../common/contentParsing/ParseResult';
 
 declare global {
 	interface ContentScriptWindow {
 		contentParser: LazyScript<{
-			parse: (mode: ParseMode) => ContentParseResult
+			parse: () => ParseResult,
+			prune: (parseResult: ParseResult) => void
 		}>
 	}
 }

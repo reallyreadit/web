@@ -11,9 +11,11 @@ declare global {
 			extension?: {
 				config?: {
 					api: HttpEndpoint,
+					contentParserVersion: string,
 					cookieName: string,
 					cookieDomain: string,
 					extensionId: string,
+					static: HttpEndpoint,
 					web: HttpEndpoint,
 					version: string
 				},

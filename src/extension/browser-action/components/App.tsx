@@ -20,6 +20,8 @@ export type Props = BrowserActionState & {
 	onAckNewReply: () => void,
 	onActivateReaderMode: () => void,
 	onDeactivateReaderMode: () => void,
+	onToggleContentIdentificationDisplay: () => void,
+	onToggleReadStateDisplay: () => void,
 	onToggleStar: () => Promise<void>
 };
 export default class extends React.Component<
@@ -148,6 +150,16 @@ export default class extends React.Component<
 								onViewComments={this._goToComments}
 								useAbsoluteUrls
 							/>
+							{this.props.debug ?
+								<ul className="debug">
+									<li>
+										<button onClick={this.props.onToggleContentIdentificationDisplay}>Toggle Content Identification Display</button>
+									</li>
+									<li>
+										<button onClick={this.props.onToggleReadStateDisplay}>Toggle Read State Display</button>
+									</li>
+								</ul> :
+								null}
 						</> :
 						<>
 							<div className="tip">Open this pop-up when you're reading an article to view your progress or star it for later.</div>

@@ -4,10 +4,9 @@ import Line from './Line';
 
 export default class Page {
 	private _contentEls: ContentElement[];
-	constructor(contentEls: ContentElement[], showOverlay: boolean) {
+	constructor(contentEls: ContentElement[]) {
 		// set up the content elements
 		this._contentEls = contentEls.sort((a, b) => a.offsetTop - b.offsetTop);
-		this._contentEls.forEach(el => el.showOverlay(showOverlay));
 	}
 	public setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
@@ -74,11 +73,11 @@ export default class Page {
 			});
 		}
 	}
-	public showOverlay(value: boolean) {
-		this._contentEls.forEach(block => block.showOverlay(value));
+	public toggleReadStateDisplay() {
+		this._contentEls.forEach(block => block.toggleReadStateDisplay());
 	}
 	public remove() {
-		this._contentEls.forEach(block => block.showOverlay(false));
+		this._contentEls.forEach(block => block.disableReadStateDisplay());
 	}
 	public get elements() {
 		return this._contentEls;

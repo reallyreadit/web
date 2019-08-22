@@ -10,7 +10,9 @@ export default class BrowserActionApi {
 		onDeactivateReaderMode: (tabId: number) => void,
 		onLoad: () => Promise<BrowserActionState>,
 		onAckNewReply: () => void,
-		onSetStarred: (articleId: number, isStarred: boolean) => Promise<UserArticle>
+		onSetStarred: (articleId: number, isStarred: boolean) => Promise<UserArticle>,
+		onToggleContentIdentificationDisplay: (tabId: number) => void,
+		onToggleReadStateDisplay: (tabId: number) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage') {
@@ -34,6 +36,12 @@ export default class BrowserActionApi {
 							.onSetStarred(message.data.articleId, message.data.isStarred)
 							.then(sendResponse);
 						return true;
+					case 'toggleContentIdentificationDisplay':
+						handlers.onToggleContentIdentificationDisplay(message.data);
+						break;
+					case 'toggleReadStateDisplay':
+						handlers.onToggleReadStateDisplay(message.data);
+						break;
 				}
 			}
 			return false;

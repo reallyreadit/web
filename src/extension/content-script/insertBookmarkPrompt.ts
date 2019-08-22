@@ -91,6 +91,7 @@ export default function insertBookmarkPrompt({
 	onConfirm: () => void
 }) {
 	const styleElement = window.document.createElement('style');
+	styleElement.id = 'com_readup_bookmark-prompt-style';
 	styleElement.type = 'text/css';
 	styleElement.textContent = styleContent.replace(
 		/\{EXTENSION_ID\}/g,
@@ -127,6 +128,7 @@ export default function insertBookmarkPrompt({
 	buttonContainer.append(cancelButton, confirmButton);
 
 	const prompt = window.document.createElement('div');
+	prompt.id = 'com_readup_bookmark-prompt';
 	prompt.classList.add('com_readup_bookmark-prompt');
 	prompt.append(promptText, buttonContainer);
 	prompt.addEventListener(

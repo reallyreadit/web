@@ -1,9 +1,11 @@
 const styleContent = `
 #rrit-article {
 	font-family: serif;
+	font-size: 16pt;
+	line-height: 1.35em;
 	color: #222;
 	margin: 0 auto;
-	padding: 0 10px 350px 10px;
+	padding: 5vh 10px 350px 10px;
 	max-width: 600px;
 }
 #rrit-article * {
@@ -18,6 +20,24 @@ const styleContent = `
 	font-style: italic;
 	font-weight: normal;
 }
+#rrit-article .rrit-image-container:not(img) {
+	margin: 1em;
+}
+#rrit-article .rrit-image-caption {
+	text-align: center;
+	color: #999;
+	font-size: 14pt;
+	margin: 1em;
+	line-height: normal;
+}
+#rrit-article .rrit-image-credit {
+	text-align: center;
+	color: #999;
+	font-size: 12pt;
+	font-style: italic;
+	margin: 1em;
+	line-height: normal;
+}
 #rrit-article h1,
 #rrit-article h2,
 #rrit-article h3,
@@ -27,34 +47,42 @@ const styleContent = `
 #rrit-article p {
 	margin: 1em 0;
 }
-#rrit-article p {
-	font-size: 16pt;
-	line-height: 1.35em;
+#rrit-article blockquote {
+	margin: 1em 0;
+	border-left: 0.3em solid #ddd;
+	padding: 0 1em;
+	background-color: #fafafa;
+	overflow: hidden;
+	border-radius: 0.5em;
+}
+#rrit-article code,
+#rrit-article pre {
+	margin: 1em 0;
+	border: 1px solid #ddd;
+	padding: 1em;
+	background-color: #fafafa;
+	overflow: auto;
+	font-family: monospace;
+	font-size: 11pt;
+}
+#rrit-article p code,
+#rrit-article p pre,
+#rrit-article li code,
+#rrit-article li pre {
+	margin: 0;
+	border: none;
+	padding: 0 0.2em;
+}
+#rrit-article mark {
+	background-color: inherit;
+	color: inherit;
 }
 #rrit-article img {
+	display: block;
 	height: auto !important;
+	margin: 0 auto;
 }
 `;
-function createAbsoluteUrl(baseUrl: string, attrValue: string) {
-	if (/^\/\/|https?:/i.test(attrValue)) {
-		// absolute url
-		return attrValue.replace(/^\/\/|http:\/\//, 'https://');
-	} else if (/^\//.test(attrValue)) {
-		// absolute path
-		return (
-			'https://' +
-			new URL(baseUrl).host +
-			attrValue
-		);
-	} else {
-		// relative path
-		return (
-			baseUrl.replace(/^http:/, 'https:') +
-			(/\/$/.test(baseUrl) ? '' : '/') +
-			attrValue
-		);
-	}
-}
 
 export default (document: Document, title: string | null, byline: string | null) => {
 	// add viewport meta
@@ -78,76 +106,31 @@ export default (document: Document, title: string | null, byline: string | null)
 	Array
 		.from(document.getElementsByTagName('style'))
 		.forEach(style => {
-			style.remove();
+			if (!style.id.startsWith('com_readup_')) {
+				style.remove();	
+			}
 		});
-	document.documentElement.removeAttribute('style');
-	document.body.removeAttribute('style');
+	const
+		bodyOpacity = document.body.style.opacity,
+		bodyTransition = document.body.style.transition;
+	Array
+		.from(document.querySelectorAll('[style]'))
+		.forEach(
+			element => {
+				if (!element.id.startsWith('com_readup_')) {
+					element.removeAttribute('style');
+				}
+			}
+	);
+	if (document.body.classList.contains('com_readup_activating_reader_mode')) {
+		document.body.style.opacity = bodyOpacity;
+		document.body.style.transition = bodyTransition;
+	}
 	// strip links
 	Array
 		.from(document.getElementsByTagName('a'))
 		.forEach(a => {
 			a.removeAttribute('href');
-		});
-	// fix images
-	Array
-		.from(document.getElementsByTagName('img'))
-		.forEach(img => {
-			// special case for nyt
-			if (img.hasAttribute('data-pattern') && img.hasAttribute('data-widths')) {
-				try {
-					const
-						masterImages = (JSON.parse(img.getAttribute('data-widths')) as {
-								master: {
-									filename: string,
-									size: number
-								}[]
-							})
-							.master,
-						smallImages = masterImages.filter(image => image.size <= 800);
-					let fileName: string;
-					if (smallImages.length) {
-						fileName = smallImages.sort((a, b) => b.size - a.size)[0].filename;
-					} else {
-						fileName = masterImages.sort((a, b) => a.size - b.size)[0].filename;
-					}
-					img.setAttribute(
-						'src',
-						img
-							.getAttribute('data-pattern')
-							.replace('{{file}}', fileName)
-					);
-					return;
-				} catch (error) {
-					// continue to trying the standard methods
-				}
-			}
-			const baseUrl = img.getAttribute('data-rrit-base-url');
-			if (baseUrl) {
-				const originalSrc = img.getAttribute('data-rrit-src') || img.getAttribute('data-src');
-				if (originalSrc) {
-					img.setAttribute('src', createAbsoluteUrl(img.getAttribute('data-rrit-base-url'), originalSrc.trim()));
-				}
-				const originalSrcset = img.getAttribute('data-rrit-srcset') || img.getAttribute('data-srcset');
-				if (originalSrcset) {
-					img.setAttribute(
-						'srcset',
-						originalSrcset
-							.split(',')
-							.map(src => {
-								const
-									parts = src
-										.trim()
-										.split(/\s+/),
-									newSrc = createAbsoluteUrl(baseUrl, parts[0]);
-								if (parts.length === 2) {
-									return newSrc + ' ' + parts[1];
-								}
-								return newSrc;
-							})
-							.join(', ')
-					);
-				}
-			}
 		});
 	// add custom classes
 	document.body.id = 'rrit-article';

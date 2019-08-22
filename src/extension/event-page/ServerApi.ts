@@ -69,7 +69,7 @@ function fetchJson<T>(request: Request) {
 	});
 }
 export default class ServerApi {
-	private static _alarms = {
+	public static alarms = {
 		checkNewReplyNotification: 'ServerApi.checkNewReplyNotification',
 		getSourceRules: 'ServerApi.getSourceRules'
 	};
@@ -132,7 +132,7 @@ export default class ServerApi {
 		// alarms
 		chrome.alarms.onAlarm.addListener(alarm => {
 			switch (alarm.name) {
-				case ServerApi._alarms.checkNewReplyNotification:
+				case ServerApi.alarms.checkNewReplyNotification:
 					this.getAuthStatus().then(isAuthenticated => {
 						if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
 							fetchJson<NewReplyNotification>({ method: 'GET', path: '/UserAccounts/CheckNewReplyNotification' })
@@ -141,7 +141,7 @@ export default class ServerApi {
 						}
 					});
 					break;
-				case ServerApi._alarms.getSourceRules:
+				case ServerApi.alarms.getSourceRules:
 					this.getAuthStatus().then(isAuthenticated => {
 						if (isAuthenticated) {
 							this.checkSourceRulesCache();
@@ -149,14 +149,6 @@ export default class ServerApi {
 					});
 					break;
 			}
-		});
-		chrome.alarms.create(ServerApi._alarms.checkNewReplyNotification, {
-			when: Date.now(),
-			periodInMinutes: 20
-		});
-		chrome.alarms.create(ServerApi._alarms.getSourceRules, {
-			when: Date.now(),
-			periodInMinutes: 120
 		});
 		// notifications
 		chrome.notifications.onClicked.addListener(url => window.open(url));

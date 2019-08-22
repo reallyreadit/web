@@ -1,7 +1,12 @@
-import parseDocumentContent from '../../../common/reading/parseDocumentContent';
+import parseDocumentContent from "../../../common/contentParsing/parseDocumentContent";
+import pruneDocument from "../../../common/contentParsing/pruneDocument";
+import ParseResult from "../../../common/contentParsing/ParseResult";
 
 window.reallyreadit.extension.contentScript.contentParser.set({
-	parse: (mode: 'analyze' | 'mutate') => {
-		return parseDocumentContent(mode);
+	parse: () => {
+		return parseDocumentContent();
+	},
+	prune: (parseResult: ParseResult) => {
+		pruneDocument(parseResult);
 	}
 });

@@ -42,4 +42,10 @@ export default class EventPageApi {
 	public setStarred(articleId: number, isStarred: boolean) {
 		return sendMessageAwaitingResponse<UserArticle>('setStarred', { articleId, isStarred });
 	}
+	public toggleContentIdentificationDisplay(tabId: number) {
+		sendMessage('toggleContentIdentificationDisplay', tabId);
+	}
+	public toggleReadStateDisplay(tabId: number) {
+		sendMessage('toggleReadStateDisplay', tabId);
+	}
 }

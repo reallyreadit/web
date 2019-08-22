@@ -28,7 +28,8 @@ export default class EventPageApi {
 		onDeactivateReaderMode: () => void,
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
-		onShowOverlay: (value: boolean) => void,
+		onToggleContentIdentificationDisplay: () => void,
+		onToggleReadStateDisplay: () => void,
 		onHistoryStateUpdated: (url: string) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -51,8 +52,11 @@ export default class EventPageApi {
 				case 'unloadPage':
 					handlers.onUnloadPage();
 					break;
-				case 'showOverlay':
-					handlers.onShowOverlay(message.data);
+				case 'toggleContentIdentificationDisplay':
+					handlers.onToggleContentIdentificationDisplay();
+					break;
+				case 'toggleReadStateDisplay':
+					handlers.onToggleReadStateDisplay();
 					break;
 				case 'updateHistoryState':
 					handlers.onHistoryStateUpdated(message.data);

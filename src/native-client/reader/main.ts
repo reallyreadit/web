@@ -1,6 +1,5 @@
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
-import parseDocumentContent from '../../common/reading/parseDocumentContent';
 import Page from '../../common/reading/Page';
 import ContentElement from '../../common/reading/ContentElement';
 import createPageParseResult from '../../common/reading/createPageParseResult';
@@ -19,6 +18,12 @@ import { mergeComment } from '../../common/comments';
 import BookmarkPrompt from './components/BookmarkPrompt';
 import * as smoothscroll from 'smoothscroll-polyfill';
 import { calculateEstimatedReadTime } from '../../common/calculate';
+import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
+import styleArticleDocument from '../../common/reading/styleArticleDocument';
+import pruneDocument from '../../common/contentParsing/pruneDocument';
+import procesLazyImages from '../../common/contentParsing/processLazyImages';
+import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
+import configs from '../../common/contentParsing/configuration/configs';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -45,38 +50,52 @@ function share(data: ShareData) {
 let lookupResult: ArticleLookupResult;
 
 const
-	// metadata parsing must happen before mutating content parsing
 	metadataParseResult = parseDocumentMetadata(),
-	contentParseResult = parseDocumentContent('mutate'),
+	contentParseResult = parseDocumentContent(),
 	page = new Page(
-		contentParseResult.elements.map(el => new ContentElement(el.element, el.wordCount)),
-		false
-	),
-	reader = new Reader(
-		event => {
-			messagingContext.sendMessage(
-				{
-					type: 'commitReadState',
-					data: {
-						commitData: {
-							readState: event.readStateArray,
-							userPageId: lookupResult.userPage.id
-						},
-						isCompletionCommit: event.isCompletionCommit
-					}
-				},
-				(article: UserArticle) => {
-					if (article.isRead) {
-						if (embedRootElement) {
-							render({ article });
-						} else {
-							insertEmbed();
-						}
+		contentParseResult.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
+	);
+
+pruneDocument(contentParseResult);
+styleArticleDocument(
+	window.document,
+	metadataParseResult.metadata.article.title,
+	metadataParseResult.metadata.article.authors
+		.map(author => author.name)
+		.filter(name => name ? !!name.trim() : false)
+		.join(', ')
+);
+
+const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
+if (publisherConfig && publisherConfig.imageStrategy != null) {
+	procesLazyImages(publisherConfig.imageStrategy);
+}
+
+const reader = new Reader(
+	event => {
+		messagingContext.sendMessage(
+			{
+				type: 'commitReadState',
+				data: {
+					commitData: {
+						readState: event.readStateArray,
+						userPageId: lookupResult.userPage.id
+					},
+					isCompletionCommit: event.isCompletionCommit
+				}
+			},
+			(article: UserArticle) => {
+				if (article.isRead) {
+					if (embedRootElement) {
+						render({ article });
+					} else {
+						insertEmbed();
 					}
 				}
-			)
-		}
-	);
+			}
+		)
+	}
+);
 
 // bookmark prompt
 function insertBookmarkPrompt() {
