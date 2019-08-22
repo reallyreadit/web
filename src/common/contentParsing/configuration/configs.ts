@@ -9,7 +9,7 @@ export default {
 			attributeFullWordBlacklist: ['ad', 'carousel', 'gallery', 'related', 'share', 'subscribe', 'subscription'],
 			attributeWordPartBlacklist: ['byline', 'caption', 'comment', 'download', 'interlude', 'image', 'meta', 'newsletter', 'photo', 'promo', 'pullquote', 'recirc', 'video'],
 			itempropValueBlacklist: ['author', 'datePublished'],
-			descendantNodeNameBlacklist: ['FORM', 'IFRAME'],
+			descendantNodeNameBlacklist: ['FORM'],
 			additionalContentNodeNameBlacklist: ['ASIDE', 'FOOTER', 'HEADER'],
 			additionalContentMaxDepthDecrease: 1,
 			additionalContentMaxDepthIncrease: 1
@@ -53,6 +53,17 @@ export default {
 		{
 			hostname: 'atlantic.com',
 			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrcset
+		},
+		{
+			hostname: 'bostonglobe.com',
+			transpositions: [
+				{
+					elementSelectors: [
+						'.article > .lead > *'
+					],
+					parentElementSelector: '.article > .body'
+				}
+			]
 		},
 		{
 			hostname: 'cnn.com',
