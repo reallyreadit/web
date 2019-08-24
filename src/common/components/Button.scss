@@ -75,14 +75,14 @@
 	border-style: solid;
 	border-color: red red transparent transparent;
 }
-.button_ovrlmi.busy > .text,
-.button_ovrlmi.busy > .icon_rour3d {
+.button_ovrlmi.overlay > .text,
+.button_ovrlmi.overlay > .icon_rour3d {
 	visibility: hidden;
 }
 .button_ovrlmi > .icon_rour3d + .text {
 	margin-left: 0.5em;
 }
-.button_ovrlmi > .loading {
+.button_ovrlmi > .overlay {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -91,4 +91,12 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background-color: inherit;
+}
+.button_ovrlmi.set > .overlay {
+	background-color: #eee;
+}
+.button_ovrlmi.set > .overlay > .icon_rour3d {
+	width: 1.5em;
+	height: 1.5em;
 }

@@ -19,5 +19,6 @@ export default interface UserArticle {
 	isRead: boolean,
 	dateStarred: string | null,
 	ratingScore: number | null,
+	datePosted: string | null,
 	proofToken: string | null
 }

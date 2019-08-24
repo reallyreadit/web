@@ -9,10 +9,10 @@ import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
-import classNames from 'classnames';
 import { calculateEstimatedReadTime } from '../calculate';
 import getShareData from '../sharing/getShareData';
 import ContentBox from './ContentBox';
+import Button from './Button';
 
 interface Props {
 	article: UserArticle,
@@ -61,15 +61,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
-			titleLink = (
-				<a
-					className="title-link"
-					href={this.props.article.url}
-					onClick={this._read}
-				>
-					{this.props.article.title}
-				</a>
-			),
 			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min',
 			averageRatingScore = this.props.article.averageRatingScore != null && this.props.article.averageRatingScore < 10 ?
 				this.props.article.averageRatingScore.toFixed(1) :
@@ -97,119 +88,134 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		const ratingStyle = {
 			backgroundImage: `url(${this.props.imagePath}/rating-seal.svg)`
 		};
+		// share
+		const shareControl = (
+			<ShareControl
+				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+				onGetData={this._getShareData}
+				onShare={this.props.onShare}
+				menuPosition={MenuPosition.TopCenter}
+			>
+				<Icon
+					display="block"
+					name="share"
+				/>
+			</ShareControl>
+		);
 		return (
 			<ContentBox className="article-details_d2vnmv">
-				<div className="actions">
-					<div className="star-container">
-						<Star
-							starred={!!this.props.article.dateStarred}
-							busy={this.state.isStarring}
-							onClick={this._toggleStar}
-						/>
-					</div>
-					<ShareControl
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onGetData={this._getShareData}
-						onShare={this.props.onShare}
-						menuPosition={MenuPosition.RightMiddle}
+				<div className="title">
+					<Star
+						starred={!!this.props.article.dateStarred}
+						busy={this.state.isStarring}
+						onClick={this._toggleStar}
+					/>
+					{!this.props.article.isRead && this.props.article.percentComplete >= 5 ?
+						<div className="bookmark">
+							<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
+							<Icon name="bookmark" />
+						</div> :
+						null}
+					<a
+						className="title-link"
+						href={this.props.article.url}
+						onClick={this._read}
 					>
-						<Icon
-							className="icon"
-							name="share"
-						/>
-					</ShareControl>
+						{this.props.article.title}
+					</a>
 				</div>
-				<div className="info">
-					<div className="small-title">
-						{titleLink}
-					</div>
-					<div className="columns">
-						<div className="article">
-							{titleLink}
-							<div className="meta">
-								{publisherMetadata.join(' | ')}
-							</div>
-							<div className="stats">
-								<div className="stat reads">
-									<span className="count">{this.props.article.readCount}</span> {formatCountable(this.props.article.readCount, 'read')}
-								</div>
-								<a
-									className="stat comments"
-									href={commentsLinkHref}
-									onClick={this._viewComments}
-								>
-									<span className="count">{this.props.article.commentCount}</span> {formatCountable(this.props.article.commentCount, 'comment')}
-								</a>
-								{averageRatingScore != null ?
-									<div
-										className="stat rating"
-										style={ratingStyle}
-									>
-										<span>{averageRatingScore}</span>
-									</div> :
-									null}
-							</div>
+				<div className="columns">
+					<div className="article">
+						<div className="meta">
+							{publisherMetadata.join(' | ')}
 						</div>
-						<div className="small-stats-article">
-							<div className="meta">
-								<div className="publisher">
-									{this.props.article.source}
-								</div>
-								<div className="author-date-length">
-									{this.props.article.authors.length ?
-										<span className="author">
-											{this.props.article.authors.join(', ')}
-										</span> :
-										null}
-									{this.props.article.authors.length && this.props.article.datePublished ?
-										<span className="spacer">|</span> :
-										null}
-									{this.props.article.datePublished ?
-										<span className="date">
-											{formatTimestamp(this.props.article.datePublished)}
-										</span> :
-										null}
-									{this.props.article.authors.length || this.props.article.datePublished ?
-										<span className="spacer">|</span> :
-										null}
-									<span className="length">
-										{estimatedReadTime}
-									</span>
-								</div>
-							</div>
-							<div className="stats">
-								<div className="stat reads">
-									<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-								</div>
-								<a
-									className="stat comments"
-									href={commentsLinkHref}
-									onClick={this._viewComments}
-								>
-									<span>{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}</span>
-								</a>
-								{averageRatingScore != null ?
-									<div
-										className="stat rating"
-										style={ratingStyle}
-									>
-										<span>{averageRatingScore}</span>
-									</div> :
-									null}
-							</div>
-						</div>
-						<div className="progress">
-							<div className="meter">
+						<div className="stats">
+							<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+							<a
+								className="comments"
+								href={commentsLinkHref}
+								onClick={this._viewComments}
+							>
+								{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+							</a>
+							{averageRatingScore != null ?
 								<div
-									className={classNames('fill', { 'read': this.props.article.isRead })}
-									style={{ height: this.props.article.percentComplete + '%' }}
-								></div>
-								<div className="description">
-									<strong>{Math.floor(this.props.article.percentComplete)}%</strong> complete
-								</div>
-							</div>
+									className="rating"
+									style={ratingStyle}
+								>
+									<span>{averageRatingScore}</span>
+								</div> :
+								null}
+							{shareControl}
 						</div>
 					</div>
+					<div className="small-stats-article">
+						<div className="meta">
+							<div className="publisher">
+								{this.props.article.source}
+							</div>
+							<div className="author-date-length">
+								{this.props.article.authors.length ?
+									<span className="author">
+										{this.props.article.authors.join(', ')}
+									</span> :
+									null}
+								{this.props.article.authors.length && this.props.article.datePublished ?
+									<span className="spacer">|</span> :
+									null}
+								{this.props.article.datePublished ?
+									<span className="date">
+										{formatTimestamp(this.props.article.datePublished)}
+									</span> :
+									null}
+								{this.props.article.authors.length || this.props.article.datePublished ?
+									<span className="spacer">|</span> :
+									null}
+								<span className="length">
+									{estimatedReadTime}
+								</span>
+							</div>
+						</div>
+						<div className="stats">
+							<div className="reads">
+								<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+							</div>
+							<div className="comments">
+								<a
+									href={commentsLinkHref}
+									onClick={this._viewComments}
+								>
+									{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+								</a>
+							</div>
+							{averageRatingScore != null ?
+								<div
+									className="rating"
+									style={ratingStyle}
+								>
+									<span>{averageRatingScore}</span>
+								</div> :
+								null}
+							{shareControl}
+						</div>
+					</div>
+					{this.props.article.isRead || this.props.article.datePosted ?
+						<div className="post">
+							<Button
+								text="Post"
+								style={
+									this.props.article.datePosted ?
+										'normal' :
+										'loud'
+								}
+								state={
+									this.props.article.datePosted ?
+										'set' :
+										'normal'
+								}
+							/>
+						</div> :
+						null}
 				</div>
 			</ContentBox>
 		);

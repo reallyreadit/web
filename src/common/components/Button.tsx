@@ -12,7 +12,7 @@ interface Props {
 	iconLeft?: IconName,
 	href?: string,
 	style?: 'normal' | 'preferred' | 'loud',
-	state?: 'normal' | 'disabled' | 'busy',
+	state?: 'normal' | 'disabled' | 'busy' | 'set',
 	size?: ButtonSize,
 	intent?: 'normal' | 'warning'
 	showIndicator?: boolean,
@@ -38,6 +38,19 @@ export default class Button extends React.PureComponent<Props> {
 		}
 	};
 	public render() {
+		let overlayChild: React.ReactNode;
+		switch (this.props.state) {
+			case 'busy':
+				overlayChild = (
+					<Spinner />
+				);
+				break;
+			case 'set':
+				overlayChild = (
+					<Icon name="checkmark" />
+				);
+				break;
+		}
 		const sharedProps = {
 			children: (
 				<>
@@ -45,9 +58,9 @@ export default class Button extends React.PureComponent<Props> {
 						<Icon name={this.props.iconLeft} /> :
 						null}
 					<span className="text">{this.props.text}</span>
-					{this.props.state === 'busy' ?
-						<span className="loading">
-							<Spinner />
+					{overlayChild ?
+						<span className="overlay">
+							{overlayChild}
 						</span> :
 						null}
 				</>
@@ -61,10 +74,16 @@ export default class Button extends React.PureComponent<Props> {
 				this.props.align,
 				this.props.intent,
 				{
+					disabled: (
+						this.props.state === 'disabled' ||
+						this.props.state === 'busy' ||
+						this.props.state === 'set'
+					),
 					busy: this.props.state === 'busy',
-					disabled: this.props.state === 'disabled' || this.props.state === 'busy',
+					set: this.props.state === 'set',
 					indicator: this.props.showIndicator,
-					hover: this.props.hoverStyle
+					hover: this.props.hoverStyle,
+					overlay: !!overlayChild
 				}
 			),
 			onClick: this._click,
