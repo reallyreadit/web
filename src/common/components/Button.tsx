@@ -12,14 +12,13 @@ interface Props {
 	iconLeft?: IconName,
 	href?: string,
 	style?: 'normal' | 'preferred' | 'loud',
-	state?: 'normal' | 'disabled' | 'busy' | 'set',
+	state?: 'normal' | 'disabled' | 'busy' | 'set' | 'selected',
 	size?: ButtonSize,
 	intent?: 'normal' | 'warning'
 	showIndicator?: boolean,
 	onClick?: () => void,
 	onMouseEnter?: () => void,
-	onMouseLeave?: () => void,
-	hoverStyle?: boolean
+	onMouseLeave?: () => void
 }
 export default class Button extends React.PureComponent<Props> {
 	public static defaultProps: Partial<Props> = {
@@ -73,16 +72,9 @@ export default class Button extends React.PureComponent<Props> {
 				this.props.display,
 				this.props.align,
 				this.props.intent,
+				this.props.state,
 				{
-					disabled: (
-						this.props.state === 'disabled' ||
-						this.props.state === 'busy' ||
-						this.props.state === 'set'
-					),
-					busy: this.props.state === 'busy',
-					set: this.props.state === 'set',
 					indicator: this.props.showIndicator,
-					hover: this.props.hoverStyle,
 					overlay: !!overlayChild
 				}
 			),

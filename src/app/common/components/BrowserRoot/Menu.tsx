@@ -78,11 +78,10 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								<Button
 									href={findRouteByKey(routes, ScreenKey.Admin).createUrl()}
 									onClick={this.props.onViewAdminPage}
-									style={this.props.selectedScreenKey === ScreenKey.Admin ? 'loud' : 'normal'}
+									state={this.props.selectedScreenKey === ScreenKey.Admin ? 'selected' : 'normal'}
 									text="Admin"
 									size="x-large"
 									display="block"
-									hoverStyle
 								/>
 							</li> :
 							null}
@@ -90,11 +89,10 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}
 								onClick={this.props.onViewSettings}
-								style={this.props.selectedScreenKey === ScreenKey.Settings ? 'loud' : 'normal'}
+								state={this.props.selectedScreenKey === ScreenKey.Settings ? 'selected' : 'normal'}
 								text="Settings"
 								size="x-large"
 								display="block"
-								hoverStyle
 							/>
 						</li>
 						<li>
@@ -104,7 +102,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								text="Log Out"
 								size="x-large"
 								display="block"
-								hoverStyle
 							/>
 						</li>
 					</ol>

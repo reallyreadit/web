@@ -41,6 +41,10 @@
 	background-color: #2A2326;
 	color: white;
 }
+.button_ovrlmi.selected {
+	background-color: silver;
+	color: white;
+}
 .button_ovrlmi.warning,
 .button_ovrlmi.preferred.warning,
 .button_ovrlmi.loud.warning {
@@ -59,10 +63,9 @@
 	font-size: 15pt;
 	padding: 0 30px;
 }
-.button_ovrlmi.hover:not(.loud):hover {
-	background-color: #eaeaea;
-}
-.button_ovrlmi.disabled {
+.button_ovrlmi.busy,
+.button_ovrlmi.disabled,
+.button_ovrlmi.set {
 	color: silver;
 	border-color: silver;
 }

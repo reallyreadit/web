@@ -30,7 +30,7 @@ export default (props: {
 				<Button
 					href={homeUrl}
 					onClick={props.onViewHome}
-					style={props.selectedScreen.key === ScreenKey.Home ? 'loud' : 'normal'}
+					state={props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
 					iconLeft="earth"
 					text="Discover"
 					size="x-large"
@@ -41,7 +41,7 @@ export default (props: {
 				<Button
 					href={myReadsUrl}
 					onClick={props.onViewMyReads}
-					style={props.selectedScreen.key === ScreenKey.MyReads ? 'loud' : 'normal'}
+					state={props.selectedScreen.key === ScreenKey.MyReads ? 'selected' : 'normal'}
 					iconLeft="star"
 					text="My Reads"
 					size="x-large"
@@ -52,12 +52,12 @@ export default (props: {
 				<Button
 					href={profileRoute.createUrl({ userName: props.user.name })}
 					onClick={props.onViewProfile}
-					style={
+					state={
 						(
 							props.selectedScreen.key === ScreenKey.Profile &&
 							profileRoute.getPathParams(props.selectedScreen.location.path)['userName'].toLowerCase() === props.user.name.toLowerCase()
 						) ?
-							'loud' :
+							'selected' :
 							'normal'
 					}
 					iconLeft="user"
@@ -70,7 +70,7 @@ export default (props: {
 				<Button
 					href={statsUrl}
 					onClick={props.onViewStats}
-					style={props.selectedScreen.key === ScreenKey.Stats ? 'loud' : 'normal'}
+					state={props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
 					iconLeft="line-chart"
 					text="Stats"
 					size="x-large"
@@ -81,7 +81,7 @@ export default (props: {
 				<Button
 					href={leaderboardsUrl}
 					onClick={props.onViewLeaderboards}
-					style={props.selectedScreen.key === ScreenKey.Leaderboards ? 'loud' : 'normal'}
+					state={props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
 					iconLeft="podium"
 					text="Leaderboards"
 					size="x-large"
