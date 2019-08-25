@@ -1,5 +1,4 @@
 import * as React from 'react';
-import RatingSelector from '../RatingSelector';
 import UserArticle from '../../models/UserArticle';
 import ShareData from '../../sharing/ShareData';
 import ShareChannel from '../../sharing/ShareChannel';
@@ -22,15 +21,6 @@ export interface Props {
 }
 const render: React.SFC<Props> = (props: Props) => (
 	<div className="footer_sg74y0">
-		<RatingSelector
-			article={props.article}
-			autoHideStatusText={props.autoHideRatingSelectorStatusText}
-			children={props.children}
-			onCopyTextToClipboard={props.onCopyTextToClipboard}
-			onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
-			onSelectRating={props.onSelectRating}
-			onShare={props.onShare}
-		/>
 		{props.comments && props.comments.value ?
 			<CommentsSection
 				article={props.article}

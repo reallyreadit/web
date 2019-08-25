@@ -11,7 +11,7 @@ import Ranking from '../../../../common/models/Ranking';
 import classNames from 'classnames';
 import StreakTimer from './LeaderboardScreen/StreakTimer';
 import ProfileLink from '../../../../common/components/ProfileLink';
-import Dialog from '../controls/Dialog';
+import Dialog from '../../../../common/components/Dialog';
 
 function renderTable(
 	{ title, iconName, scoreUnit, pluralScoreUnit, rankings, userRanking, userName, onOpenExplainer, onViewProfile }: {

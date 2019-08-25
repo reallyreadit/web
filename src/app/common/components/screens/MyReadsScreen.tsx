@@ -28,6 +28,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetStarredArticles: ArticleFetchFunction,
 	onGetUserArticleHistory: ArticleFetchFunction,
+	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -183,6 +184,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 														isUserSignedIn
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+														onPost={this.props.onPostArticle}
 														onRead={this.props.onReadArticle}
 														onShare={this.props.onShare}
 														onToggleStar={this.props.onToggleArticleStar}

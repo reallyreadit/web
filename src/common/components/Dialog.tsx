@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classNames, { ClassValue } from 'classnames';
-import Icon from '../../../../common/components/Icon';
+import Icon from './Icon';
 
 export default (
 	props: {
@@ -11,7 +11,7 @@ export default (
 		title: string
 	}
 ) => (
-	<div className={classNames('dialog_k09mus', props.className, { 'small': props.size === 'small' })}>
+	<div className={classNames('dialog_1wfm87', props.className, { 'small': props.size === 'small' })}>
 		<div className="header">
 			<div className="title">{props.title}</div>
 			{props.onClose ?

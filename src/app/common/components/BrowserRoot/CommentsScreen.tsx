@@ -35,6 +35,7 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onCopyAppReferrerTextToClipboard: () => void,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onInstallExtension: () => void,
+	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '../../../../common/components/Button';
 import { IconName } from '../../../../common/components/Icon';
 import { Intent } from '../../../../common/components/Toaster';
-import Dialog from './Dialog';
+import Dialog from '../../../../common/components/Dialog';
 
 export interface Props {
 	onCloseDialog: () => void,

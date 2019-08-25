@@ -1,9 +1,9 @@
 /*
 	componentPath: src/app/common/components/controls/Dialog
-	cssComponentId: dialog_k09mus
+	cssComponentId: dialog_1wfm87
 */
 
-.dialog_k09mus {
+.dialog_1wfm87 {
 	margin: 0 15px;
 	padding: 15px;
 	z-index: 100;
@@ -12,17 +12,17 @@
 	max-width: calc(100% - 30px);
 	box-sizing: border-box;
 }
-.dialog_k09mus.small {
+.dialog_1wfm87.small {
 	max-width: 400px;
 }
-.dialog_k09mus > .header {
+.dialog_1wfm87 > .header {
 	position: relative;
 	margin-bottom: 15px;
 	font-size: 16pt;
 	text-align: center;
 	font-family: 'Museo Sans (700)';
 }
-.dialog_k09mus > .header > .close {
+.dialog_1wfm87 > .header > .close {
 	position: absolute;
 	top: 50%;
 	right: 0;
@@ -30,6 +30,6 @@
 	cursor: pointer;
 	font-size: 13pt;
 }
-.dialog_k09mus > p + p {
+.dialog_1wfm87 > p + p {
 	margin-top: 10px;
 }

@@ -13,6 +13,7 @@ import CommentThread from '../models/CommentThread';
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onPost: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
@@ -31,6 +32,7 @@ export default class PostDetails extends React.Component<Props> {
 					isUserSignedIn={!!this.props.user}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onPost={this.props.onPost}
 					onRead={this.props.onRead}
 					onShare={this.props.onShare}
 					onToggleStar={this.props.onToggleStar}

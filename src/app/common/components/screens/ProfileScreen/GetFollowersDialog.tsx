@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../controls/Dialog';
+import Dialog from '../../../../../common/components/Dialog';
 import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
 import Icon from '../../../../../common/components/Icon';
 import ShareData from '../../../../../common/sharing/ShareData';

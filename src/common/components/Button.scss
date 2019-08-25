@@ -42,13 +42,19 @@
 	color: white;
 }
 .button_ovrlmi.selected {
-	background-color: silver;
+	background-color: #999;
 	color: white;
 }
 .button_ovrlmi.warning,
 .button_ovrlmi.preferred.warning,
 .button_ovrlmi.loud.warning {
 	background-color: darkred;
+	color: white;
+}
+.button_ovrlmi.success,
+.button_ovrlmi.preferred.success,
+.button_ovrlmi.loud.success {
+	background-color: limegreen;
 	color: white;
 }
 .button_ovrlmi.large {
@@ -64,8 +70,7 @@
 	padding: 0 30px;
 }
 .button_ovrlmi.busy,
-.button_ovrlmi.disabled,
-.button_ovrlmi.set {
+.button_ovrlmi.disabled {
 	color: silver;
 	border-color: silver;
 }
@@ -95,11 +100,4 @@
 	justify-content: center;
 	align-items: center;
 	background-color: inherit;
-}
-.button_ovrlmi.set > .overlay {
-	background-color: #eee;
-}
-.button_ovrlmi.set > .overlay > .icon_rour3d {
-	width: 1.5em;
-	height: 1.5em;
 }

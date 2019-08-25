@@ -64,6 +64,7 @@ export default class extends React.PureComponent<{
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onLengthRangeChange: (min: number, max: number) => void,
+	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onSortChange: (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => void,
@@ -98,6 +99,7 @@ export default class extends React.PureComponent<{
 					isUserSignedIn={this.props.isUserSignedIn}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onPost={this.props.onPostArticle}
 					onRead={this.props.onReadArticle}
 					onShare={this.props.onShare}
 					onToggleStar={this.props.onToggleArticleStar}
@@ -153,6 +155,7 @@ export default class extends React.PureComponent<{
 									isUserSignedIn={this.props.isUserSignedIn}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onPost={this.props.onPostArticle}
 									onRead={this.props.onReadArticle}
 									onShare={this.props.onShare}
 									onToggleStar={this.props.onToggleArticleStar}

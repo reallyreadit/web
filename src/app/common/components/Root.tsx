@@ -37,6 +37,8 @@ import { createScreenFactory as createStatsScreenFactory } from './screens/Stats
 import Analytics from '../Analytics';
 import createExtensionRemovalScreenFactory from './ExtensionRemovalScreen';
 import UserNameForm from '../../../common/models/social/UserNameForm';
+import PostDialog from '../../../common/components/PostDialog';
+import PostForm from '../../../common/models/social/PostForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -182,6 +184,15 @@ export default abstract class Root<
 			/>
 		)
 	};
+	protected readonly _openPostDialog = (article: UserArticle) => {
+		this._openDialog(
+			<PostDialog
+				articleId={article.id}
+				onCloseDialog={this._closeDialog}
+				onSubmit={this._postArticle}
+			/>
+		);
+	};
 	protected readonly _openRequestPasswordResetDialog = () => {
 		this._openDialog(
 			<RequestPasswordResetDialog
@@ -216,6 +227,15 @@ export default abstract class Root<
 
 	// social
 	protected readonly _followUser = (form: UserNameForm) => this.props.serverApi.followUser(form);
+	protected readonly _postArticle = (form: PostForm) => {
+		return this.props.serverApi
+			.postArticle(form)
+			.then(
+				post => {
+					return post;
+				}
+			);
+	};
 	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi.unfollowUser(form);
 
 	// state

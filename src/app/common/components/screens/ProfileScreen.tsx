@@ -44,6 +44,7 @@ interface Props {
 	onGetPosts: FetchFunctionWithParams<PostsQuery, PageResult<Post>>,
 	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
+	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -261,6 +262,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 											onRead={this.props.onReadArticle}
+											onPost={this.props.onPostArticle}
 											onShare={this.props.onShare}
 											onToggleStar={this.props.onToggleArticleStar}
 											onViewComments={this.props.onViewComments}

@@ -9,7 +9,6 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
-import RatingSelector from '../../../../common/components/RatingSelector';
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
@@ -35,6 +34,7 @@ export interface Props {
 	highlightedCommentId: string | null,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -45,12 +45,6 @@ export interface Props {
 }
 export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => { };
-	private readonly _selectRating = (score: number) => {
-		return this.props.onRateArticle(
-			this.props.article.value,
-			score
-		);
-	};
 	public render() {
 		return (
 			<ScreenContainer>
@@ -63,20 +57,12 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 								isUserSignedIn={!!this.props.user}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onPost={this.props.onPostArticle}
 								onRead={this.props.onReadArticle}
 								onShare={this.props.onShare}
 								onToggleStar={this.props.onToggleArticleStar}
 								onViewComments={this._noop}
 							/>
-							{this.props.article.value.isRead ?
-								<RatingSelector
-									article={this.props.article.value}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onSelectRating={this._selectRating}
-									onShare={this.props.onShare}
-								/> :
-								null}
 							<CommentsSection
 								article={this.props.article.value}
 								comments={this.props.comments.value}

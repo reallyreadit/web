@@ -12,7 +12,7 @@ import ShareChannel from '../sharing/ShareChannel';
 import { calculateEstimatedReadTime } from '../calculate';
 import getShareData from '../sharing/getShareData';
 import ContentBox from './ContentBox';
-import Button from './Button';
+import PostButton from './PostButton';
 
 interface Props {
 	article: UserArticle,
@@ -20,6 +20,7 @@ interface Props {
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onPost?: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
@@ -199,20 +200,14 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							{shareControl}
 						</div>
 					</div>
-					{this.props.article.isRead || this.props.article.datePosted ?
+					{(
+						this.props.onPost &&
+						(this.props.article.isRead || this.props.article.datePosted)
+					 ) ?
 						<div className="post">
-							<Button
-								text="Post"
-								style={
-									this.props.article.datePosted ?
-										'normal' :
-										'loud'
-								}
-								state={
-									this.props.article.datePosted ?
-										'set' :
-										'normal'
-								}
+							<PostButton
+								article={this.props.article}
+								onPost={this.props.onPost}
 							/>
 						</div> :
 						null}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../controls/Dialog';
+import Dialog from '../../../../../common/components/Dialog';
 import { FetchFunction } from '../../../serverApi/ServerApi';
 import Following from '../../../../../common/models/social/Following';
 import Fetchable from '../../../../../common/Fetchable';

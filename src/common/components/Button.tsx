@@ -14,7 +14,7 @@ interface Props {
 	style?: 'normal' | 'preferred' | 'loud',
 	state?: 'normal' | 'disabled' | 'busy' | 'set' | 'selected',
 	size?: ButtonSize,
-	intent?: 'normal' | 'warning'
+	intent?: 'normal' | 'warning' | 'success'
 	showIndicator?: boolean,
 	onClick?: () => void,
 	onMouseEnter?: () => void,

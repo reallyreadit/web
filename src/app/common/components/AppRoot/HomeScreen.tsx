@@ -24,6 +24,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
 	onOpenMenu: () => void,
+	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -155,6 +156,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onLengthRangeChange={this._changeLengthRange}
+							onPostArticle={this.props.onPostArticle}
 							onReadArticle={this.props.onReadArticle}
 							onShare={this.props.onShare}
 							onSortChange={this._changeSort}
