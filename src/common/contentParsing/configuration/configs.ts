@@ -5,25 +5,29 @@ import { LazyImageStrategy } from '../processLazyImages';
 export default {
 	universal: {
 		textContainerSearch: {
-			nodeNameBlacklist: ['BUTTON', 'FIGURE', 'FORM', 'HEAD', 'IFRAME', 'NAV', 'NOSCRIPT', 'PICTURE', 'SCRIPT', 'STYLE'],
-			attributeFullWordBlacklist: ['ad', 'carousel', 'gallery', 'related', 'share', 'subscribe', 'subscription'],
-			attributeWordPartBlacklist: ['byline', 'caption', 'comment', 'download', 'interlude', 'image', 'meta', 'newsletter', 'photo', 'promo', 'pullquote', 'recirc', 'video'],
-			itempropValueBlacklist: ['author', 'datePublished'],
-			descendantNodeNameBlacklist: ['FORM'],
 			additionalContentNodeNameBlacklist: ['ASIDE', 'FOOTER', 'HEADER'],
 			additionalContentMaxDepthDecrease: 1,
-			additionalContentMaxDepthIncrease: 1
+			additionalContentMaxDepthIncrease: 1,
+			descendantNodeNameBlacklist: ['FORM'],
+			nodeNameBlacklist: ['BUTTON', 'FIGURE', 'FORM', 'HEAD', 'IFRAME', 'NAV', 'NOSCRIPT', 'PICTURE', 'SCRIPT', 'STYLE'],
+			selectorBlacklist: ['[itemprop="author"], [itemprop="datePublished"]']
 		},
-		textContainerContent: {
+		textContainerFilter: {
+			attributeFullWordBlacklist: ['ad', 'carousel', 'gallery', 'related', 'share', 'subscribe', 'subscription'],
+			attributeWordPartBlacklist: ['byline', 'caption', 'comment', 'download', 'interlude', 'image', 'meta', 'newsletter', 'photo', 'promo', 'pullquote', 'recirc', 'video'],
+			blacklistSelectors: [],
 			regexBlacklist: [/^\[[^\]]+\]$/],
-			singleSentenceOpenerBlacklist: ['►', 'click here', 'don\'t miss', 'listen to this story', 'read more', 'related article:', 'sign up for', 'sponsored:', 'this article appears in', 'watch:']
+			singleSentenceOpenerBlacklist: ['►', 'click here', 'check out', 'don\'t miss', 'listen to this story', 'read more', 'related article:', 'sign up for', 'sponsored:', 'this article appears in', 'watch:']
 		},
 		imageContainerSearch: {
+			descendantNodeNameBlacklist: ['FORM', 'IFRAME'],
 			nodeNameBlacklist: ['FORM', 'HEAD', 'IFRAME', 'NAV', 'NOSCRIPT', 'SCRIPT', 'STYLE'],
+			selectorBlacklist: []
+		},
+		imageContainerFilter: {
 			attributeFullWordBlacklist: ['ad', 'related', 'share', 'subscribe', 'subscription'],
 			attributeWordPartBlacklist: ['interlude', 'newsletter', 'promo', 'recirc', 'video'],
-			itempropValueBlacklist: [],
-			descendantNodeNameBlacklist: ['FORM', 'IFRAME']
+			blacklistSelectors: []
 		},
 		imageContainerMetadata: {
 			contentRegexBlacklist: [/audm/i],
@@ -45,14 +49,16 @@ export default {
 	} as UniversalConfig,
 	publishers: [
 		{
-			hostname: '99u.adobe.com',
+			hostname: 'ablogtowatch.com',
 			textContainerSearch: {
-				attributeFullWordBlacklist: ['blockquote']
+				selectorBlacklist: ['.ablog-adlabel']
 			}
 		},
 		{
-			hostname: 'atlantic.com',
-			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrcset
+			hostname: '99u.adobe.com',
+			textContainerFilter: {
+				attributeFullWordBlacklist: ['blockquote']
+			}
 		},
 		{
 			hostname: 'bostonglobe.com',
@@ -81,7 +87,7 @@ export default {
 		{
 			hostname: 'abcnews.go.com',
 			textContainerSearch: {
-				attributeFullWordBlacklist: 'insert'
+				selectorBlacklist: ['[class*="insert"]']
 			}
 		},
 		{
@@ -102,7 +108,7 @@ export default {
 		{
 			hostname: 'invisionapp.com',
 			imageContainerSearch: {
-				attributeFullWordBlacklist: 'quotecomponent'
+				selectorBlacklist: ['div[class^="TweetQuotecomponent"]']
 			}
 		},
 		{
@@ -111,7 +117,7 @@ export default {
 		},
 		{
 			hostname: 'medium.com',
-			textContainerSearch: {
+			textContainerFilter: {
 				attributeFullWordWhitelist: ['ad']
 			},
 			imageStrategy: LazyImageStrategy.MediumScaleUp
@@ -128,15 +134,11 @@ export default {
 			],
 			imageStrategy: LazyImageStrategy.NytFigureImageObject,
 			textContainerSearch: {
-				classBlacklist: ['epkadsg3', 'etfikam0', 'ez3869y0']
+				selectorBlacklist: ['[id*="ad"], .epkadsg3, .etfikam0, .ez3869y0']
 			},
 			imageContainerSearch: {
-				classBlacklist: ['epkadsg3', 'etfikam0', 'ez3869y0']
+				selectorBlacklist: ['[id*="ad"], .epkadsg3, .etfikam0, .ez3869y0']
 			}
-		},
-		{
-			hostname: 'politico.com',
-			contentSearchRootElementSelector: 'article.story-main-content'
 		},
 		{
 			hostname: 'article-test.dev.readup.com',
@@ -162,21 +164,40 @@ export default {
 			]
 		},
 		{
-			hostname: 'techcrunch.com',
-			textContainerSearch: {
-				attributeFullWordWhitelist: 'subscription'
+			hostname: 'sinocism.com',
+			textContainerFilter: {
+				blacklistSelectors: [
+					() => {
+						const footer = Array
+							.from(document.getElementsByTagName('p'))
+							.find(element => element.textContent.toLowerCase().startsWith('this week’s issues of sinocism'));
+						if (footer) {
+							return [
+								footer,
+								...Array
+									.from(footer.parentElement.children)
+									.filter(sibling => footer.compareDocumentPosition(sibling) & Node.DOCUMENT_POSITION_FOLLOWING)
+							];
+						}
+						return [];
+					}
+				]
 			}
 		},
 		{
 			hostname: 'theatlantic.com',
 			imageContainerSearch: {
-				attributeFullWordBlacklist: ['callout']
-			}
+				selectorBlacklist: ['.callout']
+			},
+			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrcset
 		},
 		{
-			hostname: 'topic.com',
+			hostname: 'thenewatlantis.com',
 			textContainerSearch: {
-				attributeFullWordWhitelist: ['essay']
+				selectorBlacklist: ['.author, .epigraph, [style*="BellMT"], h2']
+			},
+			imageContainerSearch: {
+				selectorBlacklist: ['[style*="BellMT"]']
 			}
 		},
 		{
@@ -185,16 +206,27 @@ export default {
 		},
 		{
 			hostname: 'wired.com',
-			textContainerSearch: {
-				attributeFullWordBlacklist: ['inset']
+			textContainerFilter: {
+				attributeFullWordBlacklist: ['inset'],
+				blacklistSelectors: [
+					() => {
+						const footer = Array
+							.from(document.getElementsByTagName('h3'))
+							.find(element => element.textContent.toLowerCase().startsWith('more great wired stories'));
+						if (footer && footer.nextElementSibling) {
+							return [footer, footer.nextElementSibling];
+						}
+						return [];
+					}
+				]
 			},
 			imageContainerSearch: {
-				attributeFullWordBlacklist: ['inset']
+				selectorBlacklist: ['.inset']
 			}
 		},
 		{
 			hostname: 'news.harvard.edu',
-			textContainerSearch: {
+			textContainerFilter: {
 				attributeFullWordBlacklist: ['explore']
 			}
 		},
@@ -223,9 +255,13 @@ export default {
 			]
 		},
 		{
-			hostname: 'stanfordmag.org',
-			textContainerSearch: {
-				attributeFullWordWhitelist: ['image']
+			hostname: 'cjr.org',
+			textContainerFilter: {
+				blacklistSelectors: [
+					() => Array
+						.from(document.getElementsByTagName('p'))
+						.filter(element => element.textContent.startsWith('ICYMI:'))
+				]
 			}
 		},
 		{

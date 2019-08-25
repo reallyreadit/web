@@ -1,14 +1,16 @@
-import ContainerSearchConfig from './UniversalContainerSearchConfig';
-import TextContainerContentConfig from './TextContainerContentConfig';
 import ImageContainerMetadataConfig from './ImageContainerMetadataConfig';
-import TextContainerSearchConfig from './UniversalTextContainerSearchConfig';
 import TextContainerSelectionConfig from './TextContainerSelectionConfig';
 import ImageContainerContentConfig from './ImageContainerContentConfig';
+import TextContainerFilterConfig from './TextContainerFilterConfig';
+import ContainerSearchConfig from './ContainerSearchConfig';
+import TextContainerSearchConfig from './TextContainerSearchConfig';
+import UniversalContainerFilterConfig from './UniversalContainerFilterConfig';
 
 export default interface UniversalConfig {
 	textContainerSearch: TextContainerSearchConfig,
-	textContainerContent: TextContainerContentConfig,
+	textContainerFilter: TextContainerFilterConfig,
 	imageContainerSearch: ContainerSearchConfig,
+	imageContainerFilter: UniversalContainerFilterConfig,
 	imageContainerMetadata: ImageContainerMetadataConfig,
 	imageContainerContent: ImageContainerContentConfig,
 	textContainerSelection: TextContainerSelectionConfig,

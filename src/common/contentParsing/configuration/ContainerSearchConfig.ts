@@ -1,5 +1,5 @@
-import UniversalContainerSearchConfig from './UniversalContainerSearchConfig';
-
-export default interface ContainerSearchConfig extends UniversalContainerSearchConfig {
-	attributeFullWordWhitelist: string[]
+export default interface ContainerSearchConfig {
+	descendantNodeNameBlacklist: string[],
+	nodeNameBlacklist: string[],
+	selectorBlacklist: string[]
 }

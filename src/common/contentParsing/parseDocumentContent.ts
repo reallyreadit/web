@@ -9,7 +9,6 @@ import { zipContentLineages, buildLineage, isElement, isImageContainerElement, f
 import ParseResult from './ParseResult';
 import { isValidContent as isValidFigureContent } from './figureContent';
 import Config from './configuration/Config';
-import TextContainerContentConfig from './configuration/TextContainerContentConfig';
 import ContainerSearchConfig from './configuration/ContainerSearchConfig';
 import ImageContainerMetadataConfig from './configuration/ImageContainerMetadataConfig';
 import TextContainerSelectionConfig from './configuration/TextContainerSelectionConfig';
@@ -17,6 +16,9 @@ import TextContainerSearchConfig from './configuration/TextContainerSearchConfig
 import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
 import configs from './configuration/configs';
 import { findPublisherConfig } from './configuration/PublisherConfig';
+import ElementSelector from './configuration/ElementSelector';
+import ContainerFilterConfig from './configuration/ContainerFilterConfig';
+import TextContainerFilterConfig from './configuration/TextContainerFilterConfig';
 
 // regular expressions
 const wordRegex = /\S+/g;
@@ -40,32 +42,34 @@ function searchUpLineage(lineage: Node[], test: (node: Node, index: number) => b
 	}
 	return null;
 }
-
-// select article search element based on available metadata
-function selectContentSearchRootElement(configuredSelector: string | null) {
-	if (configuredSelector) {
-		const configuredRoot = document.querySelector(configuredSelector);
-		if (configuredRoot) {
-			return configuredRoot;
-		}
+function selectElements(arg0: ElementSelector | ElementSelector[]): Element[] {
+	if (Array.isArray(arg0)) {
+		return arg0.reduce<Element[]>(
+			(elements, selector) => elements.concat(selectElements(selector)),
+			[]
+		);
 	}
-	let queryRoot: Element = document.body;
-	const articleScopes = queryRoot.querySelectorAll('[itemtype="http://schema.org/Article"], [itemtype="http://schema.org/BlogPosting"]');
-	if (articleScopes.length) {
-		queryRoot = articleScopes[0];
+	if (typeof arg0 === 'string') {
+		return Array.from(document.querySelectorAll(arg0));
 	}
-	const articleBodyNodes = queryRoot.querySelectorAll('[itemprop=articleBody]');
-	if (articleBodyNodes.length === 1) {
-		return articleBodyNodes[0];
-	}
-	const articleNodes = queryRoot.querySelectorAll('article');
-	if (articleNodes.length === 1) {
-		return articleNodes[0];
-	}
-	return queryRoot;
+	return arg0();
 }
 
 // filtering
+function areContainerAttributesValid(element: Element, config: ContainerFilterConfig) {
+	const words = findWordsInAttributes(element);
+	return !(
+		words.some(
+			word => (
+				(
+					config.attributeFullWordBlacklist.includes(word) ||
+					config.attributeWordPartBlacklist.some(wordPart => word.includes(wordPart))
+				) &&
+				!words.some(word => config.attributeFullWordWhitelist.includes(word))
+			)
+		)
+	);
+}
 function isImageContainerMetadataValid(image: ImageContainer, config: ImageContainerMetadataConfig) {
 	const meta = (image.caption || '') + ' ' + (image.credit || '');
 	return !(
@@ -73,7 +77,7 @@ function isImageContainerMetadataValid(image: ImageContainer, config: ImageConta
 		!config.contentRegexWhitelist.some(regex => regex.test(meta))
 	);
 }
-function isTextContentValid(block: Element, config: TextContainerContentConfig) {
+function isTextContentValid(block: Element, config: TextContainerFilterConfig) {
 	const links = block.getElementsByTagName('a');
 	if (!links.length) {
 		return true;
@@ -97,27 +101,11 @@ function isTextContentValid(block: Element, config: TextContainerContentConfig) 
 	return true;
 }
 function shouldSearchForContent(element: Element, config: ContainerSearchConfig) {
-	if (config.nodeNameBlacklist.includes(element.nodeName)) {
+	if (config.nodeNameBlacklist.some(nodeName => element.nodeName === nodeName)) {
 		return false;
 	}
-	if (config.itempropValueBlacklist.includes(element.getAttribute('itemprop'))) {
-		return false;
-	}
-	if (config.classBlacklist.some(value => element.classList.contains(value))) {
-		return false;
-	}
-	const words = findWordsInAttributes(element);
-	return !(
-		words.some(
-			word => (
-				config.attributeFullWordBlacklist.includes(word) ||
-				config.attributeWordPartBlacklist.some(wordPart => word.includes(wordPart))
-			) &&
-				!words.some(word => config.attributeFullWordWhitelist.includes(word))
-		)
-	);
+	return !config.selectorBlacklist.some(selector => element.matches(selector));
 }
-
 
 // find text containers by recursively walking the tree looking for text nodes
 const findTextContainers = (function () {
@@ -451,16 +439,30 @@ function findChildren(parent: Node, depth: number, edge: GraphEdge, searchArea: 
 export default function parseDocumentContent(): ParseResult {
 	const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
 
-	const contentSearchRootElement = selectContentSearchRootElement(
-		publisherConfig ?
-			publisherConfig.contentSearchRootElementSelector :
-			null
-	);
+	let contentSearchRootElement: Element;
+	if (publisherConfig && publisherConfig.contentSearchRootElementSelector) {
+		contentSearchRootElement = document.querySelector(publisherConfig.contentSearchRootElementSelector);
+	}
+	if (!contentSearchRootElement) {
+		contentSearchRootElement = document.body;
+	}
 
 	const config = new Config(configs.universal, publisherConfig, contentSearchRootElement);
 
-	const textContainers = findTextContainers(contentSearchRootElement, [], config)
-		.filter(container => container.wordCount > 0 && isTextContentValid(container.containerElement, config.textContainerContent));
+	const blacklistedTextContainerElements = selectElements(config.textContainerFilter.blacklistSelectors);
+
+	let textContainers = findTextContainers(contentSearchRootElement, [], config)
+		.filter(
+			container => (
+				container.wordCount > 0 &&
+				!blacklistedTextContainerElements.some(element => element === container.containerElement) &&
+				isTextContentValid(container.containerElement, config.textContainerFilter)
+			)
+		);
+	const attributeFilteredTextContainers = textContainers.filter(container => areContainerAttributesValid(container.containerElement, config.textContainerFilter));
+	if (attributeFilteredTextContainers.length / textContainers.length > 0.5) {
+		textContainers = attributeFilteredTextContainers;
+	}
 
 	const textContainerDepthGroups = groupTextContainersByDepth(textContainers);
 
@@ -517,6 +519,8 @@ export default function parseDocumentContent(): ParseResult {
 				.length - 1
 		);
 
+	const blacklistedImageContainerElements = selectElements(config.imageContainerFilter.blacklistSelectors);
+
 	const imageContainers = findImageContainers(
 			primaryTextRootNode,
 			[],
@@ -524,7 +528,13 @@ export default function parseDocumentContent(): ParseResult {
 			searchArea,
 			config
 		)
-		.filter(image => isImageContainerMetadataValid(image, config.imageContainerMetadata));
+		.filter(
+			container => (
+				!blacklistedImageContainerElements.some(element => element === container.containerElement) &&
+				areContainerAttributesValid(container.containerElement, config.imageContainerFilter) &&
+				isImageContainerMetadataValid(container, config.imageContainerMetadata)
+			)
+		);
 
 	const additionalPrimaryTextContainers = findAdditionalPrimaryTextContainers(
 			primaryTextRootNode,
@@ -548,7 +558,7 @@ export default function parseDocumentContent(): ParseResult {
 			imageContainers.map(container => container.containerElement),
 			config.textContainerSearch
 		)
-		.filter(container => isTextContentValid(container.containerElement, config.textContainerContent));
+		.filter(container => isTextContentValid(container.containerElement, config.textContainerFilter));
 
 	return {
 		contentSearchRootElement,

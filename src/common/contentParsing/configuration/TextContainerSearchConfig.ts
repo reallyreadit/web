@@ -1,5 +1,7 @@
-import UniversalTextContainerSearchConfig from './UniversalTextContainerSearchConfig';
+import ContainerSearchConfig from './ContainerSearchConfig';
 
-export default interface TextContainerSearchConfig extends UniversalTextContainerSearchConfig {
-	attributeFullWordWhitelist: string[]
+export default interface TextContainerSearchConfig extends ContainerSearchConfig {
+	additionalContentNodeNameBlacklist: string[]
+	additionalContentMaxDepthIncrease: number,
+	additionalContentMaxDepthDecrease: number
 }
