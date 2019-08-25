@@ -8,6 +8,7 @@
 	margin-top: -10px;
 }
 .article-details_d2vnmv > .title > .bookmark > .percent-complete {
+	font-family: 'Museo Sans (500)';
 	font-size: 8pt;
 	color: white;
 	position: absolute;
@@ -19,7 +20,7 @@
 	display: block;
 	width: 42px;
 	height: 42px;
-	color: silver;
+	color: #999;
 }
 .article-details_d2vnmv > .title > .title-link {
 	font-family: 'Cambria (bold)';
@@ -68,14 +69,14 @@
 }
 .article-details_d2vnmv > .columns > .article > .stats > .rating > span {
 	color: white;
-	font-family: 'Museo Sans (700)';
+	font-family: 'Museo Sans (500)';
 	font-size: 8pt;
 }
 .article-details_d2vnmv > .columns > .article > .stats > .share-control_mnbspk {
 	flex: 0 0 auto;
 }
 .article-details_d2vnmv > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
-	color: #aaa;
+	color: #999;
 }
 .article-details_d2vnmv > .columns > .small-stats-article {
 	display: none;
@@ -161,13 +162,13 @@
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .rating > span {
 		color: white;
-		font-family: 'Museo Sans (700)';
+		font-family: 'Museo Sans (500)';
 		font-size: 8pt;
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .share-control_mnbspk {
 		flex: 0 0 auto;	
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
-		color: #aaa;
+		color: #999;
 	}
 }

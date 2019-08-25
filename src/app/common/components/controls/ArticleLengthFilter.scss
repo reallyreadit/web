@@ -10,7 +10,7 @@
 	background-repeat: no-repeat;
 	background-size: 15px;
 	background-position: right 5px center;
-	border: 1px solid #2A2326;
+	border: 1px solid #999;
 	border-radius: 0;
 	padding: 5px 23px 5px 5px;
 	font-size: 12pt;
@@ -28,7 +28,7 @@
 	box-sizing: border-box;
 	-webkit-appearance: none;
 	outline: none;
-	background-image: linear-gradient(gray, gray);
+	background-image: linear-gradient(#999, #999);
 	background-size: 100% 2px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -42,8 +42,8 @@
 	width: 20px;
 	height: 20px;
 	border-radius: 10px;
-	background-color: gray;
-	border: 1px solid black;
+	background-color: #e0e0e0;
+	border: 1px solid #999;
 	pointer-events: auto;
 }
 .article-length-filter_2dglet > .menu > .controls > input:first-child {
