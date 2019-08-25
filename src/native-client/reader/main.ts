@@ -67,9 +67,7 @@ styleArticleDocument(
 );
 
 const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
-if (publisherConfig && publisherConfig.imageStrategy != null) {
-	procesLazyImages(publisherConfig.imageStrategy);
-}
+procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
 
 const reader = new Reader(
 	event => {

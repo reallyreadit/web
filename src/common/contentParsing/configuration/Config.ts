@@ -1,7 +1,7 @@
 import UniversalConfig from './UniversalConfig';
 import PublisherConfig from './PublisherConfig';
 import TextContainerSearchConfig from './TextContainerSearchConfig';
-import TextContainerContentConfig from './TextContainerContentConfig';
+import TextContainerFilterConfig from './TextContainerFilterConfig';
 import ImageContainerMetadataConfig from './ImageContainerMetadataConfig';
 import TextContainerSelectionConfig from './TextContainerSelectionConfig';
 import TranspositionRule from './TranspositionRule';
@@ -9,11 +9,13 @@ import ContainerSearchConfig from './ContainerSearchConfig';
 import ImageContainerContentConfig from './ImageContainerContentConfig';
 import { buildLineage } from '../utils';
 import { LazyImageStrategy } from '../processLazyImages';
+import ContainerFilterConfig from './ContainerFilterConfig';
 
 export default class Config {
 	private readonly _textContainerSearch: TextContainerSearchConfig;
-	private readonly _textContainerContent: TextContainerContentConfig;
+	private readonly _textContainerFilter: TextContainerFilterConfig;
 	private readonly _imageContainerSearch: ContainerSearchConfig;
+	private readonly _imageContainerFilter: ContainerFilterConfig;
 	private readonly _imageContainerMetadata: ImageContainerMetadataConfig;
 	private readonly _imageContainerContent: ImageContainerContentConfig;
 	private readonly _textContainerSelection: TextContainerSelectionConfig;
@@ -22,7 +24,7 @@ export default class Config {
 	private readonly _wordCountTraversalPathSearchLimitMultiplier: number;
 	private readonly _imageStrategy: LazyImageStrategy | null;
 	constructor(universal: UniversalConfig, publisher: PublisherConfig | null, contentSearchRootElement: Element) {
-		this._textContainerContent = universal.textContainerContent;
+		this._textContainerFilter = universal.textContainerFilter;
 		this._imageContainerMetadata = universal.imageContainerMetadata;
 		this._imageContainerContent = universal.imageContainerContent;
 		this._textContainerSelection = universal.textContainerSelection;
@@ -31,29 +33,43 @@ export default class Config {
 			if (publisher.textContainerSearch) {
 				this._textContainerSearch = {
 					...universal.textContainerSearch,
-					attributeFullWordBlacklist: universal.textContainerSearch.attributeFullWordBlacklist.concat(publisher.textContainerSearch.attributeFullWordBlacklist || []),
-					attributeFullWordWhitelist: publisher.textContainerSearch.attributeFullWordWhitelist || [],
-					classBlacklist: publisher.textContainerSearch.classBlacklist || []
+					selectorBlacklist: universal.textContainerSearch.selectorBlacklist.concat(publisher.textContainerSearch.selectorBlacklist || [])
 				};
 			} else {
-				this._textContainerSearch = {
-					...universal.textContainerSearch,
-					attributeFullWordWhitelist: [],
-					classBlacklist: []
+				this._textContainerSearch = universal.textContainerSearch;
+			}
+			if (publisher.textContainerFilter) {
+				this._textContainerFilter = {
+					...universal.textContainerFilter,
+					attributeFullWordBlacklist: universal.textContainerFilter.attributeFullWordBlacklist.concat(publisher.textContainerFilter.attributeFullWordBlacklist || []),
+					attributeFullWordWhitelist: publisher.textContainerFilter.attributeFullWordWhitelist || [],
+					blacklistSelectors: universal.textContainerFilter.blacklistSelectors.concat(publisher.textContainerFilter.blacklistSelectors || [])
+				};
+			} else {
+				this._textContainerFilter = {
+					...universal.textContainerFilter,
+					attributeFullWordWhitelist: []
 				};
 			}
 			if (publisher.imageContainerSearch) {
 				this._imageContainerSearch = {
 					...universal.imageContainerSearch,
-					attributeFullWordBlacklist: universal.imageContainerSearch.attributeFullWordBlacklist.concat(publisher.imageContainerSearch.attributeFullWordBlacklist || []),
-					attributeFullWordWhitelist: publisher.imageContainerSearch.attributeFullWordWhitelist || [],
-					classBlacklist: publisher.imageContainerSearch.classBlacklist || []
+					selectorBlacklist: universal.imageContainerSearch.selectorBlacklist.concat(publisher.imageContainerSearch.selectorBlacklist || [])
 				};
 			} else {
-				this._imageContainerSearch = {
-					...universal.imageContainerSearch,
-					attributeFullWordWhitelist: [],
-					classBlacklist: []
+				this._imageContainerSearch = universal.imageContainerSearch;
+			}
+			if (publisher.imageContainerFilter) {
+				this._imageContainerFilter = {
+					...universal.imageContainerFilter,
+					attributeFullWordBlacklist: universal.imageContainerFilter.attributeFullWordBlacklist.concat(publisher.imageContainerFilter.attributeFullWordBlacklist || []),
+					attributeFullWordWhitelist: publisher.imageContainerFilter.attributeFullWordWhitelist || [],
+					blacklistSelectors: universal.imageContainerFilter.blacklistSelectors.concat(publisher.imageContainerFilter.blacklistSelectors || [])
+				};
+			} else {
+				this._imageContainerFilter = {
+					...universal.imageContainerFilter,
+					attributeFullWordWhitelist: []
 				};
 			}
 			this._contentSearchRootElementSelector = publisher.contentSearchRootElementSelector;
@@ -86,15 +102,15 @@ export default class Config {
 			}
 			this._imageStrategy = publisher.imageStrategy;
 		} else {
-			this._textContainerSearch = {
-				...universal.textContainerSearch,
-				attributeFullWordWhitelist: [],
-				classBlacklist: []
+			this._textContainerSearch = universal.textContainerSearch;
+			this._textContainerFilter = {
+				...universal.textContainerFilter,
+				attributeFullWordWhitelist: []
 			};
-			this._imageContainerSearch = {
-				...universal.imageContainerSearch,
-				attributeFullWordWhitelist: [],
-				classBlacklist: []
+			this._imageContainerSearch = universal.imageContainerSearch;
+			this._imageContainerFilter = {
+				...universal.imageContainerFilter,
+				attributeFullWordWhitelist: []
 			};
 			this._transpositions = [];
 		}
@@ -102,11 +118,14 @@ export default class Config {
 	public get textContainerSearch() {
 		return this._textContainerSearch;
 	}
-	public get textContainerContent() {
-		return this._textContainerContent;
+	public get textContainerFilter() {
+		return this._textContainerFilter;
 	}
 	public get imageContainerSearch() {
 		return this._imageContainerSearch;
+	}
+	public get imageContainerFilter() {
+		return this._imageContainerFilter;
 	}
 	public get imageContainerMetadata() {
 		return this._imageContainerMetadata;

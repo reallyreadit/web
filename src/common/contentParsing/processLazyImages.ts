@@ -48,7 +48,7 @@ function createObserver(elements: HTMLCollectionOf<Element> | NodeListOf<Element
 			}
 		);
 }
-export default function procesLazyImages(strategy: LazyImageStrategy) {
+export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 	switch (strategy) {
 		case LazyImageStrategy.AtlanticFigureImgDataSrcset:
 			createObserver(
@@ -123,6 +123,18 @@ export default function procesLazyImages(strategy: LazyImageStrategy) {
 					target.replaceWith(img);
 				}
 			);
+			break;
+		default:
+			// search for known strategies
+			let matches: NodeListOf<Element>;
+			matches = document.querySelectorAll('figure img[src^="https://miro.medium.com"]');
+			if (matches.length) {
+				return procesLazyImages(LazyImageStrategy.MediumScaleUp);
+			}
+			matches = document.querySelectorAll('figure [data-src], figure [data-srcset]');
+			if (matches.length) {
+				return procesLazyImages(LazyImageStrategy.FigureImgDataSrc);
+			}
 			break;
 	}
 }
