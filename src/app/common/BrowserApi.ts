@@ -3,9 +3,11 @@ import UserAccount from '../../common/models/UserAccount';
 import SemanticVersion from '../../common/SemanticVersion';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
+import Post from '../../common/models/social/Post';
 
 export default abstract class extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent,
+	'articlePosted': Post,
 	'commentPosted': CommentThread,
 	'updateAvailable': SemanticVersion,
 	'userSignedIn': UserAccount,
@@ -13,6 +15,7 @@ export default abstract class extends EventEmitter<{
 	'userUpdated': UserAccount
 }> {
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
+	public abstract articlePosted(post: Post): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract setTitle(title: string): void;
 	public abstract updateAvailable(version: SemanticVersion): void;

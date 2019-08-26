@@ -47,6 +47,7 @@ interface Props {
 	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
@@ -60,6 +61,7 @@ interface State {
 	profile: Fetchable<Profile>,
 	posts: Fetchable<PageResult<Post>>
 }
+const postsPageSize = 40;
 export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _followUser = (form: UserNameForm) => {
@@ -160,6 +162,68 @@ export class ProfileScreen extends React.Component<Props, State> {
 			profile: this.fetchProfile(),
 			posts: this.fetchPosts(1)
 		};
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterArticleChangeHandler(
+				event => {
+					if (
+						this.state.posts.value &&
+						this.state.posts.value.items.some(post => post.article.id === event.article.id)
+					) {
+						const postItems = this.state.posts.value.items.slice();
+						postItems.forEach(
+							(post, index, posts) => {
+								if (post.article.id === event.article.id) {
+									posts.splice(
+										index,
+										1,
+										{
+											...post,
+											article: event.article
+										}
+									);
+								}
+							}
+						);
+						this.setState({
+							...this.state,
+							posts: {
+								...this.state.posts,
+								value: {
+									...this.state.posts.value,
+									items: postItems
+								}
+							}
+						});
+					}
+				}
+			)
+		);
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterArticlePostedHandler(
+				post => {
+					if (this.state.posts.value) {
+						this.setState({
+							...this.state,
+							posts: {
+								...this.state.posts,
+								value: {
+									...this.state.posts.value,
+									items: [
+										post,
+										...this.state.posts.value.items.slice(
+											0,
+											this.state.posts.value.items.length < postsPageSize ?
+												this.state.posts.value.items.length :
+												postsPageSize - 1
+										)
+									]
+								}
+							}
+						});
+					}
+				}
+			)
+		);
 	}
 	private fetchProfile() {
 		return this.props.onGetProfile(
@@ -176,7 +240,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 			{
 				userName: this.props.userName,
 				pageNumber,
-				pageSize: 40
+				pageSize: postsPageSize
 			},
 			this._asyncTracker.addCallback(
 				posts => {

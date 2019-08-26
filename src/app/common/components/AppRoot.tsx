@@ -198,6 +198,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,

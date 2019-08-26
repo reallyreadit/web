@@ -3,6 +3,7 @@ import UserAccount from '../../common/models/UserAccount';
 import SemanticVersion from '../../common/SemanticVersion';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
+import Post from '../../common/models/social/Post';
 
 export default class extends BrowserApi {
 	private readonly _channel: BroadcastChannel | null;
@@ -29,6 +30,9 @@ export default class extends BrowserApi {
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
 		this.broadcastUpdate('articleUpdated', event);
+	}
+	public articlePosted(post: Post) {
+		this.broadcastUpdate('articlePosted', post);
 	}
 	public commentPosted(comment: CommentThread) {
 		this.broadcastUpdate('commentPosted', comment);

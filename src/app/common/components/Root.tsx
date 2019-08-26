@@ -39,7 +39,7 @@ import createExtensionRemovalScreenFactory from './ExtensionRemovalScreen';
 import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
-import { createCommentThread } from '../../../common/models/social/Post';
+import Post, { createCommentThread } from '../../../common/models/social/Post';
 
 export interface Props {
 	analytics: Analytics,
@@ -82,6 +82,7 @@ export interface State extends ToasterState {
 export type SharedState = Pick<State, 'user'>;
 export type SharedEvents = {
 	'articleUpdated': ArticleUpdatedEvent,
+	'articlePosted': Post,
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread
 };
@@ -230,6 +231,9 @@ export default abstract class Root<
 	protected readonly _registerArticleChangeEventHandler = (handler: (event: ArticleUpdatedEvent) => void) => {
 		return this._eventManager.addListener('articleUpdated', handler);
 	};
+	protected readonly _registerArticlePostedEventHandler = (handler: (event: Post) => void) => {
+		return this._eventManager.addListener('articlePosted', handler);
+	};
 	protected readonly _registerAuthChangedEventHandler = (handler: (user: UserAccount | null) => void) => {
 		return this._eventManager.addListener('authChanged', handler);
 	};
@@ -250,6 +254,7 @@ export default abstract class Root<
 			.postArticle(form)
 			.then(
 				post => {
+					this.onArticlePosted(post);
 					this.onArticleUpdated(
 						{
 							article: post.article,
@@ -527,6 +532,9 @@ export default abstract class Root<
 	protected abstract getSharedState(): TSharedState;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);
+	}
+	protected onArticlePosted(post: Post) {
+		this._eventManager.triggerEvent('articlePosted', post);
 	}
 	protected onCommentPosted(comment: CommentThread) {
 		this._eventManager.triggerEvent('commentPosted', comment);

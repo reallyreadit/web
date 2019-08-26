@@ -31,6 +31,7 @@ import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './screens/ProfileScreen';
+import Post from '../../../common/models/social/Post';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -268,6 +269,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
@@ -317,6 +319,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		props.browserApi
 			.addListener('articleUpdated', event => {
 				this.onArticleUpdated(event, EventSource.Remote);
+			})
+			.addListener('articlePosted', post => {
+				this.onArticlePosted(post, EventSource.Remote);
 			})
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment, EventSource.Remote);
@@ -477,6 +482,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.extensionApi.articleUpdated(event);
 		}
 		super.onArticleUpdated(event);
+	}
+	protected onArticlePosted(post: Post, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.articlePosted(post);
+		}
+		super.onArticlePosted(post);
 	}
 	protected onCommentPosted(comment: CommentThread, eventSource: EventSource = EventSource.Local) {
 		if (eventSource === EventSource.Local) {
