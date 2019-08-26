@@ -4,7 +4,6 @@ import UserArticle from '../../models/UserArticle';
 import CommentThread from '../../models/CommentThread';
 import ShareChannel from '../../sharing/ShareChannel';
 import ShareData from '../../sharing/ShareData';
-import CommentComposer from './CommentComposer';
 import CommentDetails from './CommentDetails';
 import ContentBox from '../ContentBox';
 
@@ -23,20 +22,17 @@ export default (props: {
 	const isAllowedToPost = props.article && props.user && props.article.isRead;
 	return (
 		<div className="comments-section_mqmgnd">
-			<ContentBox className="post">
-				{isAllowedToPost ?
-					<CommentComposer
-						articleId={props.article.id}
-						onPostComment={props.onPostComment}
-					/> :
+			{!isAllowedToPost ?
+				<ContentBox className="post">
 					<div className="locked">
 						<img
 							alt="Padlock"
 							src={props.imagePath + '/padlock.svg'}
 						/>
-						You must read the article before you can comment.
-					</div>}
-			</ContentBox>
+						You must read the article before you can post or reply.
+					</div>
+				</ContentBox> :
+				null}
 			{props.comments.length ?
 				<ul className="comments">
 					{props.comments.map(
@@ -60,7 +56,7 @@ export default (props: {
 						)
 					)}
 				</ul> :
-				<ContentBox className="no-comments">No comments yet</ContentBox>}
+				<ContentBox className="no-comments">No one has commented on this article yet.</ContentBox>}
 		</div>
 	);
 };
