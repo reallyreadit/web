@@ -15,23 +15,24 @@
 	box-sizing: border-box;
 }
 .toaster_2zbeib > .toasts > .toast {
-	padding: 10px;
-	border: 5px ridge gainsboro;
+	padding: 15px;
 	margin-top: 10px;
 	text-align: center;
-	font-weight: bold;
+	font-family: 'Museo Sans (500)';
+	box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
+	border-radius: 3px;
 	animation: toaster_2zbeib-pop-in 250ms;
 }
 .toaster_2zbeib > .toasts > .toast.remove {
 	animation: toaster_2zbeib-pop-out 250ms;
 }
 .toaster_2zbeib > .toasts > .toast.success {
-	color: green;
-	background-color: greenyellow;
+	color: white;
+	background-color: limegreen;
 }
 .toaster_2zbeib > .toasts > .toast.danger {
 	color: white;
-	background-color: red;
+	background-color: darkred;
 }
 .toaster_2zbeib > .toasts > .toast > p:not(:first-of-type) {
 	margin-top: 10px;
