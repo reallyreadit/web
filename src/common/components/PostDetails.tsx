@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Post from '../models/social/Post';
+import Post, { createCommentThread } from '../models/social/Post';
 import ArticleDetails from './ArticleDetails';
 import UserArticle from '../models/UserArticle';
 import ShareData from '../sharing/ShareData';
@@ -40,18 +40,7 @@ export default class PostDetails extends React.Component<Props> {
 				/>
 				{this.props.post.comment ?
 					<CommentDetails
-						comment={{
-							id: this.props.post.comment.id,
-							dateCreated: this.props.post.date,
-							text: this.props.post.comment.text,
-							articleId: this.props.post.article.id,
-							articleTitle: this.props.post.article.title,
-							articleSlug: this.props.post.article.slug,
-							userAccount: this.props.post.userName,
-							badge: this.props.post.badge,
-							children: [],
-							parentCommentId: null
-						}}
+						comment={createCommentThread(this.props.post)}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onShare={this.props.onShare}

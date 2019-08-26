@@ -27,7 +27,7 @@ const resultMessages: {
 		intent: Intent.Success
 	},
 	'success': {
-		text: 'Thanks for confirming your email address!',
+		text: 'Thanks for confirming your email address.',
 		intent: Intent.Success
 	}
 };

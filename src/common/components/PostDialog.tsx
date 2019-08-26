@@ -3,10 +3,12 @@ import Dialog from './Dialog';
 import RatingSelector from './RatingSelector';
 import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
+import { Intent } from './Toaster';
 
 interface Props {
 	articleId: number,
 	onCloseDialog?: () => void,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSubmit: (form: PostForm) => Promise<Post>
 }
 export default class PostDialog extends React.PureComponent<
@@ -25,7 +27,17 @@ export default class PostDialog extends React.PureComponent<
 		this.setState({ ratingScore });
 	};
 	private readonly _submit = () => {
-		return Promise.resolve();
+		return this.props
+			.onSubmit({
+				articleId: this.props.articleId,
+				ratingScore: this.state.ratingScore,
+				commentText: this.state.commentText
+			})
+			.then(
+				() => {
+					this.props.onShowToast('Article Posted', Intent.Success);
+				}
+			);
 	};
 	constructor(props: Props) {
 		super(props);

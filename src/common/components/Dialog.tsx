@@ -29,7 +29,12 @@ export default class Dialog extends React.PureComponent<
 			.onSubmit()
 			.then(
 				() => {
-					this.setState({ isClosing: true });
+					if (this.props.onClose) {
+						this.setState({ isClosing: true });
+						this.props.onClose();
+					} else {
+						this.setState({ isSubmitting: false });
+					}
 				}
 			)
 			.catch(

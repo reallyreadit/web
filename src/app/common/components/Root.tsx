@@ -39,6 +39,7 @@ import createExtensionRemovalScreenFactory from './ExtensionRemovalScreen';
 import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
+import { createCommentThread } from '../../../common/models/social/Post';
 
 export interface Props {
 	analytics: Analytics,
@@ -120,7 +121,7 @@ export default abstract class Root<
 						article,
 						isCompletionCommit: false
 					}
-				)
+				);
 			});
 	};
 
@@ -197,6 +198,7 @@ export default abstract class Root<
 			<PostDialog
 				articleId={article.id}
 				onCloseDialog={this._closeDialog}
+				onShowToast={this._toaster.addToast}
 				onSubmit={this._postArticle}
 			/>
 		);
@@ -248,6 +250,13 @@ export default abstract class Root<
 			.postArticle(form)
 			.then(
 				post => {
+					this.onArticleUpdated(
+						{
+							article: post.article,
+							isCompletionCommit: false
+						}
+					);
+					this.onCommentPosted(createCommentThread(post));
 					return post;
 				}
 			);

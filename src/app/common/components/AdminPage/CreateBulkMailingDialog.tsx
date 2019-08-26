@@ -28,7 +28,7 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 		this.props
 			.onSendTest(this.state.list, this.state.subject, this.state.body, this.state.testAddress)
 			.then(() => {
-				this.props.onShowToast('Test email sent!', Intent.Success);
+				this.props.onShowToast('Test email sent.', Intent.Success);
 			})
 			.catch(() => {
 				this.props.onShowToast('Failed to send test email', Intent.Danger);
@@ -42,7 +42,7 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 			{
 				title: 'Create Bulk Mailing',
 				submitButtonText: 'Send',
-				successMessage: 'Mail sent!'
+				successMessage: 'Mail sent.'
 			},
 			props
 		);
