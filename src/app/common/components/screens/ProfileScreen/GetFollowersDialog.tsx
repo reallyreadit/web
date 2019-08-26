@@ -29,6 +29,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 		return (
 			<Dialog
 				className="get-followers-dialog_woa1zs"
+				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
 				size="small"
 				title="Get Followers"

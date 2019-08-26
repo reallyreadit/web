@@ -20,7 +20,7 @@ export default class ChangePasswordDialog extends FormDialog<void, Props, Partia
 		super(
 			{
 				title: 'Change Password',
-				submitButtonText: 'Save',
+				submitButtonText: 'Save Changes',
 				successMessage: 'Password changed'
 			},
 			props

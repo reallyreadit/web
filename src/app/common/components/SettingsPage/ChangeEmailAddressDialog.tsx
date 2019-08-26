@@ -15,7 +15,7 @@ export default class ChangeEmailAddressDialog extends FormDialog<void, Props, Pa
 		super(
 			{
 				title: 'Change Email Address',
-				submitButtonText: 'Save',
+				submitButtonText: 'Save Changes',
 				successMessage: 'Email address changed'
 			},
 			props

@@ -37,7 +37,7 @@ export default class ChangeTimeZoneDialog extends FormDialog<void, Props, Partia
 		super(
 			{
 				title: 'Change Time Zone',
-				submitButtonText: 'Save',
+				submitButtonText: 'Save Changes',
 				successMessage: 'Time zone changed'
 			},
 			props

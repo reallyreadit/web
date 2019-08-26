@@ -70,6 +70,7 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 		return (
 			<Dialog
 				className="following-list-dialog_sscllo"
+				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
 				title={this.props.title}
 			>
