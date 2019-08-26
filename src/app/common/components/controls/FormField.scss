@@ -12,9 +12,9 @@
 }
 .form-field_8ey399 > strong {
 	display: inline-block;
-	height: 22px;
-	line-height: 22px;
-	margin-right: 6px;
+	height: 28px;
+	line-height: 28px;
+	margin-right: 10px;
 	vertical-align: top;
 }
 .form-field_8ey399 > .field-container {
@@ -31,6 +31,10 @@
 @media (max-width: 499px) {
 	.form-field_8ey399:not([data-label-position="horizontal"]) {
 		text-align: left;
+	}
+	.form-field_8ey399:not([data-label-position="horizontal"]) > strong {
+		height: 24px;
+		line-height: 24px;
 	}
 	.form-field_8ey399:not([data-label-position="horizontal"]) > .field-container {
 		width: 100%;

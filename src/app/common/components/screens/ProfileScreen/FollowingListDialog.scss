@@ -6,24 +6,24 @@
 .following-list-dialog_sscllo {
 	min-width: 300px;
 }
-.following-list-dialog_sscllo > .followings {
+.following-list-dialog_sscllo > .children > .followings {
 	max-height: 500px;
 	overflow-y: auto;
 }
-.following-list-dialog_sscllo > .followings > .following {
+.following-list-dialog_sscllo > .children > .followings > .following {
 	display: flex;
 	align-items: center;
 }
-.following-list-dialog_sscllo > .followings > .following + .following {
+.following-list-dialog_sscllo > .children > .followings > .following + .following {
 	margin-top: 5px;
 }
-.following-list-dialog_sscllo > .followings > .following > .user-name {
+.following-list-dialog_sscllo > .children > .followings > .following > .user-name {
 	flex: 1 1 auto;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.following-list-dialog_sscllo > .followings > .following > .button {
+.following-list-dialog_sscllo > .children > .followings > .following > .button {
 	flex: 0 0 auto;
 	width: 110px;
 	text-align: center;

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Dialog from './Dialog';
 import RatingSelector from './RatingSelector';
-import Button from './Button';
 import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
 
@@ -25,6 +24,9 @@ export default class PostDialog extends React.PureComponent<
 	private readonly _changeRatingScore = (ratingScore?: number) => {
 		this.setState({ ratingScore });
 	};
+	private readonly _submit = () => {
+		return Promise.resolve();
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -36,7 +38,9 @@ export default class PostDialog extends React.PureComponent<
 		return (
 			<Dialog
 				className="post-dialog_to9nib"
+				closeButtonText="Cancel"
 				onClose={this.props.onCloseDialog}
+				onSubmit={this._submit}
 				title="Post Article"
 			>
 				<RatingSelector
@@ -48,12 +52,6 @@ export default class PostDialog extends React.PureComponent<
 					placeholder="Optional: Share your thoughts or ask a question."
 					value={this.state.commentText}
 				/>
-				<div className="buttons">
-					<Button
-						text="Submit"
-						style="preferred"
-					/>
-				</div>
 			</Dialog>
 		);
 	}

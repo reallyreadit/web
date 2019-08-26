@@ -4,32 +4,66 @@
 */
 
 .dialog_1wfm87 {
-	margin: 0 15px;
-	padding: 15px;
+	margin: 0 10px;
 	z-index: 100;
-	background: #fff;
-	border: 3px solid black;;
-	max-width: calc(100% - 30px);
+	background: #F7F6F5;
+	max-width: calc(100% - 20px);
 	box-sizing: border-box;
+	animation: dialog_1wfm87-slide-in 250ms forwards;
+	border-radius: 5px;
+   box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
+}
+.dialog_1wfm87.closing {
+	animation: dialog_1wfm87-slide-out 250ms forwards;
 }
 .dialog_1wfm87.small {
 	max-width: 400px;
 }
 .dialog_1wfm87 > .header {
-	position: relative;
-	margin-bottom: 15px;
 	font-size: 16pt;
 	text-align: center;
 	font-family: 'Museo Sans (700)';
+	padding: 5px 10px;
+	line-height: 32px;
 }
-.dialog_1wfm87 > .header > .close {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	transform: translateY(-50%);
-	cursor: pointer;
-	font-size: 13pt;
+.dialog_1wfm87 > .children {
+	padding: 10px 15px;
+	background-color: white;
+	border-width: 1px 0 1px 0;
+	border-style: solid;
+	border-color: #e0e0e0;
 }
-.dialog_1wfm87 > p + p {
+.dialog_1wfm87 > .children > p + p {
 	margin-top: 10px;
+}
+.dialog_1wfm87 > .buttons {
+	display: flex;
+	padding: 5px 10px;
+}
+.dialog_1wfm87 > .buttons.single {
+	justify-content: center;
+}
+.dialog_1wfm87 > .buttons.double {
+	justify-content: space-between;
+}
+
+@keyframes dialog_1wfm87-slide-in {
+	from {
+		transform: translateY(20%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+@keyframes dialog_1wfm87-slide-out {
+	from {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateY(20%);
+		opacity: 0;
+	}
 }

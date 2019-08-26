@@ -292,7 +292,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 		const locationState = this.getLocationDependentState(props.initialLocation);
 		this.state = {
 			...this.state,
-			dialog: locationState.dialog,
+			dialog: (
+				locationState.dialog ?
+					{
+						element: locationState.dialog,
+						isClosing: false
+					} :
+					null
+			),
 			isExtensionInstalled: null,
 			isIosDevice: (
 				this._isDesktopDevice ?
@@ -628,7 +635,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 						userAccount={this.state.user}
 					/> :
 					null}
-				<DialogManager dialog={this.state.dialog} />
+				{this.state.dialog ?
+					<DialogManager
+						dialog={this.state.dialog.element}
+						isClosing={this.state.dialog.isClosing}
+						onRemove={this._removeDialog}
+					/> :
+					null}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

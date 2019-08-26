@@ -100,7 +100,9 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 				{this.props.type === 'multiline' ?
 					<textarea {...controlProps}></textarea> :
 					<input {...{ ...controlProps, type: this.props.type }} />}
-				<div className="error">{inErrorState ? this.props.error : null}</div>
+				{inErrorState ?
+					<div className="error">{this.props.error}</div> :
+					null}
 			</div>
 		);
 	}

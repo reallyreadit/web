@@ -1,6 +1,4 @@
 import * as React from 'react';
-import Button from '../../../../common/components/Button';
-import { IconName } from '../../../../common/components/Icon';
 import { Intent } from '../../../../common/components/Toaster';
 import Dialog from '../../../../common/components/Dialog';
 
@@ -11,12 +9,10 @@ export interface Props {
 export interface State {
 	errorMessage: string,
 	showErrors: boolean,
-	isLoading: boolean,
-	isSubmitting: boolean
+	isLoading: boolean
 }
 export default abstract class FormDialog<T, P, S extends Partial<State>> extends React.PureComponent<P & Props, S> {
 	private readonly _title: string;
-	private readonly _submitButtonIcon: IconName;
 	private readonly _submitButtonText: string;
 	private readonly _successMessage: string;
 	private readonly _submit = () => {
@@ -26,34 +22,26 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 				.getClientErrors()
 				.some(errors => Object.keys(errors).some(key => !!(errors as { [key: string]: string })[key]))
 		) {
-			this.setState(
-				{
-					errorMessage: null,
-					isSubmitting: true
-				},
-				() => this
-					.submitForm()
-					.then(result => {
-						this._close();
-						if (this._successMessage) {
-							this.props.onShowToast(this._successMessage, Intent.Success);
-						}
-						this.onSuccess(result);
-					})
-					.catch(errors => {
-						this.setState({ isSubmitting: false });
-						this.onError(errors);
-					})
-			);
+			this.setState({ errorMessage: null });
+			return this
+				.submitForm()
+				.then(result => {
+					this.props.onCloseDialog();
+					if (this._successMessage) {
+						this.props.onShowToast(this._successMessage, Intent.Success);
+					}
+					this.onSuccess(result);
+				})
+				.catch(errors => {
+					this.onError(errors);
+					return errors;
+				});
 		}
-	};
-	private readonly _close = () => {
-		this.props.onCloseDialog();
+		return Promise.reject();
 	};
 	constructor(
 		params: {
 			title: string,
-			submitButtonIcon?: IconName,
 			submitButtonText: string,
 			successMessage?: string
 		},
@@ -61,14 +49,12 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 	) {
 		super(props);
 		this._title = params.title;
-		this._submitButtonIcon = params.submitButtonIcon || 'checkmark';
 		this._submitButtonText = params.submitButtonText;
 		this._successMessage = params.successMessage;
 		this.state = {
 			errorMessage: null,
 			showErrors: false,
-			isLoading: false,
-			isSubmitting: false
+			isLoading: false
 		} as S;
 	}
 	protected abstract renderFields(): JSX.Element | JSX.Element[];
@@ -82,6 +68,10 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 		return (
 			<Dialog
 				className="form-dialog_bdppnq"
+				closeButtonText="Cancel"
+				onClose={this.props.onCloseDialog}
+				onSubmit={this._submit}
+				submitButtonText={this._submitButtonText}
 				title={this._title}
 			>
 				{this.state.errorMessage ?
@@ -92,24 +82,6 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 					</div> :
 					null}
 				{this.renderFields()}
-				<div className="buttons">
-					<Button
-						text="Cancel"
-						iconLeft="forbid"
-						onClick={this._close}
-						state={(this.state.isLoading || this.state.isSubmitting) ? 'disabled' : 'normal'} />
-					<Button
-						text={this._submitButtonText}
-						iconLeft={this._submitButtonIcon}
-						onClick={this._submit}
-						style="preferred"
-						state={
-							this.state.isLoading ? 'disabled' :
-								this.state.isSubmitting ? 'busy' :
-								'normal'
-						}
-					/>
-				</div>
 			</Dialog>
 		);
 	}

@@ -15,6 +15,7 @@
 	font-family: 'Museo Sans (500)';
 	position: relative;
 	text-decoration: none;
+	border: 1px dotted transparent;
 }
 .button_ovrlmi.inline {
 	display: inline-flex;
@@ -22,6 +23,9 @@
 .button_ovrlmi.block {
 	display: flex;
 	width: 100%;
+}
+.button_ovrlmi:focus {
+	border-color: #ccc;
 }
 .button_ovrlmi.left {
 	justify-content: flex-start;
@@ -33,29 +37,43 @@
 	justify-content: flex-end;
 }
 .button_ovrlmi.preferred {
-	border: 2px solid #2A2326;
 	font-family: 'Museo Sans (700)';
-	background-color: white;
 }
 .button_ovrlmi.loud {
 	background-color: #2A2326;
+	border-color: #2A2326;
 	color: white;
+}
+.button_ovrlmi.loud:focus {
+	border-color: #2A2326;
 }
 .button_ovrlmi.selected {
 	background-color: #999;
+	border-color: #999;
 	color: white;
+}
+.button_ovrlmi.selected:focus {
+	border-color: #999;
 }
 .button_ovrlmi.warning,
 .button_ovrlmi.preferred.warning,
 .button_ovrlmi.loud.warning {
 	background-color: darkred;
+	border-color: darkred;
 	color: white;
+}
+.button_ovrlmi.loud.warning:focus {
+	border-color: darkred;
 }
 .button_ovrlmi.success,
 .button_ovrlmi.preferred.success,
 .button_ovrlmi.loud.success {
 	background-color: limegreen;
+	border-color: limegreen;
 	color: white;
+}
+.button_ovrlmi.loud.success:focus {
+	border-color: limegreen;
 }
 .button_ovrlmi.large {
 	height: 50px;
@@ -72,7 +90,6 @@
 .button_ovrlmi.busy,
 .button_ovrlmi.disabled {
 	color: silver;
-	border-color: silver;
 }
 .button_ovrlmi.indicator::after {
 	content: "";

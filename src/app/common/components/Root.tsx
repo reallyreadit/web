@@ -71,7 +71,10 @@ export interface ScreenFactory<TSharedState> {
 	renderHeaderContent?: (screenState: Screen, sharedState: TSharedState) => React.ReactNode
 }
 export interface State extends ToasterState {
-	dialog: React.ReactNode,
+	dialog?: {
+		element: React.ReactNode,
+		isClosing: boolean
+	},
 	screens: Screen[],
 	user: UserAccount | null
 }
@@ -152,7 +155,12 @@ export default abstract class Root<
 
 	// dialogs
 	protected readonly _closeDialog = () => {
-		this._openDialog(null);
+		this.setState({
+			dialog: {
+				...this.state.dialog,
+				isClosing: true
+			}
+		});
 	};
 	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: RouteLocation) => React.ReactNode } = {
 		[DialogKey.CreateAccount]: () => (
@@ -204,7 +212,15 @@ export default abstract class Root<
 		);
 	};
 	protected readonly _openDialog = (dialog: React.ReactNode) => {
-		this.setState({ dialog });
+		this.setState({
+			dialog: {
+				element: dialog,
+				isClosing: false
+			}
+		});
+	};
+	protected readonly _removeDialog = () => {
+		this.setState({ dialog: null });
 	};
 
 	// events

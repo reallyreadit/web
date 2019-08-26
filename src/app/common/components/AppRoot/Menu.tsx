@@ -3,7 +3,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import Icon from '../../../../common/components/Icon';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import classNames from 'classnames';
-import Spinner from '../../../../common/components/Spinner';
+import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 
 interface Props {
@@ -91,7 +91,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<button onClick={this._signOut}>
 								<label>Log Out</label>
 								{this.state.isSigningOut ?
-									<Spinner /> :
+									<SpinnerIcon /> :
 									null}
 							</button>
 						</li>

@@ -6,34 +6,23 @@
 .input-control_dua9vb > input {
 	display: block;
 	width: 100%;
-	height: 22px;
-	line-height: 22px;
+	line-height: 26px;
 	box-sizing: border-box;
-	padding: 0 2px;
-	border: 1px solid #666;
+	padding: 0 5px;
+	border: 1px solid #999;
 	border-radius: 0;
 	background: #fff;
+	border-radius: 3px;
 }
 .input-control_dua9vb > input:focus {
 	outline: none;
+	border-color: black;
 }
 .input-control_dua9vb > .error {
-	position: relative;
-	line-height: 16px;
-	text-indent: 14px;
-	color: crimson;
+	color: darkred;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-.input-control_dua9vb > .error::before {
-	content: "";
-	display: block;
-	position: absolute;
-	width: 5px;
-	height: 7px;
-	border-width: 0 0 1px 1px;
-	border-style: solid;
-	border-color: #000;
-	left: 6px;
+	margin: 2px 0 5px;
+	font-size: 11pt;
 }

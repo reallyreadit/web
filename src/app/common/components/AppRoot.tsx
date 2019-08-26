@@ -239,7 +239,14 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		}
 		this.state = {
 			...this.state,
-			dialog,
+			dialog: (
+				dialog ?
+					{
+						element: dialog,
+						isClosing: false
+					} :
+					null
+			),
 			isPoppingScreen: false,
 			menuState: 'closed',
 			screens
@@ -410,7 +417,13 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 						onShowToast={this._toaster.addToast}
 						onSignIn={this._signIn}
 					/>}
-				<DialogManager dialog={this.state.dialog} />
+				{this.state.dialog ?
+					<DialogManager
+						dialog={this.state.dialog.element}
+						isClosing={this.state.dialog.isClosing}
+						onRemove={this._removeDialog}
+					/> :
+					null}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

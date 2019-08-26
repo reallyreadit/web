@@ -96,6 +96,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 	private readonly _openScoutExplainer = () => {
 		this.props.onOpenDialog(
 			<Dialog
+				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
 				size="small"
 				title="What's a scout?"
@@ -107,6 +108,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 	private readonly _openScribeExplainer = () => {
 		this.props.onOpenDialog(
 			<Dialog
+				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
 				size="small"
 				title="What's a scribe?"

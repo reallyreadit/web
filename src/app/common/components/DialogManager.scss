@@ -14,13 +14,35 @@
 	flex-flow: column;
 	align-items: center;
 	justify-content: flex-start;
-	background-color: rgba(255,255,255,0.5)
+	animation: dialog-manager_51j1qt-overlay-fade-in 250ms forwards;
 }
-.dialog-manager_51j1qt.hidden {
-	display: none;
+.dialog-manager_51j1qt.closing {
+	animation: dialog-manager_51j1qt-overlay-fade-out 250ms forwards;
 }
 .dialog-manager_51j1qt::before {
 	content: "";
-	height: 15%;
-	min-height: 15px;
+	min-height: 10px;
+	flex: 1 1 auto;
+}
+.dialog-manager_51j1qt::after {
+	content: "";
+	min-height: 10px;
+	flex: 3 1 auto;
+}
+
+@keyframes dialog-manager_51j1qt-overlay-fade-in {
+	from {
+		background-color: rgba(0, 0, 0, 0);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0.3);;
+	}
+}
+@keyframes dialog-manager_51j1qt-overlay-fade-out {
+	from {
+		background-color: rgba(0, 0, 0, 0.3);;
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0);
+	}
 }
