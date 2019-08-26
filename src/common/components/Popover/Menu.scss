@@ -10,7 +10,7 @@
 	background-color: white;
 	border: 1px solid #999;
 	border-radius: 3px;
-	box-shadow: 0px 0px 1px -1px black;
+	box-shadow: 0px 0px 3px 1px rgba(160, 160, 160, 0.5);
 	animation: menu_qla37i-pop-in 250ms;
 }
 .menu_qla37i.closing {
@@ -67,7 +67,7 @@
 	transform-origin: top left;
 }
 .menu_qla37i::before {
-	box-shadow: 0px 0px 1px -1px black;
+	box-shadow: 0px 0px 3px 1px rgba(160, 160, 160, 0.5);
 }
 .menu_qla37i.position-top::before,
 .menu_qla37i.position-right::before {
