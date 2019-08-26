@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames, { ClassValue } from 'classnames';
 import Icon, { IconName } from './Icon';
-import Spinner from './Spinner';
+import SpinnerIcon from './SpinnerIcon';
 
 export default class extends React.PureComponent<{
 	className?: ClassValue,
@@ -29,7 +29,7 @@ export default class extends React.PureComponent<{
 			),
 			content = [
 				this.props.state === 'busy' ?
-					<Spinner key="spinner" /> :
+					<SpinnerIcon key="spinner" /> :
 					this.props.iconLeft ?
 						<Icon
 							key="icon"

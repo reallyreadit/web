@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames, { ClassValue } from 'classnames';
 import Icon, { IconName } from './Icon';
-import Spinner from './Spinner';
+import SpinnerIcon from './SpinnerIcon';
 
 export type ButtonSize = 'normal' | 'large' | 'x-large';
 interface Props {
@@ -41,7 +41,7 @@ export default class Button extends React.PureComponent<Props> {
 		switch (this.props.state) {
 			case 'busy':
 				overlayChild = (
-					<Spinner />
+					<SpinnerIcon />
 				);
 				break;
 			case 'set':

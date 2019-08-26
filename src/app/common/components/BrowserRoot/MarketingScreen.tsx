@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Spinner from './Spinner';
+import Spinner from '../../../../common/components/Spinner';
 import Footer from './Footer';
 import Icon from '../../../../common/components/Icon';
 import Button from '../../../../common/components/Button';

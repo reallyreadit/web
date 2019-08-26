@@ -10,7 +10,7 @@ const LoadingOverlay: React.SFC<Props> = (props: Props) => (
 		'loading-overlay_zfgtd1',
 		{ 'absolute': props.position === 'absolute' }
 	)}>
-		Loading...<Spinner />
+		<Spinner />
 	</div>
 );
 LoadingOverlay.defaultProps = {

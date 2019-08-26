@@ -2,7 +2,7 @@ import * as React from 'react';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
-import Spinner from './Spinner';
+import Spinner from '../../../../common/components/Spinner';
 import UserAccount from '../../../../common/models/UserAccount';
 import { isIosDevice } from '../../userAgent';
 

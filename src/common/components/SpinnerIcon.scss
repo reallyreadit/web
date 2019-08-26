@@ -1,0 +1,13 @@
+/*
+	componentPath: src/common/components/SpinnerIcon
+	cssComponentId: spinner-icon_6s5uk2
+*/
+
+.spinner-icon_6s5uk2 {
+	animation: spinner-icon_6s5uk2 1000ms linear infinite;
+}
+
+@keyframes spinner-icon_6s5uk2 {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
