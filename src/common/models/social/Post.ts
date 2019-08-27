@@ -12,9 +12,9 @@ export default interface Post {
 }
 export function createCommentThread(post: Post): CommentThread {
 	return {
-		id: post.comment.id,
+		id: (post.comment && post.comment.id) || '',
 		dateCreated: post.date,
-		text: post.comment.text,
+		text: (post.comment && post.comment.text) || '',
 		articleId: post.article.id,
 		articleTitle: post.article.title,
 		articleSlug: post.article.slug,
