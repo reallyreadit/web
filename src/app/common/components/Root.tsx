@@ -71,11 +71,12 @@ export interface ScreenFactory<TSharedState> {
 	render: (screenState: Screen, sharedState: TSharedState) => React.ReactNode,
 	renderHeaderContent?: (screenState: Screen, sharedState: TSharedState) => React.ReactNode
 }
+interface Dialog {
+	element: React.ReactNode,
+	isClosing: boolean
+}
 export interface State extends ToasterState {
-	dialog?: {
-		element: React.ReactNode,
-		isClosing: boolean
-	},
+	dialog?: Dialog,
 	screens: Screen[],
 	user: UserAccount | null
 }
@@ -159,7 +160,7 @@ export default abstract class Root<
 	protected readonly _closeDialog = () => {
 		this.setState({
 			dialog: {
-				...this.state.dialog,
+				...this.state.dialog as Dialog,
 				isClosing: true
 			}
 		});
