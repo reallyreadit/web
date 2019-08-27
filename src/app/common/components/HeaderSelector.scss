@@ -23,8 +23,30 @@
 	margin-left: 10px;
 }
 
-@media (max-width: 525px) {
+@media (max-width: 870px) {
+	.header-selector_9li9z5 {
+		justify-content: center;
+	}
 	.header-selector_9li9z5 > button {
-		font-size: 20pt;
+		padding: 5px 10px;
+		font-size: 14pt;
+		border: 1px solid #999;
+		background-color: white;
+		font-family: 'Museo Sans (500)';
+	}
+	.header-selector_9li9z5 > button:first-child {
+		border-radius: 3px 0 0 3px;
+	}
+	.header-selector_9li9z5 > button:last-child {
+		border-radius: 0 3px 3px 0;
+	}
+	.header-selector_9li9z5 > button.selected {
+		font-family: 'Museo Sans (500)';
+		background-color: #666;
+		color: white;
+	}
+	.header-selector_9li9z5 > button + button {
+		margin-left: 0;
+		border-left: none;
 	}
 }

@@ -15,19 +15,18 @@ import ArticleLengthFilter from '../ArticleLengthFilter';
 import SelectList from '../../../../../common/components/SelectList';
 import ContentBox from '../../../../../common/components/ContentBox';
 import HeaderSelector from '../../HeaderSelector';
-import Icon from '../../../../../common/components/Icon';
 
 enum List {
-	AllReads = 'All Reads',
+	Trending = 'Trending',
 	Following = 'Following'
 }
-const headerSelectorLists = [List.AllReads, List.Following];
+const headerSelectorLists = [List.Trending, List.Following];
 const sortOptions: { [key: string]: CommunityReadSort } = {
-	'Trending': CommunityReadSort.Hot,
+	'Now': CommunityReadSort.Hot,
+	'All Time': CommunityReadSort.Top,
 	'Most Read': CommunityReadSort.MostRead,
 	'Most Comments': CommunityReadSort.MostComments,
-	'Top Rated': CommunityReadSort.HighestRated,
-	'Hall of Fame': CommunityReadSort.Top
+	'Top Rated': CommunityReadSort.HighestRated
 };
 const timeWindowOptions: { [key: string]: CommunityReadTimeWindow } = {
 	'Past 24 Hours': CommunityReadTimeWindow.PastDay,
@@ -108,7 +107,7 @@ export default class extends React.PureComponent<{
 					<HeaderSelector
 						items={headerSelectorLists}
 						onChange={this._changeList}
-						value={List.AllReads}
+						value={List.Trending}
 					/>
 					<div className="select-group">
 						<form
@@ -149,30 +148,14 @@ export default class extends React.PureComponent<{
 						/>
 					</div>
 				</div>
-				<ContentBox className="aotd">
-					<div className="flair">
-						<Icon name="pin" />
-						Article of the Day
-					</div>
-					<ArticleDetails
-						article={this.props.aotd}
-						isUserSignedIn={this.props.isUserSignedIn}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onPost={this.props.onPostArticle}
-						onRead={this.props.onReadArticle}
-						onShare={this.props.onShare}
-						onToggleStar={this.props.onToggleArticleStar}
-						onViewComments={this.props.onViewComments}
-					/>
-				</ContentBox>
 				{this.props.isLoadingArticles ?
 					<LoadingOverlay position="static" /> :
-					<ArticleList>
-						{this.props.articles.items.map(article =>
-							<li key={article.id}>
+					<>
+						{this.props.sort === CommunityReadSort.Hot ?
+							<ContentBox className="aotd">
+								<div className="flair">Article of the Day</div>
 								<ArticleDetails
-									article={article}
+									article={this.props.aotd}
 									isUserSignedIn={this.props.isUserSignedIn}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -182,9 +165,26 @@ export default class extends React.PureComponent<{
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 								/>
-							</li>
-						)}
-					</ArticleList>}
+							</ContentBox> :
+							null}
+						<ArticleList>
+							{this.props.articles.items.map(article =>
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										isUserSignedIn={this.props.isUserSignedIn}
+										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onPost={this.props.onPostArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+									/>
+								</li>
+							)}
+						</ArticleList>
+					</>}
 			</div>
 		);
 	}
