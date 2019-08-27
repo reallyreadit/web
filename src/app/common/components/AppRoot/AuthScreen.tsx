@@ -91,7 +91,7 @@ export default class extends React.PureComponent<Props, {
 								<div className="carousel-wrapper"></div>
 								<Button
 									onClick={this._showCreateAccountCard}
-									style="loud"
+									intent="loud"
 									text="Sign Up"
 									display="block"
 									align="center"

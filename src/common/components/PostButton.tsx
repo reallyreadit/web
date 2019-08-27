@@ -55,7 +55,6 @@ export default class PostButton extends React.PureComponent<
 				className="post-button_euo01q"
 				intent="success"
 				onClick={this._post}
-				style="loud"
 				text="Post"
 			/>
 		);

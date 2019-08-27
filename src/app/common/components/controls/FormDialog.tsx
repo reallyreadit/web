@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Intent } from '../../../../common/components/Toaster';
 import Dialog from '../../../../common/components/Dialog';
+import classNames from 'classnames';
 
 export interface Props {
 	onCloseDialog: () => void,
@@ -12,6 +13,7 @@ export interface State {
 	isLoading: boolean
 }
 export default abstract class FormDialog<T, P, S extends Partial<State>> extends React.PureComponent<P & Props, S> {
+	private readonly _className: string;
 	private readonly _title: string;
 	private readonly _submitButtonText: string;
 	private readonly _successMessage: string;
@@ -34,13 +36,14 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 				})
 				.catch(errors => {
 					this.onError(errors);
-					return errors;
+					throw new Error();
 				});
 		}
 		return Promise.reject();
 	};
 	constructor(
 		params: {
+			className?: string,
 			title: string,
 			submitButtonText: string,
 			successMessage?: string
@@ -48,6 +51,7 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 		props: P & Props
 	) {
 		super(props);
+		this._className = params.className;
 		this._title = params.title;
 		this._submitButtonText = params.submitButtonText;
 		this._successMessage = params.successMessage;
@@ -67,7 +71,7 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 	public render() {
 		return (
 			<Dialog
-				className="form-dialog_bdppnq"
+				className={classNames('form-dialog_bdppnq', this._className)}
 				closeButtonText="Cancel"
 				onClose={this.props.onCloseDialog}
 				onSubmit={this._submit}

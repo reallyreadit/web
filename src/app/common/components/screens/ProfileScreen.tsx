@@ -300,7 +300,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 									<Button
 										onClick={this._openGetFollowersDialog}
 										text="Get Followers"
-										style="loud"
+										intent="loud"
 										size="large"
 									/>
 								</> :

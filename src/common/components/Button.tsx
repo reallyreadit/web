@@ -8,17 +8,17 @@ interface Props {
 	align: 'left' | 'center' | 'right',
 	className?: ClassValue,
 	display?: 'block' | 'inline',
-	text?: string,
-	iconLeft?: IconName,
 	href?: string,
-	style?: 'normal' | 'preferred' | 'loud',
-	state?: 'normal' | 'disabled' | 'busy' | 'set' | 'selected',
-	size?: ButtonSize,
-	intent?: 'normal' | 'warning' | 'success'
-	showIndicator?: boolean,
+	iconLeft?: IconName,
+	intent?: 'normal' | 'default' | 'loud' | 'warning' | 'success',
 	onClick?: () => void,
 	onMouseEnter?: () => void,
-	onMouseLeave?: () => void
+	onMouseLeave?: () => void,
+	showIndicator?: boolean,
+	size?: ButtonSize,
+	state?: 'normal' | 'disabled' | 'busy' | 'set' | 'selected',
+	style?: 'normal' | 'preferred',
+	text?: string
 }
 export default class Button extends React.PureComponent<Props> {
 	public static defaultProps: Partial<Props> = {

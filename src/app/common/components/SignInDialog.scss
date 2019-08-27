@@ -3,11 +3,12 @@
 	cssComponentId: sign-in-dialog_rmrt01
 */
 
-.sign-in-dialog_rmrt01 > .forgot-password {
+.sign-in-dialog_rmrt01 > .children > .forgot-password {
+	margin-top: 5px;
 	text-align: center;
 }
-.sign-in-dialog_rmrt01 > .forgot-password > span {
-	color: lightgray;
+.sign-in-dialog_rmrt01 > .children > .forgot-password > span {
+	color: #999;
 	cursor: pointer;
 	text-decoration: underline;
 	font-size: small;

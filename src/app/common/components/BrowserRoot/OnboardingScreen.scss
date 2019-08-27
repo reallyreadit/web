@@ -72,25 +72,8 @@
 .onboarding-screen_ny0axb > .content > .authenticate > .buttons {
 	margin: 20px auto 0 auto;
 }
-.onboarding-screen_ny0axb > .content > .authenticate > .buttons > button {
-	font-family: 'Museo Sans (700)';
-	font-size: 16pt;
-	height: 50px;
-	border: none;
-	outline: none;
-	padding: 0 20px;
-	background-color: transparent;
-	cursor: pointer;
-}
-.onboarding-screen_ny0axb > .content > .authenticate > .buttons > button:not(.loud):hover {
-	background-color: #eaeaea;
-}
-.onboarding-screen_ny0axb > .content > .authenticate > .buttons > button:not(:last-child) {
+.onboarding-screen_ny0axb > .content > .authenticate > .buttons > .button_ovrlmi:not(:last-child) {
 	margin-right: 20px;
-}
-.onboarding-screen_ny0axb > .content > .authenticate > .buttons > .loud {
-	background-color: #2A2326;
-	color: white;
 }
 .onboarding-screen_ny0axb > .content > .unsupported > .badges {
 	display: flex;

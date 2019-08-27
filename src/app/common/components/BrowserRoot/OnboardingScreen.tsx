@@ -5,6 +5,7 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import Spinner from '../../../../common/components/Spinner';
 import UserAccount from '../../../../common/models/UserAccount';
 import { isIosDevice } from '../../userAgent';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	description: string,
@@ -91,15 +92,15 @@ export default class OnboardingScreen extends React.Component<Props> {
 									<div className="prompt authenticate">
 										<span className="text">Sign up or log in to continue</span>
 										<div className="buttons">
-											<button
-												className="loud"
+											<Button
+												intent="loud"
 												onClick={this.props.onShowCreateAccountDialog}
-											>
-												Sign Up
-											</button>
-											<button onClick={this.props.onShowSignInDialog}>
-												Log In
-											</button>
+												text="Sign Up"
+											/>
+											<Button
+												onClick={this.props.onShowSignInDialog}
+												text="Log In"
+											/>
 										</div>
 									</div>}
 						</>}

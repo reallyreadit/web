@@ -71,7 +71,7 @@ export default class extends React.PureComponent<Props, {
 				<Button
 					state={this.state.isSubmitting ? 'busy' : 'normal'}
 					onClick={this._submit}
-					style="loud"
+					intent="loud"
 					text="Login"
 					display="block"
 					align="center"

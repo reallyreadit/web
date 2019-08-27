@@ -59,7 +59,7 @@ export default class extends React.PureComponent<Props> {
 								<Button
 									text="Sign Up"
 									size="large"
-									style="loud"
+									intent="loud"
 									onClick={this.props.onShowCreateAccountDialog}
 								/>
 							</> :

@@ -18,6 +18,7 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 	constructor(props: Props & FormDialogProps) {
 		super(
 			{
+				className: 'sign-in-dialog_rmrt01',
 				title: 'Log In',
 				submitButtonText: 'Log In'
 			},
@@ -26,7 +27,7 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 	}
 	protected renderFields() {
 		return (
-			<div className="sign-in-dialog_rmrt01">
+			<>
 				<EmailAddressField
 					autoFocus
 					error={this.state.emailError}
@@ -43,7 +44,7 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 				<div className="forgot-password">
 					<span onClick={this.props.onOpenPasswordResetDialog}>Forgot your password?</span>
 				</div>
-			</div>
+			</>
 		);
 	}
 	protected getClientErrors() {

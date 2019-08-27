@@ -54,7 +54,7 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 				button = (
 					<Button
 						size="x-large"
-						style="loud"
+						intent="loud"
 						text="Get Started"
 						onClick={this.props.onOpenCreateAccountDialog}
 					/>
