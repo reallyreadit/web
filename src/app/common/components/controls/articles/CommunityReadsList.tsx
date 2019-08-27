@@ -13,7 +13,15 @@ import ShareData from '../../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../../common/models/CommunityReadTimeWindow';
 import ArticleLengthFilter from '../ArticleLengthFilter';
 import SelectList from '../../../../../common/components/SelectList';
+import ContentBox from '../../../../../common/components/ContentBox';
+import HeaderSelector from '../../HeaderSelector';
+import Icon from '../../../../../common/components/Icon';
 
+enum List {
+	AllReads = 'All Reads',
+	Following = 'Following'
+}
+const headerSelectorLists = [List.AllReads, List.Following];
 const sortOptions: { [key: string]: CommunityReadSort } = {
 	'Trending': CommunityReadSort.Hot,
 	'Most Read': CommunityReadSort.MostRead,
@@ -75,6 +83,9 @@ export default class extends React.PureComponent<{
 	sort: CommunityReadSort,
 	timeWindow?: CommunityReadTimeWindow
 }, {}> {
+	private readonly _changeList = () => {
+
+	};
 	private readonly _changeSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const sort = parseInt(e.target.value) as CommunityReadSort;
 		let timeWindow: CommunityReadTimeWindow;
@@ -93,51 +104,44 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<div className="community-reads-list_g4cy3n">
-				<h3>Article of the day</h3>
-				<ArticleDetails
-					article={this.props.aotd}
-					isUserSignedIn={this.props.isUserSignedIn}
-					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-					onPost={this.props.onPostArticle}
-					onRead={this.props.onReadArticle}
-					onShare={this.props.onShare}
-					onToggleStar={this.props.onToggleArticleStar}
-					onViewComments={this.props.onViewComments}
-				/>
 				<div className="controls">
-					<form
-						autoComplete="off"
-						className="sort"
-					>
-						<SelectList
-							onChange={this._changeSort}
-							options={
-								Object
-									.keys(sortOptions)
-									.map(key => ({
-										key,
-										value: sortOptions[key]
-									}))
-							}
-							value={this.props.sort}
-						/>
-						{this.props.timeWindow != null ?
+					<HeaderSelector
+						items={headerSelectorLists}
+						onChange={this._changeList}
+						value={List.AllReads}
+					/>
+					<div className="select-group">
+						<form
+							autoComplete="off"
+							className="sort"
+						>
 							<SelectList
-								onChange={this._changeTimeWindow}
+								onChange={this._changeSort}
 								options={
 									Object
-										.keys(timeWindowOptions)
+										.keys(sortOptions)
 										.map(key => ({
 											key,
-											value: timeWindowOptions[key]
+											value: sortOptions[key]
 										}))
 								}
-								value={this.props.timeWindow}
-							/> :
-							null}
-					</form>
-					<div className="filter-container">
+								value={this.props.sort}
+							/>
+							{this.props.timeWindow != null ?
+								<SelectList
+									onChange={this._changeTimeWindow}
+									options={
+										Object
+											.keys(timeWindowOptions)
+											.map(key => ({
+												key,
+												value: timeWindowOptions[key]
+											}))
+									}
+									value={this.props.timeWindow}
+								/> :
+								null}
+						</form>
 						<ArticleLengthFilter
 							max={this.props.maxLength}
 							min={this.props.minLength}
@@ -145,6 +149,23 @@ export default class extends React.PureComponent<{
 						/>
 					</div>
 				</div>
+				<ContentBox className="aotd">
+					<div className="flair">
+						<Icon name="pin" />
+						Article of the Day
+					</div>
+					<ArticleDetails
+						article={this.props.aotd}
+						isUserSignedIn={this.props.isUserSignedIn}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onPost={this.props.onPostArticle}
+						onRead={this.props.onReadArticle}
+						onShare={this.props.onShare}
+						onToggleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
+					/>
+				</ContentBox>
 				{this.props.isLoadingArticles ?
 					<LoadingOverlay position="static" /> :
 					<ArticleList>

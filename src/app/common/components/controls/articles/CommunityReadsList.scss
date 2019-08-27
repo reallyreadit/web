@@ -8,38 +8,72 @@
 	display: flex;
 	flex-flow: column;
 }
-.community-reads-list_g4cy3n > h3 {
-	flex: 0 0 auto;
-	padding-bottom: 10px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: 10px;
-	font-family: 'Cambria (regular)';
-	font-size: 18pt;
-	font-weight: normal;
-}
-.community-reads-list_g4cy3n > .article-details_d2vnmv {
-	flex: 0 0 auto;
-}
 .community-reads-list_g4cy3n > .controls {
 	flex: 0 0 auto;
 	display: flex;
-	align-items: center;
-	margin: 15px 0 10px 0;
+	align-items: flex-end;
+	margin: 10px 0 20px 0;
 	flex-wrap: wrap;
 	justify-content: space-between;
 }
-.community-reads-list_g4cy3n > .controls > .sort {
-	margin-top: 10px;
-	width: 300px;
+.community-reads-list_g4cy3n > .controls > .select-group {
+	display: flex;
 }
-.community-reads-list_g4cy3n > .controls > .sort > .select-list_guiajx:not(:last-child) {
+.community-reads-list_g4cy3n > .controls > .select-group > .sort {
+	margin-right: 10px;
+}
+.community-reads-list_g4cy3n > .controls > .select-group > .sort > .select-list_guiajx:not(:last-child) {
 	margin-right: 5px;
 }
-.community-reads-list_g4cy3n > .controls > .filter-container {
-	margin-top: 10px;
+
+.community-reads-list_g4cy3n > .aotd {
+	flex: 0 0 auto;
+	margin-bottom: 15px;
+	position: relative;
+	padding-top: 34px;
+}
+.community-reads-list_g4cy3n > .aotd > .flair {
+	text-align: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 24px;
+	line-height: 24px;
+	background-color: #999;
+	color: white;
+	font-family: 'Museo Sans (500)';
+	font-size: 10pt;
+	text-transform: uppercase;
+}
+.community-reads-list_g4cy3n > .aotd > .flair > .icon_rour3d {
+	position: absolute;
+	top: 4px;
+	left: 5px;
+	font-size: 13pt;
 }
 .community-reads-list_g4cy3n > .loading-overlay_zfgtd1 {
 	flex: 1 1 auto;
+}
+
+@media (max-width: 870px) {
+	.community-reads-list_g4cy3n > .controls {
+		flex-flow: column;
+	}
+	.community-reads-list_g4cy3n > .controls > .header-selector_9li9z5 {
+		width: 100%;
+		margin-bottom: 15px;
+	}
+}
+@media (max-width: 570px) {
+	.community-reads-list_g4cy3n > .controls > .select-group {
+		flex-flow: column;
+		align-items: flex-end;
+	}
+	.community-reads-list_g4cy3n > .controls > .select-group > .sort {
+		margin-right: 0;
+	}
+	.community-reads-list_g4cy3n > .controls > .select-group > .article-length-filter_2dglet {
+		margin-top: 10px;
+	}
 }

@@ -22,36 +22,16 @@
 	align-items: flex-end;
 	margin: 10px 0 20px;
 }
-.my-reads-screen_56ihtk > .controls > .list-selector {
+.my-reads-screen_56ihtk > .controls > .header-selector_9li9z5 {
 	flex: 0 0 auto;
-	display: flex;
-}
-.my-reads-screen_56ihtk > .controls > .list-selector > button {
-	background-color: transparent;
-	border: none;
-	outline: none;
-	cursor: pointer;
-	font-family: 'Museo Sans (100)';
-	font-size: 22pt;
-	margin: 0;
-	padding: 0 10px;
-}
-.my-reads-screen_56ihtk > .controls > .list-selector > button.selected {
-	font-family: 'Museo Sans (700)';
-}
-.my-reads-screen_56ihtk > .controls > .list-selector > button + button {
-	margin-left: 10px;
 }
 
 @media (max-width: 525px) {
 	.my-reads-screen_56ihtk > .controls {
 		flex-flow: column;
 	}
-	.my-reads-screen_56ihtk > .controls > .list-selector {
+	.my-reads-screen_56ihtk > .controls > .header-selector_9li9z5 {
 		width: 100%;
 		margin-bottom: 15px;
-	}
-	.my-reads-screen_56ihtk > .controls > .list-selector > button {
-		font-size: 20pt;
 	}
 }

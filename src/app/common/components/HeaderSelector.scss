@@ -1,0 +1,30 @@
+/*
+	componentPath: src/app/common/components/HeaderSelector
+	cssComponentId: header-selector_9li9z5
+*/
+
+.header-selector_9li9z5 {
+	display: flex;
+}
+.header-selector_9li9z5 > button {
+	background-color: transparent;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	font-family: 'Museo Sans (100)';
+	font-size: 22pt;
+	margin: 0;
+	padding: 0 10px;
+}
+.header-selector_9li9z5 > button.selected {
+	font-family: 'Museo Sans (700)';
+}
+.header-selector_9li9z5 > button + button {
+	margin-left: 10px;
+}
+
+@media (max-width: 525px) {
+	.header-selector_9li9z5 > button {
+		font-size: 20pt;
+	}
+}

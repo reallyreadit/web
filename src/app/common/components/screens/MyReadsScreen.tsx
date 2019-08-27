@@ -16,7 +16,7 @@ import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import InfoBox from '../controls/InfoBox';
-import classNames from 'classnames';
+import HeaderSelector from '../HeaderSelector';
 
 enum List {
 	History = 'History',
@@ -42,6 +42,7 @@ interface State {
 	maxLength: number | null,
 	minLength: number | null
 }
+const headerSelectorItems = [List.Starred, List.History];
 class MyReadsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
@@ -52,8 +53,8 @@ class MyReadsScreen extends React.Component<Props, State> {
 		});
 		this.fetchArticles(this.state.list, 1, minLength, maxLength);
 	};
-	private readonly _changeList = (event: React.MouseEvent<HTMLButtonElement>) => {
-		const list = event.currentTarget.value as List;
+	private readonly _changeList = (value: string) => {
+		const list = value as List;
 		if (list !== this.state.list) {
 			this.setState({
 				articles: { isLoading: true },
@@ -111,18 +112,6 @@ class MyReadsScreen extends React.Component<Props, State> {
 			)
 		);
 	}
-	private createListSelectorButton(list: List) {
-		return (
-			<button
-				className={classNames({'selected': this.state.list === list })}
-				disabled={this.state.articles.isLoading}
-				onClick={this._changeList}
-				value={list}
-			>
-				{list}
-			</button>
-		);
-	}
 	private fetchArticles(
 		list: List,
 		pageNumber: number,
@@ -161,10 +150,12 @@ class MyReadsScreen extends React.Component<Props, State> {
 					<LoadingOverlay position="static" /> :
 					<>
 						<div className="controls">
-							<div className="list-selector">
-								{this.createListSelectorButton(List.Starred)}
-								{this.createListSelectorButton(List.History)}
-							</div>
+							<HeaderSelector
+								disabled={this.state.articles.isLoading}
+								items={headerSelectorItems}
+								onChange={this._changeList}
+								value={this.state.list}
+							/>
 							<ArticleLengthFilter
 								max={this.state.maxLength}
 								min={this.state.minLength}
