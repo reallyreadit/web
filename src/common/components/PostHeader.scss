@@ -4,27 +4,34 @@
 */
 
 .post-header_f4a846 {
-	padding: 5px;
+	padding: 5px 10px;
 	display: flex;
 	align-items: center;
-	flex-wrap: wrap;
-	color: #999;
-	background-color: whitesmoke;
+	background-color: #999;
+	color: white;
+	font-size: 12pt;
 }
 .post-header_f4a846 > .user-name {
-	font-family: 'Museo Sans (700)';
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: 'Museo Sans (500)';
 	margin-right: 10px;
 }
 .post-header_f4a846 > .leaderboard-badges_s4o6nj {
+	flex: 0 0 auto;
 	font-size: 12pt;
 	margin-right: 10px;
 }
+.post-header_f4a846 > .age {
+	flex: 0 0 auto;
+}
 .post-header_f4a846 > .share-control_mnbspk {
+	flex: 0 0 auto;
 	margin-left: 10px;	
 }
-.post-header_f4a846 > .share-control_mnbspk > .children > .action-link_ftamt8 {
-	color: darkgray;
-}
-.post-header_f4a846 > .share-control_mnbspk > .children > .action-link_ftamt8:hover {
-	color: black;
+
+@media (max-width: 450px) {
+	.post-header_f4a846 {
+		font-size: 11pt;
+	}
 }

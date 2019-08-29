@@ -26,8 +26,15 @@ interface Props {
 	parentCommentId?: string,
 	user: UserAccount | null
 }
-export default class CommentDetails extends React.Component<Props, { showComposer: boolean }> {
+export default class CommentDetails extends React.Component<
+	Props,
+	{
+		highlight: boolean,
+		showComposer: boolean
+}> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _elementRef: React.RefObject<HTMLDivElement>;
+	private _intersectionObserver: IntersectionObserver;
 	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
 	private _showComposer = () => this.setState({ showComposer: true });
 	private _hideComposer = () => this.setState({ showComposer: false });
@@ -80,77 +87,117 @@ export default class CommentDetails extends React.Component<Props, { showCompose
 	};
 	constructor(props: Props) {
 		super(props);
-		this.state = { showComposer: false };
+		this.state = {
+			highlight: false,
+			showComposer: false
+		};
+		if (props.highlightedCommentId === props.comment.id) {
+			this._elementRef = React.createRef();
+		}
+	}
+	public componentDidMount() {
+		if (this.props.highlightedCommentId === this.props.comment.id) {
+			this._asyncTracker.addTimeout(
+				window.setTimeout(
+					() => {
+						this._intersectionObserver = new IntersectionObserver(
+							entries => {
+								const entry = entries[0];
+								if (entry && entry.isIntersecting) {
+									this.setState({ highlight: true });
+									this._intersectionObserver.unobserve(entry.target);
+								}
+							}
+						);
+						this._intersectionObserver.observe(this._elementRef.current);
+						this._elementRef.current.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start'
+						});
+					},
+					100
+				)
+			);
+		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
+		if (this._intersectionObserver) {
+			this._intersectionObserver.disconnect();
+		}
 	}
 	public render() {
 		return (
-			<ContentBox
+			<div
 				className={classNames(
 					'comment-details_qker1u',
 					{
-						highlight: this.props.comment.id === this.props.highlightedCommentId
+						'highlight': this.state.highlight,
+						'post-embed': !!this.props.onViewThread
 					}
 				)}
+				ref={this._elementRef}
 			>
-				<PostHeader
-					userName={this.props.comment.userAccount}
-					leaderboardBadge={this.props.comment.badge}
-					date={this.props.comment.dateCreated}
-					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-					onGetShareData={this._getShareData}
-					onShare={this.props.onShare}
-					onViewProfile={this.props.onViewProfile}
-				/>
-				<div
-					className="text"
-					dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}>
-				</div>
-				{this.state.showComposer ? 
-					<CommentComposer
-						articleId={this.props.comment.articleId}
-						onCancel={this._hideComposer}
-						onPostComment={this._addComment}
-						parentCommentId={this.props.comment.id}
-					/> :
-					this.props.onPostComment ?
-						<ActionLink
-							text="Reply"
-							iconLeft="backward"
-							onClick={this._showComposer}
+				<ContentBox>
+					<PostHeader
+						userName={this.props.comment.userAccount}
+						leaderboardBadge={this.props.comment.badge}
+						date={this.props.comment.dateCreated}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onGetShareData={this._getShareData}
+						onShare={this.props.onShare}
+						onViewProfile={this.props.onViewProfile}
+					/>
+					<div
+						className="text"
+						dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}
+					/>
+					{this.state.showComposer ? 
+						<CommentComposer
+							articleId={this.props.comment.articleId}
+							onCancel={this._hideComposer}
+							onPostComment={this._addComment}
+							parentCommentId={this.props.comment.id}
 						/> :
-						this.props.onViewThread ?
-							<ActionLink
-								text="View Thread"
-								iconLeft="comments"
-								onClick={this._viewThread} 
-							/> :
+						this.props.onPostComment || this.props.onViewThread ?
+							<div className="actions">
+								{this.props.onPostComment ?
+									<ActionLink
+										text="Reply"
+										onClick={this._showComposer}
+									/> :
+									this.props.onViewThread ?
+										<ActionLink
+											text="View Thread"
+											onClick={this._viewThread} 
+										/> :
+										null}
+							</div> :
 							null}
-				{this.props.comment.children.length ?
-					<ul className="replies">
-						{this.props.comment.children.map(
-							comment => (
-								<li key={comment.id}>
-									<CommentDetails
-										comment={comment}
-										highlightedCommentId={this.props.highlightedCommentId}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-										onPostComment={this.props.onPostComment}
-										onShare={this.props.onShare}
-										onViewProfile={this.props.onViewProfile}
-										onViewThread={this.props.onViewThread}
-										parentCommentId={this.props.comment.id}
-										user={this.props.user}
-									/>
-								</li>
-							)
-						)}
-					</ul> :
-					null}
-			</ContentBox>
+					{this.props.comment.children.length ?
+						<ul className="replies">
+							{this.props.comment.children.map(
+								comment => (
+									<li key={comment.id}>
+										<CommentDetails
+											comment={comment}
+											highlightedCommentId={this.props.highlightedCommentId}
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onPostComment={this.props.onPostComment}
+											onShare={this.props.onShare}
+											onViewProfile={this.props.onViewProfile}
+											onViewThread={this.props.onViewThread}
+											parentCommentId={this.props.comment.id}
+											user={this.props.user}
+										/>
+									</li>
+								)
+							)}
+						</ul> :
+						null}
+				</ContentBox>
+			</div>
 		);
 	}
 }

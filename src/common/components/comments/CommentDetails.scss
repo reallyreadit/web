@@ -3,32 +3,61 @@
 	cssComponentId: comment-details_qker1u
 */
 
-.comment-details_qker1u.highlight {
-	outline: 4px solid gold;
+.comment-details_qker1u > .content-box_kkp9lc > .post-header_f4a846 {
+	border-radius: 3px;
 }
-.comment-details_qker1u > .text {
-	padding: 5px;
+.comment-details_qker1u > .content-box_kkp9lc > .text {
+	padding: 10px 0 0 0;
 	overflow-wrap: break-word;
 }
-.comment-details_qker1u > .comment-composer_fgo1ny {
-	margin: 5px 0 10px 0;
+.comment-details_qker1u > .content-box_kkp9lc > .actions {
+	margin-top: 10px;
+	font-size: 12pt;
+	font-family: 'Museo Sans (500)';	
 }
-.comment-details_qker1u > .action-link_ftamt8 {
-	color: darkgray;
+.comment-details_qker1u > .content-box_kkp9lc > .comment-composer_fgo1ny {
+	margin-top: 10px;
 }
-.comment-details_qker1u > .action-link_ftamt8:hover {
-	color: black;
-}
-.comment-details_qker1u > .replies {
+.comment-details_qker1u > .content-box_kkp9lc > .replies {
+	margin-top: 10px;
 	padding-left: 20px;
 	border-left: 1px dotted darkgray;
 }
-.comment-details_qker1u > .replies > li {
+.comment-details_qker1u > .content-box_kkp9lc > .replies > li {
 	margin-top: 5px;
 }
+.comment-details_qker1u.highlight > .content-box_kkp9lc {
+	animation: comment-details_qker1u-highlight 2500ms;
+}
+.comment-details_qker1u.post-embed > .content-box_kkp9lc {
+	border: 1px solid #999;
+	border-radius: 3px;
+	border-top-width: 0;
+}
+.comment-details_qker1u.post-embed > .content-box_kkp9lc > .post-header_f4a846 {
+	border-radius: 3px 3px 0 0;
+}
+.comment-details_qker1u.post-embed > .content-box_kkp9lc > .text {
+	padding: 10px 10px 0 10px;
+}
+.comment-details_qker1u.post-embed > .content-box_kkp9lc > .actions {
+	margin: 10px;
+}
 
-@media (max-width: 499px) {
-	.comment-details_qker1u > .replies {
+@media (max-width: 450px) {
+	.comment-details_qker1u > .content-box_kkp9lc > .actions {
+		font-size: 11pt;
+	}
+	.comment-details_qker1u > .content-box_kkp9lc > .replies {
 		padding-left: 10px;
+	}
+}
+
+@keyframes comment-details_qker1u-highlight {
+	from {
+		background-color: #FFF599;
+	}
+	to {
+		background-color: white;
 	}
 }

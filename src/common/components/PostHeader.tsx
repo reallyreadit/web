@@ -42,7 +42,10 @@ export default (
 				onGetData={props.onGetShareData}
 				onShare={props.onShare}
 			>
-				<Icon name="share" />
+				<Icon
+					display="block"
+					name="share"
+				/>
 			</ShareControl> :
 			null}
 	</div>

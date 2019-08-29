@@ -158,13 +158,16 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
+				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
 				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
+				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile,
+				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onCloseDialog: this._closeDialog,
@@ -191,7 +194,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
-				onGetPosts: this.props.serverApi.getPosts,
+				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
 				onOpenDialog: this._openDialog,
 				onOpenMenu: this._openMenu,

@@ -50,11 +50,11 @@
 	align-items: center;
 	height: 22px;
 	margin-top: 5px;
+	font-family: 'Museo Sans (500)';
+	font-size: 12pt;
 }
 .article-details_d2vnmv > .columns > .article > .stats > .reads,
 .article-details_d2vnmv > .columns > .article > .stats > .comments {
-	font-family: 'Museo Sans (500)';
-	font-size: 12pt;
 	margin-right: 10px;
 }
 .article-details_d2vnmv > .columns > .article > .stats > .rating {
@@ -139,11 +139,11 @@
 		display: flex;
 		align-items: center;
 		margin-top: 2px;
+		font-family: 'Museo Sans (500)';
+		font-size: 11pt;
 	}
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .reads,
 	.article-details_d2vnmv > .columns > .small-stats-article > .stats > .comments {
-		font-family: 'Museo Sans (500)';
-		font-size: 11pt;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;

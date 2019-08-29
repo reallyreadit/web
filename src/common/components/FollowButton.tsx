@@ -69,7 +69,7 @@ export default class FollowButton extends React.PureComponent<Props, State> {
 				size={this.props.size}
 				intent={
 					this.props.following.isFollowed ?
-						this.state.isHovering ?
+						this.state.isHovering && !this.state.isBusy ?
 							'warning' :
 							'default' :
 						'loud'

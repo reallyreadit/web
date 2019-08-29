@@ -5,7 +5,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import UserNameQuery from '../../../../common/models/social/UserNameQuery';
 import Profile from '../../../../common/models/social/Profile';
-import PostsQuery from '../../../../common/models/social/PostsQuery';
+import UserPostsQuery from '../../../../common/models/social/UserPostsQuery';
 import PageResult from '../../../../common/models/PageResult';
 import Post from '../../../../common/models/social/Post';
 import Fetchable from '../../../../common/Fetchable';
@@ -41,7 +41,7 @@ interface Props {
 	onFollowUser: (form: UserNameForm) => Promise<void>,
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
-	onGetPosts: FetchFunctionWithParams<PostsQuery, PageResult<Post>>,
+	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
 	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,

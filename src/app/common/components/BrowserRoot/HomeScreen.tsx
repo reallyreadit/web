@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
-import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
+import CommunityReadsList, { updateCommunityReads, View } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -20,6 +20,10 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
+import CommentThread from '../../../../common/models/CommentThread';
+import Post from '../../../../common/models/social/Post';
+import PageResult from '../../../../common/models/PageResult';
+import FolloweesPostsQuery from '../../../../common/models/social/FolloweesPostsQuery';
 
 const
 	pageSize = 40,
@@ -41,6 +45,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
+	onGetFolloweesPosts: FetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
@@ -52,82 +57,32 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewPrivacyPolicy: () => void,
+	onViewProfile: (userName: string) => void,
+	onViewThread: (comment: CommentThread) => void,
 	user: UserAccount | null
 }
 interface State {
 	communityReads?: Fetchable<CommunityReads>,
-	isLoadingArticles: boolean,
+	isLoading: boolean,
 	maxLength?: number,
 	minLength?: number,
+	posts?: Fetchable<PageResult<Post>>,
 	sort?: CommunityReadSort,
-	timeWindow?: CommunityReadTimeWindow
+	timeWindow?: CommunityReadTimeWindow,
+	view?: View
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeLengthRange = (minLength?: number, maxLength?: number) => {
-		this.setState({
-			isLoadingArticles: true,
-			maxLength,
-			minLength
-		});
-		this.props.onGetCommunityReads(
-			{
-				pageNumber: 1,
-				pageSize,
-				sort: this.state.sort,
-				timeWindow: this.state.timeWindow,
-				minLength,
-				maxLength
-			},
-			this._asyncTracker.addCallback(communityReads => {
-				this.setState({
-					communityReads,
-					isLoadingArticles: false
-				});
-			})
-		);
-	};
 	private readonly _changePage = (pageNumber: number) => {
-		this.setState({ isLoadingArticles: true });
-		this.props.onGetCommunityReads(
-			{
-				pageNumber: pageNumber,
-				pageSize,
-				sort: this.state.sort,
-				timeWindow: this.state.timeWindow,
-				minLength: this.state.minLength,
-				maxLength: this.state.maxLength
-			},
-			this._asyncTracker.addCallback(communityReads => {
-				this.setState({
-					communityReads,
-					isLoadingArticles: false
-				});
-			})
-		);
+		this.setState({ isLoading: true });
+		this.fetchItems(this.state.view, this.state.sort, this.state.timeWindow, this.state.minLength, this.state.maxLength, pageNumber);
 	};
-	private readonly _changeSort = (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => {
+	private readonly _changeParams = (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => {
 		this.setState({
-			isLoadingArticles: true,
-			sort,
-			timeWindow
+			isLoading: true,
+			view, sort, timeWindow, minLength, maxLength
 		});
-		this.props.onGetCommunityReads(
-			{
-				pageNumber: 1,
-				pageSize,
-				sort,
-				timeWindow,
-				minLength: this.state.minLength,
-				maxLength: this.state.maxLength
-			},
-			this._asyncTracker.addCallback(communityReads => {
-				this.setState({
-					communityReads,
-					isLoadingArticles: false
-				});
-			})
-		);
+		this.fetchItems(view, sort, timeWindow, minLength, maxLength, 1);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -139,12 +94,13 @@ class HomeScreen extends React.Component<Props, State> {
 						this.setState({ communityReads });
 					})
 				),
-				isLoadingArticles: false,
-				sort: CommunityReadSort.Hot
+				isLoading: false,
+				sort: CommunityReadSort.Hot,
+				view: View.Trending
 			};
 		} else {
 			this.state = {
-				isLoadingArticles: false
+				isLoading: false
 			};
 		}
 		this._asyncTracker.addCancellationDelegate(
@@ -160,8 +116,9 @@ class HomeScreen extends React.Component<Props, State> {
 								this.setState({ communityReads });
 							})
 						),
-						isLoadingArticles: false,
-						sort: CommunityReadSort.Hot
+						isLoading: false,
+						sort: CommunityReadSort.Hot,
+						view: View.Trending
 					});
 					this.props.onSetScreenState(() => ({
 						templateSection: null
@@ -169,11 +126,12 @@ class HomeScreen extends React.Component<Props, State> {
 				} else {
 					this.setState({
 						communityReads: null,
-						isLoadingArticles: false,
+						isLoading: false,
 						sort: null,
 						timeWindow: null,
 						minLength: null,
-						maxLength: null
+						maxLength: null,
+						view: null
 					});
 					this.props.onSetScreenState(() => ({
 						templateSection: TemplateSection.Header
@@ -181,6 +139,47 @@ class HomeScreen extends React.Component<Props, State> {
 				}
 			})
 		);
+	}
+	private fetchItems(view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null, pageNumber: number) {
+		switch (view) {
+			case View.Trending:
+				this.props.onGetCommunityReads(
+					{
+						pageNumber,
+						pageSize,
+						sort,
+						timeWindow,
+						minLength,
+						maxLength
+					},
+					this._asyncTracker.addCallback(
+						communityReads => {
+							this.setState({
+								communityReads,
+								isLoading: false
+							});
+						}
+					)
+				);
+				break;
+			case View.Following:
+				this.props.onGetFolloweesPosts(
+					{
+						pageNumber,
+						minLength,
+						maxLength
+					},
+					this._asyncTracker.addCallback(
+						posts => {
+							this.setState({
+								isLoading: false,
+								posts
+							});
+						}
+					)
+				);
+				break;
+		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -195,7 +194,10 @@ class HomeScreen extends React.Component<Props, State> {
 							onInstallExtension={this.props.onInstallExtension}
 						/> :
 						null}
-					{this.state.communityReads.isLoading ?
+					{(
+						this.state.communityReads.isLoading ||
+						(this.state.posts && this.state.posts.isLoading)
+					) ?
 						<LoadingOverlay position="static" /> :
 						<>
 							{(
@@ -208,26 +210,36 @@ class HomeScreen extends React.Component<Props, State> {
 							<CommunityReadsList
 								aotd={this.state.communityReads.value.aotd}
 								articles={this.state.communityReads.value.articles}
-								isLoadingArticles={this.state.isLoadingArticles}
-								isUserSignedIn={!!this.props.user}
+								isLoading={this.state.isLoading}
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onLengthRangeChange={this._changeLengthRange}
+								onParamsChanged={this._changeParams}
 								onPostArticle={this.props.onPostArticle}
 								onReadArticle={this.props.onReadArticle}
 								onShare={this.props.onShare}
-								onSortChange={this._changeSort}
 								onToggleArticleStar={this.props.onToggleArticleStar}
 								onViewComments={this.props.onViewComments}
+								onViewProfile={this.props.onViewProfile}
+								onViewThread={this.props.onViewThread}
+								posts={this.state.posts && this.state.posts.value}
 								sort={this.state.sort}
 								timeWindow={this.state.timeWindow}
+								user={this.props.user}
+								view={this.state.view}
 							/>
-							{!this.state.isLoadingArticles ?
+							{!this.state.isLoading ?
 								<PageSelector
-									pageNumber={this.state.communityReads.value.articles.pageNumber}
-									pageCount={this.state.communityReads.value.articles.pageCount}
+									pageNumber={
+										this.state.view === View.Trending ?
+											this.state.communityReads.value.articles.pageNumber :
+											this.state.posts.value.pageNumber}
+									pageCount={
+										this.state.view === View.Trending ?
+											this.state.communityReads.value.articles.pageCount :
+											this.state.posts.value.pageCount
+									}
 									onChange={this._changePage}
 								/> :
 								null}

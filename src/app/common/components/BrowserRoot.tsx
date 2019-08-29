@@ -225,6 +225,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
+				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
 				onInstallExtension: this._installExtension,
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onPostArticle: this._openPostDialog,
@@ -235,7 +236,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
-				onViewPrivacyPolicy: this._viewPrivacyPolicy
+				onViewPrivacyPolicy: this._viewPrivacyPolicy,
+				onViewProfile: this._viewProfile,
+				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onCloseDialog: this._closeDialog,
@@ -263,7 +266,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
-				onGetPosts: this.props.serverApi.getPosts,
+				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
 				onOpenDialog: this._openDialog,
 				onPostArticle: this._openPostDialog,

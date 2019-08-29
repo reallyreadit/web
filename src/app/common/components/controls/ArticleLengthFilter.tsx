@@ -8,7 +8,7 @@ const
 interface Props {
 	max?: number,
 	min?: number,
-	onChange: (min: number, max: number) => void
+	onChange: (min: number | null, max: number | null) => void
 }
 export default class ArticleLengthFilter extends React.PureComponent<
 	Props,

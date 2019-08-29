@@ -15,12 +15,16 @@ import ArticleLengthFilter from '../ArticleLengthFilter';
 import SelectList from '../../../../../common/components/SelectList';
 import ContentBox from '../../../../../common/components/ContentBox';
 import HeaderSelector from '../../HeaderSelector';
+import Post from '../../../../../common/models/social/Post';
+import PostDetails from '../../../../../common/components/PostDetails';
+import UserAccount from '../../../../../common/models/UserAccount';
+import CommentThread from '../../../../../common/models/CommentThread';
 
-enum List {
+export enum View {
 	Trending = 'Trending',
 	Following = 'Following'
 }
-const headerSelectorLists = [List.Trending, List.Following];
+const headerSelectorLists = [View.Trending, View.Following];
 const sortOptions: { [key: string]: CommunityReadSort } = {
 	'Now': CommunityReadSort.Hot,
 	'All Time': CommunityReadSort.Top,
@@ -36,7 +40,8 @@ const timeWindowOptions: { [key: string]: CommunityReadTimeWindow } = {
 	'Of All Time': CommunityReadTimeWindow.AllTime
 };
 interface State {
-	communityReads: Fetchable<CommunityReads>
+	communityReads: Fetchable<CommunityReads>,
+	posts?: Fetchable<PageResult<Post>>
 }
 export function updateCommunityReads(this: React.Component<{}, State>, updatedArticle: UserArticle, isCompletionCommit: boolean) {
 	if (
@@ -44,6 +49,11 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 		(
 			[this.state.communityReads.value.aotd]
 				.concat(this.state.communityReads.value.articles.items)
+				.concat(
+					this.state.posts && this.state.posts.value ?
+						this.state.posts.value.items.map(post => post.article) :
+						[]
+				)
 				.some(article => article.id === updatedArticle.id) ||
 			(!this.state.communityReads.value.userReadCount && isCompletionCommit)
 		)
@@ -57,6 +67,13 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 					articles.splice(articles.indexOf(article), 1, updatedArticle);
 				}
 			});
+			if (prevState.posts && prevState.posts.value) {
+				prevState.posts.value.items.forEach((post, index, posts) => {
+					if (post.article.id === updatedArticle.id) {
+						post.article = updatedArticle;
+					}
+				});
+			}
 			if (!prevState.communityReads.value.userReadCount && isCompletionCommit) {
 				prevState.communityReads.value.userReadCount = 1;
 			}
@@ -64,26 +81,32 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 	}
 }
 export default class extends React.PureComponent<{
-	aotd: UserArticle,
-	articles: PageResult<UserArticle>,
-	isLoadingArticles: boolean,
-	isUserSignedIn: boolean,
+	aotd?: UserArticle,
+	articles?: PageResult<UserArticle>,
+	isLoading: boolean,
+	maxLength: number | null,
+	minLength: number | null,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onLengthRangeChange: (min: number, max: number) => void,
+	onParamsChanged: (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
-	onSortChange: (sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	maxLength: number | null,
-	minLength: number | null,
+	onViewProfile: (userName: string) => void,
+	onViewThread: (comment: CommentThread) => void,
+	posts?: PageResult<Post>,
 	sort: CommunityReadSort,
-	timeWindow?: CommunityReadTimeWindow
-}, {}> {
-	private readonly _changeList = () => {
-
+	timeWindow?: CommunityReadTimeWindow,
+	user: UserAccount,
+	view: View
+}> {
+	private readonly _changeLengthRange = (min: number | null, max: number | null) => {
+		this.props.onParamsChanged(this.props.view, this.props.sort, this.props.timeWindow, min, max);
+	};
+	private readonly _changeList = (value: string) => {
+		this.props.onParamsChanged(value as View, CommunityReadSort.Hot, null, null, null);
 	};
 	private readonly _changeSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const sort = parseInt(e.target.value) as CommunityReadSort;
@@ -95,10 +118,10 @@ export default class extends React.PureComponent<{
 				this.props.timeWindow :
 				CommunityReadTimeWindow.PastDay;
 		}
-		this.props.onSortChange(sort, timeWindow);
+		this.props.onParamsChanged(this.props.view, sort, timeWindow, this.props.minLength, this.props.maxLength);
 	};
 	private readonly _changeTimeWindow = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		this.props.onSortChange(this.props.sort, parseInt(e.target.value));
+		this.props.onParamsChanged(this.props.view, this.props.sort, parseInt(e.target.value), this.props.minLength, this.props.maxLength);
 	};
 	public render() {
 		return (
@@ -107,83 +130,109 @@ export default class extends React.PureComponent<{
 					<HeaderSelector
 						items={headerSelectorLists}
 						onChange={this._changeList}
-						value={List.Trending}
+						value={this.props.view}
 					/>
 					<div className="select-group">
-						<form
-							autoComplete="off"
-							className="sort"
-						>
-							<SelectList
-								onChange={this._changeSort}
-								options={
-									Object
-										.keys(sortOptions)
-										.map(key => ({
-											key,
-											value: sortOptions[key]
-										}))
-								}
-								value={this.props.sort}
-							/>
-							{this.props.timeWindow != null ?
+						{this.props.view === View.Trending ?
+							<form
+								autoComplete="off"
+								className="sort"
+							>
 								<SelectList
-									onChange={this._changeTimeWindow}
+									onChange={this._changeSort}
 									options={
 										Object
-											.keys(timeWindowOptions)
+											.keys(sortOptions)
 											.map(key => ({
 												key,
-												value: timeWindowOptions[key]
+												value: sortOptions[key]
 											}))
 									}
-									value={this.props.timeWindow}
-								/> :
-								null}
-						</form>
+									value={this.props.sort}
+								/>
+								{this.props.timeWindow != null ?
+									<SelectList
+										onChange={this._changeTimeWindow}
+										options={
+											Object
+												.keys(timeWindowOptions)
+												.map(key => ({
+													key,
+													value: timeWindowOptions[key]
+												}))
+										}
+										value={this.props.timeWindow}
+									/> :
+									null}
+							</form> :
+							null}
 						<ArticleLengthFilter
 							max={this.props.maxLength}
 							min={this.props.minLength}
-							onChange={this.props.onLengthRangeChange}
+							onChange={this._changeLengthRange}
 						/>
 					</div>
 				</div>
-				{this.props.isLoadingArticles ?
+				{this.props.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
-						{this.props.sort === CommunityReadSort.Hot ?
-							<ContentBox className="aotd">
-								<div className="flair">Article of the Day</div>
-								<ArticleDetails
-									article={this.props.aotd}
-									isUserSignedIn={this.props.isUserSignedIn}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onPost={this.props.onPostArticle}
-									onRead={this.props.onReadArticle}
-									onShare={this.props.onShare}
-									onToggleStar={this.props.onToggleArticleStar}
-									onViewComments={this.props.onViewComments}
-								/>
-							</ContentBox> :
-							null}
-						<ArticleList>
-							{this.props.articles.items.map(article =>
-								<li key={article.id}>
-									<ArticleDetails
-										article={article}
-										isUserSignedIn={this.props.isUserSignedIn}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-										onPost={this.props.onPostArticle}
-										onRead={this.props.onReadArticle}
-										onShare={this.props.onShare}
-										onToggleStar={this.props.onToggleArticleStar}
-										onViewComments={this.props.onViewComments}
-									/>
-								</li>
-							)}
-						</ArticleList>
+						{this.props.view === View.Trending ?
+							<>
+								{this.props.sort === CommunityReadSort.Hot ?
+									<ContentBox className="aotd">
+										<div className="flair">Article of the Day</div>
+										<ArticleDetails
+											article={this.props.aotd}
+											isUserSignedIn
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onPost={this.props.onPostArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+										/>
+									</ContentBox> :
+									null}
+								<ArticleList>
+									{this.props.articles.items.map(article =>
+										<li key={article.id}>
+											<ArticleDetails
+												article={article}
+												isUserSignedIn
+												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onPost={this.props.onPostArticle}
+												onRead={this.props.onReadArticle}
+												onShare={this.props.onShare}
+												onToggleStar={this.props.onToggleArticleStar}
+												onViewComments={this.props.onViewComments}
+											/>
+										</li>
+									)}
+								</ArticleList>
+							</> :
+							<ArticleList>
+								{this.props.posts.items.map(
+									post => (
+										<li key={post.date}>
+											<PostDetails
+												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onRead={this.props.onReadArticle}
+												onPost={this.props.onPostArticle}
+												onShare={this.props.onShare}
+												onToggleStar={this.props.onToggleArticleStar}
+												onViewComments={this.props.onViewComments}
+												onViewProfile={this.props.onViewProfile}
+												onViewThread={this.props.onViewThread}
+												post={post}
+												user={this.props.user}
+											/>
+										</li>
+									)
+								)}
+							</ArticleList>}
 					</>}
 			</div>
 		);
