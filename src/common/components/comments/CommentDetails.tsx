@@ -29,7 +29,7 @@ interface Props {
 export default class CommentDetails extends React.Component<
 	Props,
 	{
-		highlight: boolean,
+		fadeHighlight: boolean,
 		showComposer: boolean
 }> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -88,7 +88,7 @@ export default class CommentDetails extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			highlight: false,
+			fadeHighlight: false,
 			showComposer: false
 		};
 		if (props.highlightedCommentId === props.comment.id) {
@@ -104,7 +104,7 @@ export default class CommentDetails extends React.Component<
 							entries => {
 								const entry = entries[0];
 								if (entry && entry.isIntersecting) {
-									this.setState({ highlight: true });
+									this.setState({ fadeHighlight: true });
 									this._intersectionObserver.unobserve(entry.target);
 								}
 							}
@@ -132,7 +132,8 @@ export default class CommentDetails extends React.Component<
 				className={classNames(
 					'comment-details_qker1u',
 					{
-						'highlight': this.state.highlight,
+						'fade-highlight': this.state.fadeHighlight,
+						'highlight': this.props.highlightedCommentId === this.props.comment.id,
 						'post-embed': !!this.props.onViewThread
 					}
 				)}

@@ -27,7 +27,11 @@
 	margin-top: 5px;
 }
 .comment-details_qker1u.highlight > .content-box_kkp9lc {
-	animation: comment-details_qker1u-highlight 2500ms;
+	background-color: #FFF599;
+}
+.comment-details_qker1u.fade-highlight > .content-box_kkp9lc {
+	animation: comment-details_qker1u-fade-highlight 2500ms forwards;
+	animation-delay: 500ms;
 }
 .comment-details_qker1u.post-embed > .content-box_kkp9lc {
 	border: 1px solid #999;
@@ -53,7 +57,7 @@
 	}
 }
 
-@keyframes comment-details_qker1u-highlight {
+@keyframes comment-details_qker1u-fade-highlight {
 	from {
 		background-color: #FFF599;
 	}
