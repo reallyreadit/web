@@ -3,10 +3,11 @@ import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
-import Rating from '../../common/models/Rating';
 import CommentThread from '../../common/models/CommentThread';
 import PostCommentForm from '../../common/models/PostCommentForm';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import PostForm from '../../common/models/social/PostForm';
+import Post from '../../common/models/social/Post';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'eventPage', type, data }, responseCallback);
@@ -64,9 +65,6 @@ export default class EventPageApi {
 			}
 		});
 	}
-	public rateArticle(articleId: number, score: number) {
-		return sendMessageAwaitingResponse<{ article: UserArticle, rating: Rating }>('rateArticle', { articleId, score });
-	}
 	public registerContentScript(location: Location) {
 		return sendMessageAwaitingResponse<ContentScriptInitData>('registerContentScript', location.toString());
 	}
@@ -87,6 +85,9 @@ export default class EventPageApi {
 	}
 	public getComments(slug: string) {
 		return sendMessageAwaitingResponse<CommentThread[]>('getComments', slug);
+	}
+	public postArticle(form: PostForm) {
+		return sendMessageAwaitingResponse<Post>('postArticle', form);
 	}
 	public postComment(form: PostCommentForm) {
 		return sendMessageAwaitingResponse<{ article: UserArticle, comment: CommentThread }>('postComment', form);

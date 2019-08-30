@@ -1,0 +1,77 @@
+/*
+	componentPath: src/common/components/DialogManager
+	cssComponentId: dialog-manager_b1yvhp
+*/
+
+.dialog-manager_b1yvhp {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+.dialog-manager_b1yvhp.light {
+	animation: dialog-manager_b1yvhp-overlay-fade-in-light 250ms forwards;
+}
+.dialog-manager_b1yvhp.dark {
+	animation: dialog-manager_b1yvhp-overlay-fade-in-dark 250ms forwards;
+}
+.dialog-manager_b1yvhp.light.closing {
+	animation: dialog-manager_b1yvhp-overlay-fade-out-light 250ms forwards;
+}
+.dialog-manager_b1yvhp.dark.closing {
+	animation: dialog-manager_b1yvhp-overlay-fade-out-dark 250ms forwards;
+}
+.dialog-manager_b1yvhp::before {
+	content: "";
+	min-height: 10px;
+	flex: 1 1 auto;
+}
+.dialog-manager_b1yvhp.top::before {
+	content: "";
+	min-height: 20px;
+	flex: 0 1 auto;
+}
+.dialog-manager_b1yvhp::after {
+	content: "";
+	min-height: 10px;
+	flex: 3 1 auto;
+}
+
+@keyframes dialog-manager_b1yvhp-overlay-fade-in-light {
+	from {
+		background-color: rgba(0, 0, 0, 0);
+	}
+	to {
+		background-color: rgba(255, 255, 255, 0.3);
+	}
+}
+@keyframes dialog-manager_b1yvhp-overlay-fade-out-light {
+	from {
+		background-color: rgba(255, 255, 255, 0.3);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0);
+	}
+}
+@keyframes dialog-manager_b1yvhp-overlay-fade-in-dark {
+	from {
+		background-color: rgba(0, 0, 0, 0);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+}
+@keyframes dialog-manager_b1yvhp-overlay-fade-out-dark {
+	from {
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0);
+	}
+}

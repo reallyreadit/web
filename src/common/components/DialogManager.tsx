@@ -4,11 +4,17 @@ import classNames from 'classnames';
 interface Props {
 	dialog: React.ReactNode,
 	isClosing: boolean,
-	onRemove: () => void
+	onRemove: () => void,
+	style?: 'light' | 'dark',
+	verticalAlignment?: 'auto' | 'top'
 }
 export default class DialogManager extends React.PureComponent<Props> {
+	public static defaultProps: Partial<Props> = {
+		style: 'dark',
+		verticalAlignment: 'auto'
+	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
-		if (event.animationName === 'dialog-manager_51j1qt-overlay-fade-out') {
+		if (event.animationName && event.animationName.startsWith('dialog-manager_b1yvhp-overlay-fade-out')) {
 			this.props.onRemove();
 		}
 	};
@@ -17,7 +23,9 @@ export default class DialogManager extends React.PureComponent<Props> {
 			<div
 				className={
 					classNames(
-						'dialog-manager_51j1qt',
+						'dialog-manager_b1yvhp',
+						this.props.style,
+						this.props.verticalAlignment,
 						{
 							closing: this.props.isClosing
 						}

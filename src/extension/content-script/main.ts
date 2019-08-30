@@ -8,7 +8,6 @@ import createPageParseResult from '../../common/reading/createPageParseResult';
 import UserArticle from '../../common/models/UserArticle';
 import { calculateEstimatedReadTime } from '../../common/calculate';
 import IframeMessagingContext from './embed/IframeMessagingContext';
-import { Props as EmbedProps } from './embed/components/App';
 import insertBookmarkPrompt from './insertBookmarkPrompt';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import ParseResult from '../../common/contentParsing/ParseResult';
@@ -82,19 +81,16 @@ const eventPageApi = new EventPageApi({
 			context.lookupResult.userArticle = event.article;
 		}
 		if (embed) {
-			const state: EmbedState = { article: event.article };
-			if (!hasLoadedComments && event.article.ratingScore != null) {
-				loadComments(event.article.slug);
-				state.comments = { isLoading: true };
-			}
 			embed.sendMessage({
 				type: 'pushState',
-				data: state
+				data: {
+					article: event.article
+				}
 			});
 		}
 	},
 	onCommentPosted: comment => {
-		if (embed && hasLoadedComments) {
+		if (embed) {
 			embed.sendMessage({
 				type: 'commentPosted',
 				data: comment
@@ -171,10 +167,8 @@ const eventPageApi = new EventPageApi({
 });
 
 // embed
-type EmbedState = Pick<EmbedProps, Exclude<keyof EmbedProps, 'onPostComment' | 'onSelectRating'>>
 let iframe: HTMLIFrameElement;
 let embed: IframeMessagingContext;
-let hasLoadedComments = false;
 function insertEmbed(article: UserArticle) {
 	// create iframe
 	iframe = window.document.createElement('iframe');
@@ -182,21 +176,33 @@ function insertEmbed(article: UserArticle) {
 	iframe.src = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/embed/index.html#` + encodeURIComponent(window.location.protocol + '//' + window.location.host);
 	iframe.style.width = '100%';
 	iframe.style.minWidth = '320px';
-	iframe.style.height = '0';
+	iframe.style.maxHeight = '150vh';
 	iframe.style.border = 'none';
-	iframe.style.margin = '50px 0';
+	iframe.style.padding = '50px 0';
+	iframe.style.boxSizing = 'border-box';
 	iframe.addEventListener('load', () => {
-		const state: EmbedState = {
-			article,
-			user: context.lookupResult.user
-		};
-		if (article.ratingScore != null) {
-			loadComments(article.slug);
-			state.comments = { isLoading: true };
-		}
+		eventPageApi
+			.getComments(article.slug)
+			.then(
+				comments => {
+					embed.sendMessage({
+						type: 'pushState',
+						data: {
+							comments: {
+								isLoading: false,
+								value: comments
+							}
+						}
+					});
+				}
+			);
 		embed.sendMessage({
 			type: 'pushState',
-			data: state
+			data: {
+				article,
+				comments: { isLoading: true },
+				user: context.lookupResult.user
+			}
 		});
 	});
 	context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
@@ -210,6 +216,16 @@ function insertEmbed(article: UserArticle) {
 	);
 	embed.addListener((message, sendResponse) => {
 		switch (message.type) {
+			case 'postArticle':
+				eventPageApi
+					.postArticle(message.data)
+					.then(
+						result => {
+							context.lookupResult.userArticle = result.article;
+							sendResponse(result);
+						}
+					);
+				break;
 			case 'postComment':
 				eventPageApi
 					.postComment(message.data)
@@ -218,45 +234,12 @@ function insertEmbed(article: UserArticle) {
 						sendResponse(result);
 					});
 				break;
-			case 'rateArticle':
-				eventPageApi
-					.rateArticle(context.lookupResult.userArticle.id, message.data)
-					.then(result => {
-						if (!hasLoadedComments) {
-							loadComments(article.slug);
-							embed.sendMessage({
-								type: 'pushState',
-								data: {
-									comments: { isLoading: true }
-								}
-							});
-						}
-						context.lookupResult.userArticle = result.article;
-						sendResponse(result);
-					});
-				break;
 			case 'setHeight':
-				// add 160px to account for CommentComposer expanding textarea and additional overflow
-				iframe.style.height = (message.data + 160) + 'px';
+				// add extra height to account for CommentComposer expanding textarea, post dialog and additional overflow
+				iframe.style.height = (message.data + 225) + 'px';
 				break;
 		}
 	});
-}
-function loadComments(slug: string) {
-	eventPageApi
-		.getComments(slug)
-		.then(comments => {
-			embed.sendMessage({
-				type: 'pushState',
-				data: {
-					comments: {
-						isLoading: false,
-						value: comments
-					}
-				}
-			});
-		});
-	hasLoadedComments = true;
 }
 function removeEmbed() {
 	if (iframe) {
@@ -267,7 +250,6 @@ function removeEmbed() {
 		embed.destruct();
 		embed = null;
 	}
-	hasLoadedComments = false;
 }
 
 function shouldShowEmbed(article: UserArticle) {

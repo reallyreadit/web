@@ -5,7 +5,7 @@ import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
-import DialogManager from './DialogManager';
+import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
@@ -170,9 +170,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onCloseDialog: this._closeDialog,
+				onCloseDialog: this._dialog.closeDialog,
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onOpenDialog: this._openDialog,
+				onOpenDialog: this._dialog.openDialog,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
@@ -188,7 +188,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
-				onCloseDialog: this._closeDialog,
+				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onFollowUser: this._followUser,
@@ -196,7 +196,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
-				onOpenDialog: this._openDialog,
+				onOpenDialog: this._dialog.openDialog,
 				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
@@ -425,7 +425,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 					<DialogManager
 						dialog={this.state.dialog.element}
 						isClosing={this.state.dialog.isClosing}
-						onRemove={this._removeDialog}
+						onRemove={this._dialog.removeDialog}
 					/> :
 					null}
 				<Toaster

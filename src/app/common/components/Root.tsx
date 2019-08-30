@@ -40,6 +40,7 @@ import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
+import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 
 export interface Props {
 	analytics: Analytics,
@@ -71,15 +72,14 @@ export interface ScreenFactory<TSharedState> {
 	render: (screenState: Screen, sharedState: TSharedState) => React.ReactNode,
 	renderHeaderContent?: (screenState: Screen, sharedState: TSharedState) => React.ReactNode
 }
-interface Dialog {
-	element: React.ReactNode,
-	isClosing: boolean
-}
-export interface State extends ToasterState {
-	dialog?: Dialog,
-	screens: Screen[],
-	user: UserAccount | null
-}
+export type State = (
+	{
+		screens: Screen[],
+		user: UserAccount | null
+	} &
+	ToasterState &
+	DialogState
+);
 export type SharedState = Pick<State, 'user'>;
 export type SharedEvents = {
 	'articleUpdated': ArticleUpdatedEvent,
@@ -157,20 +157,17 @@ export default abstract class Root<
 	};
 
 	// dialogs
-	protected readonly _closeDialog = () => {
-		this.setState({
-			dialog: {
-				...this.state.dialog as Dialog,
-				isClosing: true
-			}
-		});
-	};
+	protected readonly _dialog = new DialogService({
+		setState: delegate => {
+			this.setState(delegate);
+		}
+	});
 	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: RouteLocation) => React.ReactNode } = {
 		[DialogKey.CreateAccount]: () => (
 			<CreateAccountDialog
 				captcha={this.props.captcha}
 				onCreateAccount={this._createAccount}
-				onCloseDialog={this._closeDialog}
+				onCloseDialog={this._dialog.closeDialog}
 				onShowToast={this._toaster.addToast}
 			/>
 		),
@@ -179,7 +176,7 @@ export default abstract class Root<
 			return (
 				<ResetPasswordDialog
 					email={kvps['email']}
-					onCloseDialog={this._closeDialog}
+					onCloseDialog={this._dialog.closeDialog}
 					onResetPassword={this._resetPassword}
 					onShowToast={this._toaster.addToast}
 					token={kvps['token']}
@@ -188,7 +185,7 @@ export default abstract class Root<
 		},
 		[DialogKey.SignIn]: () => (
 			<SignInDialog
-				onCloseDialog={this._closeDialog}
+				onCloseDialog={this._dialog.closeDialog}
 				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
 				onShowToast={this._toaster.addToast}
 				onSignIn={this._signIn}
@@ -196,35 +193,24 @@ export default abstract class Root<
 		)
 	};
 	protected readonly _openPostDialog = (article: UserArticle) => {
-		this._openDialog(
+		this._dialog.openDialog(
 			<PostDialog
 				articleId={article.id}
-				onCloseDialog={this._closeDialog}
+				onCloseDialog={this._dialog.closeDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this._postArticle}
 			/>
 		);
 	};
 	protected readonly _openRequestPasswordResetDialog = () => {
-		this._openDialog(
+		this._dialog.openDialog(
 			<RequestPasswordResetDialog
 				captcha={this.props.captcha}
-				onCloseDialog={this._closeDialog}
+				onCloseDialog={this._dialog.closeDialog}
 				onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
 				onShowToast={this._toaster.addToast}
 			/>
 		);
-	};
-	protected readonly _openDialog = (dialog: React.ReactNode) => {
-		this.setState({
-			dialog: {
-				element: dialog,
-				isClosing: false
-			}
-		});
-	};
-	protected readonly _removeDialog = () => {
-		this.setState({ dialog: null });
 	};
 
 	// events
@@ -423,13 +409,13 @@ export default abstract class Root<
 		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
-				onCloseDialog: this._closeDialog,
+				onCloseDialog: this._dialog.closeDialog,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetKeyMetrics: this.props.serverApi.getKeyMetrics,
 				onGetUserAccountCreations: this.props.serverApi.getUserAccountCreations,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
-				onOpenDialog: this._openDialog,
+				onOpenDialog: this._dialog.openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
 				onShowToast: this._toaster.addToast
@@ -445,13 +431,13 @@ export default abstract class Root<
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
 			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
-				onCloseDialog: this._closeDialog,
+				onCloseDialog: this._dialog.closeDialog,
 				onChangeEmailAddress: this._changeEmailAddress,
 				onChangePassword: this._changePassword,
 				onChangeTimeZone: this._changeTimeZone,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
 				onGetUserCount: this.props.serverApi.getUserCount,
-				onOpenDialog: this._openDialog,
+				onOpenDialog: this._dialog.openDialog,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
 				onShowToast: this._toaster.addToast,
 				onUpdateContactPreferences: this._updateContactPreferences,

@@ -3,17 +3,17 @@ import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
-import Rating from '../../common/models/Rating';
 import CommentThread from '../../common/models/CommentThread';
 import PostCommentForm from '../../common/models/PostCommentForm';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import PostForm from '../../common/models/social/PostForm';
+import Post from '../../common/models/social/Post';
 
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
 }
 export default class ContentScriptApi {
 	constructor(handlers: {
-		onRateArticle: (tabId: number, articleId: number, score: number) => Promise<{ article: UserArticle, rating: Rating }>,
 		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
@@ -21,17 +21,13 @@ export default class ContentScriptApi {
 		onUnregisterContentScript: (tabId: number) => void,
 		onLoadContentParser: (tabId: number) => void,
 		onGetComments: (slug: string) => Promise<CommentThread[]>,
+		onPostArticle: (form: PostForm) => Promise<Post>,
 		onPostComment: (form: PostCommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage') {
 				switch (message.type) {
-					case 'rateArticle':
-						handlers
-							.onRateArticle(sender.tab.id, message.data.articleId, message.data.score)
-							.then(sendResponse);
-						return true;
 					case 'registerContentScript':
 						handlers
 							.onRegisterContentScript(sender.tab.id, message.data)
@@ -59,6 +55,11 @@ export default class ContentScriptApi {
 					case 'getComments':
 						handlers
 							.onGetComments(message.data)
+							.then(sendResponse);
+						return true;
+					case 'postArticle':
+						handlers
+							.onPostArticle(message.data)
 							.then(sendResponse);
 						return true;
 					case 'postComment':

@@ -1,28 +1,37 @@
 import * as React from 'react';
-import Footer from '../../../../common/components/reader/Footer';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ClipboardTextInput from '../../../../common/components/ClipboardTextInput';
-import Toaster, { Toast } from '../../../../common/components/Toaster';
+import Toaster from '../../../../common/components/Toaster';
 import ClipboardService from '../../../../common/services/ClipboardService';
 import { createUrl } from '../../../../common/HttpEndpoint';
 import ToasterService, { State as ToasterState } from '../../../../common/services/ToasterService';
+import DialogService, { State as DialogState } from '../../../../common/services/DialogService';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import UserArticle from '../../../../common/models/UserArticle';
 import Logo from './Logo';
 import Fetchable from '../../../../common/Fetchable';
 import CommentThread from '../../../../common/models/CommentThread';
 import UserAccount from '../../../../common/models/UserAccount';
+import ContentBox from '../../../../common/components/ContentBox';
+import { formatTimestamp } from '../../../../common/format';
+import PostButton from '../../../../common/components/PostButton';
+import PostDialog from '../../../../common/components/PostDialog';
+import DialogManager from '../../../../common/components/DialogManager';
+import CommentsSection from '../../../../common/components/comments/CommentsSection';
+import PostForm from '../../../../common/models/social/PostForm';
+import Post from '../../../../common/models/social/Post';
 
 export interface Props {
 	article?: UserArticle
 	comments?: Fetchable<CommentThread[]>,
+	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
-	onSelectRating: (rating: number) => Promise<{}>,
 	user?: UserAccount
 }
 export default class App extends React.Component<
 	Props,
-	{ toasts: Toast[] }
+	ToasterState &
+	DialogState
 > {
 	// clipboard
 	private readonly _clipboard = new ClipboardService(
@@ -30,6 +39,23 @@ export default class App extends React.Component<
 			this._toaster.addToast(content, intent);
 		}
 	);
+
+	// dialogs
+	private readonly _dialog = new DialogService({
+		setState: delegate => {
+			this.setState(delegate);
+		}
+	})
+	protected readonly _openPostDialog = (article: UserArticle) => {
+		this._dialog.openDialog(
+			<PostDialog
+				articleId={article.id}
+				onCloseDialog={this._dialog.closeDialog}
+				onShowToast={this._toaster.addToast}
+				onSubmit={this.props.onPostArticle}
+			/>
+		);
+	};
 
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
@@ -60,17 +86,40 @@ export default class App extends React.Component<
 		return (
 			<div className="app_5ii7ja">
 				{this.props.article ?
-					<Footer
+					<>
+						<Logo />
+						<ContentBox className="post-prompt">
+							{this.props.article.datePosted ?
+								<p>You posted this article on {formatTimestamp(this.props.article.datePosted)}</p> :
+								<p>Post this article on Readup.</p>}
+							<PostButton
+								article={this.props.article}
+								onPost={this._openPostDialog}
+								popoverEnabled={false}
+							/>
+						</ContentBox>
+					</> :
+					null}
+				{this.props.article && this.props.comments && this.props.comments.value ?
+					<CommentsSection
 						article={this.props.article}
-						autoHideRatingSelectorStatusText={false}
-						comments={this.props.comments}
-						children={<Logo />}
+						comments={this.props.comments.value}
+						imagePath="./images"
+						noCommentsMessage="No comments on this article yet."
 						onCopyTextToClipboard={this._clipboard.copyText}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onPostComment={this.props.onPostComment}
-						onSelectRating={this.props.onSelectRating}
 						onShare={this._handleShareRequest}
 						user={this.props.user}
+					/> :
+					null}
+				{this.state.dialog ?
+					<DialogManager
+						dialog={this.state.dialog.element}
+						isClosing={this.state.dialog.isClosing}
+						onRemove={this._dialog.removeDialog}
+						style="light"
+						verticalAlignment="top"
 					/> :
 					null}
 				<Toaster

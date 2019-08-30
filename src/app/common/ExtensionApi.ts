@@ -2,8 +2,10 @@ import EventEmitter from './EventEmitter';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
 import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import Post from '../../common/models/social/Post';
 
 export default abstract class extends EventEmitter<{
+	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
 	'change': boolean,
 	'commentPosted': CommentThread

@@ -8,12 +8,13 @@ import Request from './Request';
 import { Cached, cache, isExpired } from './Cached';
 import SourceRule from '../../common/models/SourceRule';
 import { createUrl } from '../../common/HttpEndpoint';
-import Rating from '../../common/models/Rating';
 import { createQueryString } from '../../common/routing/queryString';
 import DesktopNotification from '../../common/models/DesktopNotification';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import CommentThread from '../../common/models/CommentThread';
 import PostCommentForm from '../../common/models/PostCommentForm';
+import PostForm from '../../common/models/social/PostForm';
+import Post from '../../common/models/social/Post';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -246,6 +247,17 @@ export default class ServerApi {
 			data: { slug }
 		});
 	}
+	public postArticle(form: PostForm) {
+		return fetchJson<Post>({
+				method: 'POST',
+				path: '/Social/Post',
+				data: form
+			})
+			.then(post => {
+				this.cacheArticle(post.article);
+				return post;
+			});
+	}
 	public postComment(form: PostCommentForm) {
 		return fetchJson<{
 				article: UserArticle,
@@ -298,20 +310,6 @@ export default class ServerApi {
 			this.cacheArticle(userArticle);
 			return userArticle;
 		});
-	}
-	public rateArticle(articleId: number, score: number) {
-		return fetchJson<{
-				article: UserArticle,
-				rating: Rating
-			}>({
-				method: 'POST',
-				path: '/Articles/Rate',
-				data: { articleId, score }
-			})
-			.then(result => {
-				this.cacheArticle(result.article);
-				return result;
-			});
 	}
 	public logExtensionInstallation(platformInfo: Pick<chrome.runtime.PlatformInfo, 'arch' | 'os'>) {
 		return fetchJson<{ installationId: string }>({

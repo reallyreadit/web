@@ -26,6 +26,7 @@ const render: React.SFC<Props> = (props: Props) => (
 				article={props.article}
 				comments={props.comments.value}
 				imagePath="./images"
+				noCommentsMessage="Be the first to post a comment on this article."
 				onCopyTextToClipboard={props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 				onPostComment={props.onPostComment}

@@ -6,12 +6,16 @@ import { formatTimestamp } from '../format';
 
 interface Props {
 	article: UserArticle,
-	onPost: (article: UserArticle) => void
+	onPost: (article: UserArticle) => void,
+	popoverEnabled?: boolean
 }
 export default class PostButton extends React.PureComponent<
 	Props,
 	{ menuState: MenuState }
 > {
+	public static defaultProps: Partial<Props> = {
+		popoverEnabled: true
+	};
 	private readonly _beginClosingMenu = () => {
 		this.setState({ menuState: MenuState.Closing });
 	};
@@ -30,25 +34,36 @@ export default class PostButton extends React.PureComponent<
 	}
 	public render() {
 		if (this.props.article.datePosted) {
-			return (
-				<Popover
-					className="post-button_euo01q"
-					menuChildren={
-						<span className="text">Posted on {formatTimestamp(this.props.article.datePosted)}</span>
-					}
-					menuPosition={MenuPosition.LeftMiddle}
-					menuState={this.state.menuState}
-					onBeginClosing={this._beginClosingMenu}
-					onClose={this._closeMenu}
-					onOpen={this._openMenu}
-				>
+			if (this.props.popoverEnabled) {
+				return (
+					<Popover
+						className="post-button_euo01q"
+						menuChildren={
+							<span className="text">Posted on {formatTimestamp(this.props.article.datePosted)}</span>
+						}
+						menuPosition={MenuPosition.LeftMiddle}
+						menuState={this.state.menuState}
+						onBeginClosing={this._beginClosingMenu}
+						onClose={this._closeMenu}
+						onOpen={this._openMenu}
+					>
+						<Button
+							intent="success"
+							state="set"
+							text="Post"
+						/>
+					</Popover>
+				);
+			} else {
+				return (
 					<Button
+						className="post-button_euo01q"
 						intent="success"
 						state="set"
 						text="Post"
 					/>
-				</Popover>
-			);
+				);
+			}
 		}
 		return (
 			<Button

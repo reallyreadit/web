@@ -12,6 +12,7 @@ export default (props: {
 	comments: CommentThread[],
 	highlightedCommentId?: string | null,
 	imagePath: string,
+	noCommentsMessage: string,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
@@ -56,7 +57,7 @@ export default (props: {
 						)
 					)}
 				</ul> :
-				<ContentBox className="no-comments">No one has commented on this article yet.</ContentBox>}
+				<ContentBox className="no-comments">{props.noCommentsMessage}</ContentBox>}
 		</div>
 	);
 };

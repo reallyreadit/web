@@ -27,6 +27,9 @@ export default class extends ExtensionApi {
                             this.emitEvent('change', true);
                         }
                         break;
+                    case 'articlePosted':
+                        this.emitEvent('articlePosted', message.data);
+                        break;
                     case 'articleUpdated':
                         this.emitEvent('articleUpdated', message.data);
                         break;

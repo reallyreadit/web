@@ -9,6 +9,7 @@ import BrowserActionState from '../common/BrowserActionState';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
+import { createCommentThread } from '../../common/models/social/Post';
 
 console.log('loading main.ts...');
 
@@ -75,15 +76,6 @@ const browserActionApi = new BrowserActionApi({
 
 // content script
 const contentScriptApi = new ContentScriptApi({
-	onRateArticle: (tabId, articleId, score) => serverApi
-		.rateArticle(articleId, score)
-		.then(result => {
-			webAppApi.articleUpdated({
-				article: result.article,
-				isCompletionCommit: false
-			});
-			return result;
-		}),
 	onRegisterContentScript: (tabId, url) => {
 		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
 		// update tabs
@@ -169,6 +161,23 @@ const contentScriptApi = new ContentScriptApi({
 		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
 	},
 	onGetComments: serverApi.getComments,
+	onPostArticle: form => {
+		return serverApi
+			.postArticle(form)
+			.then(
+				post => {
+					webAppApi.articlePosted(post);
+					webAppApi.articleUpdated({
+						article: post.article,
+						isCompletionCommit: false
+					});
+					if (post.comment) {
+						webAppApi.commentPosted(createCommentThread(post));
+					}
+					return post;
+				}
+			);
+	},
 	onPostComment: form => {
 		return serverApi
 			.postComment(form)

@@ -2,10 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App, { Props } from './components/App';
 import IframeMessagingContext from './IframeMessagingContext';
-import Rating from '../../../common/models/Rating';
 import CommentThread from '../../../common/models/CommentThread';
 import { mergeComment } from '../../../common/comments';
 import UserArticle from '../../../common/models/UserArticle';
+import PostForm from '../../../common/models/social/PostForm';
+import Post, { createCommentThread } from '../../../common/models/social/Post';
 
 const contentScript = new IframeMessagingContext(
 	window.parent,
@@ -60,6 +61,45 @@ function setIframeHeight() {
 	});
 }
 
+function postArticle(form: PostForm) {
+	return new Promise<Post>(
+		resolve => {
+			contentScript.sendMessage(
+				{
+					type: 'postArticle',
+					data: form
+				},
+				(post: Post) => {
+					if (post.comment) {
+						render(
+							props = {
+								...props,
+								article: post.article,
+								comments: {
+									...props.comments,
+									value: mergeComment(
+										createCommentThread(post),
+										props.comments.value
+									)
+								}
+							},
+							setIframeHeight
+						);
+					} else {
+						render(
+							props = {
+								...props,
+								article: post.article
+							}
+						);
+					}
+					resolve(post);
+				}
+			);
+		}
+	);
+}
+
 function postComment(text: string, articleId: number, parentCommentId?: string) {
 	return new Promise<void>(resolve => {
 		contentScript.sendMessage(
@@ -85,31 +125,11 @@ function postComment(text: string, articleId: number, parentCommentId?: string) 
 	});
 }
 
-function rateArticle(rating: number) {
-	return new Promise(resolve => {
-		contentScript.sendMessage(
-			{
-				type: 'rateArticle',
-				data: rating
-			},
-			(result: { article: UserArticle, rating: Rating }) => {
-				render(
-					props = {
-						...props,
-						article: result.article
-					}
-				);
-				resolve();
-			}
-		);
-	});
-}
-
 const root = document.getElementById('root');
 
 let props: Props = {
-	onPostComment: postComment,
-	onSelectRating: rateArticle
+	onPostArticle: postArticle,
+	onPostComment: postComment
 };
 
 function render(props: Props, callback?: () => void) {

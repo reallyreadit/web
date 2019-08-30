@@ -5,7 +5,7 @@ import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
 import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
-import DialogManager from './DialogManager';
+import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
 import Menu from './BrowserRoot/Menu';
@@ -73,13 +73,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
-		this._openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
+		this._dialog.openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
 			path: window.location.pathname,
 			queryString: window.location.search
 		}));
 	};
 	private readonly _openSignInDialog = () => {
-		this._openDialog(this._dialogCreatorMap[DialogKey.SignIn]({
+		this._dialog.openDialog(this._dialogCreatorMap[DialogKey.SignIn]({
 			path: window.location.pathname,
 			queryString: window.location.search
 		}));
@@ -241,9 +241,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onCloseDialog: this._closeDialog,
+				onCloseDialog: this._dialog.closeDialog,
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onOpenDialog: this._openDialog,
+				onOpenDialog: this._dialog.openDialog,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onViewProfile: this._viewProfile
 			}),
@@ -260,7 +260,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
-				onCloseDialog: this._closeDialog,
+				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onFollowUser: this._followUser,
@@ -268,7 +268,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
-				onOpenDialog: this._openDialog,
+				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -346,6 +346,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 		// ExtensionApi
 		props.extensionApi
+			.addListener('articlePosted', post => {
+				this.onArticlePosted(post, EventSource.Remote);
+			})
 			.addListener('articleUpdated', event => {
 				this.onArticleUpdated(event, EventSource.Remote);
 			})
@@ -545,11 +548,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
 		if (!this.state.user || !this.props.extensionApi.isInstalled) {
 			ev.preventDefault();
-			this._openDialog(
+			this._dialog.openDialog(
 				<ReadReadinessDialog
 					articleUrl={article.url}
 					error={!this.state.user ? ReadReadinessError.SignedOut : this.props.extensionApi.isBrowserCompatible ? ReadReadinessError.ExtensionNotInstalled : ReadReadinessError.IncompatibleBrowser}
-					onCloseDialog={this._closeDialog}
+					onCloseDialog={this._dialog.closeDialog}
 					onInstallExtension={this._installExtension}
 					onShowCreateAccountDialog={this._openCreateAccountDialog}
 					onShowSignInDialog={this._openSignInDialog}
@@ -653,7 +656,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					<DialogManager
 						dialog={this.state.dialog.element}
 						isClosing={this.state.dialog.isClosing}
-						onRemove={this._removeDialog}
+						onRemove={this._dialog.removeDialog}
 					/> :
 					null}
 				<Toaster

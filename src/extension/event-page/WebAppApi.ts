@@ -1,6 +1,7 @@
 import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import NewReplyNotification from '../../common/models/NewReplyNotification';
+import Post from '../../common/models/social/Post';
 
 function stringifyForLiteral(obj: {}) {
 	return JSON
@@ -44,6 +45,9 @@ export default class WebAppApi {
 			}
 			return false;
 		});
+	}
+	public articlePosted(post: Post) {
+		sendMessage('articlePosted', post);
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
 		sendMessage('articleUpdated', event);
