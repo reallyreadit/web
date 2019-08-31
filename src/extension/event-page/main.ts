@@ -60,6 +60,41 @@ const browserActionApi = new BrowserActionApi({
 	},
 	onLoad: () => getState(),
 	onAckNewReply: () => serverApi.ackNewReply(),
+	onPostArticle: form => {
+		return serverApi
+			.postArticle(form)
+			.then(
+				post => {
+					webAppApi.articlePosted(post);
+					webAppApi.articleUpdated({
+						article: post.article,
+						isCompletionCommit: false
+					});
+					if (post.comment) {
+						webAppApi.commentPosted(createCommentThread(post));
+					}
+					tabs
+						.getAll()
+						.forEach(
+							tab => {
+								if (tab.articleId === post.article.id) {
+									contentScriptApi.articleUpdated(
+										tab.id,
+										{
+											article: post.article,
+											isCompletionCommit: false
+										}
+									);
+									if (post.comment) {
+										contentScriptApi.commentPosted(tab.id, createCommentThread(post));
+									}
+								}
+							}
+						);
+					return post;
+				}
+			);
+	},
 	onSetStarred: (articleId, isStarred) => serverApi
 		.setStarred(articleId, isStarred)
 		.then(article => {

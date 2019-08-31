@@ -6,8 +6,9 @@ import routes from '../../../common/routing/routes';
 import { findRouteByKey } from '../../../common/routing/Route';
 import DialogKey from '../../../common/routing/DialogKey';
 import UserArticle from '../../../common/models/UserArticle';
-import Toaster, { Toast } from '../../../common/components/Toaster';
+import Toaster from '../../../common/components/Toaster';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
+import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import AsyncTracker from '../../../common/AsyncTracker';
 import ShareChannel from '../../../common/sharing/ShareChannel';
@@ -15,18 +16,25 @@ import ClipboardService from '../../../common/services/ClipboardService';
 import { createUrl } from '../../../common/HttpEndpoint';
 import Button from '../../../common/components/Button';
 import { createQueryString } from '../../../common/routing/queryString';
+import PostDialog from '../../../common/components/PostDialog';
+import DialogManager from '../../../common/components/DialogManager';
+import { MenuPosition } from '../../../common/components/Popover';
+import PostForm from '../../../common/models/social/PostForm';
+import Post from '../../../common/models/social/Post';
 
 export type Props = BrowserActionState & {
 	onAckNewReply: () => void,
 	onActivateReaderMode: () => void,
 	onDeactivateReaderMode: () => void,
+	onPostArticle: (form: PostForm) => Promise<Post>,
 	onToggleContentIdentificationDisplay: () => void,
 	onToggleReadStateDisplay: () => void,
 	onToggleStar: () => Promise<void>
 };
 export default class extends React.Component<
 	Props,
-	{ toasts: Toast[] }
+	ToasterState &
+	DialogState
 > {
 	private _openInNewTab = (path: string) => window.open(this._createAbsoluteUrl(path), '_blank');
 	private _showSignInDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.SignIn).createUrl());
@@ -54,6 +62,35 @@ export default class extends React.Component<
 			this._toaster.addToast(content, intent);
 		}
 	);
+
+	// dialogs
+	private _htmlHeight: number;
+	private readonly _dialog = new DialogService({
+		setState: delegate => {
+			this.setState(delegate);
+		}
+	});
+	protected readonly _removeDialog = () => {
+		this._dialog.removeDialog();
+		window.document.documentElement.style.height = this._htmlHeight + 'px';
+	};
+	protected readonly _openPostDialog = (article: UserArticle) => {
+		window.setTimeout(
+			() => {
+				this._dialog.openDialog(
+					<PostDialog
+						articleId={article.id}
+						onCloseDialog={this._dialog.closeDialog}
+						onShowToast={this._toaster.addToast}
+						onSubmit={this.props.onPostArticle}
+					/>
+				);
+			},
+			250
+		);
+		this._htmlHeight = window.document.documentElement.offsetHeight;
+		window.document.documentElement.style.height = '320px';
+	};
 
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
@@ -88,6 +125,10 @@ export default class extends React.Component<
 			['sourceSlug']: sourceSlug
 		};
 	}
+	public componentDidMount() {
+		// in order to animate properly the height attribute needs to be set initially
+		window.document.documentElement.style.height = window.document.documentElement.offsetHeight + 'px';
+	}
 	public render() {
 		return (
 			<div className="app_79z645">
@@ -120,6 +161,7 @@ export default class extends React.Component<
 								text="Sign Up"
 								onClick={this._showCreateAccountDialog}
 								style="preferred"
+								intent="loud"
 							/>
 						</div>
 					</div> :
@@ -144,10 +186,12 @@ export default class extends React.Component<
 								isUserSignedIn={true}
 								onCopyTextToClipboard={this._clipboard.copyText}
 								onCreateAbsoluteUrl={this._createAbsoluteUrl}
+								onPost={this._openPostDialog}
 								onRead={this._preventDefault}
 								onShare={this._handleShareRequest}
 								onToggleStar={this._toggleStar}
 								onViewComments={this._goToComments}
+								shareMenuPosition={MenuPosition.RightBottom}
 								useAbsoluteUrls
 							/>
 							{this.props.debug ?
@@ -170,6 +214,13 @@ export default class extends React.Component<
 								</div> :
 								null}
 						</>}
+				{this.state.dialog ?
+					<DialogManager
+						dialog={this.state.dialog.element}
+						isClosing={this.state.dialog.isClosing}
+						onRemove={this._removeDialog}
+					/> :
+					null}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

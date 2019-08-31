@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App, { Props } from './components/App';
 import EventPageApi from './EventPageApi';
+import PostForm from '../../common/models/social/PostForm';
 
 const eventPageApi = new EventPageApi({
 	onPushState: state => {
@@ -16,6 +17,7 @@ eventPageApi
 			onAckNewReply: ackNewReply,
 			onActivateReaderMode: activateReaderMode,
 			onDeactivateReaderMode: deactiveReaderMode,
+			onPostArticle: postArticle,
 			onToggleContentIdentificationDisplay: toggleContentIdentificationDisplay,
 			onToggleReadStateDisplay: toggleReadStateDisplay,
 			onToggleStar: toggleArticleStar
@@ -46,6 +48,9 @@ function deactiveReaderMode() {
 			}
 		});
 	}
+}
+function postArticle(form: PostForm) {
+	return eventPageApi.postArticle(form);
 }
 function toggleArticleStar() {
 	if (props.article) {

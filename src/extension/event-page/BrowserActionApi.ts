@@ -1,5 +1,7 @@
 import BrowserActionState from '../common/BrowserActionState';
 import UserArticle from '../../common/models/UserArticle';
+import PostForm from '../../common/models/social/PostForm';
+import Post from '../../common/models/social/Post';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'browserActionPage', type, data }, responseCallback);
@@ -10,6 +12,7 @@ export default class BrowserActionApi {
 		onDeactivateReaderMode: (tabId: number) => void,
 		onLoad: () => Promise<BrowserActionState>,
 		onAckNewReply: () => void,
+		onPostArticle: (form: PostForm) => Promise<Post>,
 		onSetStarred: (articleId: number, isStarred: boolean) => Promise<UserArticle>,
 		onToggleContentIdentificationDisplay: (tabId: number) => void,
 		onToggleReadStateDisplay: (tabId: number) => void
@@ -31,6 +34,11 @@ export default class BrowserActionApi {
 					case 'ackNewReply':
 						handlers.onAckNewReply();
 						break;
+					case 'postArticle':
+						handlers
+							.onPostArticle(message.data)
+							.then(sendResponse);
+						return true;
 					case 'setStarred':
 						handlers
 							.onSetStarred(message.data.articleId, message.data.isStarred)
