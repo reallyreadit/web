@@ -12,14 +12,12 @@ import Logo from './Logo';
 import Fetchable from '../../../../common/Fetchable';
 import CommentThread from '../../../../common/models/CommentThread';
 import UserAccount from '../../../../common/models/UserAccount';
-import ContentBox from '../../../../common/components/ContentBox';
-import { formatTimestamp } from '../../../../common/format';
-import PostButton from '../../../../common/components/PostButton';
 import PostDialog from '../../../../common/components/PostDialog';
 import DialogManager from '../../../../common/components/DialogManager';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import PostForm from '../../../../common/models/social/PostForm';
 import Post from '../../../../common/models/social/Post';
+import PostPrompt from '../../../../common/components/PostPrompt';
 
 export interface Props {
 	article?: UserArticle
@@ -88,16 +86,11 @@ export default class App extends React.Component<
 				{this.props.article ?
 					<>
 						<Logo />
-						<ContentBox className="post-prompt">
-							{this.props.article.datePosted ?
-								<p>You posted this article on {formatTimestamp(this.props.article.datePosted)}</p> :
-								<p>Post this article on Readup.</p>}
-							<PostButton
-								article={this.props.article}
-								onPost={this._openPostDialog}
-								popoverEnabled={false}
-							/>
-						</ContentBox>
+						<PostPrompt
+							article={this.props.article}
+							onPost={this._openPostDialog}
+							promptMessage="Post this article on Readup."
+						/>
 					</> :
 					null}
 				{this.props.article && this.props.comments && this.props.comments.value ?
