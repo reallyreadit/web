@@ -236,7 +236,7 @@ function insertEmbed(article: UserArticle) {
 				break;
 			case 'setHeight':
 				// add extra height to account for CommentComposer expanding textarea, post dialog and additional overflow
-				iframe.style.height = (message.data + 225) + 'px';
+				iframe.style.height = (message.data + 265) + 'px';
 				break;
 		}
 	});
@@ -343,8 +343,7 @@ function loadUserInterface() {
 			insertEmbed(context.lookupResult.userArticle);
 		} else if (
 			!context.lookupResult.userArticle.isRead &&
-			calculateEstimatedReadTime(context.lookupResult.userArticle.wordCount) >= 10 &&
-			calculateEstimatedReadTime(context.lookupResult.userPage.wordsRead) >= 5
+			context.page.getBookmarkScrollTop() > 0
 		) {
 			insertBookmarkPrompt({
 				onConfirm: () => {
