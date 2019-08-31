@@ -111,7 +111,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						busy={this.state.isStarring}
 						onClick={this._toggleStar}
 					/>
-					{!this.props.article.isRead && this.props.article.percentComplete >= 5 ?
+					{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
 						<div className="bookmark">
 							<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
 							<Icon name="bookmark" />
