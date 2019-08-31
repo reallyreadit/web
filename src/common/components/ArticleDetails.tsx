@@ -20,16 +20,18 @@ interface Props {
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onPost?: (article: UserArticle) => void,
+	onPost: (article: UserArticle) => void,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	shareMenuPosition?: MenuPosition,
 	useAbsoluteUrls?: boolean
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps: Partial<Props> = {
-		imagePath: '/images'
+		imagePath: '/images',
+		shareMenuPosition: MenuPosition.RightMiddle
 	};
 	private readonly _getShareData = () => {
 		return getShareData(
@@ -95,7 +97,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onGetData={this._getShareData}
 				onShare={this.props.onShare}
-				menuPosition={MenuPosition.RightMiddle}
+				menuPosition={this.props.shareMenuPosition}
 			>
 				<Icon
 					display="block"
