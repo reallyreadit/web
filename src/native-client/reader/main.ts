@@ -6,24 +6,22 @@ import createPageParseResult from '../../common/reading/createPageParseResult';
 import Reader from '../../common/reading/Reader';
 import * as ReactDOM from 'react-dom';
 import * as  React from 'react';
-import Footer, { Props as FooterProps } from '../../common/components/reader/Footer';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
-import Rating from '../../common/models/Rating';
 import UserArticle from '../../common/models/UserArticle';
 import ShareData from '../../common/sharing/ShareData';
-import ShareChannel from '../../common/sharing/ShareChannel';
-import { createUrl } from '../../common/HttpEndpoint';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment } from '../../common/comments';
 import BookmarkPrompt from './components/BookmarkPrompt';
 import * as smoothscroll from 'smoothscroll-polyfill';
-import { calculateEstimatedReadTime } from '../../common/calculate';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
 import procesLazyImages from '../../common/contentParsing/processLazyImages';
 import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
 import configs from '../../common/contentParsing/configuration/configs';
+import App, { Props as EmbedProps } from './components/App';
+import PostForm from '../../common/models/social/PostForm';
+import Post, { createCommentThread } from '../../common/models/social/Post';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -32,20 +30,6 @@ window.reallyreadit = {
 		reader: messagingContext.createIncomingMessageHandlers()
 	}
 };
-
-function copyTextToClipboard() {
-	// we don't need this since we're using native sharing
-}
-function createAbsoluteUrl(path: string) {
-	return createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
-}
-function share(data: ShareData) {
-	messagingContext.sendMessage({
-		type: 'share',
-		data
-	});
-	return [] as ShareChannel[];
-}
 
 let lookupResult: ArticleLookupResult;
 
@@ -140,32 +124,18 @@ function insertBookmarkPrompt() {
 
 // embed
 let
-	footerProps: Partial<FooterProps> = {
-		onCopyTextToClipboard: copyTextToClipboard,
-		onCreateAbsoluteUrl: createAbsoluteUrl,
+	embedProps: Partial<EmbedProps> = {
+		onPostArticle: postArticle,
 		onPostComment: postComment,
-		onSelectRating: rateArticle,
 		onShare: share
 	},
-	embedRootElement: HTMLDivElement,
-	hasLoadedComments = false;
+	embedRootElement: HTMLDivElement;
 function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
-	embedRootElement.id = 'reallyreadit-footer-root';
+	embedRootElement.id = 'com_readup_embed';
 	window.document.body.append(embedRootElement);
 	// initial render
-	const initialProps: Pick<FooterProps, 'article' | 'comments' | 'user'> = {
-		article: lookupResult.userArticle,
-		user: lookupResult.user
-	};
-	if (lookupResult.userArticle.ratingScore != null) {
-		loadComments();
-		initialProps.comments = { isLoading: true };
-	}
-	render(initialProps);
-}
-function loadComments() {
 	messagingContext.sendMessage(
 		{
 			type: 'getComments',
@@ -174,24 +144,58 @@ function loadComments() {
 		(comments: CommentThread[]) => {
 			render({
 				comments: {
-					...footerProps.comments,
+					...embedProps.comments,
 					value: comments
 				}
 			});
 		}
 	);
-	hasLoadedComments = true;
+	render({
+		article: lookupResult.userArticle,
+		comments: { isLoading: true },
+		user: lookupResult.user
+	});
 }
-function render(props: Partial<FooterProps>) {
+function render(props: Partial<EmbedProps>) {
 	ReactDOM.render(
 		React.createElement(
-			Footer,
-			footerProps = {
-				...footerProps,
+			App,
+			embedProps = {
+				...embedProps,
 				...props
-			} as FooterProps
+			} as EmbedProps
 		),
 		embedRootElement
+	);
+}
+
+function postArticle(form: PostForm) {
+	return new Promise<Post>(
+		resolve => {
+			messagingContext.sendMessage(
+				{
+					type: 'postArticle',
+					data: form
+				},
+				(post: Post) => {
+					if (post.comment) {
+						render({
+							article: post.article,
+							comments: {
+								...embedProps.comments,
+								value: mergeComment(
+									createCommentThread(post),
+									embedProps.comments.value
+								)
+							}
+						});
+					} else {
+						render({ article: post.article });
+					}
+					resolve(post);
+				}
+			);
+		}
 	);
 }
 
@@ -211,8 +215,8 @@ function postComment(text: string, articleId: number, parentCommentId?: string) 
 				render({
 					article: result.article,
 					comments: {
-						...footerProps.comments,
-						value: mergeComment(result.comment, footerProps.comments.value)
+						...embedProps.comments,
+						value: mergeComment(result.comment, embedProps.comments.value)
 					}
 				});
 			}
@@ -220,28 +224,10 @@ function postComment(text: string, articleId: number, parentCommentId?: string) 
 	});
 }
 
-function rateArticle(score: number) {
-	return new Promise<{}>(resolve => {
-		messagingContext.sendMessage(
-			{
-				type: 'rateArticle',
-				data: {
-					articleId: lookupResult.userArticle.id,
-					score
-				}
-			},
-			(result: { article: UserArticle, rating: Rating }) => {
-				resolve();
-				const newProps: Pick<FooterProps, 'article' | 'comments'> = {
-					article: result.article
-				};
-				if (!hasLoadedComments) {
-					loadComments();
-					newProps.comments = { isLoading: true };
-				}
-				render(newProps);
-			}
-		);
+function share(data: ShareData) {
+	messagingContext.sendMessage({
+		type: 'share',
+		data
 	});
 }
 
@@ -256,10 +242,7 @@ messagingContext.sendMessage(
 		reader.loadPage(page);
 		if (result.userArticle.isRead) {
 			insertEmbed();
-		} else if (
-			calculateEstimatedReadTime(result.userArticle.wordCount) >= 10 &&
-			calculateEstimatedReadTime(lookupResult.userPage.wordsRead) >= 5
-		) {
+		} else if (page.getBookmarkScrollTop() > 0) {
 			insertBookmarkPrompt();
 		}
 	}

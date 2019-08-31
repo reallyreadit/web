@@ -41,7 +41,7 @@ export default class Page {
 		}
 		return false;
 	}
-	public scrollWindowToResumeReading() {
+	public getBookmarkScrollTop() {
 		const readState = this.getReadState();
 		const lastReadLine = this._contentEls
 			.reduce(
@@ -58,18 +58,31 @@ export default class Page {
 				[] as Line[]
 			)
 			.reverse()
-			.find(line => line.readState.wordsRead > 0);
+			.find(
+				line => line.readState.wordsRead > 0
+			);
 		if (lastReadLine) {
+			return Math.max(
+				0,
+				(
+					this._contentEls
+						.find(
+							paragraph => paragraph.lines.includes(lastReadLine)
+						)
+						.offsetTop +
+					lastReadLine.top -
+					window.innerHeight
+				)
+			);
+		}
+		return 0;
+	}
+	public scrollWindowToResumeReading() {
+		const bookmarkScrollTop = this.getBookmarkScrollTop();
+		if (bookmarkScrollTop > 0) {
 			window.scrollTo({
 				behavior: 'smooth',
-				top: Math.max(
-					0,
-					(
-						this._contentEls.find(paragraph => paragraph.lines.includes(lastReadLine)).offsetTop +
-						lastReadLine.top -
-						(window.innerHeight * 0.25)
-					)
-				)
+				top: bookmarkScrollTop
 			});
 		}
 	}

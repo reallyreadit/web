@@ -34,13 +34,13 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 		if (isImageContainer) {
 			const image = images.find(image => image.containerElement === element);
 			if (image) {
-				image.containerElement.classList.add('rrit-image-container');
+				image.containerElement.classList.add('com_readup_article_image_container');
 				if (
 					image.credit &&
 					(!image.caption || image.credit !== image.caption)
 				) {
 					const credit = document.createElement('div');
-					credit.classList.add('rrit-image-credit');
+					credit.classList.add('com_readup_article_image_credit');
 					credit.textContent = image.credit;
 					if (image.caption) {
 						credit.textContent = credit.textContent.replace(image.caption, '');
@@ -50,7 +50,7 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 				}
 				if (image.caption) {
 					const caption = document.createElement('div');
-					caption.classList.add('rrit-image-caption');
+					caption.classList.add('com_readup_article_image_caption');
 					caption.textContent = image.caption;
 					if (image.credit && image.caption !== image.credit) {
 						caption.textContent = caption.textContent.replace(image.credit, '');
@@ -164,4 +164,15 @@ export default function pruneDocument(parseResult: ParseResult) {
 			document.body.replaceChild(contentRoot, document.body.children[0]);
 		}
 	}
+	// move the content into a new root element for css targeting
+	const contentRoot = document.createElement('div');
+	contentRoot.id = 'com_readup_article_content';
+	contentRoot.append(
+		...Array
+			.from(document.body.children)
+			.filter(
+				child => !child.id.startsWith('com_readup_')
+			)
+	);
+	document.body.prepend(contentRoot);
 }

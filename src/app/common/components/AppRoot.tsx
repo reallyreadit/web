@@ -258,6 +258,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 
 		// AppApi
 		props.appApi
+			.addListener('articlePosted', post => {
+				this.onArticlePosted(post);
+			})
 			.addListener('articleUpdated', event => {
 				this.onArticleUpdated(event);
 			})

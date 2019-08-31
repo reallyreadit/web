@@ -1,5 +1,5 @@
 const styleContent = `
-#rrit-article {
+#com_readup_article {
 	font-family: serif;
 	font-size: 16pt;
 	line-height: 1.35em;
@@ -8,29 +8,32 @@ const styleContent = `
 	padding: 5vh 10px 350px 10px;
 	max-width: 600px;
 }
-#rrit-article * {
+#com_readup_article #com_readup_article_content {
+	padding-top: env(safe-area-inset-top);
+}
+#com_readup_article #com_readup_article_content * {
 	max-width: 100%;
 }
-#rrit-article #rrit-title {
+#com_readup_article #com_readup_article_content #com_readup_article_title {
 	font-family: sans-serif;
 	font-size: 20pt;
 }
-#rrit-article #rrit-byline {
+#com_readup_article #com_readup_article_content #com_readup_article_byline {
 	font-size: 18pt;
 	font-style: italic;
 	font-weight: normal;
 }
-#rrit-article .rrit-image-container:not(img) {
+#com_readup_article #com_readup_article_content .com_readup_article_image_container:not(img) {
 	margin: 1em;
 }
-#rrit-article .rrit-image-caption {
+#com_readup_article #com_readup_article_content .com_readup_article_image_caption {
 	text-align: center;
 	color: #999;
 	font-size: 14pt;
 	margin: 1em;
 	line-height: normal;
 }
-#rrit-article .rrit-image-credit {
+#com_readup_article #com_readup_article_content .com_readup_article_image_credit {
 	text-align: center;
 	color: #999;
 	font-size: 12pt;
@@ -38,16 +41,19 @@ const styleContent = `
 	margin: 1em;
 	line-height: normal;
 }
-#rrit-article h1,
-#rrit-article h2,
-#rrit-article h3,
-#rrit-article h4,
-#rrit-article h5,
-#rrit-article h6,
-#rrit-article p {
+#com_readup_article #com_readup_article_content h1,
+#com_readup_article #com_readup_article_content h2,
+#com_readup_article #com_readup_article_content h3,
+#com_readup_article #com_readup_article_content h4,
+#com_readup_article #com_readup_article_content h5,
+#com_readup_article #com_readup_article_content h6 {
+	margin: 1em 0;
+	line-height: normal;
+}
+#com_readup_article #com_readup_article_content p {
 	margin: 1em 0;
 }
-#rrit-article blockquote {
+#com_readup_article #com_readup_article_content blockquote {
 	margin: 1em 0;
 	border-left: 0.3em solid #ddd;
 	padding: 0 1em;
@@ -55,8 +61,8 @@ const styleContent = `
 	overflow: hidden;
 	border-radius: 0.5em;
 }
-#rrit-article code,
-#rrit-article pre {
+#com_readup_article #com_readup_article_content code,
+#com_readup_article #com_readup_article_content pre {
 	margin: 1em 0;
 	border: 1px solid #ddd;
 	padding: 1em;
@@ -65,19 +71,19 @@ const styleContent = `
 	font-family: monospace;
 	font-size: 11pt;
 }
-#rrit-article p code,
-#rrit-article p pre,
-#rrit-article li code,
-#rrit-article li pre {
+#com_readup_article #com_readup_article_content p code,
+#com_readup_article #com_readup_article_content p pre,
+#com_readup_article #com_readup_article_content li code,
+#com_readup_article #com_readup_article_content li pre {
 	margin: 0;
 	border: none;
 	padding: 0 0.2em;
 }
-#rrit-article mark {
+#com_readup_article #com_readup_article_content mark {
 	background-color: inherit;
 	color: inherit;
 }
-#rrit-article img {
+#com_readup_article #com_readup_article_content img {
 	display: block;
 	height: auto !important;
 	margin: 0 auto;
@@ -89,7 +95,7 @@ export default (document: Document, title: string | null, byline: string | null)
 	if (!document.querySelectorAll('meta[name="viewport"]').length) {
 		const metaElement = document.createElement('meta');
 		metaElement.setAttribute('name', 'viewport');
-		metaElement.setAttribute('content', 'width=device-width,initial-scale=1,user-scalable=no');
+		metaElement.setAttribute('content', 'width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover');
 		document.head.appendChild(metaElement);
 		window.setTimeout(() => {
 			window.scrollTo(0, 0);
@@ -133,23 +139,24 @@ export default (document: Document, title: string | null, byline: string | null)
 			a.removeAttribute('href');
 		});
 	// add custom classes
-	document.body.id = 'rrit-article';
+	document.body.id = 'com_readup_article';
 	// add styles
 	const styleElement = document.createElement('style');
 	styleElement.type = 'text/css';
 	styleElement.textContent = styleContent;
 	document.body.appendChild(styleElement);
 	// add title and byline
+	const contentRoot = document.getElementById('com_readup_article_content');
 	if (byline) {
 		const bylineElement = document.createElement('h2');
-		bylineElement.id = 'rrit-byline';
+		bylineElement.id = 'com_readup_article_byline';
 		bylineElement.textContent = byline;
-		document.body.insertBefore(bylineElement, document.body.children[0]);
+		contentRoot.prepend(bylineElement);
 	}
 	if (title) {
 		const titleElement = document.createElement('h1');
-		titleElement.id = 'rrit-title';
+		titleElement.id = 'com_readup_article_title';
 		titleElement.textContent = title;
-		document.body.insertBefore(titleElement, document.body.children[0]);
+		contentRoot.prepend(titleElement);
 	}
 }

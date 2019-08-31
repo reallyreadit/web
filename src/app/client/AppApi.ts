@@ -11,6 +11,9 @@ export default class extends AppApi {
 		this._messagingContext = messagingContext;
 		messagingContext.addListener(message => {
 			switch (message.type) {
+				case 'articlePosted':
+					this.emitEvent('articlePosted', message.data);
+					break;
 				case 'articleUpdated':
 					this.emitEvent('articleUpdated', message.data);
 					break;
