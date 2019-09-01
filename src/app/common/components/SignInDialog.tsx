@@ -41,7 +41,7 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 					showError={this.state.showErrors}
 					onChange={this._handlePasswordChange}
 				/>
-				<div className="forgot-password">
+				<div className="link">
 					<span onClick={this.props.onOpenPasswordResetDialog}>Forgot your password?</span>
 				</div>
 			</>
