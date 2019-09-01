@@ -57,14 +57,7 @@ export default class CommentDetails extends React.Component<
 				.split(/\n\n+/)
 				.map((paragraph, index, paragraphs) => `"${paragraph}${index === paragraphs.length - 1 ? '"' : ''}`)
 				.join('\n\n'),
-			[sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_'),
-			shareUrl = this.props.onCreateAbsoluteUrl(
-				this._commentsScreenRoute.createUrl({
-					['articleSlug']: articleSlug,
-					['commentId']: this.props.comment.id,
-					['sourceSlug']: sourceSlug
-				})
-			);
+			shareUrl = this.getCommentAbsoluteUrl();
 		return {
 			email: {
 				body: `${quotedCommentText}\n\n${shareUrl}`,
@@ -94,6 +87,16 @@ export default class CommentDetails extends React.Component<
 		if (props.highlightedCommentId === props.comment.id) {
 			this._elementRef = React.createRef();
 		}
+	}
+	private getCommentAbsoluteUrl() {
+		const [sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_');
+		return this.props.onCreateAbsoluteUrl(
+			this._commentsScreenRoute.createUrl({
+				['articleSlug']: articleSlug,
+				['commentId']: this.props.comment.id,
+				['sourceSlug']: sourceSlug
+			})
+		);
 	}
 	public componentDidMount() {
 		if (this.props.highlightedCommentId === this.props.comment.id) {
@@ -160,7 +163,7 @@ export default class CommentDetails extends React.Component<
 							onPostComment={this._addComment}
 							parentCommentId={this.props.comment.id}
 						/> :
-						this.props.onPostComment || this.props.onViewThread ?
+						this.props.user && (this.props.onPostComment || this.props.onViewThread) ?
 							<div className="actions">
 								{this.props.onPostComment ?
 									<ActionLink
@@ -169,6 +172,7 @@ export default class CommentDetails extends React.Component<
 									/> :
 									this.props.onViewThread ?
 										<ActionLink
+											href={this.getCommentAbsoluteUrl()}
 											text="View Thread"
 											onClick={this._viewThread} 
 										/> :
