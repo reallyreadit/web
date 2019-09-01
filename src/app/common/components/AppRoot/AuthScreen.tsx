@@ -73,7 +73,6 @@ export default class extends React.PureComponent<Props, {
 							alt="logo"
 							src="/images/logo.svg"
 						/>
-						<h1>Make yourself a better reader.</h1>
 					</div>
 					<div className="flip-container">
 						<div
