@@ -13,6 +13,7 @@
 .following-list-dialog_sscllo > .children > .followings > .following {
 	display: flex;
 	align-items: center;
+	min-height: 32px;
 }
 .following-list-dialog_sscllo > .children > .followings > .following + .following {
 	margin-top: 5px;
