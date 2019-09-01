@@ -108,11 +108,13 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		return (
 			<ContentBox className="article-details_d2vnmv">
 				<div className="title">
-					<Star
-						starred={!!this.props.article.dateStarred}
-						busy={this.state.isStarring}
-						onClick={this._toggleStar}
-					/>
+					{this.props.isUserSignedIn ?
+						<Star
+							starred={!!this.props.article.dateStarred}
+							busy={this.state.isStarring}
+							onClick={this._toggleStar}
+						/> :
+						null}
 					{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
 						<div className="bookmark">
 							<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
