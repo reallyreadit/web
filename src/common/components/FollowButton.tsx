@@ -5,6 +5,7 @@ import UserNameForm from '../models/social/UserNameForm';
 
 interface Props {
 	following: Following,
+	isBusy?: boolean,
 	onFollow: (form: UserNameForm) => Promise<void>,
 	onUnfollow: (form: UserNameForm) => Promise<void>,
 	size?: ButtonSize
@@ -51,6 +52,7 @@ export default class FollowButton extends React.PureComponent<Props, State> {
 		};
 	}
 	public render() {
+		const isBusy = this.state.isBusy || this.props.isBusy;
 		return (
 			<Button
 				className='follow-button_bz2yn'
@@ -62,14 +64,14 @@ export default class FollowButton extends React.PureComponent<Props, State> {
 						: 'Follow'
 				}
 				state={
-					this.state.isBusy ?
+					isBusy ?
 						'busy' :
 						'normal'
 				}
 				size={this.props.size}
 				intent={
 					this.props.following.isFollowed ?
-						this.state.isHovering && !this.state.isBusy ?
+						this.state.isHovering && !isBusy ?
 							'warning' :
 							'default' :
 						'loud'
