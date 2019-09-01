@@ -315,9 +315,7 @@ export default abstract class Root<
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
 			.resetPassword(token, password)
-			.then(user => {
-				this.onUserSignedIn(user);
-			});
+			.then(user => this.onUserSignedIn(user));
 	};
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
@@ -341,15 +339,13 @@ export default abstract class Root<
 				if (user.timeZoneId == null) {
 					this.setTimeZone();
 				}
-				this.onUserSignedIn(user);
+				return this.onUserSignedIn(user);
 			});
 	};
 	protected readonly _signOut = () => {
 		return this.props.serverApi
 			.signOut()
-			.then(() => {
-				this.onUserSignedOut();
-			});
+			.then(() => this.onUserSignedOut());
 	};
 	protected readonly _updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
 		return this.props.serverApi
@@ -453,13 +449,18 @@ export default abstract class Root<
 		return this._changeTimeZone({ name: DateTime.local().zoneName });
 	}
 	private setUserAuthChangedState(user: UserAccount | null, supplementaryState?: Partial<S>) {
-		this.setState(
-			{
-				...supplementaryState as State,
-				user
-			},
-			() => {
-				this._eventManager.triggerEvent('authChanged', user);
+		return new Promise<void>(
+			resolve => {
+				this.setState(
+					{
+						...supplementaryState as State,
+						user
+					},
+					() => {
+						this._eventManager.triggerEvent('authChanged', user);
+						resolve();
+					}
+				);
 			}
 		);
 	}
@@ -528,10 +529,10 @@ export default abstract class Root<
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserSignedIn(user: UserAccount, supplementaryState?: Partial<S>) {
-		this.setUserAuthChangedState(user, supplementaryState);
+		return this.setUserAuthChangedState(user, supplementaryState);
 	}
 	protected onUserSignedOut(supplementaryState?: Partial<S>) {
-		this.setUserAuthChangedState(null, supplementaryState);
+		return this.setUserAuthChangedState(null, supplementaryState);
 	}
 	protected onUserUpdated(user: UserAccount) {
 		this.setState({ user });

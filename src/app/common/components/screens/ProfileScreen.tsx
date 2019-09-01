@@ -17,7 +17,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import { Screen, SharedState } from '../Root';
+import { Screen, SharedState, TemplateSection } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -32,23 +32,42 @@ import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from './ProfileScreen/FollowingListDialog';
 import produce from 'immer';
+import CreateAccountDialog from '../CreateAccountDialog';
+import Captcha from '../../Captcha';
+import { Intent } from '../../../../common/components/Toaster';
+import SignInDialog from '../SignInDialog';
+import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
+import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadIosAppDialog';
+import ContentBox from '../../../../common/components/ContentBox';
+import PageSelector from '../controls/PageSelector';
+import InfoBox from '../controls/InfoBox';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
+	captcha: Captcha,
+	isDesktopDevice: boolean,
+	isIosDevice: boolean | null,
 	onCloseDialog: () => void,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
 	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
+	onInstallExtension: () => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
+	onOpenPasswordResetRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
+	onSetScreenState: (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
+	onSignIn: (emailAddress: string, password: string) => Promise<void>,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -58,37 +77,74 @@ interface Props {
 }
 export type Deps = Pick<Props, Exclude<keyof Props, 'userAccount' | 'userName'>>;
 interface State {
+	isFollowingButtonBusy: boolean,
 	profile: Fetchable<Profile>,
 	posts: Fetchable<PageResult<Post>>
 }
 const postsPageSize = 40;
 export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changePageNumber = (pageNumber: number) => {
+		this.setState({
+			posts: { isLoading: true }
+		});
+		this.fetchPosts(pageNumber);
+	};
+	private _followOnSignIn: boolean;
 	private readonly _followUser = (form: UserNameForm) => {
-		return this.props
-			.onFollowUser(form)
-			.then(
-				() => {
-					if (this.isOwnProfile()) {
-						this.setState(
-							produce(
-								(state: State) => {
-									state.profile.value.followeeCount++;
-								}
-							)
-						);
-					} else {
-						this.setState(
-							produce(
-								(state: State) => {
-									state.profile.value.isFollowed = true;
-									state.profile.value.followerCount++;
-								}
-							)
-						);
+		if (this.props.userAccount) {
+			return this.props
+				.onFollowUser(form)
+				.then(
+					() => {
+						if (this.isOwnProfile()) {
+							this.setState(
+								produce(
+									(state: State) => {
+										state.profile.value.followeeCount++;
+									}
+								)
+							);
+						} else {
+							this.setIsFollowed();
+						}
 					}
-				}
-			);
+				);
+		}
+		this._followOnSignIn = true;
+		const cancel = () => {
+			this._followOnSignIn = false;
+			this.props.onCloseDialog();
+		};
+		this.props.onOpenDialog(
+			this.props.isIosDevice ?
+				<DownloadIosAppDialog
+					onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+					onClose={cancel}
+				/> :
+				<CreateAccountDialog
+					captcha={this.props.captcha}
+					onCreateAccount={this.props.onCreateAccount}
+					onCloseDialog={cancel}
+					onShowToast={this.props.onShowToast}
+					onSignIn={
+						this.props.isDesktopDevice ?
+							() => {
+								this.props.onOpenDialog(
+									<SignInDialog
+										onOpenPasswordResetDialog={this.props.onOpenPasswordResetRequestDialog}
+										onCloseDialog={cancel}
+										onShowToast={this.props.onShowToast}
+										onSignIn={this.props.onSignIn}
+									/>
+								);
+							} :
+							null
+					}
+					title={`Sign up to follow ${this.props.userName}`}
+				/>
+		);
+		return Promise.resolve();
 	};
 	private readonly _openGetFollowersDialog = () => {
 		this.props.onOpenDialog(
@@ -159,6 +215,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			isFollowingButtonBusy: false,
 			profile: this.fetchProfile(),
 			posts: this.fetchPosts(1)
 		};
@@ -225,12 +282,15 @@ export class ProfileScreen extends React.Component<Props, State> {
 			)
 		);
 	}
-	private fetchProfile() {
+	private fetchProfile(callback?: (profile: Profile) => void) {
 		return this.props.onGetProfile(
 			{ userName: this.props.userName },
 			this._asyncTracker.addCallback(
 				profile => {
 					this.setState({ profile });
+					if (callback) {
+						callback(profile.value);
+					}
 				}
 			)
 		);
@@ -252,6 +312,16 @@ export class ProfileScreen extends React.Component<Props, State> {
 	private isOwnProfile() {
 		return this.props.userAccount && this.props.userAccount.name === this.props.userName;
 	}
+	private setIsFollowed() {
+		this.setState(
+			produce(
+				(state: State) => {
+					state.profile.value.isFollowed = true;
+					state.profile.value.followerCount++;
+				}
+			)
+		);
+	}
 	public componentDidUpdate(prevProps: Props) {
 		if (
 			this.props.userName !== prevProps.userName ||
@@ -261,16 +331,41 @@ export class ProfileScreen extends React.Component<Props, State> {
 					!!prevProps.userAccount
 			)
 		) {
-			this.setState({
-				profile: this.fetchProfile(),
-				posts: this.fetchPosts(1)
-			});
+			let profileCallback: (profile: Profile) => void;
+			if (this.props.userAccount && !prevProps.userAccount) {
+				this.props.onSetScreenState(() => ({ templateSection: null }));
+				if (this._followOnSignIn) {
+					if (!this.isOwnProfile()) {
+						this.setState({ isFollowingButtonBusy: true });
+						profileCallback = profile => {
+							if (!profile.isFollowed) {
+								this.props
+									.onFollowUser({ userName: profile.userName })
+									.then(
+										() => {
+											this.setState({ isFollowingButtonBusy: false });
+											this.setIsFollowed();
+										}
+									)
+							} else {
+								this.setState({ isFollowingButtonBusy: false });
+							}
+						};
+					}
+					this._followOnSignIn = false;
+				}
+			} else if (!this.props.userAccount && prevProps.userAccount) {
+				this.props.onSetScreenState(() => ({ templateSection: TemplateSection.Header }));
+			}
+			this.fetchProfile(profileCallback);
+			this.fetchPosts(1);
 		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		const isOwnProfile = this.isOwnProfile();
 		let
 			followeesText: string,
 			followersText: string;
@@ -286,9 +381,11 @@ export class ProfileScreen extends React.Component<Props, State> {
 						<div className="profile">
 							<div className="user-name">
 								<span className="name">{this.state.profile.value.userName}</span>
-								<LeaderboardBadges badge={this.state.profile.value.leaderboardBadge} />
+								{this.state.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
+									<LeaderboardBadges badge={this.state.profile.value.leaderboardBadge} /> :
+									null}
 							</div>
-							{this.isOwnProfile() ?
+							{isOwnProfile ?
 								<>
 									{this.state.profile.value.followeeCount ?
 										<ActionLink
@@ -306,6 +403,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 								</> :
 								<FollowButton
 									following={this.state.profile.value}
+									isBusy={this.state.isFollowingButtonBusy}
 									onFollow={this._followUser}
 									onUnfollow={this._unfollowUser}
 									size="large"
@@ -318,26 +416,61 @@ export class ProfileScreen extends React.Component<Props, State> {
 								/> :
 								<span className="following-count followers">{followersText}</span>}
 						</div>
-						<ArticleList>
-							{this.state.posts.value.items.map(
-								post => (
-									<li key={post.date}>
-										<PostDetails
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onRead={this.props.onReadArticle}
-											onPost={this.props.onPostArticle}
-											onShare={this.props.onShare}
-											onToggleStar={this.props.onToggleArticleStar}
-											onViewComments={this.props.onViewComments}
-											onViewThread={this.props.onViewThread}
-											post={post}
-											user={this.props.userAccount}
-										/>
-									</li>
-								)
-							)}
-						</ArticleList>
+						{this.props.userAccount && !this.props.isDesktopDevice && !this.props.isIosDevice ?
+							<ContentBox className="unsupported">
+								<span className="text">Get Readup on iOS and Chrome</span>
+								<div className="badges">
+									<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+										<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+									</a>
+									<a onClick={this.props.onInstallExtension}>
+										<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+									</a>
+								</div>
+							</ContentBox> :
+							null}
+						{this.state.posts.value.items.length ?
+							<>
+								<ArticleList>
+									{this.state.posts.value.items.map(
+										post => (
+											<li key={post.date}>
+												<PostDetails
+													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onRead={this.props.onReadArticle}
+													onPost={this.props.onPostArticle}
+													onShare={this.props.onShare}
+													onToggleStar={this.props.onToggleArticleStar}
+													onViewComments={this.props.onViewComments}
+													onViewThread={this.props.onViewThread}
+													post={post}
+													user={this.props.userAccount}
+												/>
+											</li>
+										)
+									)}
+								</ArticleList>
+								{this.props.userAccount ?
+									<PageSelector
+										pageNumber={this.state.posts.value.pageNumber}
+										pageCount={this.state.posts.value.pageCount}
+										onChange={this._changePageNumber}
+									/> :
+									null}
+							</> :
+							<InfoBox
+								position="static"
+								style="normal"
+							>
+								{isOwnProfile ?
+									<>
+										<p>You haven't posted anything.</p>
+									</> :
+									<>
+										<p>This user hasn't posted anything.</p>
+									</>}
+							</InfoBox>}
 					</>}
 			</ScreenContainer>
 		)

@@ -188,21 +188,26 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				captcha: this.props.captcha,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateAccount: this._createAccount,
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
 				onOpenDialog: this._dialog.openDialog,
+				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
 				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
 				onShare: this._handleShareRequest,
+				onShowToast: this._toaster.addToast,
+				onSignIn: this._signIn,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
@@ -335,24 +340,24 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			}
 			this._hasProcessedInitialLocation = true;
 		}
-		super.onUserSignedIn(
-			user,
-			{ screens: [screen] }
-		);
 		// update analytics
 		this.props.analytics.setUserId(user.id);
 		this.props.analytics.sendPageview(screen);
+		return super.onUserSignedIn(
+			user,
+			{ screens: [screen] }
+		);
 	}
 	protected onUserSignedOut() {
-		super.onUserSignedOut(
+		// update analytics
+		this.props.analytics.setUserId(null);
+		this.props.analytics.sendPageview(authScreenPageviewParams);
+		return super.onUserSignedOut(
 			{
 				menuState: 'closed',
 				screens: []
 			}
 		);
-		// update analytics
-		this.props.analytics.setUserId(null);
-		this.props.analytics.sendPageview(authScreenPageviewParams);
 	}
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
 		ev.preventDefault();

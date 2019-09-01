@@ -8,7 +8,6 @@ import Button from '../../../../common/components/Button';
 
 interface Props {
 	isDesktopDevice: boolean,
-	isIosDevice: boolean | null,
 	isUserSignedIn: boolean,
 	onOpenMenu: () => void,
 	onShowCreateAccountDialog: () => void,

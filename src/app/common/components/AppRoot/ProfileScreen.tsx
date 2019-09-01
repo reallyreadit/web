@@ -6,7 +6,7 @@ import { Screen, SharedState } from '../Root';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Deps & { onOpenMenu: () => void }
+	deps: Pick<Deps, Exclude<keyof Deps, 'isDesktopDevice' | 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onInstallExtension' | 'onSetScreenState'>> & { onOpenMenu: () => void }
 ) {
 	return {
 		create: (location: RouteLocation) => ({
@@ -15,7 +15,20 @@ export default function createScreenFactory<TScreenKey>(
 			title: 'Profile'
 		}),
 		render: (state: Screen, sharedState: SharedState) => (
-			<ProfileScreen {...getProps(deps, state, sharedState)} />
+			<ProfileScreen {
+				...getProps(
+					{
+						...deps,
+						isDesktopDevice: false,
+						isIosDevice: true,
+						onCopyAppReferrerTextToClipboard: () => {},
+						onInstallExtension: () => {},
+						onSetScreenState: () => {}
+					},
+					state,
+					sharedState
+				)
+			} />
 		),
 		renderHeaderContent: () => (
 			<div

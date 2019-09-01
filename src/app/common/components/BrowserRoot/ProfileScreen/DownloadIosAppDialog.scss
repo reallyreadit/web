@@ -1,0 +1,19 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/ProfileScreen/DownloadIosAppDialog
+	cssComponentId: download-ios-app-dialog_i96v9f
+*/
+
+.download-ios-app-dialog_i96v9f {
+	width: 280px;
+}
+.download-ios-app-dialog_i96v9f > .children {
+	display: flex;
+	justify-content: center;
+}
+.download-ios-app-dialog_i96v9f > .children > .download-app-button {
+	margin: 10px 0;
+}
+.download-ios-app-dialog_i96v9f > .children > .download-app-button > img {
+	display: block;
+	height: 50px;
+}

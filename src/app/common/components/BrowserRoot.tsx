@@ -18,7 +18,6 @@ import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
-import ReadReadinessDialog, { Error as ReadReadinessError } from './BrowserRoot/ReadReadinessDialog';
 import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
@@ -30,7 +29,7 @@ import { isIosDevice } from '../userAgent';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
-import createProfileScreenFactory from './screens/ProfileScreen';
+import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
 import Post from '../../../common/models/social/Post';
 
 interface Props extends RootProps {
@@ -260,20 +259,29 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				captcha: this.props.captcha,
+				isDesktopDevice: this._isDesktopDevice,
 				onCloseDialog: this._dialog.closeDialog,
+				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateAccount: this._createAccount,
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
+				onInstallExtension: this._installExtension,
 				onOpenDialog: this._dialog.openDialog,
+				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
+				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShowToast: this._toaster.addToast,
+				onSignIn: this._signIn,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
@@ -520,7 +528,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				method: 'replace'
 			});
 		}
-		super.onUserSignedIn(user, supplementaryState);
+		return super.onUserSignedIn(user, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
 		// update analytics before potentially changing the screen
@@ -537,7 +545,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				method: 'replace'
 			});
 		}
-		super.onUserSignedOut(supplementaryState);
+		return super.onUserSignedOut(supplementaryState);
 	}
 	protected onUserUpdated(user: UserAccount, eventSource: EventSource = EventSource.Local) {
 		if (eventSource === EventSource.Local) {
@@ -548,16 +556,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
 		if (!this.state.user || !this.props.extensionApi.isInstalled) {
 			ev.preventDefault();
-			this._dialog.openDialog(
-				<ReadReadinessDialog
-					articleUrl={article.url}
-					error={!this.state.user ? ReadReadinessError.SignedOut : this.props.extensionApi.isBrowserCompatible ? ReadReadinessError.ExtensionNotInstalled : ReadReadinessError.IncompatibleBrowser}
-					onCloseDialog={this._dialog.closeDialog}
-					onInstallExtension={this._installExtension}
-					onShowCreateAccountDialog={this._openCreateAccountDialog}
-					onShowSignInDialog={this._openSignInDialog}
-				/>
-			);
+			const [sourceSlug, articleSlug] = article.slug.split('_');
+			this.setScreenState({
+				key: ScreenKey.Read,
+				method: 'replace',
+				urlParams: { sourceSlug, articleSlug }
+			});
 		}
 	}
 	protected reloadWindow() {
@@ -585,7 +589,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				 ) ?
 					<Header
 						isDesktopDevice={this._isDesktopDevice}
-						isIosDevice={this.state.isIosDevice}
 						isUserSignedIn={!!this.state.user}
 						onOpenMenu={this._openMenu}
 						onShowCreateAccountDialog={this._openCreateAccountDialog}

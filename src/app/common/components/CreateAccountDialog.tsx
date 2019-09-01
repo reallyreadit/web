@@ -8,7 +8,9 @@ import { Intent } from '../../../common/components/Toaster';
 
 interface Props {
 	captcha: Captcha,
-	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>
+	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
+	onSignIn?: () => void,
+	title?: string
 }
 export default class CreateAccountDialog extends FormDialog<void, Props, Partial<State> & {
 	name?: string,
@@ -24,37 +26,44 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 	constructor(props: Props & FormDialogProps) {
 		super(
 			{
-				title: 'Sign Up',
+				title: props.title || 'Sign Up',
 				submitButtonText: 'Sign Up'
 			},
 			props
 		);
 	}
 	protected renderFields() {
-		return [
-			<UsernameField
-				autoFocus
-				error={this.state.nameError}
-				key="username"
-				onChange={this._handleNameChange}
-				showError={this.state.showErrors}
-				value={this.state.name}
-			/>,
-			<EmailAddressField
-				error={this.state.emailError}
-				key="emailAddress"
-				onChange={this._handleEmailChange}
-				showError={this.state.showErrors}
-				value={this.state.email}
-			/>,
-			<PasswordField
-				error={this.state.passwordError}
-				key="password"
-				onChange={this._handlePasswordChange}
-				showError={this.state.showErrors}
-				value={this.state.password}
-			/>
-		];
+		return (
+			<>
+				<UsernameField
+					autoFocus
+					error={this.state.nameError}
+					key="username"
+					onChange={this._handleNameChange}
+					showError={this.state.showErrors}
+					value={this.state.name}
+				/>
+				<EmailAddressField
+					error={this.state.emailError}
+					key="emailAddress"
+					onChange={this._handleEmailChange}
+					showError={this.state.showErrors}
+					value={this.state.email}
+				/>
+				<PasswordField
+					error={this.state.passwordError}
+					key="password"
+					onChange={this._handlePasswordChange}
+					showError={this.state.showErrors}
+					value={this.state.password}
+				/>
+				{this.props.onSignIn ?
+					<div className="link">
+						<span onClick={this.props.onSignIn}>Already have an account?</span>
+					</div> :
+					null}
+			</>
+		);
 	}
 	protected getClientErrors() {
 		return [{

@@ -229,7 +229,12 @@ class HomeScreen extends React.Component<Props, State> {
 								user={this.props.user}
 								view={this.state.view}
 							/>
-							{!this.state.isLoading ?
+							{(
+								!this.state.isLoading && (
+									this.state.view === View.Trending ||
+									this.state.posts.value.items.length
+								)
+							) ?
 								<PageSelector
 									pageNumber={
 										this.state.view === View.Trending ?

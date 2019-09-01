@@ -7,7 +7,8 @@
 	display: flex;
 	flex-flow: column;
 }
-.profile-screen_1u1j1e > .loading-overlay_zfgtd1 {
+.profile-screen_1u1j1e > .loading-overlay_zfgtd1,
+.profile-screen_1u1j1e > .info-box_whou0t {
 	flex: 1 1 auto;
 }
 .profile-screen_1u1j1e > .profile,
@@ -44,4 +45,22 @@
 }
 .profile-screen_1u1j1e > .profile > .following-count.followers {
 	margin-top: 15px;
+}
+.profile-screen_1u1j1e > .unsupported {
+	margin-bottom: 20px;
+	text-align: center;
+}
+.profile-screen_1u1j1e > .unsupported > .badges {
+	display: flex;
+	margin: 0 auto;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.profile-screen_1u1j1e > .unsupported > .badges > a {
+	margin: 10px 10px 0 10px;
+	cursor: pointer;
+}
+.profile-screen_1u1j1e > .unsupported > .badges > a > img {
+	display: block;
+	height: 55px;
 }
