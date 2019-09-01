@@ -19,6 +19,7 @@ import Post from '../../../../../common/models/social/Post';
 import PostDetails from '../../../../../common/components/PostDetails';
 import UserAccount from '../../../../../common/models/UserAccount';
 import CommentThread from '../../../../../common/models/CommentThread';
+import InfoBox from '../InfoBox';
 
 export enum View {
 	Trending = 'Trending',
@@ -212,27 +213,34 @@ export default class extends React.PureComponent<{
 									)}
 								</ArticleList>
 							</> :
-							<ArticleList>
-								{this.props.posts.items.map(
-									post => (
-										<li key={post.date}>
-											<PostDetails
-												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onRead={this.props.onReadArticle}
-												onPost={this.props.onPostArticle}
-												onShare={this.props.onShare}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												onViewThread={this.props.onViewThread}
-												post={post}
-												user={this.props.user}
-											/>
-										</li>
-									)
-								)}
-							</ArticleList>}
+							this.props.posts.items.length ?
+								<ArticleList>
+									{this.props.posts.items.map(
+										post => (
+											<li key={post.date}>
+												<PostDetails
+													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onRead={this.props.onReadArticle}
+													onPost={this.props.onPostArticle}
+													onShare={this.props.onShare}
+													onToggleStar={this.props.onToggleArticleStar}
+													onViewComments={this.props.onViewComments}
+													onViewProfile={this.props.onViewProfile}
+													onViewThread={this.props.onViewThread}
+													post={post}
+													user={this.props.user}
+												/>
+											</li>
+										)
+									)}
+								</ArticleList> :
+								<InfoBox
+									position="static"
+									style="normal"
+								>
+									<p>No posts from users you're following.</p>
+								</InfoBox>}
 					</>}
 			</div>
 		);
