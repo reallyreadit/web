@@ -95,10 +95,12 @@ export default class OnboardingScreen extends React.Component<Props> {
 											<Button
 												intent="loud"
 												onClick={this.props.onShowCreateAccountDialog}
+												size="large"
 												text="Sign Up"
 											/>
 											<Button
 												onClick={this.props.onShowSignInDialog}
+												size="large"
 												text="Log In"
 											/>
 										</div>
