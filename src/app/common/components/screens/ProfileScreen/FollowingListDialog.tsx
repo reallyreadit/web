@@ -8,12 +8,15 @@ import LoadingOverlay from '../../controls/LoadingOverlay';
 import UserNameForm from '../../../../../common/models/social/UserNameForm';
 import FollowButton from '../../../../../common/components/FollowButton';
 import UserAccount from '../../../../../common/models/UserAccount';
+import ProfileLink from '../../../../../common/components/ProfileLink';
 
 interface Props {
 	onCloseDialog: () => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
 	onGetFollowings: FetchFunction<Following[]>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
+	onViewProfile: (userName: string) => void,
 	title: string,
 	userAccount: UserAccount | null,
 }
@@ -54,6 +57,10 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 				}
 			);
 	};
+	private readonly _viewProfile = (userName: string) => {
+		this.props.onViewProfile(userName);
+		this.props.onCloseDialog();
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -78,23 +85,35 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 					<LoadingOverlay position="static" /> :
 					<ol className="followings">
 						{this.state.followings.value.map(
-							following => (
-								<li
-									className="following"
-									key={following.userName}
-								>
-									<span className="user-name">{following.userName}</span>
-									{this.props.userAccount && this.props.userAccount.name !== following.userName ?
-										<div className="button">
-											<FollowButton
-												following={following}
-												onFollow={this._followUser}
-												onUnfollow={this._unfollowUser}	
-											/>
-										</div> :
-										null}
-								</li>
-							)
+							following => {
+								const isOwnAccount = (
+									this.props.userAccount && this.props.userAccount.name === following.userName
+								);
+								return (
+									<li
+										className="following"
+										key={following.userName}
+									>
+										{!isOwnAccount ?
+											<ProfileLink
+												className="user-name"
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onViewProfile={this._viewProfile}
+												userName={following.userName}
+											/> :
+											<span className="user-name">{following.userName}</span>}
+										{!isOwnAccount ?
+											<div className="button">
+												<FollowButton
+													following={following}
+													onFollow={this._followUser}
+													onUnfollow={this._unfollowUser}	
+												/>
+											</div> :
+											null}
+									</li>
+								)
+							}
 						)}
 					</ol>}
 			</Dialog>

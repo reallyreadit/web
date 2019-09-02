@@ -14,6 +14,7 @@ export default (
 		leaderboardBadge: LeaderboardBadge,
 		date: string
 		onCopyTextToClipboard?: (text: string, successMessage: string) => void,
+		onCreateAbsoluteUrl: (path: string) => string,
 		onGetShareData?: () => ShareData,
 		onShare?: (data: ShareData) => ShareChannel[],
 		onViewProfile?: (userName: string) => void
@@ -23,6 +24,7 @@ export default (
 		{props.onViewProfile ?
 			<ProfileLink
 				className="user-name"
+				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 				onViewProfile={props.onViewProfile}
 				userName={props.userName}
 			/> :

@@ -11,6 +11,7 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	onCloseDialog: () => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onGetLeaderboards: FetchFunction<Leaderboards>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
@@ -42,6 +43,7 @@ class BrowserLeaderboardsScreen extends React.Component<Props, {
 			<LeaderboardsScreen
 				leaderboards={this.state.leaderboards}
 				onCloseDialog={this.props.onCloseDialog}
+				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onOpenDialog={this.props.onOpenDialog}
 				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}

@@ -71,6 +71,7 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
 	userAccount: UserAccount | null,
 	userName: string
@@ -160,9 +161,11 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this.props.onOpenDialog(
 			<FollowingListDialog
 				onCloseDialog={this.props.onCloseDialog}
+				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onFollowUser={this._followUser}
 				onGetFollowings={this.props.onGetFollowees}
 				onUnfollowUser={this._unfollowUser}
+				onViewProfile={this.props.onViewProfile}
 				title="Following"
 				userAccount={this.props.userAccount}
 			/>
@@ -172,11 +175,13 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this.props.onOpenDialog(
 			<FollowingListDialog
 				onCloseDialog={this.props.onCloseDialog}
+				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onFollowUser={this._followUser}
 				onGetFollowings={
 					(callback: (value: Fetchable<Following[]>) => void) => this.props.onGetFollowers({ userName: this.props.userName }, callback)
 				}
 				onUnfollowUser={this._unfollowUser}
+				onViewProfile={this.props.onViewProfile}
 				title={
 					this.isOwnProfile() ?
 						"Followers" :

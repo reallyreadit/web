@@ -18,6 +18,9 @@ import CommentsSection from '../../../../common/components/comments/CommentsSect
 import PostForm from '../../../../common/models/social/PostForm';
 import Post from '../../../../common/models/social/Post';
 import PostPrompt from '../../../../common/components/PostPrompt';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 export interface Props {
 	article?: UserArticle
@@ -52,6 +55,16 @@ export default class App extends React.Component<
 				onShowToast={this._toaster.addToast}
 				onSubmit={this.props.onPostArticle}
 			/>
+		);
+	};
+
+	// profile links
+	private readonly _viewProfile = (userName: string) => {
+		window.open(
+			this._createAbsoluteUrl(
+				findRouteByKey(routes, ScreenKey.Profile).createUrl({ userName })
+			),
+			'_blank'
 		);
 	};
 
@@ -103,6 +116,7 @@ export default class App extends React.Component<
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onPostComment={this.props.onPostComment}
 						onShare={this._handleShareRequest}
+						onViewProfile={this._viewProfile}
 						user={this.props.user}
 					/> :
 					null}

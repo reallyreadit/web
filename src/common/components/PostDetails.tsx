@@ -52,6 +52,7 @@ export default class PostDetails extends React.Component<Props> {
 						userName={this.props.post.userName}
 						leaderboardBadge={this.props.post.badge}
 						date={this.props.post.date}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onViewProfile={this.props.onViewProfile}
 					/>}
 			</ContentBox>

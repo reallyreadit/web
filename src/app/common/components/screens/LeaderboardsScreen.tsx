@@ -14,7 +14,7 @@ import ProfileLink from '../../../../common/components/ProfileLink';
 import Dialog from '../../../../common/components/Dialog';
 
 function renderTable(
-	{ title, iconName, scoreUnit, pluralScoreUnit, rankings, userRanking, userName, onOpenExplainer, onViewProfile }: {
+	{ title, iconName, scoreUnit, pluralScoreUnit, rankings, userRanking, userName, onCreateAbsoluteUrl, onOpenExplainer, onViewProfile }: {
 		title: string,
 		iconName: IconName,
 		scoreUnit: string,
@@ -22,6 +22,7 @@ function renderTable(
 		rankings: LeaderboardRanking[],
 		userRanking: Ranking,
 		userName: string,
+		onCreateAbsoluteUrl: (path: string) => string,
 		onOpenExplainer?: () => void,
 		onViewProfile: (userName: string) => void
 	}
@@ -55,6 +56,7 @@ function renderTable(
 												{ranking.userName !== userName ?
 													<ProfileLink
 														className="profile-link"
+														onCreateAbsoluteUrl={onCreateAbsoluteUrl}
 														onViewProfile={onViewProfile}
 														userName={ranking.userName}
 													/> :
@@ -89,6 +91,7 @@ function renderTable(
 export default class LeaderboardsScreen extends React.PureComponent<{
 	leaderboards: Fetchable<Leaderboards>,
 	onCloseDialog: () => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount
@@ -141,6 +144,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 								{renderTable({
 									title: 'Top readers this week',
 									iconName: 'medal',
+									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'read',
 									rankings: this.props.leaderboards.value.weeklyReadCount,
@@ -152,6 +156,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 								{renderTable({
 									title: 'Top readers of all time',
 									iconName: 'trophy',
+									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'read',
 									rankings: this.props.leaderboards.value.readCount,
@@ -163,6 +168,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 								{renderTable({
 									title: 'Reading streaks',
 									iconName: 'fire',
+									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'day',
 									rankings: this.props.leaderboards.value.streak,
@@ -193,6 +199,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 								{renderTable({
 									title: 'Scouts',
 									iconName: 'binoculars',
+									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'AOTD',
 									rankings: this.props.leaderboards.value.scout,
@@ -205,6 +212,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 								{renderTable({
 									title: 'Scribes',
 									iconName: 'quill',
+									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'reply',
 									pluralScoreUnit: 'replies',

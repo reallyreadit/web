@@ -148,6 +148,7 @@ export default class CommentDetails extends React.Component<
 						leaderboardBadge={this.props.comment.badge}
 						date={this.props.comment.dateCreated}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onGetShareData={this._getShareData}
 						onShare={this.props.onShare}
 						onViewProfile={this.props.onViewProfile}

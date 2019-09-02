@@ -171,6 +171,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			}),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onCloseDialog: this._dialog.closeDialog,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetLeaderboards: this.props.serverApi.getLeaderboards,
 				onOpenDialog: this._dialog.openDialog,
 				onViewProfile: this._viewProfile
@@ -211,6 +212,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			})
 		};
