@@ -64,7 +64,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
-	onSetScreenState: (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
+	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (emailAddress: string, password: string) => Promise<void>,
@@ -73,6 +73,7 @@ interface Props {
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
+	screenId: number,
 	userAccount: UserAccount | null,
 	userName: string
 }
@@ -338,7 +339,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 		) {
 			let profileCallback: (profile: Profile) => void;
 			if (this.props.userAccount && !prevProps.userAccount) {
-				this.props.onSetScreenState(() => ({ templateSection: null }));
+				this.props.onSetScreenState(this.props.screenId, () => ({ templateSection: null }));
 				if (this._followOnSignIn) {
 					if (!this.isOwnProfile()) {
 						this.setState({ isFollowingButtonBusy: true });
@@ -360,7 +361,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 					this._followOnSignIn = false;
 				}
 			} else if (!this.props.userAccount && prevProps.userAccount) {
-				this.props.onSetScreenState(() => ({ templateSection: TemplateSection.Header }));
+				this.props.onSetScreenState(this.props.screenId, () => ({ templateSection: TemplateSection.Header }));
 			}
 			this.fetchProfile(profileCallback);
 			this.fetchPosts(1);

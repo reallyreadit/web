@@ -6,16 +6,13 @@ import { SharedState } from '../BrowserRoot';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'isIosDevice' | 'onSetScreenState'>> & {
-		isDesktopDevice: boolean,
-		onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
+	deps: Pick<Deps, Exclude<keyof Deps, 'isIosDevice' | 'screenId'>> & {
+		isDesktopDevice: boolean
 	}
 ) {
-	const setScreenState = (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
-		deps.onSetScreenState(key, getNextState);
-	};
 	return {
-		create: (location: RouteLocation, sharedState: SharedState) => ({
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
+			id,
 			key,
 			location,
 			templateSection: (
@@ -31,7 +28,7 @@ export default function createScreenFactory<TScreenKey>(
 					{
 						...deps,
 						isIosDevice: sharedState.isIosDevice,
-						onSetScreenState: setScreenState
+						screenId: state.id
 					},
 					state,
 					sharedState

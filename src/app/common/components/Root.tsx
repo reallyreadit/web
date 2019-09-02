@@ -60,6 +60,7 @@ export enum TemplateSection {
 	Footer = 4
 }
 export interface Screen<T = any> {
+	id: number,
 	componentState?: T,
 	key: ScreenKey,
 	location: RouteLocation,
@@ -68,7 +69,7 @@ export interface Screen<T = any> {
 	titleContent?: React.ReactNode
 }
 export interface ScreenFactory<TSharedState> {
-	create: (location: RouteLocation, sharedState: TSharedState) => Screen,
+	create: (id: number, location: RouteLocation, sharedState: TSharedState) => Screen,
 	render: (screenState: Screen, sharedState: TSharedState) => React.ReactNode,
 	renderHeaderContent?: (screenState: Screen, sharedState: TSharedState) => React.ReactNode
 }
@@ -256,8 +257,9 @@ export default abstract class Root<
 	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi.unfollowUser(form);
 
 	// state
-	protected readonly _setScreenState = (key: ScreenKey, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
-		const screen = this.state.screens.find(screen => screen.key === key);
+	private _screenId = 0;
+	protected readonly _setScreenState = (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
+		const screen = this.state.screens.find(screen => screen.id === id);
 		if (screen) {
 			const
 				screens = this.state.screens.slice(),
@@ -502,7 +504,7 @@ export default abstract class Root<
 			[path, queryString] = findRouteByKey(routes, key)
 				.createUrl(urlParams)
 				.split('?'),
-			screen = this._screenFactoryMap[key].create({ path, queryString }, this.getSharedState());
+			screen = this._screenFactoryMap[key].create(this._screenId++, { path, queryString }, this.getSharedState());
 		if (title) {
 			screen.title = title;
 		}
@@ -514,7 +516,7 @@ export default abstract class Root<
 			dialog: route.dialogKey != null ?
 				this._dialogCreatorMap[route.dialogKey](location) :
 				null,
-			screen: this._screenFactoryMap[route.screenKey].create(location, this.getSharedState())
+			screen: this._screenFactoryMap[route.screenKey].create(this._screenId++, location, this.getSharedState())
 		};
 	}
 	protected abstract getSharedState(): TSharedState;

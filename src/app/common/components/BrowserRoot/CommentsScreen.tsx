@@ -41,11 +41,12 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onReloadArticle: (slug: string) => void,
-	onSetScreenState: (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void,
+	onReloadArticle: (screenId: number, slug: string) => void,
+	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void,
 	onShowCreateAccountDialog: () => void,
 	onShowSignInDialog: () => void,
-	onViewHomeScreen: () => void
+	onViewHomeScreen: () => void,
+	screenId: number
 }
 class BrowserCommentsScreen extends React.Component<
 	Props,
@@ -60,7 +61,7 @@ class BrowserCommentsScreen extends React.Component<
 			onClick={
 				() => {
 					this.setState({ hasDeclinedExtensionInstallPrompt: true });
-					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+					this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 						currentState.templateSection = shouldShowComments(
 								this.props.user,
 								this.props.isExtensionInstalled,
@@ -85,7 +86,7 @@ class BrowserCommentsScreen extends React.Component<
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
 				if (this.props.article.value && this.props.article.value.id === event.article.id) {
-					this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+					this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 						currentState.componentState.value = event.article;
 					}));
 				}
@@ -101,7 +102,7 @@ class BrowserCommentsScreen extends React.Component<
 				}
 			}),
 			props.onRegisterExtensionChangeHandler(isExtensionInstalled => {
-				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+				this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 					currentState.templateSection = shouldShowComments(
 							this.props.user,
 							isExtensionInstalled,
@@ -112,8 +113,8 @@ class BrowserCommentsScreen extends React.Component<
 				}));
 			}),
 			props.onRegisterUserChangeHandler(user => {
-				this.props.onReloadArticle(this.props.articleSlug);
-				this.props.onSetScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+				this.props.onReloadArticle(this.props.screenId, this.props.articleSlug);
+				this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 					currentState.templateSection = shouldShowComments(
 							user,
 							this.props.isExtensionInstalled,
@@ -185,32 +186,32 @@ class BrowserCommentsScreen extends React.Component<
 		return screen;
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'isExtensionInstalled' | 'onReloadArticle' | 'onSetScreenState' | 'user'>> & {
-	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
-	onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'isExtensionInstalled' | 'onReloadArticle' | 'screenId' | 'user'>> & {
+	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 };
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
-	const setScreenState = (getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => {
-		deps.onSetScreenState(key, getNextState);
-	};
-	const reloadArticle = (slug: string) => {
+	const reloadArticle = (screenId: number, slug: string) => {
 		deps.onGetArticle({ slug }, article => {
-			setScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
+			deps.onSetScreenState(screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 				currentState.componentState = article;
 			}));
 		});
 	};
 	return {
-		create: (location: RouteLocation, sharedState: SharedState) => {
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => {
 			const
 				pathParams = getPathParams(location),
 				article = deps.onGetArticle({ slug: pathParams.slug }, article => {
-					setScreenState(produce<Screen<Fetchable<UserArticle>>>(currentState => {
-						currentState.componentState = article;
-						currentState.title = article.value.title;
-					}));
+					deps.onSetScreenState(
+						id,
+						produce<Screen<Fetchable<UserArticle>>>(currentState => {
+							currentState.componentState = article;
+							currentState.title = article.value.title;
+						})
+					);
 				});
 			return {
+				id,
 				componentState: article,
 				key,
 				location,
@@ -230,7 +231,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 							articleSlug: pathParams.slug,
 							highlightedCommentId: pathParams.commentId,
 							onReloadArticle: reloadArticle,
-							onSetScreenState: setScreenState
+							screenId: state.id
 						}
 					}
 				/>

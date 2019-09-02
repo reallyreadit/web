@@ -62,7 +62,7 @@ const privacyPolicyPage = () => (
 );
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Privacy Policy' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Privacy Policy' }),
 		render: () => React.createElement(privacyPolicyPage)
 	};
 }

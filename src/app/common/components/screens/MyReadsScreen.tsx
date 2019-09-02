@@ -215,7 +215,7 @@ export default function createScreenFactory<TScreenKey>(
 	deps: Props
 ) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'My Reads' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'My Reads' }),
 		render: () => (
 			<MyReadsScreen {...deps} />
 		)

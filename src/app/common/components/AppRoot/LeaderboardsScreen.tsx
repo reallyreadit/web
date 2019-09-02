@@ -44,7 +44,7 @@ class AppLeaderboardsScreen extends React.Component<Props, {
 }
 export default function<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Leaderboards' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Leaderboards' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<AppLeaderboardsScreen {...{ ...deps, user: sharedState.user }} />
 		)

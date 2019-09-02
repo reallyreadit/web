@@ -18,7 +18,7 @@ import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys 
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
-import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
+import { findRouteByLocation } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
@@ -226,12 +226,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			if (props.initialUser) {
 				this._hasProcessedInitialLocation = true;
 				screens = [
-					this._screenFactoryMap[ScreenKey.Comments].create(
-						{
-							path: findRouteByKey(routes, ScreenKey.Comments).createUrl(route.getPathParams(props.initialLocation.path))
-						},
-						this.getSharedState()
-					)
+					this.createScreen(ScreenKey.Comments, route.getPathParams(props.initialLocation.path))
 				];
 			} else {
 				this._hasProcessedInitialLocation = false;
@@ -313,12 +308,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				const
 					pathParams = route.getPathParams(this.props.initialLocation.path),
 					slug = pathParams['sourceSlug'] + '_' + pathParams['articleSlug'];
-				screen = this._screenFactoryMap[ScreenKey.Comments].create(
-					{
-						path: findRouteByKey(routes, ScreenKey.Comments).createUrl(pathParams)
-					},
-					this.getSharedState()
-				);
+				screen = this.createScreen(ScreenKey.Comments, pathParams);
 				// iOS versions < 2.1 crash when calling readArticle using only the slug
 				if (
 					!this.props.appApi.appVersion ||
@@ -393,7 +383,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 										className={classNames('screen', {
 											'slide-out': this.state.isPoppingScreen && index === screens.length - 1
 										})}
-										key={screen.key}
+										key={screen.id}
 										onAnimationEnd={this._handleScreenAnimationEnd}
 									>
 										{this._screenFactoryMap[screen.key].render(screen, sharedState)}

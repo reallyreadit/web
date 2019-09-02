@@ -91,7 +91,8 @@ class AppCommentsScreen extends React.Component<
 type Dependencies = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'user'>>;
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies) {
 	return {
-		create: (location: RouteLocation) => ({
+		create: (id: number, location: RouteLocation) => ({
+			id,
 			key,
 			location,
 			title: 'Comments'

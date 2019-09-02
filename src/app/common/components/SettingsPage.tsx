@@ -198,7 +198,7 @@ class SettingsPage extends React.PureComponent<
 }
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Settings' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}

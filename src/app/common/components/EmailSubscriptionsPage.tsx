@@ -19,7 +19,7 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: {
 	onUpdateEmailSubscriptions: (token: string, subscriptions: EmailSubscriptions) => Promise<void>
 }) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Email Subscriptions' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Email Subscriptions' }),
 		render: (state: Screen) => (
 			<EmailSubscriptionPage
 				onGetEmailSubscriptions={deps.onGetEmailSubscriptions}

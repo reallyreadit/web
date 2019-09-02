@@ -373,7 +373,7 @@ class AdminPage extends React.Component<
 }
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Admin' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Admin' }),
 		render: (screenState: Screen, sharedState: SharedState) => {
 			return (
 				<AdminPage

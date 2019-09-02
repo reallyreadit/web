@@ -78,23 +78,24 @@ export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	deps: Pick<Props, Exclude<keyof Props, 'article' | 'isExtensionInstalled' | 'user'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
-		onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
+		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
 ) {
 	return {
-		create: (location: RouteLocation) => {
+		create: (id: number, location: RouteLocation) => {
 			const
 				pathParams = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path),
 				article = deps.onGetArticle(
 					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
 					article => {
-						deps.onSetScreenState(key, produce<Screen<Fetchable<UserArticle>>>(currentState => {
+						deps.onSetScreenState(id, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 							currentState.componentState = article;
 							currentState.title = article.value.title;
 						}));
 					}
 				);
 			return {
+				id,
 				componentState: article,
 				key,
 				location,

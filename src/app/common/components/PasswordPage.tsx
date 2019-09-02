@@ -18,7 +18,7 @@ const resultMessages: {
 };
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Password Reset' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Password Reset' }),
 		render: (state: Screen) => {
 			const [, action, result] = state.location.path
 				.match(findRouteByKey(routes, ScreenKey.Password).pathRegExp);

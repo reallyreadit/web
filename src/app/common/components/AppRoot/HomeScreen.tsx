@@ -241,7 +241,8 @@ export default function <TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
-		create: (location: RouteLocation) => ({
+		create: (id: number, location: RouteLocation) => ({
+			id,
 			key,
 			location,
 			title: 'Discover'

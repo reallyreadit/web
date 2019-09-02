@@ -33,7 +33,7 @@ const resultMessages: {
 };
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Email Confirmation' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Email Confirmation' }),
 		render: (state: Screen) => (
 			<EmailConfirmationPage
 				result={

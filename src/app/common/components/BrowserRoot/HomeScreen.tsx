@@ -52,13 +52,14 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onSetScreenState: (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
+	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewPrivacyPolicy: () => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
+	screenId: number,
 	user: UserAccount | null
 }
 interface State {
@@ -120,7 +121,7 @@ class HomeScreen extends React.Component<Props, State> {
 						sort: CommunityReadSort.Hot,
 						view: View.Trending
 					});
-					this.props.onSetScreenState(() => ({
+					this.props.onSetScreenState(this.props.screenId, () => ({
 						templateSection: null
 					}));
 				} else {
@@ -133,7 +134,7 @@ class HomeScreen extends React.Component<Props, State> {
 						maxLength: null,
 						view: null
 					});
-					this.props.onSetScreenState(() => ({
+					this.props.onSetScreenState(this.props.screenId, () => ({
 						templateSection: TemplateSection.Header
 					}));
 				}
@@ -268,15 +269,11 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'isIosDevice' | 'onSetScreenState' | 'user'>> & {
-		onSetScreenState: (key: TScreenKey, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
-	}
+	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'isIosDevice' | 'screenId' | 'user'>>
 ) {
-	const setScreenState = (getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
-		deps.onSetScreenState(key, getNextState);
-	};
 	return {
-		create: (location: RouteLocation, sharedState: SharedState) => ({
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
+			id,
 			key,
 			location,
 			templateSection: shouldShowHomeScreen(sharedState.user, deps.isDesktopDevice) ?
@@ -289,7 +286,7 @@ export default function createScreenFactory<TScreenKey>(
 				...{
 					...deps,
 					...sharedState,
-					onSetScreenState: setScreenState
+					screenId: screenState.id
 				}}
 			/>
 		)

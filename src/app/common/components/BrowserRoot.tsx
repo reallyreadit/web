@@ -623,7 +623,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						{this.state.screens.map(screen => (
 							<li
 								className="screen"
-								key={screen.key}
+								key={screen.id}
 							>
 								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
 								{(

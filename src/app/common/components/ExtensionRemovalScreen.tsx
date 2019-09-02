@@ -68,7 +68,7 @@ class ExtensionRemovalScreen extends React.PureComponent<
 }
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'installationId'>>) {
 	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Extension Removal Feedback' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Extension Removal Feedback' }),
 		render: (state: Screen) => (
 			<ExtensionRemovalScreen
 				installationId={parseQueryString(state.location.queryString)['installationId']}
