@@ -26,7 +26,7 @@ export default class ContentScriptApi {
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if (message.to === 'eventPage') {
+			if (message.to === 'eventPage' && message.from === 'contentScript') {
 				switch (message.type) {
 					case 'registerContentScript':
 						handlers

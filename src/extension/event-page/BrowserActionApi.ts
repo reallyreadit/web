@@ -4,7 +4,7 @@ import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
-	chrome.runtime.sendMessage({ to: 'browserActionPage', type, data }, responseCallback);
+	chrome.runtime.sendMessage({ to: 'browserActionPage', from: 'eventPage', type, data }, responseCallback);
 }
 export default class BrowserActionApi {
 	constructor(handlers: {
@@ -18,7 +18,7 @@ export default class BrowserActionApi {
 		onToggleReadStateDisplay: (tabId: number) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if (message.to === 'eventPage') {
+			if (message.to === 'eventPage' && message.from === 'browserActionPage') {
 				switch (message.type) {
 					case 'activateReaderMode':
 						handlers.onActivateReaderMode(message.data);

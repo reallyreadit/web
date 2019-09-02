@@ -4,7 +4,7 @@ import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
-	chrome.runtime.sendMessage({ to: 'eventPage', type, data }, responseCallback);
+	chrome.runtime.sendMessage({ to: 'eventPage', from: 'browserActionPage', type, data }, responseCallback);
 }
 function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
 	return new Promise<T>((resolve, reject) => {
@@ -20,7 +20,7 @@ export default class EventPageApi {
 		onPushState: (state: BrowserActionState) => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if (message.to === 'browserActionPage') {
+			if (message.to === 'browserActionPage' && message.from === 'eventPage') {
 				switch (message.type) {
 					case 'pushState':
 						handlers.onPushState(message.data);
