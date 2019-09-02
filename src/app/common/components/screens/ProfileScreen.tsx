@@ -153,6 +153,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 			<GetFollowersDialog
 				onCloseDialog={this.props.onCloseDialog}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onShare={this.props.onShare}
 				userName={this.props.userAccount.name}
 			/>

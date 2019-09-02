@@ -4,15 +4,19 @@ import ShareControl, { MenuPosition } from '../../../../../common/components/Sha
 import Icon from '../../../../../common/components/Icon';
 import ShareData from '../../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
+import { findRouteByKey } from '../../../../../common/routing/Route';
+import routes from '../../../../../common/routing/routes';
+import ScreenKey from '../../../../../common/routing/ScreenKey';
 
 export default class GetFollowersDialog extends React.PureComponent<{
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (userName: string) => string,
 	onShare: (data: ShareData) => ShareChannel[],
 	userName: string
 }> {
 	private readonly _getShareData = () => {
-		const url = this.getProfileUrl();
+		const url = this.props.onCreateAbsoluteUrl(this.getProfilePath());
 		return {
 			email: {
 				body: url,
@@ -22,8 +26,9 @@ export default class GetFollowersDialog extends React.PureComponent<{
 			url
 		};
 	};
-	private getProfileUrl() {
-		return `readup.com/@${this.props.userName}`;
+	private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
+	private getProfilePath() {
+		return this._profileRoute.createUrl({ userName: this.props.userName });
 	}
 	public render() {
 		return (
@@ -43,7 +48,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 						onGetData={this._getShareData}
 						onShare={this.props.onShare}
 					>
-						<strong>{this.getProfileUrl()}</strong> <Icon name="share" />
+						<strong>{`readup.com${this.getProfilePath()}`}</strong> <Icon name="share" />
 					</ShareControl>
 				</div>
 			</Dialog>
