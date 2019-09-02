@@ -101,7 +101,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 				size="small"
 				title="What's a scout?"
 			>
-				<p>Scouts find the good stuff. They're the first ones to read <em>and rate</em> new articles that go on to become Article of the Day (AOTD). The leaderboard shows the top Scouts of the last month.</p>
+				<p>Scouts find the good stuff. They're the first ones to post new articles that go on to become Article of the Day (AOTD). The leaderboard shows the top Scouts of the last month.</p>
 			</Dialog>
 		);
 	};
