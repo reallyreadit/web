@@ -6,8 +6,6 @@ export default () => (
 		position="static"
 		style="success"
 	>
-		<p>Welcome!</p>
-		<p><strong>To get started, read something.</strong></p>
-		<p>The articles below are automatically selected based on what the community is reading.</p>
+		<p><strong>Welcome! Read something to get started.</strong></p>
 	</InfoBox>
 );
