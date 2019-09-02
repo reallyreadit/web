@@ -6,6 +6,7 @@ interface Props {
 	children: React.ReactNode,
 	className?: ClassValue,
 	closeButtonText?: string,
+	isClosing?: boolean,
 	onClose?: () => void,
 	onSubmit?: () => Promise<any>,
 	size?: 'small',
@@ -58,7 +59,7 @@ export default class Dialog extends React.PureComponent<
 						'dialog_1wfm87',
 						this.props.className,
 						{
-							'closing': this.state.isClosing,
+							'closing': this.props.isClosing || this.state.isClosing,
 							'small': this.props.size === 'small'
 						}
 					)

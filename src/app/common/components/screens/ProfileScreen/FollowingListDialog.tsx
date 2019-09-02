@@ -21,7 +21,8 @@ interface Props {
 	userAccount: UserAccount | null,
 }
 interface State {
-	followings: Fetchable<Following[]>
+	followings: Fetchable<Following[]>,
+	isClosing: boolean
 }
 export default class FollowingListDialog extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -59,6 +60,7 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 	};
 	private readonly _viewProfile = (userName: string) => {
 		this.props.onViewProfile(userName);
+		this.setState({ isClosing: true });
 		this.props.onCloseDialog();
 	};
 	constructor(props: Props) {
@@ -70,14 +72,19 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 						this.setState({ followings });
 					}
 				)
-			)
+			),
+			isClosing: false
 		};
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (
 			<Dialog
 				className="following-list-dialog_sscllo"
 				closeButtonText="Ok"
+				isClosing={this.state.isClosing}
 				onClose={this.props.onCloseDialog}
 				title={this.props.title}
 			>
