@@ -8,13 +8,14 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<InfoBox
-				icon="warning"
+				className="read-readiness-info-box_gbdufn"
 				position="static"
-				style="warning"
+				style="normal"
 			>
-				{this.props.isBrowserCompatible ?
-					<p>Click <a href="#" onClick={this.props.onInstallExtension}>here</a> to add the Chrome extension.</p> :
-					<p>You must use Chrome (on Mac or PC) to track your reading.</p>}
+				<a onClick={this.props.onInstallExtension}>
+					Add the browser extension to get started.
+					<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+				</a>
 			</InfoBox>
 		);
 	}
