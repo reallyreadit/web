@@ -9,6 +9,7 @@
 .following-list-dialog_sscllo > .children > .followings {
 	max-height: 350px;
 	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 }
 .following-list-dialog_sscllo > .children > .followings > .following {
 	display: flex;
