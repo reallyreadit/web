@@ -3,7 +3,8 @@ export enum LazyImageStrategy {
 	FigureImgDataSrc,
 	MediumScaleUp,
 	NytFigureImageObject,
-	PostLoadImgTag
+	PostLoadImgTag,
+	WashingtonPostScaleUp
 }
 function copyAttributes(source: Element, dest: Element, ...attributeNames: (string | [string, string])[]) {
 	attributeNames.forEach(
@@ -121,6 +122,14 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 							.map<[string, string]>(dataAttr => ([dataAttr, dataAttr.split('-')[1]]))
 					);
 					target.replaceWith(img);
+				}
+			);
+			break;
+		case LazyImageStrategy.WashingtonPostScaleUp:
+			createObserver(
+				document.querySelectorAll('img[data-hi-res-src]'),
+				(target: HTMLImageElement) => {
+					target.src = target.getAttribute('data-hi-res-src');
 				}
 			);
 			break;

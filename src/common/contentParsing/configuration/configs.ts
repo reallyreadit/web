@@ -72,6 +72,10 @@ export default {
 			]
 		},
 		{
+			hostname: 'cnbc.com',
+			contentSearchRootElementSelector: '.ArticleBody-articleBody'
+		},
+		{
 			hostname: 'cnn.com',
 			transpositions: [
 				{
@@ -205,6 +209,13 @@ export default {
 			contentSearchRootElementSelector: 'article.c-content'
 		},
 		{
+			hostname: 'washingtonpost.com',
+			imageStrategy: LazyImageStrategy.WashingtonPostScaleUp,
+			textContainerFilter: {
+				attributeFullWordBlacklist: ['interstitial']
+			}
+		},
+		{
 			hostname: 'wired.com',
 			textContainerFilter: {
 				attributeFullWordBlacklist: ['inset'],
@@ -253,16 +264,6 @@ export default {
 					parentElementSelector: '.body-block > section:first-of-type'
 				}
 			]
-		},
-		{
-			hostname: 'cjr.org',
-			textContainerFilter: {
-				blacklistSelectors: [
-					() => Array
-						.from(document.getElementsByTagName('p'))
-						.filter(element => element.textContent.startsWith('ICYMI:'))
-				]
-			}
 		},
 		{
 			hostname: 'telegraph.co.uk',
