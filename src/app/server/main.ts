@@ -65,7 +65,7 @@ function redirectToHomeScreen(req: express.Request, res: express.Response) {
 // token helper function
 // Swift URLComponents doesn't encode the plus sign like encodeURIComponent and WebUtility.UrlEncode do
 function replaceSpacesWithPlusSign(token: string) {
-	return token.replace(' ', '+');
+	return token.replace(/\s/g, '+');
 }
 
 // cloudfront device type headers
