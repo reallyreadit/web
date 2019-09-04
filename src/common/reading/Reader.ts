@@ -1,37 +1,38 @@
 import Page from './Page';
 
-const config = {
-	readWordRate: 100,
-	idleReadRate: 500,
-	pageOffsetUpdateRate: 3000,
-	readStateCommitRate: 3000
-};
-interface Timers {
-	readWord?: {
-		handle?: number,
-		rate?: number
-	},
-	updatePageOffset?: number,
-	commitReadState?: number
+interface CommitEvent {
+	isCompletionCommit: boolean,
+	isRead: boolean,
+	percentComplete: number,
+	readStateArray: number[]
 }
 export default class Reader {
+	private _commitInterval: number | null;
 	private _isReading = false;
 	private _lastCommitPercentComplete = 0;
+	private _lastReadTimestamp: number | null;
+	private _offsetUpdateInterval: number | null;
+	private readonly _onCommitReadState: (event: CommitEvent) => void;
 	private _page: Page | null;
-	private readonly _readWord = () => {
-		this.readWord();
+	private readonly _read = () => {
+		if (this._isReading) {
+			const
+				now = Date.now(),
+				elapsed = now - (this._lastReadTimestamp || now - 300),
+				readWordCount = Math.floor(elapsed / 100);
+			for (let i = 0; i < readWordCount; i++) {
+				if (!this._page.readWord() && this._page.isRead()) {
+					this.stopReading();
+					this.commitReadState();
+					return;
+				}
+			}
+			this._lastReadTimestamp = now;
+			window.setTimeout(this._read, 300);
+		}
 	};
-	private _timers: Timers = {
-		readWord: { }
-	};
-	constructor(
-		private readonly _onCommitReadState: (event: {
-			isCompletionCommit: boolean,
-			isRead: boolean,
-			percentComplete: number,
-			readStateArray: number[]
-		}) => void
-	) {
+	constructor(onCommitReadState: (event: CommitEvent) => void) {
+		this._onCommitReadState = onCommitReadState;
 		window.document.addEventListener('visibilitychange', () => {
 			if (this._page) {
 				if (window.document.hidden) {
@@ -45,67 +46,42 @@ export default class Reader {
 	private commitReadState() {
 		const
 			readState = this._page.getReadState(),
-			percentComplete = readState.getPercentComplete(),
-			isRead = percentComplete >= 90;
-		this._onCommitReadState(
-			{
+			percentComplete = readState.getPercentComplete();
+		if (percentComplete > this._lastCommitPercentComplete) {
+			const isRead = percentComplete >= 90;
+			this._onCommitReadState({
 				isCompletionCommit: this._lastCommitPercentComplete < 90 && isRead,
 				isRead,
 				percentComplete,
 				readStateArray: readState.readStateArray
-			}
-		);
-		this._lastCommitPercentComplete = percentComplete;
-	}
-	private readWord() {
-		if (this._page.readWord()) {
-			if (this._timers.readWord.rate === config.idleReadRate) {
-				window.clearInterval(this._timers.readWord.handle);
-				this._timers.readWord = {
-					handle: window.setInterval(this._readWord, config.readWordRate),
-					rate: config.readWordRate
-				};
-				this._timers.commitReadState = window.setInterval(
-					() => {
-						this.commitReadState();
-					},
-					config.readStateCommitRate
-				);
-			}
-		} else if (this._page.isRead()) {
-			this.stopReading();
-			this.commitReadState();
-		} else if (this._timers.readWord.rate === config.readWordRate) {
-			window.clearInterval(this._timers.readWord.handle);
-			this._timers.readWord = {
-				handle: window.setInterval(this._readWord, config.idleReadRate),
-				rate: config.idleReadRate
-			};
-			window.clearInterval(this._timers.commitReadState);
+			});
+			this._lastCommitPercentComplete = percentComplete;
 		}
 	}
 	private startReading() {
 		if (!this._isReading && !this._page.isRead()) {
-			this._timers.readWord = {
-				handle: window.setInterval(this._readWord, config.idleReadRate),
-				rate: config.idleReadRate
-			};
-			this._timers.updatePageOffset = window.setInterval(
+			this._isReading = true;
+			this._commitInterval = window.setInterval(
+				() => {
+					this.commitReadState();
+				},
+				3000
+			);
+			this._offsetUpdateInterval = window.setInterval(
 				() => {
 					this._page.updateOffset();
 				},
-				config.pageOffsetUpdateRate
+				3000
 			);
-			this._isReading = true;
-			this.readWord();
+			this._read();
 		}
 	}
 	private stopReading() {
 		if (this._isReading) {
-			window.clearTimeout(this._timers.readWord.handle);
-			window.clearInterval(this._timers.updatePageOffset);
-			window.clearInterval(this._timers.commitReadState);
 			this._isReading = false;
+			this._lastReadTimestamp = null;
+			window.clearInterval(this._commitInterval);
+			window.clearInterval(this._offsetUpdateInterval);
 		}
 	}
 	public loadPage(page: Page) {
