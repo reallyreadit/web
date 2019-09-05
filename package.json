@@ -11,7 +11,7 @@
         "content-parser": "1.0.3"
       },
       "native-client": {
-        "reader": "5.0.1",
+        "reader": "5.0.2",
         "share-extension": "3.0.3"
       }
     }

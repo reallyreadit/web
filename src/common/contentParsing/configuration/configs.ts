@@ -95,6 +95,10 @@ export default {
 			}
 		},
 		{
+			hostname: 'governing.com',
+			imageStrategy: LazyImageStrategy.GoverningImgSrcCorrection
+		},
+		{
 			hostname: 'huffpost.com',
 			transpositions: [
 				{

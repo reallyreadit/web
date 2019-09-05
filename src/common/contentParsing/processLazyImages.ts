@@ -1,6 +1,7 @@
 export enum LazyImageStrategy {
 	AtlanticFigureImgDataSrcset,
 	FigureImgDataSrc,
+	GoverningImgSrcCorrection,
 	MediumScaleUp,
 	NytFigureImageObject,
 	PostLoadImgTag,
@@ -81,6 +82,16 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 								}
 							}
 						);
+				}
+			);
+			break;
+		case LazyImageStrategy.GoverningImgSrcCorrection:
+			createObserver(
+				document.querySelectorAll('img'),
+				(target: HTMLImageElement) => {
+					target.src = target.src
+						.replace(/^http:/, 'https:')
+						.replace(/&.*$/, '');
 				}
 			);
 			break;
