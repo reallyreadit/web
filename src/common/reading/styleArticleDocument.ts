@@ -120,10 +120,11 @@ export default (document: Document, title: string | null, byline: string | null)
 		bodyOpacity = document.body.style.opacity,
 		bodyTransition = document.body.style.transition;
 	Array
-		.from(document.querySelectorAll('[style]'))
+		.from(document.querySelectorAll('[align], [style]'))
 		.forEach(
 			element => {
 				if (!element.id.startsWith('com_readup_')) {
+					element.removeAttribute('align');
 					element.removeAttribute('style');
 				}
 			}
