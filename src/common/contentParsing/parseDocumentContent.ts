@@ -23,7 +23,7 @@ import TextContainerFilterConfig from './configuration/TextContainerFilterConfig
 // regular expressions
 const wordRegex = /\S+/g;
 const singleSentenceRegex = /^[^.!?]+[.!?'"]*$/;
-const recircRegex = /^[^:]+:(.+)$/
+const recircRegex = /^[^:]+:.+$/
 
 // misc
 function findDescendantsMatchingQuerySelectors(element: Element, selectors: string[]) {
@@ -96,20 +96,8 @@ function isTextContentValid(block: Element, config: TextContainerFilterConfig) {
 	}
 	const singleSentenceMatch = trimmedContent.match(singleSentenceRegex);
 	if (singleSentenceMatch) {
-		if (links.length === 1) {
-			const recircMatch = trimmedContent.match(recircRegex);
-			if (
-				recircMatch &&
-				recircMatch.length === 2 &&
-				recircMatch[1]
-					.trim()
-					.toLowerCase() ===
-				links[0].textContent
-					.trim()
-					.toLowerCase()
-			) {
-				return false;
-			}
+		if (recircRegex.test(trimmedContent)) {
+			return false;
 		}
 		const lowercasedContent = trimmedContent.toLowerCase();
 		return !config.singleSentenceOpenerBlacklist.some(opener => lowercasedContent.startsWith(opener));
