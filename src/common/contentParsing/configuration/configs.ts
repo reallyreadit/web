@@ -193,6 +193,22 @@ export default {
 			}
 		},
 		{
+			hostname: 'techrepublic.com',
+			textContainerFilter: {
+				blacklistSelectors: [
+					() => {
+						const footer = Array
+							.from(document.getElementsByTagName('h2'))
+							.find(element => element.textContent.toLowerCase().startsWith('also see'));
+						if (footer && footer.nextElementSibling) {
+							return [footer, footer.nextElementSibling];
+						}
+						return [];
+					}
+				]
+			}
+		},
+		{
 			hostname: 'theatlantic.com',
 			imageContainerSearch: {
 				selectorBlacklist: ['.callout']
