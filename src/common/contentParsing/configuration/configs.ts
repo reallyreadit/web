@@ -216,6 +216,10 @@ export default {
 			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrcset
 		},
 		{
+			hostname: 'thedailybeast.com',
+			contentSearchRootElementSelector: 'article.Body'
+		},
+		{
 			hostname: 'thenewatlantis.com',
 			textContainerSearch: {
 				selectorBlacklist: ['.author, .epigraph, [style*="BellMT"], h2']
@@ -227,6 +231,10 @@ export default {
 		{
 			hostname: 'variety.com',
 			contentSearchRootElementSelector: 'article.c-content'
+		},
+		{
+			hostname: 'vice.com',
+			contentSearchRootElementSelector: '.article__body'
 		},
 		{
 			hostname: 'washingtonpost.com',
