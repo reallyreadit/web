@@ -474,28 +474,29 @@ export default function parseDocumentContent(): ParseResult {
 
 	const traversalPathSearchResults = findTraversalPaths(depthGroupWithMostWords);
 
-	const primaryTextContainerSearchResults = traversalPathSearchResults
-		.reduce<{
-			preferredPathHopCount: number,
-			searchResults: TraversalPathSearchResult[],
-			wordCount: number
-		}[]>(
-			(groups, result) => {
-				const group = groups.find(group => group.preferredPathHopCount === result.getPreferredPath().hops);
-				if (group) {
-					group.searchResults.push(result);
-					group.wordCount += result.textContainer.wordCount;
-				} else {
-					groups.push({
-						preferredPathHopCount: result.getPreferredPath().hops,
-						searchResults: [result],
-						wordCount: result.textContainer.wordCount
-					});
-				}
-				return groups;
-			},
-			[]
-		)
+	const preferredPathHopCountGroups = traversalPathSearchResults.reduce<{
+		preferredPathHopCount: number,
+		searchResults: TraversalPathSearchResult[],
+		wordCount: number
+	}[]>(
+		(groups, result) => {
+			const group = groups.find(group => group.preferredPathHopCount === result.getPreferredPath().hops);
+			if (group) {
+				group.searchResults.push(result);
+				group.wordCount += result.textContainer.wordCount;
+			} else {
+				groups.push({
+					preferredPathHopCount: result.getPreferredPath().hops,
+					searchResults: [result],
+					wordCount: result.textContainer.wordCount
+				});
+			}
+			return groups;
+		},
+		[]
+	);
+
+	const selectedPreferredPathHopCountGroups = preferredPathHopCountGroups
 		.sort((a, b) => b.wordCount - a.wordCount)
 		.reduce<{
 			preferredPathHopCount: number,
@@ -509,8 +510,49 @@ export default function parseDocumentContent(): ParseResult {
 				return selectedGroups;
 			},
 			[]
-		)
-		.reduce<TraversalPathSearchResult[]>((results, group) => results.concat(group.searchResults), []);
+		);
+
+	let primaryTextContainerSearchResults = selectedPreferredPathHopCountGroups.reduce<TraversalPathSearchResult[]>(
+		(results, group) => results.concat(group.searchResults), []
+	);
+
+	const excludedSearchResults = traversalPathSearchResults.filter(
+		result => !primaryTextContainerSearchResults.includes(result)
+	);
+	if (excludedSearchResults.length) {
+		const primaryTextContainerElementMetadata = primaryTextContainerSearchResults
+			.reduce<{
+				nodeName: string,
+				searchResults: TraversalPathSearchResult[],
+				wordCount: number
+			}[]>(
+				(groups, result) => {
+					const group = groups.find(group => group.nodeName === result.textContainer.containerElement.nodeName);
+					if (group) {
+						group.searchResults.push(result);
+						group.wordCount += result.textContainer.wordCount;
+					} else {
+						groups.push({
+							nodeName: result.textContainer.containerElement.nodeName,
+							searchResults: [result],
+							wordCount: result.textContainer.wordCount
+						});
+					}
+					return groups;
+				},
+				[]
+			)
+			.sort(
+				(a, b) => b.wordCount - a.wordCount
+			)[0];
+		if (primaryTextContainerElementMetadata.nodeName === 'P') {
+			primaryTextContainerSearchResults = primaryTextContainerSearchResults.concat(
+				excludedSearchResults.filter(
+					result => result.textContainer.containerElement.nodeName === primaryTextContainerElementMetadata.nodeName
+				)
+			);
+		}
+	}
 
 	const primaryTextRootNode = primaryTextContainerSearchResults[0].textContainer.containerLineage[primaryTextContainerSearchResults[0].textContainer.containerLineage.length - Math.max((Math.max(...primaryTextContainerSearchResults.map(result => result.getPreferredPath().hops)) / 2), 1)] as Element;
 
