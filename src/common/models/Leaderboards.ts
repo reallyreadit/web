@@ -8,5 +8,6 @@ export default interface Leaderboards {
 	scribe: LeaderboardRanking[],
 	streak: LeaderboardRanking[],
 	userRankings: UserLeaderboardRankings,
-	weeklyReadCount: LeaderboardRanking[]
+	weeklyReadCount: LeaderboardRanking[],
+	timeZoneName: string
 }

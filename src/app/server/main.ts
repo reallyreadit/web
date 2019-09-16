@@ -4,7 +4,6 @@ import * as ReactDOMServer from 'react-dom/server';
 import ServerApi from './ServerApi';
 import renderHtml from '../common/templates/html';
 import UserAccountRole from '../../common/models/UserAccountRole';
-import SessionState from '../../common/models/SessionState';
 import config from './config';
 import routes from '../../common/routing/routes';
 import * as bunyan from 'bunyan';
@@ -29,6 +28,7 @@ import DeviceType from '../common/DeviceType';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
 import { variants as marketingScreenVariants } from '../common/components/BrowserRoot/MarketingScreen';
+import UserAccount from '../../common/models/UserAccount';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -174,32 +174,29 @@ server = server.use((req, res, next) => {
 	req.api = api;
 	req.clientType = clientType;
 	if (api.hasAuthCookie()) {
-		api.fetchJson<SessionState>('GET', { path: '/UserAccounts/GetSessionState' })
-			.then(sessionState => {
-				if (!sessionState) {
-					throw new Error('InvalidSessionKey');
+		api
+			.fetchJson<UserAccount>('GET', { path: '/UserAccounts/GetUserAccount' })
+			.then(
+				user => {
+					if (!user) {
+						throw new Error('InvalidSessionKey');
+					}
+					req.user = user;
+					next();
 				}
-				req.sessionState = sessionState;
-				next();
-			})
-			.catch((reason: string[] | Error) => {
-				if (
-					(reason instanceof Array && reason.includes('Unauthenticated')) ||
-					(reason instanceof Error && reason.message === 'InvalidSessionKey')
-				) {
-					res.clearCookie(config.cookieName, { domain: config.cookieDomain });
+			)
+			.catch(
+				(reason: string[] | Error) => {
+					if (
+						(reason instanceof Array && reason.includes('Unauthenticated')) ||
+						(reason instanceof Error && reason.message === 'InvalidSessionKey')
+					) {
+						res.clearCookie(config.cookieName, { domain: config.cookieDomain });
+					}
+					next();
 				}
-				req.sessionState = {
-					userAccount: null,
-					newReplyNotification: null
-				};
-				next();
-			});
+			);
 	} else {
-		req.sessionState = {
-			userAccount: null,
-			newReplyNotification: null
-		};
 		next();
 	}
 });
@@ -209,7 +206,7 @@ server = server.use((req, res, next) => {
 	if (
 		!route ||
 		route.authLevel == null ||
-		(req.sessionState.userAccount && (req.sessionState.userAccount.role === route.authLevel || req.sessionState.userAccount.role === UserAccountRole.Admin))
+		(req.user && (req.user.role === route.authLevel || req.user.role === UserAccountRole.Admin))
 	) {
 		next();
 	} else {
@@ -407,7 +404,7 @@ server = server.get('/*', (req, res) => {
 			path: req.path,
 			queryString: createQueryString(req.query)
 		},
-		initialUser: req.sessionState.userAccount,
+		initialUser: req.user,
 		iosReferrerUrl,
 		marketingScreenVariant,
 		serverApi: req.api,
@@ -433,8 +430,7 @@ server = server.get('/*', (req, res) => {
 					...rootProps,
 					browserApi,
 					deviceType,
-					extensionApi: new ExtensionApi(config.extensionId),
-					newReplyNotification: req.sessionState.newReplyNotification
+					extensionApi: new ExtensionApi(config.extensionId)
 				}
 			);
 			break;
@@ -466,10 +462,9 @@ server = server.get('/*', (req, res) => {
 				exchanges: req.api.exchanges,
 				extensionId: config.extensionId,
 				marketingScreenVariant,
-				newReplyNotification: req.sessionState.newReplyNotification,
 				initialLocation: rootProps.initialLocation,
 				iosReferrerUrl,
-				userAccount: req.sessionState.userAccount,
+				userAccount: req.user,
 				version: version.app,
 				webServerEndpoint: config.webServer
 			},

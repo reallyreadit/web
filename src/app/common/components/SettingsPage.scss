@@ -3,42 +3,86 @@
 	cssComponentId: settings-page_ejwkk
 */
 
-.settings-page_ejwkk > ul > li {
-	padding-bottom: 10px;
-	line-height: 1.35em;
+.settings-page_ejwkk > .setting + .setting {
+	padding-top: 15px;
 }
-.settings-page_ejwkk > ul > li:last-child {
-	padding-bottom: 0;
-}
-.settings-page_ejwkk > ul > li > label {
+.settings-page_ejwkk > .setting > .header {
 	display: flex;
+	align-items: center;
 }
-.settings-page_ejwkk > ul > li > .setting {
-	padding-left: 15px;
+.settings-page_ejwkk > .setting > .header > .label {
+	font-family: 'Museo Sans (700)';
+	font-size: 14pt;
 }
-.settings-page_ejwkk > ul > li > .setting.on {
+.settings-page_ejwkk > .setting > .section {
+	margin: 10px 0;
+}
+.settings-page_ejwkk > .setting > .section > label {
+	font-family: 'Museo Sans (500)';
+}
+.settings-page_ejwkk > .setting > .section > .indicators {
+	display: flex;
+	align-items: center;
+	margin-top: 2px;
+}
+.settings-page_ejwkk > .setting > .section > .indicators > .status {
+	display: flex;
+	align-items: center;
+}
+.settings-page_ejwkk > .setting > .section > .indicators > .status.on {
 	color: green;
 }
-.settings-page_ejwkk > ul > li > .setting.off {
+.settings-page_ejwkk > .setting > .section > .indicators > .status.off {
 	color: gray;
 }
-.settings-page_ejwkk > ul > li > .setting.warn {
+.settings-page_ejwkk > .setting > .section > .indicators > .status.warn {
 	color: orange;
 }
-.settings-page_ejwkk > ul > li > .setting + .setting {
-	margin-top: 3px;
-}
-.settings-page_ejwkk > ul > li > .setting > .icon_rour3d {
+.settings-page_ejwkk > .setting > .section > .indicators > .status > .icon_rour3d {
 	margin-right: 3px;
 }
-.settings-page_ejwkk > ul > li > .setting > .notice {
-	padding-left: 15px;
+.settings-page_ejwkk > .setting > .section > .indicators > .status > .notice {
+	margin-left: 15px;
 	color: orange;
 }
-.settings-page_ejwkk > ul > li > .setting > .notice > .icon_rour3d {
+.settings-page_ejwkk > .setting > .section > .indicators > .status > .notice > .icon_rour3d {
 	margin-right: 3px;
 }
-.settings-page_ejwkk > ul > li > .setting > .notice > a {
+.settings-page_ejwkk > .setting > .section > .indicators > .status > .notice > a {
 	cursor: pointer;
 	text-decoration: underline;
+}
+.settings-page_ejwkk > .notifications > table {
+	width: 100%;
+	max-width: 400px;
+	margin: 10px 0;
+}
+.settings-page_ejwkk > .notifications > table > thead > tr > th {
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+	text-align: center;
+	padding: 3px 2px;
+	border: 1px solid #ccc;
+}
+.settings-page_ejwkk > .notifications > table > tbody > tr > th {
+	font-weight: normal;
+	padding: 3px 2px;
+	border: 1px solid #ccc;
+}
+.settings-page_ejwkk > .notifications > table > tbody > tr > td {
+	padding: 3px 0;
+	border: 1px solid #ccc;
+}
+.settings-page_ejwkk > .notifications > table > tbody > tr:first-child > th {
+	font-family: 'Museo Sans (500)';
+}
+.settings-page_ejwkk > .notifications > table > tbody > tr + tr > td > .icon_rour3d {
+	display: block;
+	margin: 0 auto;
+}
+.settings-page_ejwkk > .notifications > table > tbody > tr + tr > td > .icon_rour3d.on {
+	color: green;
+}
+.settings-page_ejwkk > .notifications > table > tbody > tr + tr > td > .icon_rour3d.off {
+	color: gray;
 }

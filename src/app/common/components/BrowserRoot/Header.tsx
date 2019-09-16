@@ -12,8 +12,7 @@ interface Props {
 	onOpenMenu: () => void,
 	onShowCreateAccountDialog: () => void,
 	onShowSignInDialog: () => void,
-	onViewHome: () => void,
-	showNewReplyIndicator: boolean
+	onViewHome: () => void
 }
 export default class extends React.PureComponent<Props> {
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
@@ -41,7 +40,7 @@ export default class extends React.PureComponent<Props> {
 				{showAuthButtons || showMenu ?
 					<div className="menu-container">
 						{showMenu ?
-							<div className={classNames('menu-icon-container', { 'indicator': this.props.showNewReplyIndicator })}>
+							<div className={classNames('menu-icon-container')}>
 								<Icon
 									name="menu2"
 									onClick={this.props.onOpenMenu}

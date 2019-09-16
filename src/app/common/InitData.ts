@@ -1,6 +1,5 @@
 import UserAccount from '../../common/models/UserAccount';
 import ClientType from './ClientType';
-import NewReplyNotification from '../../common/models/NewReplyNotification';
 import RouteLocation from '../../common/routing/RouteLocation';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import Exchange from './serverApi/Exchange';
@@ -16,7 +15,6 @@ export default interface InitData {
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,
 	marketingScreenVariant: number,
-	newReplyNotification: NewReplyNotification,
 	iosReferrerUrl: string,
 	userAccount: UserAccount,
 	version: string,

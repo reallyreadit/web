@@ -4,6 +4,7 @@ import SemanticVersion from '../../common/SemanticVersion';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
+import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 
 export default class extends BrowserApi {
 	private readonly _channel: BroadcastChannel | null;
@@ -36,6 +37,9 @@ export default class extends BrowserApi {
 	}
 	public commentPosted(comment: CommentThread) {
 		this.broadcastUpdate('commentPosted', comment);
+	}
+	public notificationPreferenceChanged(preference: NotificationPreference) {
+		this.broadcastUpdate('notificationPreferenceChanged', preference);
 	}
 	public setTitle(title: string) {
 		window.document.title = title;

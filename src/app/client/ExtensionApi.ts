@@ -1,5 +1,4 @@
 import ExtensionApi from '../common/ExtensionApi';
-import NewReplyNotification from '../../common/models/NewReplyNotification';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 
@@ -64,9 +63,6 @@ export default class extends ExtensionApi {
     }
     public install() {
         window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');
-    }
-    public newReplyNotificationUpdated(notification: NewReplyNotification) {
-        this.sendMessage('newReplyNotificationUpdated', notification);
     }
     public get isInstalled() {
         return this._isInstalled;

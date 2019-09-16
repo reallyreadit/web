@@ -1,0 +1,24 @@
+/*
+	componentPath: src/app/common/components/SettingsPage/ChangeNotificationsDialog/EventConfigurator
+	cssComponentId: event-configurator_nibmbx
+*/
+
+.event-configurator_nibmbx > .label {
+	font-family: 'Museo Sans (500)';
+}
+.event-configurator_nibmbx > select {
+	margin-top: 2px;
+}
+.event-configurator_nibmbx > .checkboxes {
+	margin-top: 2px;
+}
+.event-configurator_nibmbx > .checkboxes > label {
+	display: inline-flex;
+	align-items: center;
+}
+.event-configurator_nibmbx > .checkboxes > label + label {
+	margin-left: 5px;
+}
+.event-configurator_nibmbx > .checkboxes > label > input {
+	margin-right: 2px;
+}

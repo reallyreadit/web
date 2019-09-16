@@ -4,6 +4,7 @@ import SemanticVersion from '../../common/SemanticVersion';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
+import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 
 export default class extends BrowserApi {
 	private _title: string;
@@ -21,6 +22,9 @@ export default class extends BrowserApi {
 	}
 	public getTitle() {
 		return this._title;
+	}
+	public notificationPreferenceChanged(preference: NotificationPreference) {
+		throw new Error('Operation not supported in server environment');
 	}
 	public updateAvailable(version: SemanticVersion) {
 		throw new Error('Operation not supported in server environment');

@@ -3,7 +3,6 @@ import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
-import NewReplyNotification, { hasNewUnreadReply } from '../../../common/models/NewReplyNotification';
 import UserAccount from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -31,18 +30,17 @@ import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
 import Post from '../../../common/models/social/Post';
+import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
 	deviceType: DeviceType,
-	extensionApi: ExtensionApi,
-	newReplyNotification: NewReplyNotification | null
+	extensionApi: ExtensionApi
 }
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
 	isIosDevice: boolean | null,
 	menuState: MenuState,
-	showNewReplyIndicator: boolean,
 	showRedirectBanner: boolean
 }
 type MenuState = 'opened' | 'closing' | 'closed';
@@ -323,7 +321,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			),
 			menuState: 'closed',
 			screens: [locationState.screen],
-			showNewReplyIndicator: hasNewUnreadReply(props.newReplyNotification),
 			showRedirectBanner: redirectedQueryStringKey in parseQueryString(props.initialLocation.queryString)
 		};
 
@@ -338,6 +335,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			})
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment, EventSource.Remote);
+			})
+			.addListener('notificationPreferenceChanged', preference => {
+				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
 			.addListener('updateAvailable', version => {
 				if (!this._isUpdateAvailable && version.compareTo(this.props.version) > 0) {
@@ -512,6 +512,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onCommentPosted(comment);
 	}
+	protected onNotificationPreferenceChanged(preference: NotificationPreference, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.notificationPreferenceChanged(preference);
+		}
+		super.onNotificationPreferenceChanged(preference);
+	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
@@ -596,7 +602,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onShowCreateAccountDialog={this._openCreateAccountDialog}
 						onShowSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
-						showNewReplyIndicator={this.state.showNewReplyIndicator}
 					/> :
 					null}
 				<main>
@@ -653,7 +658,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onViewAdminPage={this._viewAdminPage}
 						onViewSettings={this._viewSettings}
 						selectedScreenKey={this.state.screens[0].key}
-						showNewReplyNotification={this.state.showNewReplyIndicator}
 						userAccount={this.state.user}
 					/> :
 					null}
@@ -706,9 +710,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// update other tabs with the latest user data
 		this.props.browserApi.userUpdated(this.state.user);
 		// update the extension with the latest notification data
-		if (this.props.newReplyNotification) {
-			this.props.extensionApi.newReplyNotificationUpdated(this.props.newReplyNotification);
-		}
+		
 		// check user agent for device type
 		if (this.state.isIosDevice == null) {
 			this.setState({

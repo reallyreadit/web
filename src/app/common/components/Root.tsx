@@ -41,6 +41,7 @@ import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 
 export interface Props {
 	analytics: Analytics,
@@ -86,7 +87,8 @@ export type SharedEvents = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
 	'authChanged': UserAccount | null,
-	'commentPosted': CommentThread
+	'commentPosted': CommentThread,
+	'notificationPreferenceChanged': NotificationPreference
 };
 export default abstract class Root<
 	P extends Props,
@@ -228,6 +230,9 @@ export default abstract class Root<
 	protected readonly _registerCommentPostedEventHandler = (handler: (comment: CommentThread) => void) => {
 		return this._eventManager.addListener('commentPosted', handler);
 	};
+	protected readonly _registerNotificationPreferenceChangedEventHandler = (handler: (preference: NotificationPreference) => void) => {
+		return this._eventManager.addListener('notificationPreferenceChanged', handler);
+	};
 
 	// routing
 	protected readonly _createAbsoluteUrl: (path: string) => string;
@@ -287,6 +292,16 @@ export default abstract class Root<
 			.then(user => {
 				this.onUserUpdated(user);
 			});
+	};
+	protected readonly _changeNotificationPreference = (data: NotificationPreference) => {
+		return this.props.serverApi
+			.changeNotificationPreference(data)
+			.then(
+				preference => {
+					this.onNotificationPreferenceChanged(preference);
+					return preference;
+				}
+			);
 	};
 	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
 		return this.props.serverApi.changePassword(currentPassword, newPassword);
@@ -349,13 +364,6 @@ export default abstract class Root<
 			.signOut()
 			.then(() => this.onUserSignedOut());
 	};
-	protected readonly _updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
-		return this.props.serverApi
-			.updateContactPreferences(receiveWebsiteUpdates, receiveSuggestedReadings)
-			.then(user => {
-				this.onUserUpdated(user);
-			});
-	};
 	protected readonly _updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
 		return this.props.serverApi
 			.updateEmailSubscriptions(token, subscriptions)
@@ -365,13 +373,6 @@ export default abstract class Root<
 						this.onUserUpdated(user.value);
 					});
 				}
-			});
-	};
-	protected readonly _updateNotificationPreferences = (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => {
-		return this.props.serverApi
-			.updateNotificationPreferences(receiveEmailNotifications, receiveDesktopNotifications)
-			.then(user => {
-				this.onUserUpdated(user);
 			});
 	};
 
@@ -431,15 +432,15 @@ export default abstract class Root<
 			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
 				onCloseDialog: this._dialog.closeDialog,
 				onChangeEmailAddress: this._changeEmailAddress,
+				onChangeNotificationPreference: this._changeNotificationPreference,
 				onChangePassword: this._changePassword,
 				onChangeTimeZone: this._changeTimeZone,
+				onGetSettings: this.props.serverApi.getSettings,
 				onGetTimeZones: this.props.serverApi.getTimeZones,
-				onGetUserCount: this.props.serverApi.getUserCount,
 				onOpenDialog: this._dialog.openDialog,
+				onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
-				onShowToast: this._toaster.addToast,
-				onUpdateContactPreferences: this._updateContactPreferences,
-				onUpdateNotificationPreferences: this._updateNotificationPreferences
+				onShowToast: this._toaster.addToast
 			}),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
@@ -528,6 +529,9 @@ export default abstract class Root<
 	}
 	protected onCommentPosted(comment: CommentThread) {
 		this._eventManager.triggerEvent('commentPosted', comment);
+	}
+	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
+		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserSignedIn(user: UserAccount, supplementaryState?: Partial<S>) {

@@ -1,0 +1,11 @@
+/*
+	componentPath: src/app/common/components/SettingsPage/ChangeNotificationsDialog
+	cssComponentId: change-notifications-dialog_r5angh
+*/
+
+.change-notifications-dialog_r5angh {
+	min-width: 280px;
+}
+.change-notifications-dialog_r5angh > .children > .event-configurator_nibmbx + .event-configurator_nibmbx {
+	margin-top: 5px;
+}

@@ -4,10 +4,13 @@
 */
 
 .dialog_1wfm87 {
+	display: flex;
+	flex-flow: column;
 	margin: 0 10px;
 	z-index: 100;
 	background: #F7F6F5;
-	max-width: calc(100% - 20px);
+	max-width: calc(100vw - 20px);
+	max-height: calc(100vh - 20px);
 	box-sizing: border-box;
 	animation: dialog_1wfm87-slide-in 250ms forwards;
 	border-radius: 5px;
@@ -20,6 +23,7 @@
 	max-width: 400px;
 }
 .dialog_1wfm87 > .header {
+	flex: 0 0 auto;
 	font-size: 16pt;
 	text-align: center;
 	font-family: 'Museo Sans (700)';
@@ -28,6 +32,8 @@
 }
 .dialog_1wfm87 > .children {
 	padding: 10px 15px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 	background-color: white;
 	border-width: 1px 0 1px 0;
 	border-style: solid;
@@ -37,6 +43,7 @@
 	margin-top: 10px;
 }
 .dialog_1wfm87 > .buttons {
+	flex: 0 0 auto;
 	display: flex;
 	padding: 5px 10px;
 }

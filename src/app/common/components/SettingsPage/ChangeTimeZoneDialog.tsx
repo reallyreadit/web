@@ -8,7 +8,7 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 
 interface Props {
 	currentTimeZoneId: number | null,
-	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
+	onChangeTimeZone: (id: number, displayName: string) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>
 }
 export default class ChangeTimeZoneDialog extends FormDialog<void, Props, Partial<State> & {
@@ -106,7 +106,10 @@ export default class ChangeTimeZoneDialog extends FormDialog<void, Props, Partia
 		);
 	}
 	protected submitForm() {
-		return this.props.onChangeTimeZone({ id: this.state.timeZoneSelection.id });
+		return this.props.onChangeTimeZone(
+			this.state.timeZoneSelection.id,
+			this.state.timeZoneSelection.selectListItem.key
+		);
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();

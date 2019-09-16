@@ -6,7 +6,6 @@ import UserAccount from '../../../common/models/UserAccount';
 import Request from './Request';
 import RequestStore from './RequestStore';
 import HttpEndpoint from '../../../common/HttpEndpoint';
-import NewReplyNotification from '../../../common/models/NewReplyNotification';
 import PageResult from '../../../common/models/PageResult';
 import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
@@ -30,6 +29,8 @@ import UserNameQuery from '../../../common/models/social/UserNameQuery';
 import Profile from '../../../common/models/social/Profile';
 import Following from '../../../common/models/social/Following';
 import FolloweesPostsQuery from '../../../common/models/social/FolloweesPostsQuery';
+import Settings from '../../../common/models/Settings';
+import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -74,18 +75,6 @@ export default abstract class {
 	public readonly requestPasswordReset = (email: string, captchaResponse: string) => {
 		return this.post({ path: '/UserAccounts/RequestPasswordReset', data: { email, captchaResponse } });
 	};
-	public readonly updateContactPreferences = (receiveWebsiteUpdates: boolean, receiveSuggestedReadings: boolean) => {
-		return this.post<UserAccount>({
-			path: '/UserAccounts/UpdateContactPreferences',
-			data: { receiveWebsiteUpdates, receiveSuggestedReadings }
-		});
-	};
-	public readonly updateNotificationPreferences = (receiveEmailNotifications: boolean, receiveDesktopNotifications: boolean) => {
-		return this.post<UserAccount>({
-			path: '/UserAccounts/UpdateNotificationPreferences',
-			data: { receiveEmailNotifications, receiveDesktopNotifications }
-		});
-	};
 	public readonly getUserAccount = (callback: (userAccount: Fetchable<UserAccount>) => void) => {
 		return this.get<UserAccount>({ path: '/UserAccounts/GetUserAccount' }, callback);
 	};
@@ -109,9 +98,6 @@ export default abstract class {
 	};
 	public readonly listReplies = (pageNumber: number, callback: (comments: Fetchable<PageResult<CommentThread>>) => void) => {
 		return this.get<PageResult<CommentThread>>({ path: '/Articles/ListReplies', data: { pageNumber } }, callback);
-	};
-	public readonly checkNewReplyNotification = (callback: (states: Fetchable<NewReplyNotification>) => void) => {
-		return this.get<NewReplyNotification>({ path: '/UserAccounts/CheckNewReplyNotification' }, callback);
 	};
 	public readonly ackNewReply = () => {
 		return this.post({ path: '/UserAccounts/AckNewReply' });
@@ -171,6 +157,8 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// UserAccounts
+	public readonly changeNotificationPreference = (data: NotificationPreference) => this.post<NotificationPreference>({ path: '/UserAccounts/NotificationPreference', data });
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });
+	public readonly getSettings = this.createFetchFunction<Settings>('/UserAccounts/Settings');
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
 }

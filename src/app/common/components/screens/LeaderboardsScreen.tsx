@@ -188,7 +188,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 										{!streak.includesToday ?
 											<div className="timer">
 												<StreakTimer
-													timeZoneName={this.props.user.timeZoneName}
+													timeZoneName={this.props.leaderboards.value.timeZoneName}
 												/>
 											</div> :
 											null}

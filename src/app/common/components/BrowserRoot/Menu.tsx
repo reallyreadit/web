@@ -16,7 +16,6 @@ interface Props {
 	onViewAdminPage: () => void,
 	onViewSettings: () => void,
 	selectedScreenKey: ScreenKey,
-	showNewReplyNotification: boolean,
 	userAccount: UserAccount | null
 }
 export default class extends React.PureComponent<Props, { isSigningOut: boolean }> {
