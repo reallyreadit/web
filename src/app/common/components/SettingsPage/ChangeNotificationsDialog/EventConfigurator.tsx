@@ -14,7 +14,7 @@ interface Props {
 }
 enum Mode {
 	Disabled = 'Disabled',
-	Alert = 'Alert',
+	Alerts = 'Alerts',
 	DailyDigest = 'Daily Digest',
 	WeeklyDigest = 'Weekly Digest'
 }
@@ -48,7 +48,7 @@ export default class EventConfigurator extends React.PureComponent<
 			weeklyDigest: NotificationChannel.None
 		};
 		switch (this.state.mode) {
-			case Mode.Alert:
+			case Mode.Alerts:
 				value.alert = setChannelCheckboxValue(this.props.value.alert, channel, event.target.checked);
 				break;
 			case Mode.DailyDigest:
@@ -64,11 +64,23 @@ export default class EventConfigurator extends React.PureComponent<
 		this.setState(
 			{ mode: event.target.value as Mode },
 			() => {
-				this.props.onChange({
+				const value = {
 					alert: NotificationChannel.None,
 					dailyDigest: NotificationChannel.None,
 					weeklyDigest: NotificationChannel.None
-				});
+				};
+				switch (this.state.mode) {
+					case Mode.Alerts:
+						value.alert = this.props.options.alert;
+						break;
+					case Mode.DailyDigest:
+						value.dailyDigest = this.props.options.dailyDigest;
+						break;
+					case Mode.WeeklyDigest:
+						value.weeklyDigest = this.props.options.weeklyDigest;
+						break;
+				}
+				this.props.onChange(value);
 			}
 		);
 	};
@@ -76,7 +88,7 @@ export default class EventConfigurator extends React.PureComponent<
 		super(props);
 		let mode = Mode.Disabled;
 		if (props.value.alert) {
-			mode = Mode.Alert;
+			mode = Mode.Alerts;
 		} else if (props.value.dailyDigest) {
 			mode = Mode.DailyDigest;
 		} else if (props.value.weeklyDigest) {
@@ -87,7 +99,7 @@ export default class EventConfigurator extends React.PureComponent<
 	public render() {
 		const modes = [Mode.Disabled];
 		if (this.props.options.alert) {
-			modes.push(Mode.Alert);
+			modes.push(Mode.Alerts);
 		}
 		if (this.props.options.dailyDigest) {
 			modes.push(Mode.DailyDigest);
@@ -103,7 +115,7 @@ export default class EventConfigurator extends React.PureComponent<
 				channelOptions = NotificationChannel.None;
 				channelValue = NotificationChannel.None;
 				break;
-			case Mode.Alert:
+			case Mode.Alerts:
 				channelOptions = this.props.options.alert;
 				channelValue = this.props.value.alert;
 				break;
