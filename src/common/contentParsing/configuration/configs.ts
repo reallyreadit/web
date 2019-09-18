@@ -21,7 +21,7 @@ export default {
 		},
 		imageContainerSearch: {
 			descendantNodeNameBlacklist: ['FORM', 'IFRAME'],
-			nodeNameBlacklist: ['FORM', 'HEAD', 'IFRAME', 'NAV', 'NOSCRIPT', 'SCRIPT', 'STYLE'],
+			nodeNameBlacklist: ['FORM', 'HEAD', 'IFRAME', 'NAV', 'SCRIPT', 'STYLE'],
 			selectorBlacklist: []
 		},
 		imageContainerFilter: {
@@ -227,6 +227,10 @@ export default {
 			imageContainerSearch: {
 				selectorBlacklist: ['[style*="BellMT"]']
 			}
+		},
+		{
+			hostname: 'vanityfair.com',
+			imageStrategy: LazyImageStrategy.NoscriptImgContent
 		},
 		{
 			hostname: 'variety.com',

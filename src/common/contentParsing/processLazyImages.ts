@@ -3,6 +3,7 @@ export enum LazyImageStrategy {
 	FigureImgDataSrc,
 	GoverningImgSrcCorrection,
 	MediumScaleUp,
+	NoscriptImgContent,
 	NytFigureImageObject,
 	PostLoadImgTag,
 	WashingtonPostScaleUp
@@ -109,6 +110,22 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 				}
 			);
 			break;
+		case LazyImageStrategy.NoscriptImgContent:
+			createObserver(
+				document.querySelectorAll('figure'),
+				target => {
+					Array
+						.from(target.getElementsByTagName('noscript'))
+						.forEach(
+							noscript => {
+								if (/^\s*<\s*img\s.+\/\s*>\s*$/is.test(noscript.textContent)) {
+									noscript.insertAdjacentHTML('afterend', noscript.textContent);
+								}
+							}
+						);
+				}
+			);
+			break;
 		case LazyImageStrategy.NytFigureImageObject:
 			createObserver(
 				document.querySelectorAll('figure[itemType="http://schema.org/ImageObject"]'),
@@ -154,6 +171,10 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			matches = document.querySelectorAll('figure [data-src], figure [data-srcset]');
 			if (matches.length) {
 				return procesLazyImages(LazyImageStrategy.FigureImgDataSrc);
+			}
+			matches = document.querySelectorAll('noscript');
+			if (matches.length) {
+				return procesLazyImages(LazyImageStrategy.NoscriptImgContent);
 			}
 			break;
 	}

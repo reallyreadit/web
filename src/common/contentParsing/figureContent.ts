@@ -15,6 +15,7 @@ export function isValidContent(element: Element, config: ImageContainerContentCo
 	return (
 		!config.nodeNameBlacklist.some(nodeName => element.nodeName === nodeName) &&
 		(
+			element.nodeName === 'NOSCRIPT' ||
 			config.nodeNameWhitelist.some(nodeName => element.nodeName === nodeName || !!element.getElementsByTagName(nodeName).length) ||
 			!getChildNodesTextContent(element).trim()
 		) &&

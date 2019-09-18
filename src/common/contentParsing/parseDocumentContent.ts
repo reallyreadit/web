@@ -251,8 +251,14 @@ const findImageContainers = (function () {
 	function addFigureContent(element: Element, config: ImageContainerContentConfig, contentElements: Node[] = []) {
 		if (isValidFigureContent(element, config)) {
 			contentElements.push(element);
-			for (const child of element.children) {
-				addFigureContent(child, config, contentElements);
+			if (element.nodeName === 'NOSCRIPT') {
+				for (const child of element.childNodes) {
+					contentElements.push(child);
+				}
+			} else {
+				for (const child of element.children) {
+					addFigureContent(child, config, contentElements);
+				}
 			}
 		}
 		return contentElements;
