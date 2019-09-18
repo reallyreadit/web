@@ -347,7 +347,13 @@ function loadUserInterface() {
 		) {
 			insertBookmarkPrompt({
 				onConfirm: () => {
-					context.page.scrollWindowToResumeReading();
+					const bookmarkScrollTop = context.page.getBookmarkScrollTop();
+					if (bookmarkScrollTop > 0) {
+						window.scrollTo({
+							behavior: 'smooth',
+							top: bookmarkScrollTop
+						});
+					}
 				}
 			});
 		}

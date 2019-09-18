@@ -42,6 +42,7 @@ export default class Page {
 		return false;
 	}
 	public getBookmarkScrollTop() {
+		this.updateOffset();
 		const readState = this.getReadState();
 		const lastReadLine = this._contentEls
 			.reduce(
@@ -76,15 +77,6 @@ export default class Page {
 			);
 		}
 		return 0;
-	}
-	public scrollWindowToResumeReading() {
-		const bookmarkScrollTop = this.getBookmarkScrollTop();
-		if (bookmarkScrollTop > 0) {
-			window.scrollTo({
-				behavior: 'smooth',
-				top: bookmarkScrollTop
-			});
-		}
 	}
 	public toggleReadStateDisplay() {
 		this._contentEls.forEach(block => block.toggleReadStateDisplay());

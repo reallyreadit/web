@@ -10,6 +10,7 @@ const styleContent = `
 }
 #com_readup_article #com_readup_article_content {
 	padding-top: env(safe-area-inset-top);
+	transition: opacity 350ms;
 }
 #com_readup_article #com_readup_article_content * {
 	max-width: 100%;

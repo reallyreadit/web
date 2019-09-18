@@ -12,7 +12,6 @@ import ShareData from '../../common/sharing/ShareData';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment } from '../../common/comments';
 import BookmarkPrompt from './components/BookmarkPrompt';
-import * as smoothscroll from 'smoothscroll-polyfill';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
@@ -110,7 +109,18 @@ function insertBookmarkPrompt() {
 		isClosing: false,
 		onCancel: beginClosingPrompt,
 		onConfirm: () => {
-			page.scrollWindowToResumeReading();
+			const scrollTop = page.getBookmarkScrollTop();
+			if (scrollTop > 0) {
+				const content = document.getElementById('com_readup_article_content');
+				content.style.opacity = '0';
+				setTimeout(
+					() => {
+						window.scrollTo(0, scrollTop);
+						content.style.opacity = '1';
+					},
+					350
+				);
+			}
 			beginClosingPrompt();
 		}
 	};
@@ -118,8 +128,6 @@ function insertBookmarkPrompt() {
 		React.createElement(BookmarkPrompt, props),
 		rootElement
 	);
-	// smooth scrolling
-	smoothscroll.polyfill();
 }
 
 // embed
