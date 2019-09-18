@@ -149,6 +149,10 @@ export default {
 			}
 		},
 		{
+			hostname: 'qsrmagazine.com',
+			contentSearchRootElementSelector: '.post'
+		},
+		{
 			hostname: 'article-test.dev.readup.com',
 			transpositions: [
 				{
@@ -296,6 +300,13 @@ export default {
 					parentElementSelector: '.body-block > section:first-of-type'
 				}
 			]
+		},
+		{
+			hostname: 'dailymail.co.uk',
+			contentSearchRootElementSelector: 'div[itemprop="articleBody"]',
+			textContainerSearch: {
+				selectorBlacklist: ['.art-insert']
+			}
 		},
 		{
 			hostname: 'telegraph.co.uk',
