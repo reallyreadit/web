@@ -8,9 +8,9 @@ export default interface UserAccount {
 	role: UserAccountRole,
 	isEmailConfirmed: boolean,
 	timeZoneId: number | null,
-	aotd_alert_count: number,
-	reply_alert_count: number,
-	loopback_alert_count: number,
-	post_alert_count: number,
-	follower_alert_count: number
+	aotdAlert: boolean,
+	replyAlertCount: number,
+	loopbackAlertCount: number,
+	postAlertCount: number,
+	followerAlertCount: number
 }
