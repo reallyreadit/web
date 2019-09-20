@@ -8,7 +8,9 @@ export default interface Post {
 	userName: string,
 	badge: LeaderboardBadge,
 	article: UserArticle,
-	comment: PostComment | null
+	comment: PostComment | null,
+	silentPostId: number | null,
+	hasAlert: boolean
 }
 export function createCommentThread(post: Post): CommentThread {
 	return {

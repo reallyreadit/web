@@ -24,6 +24,7 @@ import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
+import createInboxScreenFactory from './screens/InboxScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -169,6 +170,22 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
+			[ScreenKey.Inbox]: createInboxScreenFactory(
+				ScreenKey.Inbox,
+				{
+					onClearAlerts: this._clearAlerts,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
+					onPostArticle: this._openPostDialog,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onCloseDialog: this._dialog.closeDialog,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,

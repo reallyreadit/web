@@ -31,6 +31,8 @@ import Following from '../../../common/models/social/Following';
 import FolloweesPostsQuery from '../../../common/models/social/FolloweesPostsQuery';
 import Settings from '../../../common/models/Settings';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
+import InboxPostsQuery from '../../../common/models/social/InboxPostsQuery';
+import ClearAlertForm from '../../../common/models/notifications/ClearAlertForm';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -141,12 +143,16 @@ export default abstract class {
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });
 
+	// Notifications
+	public readonly clearAlerts = (data: ClearAlertForm) => this.post({ path: '/Notifications/ClearAlerts', data });
+
 	// Social
 	public readonly followUser = (data : UserNameForm) => this.post({ path: '/Social/Follow', data });
 	public readonly getFollowees = this.createFetchFunction<Following[]>('/Social/Followees');
 	public readonly getFollowers = this.createFetchFunctionWithParams<UserNameQuery, Following[]>('/Social/Followers');
 	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
 	public readonly getPostsFromFollowees = this.createFetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>('/Social/FolloweesPosts');
+	public readonly getPostsFromInbox = this.createFetchFunctionWithParams<InboxPostsQuery, PageResult<Post>>('/Social/InboxPosts');
 	public readonly getPostsFromUser = this.createFetchFunctionWithParams<UserPostsQuery, PageResult<Post>>('/Social/UserPosts');
 	public readonly getProfile = this.createFetchFunctionWithParams<UserNameQuery, Profile>('/Social/Profile');
 	public readonly unfollowUser = (data: UserNameForm) => this.post({ path: '/Social/Unfollow', data });

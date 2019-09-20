@@ -31,6 +31,7 @@ import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
 import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
+import createInboxScreenFactory from './screens/InboxScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -118,6 +119,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
+			method: 'replace'
+		});
+	};
+	private readonly _viewInbox = () => {
+		this.setScreenState({
+			key: ScreenKey.Inbox,
 			method: 'replace'
 		});
 	};
@@ -237,6 +244,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
+			[ScreenKey.Inbox]: createInboxScreenFactory(
+				ScreenKey.Inbox,
+				{
+					onClearAlerts: this._clearAlerts,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
+					onPostArticle: this._openPostDialog,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
 				onCloseDialog: this._dialog.closeDialog,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -597,11 +620,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 				 ) ?
 					<Header
 						isDesktopDevice={this._isDesktopDevice}
-						isUserSignedIn={!!this.state.user}
 						onOpenMenu={this._openMenu}
 						onShowCreateAccountDialog={this._openCreateAccountDialog}
 						onShowSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
+						onViewInbox={this._viewInbox}
+						user={this.state.user}
 					/> :
 					null}
 				<main>

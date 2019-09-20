@@ -102,6 +102,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Leaderboards
 	},
 	{
+		analyticsName: 'Inbox',
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/notifications',
+		pathRegExp: /^\/notifications$/,
+		screenKey: ScreenKey.Inbox
+	},
+	{
 		analyticsName: 'MyReads',
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/reads',

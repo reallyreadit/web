@@ -5,14 +5,16 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
+import UserAccount from '../../../../common/models/UserAccount';
 
 interface Props {
 	isDesktopDevice: boolean,
-	isUserSignedIn: boolean,
 	onOpenMenu: () => void,
 	onShowCreateAccountDialog: () => void,
 	onShowSignInDialog: () => void,
-	onViewHome: () => void
+	onViewHome: () => void,
+	onViewInbox: () => void,
+	user: UserAccount | null
 }
 export default class extends React.PureComponent<Props> {
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
@@ -21,8 +23,8 @@ export default class extends React.PureComponent<Props> {
 	};
 	public render() {
 		const
-			showAuthButtons = !this.props.isUserSignedIn && this.props.isDesktopDevice,
-			showMenu = this.props.isUserSignedIn && this.props.isDesktopDevice;
+			showAuthButtons = !this.props.user && this.props.isDesktopDevice,
+			showMenu = this.props.user && this.props.isDesktopDevice;
 		return (
 			<header className={
 				classNames(
@@ -40,12 +42,17 @@ export default class extends React.PureComponent<Props> {
 				{showAuthButtons || showMenu ?
 					<div className="menu-container">
 						{showMenu ?
-							<div className={classNames('menu-icon-container')}>
+							<>
+								<Icon
+									badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
+									name="bell"
+									onClick={this.props.onViewInbox}
+								/>
 								<Icon
 									name="menu2"
 									onClick={this.props.onOpenMenu}
 								/>
-							</div> :
+							</> :
 							null}
 						{showAuthButtons ?
 							<>

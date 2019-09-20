@@ -42,6 +42,7 @@ import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
+import Alert from '../../../common/models/notifications/Alert';
 
 export interface Props {
 	analytics: Analytics,
@@ -232,6 +233,31 @@ export default abstract class Root<
 	};
 	protected readonly _registerNotificationPreferenceChangedEventHandler = (handler: (preference: NotificationPreference) => void) => {
 		return this._eventManager.addListener('notificationPreferenceChanged', handler);
+	};
+
+	// notifications
+	protected readonly _clearAlerts = (alert: Alert) => {
+		let user = this.state.user;
+		switch (alert) {
+			case Alert.Aotd:
+				user = { ...user, aotdAlert: false };
+				break;
+			case Alert.Followers:
+				user = { ...user, followerAlertCount: 0 };
+				break;
+			case Alert.Following:
+				user = { ...user, postAlertCount: 0 };
+				break;
+			case Alert.Inbox:
+				user = {
+					...user,
+					replyAlertCount: 0,
+					loopbackAlertCount: 0
+				};
+				break;
+		}
+		this.setState({ user });
+		this.props.serverApi.clearAlerts({ alert });
 	};
 
 	// routing
