@@ -8,11 +8,13 @@
 	width: 20px;
 	height: 20px;
 	cursor: pointer;
-	stroke-width: 1px;
+}
+.star_n3lkaj > .icon_rour3d > .icon {
 	fill: transparent;
 	stroke: #999;
+	stroke-width: 1px;
 }
-.star_n3lkaj.starred > .icon_rour3d {
+.star_n3lkaj.starred > .icon_rour3d > .icon {
 	fill: gold;
 	stroke: darkgoldenrod;
 }
