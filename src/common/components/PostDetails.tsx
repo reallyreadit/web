@@ -9,6 +9,7 @@ import UserAccount from '../models/UserAccount';
 import ContentBox from './ContentBox';
 import PostHeader from './PostHeader';
 import CommentThread from '../models/CommentThread';
+import classNames from 'classnames';
 
 interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -26,7 +27,7 @@ interface Props {
 export default class PostDetails extends React.Component<Props> {
 	public render() {
 		return (
-			<ContentBox className="post-details_8qx033">
+			<ContentBox className={classNames('post-details_8qx033', { 'alert': this.props.post.hasAlert })}>
 				<ArticleDetails
 					article={this.props.post.article}
 					isUserSignedIn={!!this.props.user}
