@@ -19,13 +19,13 @@
 	width: 36px;
 	height: 100%;
 }
-.header_q3p9go > .left-content > .back-button {
+.header_q3p9go > .left-content {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100%;
 }
-.header_q3p9go > .left-content > .back-button > .icon_rour3d {
+.header_q3p9go > .left-content > .icon_rour3d,
+.header_q3p9go > .left-content > .inbox-icon-wrapper > .icon_rour3d {
 	font-size: 20px;
 }
 .header_q3p9go > .title {

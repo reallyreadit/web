@@ -76,6 +76,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
 	};
+	private readonly _viewInbox = () => {
+		this.replaceScreen(ScreenKey.Inbox);
+	};
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
 	};
@@ -391,7 +394,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 							content={headerContent}
 							isTransitioningBack={this.state.isPoppingScreen}
 							onBack={this._popScreen}
+							onViewInbox={this._viewInbox}
 							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
+							user={this.state.user}
 						/>
 						<div className="content">
 							<ol className="screens">
