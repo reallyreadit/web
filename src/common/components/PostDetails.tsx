@@ -12,6 +12,7 @@ import CommentThread from '../models/CommentThread';
 import classNames from 'classnames';
 
 interface Props {
+	highlightedCommentId?: string,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPost: (article: UserArticle) => void,
@@ -27,7 +28,10 @@ interface Props {
 export default class PostDetails extends React.Component<Props> {
 	public render() {
 		return (
-			<ContentBox className={classNames('post-details_8qx033', { 'alert': this.props.post.hasAlert })}>
+			<ContentBox
+				className={classNames('post-details_8qx033', { 'alert': this.props.post.hasAlert })}
+				highlight={this.props.post.comment && this.props.post.comment.id === this.props.highlightedCommentId}
+			>
 				<ArticleDetails
 					article={this.props.post.article}
 					isUserSignedIn={!!this.props.user}

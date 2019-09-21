@@ -18,8 +18,12 @@ import CommentThread from '../../../../common/models/CommentThread';
 import UserAccount from '../../../../common/models/UserAccount';
 import { Screen, SharedState } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 interface Props {
+	highlightedCommentId: string | null,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -80,6 +84,7 @@ class InboxScreen extends React.Component<Props, State> {
 							post => (
 								<li key={post.date}>
 									<PostDetails
+										highlightedCommentId={this.props.highlightedCommentId}
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onRead={this.props.onReadArticle}
@@ -101,12 +106,19 @@ class InboxScreen extends React.Component<Props, State> {
 }
 export default function createInboxScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'user'>>
 ) {
+	const route = findRouteByKey(routes, ScreenKey.Inbox);
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Notifications' }),
 		render: (state: Screen, sharedState: SharedState) => (
-			<InboxScreen {...{ ...deps, user: sharedState.user }} />
+			<InboxScreen {
+				...{
+					...deps,
+					highlightedCommentId: route.getPathParams(state.location.path)['commentId'],
+					user: sharedState.user
+				}
+			} />
 		)
 	};
 }
