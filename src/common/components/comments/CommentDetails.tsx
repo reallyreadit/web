@@ -26,15 +26,11 @@ interface Props {
 	parentCommentId?: string,
 	user: UserAccount | null
 }
-export default class CommentDetails extends React.Component<
+export default class CommentDetails extends React.PureComponent<
 	Props,
-	{
-		fadeHighlight: boolean,
-		showComposer: boolean
-}> {
+	{ showComposer: boolean }
+> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _elementRef: React.RefObject<HTMLDivElement>;
-	private _intersectionObserver: IntersectionObserver;
 	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
 	private _showComposer = () => this.setState({ showComposer: true });
 	private _hideComposer = () => this.setState({ showComposer: false });
@@ -81,12 +77,8 @@ export default class CommentDetails extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			fadeHighlight: false,
 			showComposer: false
 		};
-		if (props.highlightedCommentId === props.comment.id) {
-			this._elementRef = React.createRef();
-		}
 	}
 	private getCommentAbsoluteUrl() {
 		const [sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_');
@@ -98,112 +90,80 @@ export default class CommentDetails extends React.Component<
 			})
 		);
 	}
-	public componentDidMount() {
-		if (this.props.highlightedCommentId === this.props.comment.id) {
-			this._asyncTracker.addTimeout(
-				window.setTimeout(
-					() => {
-						this._intersectionObserver = new IntersectionObserver(
-							entries => {
-								const entry = entries[0];
-								if (entry && entry.isIntersecting) {
-									this.setState({ fadeHighlight: true });
-									this._intersectionObserver.unobserve(entry.target);
-								}
-							}
-						);
-						this._intersectionObserver.observe(this._elementRef.current);
-						this._elementRef.current.scrollIntoView({
-							behavior: 'smooth',
-							block: 'start'
-						});
-					},
-					100
-				)
-			);
-		}
-	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
-		if (this._intersectionObserver) {
-			this._intersectionObserver.disconnect();
-		}
 	}
 	public render() {
 		return (
-			<div
+			<ContentBox
 				className={classNames(
 					'comment-details_qker1u',
 					{
-						'fade-highlight': this.state.fadeHighlight,
-						'highlight': this.props.highlightedCommentId === this.props.comment.id,
 						'post-embed': !!this.props.onViewThread
 					}
 				)}
-				ref={this._elementRef}
+				highlight={this.props.highlightedCommentId === this.props.comment.id}
 			>
-				<ContentBox>
-					<PostHeader
-						userName={this.props.comment.userAccount}
-						leaderboardBadge={this.props.comment.badge}
-						date={this.props.comment.dateCreated}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onGetShareData={this._getShareData}
-						onShare={this.props.onShare}
-						onViewProfile={this.props.onViewProfile}
-					/>
-					<div
-						className="text"
-						dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}
-					/>
-					{this.state.showComposer ? 
-						<CommentComposer
-							articleId={this.props.comment.articleId}
-							onCancel={this._hideComposer}
-							onPostComment={this._addComment}
-							parentCommentId={this.props.comment.id}
-						/> :
-						this.props.user && (this.props.onPostComment || this.props.onViewThread) ?
-							<div className="actions">
-								{this.props.onPostComment ?
+				<PostHeader
+					userName={this.props.comment.userAccount}
+					leaderboardBadge={this.props.comment.badge}
+					date={this.props.comment.dateCreated}
+					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onGetShareData={this._getShareData}
+					onShare={this.props.onShare}
+					onViewProfile={this.props.onViewProfile}
+				/>
+				<div
+					className="text"
+					dangerouslySetInnerHTML={{ __html: this.props.comment.text.replace(/\n/g, '<br />') }}
+				/>
+				{this.state.showComposer ? 
+					<CommentComposer
+						articleId={this.props.comment.articleId}
+						onCancel={this._hideComposer}
+						onPostComment={this._addComment}
+						parentCommentId={this.props.comment.id}
+					/> :
+					this.props.user && (this.props.onPostComment || this.props.onViewThread) ?
+						<div className="actions">
+							{this.props.onPostComment ?
+								<ActionLink
+									text="Reply"
+									onClick={this._showComposer}
+								/> :
+								this.props.onViewThread ?
 									<ActionLink
-										text="Reply"
-										onClick={this._showComposer}
+										href={this.getCommentAbsoluteUrl()}
+										text="View Thread"
+										onClick={this._viewThread} 
 									/> :
-									this.props.onViewThread ?
-										<ActionLink
-											href={this.getCommentAbsoluteUrl()}
-											text="View Thread"
-											onClick={this._viewThread} 
-										/> :
-										null}
-							</div> :
-							null}
-					{this.props.comment.children.length ?
-						<ul className="replies">
-							{this.props.comment.children.map(
-								comment => (
-									<li key={comment.id}>
-										<CommentDetails
-											comment={comment}
-											highlightedCommentId={this.props.highlightedCommentId}
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onPostComment={this.props.onPostComment}
-											onShare={this.props.onShare}
-											onViewProfile={this.props.onViewProfile}
-											onViewThread={this.props.onViewThread}
-											parentCommentId={this.props.comment.id}
-											user={this.props.user}
-										/>
-									</li>
-								)
-							)}
-						</ul> :
+									null}
+						</div> :
 						null}
-				</ContentBox>
-			</div>
+				{this.props.comment.children.length ?
+					<ul className="replies">
+						{this.props.comment.children.map(
+							comment => (
+								<li key={comment.id}>
+									<CommentDetails
+										comment={comment}
+										highlightedCommentId={this.props.highlightedCommentId}
+										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onPostComment={this.props.onPostComment}
+										onShare={this.props.onShare}
+										onViewProfile={this.props.onViewProfile}
+										onViewThread={this.props.onViewThread}
+										parentCommentId={this.props.comment.id}
+										user={this.props.user}
+									/>
+								</li>
+							)
+						)}
+					</ul> :
+					null}
+			</ContentBox>
 		);
 	}
 }

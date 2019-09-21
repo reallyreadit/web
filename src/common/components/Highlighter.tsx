@@ -1,0 +1,76 @@
+import * as React from 'react';
+import classNames, { ClassValue } from 'classnames';
+import AsyncTracker from '../AsyncTracker';
+
+interface Props {
+	children: React.ReactNode,
+	className?: ClassValue,
+	highlight: boolean
+}
+export default class Highlighter extends React.PureComponent<
+	Props,
+	{ fadeHighlight: boolean }
+> {
+	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _elementRef: React.RefObject<HTMLDivElement>;
+	private _intersectionObserver: IntersectionObserver;
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			fadeHighlight: false
+		};
+		if (props.highlight) {
+			this._elementRef = React.createRef();
+		}
+	}
+	public componentDidMount() {
+		if (this.props.highlight) {
+			this._asyncTracker.addTimeout(
+				window.setTimeout(
+					() => {
+						this._intersectionObserver = new IntersectionObserver(
+							entries => {
+								const entry = entries[0];
+								if (entry && entry.isIntersecting) {
+									this.setState({ fadeHighlight: true });
+									this._intersectionObserver.unobserve(entry.target);
+								}
+							}
+						);
+						this._intersectionObserver.observe(this._elementRef.current);
+						this._elementRef.current.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start'
+						});
+					},
+					100
+				)
+			);
+		}
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
+		if (this._intersectionObserver) {
+			this._intersectionObserver.disconnect();
+		}
+	}
+	public render() {
+		return (
+			<div
+				className={
+					classNames(
+						'highlighter_trojkf',
+						this.props.className,
+						{
+							'fade-highlight': this.state.fadeHighlight,
+							'highlight': this.props.highlight,
+						}
+					)
+				}
+				ref={this._elementRef}
+			>
+				{this.props.children}
+			</div>
+		);
+	}
+}

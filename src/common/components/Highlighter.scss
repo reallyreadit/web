@@ -1,0 +1,21 @@
+/*
+	componentPath: src/common/components/Highlighter
+	cssComponentId: highlighter_trojkf
+*/
+
+.highlighter_trojkf.highlight {
+	background-color: #FFF599;
+}
+.highlighter_trojkf.fade-highlight {
+	animation: highlighter_trojkf-fade-highlight 2500ms forwards;
+	animation-delay: 500ms;
+}
+
+@keyframes highlighter_trojkf-fade-highlight {
+	from {
+		background-color: #FFF599;
+	}
+	to {
+		background-color: white;
+	}
+}
