@@ -27,6 +27,7 @@
 	-webkit-overflow-scrolling: touch;
 	box-sizing: border-box;
 	background-color: #F7F6F5;
+	z-index: 1;
 }
 .app-root_vc3j5h > .content > .screens > .screen + .screen {
 	animation: app-root_vc3j5h-screen-slide-in 250ms forwards;
