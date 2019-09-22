@@ -251,14 +251,7 @@ server = server.get('/proof/:token', (req, res) => {
 			);
 		});
 });
-server = server.get('/history', (req, res) => {
-	redirect(
-		req,
-		res,
-		findRouteByKey(routes, ScreenKey.MyReads).createUrl()
-	);
-});
-server = server.get('/starred', (req, res) => {
+server = server.get('/reads', (req, res) => {
 	redirect(
 		req,
 		res,
@@ -269,7 +262,7 @@ server = server.get('/inbox', (req, res) => {
 	redirect(
 		req,
 		res,
-		findRouteByKey(routes, ScreenKey.Home).createUrl()
+		findRouteByKey(routes, ScreenKey.Inbox).createUrl()
 	);
 });
 // handle redirects

@@ -161,13 +161,33 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Inbox
 		} as Route<DialogKey, ScreenKey>;
 	})(),
-	{
-		analyticsName: 'MyReads',
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/reads',
-		pathRegExp: /^\/reads$/,
-		screenKey: ScreenKey.MyReads
-	},
+	(function () {
+		const pathRegExp = /^\/(starred|history)$/;
+		return {
+			analyticsName: 'MyReads',
+			authLevel: UserAccountRole.Regular,
+			createUrl: params => {
+				if (
+					params &&
+					(
+						params['view'] === 'starred' ||
+						params['view'] === 'history'
+					)
+				) {
+					return `/${params['view']}`;
+				}
+				return '/starred';
+			},
+			getPathParams: path => {
+				const [, view] = path.match(pathRegExp);
+				return {
+					view: view === 'history' ? view : 'starred'
+				};
+			},
+			pathRegExp,
+			screenKey: ScreenKey.MyReads
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	{
 		analyticsName: 'PasswordReset',
 		createUrl: params => `/password/${params['action']}/${params['result']}`,

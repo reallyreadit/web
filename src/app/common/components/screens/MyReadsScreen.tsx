@@ -17,6 +17,10 @@ import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import InfoBox from '../controls/InfoBox';
 import HeaderSelector from '../HeaderSelector';
+import { Screen } from '../Root';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 enum List {
 	History = 'History',
@@ -24,6 +28,7 @@ enum List {
 }
 type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>;
 interface Props {
+	list: List,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetStarredArticles: ArticleFetchFunction,
@@ -31,14 +36,15 @@ interface Props {
 	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	screenId: number
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
 	isScreenLoading: boolean,
-	list: List,
 	maxLength: number | null,
 	minLength: number | null
 }
@@ -51,15 +57,24 @@ class MyReadsScreen extends React.Component<Props, State> {
 			minLength,
 			maxLength
 		});
-		this.fetchArticles(this.state.list, 1, minLength, maxLength);
+		this.fetchArticles(this.props.list, 1, minLength, maxLength);
 	};
 	private readonly _changeList = (value: string) => {
 		const list = value as List;
-		if (list !== this.state.list) {
+		if (list !== this.props.list) {
 			this.setState({
-				articles: { isLoading: true },
-				list
+				articles: { isLoading: true }
 			});
+			this.props.onSetScreenState(
+				this.props.screenId,
+				() => ({
+					location: {
+						path: list === List.Starred ?
+							'/starred' :
+							'/history'
+					}
+				})
+			);
 			this.fetchArticles(list, 1, this.state.minLength, this.state.maxLength);
 		}
 	};
@@ -67,16 +82,15 @@ class MyReadsScreen extends React.Component<Props, State> {
 		this.setState({
 			articles: { isLoading: true }
 		});
-		this.fetchArticles(this.state.list, pageNumber, this.state.minLength, this.state.maxLength);
+		this.fetchArticles(this.props.list, pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	constructor(props: Props) {
 		super(props);
 		const
-			list = List.Starred,
 			minLength: number | null = null,
 			maxLength: number | null = null,
 			articles = this.fetchArticles(
-				list,
+				props.list,
 				1,
 				minLength,
 				maxLength,
@@ -89,7 +103,6 @@ class MyReadsScreen extends React.Component<Props, State> {
 		this.state = {
 			articles,
 			isScreenLoading: articles.isLoading,
-			list,
 			maxLength,
 			minLength
 		};
@@ -154,7 +167,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 								disabled={this.state.articles.isLoading}
 								items={headerSelectorItems}
 								onChange={this._changeList}
-								value={this.state.list}
+								value={this.props.list}
 							/>
 							<ArticleLengthFilter
 								max={this.state.maxLength}
@@ -195,7 +208,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 									position="static"
 									style="normal"
 								>
-									{this.state.list === List.Starred ?
+									{this.props.list === List.Starred ?
 										<>
 											<p>You have 0 starred articles.</p>
 											<p><strong>Star articles to save them for later.</strong></p>
@@ -212,12 +225,21 @@ class MyReadsScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Props
+	deps: Pick<Props, Exclude<keyof Props, 'list' | 'screenId'>>
 ) {
+	const route = findRouteByKey(routes, ScreenKey.MyReads);
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'My Reads' }),
-		render: () => (
-			<MyReadsScreen {...deps} />
+		render: (screen: Screen) => (
+			<MyReadsScreen {
+				...{
+					...deps,
+					list: route.getPathParams(screen.location.path)['view'] === 'starred' ?
+						List.Starred :
+						List.History,
+					screenId: screen.id
+				}
+			} />
 		)
 	};
 }
