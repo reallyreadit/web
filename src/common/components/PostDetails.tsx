@@ -13,6 +13,7 @@ import classNames from 'classnames';
 
 interface Props {
 	highlightedCommentId?: string,
+	highlightedPostId?: string,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPost: (article: UserArticle) => void,
@@ -30,7 +31,14 @@ export default class PostDetails extends React.Component<Props> {
 		return (
 			<ContentBox
 				className={classNames('post-details_8qx033', { 'alert': this.props.post.hasAlert })}
-				highlight={this.props.post.comment && this.props.post.comment.id === this.props.highlightedCommentId}
+				highlight={
+					(
+						this.props.post.silentPostId && this.props.post.silentPostId === this.props.highlightedPostId
+					) ||
+					(
+						this.props.post.comment && this.props.post.comment.id === this.props.highlightedCommentId
+					)
+				}
 			>
 				<ArticleDetails
 					article={this.props.post.article}

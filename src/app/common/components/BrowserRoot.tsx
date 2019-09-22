@@ -447,7 +447,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				null,
 				screen.title,
 				screen.location.path + (screen.location.queryString || '')
-			)
+			);
 		}
 		this.props.browserApi.setTitle(title);
 		// send the pageview for the top screen
@@ -534,6 +534,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.extensionApi.commentPosted(comment);
 		}
 		super.onCommentPosted(comment);
+	}
+	protected onLocationChanged(path: string, title?: string) {
+		window.history.pushState(
+			null,
+			title || window.document.title,
+			path
+		);
+		if (title) {
+			this.props.browserApi.setTitle(title);
+		}
 	}
 	protected onNotificationPreferenceChanged(preference: NotificationPreference, eventSource: EventSource = EventSource.Local) {
 		if (eventSource === EventSource.Local) {

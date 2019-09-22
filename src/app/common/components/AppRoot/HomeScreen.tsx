@@ -22,8 +22,13 @@ import CommentThread from '../../../../common/models/CommentThread';
 import FolloweesPostsQuery from '../../../../common/models/social/FolloweesPostsQuery';
 import PageResult from '../../../../common/models/PageResult';
 import Post from '../../../../common/models/social/Post';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 interface Props {
+	highlightedCommentId: string | null,
+	highlightedPostId: string | null,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
@@ -32,30 +37,42 @@ interface Props {
 	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
-	user: UserAccount | null
+	screenId: number,
+	user: UserAccount | null,
+	view: View
 }
 interface State {
-	communityReads: Fetchable<CommunityReads>,
+	communityReads?: Fetchable<CommunityReads>,
 	isLoading: boolean,
 	maxLength?: number,
 	minLength?: number,
 	posts?: Fetchable<PageResult<Post>>,
 	sort: CommunityReadSort,
-	timeWindow?: CommunityReadTimeWindow,
-	view: View
+	timeWindow?: CommunityReadTimeWindow
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeParams = (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => {
 		this.setState({
 			isLoading: true,
-			view, sort, timeWindow, minLength, maxLength
+			sort, timeWindow, minLength, maxLength
 		});
+		this.props.onSetScreenState(
+			this.props.screenId,
+			() => ({
+				location: {
+					path: view === View.Trending ?
+						'/' :
+						'/following'
+				}
+			})
+		);
 		switch (view) {
 			case View.Trending:
 				this.props.onGetCommunityReads(
@@ -99,7 +116,7 @@ class HomeScreen extends React.Component<Props, State> {
 	private readonly _loadMore = () => {
 		return this._asyncTracker.addPromise(
 			new Promise<void>((resolve, reject) => {
-				switch (this.state.view) {
+				switch (this.props.view) {
 					case View.Trending:
 						this.props.onGetCommunityReads(
 							{
@@ -161,17 +178,44 @@ class HomeScreen extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
-		this.state = {
-			communityReads: props.onGetCommunityReads(
-				{ pageNumber: 1, pageSize: 10, sort: CommunityReadSort.Hot },
-				this._asyncTracker.addCallback(communityReads => {
-					this.setState({ communityReads });
-				})
-			),
-			isLoading: false,
-			sort: CommunityReadSort.Hot,
-			view: View.Trending
-		};
+		switch (props.view) {
+			case View.Trending:
+				this.state = {
+					communityReads: props.onGetCommunityReads(
+						{
+							pageNumber: 1,
+							pageSize: 10,
+							sort: CommunityReadSort.Hot
+						},
+						this._asyncTracker.addCallback(
+							communityReads => {
+								this.setState({ communityReads });
+							}
+						)
+					),
+					isLoading: false,
+					sort: CommunityReadSort.Hot
+				};
+				break;
+			case View.Following:
+				this.state = {
+					posts: props.onGetFolloweesPosts(
+						{
+							maxLength: null,
+							minLength: null,
+							pageNumber: 1
+						},
+						this._asyncTracker.addCallback(
+							posts => {
+								this.setState({ posts });
+							}
+						)
+					),
+					isLoading: false,
+					sort: CommunityReadSort.Hot
+				};
+				break;
+		}
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
 				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
@@ -185,20 +229,23 @@ class HomeScreen extends React.Component<Props, State> {
 		return (
 			<ScreenContainer className="home-screen_an7vm5">
 				{(
-					this.state.communityReads.isLoading ||
+					(this.state.communityReads && this.state.communityReads.isLoading) ||
 					(this.state.posts && this.state.posts.isLoading)
 				) ?
 					<LoadingOverlay position="static" /> :
 					<>
 						{(
 							this.props.user &&
+							!this.state.posts &&
 							!this.state.communityReads.value.userReadCount
 						) ?
 							<WelcomeInfoBox /> :
 							null}
 						<CommunityReadsList
-							aotd={this.state.communityReads.value.aotd}
-							articles={this.state.communityReads.value.articles}
+							aotd={this.state.communityReads && this.state.communityReads.value.aotd}
+							articles={this.state.communityReads && this.state.communityReads.value.articles}
+							highlightedCommentId={this.props.highlightedCommentId}
+							highlightedPostId={this.props.highlightedPostId}
 							isLoading={this.state.isLoading}
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}
@@ -216,11 +263,11 @@ class HomeScreen extends React.Component<Props, State> {
 							sort={this.state.sort}
 							timeWindow={this.state.timeWindow}
 							user={this.props.user}
-							view={this.state.view}
+							view={this.props.view}
 						/>
 						{(
 							!this.state.isLoading && (
-								this.state.view === View.Trending ||
+								this.props.view === View.Trending ||
 								this.state.posts.value.items.length
 							)
 						) ?
@@ -238,8 +285,9 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'screenId' | 'user' | 'view'>>
 ) {
+	const route = findRouteByKey(routes, ScreenKey.Home);
 	return {
 		create: (id: number, location: RouteLocation) => ({
 			id,
@@ -247,8 +295,30 @@ export default function <TScreenKey>(
 			location,
 			title: 'Discover'
 		}),
-		render: (screenState: Screen, sharedState: SharedState) => (
-			<HomeScreen {...{ ...deps, user: sharedState.user }} />
-		)
+		render: (screenState: Screen, sharedState: SharedState) => {
+			const pathParams = route.getPathParams(screenState.location.path);
+			return (
+				<HomeScreen {
+					...{
+						...deps,
+						highlightedCommentId: (
+							pathParams['highlightedType'] === 'comment' ?
+								pathParams['highlightedId'] :
+								null
+						),
+						highlightedPostId: (
+							pathParams['highlightedType'] === 'post' ?
+								pathParams['highlightedId'] :
+								null
+						),
+						screenId: screenState.id,
+						user: sharedState.user,
+						view: pathParams['view'] === 'trending' ?
+							View.Trending :
+							View.Following
+					}
+				} />
+			);
+		}
 	};
 }

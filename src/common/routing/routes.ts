@@ -4,12 +4,49 @@ import ScreenKey from "./ScreenKey";
 import UserAccountRole from "../models/UserAccountRole";
 
 const routes: Route<DialogKey, ScreenKey>[] = [
-	{
-		analyticsName: 'Home',
-		createUrl: () => '/',
-		pathRegExp: /^\/$/,
-		screenKey: ScreenKey.Home
-	},
+	(function () {
+		const pathRegExp = /^\/(?:(following)(?:\/(comment|post)\/([^/]+))?)?$/;
+		return {
+			analyticsName: 'Home',
+			createUrl: params => {
+				let url = '/';
+				if (params && params['view'] && params['view'] === 'following') {
+					url += 'following';
+					if (
+						params['highlightedType'] &&
+						(
+							params['highlightedType'] === 'comment' ||
+							params['highlightedType'] === 'post'
+						) &&
+						params['highlightedId']
+					) {
+						url += `/${params['highlightedType']}/${params['highlightedId']}`;
+					}
+				}
+				return url;
+			},
+			getPathParams: path => {
+				const
+					[, view, highlightedType, highlightedId] = path.match(pathRegExp),
+					params: {
+						view: 'trending' | 'following',
+						highlightedType?: 'comment' | 'post',
+						highlightedId?: string
+					} = {
+						view: view === 'following' ? view : 'trending'
+					};
+				if (highlightedType === 'comment' || highlightedType === 'post') {
+					params.highlightedType = highlightedType;
+				}
+				if (highlightedId) {
+					params.highlightedId = highlightedId;
+				}
+				return params;
+			},
+			pathRegExp,
+			screenKey: ScreenKey.Home
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	{
 		analyticsName: 'Home',
 		createUrl: () => '/?create-account',

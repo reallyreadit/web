@@ -84,6 +84,8 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 export default class extends React.PureComponent<{
 	aotd?: UserArticle,
 	articles?: PageResult<UserArticle>,
+	highlightedCommentId: string | null,
+	highlightedPostId: string | null,
 	isLoading: boolean,
 	maxLength: number | null,
 	minLength: number | null,
@@ -219,6 +221,8 @@ export default class extends React.PureComponent<{
 										post => (
 											<li key={post.date}>
 												<PostDetails
+													highlightedCommentId={this.props.highlightedCommentId}
+													highlightedPostId={this.props.highlightedPostId}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onRead={this.props.onReadArticle}

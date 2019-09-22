@@ -24,18 +24,17 @@ import CommentThread from '../../../../common/models/CommentThread';
 import Post from '../../../../common/models/social/Post';
 import PageResult from '../../../../common/models/PageResult';
 import FolloweesPostsQuery from '../../../../common/models/social/FolloweesPostsQuery';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
-const
-	pageSize = 40,
-	defaultQueryParams = {
-		pageNumber: 1,
-		pageSize,
-		sort: CommunityReadSort.Hot
-	};
+const pageSize = 40;
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
 	return user && isDesktopDevice;
 }
 interface Props {
+	highlightedCommentId: string | null,
+	highlightedPostId: string | null,
 	isDesktopDevice: boolean,
 	isBrowserCompatible: boolean,
 	isIosDevice: boolean | null,
@@ -60,7 +59,8 @@ interface Props {
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
 	screenId: number,
-	user: UserAccount | null
+	user: UserAccount | null,
+	view: View
 }
 interface State {
 	communityReads?: Fetchable<CommunityReads>,
@@ -69,36 +69,72 @@ interface State {
 	minLength?: number,
 	posts?: Fetchable<PageResult<Post>>,
 	sort?: CommunityReadSort,
-	timeWindow?: CommunityReadTimeWindow,
-	view?: View
+	timeWindow?: CommunityReadTimeWindow
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changePage = (pageNumber: number) => {
 		this.setState({ isLoading: true });
-		this.fetchItems(this.state.view, this.state.sort, this.state.timeWindow, this.state.minLength, this.state.maxLength, pageNumber);
+		this.fetchItems(this.props.view, this.state.sort, this.state.timeWindow, this.state.minLength, this.state.maxLength, pageNumber);
 	};
 	private readonly _changeParams = (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => {
 		this.setState({
 			isLoading: true,
-			view, sort, timeWindow, minLength, maxLength
+			sort, timeWindow, minLength, maxLength
 		});
+		this.props.onSetScreenState(
+			this.props.screenId,
+			() => ({
+				location: {
+					path: view === View.Trending ?
+						'/' :
+						'/following'
+				}
+			})
+		);
 		this.fetchItems(view, sort, timeWindow, minLength, maxLength, 1);
 	};
 	constructor(props: Props) {
 		super(props);
 		if (shouldShowHomeScreen(props.user, props.isDesktopDevice)) {
-			this.state = {
-				communityReads: props.onGetCommunityReads(
-					defaultQueryParams,
-					this._asyncTracker.addCallback(communityReads => {
-						this.setState({ communityReads });
-					})
-				),
-				isLoading: false,
-				sort: CommunityReadSort.Hot,
-				view: View.Trending
-			};
+			switch (props.view) {
+				case View.Trending:
+					this.state = {
+						communityReads: props.onGetCommunityReads(
+							{
+								pageNumber: 1,
+								pageSize,
+								sort: CommunityReadSort.Hot
+							},
+							this._asyncTracker.addCallback(
+								communityReads => {
+									this.setState({ communityReads });
+								}
+							)
+						),
+						isLoading: false,
+						sort: CommunityReadSort.Hot
+					};
+					break;
+				case View.Following:
+					this.state = {
+						posts: props.onGetFolloweesPosts(
+							{
+								maxLength: null,
+								minLength: null,
+								pageNumber: 1
+							},
+							this._asyncTracker.addCallback(
+								posts => {
+									this.setState({ posts });
+								}
+							)
+						),
+						isLoading: false,
+						sort: CommunityReadSort.Hot
+					};
+					break;
+			}
 		} else {
 			this.state = {
 				isLoading: false
@@ -112,18 +148,27 @@ class HomeScreen extends React.Component<Props, State> {
 				if (shouldShowHomeScreen(user, this.props.isDesktopDevice)) {
 					this.setState({
 						communityReads: props.onGetCommunityReads(
-							defaultQueryParams,
-							this._asyncTracker.addCallback(communityReads => {
-								this.setState({ communityReads });
-							})
+							{
+								pageNumber: 1,
+								pageSize,
+								sort: CommunityReadSort.Hot
+							},
+							this._asyncTracker.addCallback(
+								communityReads => {
+									this.setState({ communityReads });
+								}
+							)
 						),
 						isLoading: false,
-						sort: CommunityReadSort.Hot,
-						view: View.Trending
+						sort: CommunityReadSort.Hot
 					});
-					this.props.onSetScreenState(this.props.screenId, () => ({
-						templateSection: null
-					}));
+					this.props.onSetScreenState(
+						this.props.screenId,
+						() => ({
+							location: { path: '/' },
+							templateSection: null
+						})
+					);
 				} else {
 					this.setState({
 						communityReads: null,
@@ -131,12 +176,15 @@ class HomeScreen extends React.Component<Props, State> {
 						sort: null,
 						timeWindow: null,
 						minLength: null,
-						maxLength: null,
-						view: null
+						maxLength: null
 					});
-					this.props.onSetScreenState(this.props.screenId, () => ({
-						templateSection: TemplateSection.Header
-					}));
+					this.props.onSetScreenState(
+						this.props.screenId,
+						() => ({
+							location: { path: '/' },
+							templateSection: TemplateSection.Header
+						})
+					);
 				}
 			})
 		);
@@ -186,7 +234,11 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice) && this.state.communityReads && this.state.sort != null) {
+		if (
+			shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice) &&
+			(this.state.communityReads || this.state.posts) &&
+			this.state.sort != null
+		) {
 			return (
 				<ScreenContainer className="home-screen_1sjipy">
 					{this.props.user && this.props.isExtensionInstalled === false ?
@@ -196,7 +248,7 @@ class HomeScreen extends React.Component<Props, State> {
 						/> :
 						null}
 					{(
-						this.state.communityReads.isLoading ||
+						(this.state.communityReads && this.state.communityReads.isLoading) ||
 						(this.state.posts && this.state.posts.isLoading)
 					) ?
 						<LoadingOverlay position="static" /> :
@@ -204,13 +256,16 @@ class HomeScreen extends React.Component<Props, State> {
 							{(
 								this.props.user &&
 								this.props.isExtensionInstalled &&
+								!this.state.posts &&
 								!this.state.communityReads.value.userReadCount
 							) ?
 								<WelcomeInfoBox /> :
 								null}
 							<CommunityReadsList
-								aotd={this.state.communityReads.value.aotd}
-								articles={this.state.communityReads.value.articles}
+								aotd={this.state.communityReads && this.state.communityReads.value.aotd}
+								articles={this.state.communityReads && this.state.communityReads.value.articles}
+								highlightedCommentId={this.props.highlightedCommentId}
+								highlightedPostId={this.props.highlightedPostId}
 								isLoading={this.state.isLoading}
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
@@ -228,21 +283,21 @@ class HomeScreen extends React.Component<Props, State> {
 								sort={this.state.sort}
 								timeWindow={this.state.timeWindow}
 								user={this.props.user}
-								view={this.state.view}
+								view={this.props.view}
 							/>
 							{(
 								!this.state.isLoading && (
-									this.state.view === View.Trending ||
+									this.props.view === View.Trending ||
 									this.state.posts.value.items.length
 								)
 							) ?
 								<PageSelector
 									pageNumber={
-										this.state.view === View.Trending ?
+										this.props.view === View.Trending ?
 											this.state.communityReads.value.articles.pageNumber :
 											this.state.posts.value.pageNumber}
 									pageCount={
-										this.state.view === View.Trending ?
+										this.props.view === View.Trending ?
 											this.state.communityReads.value.articles.pageCount :
 											this.state.posts.value.pageCount
 									}
@@ -269,8 +324,9 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'isIosDevice' | 'screenId' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'isExtensionInstalled' | 'isIosDevice' | 'screenId' | 'user' | 'view'>>
 ) {
+	const route = findRouteByKey(routes, ScreenKey.Home);
 	return {
 		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
 			id,
@@ -281,14 +337,30 @@ export default function createScreenFactory<TScreenKey>(
 				TemplateSection.Header,
 			title: 'Readup'
 		}),
-		render: (screenState: Screen, sharedState: SharedState) => (
-			<HomeScreen {
-				...{
-					...deps,
-					...sharedState,
-					screenId: screenState.id
-				}}
-			/>
-		)
+		render: (screenState: Screen, sharedState: SharedState) => {
+			const pathParams = route.getPathParams(screenState.location.path);
+			return (
+				<HomeScreen {
+					...{
+						...deps,
+						...sharedState,
+						highlightedCommentId: (
+							pathParams['highlightedType'] === 'comment' ?
+								pathParams['highlightedId'] :
+								null
+						),
+						highlightedPostId: (
+							pathParams['highlightedType'] === 'post' ?
+								pathParams['highlightedId'] :
+								null
+						),
+						screenId: screenState.id,
+						view: pathParams['view'] === 'trending' ?
+							View.Trending :
+							View.Following
+					}
+				} />
+			);
+		}
 	};
 }

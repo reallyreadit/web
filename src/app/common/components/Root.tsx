@@ -294,11 +294,22 @@ export default abstract class Root<
 		if (screen) {
 			const
 				screens = this.state.screens.slice(),
+				screenIndex = screens.indexOf(screen),
 				nextState = getNextState(screen);
-			screens.splice(screens.indexOf(screen), 1, { ...screen, ...nextState });
+			screens.splice(screenIndex, 1, { ...screen, ...nextState });
 			this.setState({ screens });
-			if ('title' in nextState && nextState.title !== screen.title) {
-				this.onTitleChanged(nextState.title);
+			if (screenIndex === screens.length - 1) {
+				if (
+					'location' in nextState &&
+					nextState.location.path !== screen.location.path
+				) {
+					this.onLocationChanged(nextState.location.path, nextState.title);
+				} else if (
+					'title' in nextState &&
+					nextState.title !== screen.title
+				) {
+					this.onTitleChanged(nextState.title);
+				}
 			}
 		}
 	};
@@ -556,6 +567,7 @@ export default abstract class Root<
 	protected onCommentPosted(comment: CommentThread) {
 		this._eventManager.triggerEvent('commentPosted', comment);
 	}
+	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
