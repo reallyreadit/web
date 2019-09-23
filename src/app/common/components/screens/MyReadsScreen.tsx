@@ -48,7 +48,10 @@ interface State {
 	maxLength: number | null,
 	minLength: number | null
 }
-const headerSelectorItems = [List.Starred, List.History];
+const headerSelectorItems = [
+	{ value: List.Starred },
+	{ value: List.History }
+];
 class MyReadsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {

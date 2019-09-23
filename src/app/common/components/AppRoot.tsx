@@ -159,6 +159,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				onClearAlerts: this._clearAlerts,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,

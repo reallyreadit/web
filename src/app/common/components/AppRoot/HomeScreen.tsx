@@ -25,10 +25,12 @@ import Post from '../../../../common/models/social/Post';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import Alert from '../../../../common/models/notifications/Alert';
 
 interface Props {
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
+	onClearAlerts: (alert: Alert) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
@@ -107,12 +109,14 @@ class HomeScreen extends React.Component<Props, State> {
 								isLoading: false,
 								posts
 							});
+							this.clearAlertsIfNeeded();
 						}
 					)
 				);
 				break;
 		}
 	};
+	private _hasClearedAlerts = false;
 	private readonly _loadMore = () => {
 		return this._asyncTracker.addPromise(
 			new Promise<void>((resolve, reject) => {
@@ -221,6 +225,20 @@ class HomeScreen extends React.Component<Props, State> {
 				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
 			})
 		);
+	}
+	private clearAlertsIfNeeded() {
+		if (
+			!this._hasClearedAlerts &&
+			this.props.user.postAlertCount
+		) {
+			this.props.onClearAlerts(Alert.Following);
+			this._hasClearedAlerts = true;
+		}
+	}
+	public componentDidMount() {
+		if (this.state.posts && !this.state.posts.isLoading) {
+			this.clearAlertsIfNeeded();
+		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();

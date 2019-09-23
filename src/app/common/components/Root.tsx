@@ -237,27 +237,41 @@ export default abstract class Root<
 
 	// notifications
 	protected readonly _clearAlerts = (alert: Alert) => {
-		let user = this.state.user;
+		const user = this.state.user;
+		let newUser: UserAccount;
 		switch (alert) {
 			case Alert.Aotd:
-				user = { ...user, aotdAlert: false };
+				if (user.aotdAlert) {
+					newUser = { ...user, aotdAlert: false };
+				}
 				break;
 			case Alert.Followers:
-				user = { ...user, followerAlertCount: 0 };
+				if (user.followerAlertCount) {
+					newUser = { ...user, followerAlertCount: 0 };
+				}
 				break;
 			case Alert.Following:
-				user = { ...user, postAlertCount: 0 };
+				if (user.postAlertCount) {
+					newUser = { ...user, postAlertCount: 0 };
+				}
 				break;
 			case Alert.Inbox:
-				user = {
-					...user,
-					replyAlertCount: 0,
-					loopbackAlertCount: 0
-				};
+				if (
+					user.replyAlertCount ||
+					user.loopbackAlertCount
+				) {
+					newUser = {
+						...user,
+						replyAlertCount: 0,
+						loopbackAlertCount: 0
+					};
+				}
 				break;
 		}
-		this.setState({ user });
-		this.props.serverApi.clearAlerts({ alert });
+		if (newUser) {
+			this.setState({ user: newUser });
+			this.props.serverApi.clearAlerts({ alert });
+		}
 	};
 
 	// routing

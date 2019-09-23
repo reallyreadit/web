@@ -6,6 +6,7 @@ import SpinnerIcon from './SpinnerIcon';
 export type ButtonSize = 'normal' | 'large' | 'x-large';
 interface Props {
 	align: 'left' | 'center' | 'right',
+	badge?: number,
 	className?: ClassValue,
 	display?: 'block' | 'inline',
 	href?: string,
@@ -54,9 +55,14 @@ export default class Button extends React.PureComponent<Props> {
 			children: (
 				<>
 					{this.props.iconLeft ?
-						<Icon name={this.props.iconLeft} /> :
+						<Icon
+							badge={this.props.badge}
+							name={this.props.iconLeft}
+						/> :
 						null}
-					<span className="text">{this.props.text}</span>
+					<span className="text">
+						{this.props.text}
+					</span>
 					{overlayChild ?
 						<span className="overlay">
 							{overlayChild}

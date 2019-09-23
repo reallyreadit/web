@@ -1,0 +1,23 @@
+/*
+	componentPath: src/common/components/AlertBadge
+	cssComponentId: alert-badge_ejzklr
+*/
+
+.alert-badge_ejzklr {
+	position: absolute;
+	top: -3px;
+	right: -3px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	text-align: center;
+	border-radius: 8px;
+	background-color: red;
+	color: white;
+	font-size: 8pt;
+	font-family: 'Museo Sans (700)';
+	transition: transform 500ms;
+}
+.alert-badge_ejzklr.hidden {
+	transform: scale(0);
+}

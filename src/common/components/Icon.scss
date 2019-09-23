@@ -11,24 +11,6 @@
 .icon_rour3d.inline {
 	display: inline-block;
 }
-.icon_rour3d > .badge {
-	position: absolute;
-	top: -3px;
-	right: -3px;
-	width: 16px;
-	height: 16px;
-	line-height: 16px;
-	text-align: center;
-	border-radius: 8px;
-	background-color: red;
-	color: white;
-	font-size: 8pt;
-	font-family: 'Museo Sans (700)';
-	transition: transform 500ms;
-}
-.icon_rour3d > .badge.hidden {
-	transform: scale(0);
-}
 .icon_rour3d > .icon {
 	display: block;
 	stroke-width: 0;

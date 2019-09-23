@@ -27,6 +27,7 @@ import FolloweesPostsQuery from '../../../../common/models/social/FolloweesPosts
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import Alert from '../../../../common/models/notifications/Alert';
 
 const pageSize = 40;
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
@@ -40,6 +41,7 @@ interface Props {
 	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
 	marketingScreenVariant: number,
+	onClearAlerts: (alert: Alert) => void,
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -94,6 +96,7 @@ class HomeScreen extends React.Component<Props, State> {
 		);
 		this.fetchItems(view, sort, timeWindow, minLength, maxLength, 1);
 	};
+	private _hasClearedAlerts = false;
 	constructor(props: Props) {
 		super(props);
 		if (shouldShowHomeScreen(props.user, props.isDesktopDevice)) {
@@ -189,6 +192,15 @@ class HomeScreen extends React.Component<Props, State> {
 			})
 		);
 	}
+	private clearAlertsIfNeeded() {
+		if (
+			!this._hasClearedAlerts &&
+			this.props.user.postAlertCount
+		) {
+			this.props.onClearAlerts(Alert.Following);
+			this._hasClearedAlerts = true;
+		}
+	}
 	private fetchItems(view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null, pageNumber: number) {
 		switch (view) {
 			case View.Trending:
@@ -224,10 +236,16 @@ class HomeScreen extends React.Component<Props, State> {
 								isLoading: false,
 								posts
 							});
+							this.clearAlertsIfNeeded();
 						}
 					)
 				);
 				break;
+		}
+	}
+	public componentDidMount() {
+		if (this.state.posts && !this.state.posts.isLoading) {
+			this.clearAlertsIfNeeded();
 		}
 	}
 	public componentWillUnmount() {

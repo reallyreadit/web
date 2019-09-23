@@ -29,7 +29,10 @@ export default class NavTray extends React.PureComponent<Props>{
 						className={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : null}
 						onClick={this.props.onViewHome}
 					>
-						<Icon name="earth" />
+						<Icon
+							badge={this.props.user.postAlertCount}
+							name="earth"
+						/>
 						<label>Discover</label>
 					</button>
 				</li>

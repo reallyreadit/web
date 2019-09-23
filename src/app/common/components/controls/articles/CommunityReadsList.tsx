@@ -131,7 +131,18 @@ export default class extends React.PureComponent<{
 			<div className="community-reads-list_g4cy3n">
 				<div className="controls">
 					<HeaderSelector
-						items={headerSelectorLists}
+						items={
+							headerSelectorLists.map(
+								value => ({
+									badge: (
+										value === View.Following ?
+											this.props.user.postAlertCount :
+											null
+									),
+									value
+								})
+							)
+						}
 						onChange={this._changeList}
 						value={this.props.view}
 					/>

@@ -1,9 +1,14 @@
 import * as React from 'react';
 import classNames from 'classnames';
+import AlertBadge from '../../../common/components/AlertBadge';
 
+export interface Item {
+	badge?: number,
+	value: string
+}
 export default class HeaderSelector extends React.PureComponent<{
 	disabled?: boolean,
-	items: string[],
+	items: Item[],
 	onChange: (value: string) => void,
 	value: string
 }> {
@@ -16,13 +21,14 @@ export default class HeaderSelector extends React.PureComponent<{
 				{this.props.items.map(
 					item => (
 						<button
-							className={classNames({ 'selected': this.props.value === item })}
+							className={classNames({ 'selected': this.props.value === item.value })}
 							disabled={this.props.disabled}
-							key={item}
+							key={item.value}
 							onClick={this._change}
-							value={item}
+							value={item.value}
 						>
-							{item}
+							{item.value}
+							<AlertBadge count={item.badge} />
 						</button>
 					)
 				)}

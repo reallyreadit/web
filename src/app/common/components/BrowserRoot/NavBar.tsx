@@ -28,6 +28,7 @@ export default (props: {
 		<ol>
 			<li>
 				<Button
+					badge={props.user.postAlertCount}
 					href={homeUrl}
 					onClick={props.onViewHome}
 					state={props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
