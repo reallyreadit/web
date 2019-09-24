@@ -32,7 +32,11 @@ export default class Button extends React.PureComponent<Props> {
 		}
 		if (
 			this.props.onClick &&
-			(!this.props.state || this.props.state === 'normal')
+			(
+				!this.props.state ||
+				this.props.state === 'normal' ||
+				this.props.state === 'selected'
+			)
 		) {
 			this.props.onClick();
 		}
