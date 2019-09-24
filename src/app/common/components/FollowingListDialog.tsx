@@ -112,43 +112,38 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 					<LoadingOverlay position="static" /> :
 					<ol className="followings">
 						{this.state.followings.value.map(
-							following => {
-								const isOwnAccount = (
-									this.props.userAccount && this.props.userAccount.name === following.userName
-								);
-								return (
-									<li
-										className="following"
-										key={following.userName}
-									>
-										{!isOwnAccount ?
-											<Highlighter
-												className="content"
-												highlight={
-													following.hasAlert ||
-													this.props.highlightedUser === following.userName
-												}
-											>
-												<ProfileLink
-													className="user-name"
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onViewProfile={this._viewProfile}
-													userName={following.userName}
+							following => (
+								<li
+									className="following"
+									key={following.userName}
+								>
+									{this.props.userAccount && this.props.userAccount.name !== following.userName ?
+										<Highlighter
+											className="content"
+											highlight={
+												following.hasAlert ||
+												this.props.highlightedUser === following.userName
+											}
+										>
+											<ProfileLink
+												className="user-name"
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onViewProfile={this._viewProfile}
+												userName={following.userName}
+											/>
+											<div className="button">
+												<FollowButton
+													following={following}
+													onFollow={this._followUser}
+													onUnfollow={this._unfollowUser}
 												/>
-												<div className="button">
-													<FollowButton
-														following={following}
-														onFollow={this._followUser}
-														onUnfollow={this._unfollowUser}
-													/>
-												</div>
-											</Highlighter> :
-											<div className="content">
-												<span className="user-name">{following.userName}</span>}
-											</div>}
-									</li>
-								)
-							}
+											</div>
+										</Highlighter> :
+										<div className="content">
+											<span className="user-name">{following.userName}</span>
+										</div>}
+								</li>
+							)
 						)}
 					</ol>}
 			</Dialog>
