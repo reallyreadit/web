@@ -46,6 +46,7 @@ import Alert from '../../../common/models/notifications/Alert';
 import FollowingListDialog from './FollowingListDialog';
 import Fetchable from '../../../common/Fetchable';
 import Following from '../../../common/models/social/Following';
+import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
 
 export interface Props {
 	analytics: Analytics,
@@ -92,6 +93,7 @@ export type SharedEvents = {
 	'articlePosted': Post,
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread,
+	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
 export default abstract class Root<
@@ -250,6 +252,9 @@ export default abstract class Root<
 	protected readonly _registerCommentPostedEventHandler = (handler: (comment: CommentThread) => void) => {
 		return this._eventManager.addListener('commentPosted', handler);
 	};
+	protected readonly _registerFolloweeCountChangedEventHandler = (handler: (change: FolloweeCountChange) => void) => {
+		return this._eventManager.addListener('followeeCountChanged', handler);
+	};
 	protected readonly _registerNotificationPreferenceChangedEventHandler = (handler: (preference: NotificationPreference) => void) => {
 		return this._eventManager.addListener('notificationPreferenceChanged', handler);
 	};
@@ -300,7 +305,13 @@ export default abstract class Root<
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
 
 	// social
-	protected readonly _followUser = (form: UserNameForm) => this.props.serverApi.followUser(form);
+	protected readonly _followUser = (form: UserNameForm) => this.props.serverApi
+		.followUser(form)
+		.then(
+			() => {
+				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Increment);
+			}
+		);
 	protected readonly _postArticle = (form: PostForm) => {
 		return this.props.serverApi
 			.postArticle(form)
@@ -318,7 +329,13 @@ export default abstract class Root<
 				}
 			);
 	};
-	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi.unfollowUser(form);
+	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi
+		.unfollowUser(form)
+		.then(
+			() => {
+				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Decrement);
+			}
+		);
 	protected readonly _viewProfile: (userName?: string) => void;
 
 	// state

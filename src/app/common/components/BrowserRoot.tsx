@@ -306,6 +306,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
+				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShowToast: this._toaster.addToast,

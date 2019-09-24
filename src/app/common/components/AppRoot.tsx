@@ -218,6 +218,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
+				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onShowToast: this._toaster.addToast,
 				onSignIn: this._signIn,

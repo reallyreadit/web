@@ -42,6 +42,7 @@ import ContentBox from '../../../../common/components/ContentBox';
 import PageSelector from '../controls/PageSelector';
 import InfoBox from '../controls/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
+import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
@@ -66,6 +67,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
+	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
@@ -101,15 +103,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 				.onFollowUser(form)
 				.then(
 					() => {
-						if (this.isOwnProfile()) {
-							this.setState(
-								produce(
-									(state: State) => {
-										state.profile.value.followeeCount++;
-									}
-								)
-							);
-						} else {
+						if (form.userName === this.props.userName) {
 							this.setIsFollowed();
 						}
 					}
@@ -202,15 +196,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 			.onUnfollowUser(form)
 			.then(
 				() => {
-					if (this.isOwnProfile()) {
-						this.setState(
-							produce(
-								(state: State) => {
-									state.profile.value.followeeCount--;
-								}
-							)
-						);
-					} else {
+					if (form.userName === this.props.userName) {
 						this.setState(
 							produce(
 								(state: State) => {
@@ -285,6 +271,30 @@ export class ProfileScreen extends React.Component<Props, State> {
 												postsPageSize - 1
 										)
 									]
+								}
+							}
+						});
+					}
+				}
+			)
+		);
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterFolloweeCountChangedHandler(
+				change => {
+					if (this.state.profile.value && this.isOwnProfile()) {
+						this.setState({
+							profile: {
+								...this.state.profile,
+								value: {
+									...this.state.profile.value,
+									followeeCount: Math.max(
+										this.state.profile.value.followeeCount + (
+											change === FolloweeCountChange.Increment ?
+												1 :
+												-1
+										),
+										0
+									)
 								}
 							}
 						});
