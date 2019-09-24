@@ -57,7 +57,10 @@ export default class NavTray extends React.PureComponent<Props>{
 						}
 						onClick={this._viewProfile}
 					>
-						<Icon name="user" />
+						<Icon
+							badge={this.props.user.followerAlertCount}
+							name="user"
+						/>
 						<label>Profile</label>
 					</button>
 				</li>

@@ -43,6 +43,9 @@ import Post, { createCommentThread } from '../../../common/models/social/Post';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import Alert from '../../../common/models/notifications/Alert';
+import FollowingListDialog from './FollowingListDialog';
+import Fetchable from '../../../common/Fetchable';
+import Following from '../../../common/models/social/Following';
 
 export interface Props {
 	analytics: Analytics,
@@ -166,13 +169,29 @@ export default abstract class Root<
 			this.setState(delegate);
 		}
 	});
-	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: RouteLocation) => React.ReactNode } = {
+	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode } = {
 		[DialogKey.CreateAccount]: () => (
 			<CreateAccountDialog
 				captcha={this.props.captcha}
 				onCreateAccount={this._createAccount}
 				onCloseDialog={this._dialog.closeDialog}
 				onShowToast={this._toaster.addToast}
+			/>
+		),
+		[DialogKey.Followers]: (location, sharedState) => (
+			<FollowingListDialog
+				highlightedUser={parseQueryString(location.queryString)['user']}
+				onClearAlerts={this._clearAlerts}
+				onCloseDialog={this._dialog.closeDialog}
+				onCreateAbsoluteUrl={this._createAbsoluteUrl}
+				onFollowUser={this._followUser}
+				onGetFollowings={
+					(callback: (value: Fetchable<Following[]>) => void) => this.props.serverApi.getFollowers({ userName: sharedState.user.name }, callback)
+				}
+				onUnfollowUser={this._unfollowUser}
+				onViewProfile={this._viewProfile}
+				title="Followers"
+				userAccount={sharedState.user}
 			/>
 		),
 		[DialogKey.ResetPassword]: location => {
@@ -300,6 +319,7 @@ export default abstract class Root<
 			);
 	};
 	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi.unfollowUser(form);
+	protected readonly _viewProfile: (userName?: string) => void;
 
 	// state
 	private _screenId = 0;
@@ -452,6 +472,7 @@ export default abstract class Root<
 		// delegates
 		this._readArticle = this.readArticle.bind(this);
 		this._viewComments = this.viewComments.bind(this);
+		this._viewProfile = this.viewProfile.bind(this);
 
 		// routing
 		this._createAbsoluteUrl = path => `${props.webServerEndpoint.protocol}://${props.webServerEndpoint.host}${path}`;
@@ -563,12 +584,14 @@ export default abstract class Root<
 		return screen;
 	}
 	protected getLocationDependentState(location: RouteLocation) {
-		const route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
+		const
+			route = findRouteByLocation(routes, location, unroutableQueryStringKeys),
+			sharedState = this.getSharedState();
 		return {
 			dialog: route.dialogKey != null ?
-				this._dialogCreatorMap[route.dialogKey](location) :
+				this._dialogCreatorMap[route.dialogKey](location, sharedState) :
 				null,
-			screen: this._screenFactoryMap[route.screenKey].create(this._screenId++, location, this.getSharedState())
+			screen: this._screenFactoryMap[route.screenKey].create(this._screenId++, location, sharedState)
 		};
 	}
 	protected abstract getSharedState(): TSharedState;
@@ -599,6 +622,7 @@ export default abstract class Root<
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
 	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string): void;
+	protected abstract viewProfile(userName?: string): void;
 	public componentDidMount() {
 		if (this.state.user && this.state.user.timeZoneId == null) {
 			this.setTimeZone();

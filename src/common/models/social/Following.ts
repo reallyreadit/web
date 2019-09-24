@@ -1,4 +1,5 @@
 export default interface Following {
 	userName: string,
-	isFollowed: boolean
+	isFollowed: boolean,
+	hasAlert?: boolean
 }

@@ -4,6 +4,7 @@
 */
 
 .action-link_ftamt8 {
+	position: relative;
 	text-decoration: underline;
 	cursor: pointer;
 	color: inherit;
@@ -15,4 +16,7 @@
 .action-link_ftamt8 > .icon_rour3d {
 	margin-right: 0.2em;
 	vertical-align: text-top;
+}
+.action-link_ftamt8 > .alert-badge_ejzklr {
+	right: -16px;
 }

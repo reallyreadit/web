@@ -51,6 +51,7 @@ export default (props: {
 			</li>
 			<li>
 				<Button
+					badge={props.user.followerAlertCount}
 					href={profileRoute.createUrl({ userName: props.user.name })}
 					onClick={props.onViewProfile}
 					state={

@@ -25,6 +25,7 @@ import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
 import createInboxScreenFactory from './screens/InboxScreen';
+import DialogKey from '../../../common/routing/DialogKey';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -87,19 +88,6 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
-	};
-	private readonly _viewProfile = (userName?: string) => {
-		if (userName) {
-			this.pushScreen(
-				ScreenKey.Profile,
-				{ userName }
-			);
-		} else {
-			this.replaceScreen(
-				ScreenKey.Profile,
-				{ userName: this.state.user.name }
-			);
-		}
 	};
 	private readonly _viewSettings = () => {
 		this.pushScreen(ScreenKey.Settings);
@@ -213,6 +201,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				captcha: this.props.captcha,
+				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -257,13 +246,18 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			}
 		} else {
 			const locationState = this.getLocationDependentState(props.initialLocation);
-			dialog = locationState.dialog;
 			if (props.initialUser) {
 				this._hasProcessedInitialLocation = true;
 				screens = [locationState.screen];
+				dialog = locationState.dialog;
 			} else {
 				this._hasProcessedInitialLocation = false;
 				screens = [];
+				dialog = (
+					route.dialogKey === DialogKey.ResetPassword ?
+						locationState.dialog :
+						null
+				);
 			}
 		}
 		this.state = {
@@ -474,6 +468,19 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			ScreenKey.Comments,
 			urlParams
 		);
+	}
+	protected viewProfile(userName?: string) {
+		if (userName) {
+			this.pushScreen(
+				ScreenKey.Profile,
+				{ userName }
+			);
+		} else {
+			this.replaceScreen(
+				ScreenKey.Profile,
+				{ userName: this.state.user.name }
+			);
+		}
 	}
 	public componentDidMount() {
 		// super

@@ -200,19 +200,24 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/privacy-policy$/,
 		screenKey: ScreenKey.PrivacyPolicy
 	},
-	(function () {
-		const pathRegExp = /^\/@([^/]+)$/;
-		return {
-			analyticsName: 'Profile',
-			createUrl: params => `/@${params['userName']}`,
-			getPathParams: path => {
-				return {
-					userName: path.match(pathRegExp)[1]
-				};
-			},
-			pathRegExp,
-			screenKey: ScreenKey.Profile
-		} as Route<DialogKey, ScreenKey>;
+	...(function () {
+		const
+			pathRegExp = /^\/@([^/]+)$/,
+			mainRoute = {
+				analyticsName: 'Profile',
+				createUrl: (params: { [key: string]: string }) => `/@${params['userName']}`,
+				getPathParams: (path: string) => ({ userName: path.match(pathRegExp)[1] }),
+				pathRegExp,
+				screenKey: ScreenKey.Profile
+			};
+		return [
+			mainRoute,
+			{
+				...mainRoute,
+				dialogKey: DialogKey.Followers,
+				queryStringKeys: ['followers', 'user']
+			}
+		] as Route<DialogKey, ScreenKey>[];
 	})(),
 	(function () {
 		const pathRegExp = /^\/read\/([^/]+)\/([^/]+)$/;

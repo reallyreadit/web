@@ -2,8 +2,10 @@ import * as React from 'react';
 import classNames, { ClassValue } from 'classnames';
 import Icon, { IconName } from './Icon';
 import SpinnerIcon from './SpinnerIcon';
+import AlertBadge from './AlertBadge';
 
 export default class extends React.PureComponent<{
+	badge?: number,
 	className?: ClassValue,
 	href?: string,
 	iconLeft?: IconName,
@@ -27,17 +29,23 @@ export default class extends React.PureComponent<{
 					busy: this.props.state === 'busy'
 				}
 			),
-			content = [
-				this.props.state === 'busy' ?
-					<SpinnerIcon key="spinner" /> :
-					this.props.iconLeft ?
-						<Icon
-							key="icon"
-							name={this.props.iconLeft}
-						/> :
-						null,
-				<span key="text">{this.props.text}</span>
-			];
+			content = (
+				<>
+					{this.props.state === 'busy' ?
+						<SpinnerIcon key="spinner" /> :
+						this.props.iconLeft ?
+							<Icon
+								badge={this.props.badge}
+								key="icon"
+								name={this.props.iconLeft}
+							/> :
+							null}
+					<span key="text">{this.props.text}</span>
+					{!this.props.iconLeft ?
+						<AlertBadge count={this.props.badge} /> :
+						null}
+				</>
+			);
 		return (
 			this.props.href ?
 				<a

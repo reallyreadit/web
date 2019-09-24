@@ -30,7 +30,7 @@ import CommentThread from '../../../../common/models/CommentThread';
 import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
-import FollowingListDialog from './ProfileScreen/FollowingListDialog';
+import FollowingListDialog from '../FollowingListDialog';
 import produce from 'immer';
 import CreateAccountDialog from '../CreateAccountDialog';
 import Captcha from '../../Captcha';
@@ -41,12 +41,14 @@ import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadIosAppDia
 import ContentBox from '../../../../common/components/ContentBox';
 import PageSelector from '../controls/PageSelector';
 import InfoBox from '../controls/InfoBox';
+import Alert from '../../../../common/models/notifications/Alert';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
 	captcha: Captcha,
 	isDesktopDevice: boolean,
 	isIosDevice: boolean | null,
+	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -162,6 +164,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _showFollowees = () => {
 		this.props.onOpenDialog(
 			<FollowingListDialog
+				onClearAlerts={this.props.onClearAlerts}
 				onCloseDialog={this.props.onCloseDialog}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onFollowUser={this._followUser}
@@ -176,6 +179,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _showFollowers = () => {
 		this.props.onOpenDialog(
 			<FollowingListDialog
+				onClearAlerts={this.props.onClearAlerts}
 				onCloseDialog={this.props.onCloseDialog}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onFollowUser={this._followUser}
@@ -417,6 +421,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 								/>}
 							{this.state.profile.value.followerCount ?
 								<ActionLink
+									badge={isOwnProfile && this.props.userAccount.followerAlertCount}
 									className="following-count followers"
 									onClick={this._showFollowers}
 									text={followersText}

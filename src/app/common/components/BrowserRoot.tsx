@@ -21,7 +21,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, redirectedQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, redirectedQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import DeviceType from '../DeviceType';
 import { isIosDevice } from '../userAgent';
@@ -71,16 +71,26 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// dialogs
 	private readonly _openCreateAccountDialog = () => {
-		this._dialog.openDialog(this._dialogCreatorMap[DialogKey.CreateAccount]({
-			path: window.location.pathname,
-			queryString: window.location.search
-		}));
+		this._dialog.openDialog(
+			this._dialogCreatorMap[DialogKey.CreateAccount](
+				{
+					path: window.location.pathname,
+					queryString: window.location.search
+				},
+				this.getSharedState()
+			)
+		);
 	};
 	private readonly _openSignInDialog = () => {
-		this._dialog.openDialog(this._dialogCreatorMap[DialogKey.SignIn]({
-			path: window.location.pathname,
-			queryString: window.location.search
-		}));
+		this._dialog.openDialog(
+			this._dialogCreatorMap[DialogKey.SignIn](
+				{
+					path: window.location.pathname,
+					queryString: window.location.search
+				},
+				this.getSharedState()
+			)
+		);
 	};
 
 	// events
@@ -144,13 +154,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
 			method: 'replace'
-		});
-	};
-	private readonly _viewProfile = (userName?: string) => {
-		this.setScreenState({
-			key: ScreenKey.Profile,
-			method: userName ? 'push' : 'replace',
-			urlParams: { userName: userName || this.state.user.name }
 		});
 	};
 	private readonly _viewSettings = () => {
@@ -285,6 +288,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				captcha: this.props.captcha,
 				isDesktopDevice: this._isDesktopDevice,
+				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -327,11 +331,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 		};
 
 		// state
-		const locationState = this.getLocationDependentState(props.initialLocation);
+		const
+			route = findRouteByLocation(routes, props.initialLocation, unroutableQueryStringKeys),
+			locationState = this.getLocationDependentState(props.initialLocation);
 		this.state = {
 			...this.state,
 			dialog: (
-				locationState.dialog ?
+				locationState.dialog && (
+					route.dialogKey !== DialogKey.Followers ||
+					props.initialUser
+				) ?
 					{
 						element: locationState.dialog,
 						isClosing: false
@@ -726,6 +735,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'push',
 			title: article.title,
 			urlParams
+		});
+	}
+	protected viewProfile(userName?: string) {
+		this.setScreenState({
+			key: ScreenKey.Profile,
+			method: userName ? 'push' : 'replace',
+			urlParams: { userName: userName || this.state.user.name }
 		});
 	}
 	public componentDidMount() {

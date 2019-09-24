@@ -1,0 +1,32 @@
+/*
+	componentPath: src/app/common/components/FollowingListDialog
+	cssComponentId: following-list-dialog_7vsgrb
+*/
+
+.following-list-dialog_7vsgrb {
+	min-width: 300px;
+}
+.following-list-dialog_7vsgrb > .children > .followings {
+	max-height: 350px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.following-list-dialog_7vsgrb > .children > .followings > .following + .following {
+	margin-top: 5px;
+}
+.following-list-dialog_7vsgrb > .children > .followings > .following > .content {
+	display: flex;
+	align-items: center;
+	min-height: 32px;
+}
+.following-list-dialog_7vsgrb > .children > .followings > .following > .content > .user-name {
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.following-list-dialog_7vsgrb > .children > .followings > .following > .content > .button {
+	flex: 0 0 auto;
+	width: 110px;
+	text-align: center;
+}
