@@ -182,6 +182,7 @@ export default abstract class Root<
 		),
 		[DialogKey.Followers]: (location, sharedState) => (
 			<FollowingListDialog
+				clearFollowersAlerts
 				highlightedUser={parseQueryString(location.queryString)['user']}
 				onClearAlerts={this._clearAlerts}
 				onCloseDialog={this._dialog.closeDialog}

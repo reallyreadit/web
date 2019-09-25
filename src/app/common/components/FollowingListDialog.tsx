@@ -13,6 +13,7 @@ import Alert from '../../../common/models/notifications/Alert';
 import Highlighter from '../../../common/components/Highlighter';
 
 interface Props {
+	clearFollowersAlerts?: boolean,
 	highlightedUser?: string,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
@@ -84,8 +85,10 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 	}
 	private clearAlertsIfNeeded() {
 		if (
+			this.props.clearFollowersAlerts &&
 			!this._hasClearedAlerts &&
-			this.props.userAccount && this.props.userAccount.followerAlertCount
+			this.props.userAccount &&
+			this.props.userAccount.followerAlertCount
 		) {
 			this.props.onClearAlerts(Alert.Followers);
 			this._hasClearedAlerts = true;

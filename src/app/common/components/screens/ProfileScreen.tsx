@@ -171,8 +171,10 @@ export class ProfileScreen extends React.Component<Props, State> {
 		);
 	};
 	private readonly _showFollowers = () => {
+		const isOwnProfile = this.isOwnProfile();
 		this.props.onOpenDialog(
 			<FollowingListDialog
+				clearFollowersAlerts={isOwnProfile}
 				onClearAlerts={this.props.onClearAlerts}
 				onCloseDialog={this.props.onCloseDialog}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -183,7 +185,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 				onUnfollowUser={this._unfollowUser}
 				onViewProfile={this.props.onViewProfile}
 				title={
-					this.isOwnProfile() ?
+					isOwnProfile ?
 						"Followers" :
 						`Following ${this.props.userName}`
 				}
