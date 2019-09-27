@@ -62,9 +62,18 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 			}
 			return (
 				<div className="marketing-screen_n5a6wc">
-					<div className="section">
+					<div className="section home">
 						<div className="content">
 							<h1>{variants[this.props.variant]}</h1>
+							<div className="video">
+								<div className="aspect-container">
+									<iframe
+										allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+										allowFullScreen
+										src="https://www.youtube.com/embed/rpw3gpH42Aw"
+									></iframe>
+								</div>
+							</div>
 							{button}
 							{this.props.isDesktopDevice || this.props.isIosDevice === false ?
 								<div className="platforms">
@@ -100,7 +109,7 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 							<p>Readup is a reading platform that incentivizes thoughtful, deep reading of the world's best free content. We are a community that believes in a moonshot idea: that reading can revitalize the internet, make it more sane, more human.</p>
 						</div>
 					</div>
-					<div className="section">
+					<div className="section how-it-works">
 						<div className="content">
 							<h2>How it works</h2>
 							<ol>
