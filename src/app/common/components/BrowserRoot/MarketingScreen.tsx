@@ -3,15 +3,21 @@ import Spinner from '../../../../common/components/Spinner';
 import Footer from './Footer';
 import Icon from '../../../../common/components/Icon';
 import Button from '../../../../common/components/Button';
+import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import routes from '../../../../common/routing/routes';
+import { findRouteByKey } from '../../../../common/routing/Route';
 
 interface Props {
 	isDesktopDevice: boolean,
 	isIosDevice: boolean | null,
 	isUserSignedIn: boolean,
 	onCopyAppReferrerTextToClipboard: () => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onViewPrivacyPolicy: () => void,
+	onViewProfile: (userName: string) => void,
 	variant: number
 }
 export const variants: {
@@ -21,7 +27,20 @@ export const variants: {
 	2: 'Read with friends.',
 	3: 'Social media for people who read.'
 };
-export default class MarketingScreen extends React.PureComponent<Props> {
+export default class MarketingScreen extends React.PureComponent<
+	Props,
+	{ menuState: MenuState }
+> {
+	private readonly _beginClosingMenu = () => {
+		this.setState({ menuState: MenuState.Closing });
+	};
+	private readonly _closeMenu = () => {
+		this.setState({ menuState: MenuState.Closed });
+	};
+	private readonly _openMenu = () => {
+		this.setState({ menuState: MenuState.Opened });
+	};
+	private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 	private readonly _secondSectionElementRef: React.RefObject<HTMLDivElement>;
 	private readonly _scrollDown = () => {
 		this._secondSectionElementRef.current.scrollIntoView({
@@ -29,9 +48,22 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 			block: 'start'
 		});
 	};
+	private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
+		event.preventDefault();
+		this._beginClosingMenu();
+		this.props.onViewProfile('bill');
+	};
+	private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
+		event.preventDefault();
+		this._beginClosingMenu();
+		this.props.onViewProfile('jeff');
+	};
 	constructor(props: Props) {
 		super(props);
 		this._secondSectionElementRef = React.createRef();
+		this.state = {
+			menuState: MenuState.Closed
+		};
 	}
 	public render () {
 		if (
@@ -101,12 +133,41 @@ export default class MarketingScreen extends React.PureComponent<Props> {
 						</div>
 					</div>
 					<div
-						className="section"
+						className="section what-is-it"
 						ref={this._secondSectionElementRef}
 					>
 						<div className="content">
 							<h2>What is Readup?</h2>
 							<p>Readup is a reading platform that incentivizes thoughtful, deep reading of the world's best free content. We are a community that believes in a moonshot idea: that reading can revitalize the internet, make it more sane, more human.</p>
+							<div className="paragraph bios">
+								<a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a> are the co-founders.&#32;
+								<Popover
+									menuChildren={
+										<div className="links">
+											<a
+												href={this.props.onCreateAbsoluteUrl(this._profileRoute.createUrl({ 'userName': 'bill' }))}
+												onClick={this._viewBillsProfile}
+											>
+												readup.com/@bill
+											</a>
+											<a
+												href={this.props.onCreateAbsoluteUrl(this._profileRoute.createUrl({ 'userName': 'jeff' }))}
+												onClick={this._viewJeffsProfile}
+											>
+												readup.com/@jeff
+											</a>
+										</div>
+									}
+									menuPosition={MenuPosition.TopCenter}
+									menuState={this.state.menuState}
+									onBeginClosing={this._beginClosingMenu}
+									onClose={this._closeMenu}
+									onOpen={this._openMenu}
+								>
+									Read with us
+								</Popover>
+								&#32;and let us know what you think!
+							</div>
 						</div>
 					</div>
 					<div className="section how-it-works">

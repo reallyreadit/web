@@ -259,9 +259,11 @@ class HomeScreen extends React.Component<Props, State> {
 				isIosDevice={this.props.isIosDevice}
 				isUserSignedIn={!!this.props.user}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onInstallExtension={this.props.onInstallExtension}
 				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
 				onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
+				onViewProfile={this.props.onViewProfile}
 				variant={this.props.marketingScreenVariant}
 			/>
 		);

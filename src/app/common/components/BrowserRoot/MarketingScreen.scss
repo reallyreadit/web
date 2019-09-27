@@ -42,14 +42,13 @@
 	font-size: 30px;
 	text-align: center;
 }
-.marketing-screen_n5a6wc > .section > .content > p {
+.marketing-screen_n5a6wc > .section > .content > p,
+.marketing-screen_n5a6wc > .section > .content > .paragraph {
 	margin: 20px 0;
 	font-family: 'Cambria (Regular)';
 	font-size: 16pt;
 	line-height: 1.35em;
-}
-.marketing-screen_n5a6wc > .section > .content > p:last-child {
-	margin-bottom: 50px;
+	text-align: center;
 }
 .marketing-screen_n5a6wc > .section > .content > .download-app-button > img {
 	display: block;
@@ -124,6 +123,25 @@
 	color: #666;
 	font-size: 20pt;
 }
+.marketing-screen_n5a6wc > .what-is-it > .content > .bios {
+	margin-bottom: 50px;
+}
+.marketing-screen_n5a6wc > .what-is-it > .content > .bios > .popover_r7v81v > .children {
+	text-decoration: underline;
+	cursor: pointer;
+}
+.marketing-screen_n5a6wc > .what-is-it > .content > .bios > .popover_r7v81v > .menu > .links {
+	position: relative;
+	background-color: white;
+	padding: 5px;
+	font-size: 13pt;
+}
+.marketing-screen_n5a6wc > .what-is-it > .content > .bios > .popover_r7v81v > .menu > .links > a {
+	display: block;
+}
+.marketing-screen_n5a6wc > .what-is-it > .content > .bios > .popover_r7v81v > .menu > .links > a + a {
+	margin-top: 5px;
+}
 .marketing-screen_n5a6wc > .how-it-works > .content > ol {
 	width: 100%;
 	display: flex;
@@ -144,9 +162,6 @@
 .marketing-screen_n5a6wc > .community > .content > .button_ovrlmi,
 .marketing-screen_n5a6wc > .community > .content > .download-app-button {
 	margin: 50px auto;
-}
-.marketing-screen_n5a6wc > .community > .content > p {
-	text-align: center;
 }
 .marketing-screen_n5a6wc.unsupported > .prompt {
 	flex: 1 1 auto;
