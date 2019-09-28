@@ -110,7 +110,7 @@ function insertBookmarkPrompt() {
 		onCancel: beginClosingPrompt,
 		onConfirm: () => {
 			const scrollTop = page.getBookmarkScrollTop();
-			if (scrollTop > 0) {
+			if (scrollTop > window.innerHeight) {
 				const content = document.getElementById('com_readup_article_content');
 				content.style.opacity = '0';
 				setTimeout(

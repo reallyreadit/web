@@ -343,7 +343,7 @@ function loadUserInterface() {
 			insertEmbed(context.lookupResult.userArticle);
 		} else if (
 			!context.lookupResult.userArticle.isRead &&
-			context.page.getBookmarkScrollTop() > 0
+			context.page.getBookmarkScrollTop() > window.innerHeight
 		) {
 			insertBookmarkPrompt({
 				onConfirm: () => {
