@@ -38,10 +38,13 @@ export default class Highlighter extends React.PureComponent<
 							}
 						);
 						this._intersectionObserver.observe(this._elementRef.current);
-						this._elementRef.current.scrollIntoView({
-							behavior: 'smooth',
-							block: 'start'
-						});
+						const rect = this._elementRef.current.getBoundingClientRect();
+						if (rect.top < 0 || rect.bottom > window.innerHeight) {
+							this._elementRef.current.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start'
+							});
+						}
 					},
 					100
 				)
