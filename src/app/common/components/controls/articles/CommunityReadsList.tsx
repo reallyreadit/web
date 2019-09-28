@@ -83,6 +83,7 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 }
 export default class extends React.PureComponent<{
 	aotd?: UserArticle,
+	aotdHasAlert?: boolean,
 	articles?: PageResult<UserArticle>,
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
@@ -193,7 +194,10 @@ export default class extends React.PureComponent<{
 						{this.props.view === View.Trending ?
 							<>
 								{this.props.sort === CommunityReadSort.Hot ?
-									<ContentBox className="aotd">
+									<ContentBox
+										className="aotd"
+										highlight={this.props.aotdHasAlert}
+									>
 										<div className="flair">Article of the Day</div>
 										<ArticleDetails
 											article={this.props.aotd}

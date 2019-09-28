@@ -30,7 +30,7 @@ export default class NavTray extends React.PureComponent<Props>{
 						onClick={this.props.onViewHome}
 					>
 						<Icon
-							badge={this.props.user.postAlertCount}
+							badge={this.props.user.postAlertCount + (this.props.user.aotdAlert ? 1 : 0)}
 							name="earth"
 						/>
 						<label>Discover</label>

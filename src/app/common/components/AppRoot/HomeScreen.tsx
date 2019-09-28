@@ -92,6 +92,7 @@ class HomeScreen extends React.Component<Props, State> {
 								communityReads,
 								isLoading: false
 							});
+							this.clearAotdAlertIfNeeded();
 						}
 					)
 				);
@@ -109,14 +110,15 @@ class HomeScreen extends React.Component<Props, State> {
 								isLoading: false,
 								posts
 							});
-							this.clearAlertsIfNeeded();
+							this.clearFollowingAlertIfNeeded();
 						}
 					)
 				);
 				break;
 		}
 	};
-	private _hasClearedAlerts = false;
+	private _hasClearedAotdAlert = false;
+	private _hasClearedFollowingAlert = false;
 	private readonly _loadMore = () => {
 		return this._asyncTracker.addPromise(
 			new Promise<void>((resolve, reject) => {
@@ -194,6 +196,7 @@ class HomeScreen extends React.Component<Props, State> {
 						this._asyncTracker.addCallback(
 							communityReads => {
 								this.setState({ communityReads });
+								this.clearAotdAlertIfNeeded();
 							}
 						)
 					),
@@ -212,6 +215,7 @@ class HomeScreen extends React.Component<Props, State> {
 						this._asyncTracker.addCallback(
 							posts => {
 								this.setState({ posts });
+								this.clearFollowingAlertIfNeeded();
 							}
 						)
 					),
@@ -226,18 +230,24 @@ class HomeScreen extends React.Component<Props, State> {
 			})
 		);
 	}
-	private clearAlertsIfNeeded() {
-		if (
-			!this._hasClearedAlerts &&
-			this.props.user.postAlertCount
-		) {
+	private clearAotdAlertIfNeeded() {
+		if (!this._hasClearedAotdAlert && this.props.user.aotdAlert) {
+			this.props.onClearAlerts(Alert.Aotd);
+			this._hasClearedAotdAlert = true;
+		}
+	}
+	private clearFollowingAlertIfNeeded() {
+		if (!this._hasClearedFollowingAlert && this.props.user.postAlertCount) {
 			this.props.onClearAlerts(Alert.Following);
-			this._hasClearedAlerts = true;
+			this._hasClearedFollowingAlert = true;
 		}
 	}
 	public componentDidMount() {
+		if (this.state.communityReads && !this.state.communityReads.isLoading) {
+			this.clearAotdAlertIfNeeded();
+		}
 		if (this.state.posts && !this.state.posts.isLoading) {
-			this.clearAlertsIfNeeded();
+			this.clearFollowingAlertIfNeeded();
 		}
 	}
 	public componentWillUnmount() {
@@ -261,6 +271,7 @@ class HomeScreen extends React.Component<Props, State> {
 							null}
 						<CommunityReadsList
 							aotd={this.state.communityReads && this.state.communityReads.value.aotd}
+							aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
 							articles={this.state.communityReads && this.state.communityReads.value.articles}
 							highlightedCommentId={this.props.highlightedCommentId}
 							highlightedPostId={this.props.highlightedPostId}

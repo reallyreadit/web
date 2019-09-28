@@ -1,7 +1,7 @@
 enum Alert {
-	Aotd,
-	Followers,
-	Following,
-	Inbox
+	Aotd = 0,
+	Followers = 1,
+	Following = 2,
+	Inbox = 3
 }
 export default Alert;
