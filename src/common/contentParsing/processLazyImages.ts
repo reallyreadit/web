@@ -1,6 +1,5 @@
 export enum LazyImageStrategy {
-	AtlanticFigureImgDataSrcset,
-	FigureImgDataSrc,
+	DataSrcSrcset,
 	GoverningImgSrcCorrection,
 	MediumScaleUp,
 	NoscriptImgContent,
@@ -27,49 +26,43 @@ function copyAttributes(source: Element, dest: Element, ...attributeNames: (stri
 		}
 	);
 }
-function createObserver(elements: HTMLCollectionOf<Element> | NodeListOf<Element>, handler: (target: Element) => void) {
-	const viewportObserver = new IntersectionObserver(
-		(entries, observer) => {
-			entries.forEach(
-				entry => {
-					if (entry.isIntersecting) {
-						observer.unobserve(entry.target);
-						handler(entry.target);
+function createObserver(elements: Element[], handler: (target: Element) => void) {
+	if (elements.length) {
+		const viewportObserver = new IntersectionObserver(
+			(entries, observer) => {
+				entries.forEach(
+					entry => {
+						if (entry.isIntersecting) {
+							observer.unobserve(entry.target);
+							handler(entry.target);
+						}
 					}
-				}
-			);
-		},
-		{
-			rootMargin: '0px 0px 200px 0px'
-		}
-	);
-	Array
-		.from(elements)
-		.forEach(
+				);
+			},
+			{
+				rootMargin: '0px 0px 200px 0px'
+			}
+		);
+		elements.forEach(
 			image => {
 				viewportObserver.observe(image);
 			}
 		);
+	}
 }
+const dataSrcSrcsetSelector = 'img[data-src], img[data-srcset], source[data-src], source[data-srcset]';
 export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 	switch (strategy) {
-		case LazyImageStrategy.AtlanticFigureImgDataSrcset:
+		case LazyImageStrategy.DataSrcSrcset:
 			createObserver(
-				document.querySelectorAll('figure'),
-				target => {
-					const img = target.getElementsByTagName('img')[0];
-					if (!img.hasAttribute('srcset') && img.hasAttribute('data-srcset')) {
-						img.srcset = img.getAttribute('data-srcset');
-					}
-				}
-			);
-			break;
-		case LazyImageStrategy.FigureImgDataSrc:
-			createObserver(
-				document.querySelectorAll('figure'),
+				Array
+					.from(document.querySelectorAll(dataSrcSrcsetSelector))
+					.map(
+						element => element.parentElement
+					),
 				target => {
 					Array
-						.from(target.querySelectorAll('[data-src], [data-srcset]'))
+						.from(target.querySelectorAll(dataSrcSrcsetSelector))
 						.forEach(
 							element => {
 								if (element.hasAttribute('data-src') && element.getAttribute('data-src') !== element.getAttribute('src')) {
@@ -88,7 +81,7 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.GoverningImgSrcCorrection:
 			createObserver(
-				document.querySelectorAll('img'),
+				Array.from(document.querySelectorAll('img')),
 				(target: HTMLImageElement) => {
 					target.src = target.src
 						.replace(/^http:/, 'https:')
@@ -98,7 +91,7 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.MediumScaleUp:
 			createObserver(
-				document.querySelectorAll('figure'),
+				Array.from(document.querySelectorAll('figure')),
 				target => {
 					const img = target.getElementsByTagName('img')[0];
 					if (img.src) {
@@ -112,14 +105,30 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.NoscriptImgContent:
 			createObserver(
-				document.querySelectorAll('figure'),
+				Array
+					.from(document.getElementsByTagName('noscript'))
+					.map(noscript => noscript.parentElement),
 				target => {
 					Array
 						.from(target.getElementsByTagName('noscript'))
 						.forEach(
 							noscript => {
-								if (/^\s*<\s*img\s.+\/\s*>\s*$/is.test(noscript.textContent)) {
-									noscript.insertAdjacentHTML('afterend', noscript.textContent);
+								if (/^\s*<\s*img\s.+\s*>\s*$/is.test(noscript.textContent)) {
+									const temp = document.createElement('div');
+									temp.innerHTML = noscript.textContent;
+									const
+										img = temp.firstElementChild,
+										imageContainer = noscript.parentElement.getElementsByClassName('com_readup_article_image_container')[0];
+									if (imageContainer) {
+										if (imageContainer.nodeName === 'FIGURE') {
+											imageContainer.append(img);
+										} else {
+											img.classList.add('com_readup_article_image_container');
+											imageContainer.replaceWith(img);
+										}
+									} else {
+										noscript.replaceWith(img);
+									}
 								}
 							}
 						);
@@ -128,7 +137,7 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.NytFigureImageObject:
 			createObserver(
-				document.querySelectorAll('figure[itemType="http://schema.org/ImageObject"]'),
+				Array.from(document.querySelectorAll('figure[itemType="http://schema.org/ImageObject"]')),
 				target => {
 					if (!target.getElementsByTagName('img').length) {
 						const img = document.createElement('img');
@@ -140,7 +149,7 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.PostLoadImgTag:
 			createObserver(
-				document.getElementsByTagName('postload-img'),
+				Array.from(document.getElementsByTagName('postload-img')),
 				target => {
 					const img = document.createElement('img');
 					copyAttributes(
@@ -155,7 +164,7 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.WashingtonPostScaleUp:
 			createObserver(
-				document.querySelectorAll('img[data-hi-res-src]'),
+				Array.from(document.querySelectorAll('img[data-hi-res-src]')),
 				(target: HTMLImageElement) => {
 					target.src = target.getAttribute('data-hi-res-src');
 				}
@@ -168,9 +177,9 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			if (matches.length) {
 				return procesLazyImages(LazyImageStrategy.MediumScaleUp);
 			}
-			matches = document.querySelectorAll('figure [data-src], figure [data-srcset]');
+			matches = document.querySelectorAll(dataSrcSrcsetSelector);
 			if (matches.length) {
-				return procesLazyImages(LazyImageStrategy.FigureImgDataSrc);
+				return procesLazyImages(LazyImageStrategy.DataSrcSrcset);
 			}
 			matches = document.querySelectorAll('noscript');
 			if (matches.length) {

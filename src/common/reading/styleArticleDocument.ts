@@ -51,7 +51,8 @@ const styleContent = `
 	margin: 1em 0;
 	line-height: normal;
 }
-#com_readup_article #com_readup_article_content p {
+#com_readup_article #com_readup_article_content p,
+#com_readup_article #com_readup_article_content div[class*="para"] {
 	margin: 1em 0;
 }
 #com_readup_article #com_readup_article_content blockquote {
@@ -87,7 +88,7 @@ const styleContent = `
 #com_readup_article #com_readup_article_content img {
 	display: block;
 	height: auto !important;
-	margin: 0 auto;
+	margin: 1em auto;
 }
 `;
 

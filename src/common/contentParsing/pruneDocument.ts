@@ -21,7 +21,7 @@ function formatImageMetadata(text: string) {
 function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[], config: ImageContainerContentConfig) {
 	if (
 		isElement(element) &&
-		element.id.startsWith('com_readup_')
+		(element.id.startsWith('com_readup_') || element.nodeName === 'NOSCRIPT')
 	) {
 		return;
 	} else if (
