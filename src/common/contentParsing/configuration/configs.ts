@@ -120,15 +120,15 @@ export default {
 			}
 		},
 		{
-			hostname: 'kotaku.com',
-			imageStrategy: LazyImageStrategy.FigureImgDataSrc
-		},
-		{
 			hostname: 'medium.com',
 			textContainerFilter: {
 				attributeFullWordWhitelist: ['ad']
 			},
 			imageStrategy: LazyImageStrategy.MediumScaleUp
+		},
+		{
+			hostname: 'devblogs.microsoft.com',
+			contentSearchRootElementSelector: 'article'
 		},
 		{
 			hostname: 'nytimes.com',
@@ -151,6 +151,10 @@ export default {
 		{
 			hostname: 'qsrmagazine.com',
 			contentSearchRootElementSelector: '.post'
+		},
+		{
+			hostname: 'raptitude.com',
+			contentSearchRootElementSelector: '.entry-content'
 		},
 		{
 			hostname: 'article-test.dev.readup.com',
@@ -214,10 +218,34 @@ export default {
 		},
 		{
 			hostname: 'theatlantic.com',
+			contentSearchRootElementSelector: '.article-body',
+			transpositions: [
+				{
+					elementSelectors: ['.article-body > section > div > p'],
+					parentElementSelector: '.article-body > section:last-of-type'
+				}
+			],
 			imageContainerSearch: {
 				selectorBlacklist: ['.callout']
 			},
-			imageStrategy: LazyImageStrategy.AtlanticFigureImgDataSrcset
+			textContainerSearch: {
+				selectorBlacklist: ['.c-nudge__spacing-container']
+			},
+			textContainerFilter: {
+				blacklistSelectors: [
+					() => {
+						const relatedVideo = Array
+							.from(document.querySelectorAll('p > strong'))
+							.find(
+								strong => strong.textContent.trim().toLowerCase() === 'related video'
+							);
+						if (relatedVideo) {
+							return [relatedVideo.parentElement];
+						}
+						return [];
+					}
+				]
+			}
 		},
 		{
 			hostname: 'thedailybeast.com',
@@ -231,10 +259,6 @@ export default {
 			imageContainerSearch: {
 				selectorBlacklist: ['[style*="BellMT"]']
 			}
-		},
-		{
-			hostname: 'vanityfair.com',
-			imageStrategy: LazyImageStrategy.NoscriptImgContent
 		},
 		{
 			hostname: 'variety.com',
