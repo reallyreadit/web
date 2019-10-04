@@ -17,7 +17,7 @@ export default {
 			attributeWordPartBlacklist: ['byline', 'caption', 'comment', 'download', 'interlude', 'image', 'meta', 'newsletter', 'photo', 'promo', 'pullquote', 'recirc', 'video'],
 			blacklistSelectors: [],
 			regexBlacklist: [/^\[[^\]]+\]$/],
-			singleSentenceOpenerBlacklist: ['►', 'click here', 'check out', 'don\'t miss', 'listen to this story', 'read more', 'related article:', 'sign up for', 'sponsored:', 'this article appears in', 'watch:']
+			singleSentenceOpenerBlacklist: ['►', 'click here', 'check out', 'don\'t miss', 'listen to', 'read more', 'related article:', 'sign up for', 'sponsored:', 'this article appears in', 'watch:']
 		},
 		imageContainerSearch: {
 			descendantNodeNameBlacklist: ['FORM', 'IFRAME'],
@@ -201,6 +201,10 @@ export default {
 			}
 		},
 		{
+			hostname: 'techcrunch.com',
+			contentSearchRootElementSelector: '.article-content'
+		},
+		{
 			hostname: 'techrepublic.com',
 			textContainerFilter: {
 				blacklistSelectors: [
@@ -248,6 +252,13 @@ export default {
 			}
 		},
 		{
+			hostname: 'thecut.com',
+			contentSearchRootElementSelector: '[itemprop="articleBody"]',
+			textContainerSearch: {
+				selectorBlacklist: ['aside']
+			}
+		},
+		{
 			hostname: 'thedailybeast.com',
 			contentSearchRootElementSelector: 'article.Body'
 		},
@@ -258,6 +269,13 @@ export default {
 			},
 			imageContainerSearch: {
 				selectorBlacklist: ['[style*="BellMT"]']
+			}
+		},
+		{
+			hostname: 'theverge.com',
+			contentSearchRootElementSelector: '.c-entry-content',
+			textContainerSearch: {
+				selectorBlacklist: ['aside']
 			}
 		},
 		{
