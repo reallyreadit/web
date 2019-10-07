@@ -389,6 +389,8 @@ chrome.runtime.onInstalled.addListener(details => {
 		when: Date.now(),
 		periodInMinutes: 120
 	});
+	// clean up old alarm
+	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
