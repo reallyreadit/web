@@ -262,7 +262,7 @@ export default abstract class Root<
 
 	// notifications
 	protected readonly _clearAlerts = (alert: Alert) => {
-		const user = this.state.user;
+		const user = this.state.user as UserAccount;
 		let newUser: UserAccount;
 		switch (alert) {
 			case Alert.Aotd:
@@ -294,8 +294,8 @@ export default abstract class Root<
 				break;
 		}
 		if (newUser) {
-			this.setState({ user: newUser });
 			this.props.serverApi.clearAlerts({ alert });
+			this.onUserUpdated(newUser);
 		}
 	};
 

@@ -1,6 +1,7 @@
 import ExtensionApi from '../common/ExtensionApi';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
+import UserAccount from '../../common/models/UserAccount';
 
 export default class extends ExtensionApi {
     private _isInstalled: boolean | null = null;
@@ -35,6 +36,9 @@ export default class extends ExtensionApi {
                     case 'commentPosted':
                         this.emitEvent('commentPosted', message.data);
                         break;
+                    case 'userUpdated':
+                        this.emitEvent('userUpdated', message.data);
+                        break;
                 }
             }
         });
@@ -63,6 +67,9 @@ export default class extends ExtensionApi {
     }
     public install() {
         window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');
+    }
+    public userUpdated(user: UserAccount) {
+        this.sendMessage('userUpdated', user);
     }
     public get isInstalled() {
         return this._isInstalled;

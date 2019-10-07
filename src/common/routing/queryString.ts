@@ -13,23 +13,38 @@ export function parseQueryString(queryString: string) {
 			return result;
 		}, {} as { [key: string]: string })
 }
-export function createQueryString(kvps: { [key: string]: string }) {
-	let keys: string[];
-	if (!kvps || !((keys = Object.keys(kvps)).length)) {
-		return '';
+export function createQueryString(kvps: { [key: string]: string | Array<string> }) {
+	if (kvps) {
+		const qsKvps = Object
+			.keys(kvps)
+			.reduce<string[]>(
+				(qsKvps, key) => {
+					const
+						qsKey = encodeURIComponent(key),
+						value = kvps[key];
+					if (value == null) {
+						qsKvps.push(qsKey);
+					} else if (
+						typeof value === 'string' ||
+						typeof value === 'number'
+					) {
+						qsKvps.push(qsKey + '=' + encodeURIComponent(value));
+					} else if (Array.isArray(value)) {
+						value.forEach(
+							item => {
+								qsKvps.push(qsKey + '=' + encodeURIComponent(item));
+							}
+						);
+					}
+					return qsKvps;
+				},
+				[]
+			);
+		if (qsKvps.length) {
+			return '?' + qsKvps.join('&');
+		}
 	}
-	return (
-		'?' +
-		keys
-			.map(
-				key => encodeURIComponent(key) + (
-					kvps[key] != null ?
-						'=' + encodeURIComponent(kvps[key]) :
-						''
-				)
-			)
-			.join('&')
-	);
+	return '';
 }
 export const clientTypeQueryStringKey = 'clientType';
 export const redirectedQueryStringKey = 'redirected';

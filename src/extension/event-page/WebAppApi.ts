@@ -1,7 +1,7 @@
 import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
-import NewReplyNotification from '../../common/models/NewReplyNotification';
 import Post from '../../common/models/social/Post';
+import UserAccount from '../../common/models/UserAccount';
 
 function stringifyForLiteral(obj: {}) {
 	return JSON
@@ -25,7 +25,7 @@ export default class WebAppApi {
 		handlers: {
 			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
 			onCommentPosted: (comment: CommentThread) => void,
-			onNewReplyNotificationUpdated: (notification: NewReplyNotification) => void
+			onUserUpdated: (user: UserAccount) => void
 		}
 	) {
 		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
@@ -36,12 +36,12 @@ export default class WebAppApi {
 				case 'commentPosted':
 					handlers.onCommentPosted(message.data);
 					break;
-				case 'newReplyNotificationUpdated':
-					handlers.onNewReplyNotificationUpdated(message.data);
-					break;
 				case 'ping':
 					sendResponse(true);
 					return true;
+				case 'userUpdated':
+					handlers.onUserUpdated(message.data);
+					break;
 			}
 			return false;
 		});
@@ -57,5 +57,8 @@ export default class WebAppApi {
 	}
 	public extensionInstalled() {
 		sendMessage('extensionInstalled');
+	}
+	public userUpdated(user: UserAccount) {
+		sendMessage('userUpdated', user);
 	}
 }

@@ -23,7 +23,6 @@ import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
 
 export type Props = BrowserActionState & {
-	onAckNewReply: () => void,
 	onActivateReaderMode: () => void,
 	onDeactivateReaderMode: () => void,
 	onPostArticle: (form: PostForm) => Promise<Post>,

@@ -36,6 +36,14 @@ const serverApi = new ServerApi({
 			updateIcon(state);
 			browserActionApi.pushState(state);
 		});
+	},
+	onUserUpdated: user => {
+		console.log('serverApi.onUserUpdated');
+		getState().then(state => {
+			updateIcon(state);
+			browserActionApi.pushState(state);
+		});
+		webAppApi.userUpdated(user);
 	}
 });
 
@@ -59,7 +67,6 @@ const browserActionApi = new BrowserActionApi({
 		});
 	},
 	onLoad: () => getState(),
-	onAckNewReply: () => serverApi.ackNewReply(),
 	onPostArticle: form => {
 		return serverApi
 			.postArticle(form)
@@ -249,9 +256,12 @@ const webAppApi = new WebAppApi({
 				contentScriptApi.commentPosted(tab.id, comment);
 			});
 	},
-	onNewReplyNotificationUpdated: notification => {
-		// process
-		serverApi.processNewReplyNotification(notification);
+	onUserUpdated: user => {
+		serverApi.updateUser(user);
+		getState().then(state => {
+			updateIcon(state);
+			browserActionApi.pushState(state);
+		});
 	}
 });
 
@@ -272,7 +282,7 @@ function getState(): Promise<BrowserActionState> {
 				focusedChromeTab = result[0],
 				isAuthenticated = result[1],
 				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
-				showNewReplyIndicator = serverApi.hasNewReply();
+				showAlertIndicator = serverApi.hasAlert();
 			let activeTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (activeTab = tabs.get(focusedChromeTab.id))) {
 				return Promise.resolve({
@@ -281,7 +291,7 @@ function getState(): Promise<BrowserActionState> {
 					debug,
 					isAuthenticated,
 					isOnHomePage,
-					showNewReplyIndicator,
+					showAlertIndicator,
 					url: focusedChromeTab.url
 				});
 			} else {
@@ -289,8 +299,8 @@ function getState(): Promise<BrowserActionState> {
 					debug,
 					isAuthenticated,
 					isOnHomePage,
-					showNewReplyIndicator,
-					url: focusedChromeTab.url
+					showAlertIndicator,
+					url: focusedChromeTab ? focusedChromeTab.url : null
 				});
 			}
 		});
@@ -305,7 +315,7 @@ function updateIcon(state: BrowserActionState) {
 			// content script tab
 			drawBrowserActionIcon(
 				'signedIn',
-				state.showNewReplyIndicator
+				state.showAlertIndicator
 			);
 			browserActionBadgeApi.set({
 				isLoading: !!serverApi.getArticleLookupRequests(state.activeTab.id).length,
@@ -313,7 +323,7 @@ function updateIcon(state: BrowserActionState) {
 			});
 		} else {
 			// not one of our tabs
-			drawBrowserActionIcon('signedIn', state.showNewReplyIndicator);
+			drawBrowserActionIcon('signedIn', state.showAlertIndicator);
 			browserActionBadgeApi.set();
 		}
 	} else {
@@ -329,6 +339,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	// initialize settings
 	localStorage.removeItem('parseMode');
 	localStorage.removeItem('showOverlay');
+	localStorage.removeItem('newReplyNotification');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// clear storage
 	tabs.clear();
@@ -367,10 +378,13 @@ chrome.runtime.onInstalled.addListener(details => {
 			periodInMinutes: 120
 		}
 	);
-	chrome.alarms.create(ServerApi.alarms.checkNewReplyNotification, {
-		when: Date.now(),
-		periodInMinutes: 20
-	});
+	chrome.alarms.create(
+		ServerApi.alarms.checkNotifications,
+		{
+			when: Date.now(),
+			periodInMinutes: 2.5
+		}
+	);
 	chrome.alarms.create(ServerApi.alarms.getSourceRules, {
 		when: Date.now(),
 		periodInMinutes: 120

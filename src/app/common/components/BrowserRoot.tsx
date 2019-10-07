@@ -3,7 +3,7 @@ import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
-import UserAccount from '../../../common/models/UserAccount';
+import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
@@ -386,7 +386,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				this.onUserSignedOut(EventSource.Remote);
 			})
 			.addListener('userUpdated', user => {
-				this.onUserUpdated(user, EventSource.Remote);
+				if (!areUsersEqual(this.state.user, user)) {
+					this.onUserUpdated(user, EventSource.Remote);
+				}
 			});
 
 		// ExtensionApi
@@ -407,6 +409,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			})
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment, EventSource.Remote);
+			})
+			.addListener('userUpdated', user => {
+				if (!areUsersEqual(this.state.user, user)) {
+					this.onUserUpdated(user, EventSource.Remote);
+				}
 			});
 	}
 	private changeScreen(
@@ -603,6 +610,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected onUserUpdated(user: UserAccount, eventSource: EventSource = EventSource.Local) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userUpdated(user);
+			this.props.extensionApi.userUpdated(user);
 		}
 		super.onUserUpdated(user);
 	}
@@ -762,8 +770,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		// update other tabs with the latest user data
 		this.props.browserApi.userUpdated(this.state.user);
-		// update the extension with the latest notification data
-		
+		this.props.extensionApi.userUpdated(this.state.user);
 		// check user agent for device type
 		if (this.state.isIosDevice == null) {
 			this.setState({

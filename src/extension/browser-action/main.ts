@@ -14,7 +14,6 @@ eventPageApi
 	.then(state => {
 		setState({
 			...state,
-			onAckNewReply: ackNewReply,
 			onActivateReaderMode: activateReaderMode,
 			onDeactivateReaderMode: deactiveReaderMode,
 			onPostArticle: postArticle,
@@ -24,9 +23,6 @@ eventPageApi
 		});
 	});
 
-function ackNewReply() {
-	eventPageApi.ackNewReply();
-}
 function activateReaderMode() {
 	if (props.activeTab) {
 		eventPageApi.activateReaderMode(props.activeTab.id);

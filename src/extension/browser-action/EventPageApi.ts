@@ -29,9 +29,6 @@ export default class EventPageApi {
 			}
 		});
 	}
-	public ackNewReply() {
-		sendMessage('ackNewReply');
-	}
 	public activateReaderMode(tabId: number) {
 		sendMessage('activateReaderMode', tabId);
 	}

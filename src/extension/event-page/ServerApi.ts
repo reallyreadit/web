@@ -1,5 +1,4 @@
 import UserArticle from '../../common/models/UserArticle';
-import NewReplyNotification, { isStateEqual as isNotificationStateEqual, shouldShowDesktopNotification } from '../../common/models/NewReplyNotification';
 import SetStore from '../../common/webStorage/SetStore';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import ParseResult from '../../common/reading/ParseResult';
@@ -9,12 +8,14 @@ import { Cached, cache, isExpired } from './Cached';
 import SourceRule from '../../common/models/SourceRule';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
-import DesktopNotification from '../../common/models/DesktopNotification';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import CommentThread from '../../common/models/CommentThread';
 import PostCommentForm from '../../common/models/PostCommentForm';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
+import UserAccount, { areEqual } from '../../common/models/UserAccount';
+import NotificationsQueryResult from '../common/models/NotificationsQueryResult';
+import DisplayedNotification from './DisplayedNotification';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -71,76 +72,72 @@ function fetchJson<T>(request: Request) {
 }
 export default class ServerApi {
 	public static alarms = {
-		checkNewReplyNotification: 'ServerApi.checkNewReplyNotification',
+		checkNotifications: 'ServerApi.checkNotifications',
 		getSourceRules: 'ServerApi.getSourceRules'
 	};
 	// cached local storage
-	private _newReplyNotification = new ObjectStore<Cached<NewReplyNotification>>('newReplyNotification', {
-		value: {
-			lastReply: 0,
-			lastNewReplyAck: 0,
-			lastNewReplyDesktopNotification: 0,
-			timestamp: 0
-		},
-		timestamp: 0,
-		expirationTimespan: 0
-	});
 	private _articles = new SetStore<number, Cached<UserArticle>>('articles', a => a.value.id);
+	private _displayedNotifications = new SetStore<string, DisplayedNotification>(
+		'displayedNotifications',
+		notification => notification.id
+	);
 	private _sourceRules = new ObjectStore<Cached<SourceRule[]>>('sourceRules', {
 		value: [],
 		timestamp: 0,
 		expirationTimespan: 0
 	});
+	private _user = new ObjectStore<UserAccount>('user', null);
 	// ephemeral requests stores
 	private _articleLookupRequests: Request[] = [];
 	private _articleCacheRequets: Request[] = [];
 	// handlers
 	private _onArticleLookupRequestChanged: () => void;
 	private _onCacheUpdated: () => void;
+	private readonly _onUserUpdated: (user: UserAccount) => void;
 	constructor(handlers: {
 		onAuthenticationStatusChanged: (isAuthenticated: boolean) => void,
 		onArticleLookupRequestChanged: () => void,
-		onCacheUpdated: () => void
+		onCacheUpdated: () => void,
+		onUserUpdated: (user: UserAccount) => void
 	}) {
 		// extension install
 		chrome.runtime.onInstalled.addListener(details => {
 			// clear entire cache
-			this._newReplyNotification.clear();
 			this._articles.clear();
+			this._displayedNotifications.clear();
 			this._sourceRules.clear();
+			this._user.clear();
 		});
 		// cookie change
 		chrome.cookies.onChanged.addListener(changeInfo => {
 			if (changeInfo.cookie.domain === '.' + window.reallyreadit.extension.config.cookieDomain && changeInfo.cookie.name === window.reallyreadit.extension.config.cookieName) {
 				const isAuthenticated = !changeInfo.removed;
 				// clear user specific cache
-				this._newReplyNotification.clear();
 				this._articles.clear();
+				this._displayedNotifications.clear();
+				this._user.clear();
 				// check source rules cache
 				if (isAuthenticated) {
+					this.checkNotifications();
 					this.checkSourceRulesCache();
 				}
 				// fire handler
 				handlers.onAuthenticationStatusChanged(isAuthenticated);
 			}
 		});
-		// external message
-		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-			if (message.type === 'updateNewReplyNotification') {
-				this.processNewReplyNotification(message.data);
-			}
-		});
 		// alarms
 		chrome.alarms.onAlarm.addListener(alarm => {
 			switch (alarm.name) {
-				case ServerApi.alarms.checkNewReplyNotification:
-					this.getAuthStatus().then(isAuthenticated => {
-						if (isAuthenticated && isExpired(this._newReplyNotification.get())) {
-							fetchJson<NewReplyNotification>({ method: 'GET', path: '/UserAccounts/CheckNewReplyNotification' })
-								.then(notification => this.processNewReplyNotification(notification))
-								.catch(() => {});
-						}
-					});
+				case ServerApi.alarms.checkNotifications:
+					this
+						.getAuthStatus()
+						.then(
+							isAuthenticated => {
+								if (isAuthenticated) {
+									this.checkNotifications();
+								}
+							}
+						);
 					break;
 				case ServerApi.alarms.getSourceRules:
 					this.getAuthStatus().then(isAuthenticated => {
@@ -152,10 +149,104 @@ export default class ServerApi {
 			}
 		});
 		// notifications
-		chrome.notifications.onClicked.addListener(url => window.open(url));
+		chrome.notifications.onClicked.addListener(
+			id => {
+				window.open(createUrl(window.reallyreadit.extension.config.api, '/Extension/Notification/' + id));
+			}
+		);
 		// handlers
 		this._onArticleLookupRequestChanged = handlers.onArticleLookupRequestChanged;
 		this._onCacheUpdated = handlers.onCacheUpdated;
+		this._onUserUpdated = handlers.onUserUpdated;
+	}
+	private checkNotifications() {
+		chrome.notifications.getAll(
+			chromeNotifications => {
+				const
+					now = Date.now(),
+					displayedNotificationExpiration = now - (2 * 60 * 1000),
+					{
+						current: currentNotifications,
+						expired: expiredNotifications
+					} = this._displayedNotifications
+						.getAll()
+						.reduce<{
+							current: DisplayedNotification[],
+							expired: DisplayedNotification[]
+						}>(
+							(result, notification) => {
+								if (notification.date >= displayedNotificationExpiration) {
+									result.current.push(notification);
+								} else {
+									result.expired.push(notification);
+								}
+								return result;
+							},
+							{
+								current: [],
+								expired: []
+							}
+						);
+				expiredNotifications.forEach(
+					notification => {
+						this._displayedNotifications.remove(notification.id);
+					}
+				);
+				fetchJson<NotificationsQueryResult>({
+						method: 'GET',
+						path: '/Extension/Notifications',
+						data: {
+							ids: Object
+								.keys(chromeNotifications)
+								.concat(
+									currentNotifications
+										.filter(
+											notification => !(notification.id in chromeNotifications)
+										)
+										.map(
+											notification => notification.id
+										)
+								)
+						}
+					})
+					.then(
+						result => {
+							result.cleared.forEach(
+								id => {
+									chrome.notifications.clear(id);
+									this._displayedNotifications.remove(id);
+								}
+							);
+							result.created.forEach(
+								notification => {
+									chrome.notifications.create(
+										notification.id,
+										{
+											type: 'basic',
+											iconUrl: '../icons/icon.svg',
+											title: notification.title,
+											message: notification.message,
+											isClickable: true
+										}
+									);
+									this._displayedNotifications.set({
+										id: notification.id,
+										date: Date.now()
+									});
+								}
+							);
+							const currentUser = this._user.get();
+							if (!areEqual(currentUser, result.user)) {
+								this._user.set(result.user);
+								this._onUserUpdated(result.user);
+							}
+						}
+					)
+					.catch(
+						() => { }
+					);	
+			}
+		);
 	}
 	private checkSourceRulesCache() {
 		if (isExpired(this._sourceRules.get())) {
@@ -182,39 +273,6 @@ export default class ServerApi {
 	public cacheArticle(userArticle: UserArticle) {
 		this._articles.set(cache(userArticle, 60000));
 		this._onCacheUpdated();
-	}
-	public processNewReplyNotification(notification: NewReplyNotification) {
-		const current = this._newReplyNotification.get();
-		if (notification.timestamp > current.value.timestamp) {
-			this._newReplyNotification.set(cache(notification, 50000));
-			if (!isNotificationStateEqual(current.value, notification)) {
-				if (shouldShowDesktopNotification(notification)) {
-					fetchJson<DesktopNotification>({ method: 'POST', path: '/UserAccounts/CreateDesktopNotification' })
-						.then(notification => {
-							if (notification) {
-								const now = Date.now();
-								this.processNewReplyNotification({
-									...this._newReplyNotification.get().value,
-									lastNewReplyDesktopNotification: now,
-									timestamp: now
-								});
-								chrome.notifications.create(
-									createUrl(window.reallyreadit.extension.config.web, '/viewReply' + createQueryString({ token: notification.token })),
-									{
-										type: 'basic',
-										iconUrl: '../icons/icon.svg',
-										title: `${notification.userName} just replied to your comment re: ${notification.articleTitle}`,
-										message: 'Click here to view the reply in the comment thread.',
-										isClickable: true
-									}
-								);
-							}
-						})
-						.catch(() => { });
-				}
-				this._onCacheUpdated();
-			}
-		}
 	}
 	public registerPage(tabId: number, data: ParseResult) {
 		const request = this.logRequest<ArticleLookupResult>({ method: 'POST', path: '/Extension/GetUserArticle', data, id: tabId }, this._articleLookupRequests)
@@ -288,20 +346,6 @@ export default class ServerApi {
 			name: window.reallyreadit.extension.config.cookieName
 		}, cookie => resolve(!!cookie)));
 	}
-	public hasNewReply() {
-		const notif = this._newReplyNotification.get().value;
-		return notif.lastReply > notif.lastNewReplyAck;
-	}
-	public ackNewReply() {
-		const now = Date.now();
-		this.processNewReplyNotification({
-			...this._newReplyNotification.get().value,
-			lastNewReplyAck: now,
-			timestamp: now
-		});
-		fetchJson({ method: 'POST', path: '/UserAccounts/AckNewReply' })
-			.catch(() => {});
-	}
 	public getSourceRules(hostname: string) {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
 	}
@@ -317,5 +361,21 @@ export default class ServerApi {
 			path: '/Extension/Install',
 			data: platformInfo
 		});
+	}
+	public hasAlert() {
+		var user = this._user.get();
+		return !!(
+			user &&
+			(
+				user.aotdAlert ||
+				user.replyAlertCount ||
+				user.loopbackAlertCount ||
+				user.postAlertCount ||
+				user.followerAlertCount
+			)
+		);
+	}
+	public updateUser(user: UserAccount) {
+		this._user.set(user);
 	}
 }

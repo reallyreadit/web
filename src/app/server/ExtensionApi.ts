@@ -1,6 +1,7 @@
 import ExtensionApi from '../common/ExtensionApi';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
+import UserAccount from '../../common/models/UserAccount';
 
 export default class extends ExtensionApi {
     public articleUpdated(event: ArticleUpdatedEvent) {
@@ -10,6 +11,9 @@ export default class extends ExtensionApi {
         throw new Error('Operation not supported in server environment');
     }
     public install() {
+        throw new Error('Operation not supported in server environment');
+    }
+    public userUpdated(user: UserAccount) {
         throw new Error('Operation not supported in server environment');
     }
     public get isInstalled(): boolean | undefined {

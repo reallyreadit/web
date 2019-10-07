@@ -11,7 +11,6 @@ export default class BrowserActionApi {
 		onActivateReaderMode: (tabId: number) => void,
 		onDeactivateReaderMode: (tabId: number) => void,
 		onLoad: () => Promise<BrowserActionState>,
-		onAckNewReply: () => void,
 		onPostArticle: (form: PostForm) => Promise<Post>,
 		onSetStarred: (articleId: number, isStarred: boolean) => Promise<UserArticle>,
 		onToggleContentIdentificationDisplay: (tabId: number) => void,
@@ -31,9 +30,6 @@ export default class BrowserActionApi {
 							.onLoad()
 							.then(sendResponse);
 						return true;
-					case 'ackNewReply':
-						handlers.onAckNewReply();
-						break;
 					case 'postArticle':
 						handlers
 							.onPostArticle(message.data)

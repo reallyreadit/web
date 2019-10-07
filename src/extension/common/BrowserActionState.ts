@@ -7,6 +7,6 @@ export default interface BrowserActionState {
 	debug: boolean,
 	isAuthenticated: boolean,
 	isOnHomePage: boolean,
-	showNewReplyIndicator: boolean,
-	url: string
+	showAlertIndicator: boolean,
+	url: string | null
 }
