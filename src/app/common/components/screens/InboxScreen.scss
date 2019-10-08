@@ -2,3 +2,17 @@
 	componentPath: src/app/common/components/screens/InboxScreen
 	cssComponentId: inbox-screen_yq0iay
 */
+
+.inbox-screen_yq0iay > .update-banner {
+	position: absolute;
+    top: 10px;
+    left: 50%;
+	 transform: translateX(-50%);
+    padding: 0 10px;
+    font-size: 12pt;
+    height: 25px;
+    line-height: 25px;
+    background-color: #FFF599;
+    border: 1px solid gold;
+    border-radius: 3px;
+}

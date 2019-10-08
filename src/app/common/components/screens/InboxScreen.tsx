@@ -21,6 +21,8 @@ import Alert from '../../../../common/models/notifications/Alert';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import ActionLink from '../../../../common/components/ActionLink';
+import { formatCountable } from '../../../../common/format';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -38,14 +40,34 @@ interface Props {
 	user: UserAccount
 }
 interface State {
+	isLoadingNewItems: boolean,
+	newItemCount: number,
 	posts: Fetchable<PageResult<Post>>
 }
 class InboxScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private _hasClearedAlerts = false;
+	private readonly _loadNewItems = () => {
+		this.setState({ isLoadingNewItems: true });
+		this.props.onGetInboxPosts(
+			{ pageNumber: 1 },
+			this._asyncTracker.addCallback(
+				posts => {
+					this.setState({
+						isLoadingNewItems: false,
+						newItemCount: 0,
+						posts
+					});
+					this.clearAlertsIfNeeded();
+				}
+			)
+		);
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			isLoadingNewItems: false,
+			newItemCount: 0,
 			posts: props.onGetInboxPosts(
 				{ pageNumber: 1 },
 				this._asyncTracker.addCallback(
@@ -68,32 +90,50 @@ class InboxScreen extends React.Component<Props, State> {
 			this.clearAlertsIfNeeded();
 		}
 	}
+	public componentDidUpdate(prevProps: Props) {
+		const newItemCount = Math.max(0, (this.props.user.replyAlertCount + this.props.user.loopbackAlertCount) - (prevProps.user.replyAlertCount + prevProps.user.loopbackAlertCount));
+		if (newItemCount) {
+			this.setState({ newItemCount });
+			this._hasClearedAlerts = false;
+		}
+	}
 	public render() {
 		return (
 			<ScreenContainer className="inbox-screen_yq0iay">
 				{this.state.posts.isLoading ?
 					<LoadingOverlay position="absolute" /> :
-					<ArticleList>
-						{this.state.posts.value.items.map(
-							post => (
-								<li key={post.date}>
-									<PostDetails
-										highlightedCommentId={this.props.highlightedCommentId}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-										onRead={this.props.onReadArticle}
-										onPost={this.props.onPostArticle}
-										onShare={this.props.onShare}
-										onToggleStar={this.props.onToggleArticleStar}
-										onViewComments={this.props.onViewComments}
-										onViewThread={this.props.onViewThread}
-										post={post}
-										user={this.props.user}
-									/>
-								</li>
-							)
-						)}
-					</ArticleList>}
+					<>
+						{this.state.newItemCount ?
+							<div className="update-banner">
+								<ActionLink
+									onClick={this._loadNewItems}
+									state={this.state.isLoadingNewItems ? 'busy' : 'normal'}
+									text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'notification')}`}
+								/>
+							</div> :
+							null}
+						<ArticleList>
+							{this.state.posts.value.items.map(
+								post => (
+									<li key={post.date}>
+										<PostDetails
+											highlightedCommentId={this.props.highlightedCommentId}
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onRead={this.props.onReadArticle}
+											onPost={this.props.onPostArticle}
+											onShare={this.props.onShare}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+											onViewThread={this.props.onViewThread}
+											post={post}
+											user={this.props.user}
+										/>
+									</li>
+								)
+							)}
+						</ArticleList>
+					</>}
 			</ScreenContainer>
 		);
 	}
