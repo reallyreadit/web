@@ -1,5 +1,6 @@
 import ContentScriptTab from './ContentScriptTab';
 import UserArticle from '../../common/models/UserArticle';
+import UserAccount from '../../common/models/UserAccount';
 
 export default interface BrowserActionState {
 	activeTab?: ContentScriptTab,
@@ -7,6 +8,6 @@ export default interface BrowserActionState {
 	debug: boolean,
 	isAuthenticated: boolean,
 	isOnHomePage: boolean,
-	showAlertIndicator: boolean,
-	url: string | null
+	url: string | null,
+	user?: UserAccount
 }

@@ -15,7 +15,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import ArticleList from '../controls/articles/ArticleList';
 import PostDetails from '../../../../common/components/PostDetails';
 import CommentThread from '../../../../common/models/CommentThread';
-import UserAccount from '../../../../common/models/UserAccount';
+import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
 import { Screen, SharedState } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
 import { findRouteByKey } from '../../../../common/routing/Route';
@@ -58,13 +58,7 @@ class InboxScreen extends React.Component<Props, State> {
 		};
 	}
 	private clearAlertsIfNeeded() {
-		if (
-			!this._hasClearedAlerts &&
-			(
-				this.props.user.replyAlertCount ||
-				this.props.user.loopbackAlertCount
-			)
-		) {
+		if (!this._hasClearedAlerts && hasAlert(this.props.user, Alert.Inbox)) {
 			this.props.onClearAlerts(Alert.Inbox);
 			this._hasClearedAlerts = true;
 		}

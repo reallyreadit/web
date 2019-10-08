@@ -362,18 +362,8 @@ export default class ServerApi {
 			data: platformInfo
 		});
 	}
-	public hasAlert() {
-		var user = this._user.get();
-		return !!(
-			user &&
-			(
-				user.aotdAlert ||
-				user.replyAlertCount ||
-				user.loopbackAlertCount ||
-				user.postAlertCount ||
-				user.followerAlertCount
-			)
-		);
+	public getUser() {
+		return this._user.get();
 	}
 	public updateUser(user: UserAccount) {
 		this._user.set(user);

@@ -10,6 +10,7 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
+import { hasAlert } from '../../common/models/UserAccount';
 
 console.log('loading main.ts...');
 
@@ -282,7 +283,7 @@ function getState(): Promise<BrowserActionState> {
 				focusedChromeTab = result[0],
 				isAuthenticated = result[1],
 				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
-				showAlertIndicator = serverApi.hasAlert();
+				user = serverApi.getUser();
 			let activeTab: ContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (activeTab = tabs.get(focusedChromeTab.id))) {
 				return Promise.resolve({
@@ -291,16 +292,16 @@ function getState(): Promise<BrowserActionState> {
 					debug,
 					isAuthenticated,
 					isOnHomePage,
-					showAlertIndicator,
-					url: focusedChromeTab.url
+					url: focusedChromeTab.url,
+					user
 				});
 			} else {
 				return Promise.resolve({
 					debug,
 					isAuthenticated,
 					isOnHomePage,
-					showAlertIndicator,
-					url: focusedChromeTab ? focusedChromeTab.url : null
+					url: focusedChromeTab ? focusedChromeTab.url : null,
+					user
 				});
 			}
 		});
@@ -313,17 +314,14 @@ function updateIcon(state: BrowserActionState) {
 	if (state.isAuthenticated) {
 		if (state.activeTab) {
 			// content script tab
-			drawBrowserActionIcon(
-				'signedIn',
-				state.showAlertIndicator
-			);
+			drawBrowserActionIcon('signedIn', hasAlert(state.user));
 			browserActionBadgeApi.set({
 				isLoading: !!serverApi.getArticleLookupRequests(state.activeTab.id).length,
 				value: state.article
 			});
 		} else {
 			// not one of our tabs
-			drawBrowserActionIcon('signedIn', state.showAlertIndicator);
+			drawBrowserActionIcon('signedIn', hasAlert(state.user));
 			browserActionBadgeApi.set();
 		}
 	} else {

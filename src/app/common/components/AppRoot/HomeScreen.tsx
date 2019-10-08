@@ -1,7 +1,7 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
-import UserAccount from '../../../../common/models/UserAccount';
+import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadsList, { updateCommunityReads, View } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -231,13 +231,13 @@ class HomeScreen extends React.Component<Props, State> {
 		);
 	}
 	private clearAotdAlertIfNeeded() {
-		if (!this._hasClearedAotdAlert && this.props.user.aotdAlert) {
+		if (!this._hasClearedAotdAlert && hasAlert(this.props.user, Alert.Aotd)) {
 			this.props.onClearAlerts(Alert.Aotd);
 			this._hasClearedAotdAlert = true;
 		}
 	}
 	private clearFollowingAlertIfNeeded() {
-		if (!this._hasClearedFollowingAlert && this.props.user.postAlertCount) {
+		if (!this._hasClearedFollowingAlert && hasAlert(this.props.user, Alert.Following)) {
 			this.props.onClearAlerts(Alert.Following);
 			this._hasClearedFollowingAlert = true;
 		}

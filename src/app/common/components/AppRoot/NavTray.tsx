@@ -1,10 +1,11 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import UserAccount from '../../../../common/models/UserAccount';
+import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import { Screen } from '../Root';
+import Alert from '../../../../common/models/notifications/Alert';
 
 const profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
@@ -30,7 +31,7 @@ export default class NavTray extends React.PureComponent<Props>{
 						onClick={this.props.onViewHome}
 					>
 						<Icon
-							badge={this.props.user.postAlertCount + (this.props.user.aotdAlert ? 1 : 0)}
+							badge={this.props.user.postAlertCount + (hasAlert(this.props.user, Alert.Aotd) ? 1 : 0)}
 							name="earth"
 						/>
 						<label>Discover</label>

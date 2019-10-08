@@ -8,7 +8,7 @@
 }
 .app_79z645 > header {
 	position: relative;
-	margin-top: 5px;
+	margin: 5px 0 10px 0;
 	text-align: center;
 }
 .app_79z645 > header > a {
@@ -25,9 +25,6 @@
 	right: 0;
 	top: 50%;
 	transform: translateY(-50%);
-}
-.app_79z645 > .unauthenticated {
-	margin-top: 10px;
 }
 .app_79z645 > .unauthenticated > .signed-out-warning {
 	display: flex;
@@ -47,10 +44,16 @@
 	margin: 10px 0;
 	justify-content: space-evenly;
 }
+.app_79z645 > .alerts {
+	margin-bottom: 10px;	
+}
+.app_79z645 > .alerts > .button_ovrlmi {
+	display: flex;
+	margin: 0 auto;
+}
 .app_79z645 > .controls {
 	display: flex;
 	justify-content: center;
-	margin-top: 10px;
 }
 .app_79z645 > .controls > .reader-toggle {
 	display: flex;
@@ -96,20 +99,12 @@
 .app_79z645 > .controls > .reader-toggle > .toggle-switch > input:checked + .switch::before {
 	left: calc(100% - 20px);
 }
-.app_79z645 > .article-details_d2vnmv {
-	margin-top: 10px;
-}
 .app_79z645 > .debug {
 	margin: 10px;
 	text-align: center;
 }
-.app_79z645 > .tip {
-	display: block;
-	margin-top: 10px;
-	padding: 10px;
+.app_79z645 > .content-box_kkp9lc {
 	text-align: center;
-	background-color: white;
-	border: 1px solid #ccc;
 }
 .app_79z645 > .no-article {
 	margin: 20px 0 10px 0;

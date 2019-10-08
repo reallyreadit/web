@@ -1,4 +1,5 @@
 import UserAccountRole from './UserAccountRole';
+import Alert from './notifications/Alert';
 
 export default interface UserAccount {
 	id: number,
@@ -31,5 +32,34 @@ export function areEqual(a: UserAccount, b: UserAccount) {
 		a.loopbackAlertCount === b.loopbackAlertCount &&
 		a.postAlertCount === b.postAlertCount &&
 		a.followerAlertCount === b.followerAlertCount
+	);
+}
+export function hasAlert(user: UserAccount, alert?: Alert) {
+	if (!user) {
+		return false;
+	}
+	if (alert != null) {
+		switch (alert) {
+			case Alert.Aotd:
+				return user.aotdAlert;
+			case Alert.Followers:
+				return !!user.followerAlertCount;
+			case Alert.Following:
+				return !!user.postAlertCount;
+			case Alert.Inbox:
+				return !!(
+					user.replyAlertCount ||
+					user.loopbackAlertCount
+				);
+			default:
+				throw new Error('Unexpected value for alert');
+		}
+	}
+	return !!(
+		user.aotdAlert ||
+		user.replyAlertCount ||
+		user.loopbackAlertCount ||
+		user.postAlertCount ||
+		user.followerAlertCount
 	);
 }

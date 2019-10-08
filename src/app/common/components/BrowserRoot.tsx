@@ -50,6 +50,7 @@ type Events = SharedEvents & {
 	'extensionInstallationStatusChanged': boolean
 };
 export default class extends Root<Props, State, SharedState, Events> {
+	private _hasBroadcastInitialUser = false;
 	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
 
@@ -611,6 +612,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userUpdated(user);
 			this.props.extensionApi.userUpdated(user);
+			if (!this._hasBroadcastInitialUser) {
+				this._hasBroadcastInitialUser = true;
+			}
 		}
 		super.onUserUpdated(user);
 	}
@@ -769,8 +773,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.startUpdateCheckInterval();
 		}
 		// update other tabs with the latest user data
-		this.props.browserApi.userUpdated(this.state.user);
-		this.props.extensionApi.userUpdated(this.state.user);
+		// descendent components' mount handlers will fire before this one
+		// and might have cleared an alert and already broadcast a more
+		// up to date version before this handler is fired and before
+		// setState has updated the user we are seeing here
+		if (!this._hasBroadcastInitialUser) {
+			this.props.browserApi.userUpdated(this.state.user);
+			this.props.extensionApi.userUpdated(this.state.user);
+			this._hasBroadcastInitialUser = true;
+		}
 		// check user agent for device type
 		if (this.state.isIosDevice == null) {
 			this.setState({

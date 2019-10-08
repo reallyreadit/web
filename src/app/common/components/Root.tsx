@@ -1,5 +1,5 @@
 import * as React from 'react';
-import UserAccount from '../../../common/models/UserAccount';
+import UserAccount, { hasAlert } from '../../../common/models/UserAccount';
 import Captcha from '../Captcha';
 import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
@@ -266,25 +266,22 @@ export default abstract class Root<
 		let newUser: UserAccount;
 		switch (alert) {
 			case Alert.Aotd:
-				if (user.aotdAlert) {
+				if (hasAlert(user, alert)) {
 					newUser = { ...user, aotdAlert: false };
 				}
 				break;
 			case Alert.Followers:
-				if (user.followerAlertCount) {
+				if (hasAlert(user, alert)) {
 					newUser = { ...user, followerAlertCount: 0 };
 				}
 				break;
 			case Alert.Following:
-				if (user.postAlertCount) {
+				if (hasAlert(user, alert)) {
 					newUser = { ...user, postAlertCount: 0 };
 				}
 				break;
 			case Alert.Inbox:
-				if (
-					user.replyAlertCount ||
-					user.loopbackAlertCount
-				) {
+				if (hasAlert(user, alert)) {
 					newUser = {
 						...user,
 						replyAlertCount: 0,

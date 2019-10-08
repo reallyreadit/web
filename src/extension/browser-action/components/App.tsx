@@ -21,6 +21,10 @@ import DialogManager from '../../../common/components/DialogManager';
 import { MenuPosition } from '../../../common/components/Popover';
 import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
+import { hasAlert } from '../../../common/models/UserAccount';
+import Alert from '../../../common/models/notifications/Alert';
+import ContentBox from '../../../common/components/ContentBox';
+import { formatCountable } from '../../../common/format';
 
 export type Props = BrowserActionState & {
 	onActivateReaderMode: () => void,
@@ -40,6 +44,9 @@ export default class extends React.Component<
 	private _showCreateAccountDialog = () => this._openInNewTab(findRouteByKey(routes, ScreenKey.Home, DialogKey.CreateAccount).createUrl());
 	private _goToComments = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments).createUrl(this.getArticleUrlParams()));
+	};
+	private _goToInbox = () => {
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
 	};
 	private readonly _toggleReaderMode = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
@@ -164,55 +171,69 @@ export default class extends React.Component<
 							/>
 						</div>
 					</div> :
-					this.props.activeTab && this.props.article ?
-						<>
-							<div className="controls">
-								<label className="reader-toggle">
-									<span className="text">Reader Mode</span>
-									<span className="toggle-switch">
-										<input
-											type="checkbox"
-											checked={this.props.activeTab.isReaderModeActivated}
-											onChange={this._toggleReaderMode}
-										/>
-										<span className="switch"></span>
-									</span>
-								</label>
-							</div>
-							<ArticleDetails
-								article={this.props.article}
-								imagePath='./images'
-								isUserSignedIn={true}
-								onCopyTextToClipboard={this._clipboard.copyText}
-								onCreateAbsoluteUrl={this._createAbsoluteUrl}
-								onPost={this._openPostDialog}
-								onRead={this._preventDefault}
-								onShare={this._handleShareRequest}
-								onToggleStar={this._toggleStar}
-								onViewComments={this._goToComments}
-								shareMenuPosition={MenuPosition.RightBottom}
-								useAbsoluteUrls
-							/>
-							{this.props.debug ?
-								<ul className="debug">
-									<li>
-										<button onClick={this.props.onToggleContentIdentificationDisplay}>Toggle Content Identification Display</button>
-									</li>
-									<li>
-										<button onClick={this.props.onToggleReadStateDisplay}>Toggle Read State Display</button>
-									</li>
-								</ul> :
-								null}
-						</> :
-						<>
-							<div className="tip">Open this pop-up when you're reading an article to view your progress or star it for later.</div>
-							{!this.props.isOnHomePage ?
-								<div className="no-article">
-									<div className="notice">No article detected on this web page.</div>
-									<div className="report">Is this a mistake? Please <a href={'mailto:support@readup.com' + createQueryString({ subject: 'Extension issue: Article not detected', body: this.props.url })} target="_blank">let us know.</a></div>
-								</div> :
-								null}
-						</>}
+					<>
+						{hasAlert(this.props.user) ?
+							<div className="alerts">
+								{hasAlert(this.props.user, Alert.Inbox) ?
+									<Button
+										badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
+										iconLeft="bell"
+										onClick={this._goToInbox}
+										text={`View ${this.props.user.replyAlertCount + this.props.user.loopbackAlertCount} new ${formatCountable(this.props.user.replyAlertCount + this.props.user.loopbackAlertCount, 'notification')}`}
+									/> :
+									null}
+							</div> :
+							null}
+						{this.props.activeTab && this.props.article ?
+							<>
+								<div className="controls">
+									<label className="reader-toggle">
+										<span className="text">Reader Mode</span>
+										<span className="toggle-switch">
+											<input
+												type="checkbox"
+												checked={this.props.activeTab.isReaderModeActivated}
+												onChange={this._toggleReaderMode}
+											/>
+											<span className="switch"></span>
+										</span>
+									</label>
+								</div>
+								<ArticleDetails
+									article={this.props.article}
+									imagePath='./images'
+									isUserSignedIn={true}
+									onCopyTextToClipboard={this._clipboard.copyText}
+									onCreateAbsoluteUrl={this._createAbsoluteUrl}
+									onPost={this._openPostDialog}
+									onRead={this._preventDefault}
+									onShare={this._handleShareRequest}
+									onToggleStar={this._toggleStar}
+									onViewComments={this._goToComments}
+									shareMenuPosition={MenuPosition.RightBottom}
+									useAbsoluteUrls
+								/>
+								{this.props.debug ?
+									<ul className="debug">
+										<li>
+											<button onClick={this.props.onToggleContentIdentificationDisplay}>Toggle Content Identification Display</button>
+										</li>
+										<li>
+											<button onClick={this.props.onToggleReadStateDisplay}>Toggle Read State Display</button>
+										</li>
+									</ul> :
+									null}
+							</> :
+							<>
+								<ContentBox>Open this pop-up when you're reading an article to view your progress or star it for later.</ContentBox>
+								{!this.props.isOnHomePage ?
+									<div className="no-article">
+										<div className="notice">No article detected on this web page.</div>
+										<div className="report">Is this a mistake? Please <a href={'mailto:support@readup.com' + createQueryString({ subject: 'Extension issue: Article not detected', body: this.props.url })} target="_blank">let us know.</a></div>
+									</div> :
+									null}
+							</>}
+					</>}
 				{this.state.dialog ?
 					<DialogManager
 						dialog={this.state.dialog.element}

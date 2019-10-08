@@ -3,9 +3,10 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import Footer from './Footer';
-import UserAccount from '../../../../common/models/UserAccount';
+import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
 import { Screen } from '../Root';
 import Button from '../../../../common/components/Button';
+import Alert from '../../../../common/models/notifications/Alert';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
@@ -28,7 +29,7 @@ export default (props: {
 		<ol>
 			<li>
 				<Button
-					badge={props.user.postAlertCount + (props.user.aotdAlert ? 1 : 0)}
+					badge={props.user.postAlertCount + (hasAlert(props.user, Alert.Aotd) ? 1 : 0)}
 					href={homeUrl}
 					onClick={props.onViewHome}
 					state={props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
