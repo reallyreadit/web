@@ -225,7 +225,7 @@ export default class extends React.Component<
 									null}
 							</> :
 							<>
-								<ContentBox>Open this pop-up when you're reading an article to view your progress or star it for later.</ContentBox>
+								<ContentBox className="tip">Open this pop-up when you're reading an article to view your progress or star it for later.</ContentBox>
 								{!this.props.isOnHomePage ?
 									<div className="no-article">
 										<div className="notice">No article detected on this web page.</div>
