@@ -296,15 +296,16 @@ server = server.get('/confirmEmail', (req, res) => {
 		});
 });
 server = server.get('/resetPassword', (req, res) => {
+	const token = replaceSpacesWithPlusSign(req.query['token']);
 	req.api
-		.fetchJson<PasswordResetRequest>('GET', { path: '/UserAccounts/PasswordResetRequest2', data: { token: req.query['token'] } })
+		.fetchJson<PasswordResetRequest>('GET', { path: '/UserAccounts/PasswordResetRequest2', data: { token } })
 		.then(resetRequest => {
 			redirect(req, res, url.format({
 				pathname: '/',
 				query: {
 					'reset-password': '',
 					'email': resetRequest.emailAddress,
-					'token': replaceSpacesWithPlusSign(req.query['token'])
+					'token': token
 				}
 			}));
 		})
