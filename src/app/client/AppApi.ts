@@ -47,6 +47,11 @@ export default class extends AppApi {
 			data
 		});
 	}
+	public syncAuthCookie() {
+		this._messagingContext.sendMessage({
+			type: 'syncAuthCookie'
+		});
+	}
 	public get appVersion() {
 		return this._appVersion;
 	}

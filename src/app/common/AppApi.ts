@@ -13,5 +13,6 @@ export default abstract class extends EventEmitter<{
 }> {
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract share(data: ShareData): void;
+	public abstract syncAuthCookie(): void;
 	public abstract get appVersion(): SemanticVersion | null;
 }
