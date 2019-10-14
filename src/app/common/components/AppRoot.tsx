@@ -317,6 +317,9 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		return { user: this.state.user };
 	}
 	protected onUserSignedIn(user: UserAccount) {
+		// sync auth state with app
+		this.props.appApi.syncAuthCookie();
+		// set screen
 		let screen: Screen;
 		if (this._hasProcessedInitialLocation) {
 			screen = this.createScreen(ScreenKey.Home);
@@ -359,6 +362,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		);
 	}
 	protected onUserSignedOut() {
+		// sync auth state with app
+		this.props.appApi.syncAuthCookie();
 		// update analytics
 		this.props.analytics.setUserId(null);
 		this.props.analytics.sendPageview(authScreenPageviewParams);
@@ -484,6 +489,8 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 		}
 	}
 	public componentDidMount() {
+		// sync auth state with app
+		this.props.appApi.syncAuthCookie();
 		// super
 		super.componentDidMount();
 		// get the initial route
