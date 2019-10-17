@@ -32,6 +32,7 @@ import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
 import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import createInboxScreenFactory from './screens/InboxScreen';
+import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -527,6 +528,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			window.clearInterval(this._updateCheckInterval);
 			this._updateCheckInterval = null;
 		}
+	}
+	protected getPushDeviceForm() {
+		return null as PushDeviceForm;
 	}
 	protected getSharedState() {
 		return {

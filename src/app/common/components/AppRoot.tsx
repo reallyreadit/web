@@ -313,6 +313,13 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			screens
 		});
 	}
+	protected getPushDeviceForm() {
+		return {
+			installationId: this.props.appApi.deviceInfo.installationId,
+			name: this.props.appApi.deviceInfo.name,
+			token: this.props.appApi.deviceInfo.token
+		};
+	}
 	protected getSharedState() {
 		return { user: this.state.user };
 	}

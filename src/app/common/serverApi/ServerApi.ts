@@ -33,6 +33,10 @@ import Settings from '../../../common/models/Settings';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import InboxPostsQuery from '../../../common/models/social/InboxPostsQuery';
 import ClearAlertForm from '../../../common/models/notifications/ClearAlertForm';
+import PasswordResetForm from '../../../common/models/userAccounts/PasswordResetForm';
+import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';
+import SignInForm from '../../../common/models/userAccounts/SignInForm';
+import SignOutForm from '../../../common/models/userAccounts/SignOutForm';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -56,11 +60,8 @@ export default abstract class {
 	}
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
-	public readonly createUserAccount = (name: string, email: string, password: string, captchaResponse: string, timeZoneName: string, marketingScreenVariant: number, referrerUrl: string, initialPath: string) => {
-		return this.post<UserAccount>({
-			path: '/UserAccounts/CreateAccount',
-			data: { name, email, password, captchaResponse, timeZoneName, marketingScreenVariant, referrerUrl, initialPath }
-		});
+	public readonly createUserAccount = (data: UserAccountForm) => {
+		return this.post<UserAccount>({ path: '/UserAccounts/CreateAccount', data });
 	};
 	public readonly resendConfirmationEmail = () => {
 		return this.post({ path: '/UserAccounts/ResendConfirmationEmail' });
@@ -68,8 +69,8 @@ export default abstract class {
 	public readonly changePassword = (currentPassword: string, newPassword: string) => {
 		return this.post({ path: '/UserAccounts/ChangePassword', data: { currentPassword, newPassword } });
 	};
-	public readonly resetPassword = (token: string, password: string) => {
-		return this.post<UserAccount>({ path: '/UserAccounts/ResetPassword', data: { token, password } });
+	public readonly resetPassword = (data: PasswordResetForm) => {
+		return this.post<UserAccount>({ path: '/UserAccounts/ResetPassword', data });
 	};
 	public readonly changeEmailAddress = (email: string) => {
 		return this.post<UserAccount>({ path: '/UserAccounts/ChangeEmailAddress', data: { email } });
@@ -80,11 +81,11 @@ export default abstract class {
 	public readonly getUserAccount = (callback: (userAccount: Fetchable<UserAccount>) => void) => {
 		return this.get<UserAccount>({ path: '/UserAccounts/GetUserAccount' }, callback);
 	};
-	public readonly signIn = (email: string, password: string) => {
-		return this.post<UserAccount>({ path: '/UserAccounts/SignIn', data: { email, password } });
+	public readonly signIn = (data: SignInForm) => {
+		return this.post<UserAccount>({ path: '/UserAccounts/SignIn', data });
 	};
-	public readonly signOut = () => {
-		return this.post<void>({ path: '/UserAccounts/SignOut' });
+	public readonly signOut = (data: SignOutForm) => {
+		return this.post<void>({ path: '/UserAccounts/SignOut', data });
 	};
 	public readonly postComment = (text: string, articleId: number, parentCommentId?: string) => {
 		return this.post<{ article: UserArticle, comment: CommentThread }>({ path: '/Articles/PostComment', data: { text, articleId, parentCommentId } });

@@ -47,6 +47,7 @@ import FollowingListDialog from './FollowingListDialog';
 import Fetchable from '../../../common/Fetchable';
 import Following from '../../../common/models/social/Following';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
+import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -401,23 +402,28 @@ export default abstract class Root<
 	};
 	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
 		return this.props.serverApi
-			.createUserAccount(
+			.createUserAccount({
 				name, 
 				email,
 				password,
 				captchaResponse,
-				DateTime.local().zoneName,
-				this.props.marketingScreenVariant,
-				this.props.iosReferrerUrl || window.document.referrer,
-				this.props.initialLocation.path
-			)
+				timeZoneName: DateTime.local().zoneName,
+				marketingScreenVariant: this.props.marketingScreenVariant,
+				referrerUrl: this.props.iosReferrerUrl || window.document.referrer,
+				initialPath: this.props.initialLocation.path,
+				pushDevice: this.getPushDeviceForm()
+			})
 			.then(user => {
 				this.onUserSignedIn(user);
 			});
 	};
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
-			.resetPassword(token, password)
+			.resetPassword({
+				token,
+				password,
+				pushDevice: this.getPushDeviceForm()
+			})
 			.then(user => this.onUserSignedIn(user));
 	};
 	protected readonly _resendConfirmationEmail = () => {
@@ -437,7 +443,11 @@ export default abstract class Root<
 	};
 	protected readonly _signIn = (email: string, password: string) => {
 		return this.props.serverApi
-			.signIn(email, password)
+			.signIn({
+				email,
+				password,
+				pushDevice: this.getPushDeviceForm()
+			})
 			.then(user => {
 				if (user.timeZoneId == null) {
 					this.setTimeZone();
@@ -446,8 +456,11 @@ export default abstract class Root<
 			});
 	};
 	protected readonly _signOut = () => {
+		const pushDeviceForm = this.getPushDeviceForm();
 		return this.props.serverApi
-			.signOut()
+			.signOut({
+				installationId: pushDeviceForm && pushDeviceForm.installationId
+			})
 			.then(() => this.onUserSignedOut());
 	};
 	protected readonly _updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
@@ -609,6 +622,7 @@ export default abstract class Root<
 			screen: this._screenFactoryMap[route.screenKey].create(this._screenId++, location, sharedState)
 		};
 	}
+	protected abstract getPushDeviceForm(): PushDeviceForm | null;
 	protected abstract getSharedState(): TSharedState;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);

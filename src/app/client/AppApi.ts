@@ -2,10 +2,17 @@ import AppApi, { ArticleReference } from '../common/AppApi';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import SemanticVersion from '../../common/SemanticVersion';
 import ShareData from '../../common/sharing/ShareData';
+import DeviceInfo from '../../common/models/app/DeviceInfo';
+import SerializedDeviceInfo from '../../common/models/app/SerializedDeviceInfo';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
-	private _appVersion: SemanticVersion | null;
+	private _deviceInfo: DeviceInfo = {
+		appVersion: new SemanticVersion('0.0.0'),
+		installationId: null,
+		name: '',
+		token: null
+	};
 	constructor(messagingContext: WebViewMessagingContext) {
 		super();
 		this._messagingContext = messagingContext;
@@ -20,20 +27,34 @@ export default class extends AppApi {
 				case 'commentPosted':
 					this.emitEvent('commentPosted', message.data);
 					break;
+				case 'deviceInfoUpdated':
+					this.setDeviceInfo(message.data);	
+					break;
 			}
 		});
+		messagingContext.sendMessage(
+			{
+				type: 'getDeviceInfo'
+			},
+			(deviceInfo: SerializedDeviceInfo) => {
+				this.setDeviceInfo(deviceInfo);
+			}
+		);
+		// legacy app < version 5.0.0
 		messagingContext.sendMessage(
 			{
 				type: 'getVersion'
 			},
 			(version: string) => {
-				try {
-					this._appVersion = new SemanticVersion(version);
-				} catch {
-					// this._appVersion remains null
-				}
+				this._deviceInfo.appVersion = new SemanticVersion(version);
 			}
 		);
+	}
+	private setDeviceInfo(deviceInfo: SerializedDeviceInfo) {
+		this._deviceInfo = {
+			...deviceInfo,
+			appVersion: new SemanticVersion(deviceInfo.appVersion)
+		};
 	}
 	public readArticle(reference: ArticleReference) {
 		this._messagingContext.sendMessage({
@@ -53,6 +74,9 @@ export default class extends AppApi {
 		});
 	}
 	public get appVersion() {
-		return this._appVersion;
+		return this._deviceInfo.appVersion;
+	}
+	public get deviceInfo() {
+		return this._deviceInfo;
 	}
 }
