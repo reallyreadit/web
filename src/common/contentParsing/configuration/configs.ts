@@ -120,6 +120,12 @@ export default {
 			}
 		},
 		{
+			hostname: 'longreads.com',
+			textContainerSearch: {
+				selectorBlacklist: ['.in-story']
+			}
+		},
+		{
 			hostname: 'medium.com',
 			textContainerFilter: {
 				attributeFullWordWhitelist: ['ad']
