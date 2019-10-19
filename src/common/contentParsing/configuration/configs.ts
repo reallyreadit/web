@@ -320,6 +320,44 @@ export default {
 			}
 		},
 		{
+			hostname: 'nih.gov',
+			contentSearchRootElementSelector: '#maincontent',
+			textContainerSearch: {
+				selectorBlacklist: ['.goto', '.largeobj-link']
+			},
+			textContainerFilter: {
+				blacklistSelectors: [
+					() => {
+						const footer = Array
+							.from(document.getElementsByTagName('h2'))
+							.find(element => element.textContent === 'Footnotes');
+						if (footer && footer.parentElement.classList.contains('sec')) {
+							return Array
+								.from(footer.parentElement.parentElement.children)
+								.filter(element => footer.parentElement === element || footer.parentElement.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING)
+								.reduce<Element[]>(
+									(elements, element) => elements.concat(Array.from(element.querySelectorAll('*'))),
+									[]
+								);
+						}
+						return [];
+					}
+				]
+			},
+			transpositions: [
+				{
+					elementSelectors: [
+						'.sec > .sec > *',
+						'.sec > .table > *',
+						'.sec > .table > .caption > *',
+						'.sec > .table > * > table',
+						'.sec > .table > .tblwrap-foot > *',
+					],
+					parentElementSelector: '#maincontent .sec + .sec'
+				}
+			]
+		},
+		{
 			hostname: 'dark-mountain.net',
 			transpositions: [
 				{
