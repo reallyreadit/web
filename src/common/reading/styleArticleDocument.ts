@@ -55,6 +55,9 @@ const styleContent = `
 #com_readup_article #com_readup_article_content div[class*="para"] {
 	margin: 1em 0;
 }
+#com_readup_article #com_readup_article_content br + br {
+	margin-bottom: 1em;
+}
 #com_readup_article #com_readup_article_content blockquote {
 	margin: 1em 0;
 	border-left: 0.3em solid #ddd;

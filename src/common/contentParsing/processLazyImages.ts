@@ -28,26 +28,32 @@ function copyAttributes(source: Element, dest: Element, ...attributeNames: (stri
 }
 function createObserver(elements: Element[], handler: (target: Element) => void) {
 	if (elements.length) {
-		const viewportObserver = new IntersectionObserver(
-			(entries, observer) => {
-				entries.forEach(
-					entry => {
-						if (entry.isIntersecting) {
-							observer.unobserve(entry.target);
-							handler(entry.target);
+		// iOS 11 WKWebView doesn't support IntersectionObserver
+		if ('IntersectionObserver' in window) {
+			const viewportObserver = new IntersectionObserver(
+				(entries, observer) => {
+					entries.forEach(
+						entry => {
+							if (entry.isIntersecting) {
+								observer.unobserve(entry.target);
+								handler(entry.target);
+							}
 						}
-					}
-				);
-			},
-			{
-				rootMargin: '0px 0px 200px 0px'
-			}
-		);
-		elements.forEach(
-			image => {
-				viewportObserver.observe(image);
-			}
-		);
+					);
+				},
+				{
+					rootMargin: '0px 0px 200px 0px'
+				}
+			);
+			elements.forEach(
+				image => {
+					viewportObserver.observe(image);
+				}
+			);
+		} else {
+			// just load everything
+			elements.forEach(handler);
+		}
 	}
 }
 const dataSrcSrcsetSelector = 'img[data-src], img[data-srcset], source[data-src], source[data-srcset]';
