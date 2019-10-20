@@ -4,6 +4,7 @@ import SemanticVersion from '../../common/SemanticVersion';
 import ShareData from '../../common/sharing/ShareData';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import SerializedDeviceInfo from '../../common/models/app/SerializedDeviceInfo';
+import UserAccount from '../../common/models/UserAccount';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -18,6 +19,9 @@ export default class extends AppApi {
 		this._messagingContext = messagingContext;
 		messagingContext.addListener(message => {
 			switch (message.type) {
+				case 'alertStatusUpdated':
+					this.emitEvent('alertStatusUpdated', message.data);
+					break;
 				case 'articlePosted':
 					this.emitEvent('articlePosted', message.data);
 					break;
@@ -26,6 +30,9 @@ export default class extends AppApi {
 					break;
 				case 'commentPosted':
 					this.emitEvent('commentPosted', message.data);
+					break;
+				case 'didBecomeActive':
+					this.emitEvent('didBecomeActive', message.data);
 					break;
 				case 'deviceInfoUpdated':
 					this.setDeviceInfo(message.data);	
@@ -68,9 +75,10 @@ export default class extends AppApi {
 			data
 		});
 	}
-	public syncAuthCookie() {
+	public syncAuthCookie(user?: UserAccount) {
 		this._messagingContext.sendMessage({
-			type: 'syncAuthCookie'
+			type: 'syncAuthCookie',
+			data: user
 		});
 	}
 	public get appVersion() {

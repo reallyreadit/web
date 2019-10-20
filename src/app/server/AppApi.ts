@@ -2,6 +2,7 @@ import AppApi, { ArticleReference } from '../common/AppApi';
 import ShareData from '../../common/sharing/ShareData';
 import SemanticVersion from '../../common/SemanticVersion';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
+import UserAccount from '../../common/models/UserAccount';
 
 export default class extends AppApi {
 	public readArticle(reference: ArticleReference) {
@@ -10,7 +11,7 @@ export default class extends AppApi {
 	public share(data: ShareData) {
 		throw new Error('Operation not supported in server environment');
 	}
-	public syncAuthCookie() {
+	public syncAuthCookie(user?: UserAccount) {
 		throw new Error('Operation not supported in server environment');
 	}
 	public get appVersion() {

@@ -4,7 +4,7 @@ import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
-import UserAccount from '../../../common/models/UserAccount';
+import UserAccount, { hasAlert, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -26,6 +26,7 @@ import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
 import createInboxScreenFactory from './screens/InboxScreen';
 import DialogKey from '../../../common/routing/DialogKey';
+import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -39,8 +40,20 @@ const authScreenPageviewParams = {
 	title: 'Auth',
 	path: '/'
 };
-export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvents> {
+export default class extends Root<
+	Props,
+	State,
+	Pick<State, 'user'>,
+	SharedEvents & {
+		'newStars': number
+	}
+> {
 	private _isUpdateAvailable: boolean = false;
+
+	// events
+	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
+		return this._eventManager.addListener('newStars', handler);
+	};
 
 	// menu
 	private readonly _closeMenu = () => {
@@ -194,6 +207,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterNewStarsHandler: this._registerNewStarsEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
@@ -278,6 +292,20 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 
 		// AppApi
 		props.appApi
+			.addListener(
+				'alertStatusUpdated',
+				status => {
+					if (this.state.user) {
+						const updatedUser = {
+							...this.state.user,
+							...status
+						};
+						if (!areUsersEqual(updatedUser, this.state.user)) {
+							this.onUserUpdated(updatedUser);
+						}
+					}
+				}
+			)
 			.addListener('articlePosted', post => {
 				this.onArticlePosted(post);
 			})
@@ -286,7 +314,34 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 			})
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment);
-			});
+			})
+			.addListener(
+				'didBecomeActive',
+				(() => {
+					let lastUserCheck = 0;
+					return (event: AppActivationEvent) => {
+						const now = Date.now();
+						if (
+							(event.badgeCount || hasAlert(this.state.user)) &&
+							now - lastUserCheck > 60 * 1000
+						) {
+							props.serverApi.getUserAccount(
+								result => {
+									if (result.value) {
+										if (!areUsersEqual(result.value, this.state.user)) {
+											this.onUserUpdated(result.value);
+										}
+										lastUserCheck = now;
+									}
+								}
+							);
+						}
+						if (event.newStarCount) {
+							this._eventManager.triggerEvent('newStars', event.newStarCount);
+						}
+					};
+				})()
+			);
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		// create the new screen
@@ -325,7 +380,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	}
 	protected onUserSignedIn(user: UserAccount) {
 		// sync auth state with app
-		this.props.appApi.syncAuthCookie();
+		this.props.appApi.syncAuthCookie(user);
 		// set screen
 		let screen: Screen;
 		if (this._hasProcessedInitialLocation) {
@@ -497,7 +552,7 @@ export default class extends Root<Props, State, Pick<State, 'user'>, SharedEvent
 	}
 	public componentDidMount() {
 		// sync auth state with app
-		this.props.appApi.syncAuthCookie();
+		this.props.appApi.syncAuthCookie(this.props.initialUser);
 		// super
 		super.componentDidMount();
 		// get the initial route

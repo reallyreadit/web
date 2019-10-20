@@ -21,8 +21,8 @@ import Alert from '../../../../common/models/notifications/Alert';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import ActionLink from '../../../../common/components/ActionLink';
 import { formatCountable } from '../../../../common/format';
+import UpdateBanner from '../../../../common/components/UpdateBanner';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -104,13 +104,11 @@ class InboxScreen extends React.Component<Props, State> {
 					<LoadingOverlay position="absolute" /> :
 					<>
 						{this.state.newItemCount ?
-							<div className="update-banner">
-								<ActionLink
-									onClick={this._loadNewItems}
-									state={this.state.isLoadingNewItems ? 'busy' : 'normal'}
-									text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'notification')}`}
-								/>
-							</div> :
+							<UpdateBanner
+								isBusy={this.state.isLoadingNewItems}
+								onClick={this._loadNewItems}
+								text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'notification')}`}
+							/> :
 							null}
 						<ArticleList>
 							{this.state.posts.value.items.map(

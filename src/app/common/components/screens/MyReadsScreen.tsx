@@ -21,6 +21,8 @@ import { Screen } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import UpdateBanner from '../../../../common/components/UpdateBanner';
+import { formatCountable } from '../../../../common/format';
 
 enum List {
 	History = 'History',
@@ -36,6 +38,7 @@ interface Props {
 	onPostArticle: (article: UserArticle) => void,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function,
 	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -46,7 +49,8 @@ interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
 	isScreenLoading: boolean,
 	maxLength: number | null,
-	minLength: number | null
+	minLength: number | null,
+	newStarsCount: number
 }
 const headerSelectorItems = [
 	{ value: List.Starred },
@@ -107,7 +111,8 @@ class MyReadsScreen extends React.Component<Props, State> {
 			articles,
 			isScreenLoading: articles.isLoading,
 			maxLength,
-			minLength
+			minLength,
+			newStarsCount: 0
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(
@@ -127,6 +132,28 @@ class MyReadsScreen extends React.Component<Props, State> {
 				}
 			)
 		);
+		if (props.onRegisterNewStarsHandler) {
+			props.onRegisterNewStarsHandler(
+				newStarsCount => {
+					if (this.props.list === List.Starred) {
+						this.setState({
+							minLength: null,
+							maxLength: null,
+							newStarsCount
+						});
+						this.fetchArticles(
+							this.props.list,
+							1,
+							null,
+							null,
+							() => {
+								this.setState({ newStarsCount: 0 });
+							}
+						);
+					}
+				}
+			)
+		}
 	}
 	private fetchArticles(
 		list: List,
@@ -165,6 +192,12 @@ class MyReadsScreen extends React.Component<Props, State> {
 				{this.state.isScreenLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
+						{this.state.newStarsCount ?
+							<UpdateBanner
+								isBusy
+								text={`Loading ${this.state.newStarsCount} new ${formatCountable(this.state.newStarsCount, 'article')}`}
+							/> :
+							null}
 						<div className="controls">
 							<HeaderSelector
 								disabled={this.state.articles.isLoading}
