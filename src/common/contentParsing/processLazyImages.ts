@@ -110,6 +110,13 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			);
 			break;
 		case LazyImageStrategy.NoscriptImgContent:
+			// iOS 11 WKWebView doesn't support s dotAll flag
+			let noscriptImgContentRegex: RegExp;
+			try {
+				noscriptImgContentRegex = /^\s*<\s*img\s.+\s*>\s*$/is;
+			} catch {
+				noscriptImgContentRegex = /^\s*<\s*img\s.+\s*>\s*$/i;
+			}
 			createObserver(
 				Array
 					.from(document.getElementsByTagName('noscript'))
@@ -119,7 +126,7 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 						.from(target.getElementsByTagName('noscript'))
 						.forEach(
 							noscript => {
-								if (/^\s*<\s*img\s.+\s*>\s*$/is.test(noscript.textContent)) {
+								if (noscriptImgContentRegex.test(noscript.textContent)) {
 									const temp = document.createElement('div');
 									temp.innerHTML = noscript.textContent;
 									const
