@@ -23,10 +23,14 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin-left: 10px;
 }
 .header_q3p9go > .left-content > .icon_rour3d,
 .header_q3p9go > .left-content > .inbox-icon-wrapper > .icon_rour3d {
 	font-size: 20px;
+}
+.header_q3p9go > .right-content {
+	margin-right: 10px;
 }
 .header_q3p9go > .title {
 	flex: 1 1 auto;
