@@ -15,7 +15,8 @@ export default abstract class extends EventEmitter<{
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
 	'commentPosted': CommentThread,
-	'didBecomeActive': AppActivationEvent
+	'didBecomeActive': AppActivationEvent,
+	'loadUrl': string
 }> {
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract share(data: ShareData): void;

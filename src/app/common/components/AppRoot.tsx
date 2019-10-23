@@ -341,6 +341,33 @@ export default class extends Root<
 						}
 					};
 				})()
+			)
+			.addListener(
+				'loadUrl',
+				urlString => {
+					if (this.state.user) {
+						const url = new URL(urlString);
+						const location = this.getLocationDependentState({
+							path: url.pathname,
+							queryString: url.search
+						});
+						this.setState({
+							dialog: (
+								location.dialog ?
+									{
+										element: location.dialog,
+										isClosing: false
+									} :
+									null
+							),
+							isPoppingScreen: false,
+							menuState: 'closed',
+							screens: [location.screen]
+						});
+					} else {
+						window.location.href = urlString;
+					}
+				}
 			);
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {

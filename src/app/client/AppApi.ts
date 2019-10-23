@@ -37,6 +37,9 @@ export default class extends AppApi {
 				case 'deviceInfoUpdated':
 					this.setDeviceInfo(message.data);	
 					break;
+				case 'loadUrl':
+					this.emitEvent('loadUrl', message.data);
+					break;
 			}
 		});
 		messagingContext.sendMessage(
