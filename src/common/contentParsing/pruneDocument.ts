@@ -2,22 +2,16 @@ import ParseResult from './ParseResult';
 import ContentContainer from './ContentContainer';
 import { buildLineage, zipContentLineages, isImageContainerElement, isElement } from './utils';
 import ImageContainer from './ImageContainer';
-import { isValidContent } from './figureContent';
+import { isValidContent, createMetadataElements } from './figureContent';
 import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
 import configs from './configuration/configs';
 
 const whitelistedScriptTypes = [
 	'application/json',
 	'application/ld+json',
+	'text/template',
 	'text/x-readup-disabled-javascript'
 ];
-function formatImageMetadata(text: string) {
-	return text
-		.split('\n')
-		.map(line => line.trim())
-		.filter(line => !!line)
-		.join('<br /><br />');
-}
 function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[], config: ImageContainerContentConfig) {
 	if (
 		isElement(element) &&
@@ -35,29 +29,7 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 			const image = images.find(image => image.containerElement === element);
 			if (image) {
 				image.containerElement.classList.add('com_readup_article_image_container');
-				if (
-					image.credit &&
-					(!image.caption || image.credit !== image.caption)
-				) {
-					const credit = document.createElement('div');
-					credit.classList.add('com_readup_article_image_credit');
-					credit.textContent = image.credit;
-					if (image.caption) {
-						credit.textContent = credit.textContent.replace(image.caption, '');
-					}
-					credit.innerHTML = formatImageMetadata(credit.textContent);
-					(element as HTMLElement).insertAdjacentElement('afterend', credit);
-				}
-				if (image.caption) {
-					const caption = document.createElement('div');
-					caption.classList.add('com_readup_article_image_caption');
-					caption.textContent = image.caption;
-					if (image.credit && image.caption !== image.credit) {
-						caption.textContent = caption.textContent.replace(image.credit, '');
-					}
-					caption.innerHTML = formatImageMetadata(caption.textContent);
-					(element as HTMLElement).insertAdjacentElement('afterend', caption);
-				}
+				createMetadataElements(image.caption, image.credit, element as HTMLElement);
 			}
 		}
 		if (isElement(element)) {

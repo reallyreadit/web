@@ -1,10 +1,14 @@
+import { createMetadataElements } from "./figureContent";
+
 export enum LazyImageStrategy {
 	DataSrcSrcset,
 	GoverningImgSrcCorrection,
 	MediumScaleUp,
+	NautilusHostSwap,
 	NoscriptImgContent,
-	NytFigureImageObject,
+	NytFigureMulti,
 	PostLoadImgTag,
+	QuantaScriptTemplate,
 	WashingtonPostScaleUp
 }
 function copyAttributes(source: Element, dest: Element, ...attributeNames: (string | [string, string])[]) {
@@ -109,6 +113,22 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 				}
 			);
 			break;
+		case LazyImageStrategy.NautilusHostSwap:
+			createObserver(
+				Array.from(document.getElementsByTagName('figure')),
+				figure => {
+					Array
+						.from(figure.getElementsByTagName('img'))
+						.forEach(
+							img => {
+								if (img.src.startsWith('http://static.nautil.us/')) {
+									img.src = img.src.replace('http://static.nautil.us/', 'https://d3chnh8fr629l6.cloudfront.net/');
+								}
+							}
+						);
+				}
+			);
+			break;
 		case LazyImageStrategy.NoscriptImgContent:
 			// iOS 11 WKWebView doesn't support s dotAll flag
 			let noscriptImgContentRegex: RegExp;
@@ -148,17 +168,51 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 				}
 			);
 			break;
-		case LazyImageStrategy.NytFigureImageObject:
-			createObserver(
-				Array.from(document.querySelectorAll('figure[itemType="http://schema.org/ImageObject"]')),
-				target => {
-					if (!target.getElementsByTagName('img').length) {
-						const img = document.createElement('img');
-						img.src = target.getAttribute('itemID');
-						target.prepend(img);
-					}
-				}
+		case LazyImageStrategy.NytFigureMulti:
+			const figures = Array.from(document.getElementsByTagName('figure'));
+			const imageObjectFigures = figures.filter(
+				figure => figure.getAttribute('itemType') === 'http://schema.org/ImageObject'
 			);
+			if (imageObjectFigures.length) {
+				createObserver(
+					imageObjectFigures,
+					target => {
+						if (!target.getElementsByTagName('img').length) {
+							const img = document.createElement('img');
+							img.src = target.getAttribute('itemID');
+							target.prepend(img);
+						}
+					}
+				);
+			}
+			const
+				dataPatternImgSelector = 'img[data-pattern][data-widths]',
+				dataPatternFigures = figures.filter(
+					figure => !!figure.querySelector(dataPatternImgSelector)
+				);
+			if (dataPatternFigures.length) {
+				createObserver(
+					dataPatternFigures,
+					target => {
+						const img = target.querySelector(dataPatternImgSelector) as HTMLImageElement;
+						if (img) {
+							let src: string;
+							try {
+								const
+									widths = JSON.parse(img.dataset['widths']) as { master: { size: number, filename: string }[] },
+									masterWidths = widths.master.sort((a, b) => a.size - b.size),
+									width = masterWidths.find(width => width.size >= window.innerWidth) || masterWidths[masterWidths.length - 1];
+								src = img.dataset['pattern'].replace('{{file}}', width.filename);
+							} catch (ex) {
+								src = img.dataset['mediaviewerSrc'];
+							}
+							if (src) {
+								img.src = src;
+							}
+						}
+					}
+				);
+			}
 			break;
 		case LazyImageStrategy.PostLoadImgTag:
 			createObserver(
@@ -174,6 +228,47 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 					target.replaceWith(img);
 				}
 			);
+			break;
+		case LazyImageStrategy.QuantaScriptTemplate:
+			const
+				// can't select type="text/template" because it gets replaced with text/x-readup-disabled-javascript in order app versions
+				templateScripts = document.querySelectorAll('div[id^="component-"] script');
+			if (templateScripts.length) {
+				createObserver(
+					Array
+						.from(templateScripts)
+						.map(script => script.parentElement),
+					div => {
+						const script = div.getElementsByTagName('script')[0];
+						if (script) {
+							try {
+								const
+									template = JSON.parse(script.textContent) as { data: { attribution: string, caption: string, src: string } },
+									img = document.createElement('img');
+								img.src = template.data.src;
+								script.replaceWith(img);
+								if (template.data.attribution || template.data.caption) {
+									let
+										caption: string,
+										credit: string;
+									const tempDiv = document.createElement('div');
+									if (template.data.attribution) {
+										tempDiv.innerHTML = template.data.attribution;
+										credit = tempDiv.textContent;
+									}
+									if (template.data.caption) {
+										tempDiv.innerHTML = template.data.caption;
+										caption = tempDiv.textContent;
+									}
+									createMetadataElements(caption, credit, img);
+								}
+							} catch (ex) {
+
+							}
+						}
+					}
+				);
+			}
 			break;
 		case LazyImageStrategy.WashingtonPostScaleUp:
 			createObserver(

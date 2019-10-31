@@ -146,7 +146,7 @@ export default {
 					parentElementSelector: '.story-body-2'
 				}
 			],
-			imageStrategy: LazyImageStrategy.NytFigureImageObject,
+			imageStrategy: LazyImageStrategy.NytFigureMulti,
 			textContainerSearch: {
 				selectorBlacklist: ['[id*="ad"], .epkadsg3, .etfikam0, .ez3869y0']
 			},
@@ -388,6 +388,13 @@ export default {
 			]
 		},
 		{
+			hostname: 'quantamagazine.org',
+			imageStrategy: LazyImageStrategy.QuantaScriptTemplate,
+			imageContainerSearch: {
+				selectorBlacklist: ['.post__sidebar']
+			}
+		},
+		{
 			hostname: 'dailymail.co.uk',
 			contentSearchRootElementSelector: 'div[itemprop="articleBody"]',
 			textContainerSearch: {
@@ -404,6 +411,17 @@ export default {
 					parentElementSelector: '#mainBodyArea > .body'
 				}
 			]
+		},
+		{
+			hostname: 'nautil.us',
+			contentSearchRootElementSelector: '[itemprop="articleBody"]',
+			imageStrategy: LazyImageStrategy.NautilusHostSwap,
+			textContainerSearch: {
+				selectorBlacklist: ['.pull-quote']
+			},
+			imageContainerSearch: {
+				selectorBlacklist: ['.reco']
+			}
 		}
 	] as PublisherConfig[]
 };
