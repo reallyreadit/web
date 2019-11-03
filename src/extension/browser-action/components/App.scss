@@ -60,45 +60,8 @@
 	display: flex;
 	align-items: center;
 }
-.app_79z645 > .controls > .reader-toggle > .toggle-switch {
-	display: inline-block;
-	position: relative;
-	width: 38px;
-	height: 22px;
+.app_79z645 > .controls > .reader-toggle > .toggle-switch_t7od1q {
 	margin-left: 10px;
-}
-.app_79z645 > .controls > .reader-toggle > .toggle-switch > input {
-	width: 0;
-	height: 0;
-	visibility: hidden;
-}
-.app_79z645 > .controls > .reader-toggle > .toggle-switch > .switch {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: #ccc;
-	border-radius: 11px;
-	transition: 350ms;
-	cursor: default;
-}
-.app_79z645 > .controls > .reader-toggle > .toggle-switch > .switch::before {
-	content: "";
-	position: absolute;
-	top: 2px;
-	left: 2px;
-	height: 18px;
-	width: 18px;
-	background-color: white;
-	transition: 350ms;
-	border-radius: 50%;
-}
-.app_79z645 > .controls > .reader-toggle > .toggle-switch > input:checked + .switch {
-	background-color: #2A2326;
-}
-.app_79z645 > .controls > .reader-toggle > .toggle-switch > input:checked + .switch::before {
-	left: calc(100% - 20px);
 }
 .app_79z645 > .debug {
 	margin: 10px;

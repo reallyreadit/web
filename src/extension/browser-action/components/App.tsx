@@ -25,6 +25,7 @@ import { hasAlert } from '../../../common/models/UserAccount';
 import Alert from '../../../common/models/notifications/Alert';
 import ContentBox from '../../../common/components/ContentBox';
 import { formatCountable } from '../../../common/format';
+import ToggleSwitch from '../../../common/components/ToggleSwitch';
 
 export type Props = BrowserActionState & {
 	onActivateReaderMode: () => void,
@@ -48,8 +49,8 @@ export default class extends React.Component<
 	private _goToInbox = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
 	};
-	private readonly _toggleReaderMode = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (event.target.checked) {
+	private readonly _toggleReaderMode = (isEnabled: boolean) => {
+		if (isEnabled) {
 			this.props.onActivateReaderMode();
 		} else {
 			this.props.onDeactivateReaderMode();
@@ -189,14 +190,10 @@ export default class extends React.Component<
 								<div className="controls">
 									<label className="reader-toggle">
 										<span className="text">Reader Mode</span>
-										<span className="toggle-switch">
-											<input
-												type="checkbox"
-												checked={this.props.activeTab.isReaderModeActivated}
-												onChange={this._toggleReaderMode}
-											/>
-											<span className="switch"></span>
-										</span>
+										<ToggleSwitch
+											isChecked={this.props.activeTab.isReaderModeActivated}
+											onChange={this._toggleReaderMode}
+										/>
 									</label>
 								</div>
 								<ArticleDetails
