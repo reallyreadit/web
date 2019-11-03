@@ -28,6 +28,8 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Alert from '../../../../common/models/notifications/Alert';
+import { formatCountable } from '../../../../common/format';
+import UpdateBanner from '../../../../common/components/UpdateBanner';
 
 const pageSize = 40;
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
@@ -67,8 +69,10 @@ interface Props {
 interface State {
 	communityReads?: Fetchable<CommunityReads>,
 	isLoading: boolean,
+	isLoadingNewItems: boolean,
 	maxLength?: number,
 	minLength?: number,
+	newItemMessage: string | null,
 	posts?: Fetchable<PageResult<Post>>,
 	sort?: CommunityReadSort,
 	timeWindow?: CommunityReadTimeWindow
@@ -76,12 +80,16 @@ interface State {
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changePage = (pageNumber: number) => {
-		this.setState({ isLoading: true });
+		this.setState({
+			isLoading: true,
+			newItemMessage: null
+		});
 		this.fetchItems(this.props.view, this.state.sort, this.state.timeWindow, this.state.minLength, this.state.maxLength, pageNumber);
 	};
 	private readonly _changeParams = (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => {
 		this.setState({
 			isLoading: true,
+			newItemMessage: null,
 			sort, timeWindow, minLength, maxLength
 		});
 		this.props.onSetScreenState(
@@ -95,6 +103,10 @@ class HomeScreen extends React.Component<Props, State> {
 			})
 		);
 		this.fetchItems(view, sort, timeWindow, minLength, maxLength, 1);
+	};
+	private readonly _loadNewItems = () => {
+		this.setState({ isLoadingNewItems: true });
+		this.fetchItems(this.props.view, CommunityReadSort.Hot, null, null, null, 1);
 	};
 	private _hasClearedAotdAlert = false;
 	private _hasClearedFollowingAlert = false;
@@ -118,6 +130,8 @@ class HomeScreen extends React.Component<Props, State> {
 							)
 						),
 						isLoading: false,
+						isLoadingNewItems: false,
+						newItemMessage: null,
 						sort: CommunityReadSort.Hot
 					};
 					break;
@@ -137,13 +151,17 @@ class HomeScreen extends React.Component<Props, State> {
 							)
 						),
 						isLoading: false,
+						isLoadingNewItems: false,
+						newItemMessage: null,
 						sort: CommunityReadSort.Hot
 					};
 					break;
 			}
 		} else {
 			this.state = {
-				isLoading: false
+				isLoading: false,
+				isLoadingNewItems: false,
+				newItemMessage: null
 			};
 		}
 		this._asyncTracker.addCancellationDelegate(
@@ -167,6 +185,7 @@ class HomeScreen extends React.Component<Props, State> {
 							)
 						),
 						isLoading: false,
+						newItemMessage: null,
 						sort: CommunityReadSort.Hot
 					});
 					this.props.onSetScreenState(
@@ -180,6 +199,7 @@ class HomeScreen extends React.Component<Props, State> {
 					this.setState({
 						communityReads: null,
 						isLoading: false,
+						newItemMessage: null,
 						sort: null,
 						timeWindow: null,
 						minLength: null,
@@ -224,7 +244,9 @@ class HomeScreen extends React.Component<Props, State> {
 						communityReads => {
 							this.setState({
 								communityReads,
-								isLoading: false
+								isLoading: false,
+								isLoadingNewItems: false,
+								newItemMessage: null,
 							});
 							this.clearAotdAlertIfNeeded();
 						}
@@ -242,6 +264,8 @@ class HomeScreen extends React.Component<Props, State> {
 						posts => {
 							this.setState({
 								isLoading: false,
+								isLoadingNewItems: false,
+								newItemMessage: null,
 								posts
 							});
 							this.clearFollowingAlertIfNeeded();
@@ -257,6 +281,32 @@ class HomeScreen extends React.Component<Props, State> {
 		}
 		if (this.state.posts && !this.state.posts.isLoading) {
 			this.clearFollowingAlertIfNeeded();
+		}
+	}
+	public componentDidUpdate(prevProps: Props) {
+		switch (this.props.view) {
+			case View.Trending:
+				if (
+					this.props.user &&
+					this.props.user.aotdAlert &&
+					prevProps.user &&
+					!prevProps.user.aotdAlert
+				) {
+					this.setState({ newItemMessage: 'Show new Article of the Day' });
+					this._hasClearedAotdAlert = false;
+				}
+				break;
+			case View.Following:
+				if (this.props.user && prevProps.user) {
+					const newItemCount = Math.max(0, this.props.user.postAlertCount - prevProps.user.postAlertCount);
+					if (newItemCount) {
+						this.setState({
+							newItemMessage: `Show ${newItemCount} new ${formatCountable(newItemCount, 'post')}`
+						});
+						this._hasClearedFollowingAlert = false;
+					}
+				}
+				break;
 		}
 	}
 	public componentWillUnmount() {
@@ -289,6 +339,13 @@ class HomeScreen extends React.Component<Props, State> {
 								!this.state.communityReads.value.userReadCount
 							) ?
 								<WelcomeInfoBox /> :
+								null}
+							{this.state.newItemMessage ?
+								<UpdateBanner
+									isBusy={this.state.isLoadingNewItems}
+									onClick={this._loadNewItems}
+									text={this.state.newItemMessage}
+								/> :
 								null}
 							<CommunityReadsList
 								aotd={this.state.communityReads && this.state.communityReads.value.aotd}
