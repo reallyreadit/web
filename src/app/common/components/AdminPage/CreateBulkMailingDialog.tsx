@@ -30,8 +30,13 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 			.then(() => {
 				this.props.onShowToast('Test email sent.', Intent.Success);
 			})
-			.catch(() => {
-				this.props.onShowToast('Failed to send test email', Intent.Danger);
+			.catch((errors?: string[]) => {
+				this.props.onShowToast(
+					errors && errors[0] ?
+						errors[0] :
+						'Unknown Error',
+					Intent.Danger
+				);
 			})
 			.then(() => {
 				this.setState({ sendingTestEmail: false });
@@ -81,6 +86,10 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 						<th>Body</th>
 						<td>
 							<textarea value={this.state.body} onChange={this._changeBody} />
+							<div>
+								<small><strong>Formatting:</strong></small><br />
+								<small>Read links: [LINK_TEXT](read:ARTICLE_SLUG)</small>
+							</div>
 						</td>
 					</tr>
 					<tr className="test-email">
