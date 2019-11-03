@@ -7,7 +7,6 @@ import Request from './Request';
 import RequestStore from './RequestStore';
 import HttpEndpoint from '../../../common/HttpEndpoint';
 import PageResult from '../../../common/models/PageResult';
-import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import EmailSubscriptionsRequest from '../../../common/models/EmailSubscriptionsRequest';
 import CommunityReads from '../../../common/models/CommunityReads';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
@@ -120,8 +119,8 @@ export default abstract class {
 	public readonly getEmailSubscriptions = (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => {
 		return this.get({ path: '/UserAccounts/EmailSubscriptions', data: { token } }, callback);
 	};
-	public readonly updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
-		return this.post({ path: '/UserAccounts/UpdateEmailSubscriptions', data: { token, ...subscriptions } });
+	public readonly updateEmailSubscriptions = (token: string, preference: NotificationPreference) => {
+		return this.post({ path: '/UserAccounts/UpdateEmailSubscriptions', data: { token, ...preference } });
 	};
 	public readonly getUserAccountStats = (callback: (state: Fetchable<UserAccountStats>) => void) => {
 		return this.get<UserAccountStats>({ path: '/UserAccounts/Stats' }, callback);

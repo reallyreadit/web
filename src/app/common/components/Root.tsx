@@ -19,7 +19,6 @@ import createSettingsPageScreenFactory from './SettingsPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
-import EmailSubscriptions from '../../../common/models/EmailSubscriptions';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
@@ -465,14 +464,12 @@ export default abstract class Root<
 			})
 			.then(() => this.onUserSignedOut());
 	};
-	protected readonly _updateEmailSubscriptions = (token: string, subscriptions: EmailSubscriptions) => {
+	protected readonly _updateEmailSubscriptions = (token: string, preference: NotificationPreference) => {
 		return this.props.serverApi
-			.updateEmailSubscriptions(token, subscriptions)
+			.updateEmailSubscriptions(token, preference)
 			.then(() => {
 				if (this.state.user) {
-					this.props.serverApi.getUserAccount(user => {
-						this.onUserUpdated(user.value);
-					});
+					this.onNotificationPreferenceChanged(preference);
 				}
 			});
 	};

@@ -1,7 +1,7 @@
-import EmailSubscriptions from './EmailSubscriptions';
+import NotificationPreference from './notifications/NotificationPreference';
 
 export default interface EmailSubscriptionsRequest {
 	isValid: boolean,
-	emailAddress: string,
-	subscriptions: EmailSubscriptions
+	emailAddress?: string,
+	preference?: NotificationPreference
 }

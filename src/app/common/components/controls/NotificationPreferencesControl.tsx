@@ -6,7 +6,7 @@ import AlertEmailPreference from '../../../../common/models/notifications/AlertE
 
 interface Props {
 	preference: NotificationPreference,
-	onChangeNotificationPreference: (data: NotificationPreference) => Promise<NotificationPreference>,
+	onChangeNotificationPreference: (data: NotificationPreference) => Promise<any>,
 }
 interface State extends NotificationPreference {
 	isCompanyUpdateEnabled: boolean,
