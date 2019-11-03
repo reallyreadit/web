@@ -366,6 +366,6 @@ export default class ServerApi {
 		return this._user.get();
 	}
 	public updateUser(user: UserAccount) {
-		this._user.set(user);
+		this._user.set(user || null);
 	}
 }
