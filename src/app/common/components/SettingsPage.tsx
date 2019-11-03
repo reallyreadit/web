@@ -18,9 +18,7 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import Settings from '../../../common/models/Settings';
 import LoadingOverlay from './controls/LoadingOverlay';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
-import NotificationChannel from '../../../common/models/notifications/NotificationChannel';
-import NotificationEventFrequency from '../../../common/models/notifications/NotificationEventFrequency';
-import ChangeNotificationsDialog from './SettingsPage/ChangeNotificationsDialog';
+import NotificationPreferencesControl from './controls/NotificationPreferencesControl';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -35,14 +33,6 @@ interface Props {
 	onResendConfirmationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	user: UserAccount
-}
-function renderIndicator(value: number) {
-	return (
-		<Icon
-			className={value ? 'on' : 'off'}
-			name={value ? 'checkmark' : 'cancel'}
-		/>
-	);
 }
 class SettingsPage extends React.PureComponent<
 	Props,
@@ -84,16 +74,6 @@ class SettingsPage extends React.PureComponent<
 				onCloseDialog={this.props.onCloseDialog}
 				onChangeEmailAddress={this.props.onChangeEmailAddress}
 				onShowToast={this.props.onShowToast}
-			/>
-		);
-	};
-	private readonly _openChangeNotificationsDialog = () => {
-		this.props.onOpenDialog(
-			<ChangeNotificationsDialog
-				onChangeNotificationPreference={this.props.onChangeNotificationPreference}
-				onCloseDialog={this.props.onCloseDialog}
-				onShowToast={this.props.onShowToast}
-				preference={this.state.settings.value.notificationPreference}
 			/>
 		);
 	};
@@ -195,197 +175,16 @@ class SettingsPage extends React.PureComponent<
 								</div>
 							</div>
 						</div>
-						<div className="setting notifications">
+						<div className="setting">
 							<div className="header">
 								<span className="label">Notifications</span>
-								<Separator />
-								<ActionLink text="Change" iconLeft="write" onClick={this._openChangeNotificationsDialog} />
 							</div>
-							<table>
-								<thead>
-									<tr>
-										<th></th>
-										<th>Email</th>
-										<th>Extension</th>
-										<th>Push</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Company Update</th>
-									</tr>
-									<tr>
-										<th>Alerts</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.companyUpdate & NotificationChannel.Email)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Suggested Reading</th>
-									</tr>
-									<tr>
-										<th>Weekly Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.suggestedReading & NotificationEventFrequency.Weekly)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Article of the Day</th>
-									</tr>
-									<tr>
-										<th>Alerts</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.aotd & NotificationChannel.Email)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.aotd & NotificationChannel.Extension)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.aotd & NotificationChannel.Push)}
-										</td>
-									</tr>
-								</tbody>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Reply</th>
-									</tr>
-									<tr>
-										<th>Alerts</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.reply & NotificationChannel.Email)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.reply & NotificationChannel.Extension)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.reply & NotificationChannel.Push)}
-										</td>
-									</tr>
-									<tr>
-										<th>Daily Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.replyDigest & NotificationEventFrequency.Daily)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-									<tr>
-										<th>Weekly Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.replyDigest & NotificationEventFrequency.Weekly)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Loopback</th>
-									</tr>
-									<tr>
-										<th>Alerts</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.loopback & NotificationChannel.Email)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.loopback & NotificationChannel.Extension)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.loopback & NotificationChannel.Push)}
-										</td>
-									</tr>
-									<tr>
-										<th>Daily Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.loopbackDigest & NotificationEventFrequency.Daily)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-									<tr>
-										<th>Weekly Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.loopbackDigest & NotificationEventFrequency.Weekly)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Post</th>
-									</tr>
-									<tr>
-										<th>Alerts</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.post & NotificationChannel.Email)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.post & NotificationChannel.Extension)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.post & NotificationChannel.Push)}
-										</td>
-									</tr>
-									<tr>
-										<th>Daily Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.postDigest & NotificationEventFrequency.Daily)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-									<tr>
-										<th>Weekly Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.postDigest & NotificationEventFrequency.Weekly)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-								<tbody>
-									<tr>
-										<th colSpan={4}>Follower</th>
-									</tr>
-									<tr>
-										<th>Alerts</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.follower & NotificationChannel.Email)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.follower & NotificationChannel.Extension)}
-										</td>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.follower & NotificationChannel.Push)}
-										</td>
-									</tr>
-									<tr>
-										<th>Daily Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.followerDigest & NotificationEventFrequency.Daily)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-									<tr>
-										<th>Weekly Digest</th>
-										<td>
-											{renderIndicator(this.state.settings.value.notificationPreference.followerDigest & NotificationEventFrequency.Weekly)}
-										</td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
+							<div className="section">
+								<NotificationPreferencesControl
+									preference={this.state.settings.value.notificationPreference}
+									onChangeNotificationPreference={this.props.onChangeNotificationPreference}
+								/>
+							</div>
 						</div>
 						<div className="setting">
 							<div className="header">

@@ -52,37 +52,3 @@
 	cursor: pointer;
 	text-decoration: underline;
 }
-.settings-page_ejwkk > .notifications > table {
-	width: 100%;
-	max-width: 400px;
-	margin: 10px 0;
-}
-.settings-page_ejwkk > .notifications > table > thead > tr > th {
-	font-weight: normal;
-	font-family: 'Museo Sans (500)';
-	text-align: center;
-	padding: 3px 2px;
-	border: 1px solid #ccc;
-}
-.settings-page_ejwkk > .notifications > table > tbody > tr > th {
-	font-weight: normal;
-	padding: 3px 2px;
-	border: 1px solid #ccc;
-}
-.settings-page_ejwkk > .notifications > table > tbody > tr > td {
-	padding: 3px 0;
-	border: 1px solid #ccc;
-}
-.settings-page_ejwkk > .notifications > table > tbody > tr:first-child > th {
-	font-family: 'Museo Sans (500)';
-}
-.settings-page_ejwkk > .notifications > table > tbody > tr + tr > td > .icon_rour3d {
-	display: block;
-	margin: 0 auto;
-}
-.settings-page_ejwkk > .notifications > table > tbody > tr + tr > td > .icon_rour3d.on {
-	color: green;
-}
-.settings-page_ejwkk > .notifications > table > tbody > tr + tr > td > .icon_rour3d.off {
-	color: gray;
-}

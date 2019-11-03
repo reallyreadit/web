@@ -1,16 +1,10 @@
-import NotificationChannel from './NotificationChannel';
-import NotificationEventFrequency from './NotificationEventFrequency';
+import AlertPreference from './AlertPreference';
 
 export default interface NotificationPreference {
-	companyUpdate: NotificationChannel,
-	suggestedReading: NotificationEventFrequency,
-	aotd: NotificationChannel,
-	reply: NotificationChannel,
-	replyDigest: NotificationEventFrequency,
-	loopback: NotificationChannel,
-	loopbackDigest: NotificationEventFrequency,
-	post: NotificationChannel,
-	postDigest: NotificationEventFrequency,
-	follower: NotificationChannel,
-	followerDigest: NotificationEventFrequency
+	companyUpdate: boolean,
+	aotd: AlertPreference,
+	post: AlertPreference,
+	reply: AlertPreference,
+	loopback: AlertPreference,
+	follower: AlertPreference
 }
