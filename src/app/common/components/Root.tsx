@@ -323,7 +323,9 @@ export default abstract class Root<
 							isCompletionCommit: false
 						}
 					);
-					this.onCommentPosted(createCommentThread(post));
+					if (post.comment) {
+						this.onCommentPosted(createCommentThread(post));
+					}
 					return post;
 				}
 			);
