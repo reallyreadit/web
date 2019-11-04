@@ -226,6 +226,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			mainRoute,
 			{
 				...mainRoute,
+				createUrl: params => mainRoute.createUrl(params) + '?followers',
+				dialogKey: DialogKey.Followers,
+				queryStringKeys: ['followers']
+			},
+			{
+				...mainRoute,
+				createUrl: params => mainRoute.createUrl(params) + '?followers&user=' + params['user'],
 				dialogKey: DialogKey.Followers,
 				queryStringKeys: ['followers', 'user']
 			}
