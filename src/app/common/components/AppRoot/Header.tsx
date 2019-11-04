@@ -6,6 +6,7 @@ export default (props: {
 	content?: React.ReactNode,
 	isTransitioningBack: boolean,
 	onBack: () => void,
+	onOpenMenu: () => void,
 	onViewInbox: () => void,
 	titles: (React.ReactNode | null)[],
 	user: UserAccount
@@ -49,6 +50,12 @@ export default (props: {
 			<div className="title">{props.titles[props.titles.length - (props.isTransitioningBack ? 2 : 1)]}</div>
 			<div className="right-content">
 				{props.content}
+				<div
+					className="menu-button"
+					onClick={props.onOpenMenu}
+				>
+					<Icon name="menu2" />
+				</div>
 			</div>
 		</div>
 	);

@@ -227,7 +227,6 @@ export default class extends Root<
 				onGetProfile: this.props.serverApi.getProfile,
 				onOpenDialog: this._dialog.openDialog,
 				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
-				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
@@ -486,6 +485,7 @@ export default class extends Root<
 							content={headerContent}
 							isTransitioningBack={this.state.isPoppingScreen}
 							onBack={this._popScreen}
+							onOpenMenu={this._openMenu}
 							onViewInbox={this._viewInbox}
 							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
 							user={this.state.user}

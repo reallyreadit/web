@@ -32,6 +32,15 @@
 .header_q3p9go > .right-content {
 	margin-right: 10px;
 }
+.header_q3p9go > .right-content > .menu-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+.header_q3p9go > .right-content > .menu-button > .icon_rour3d {
+	font-size: 22px;
+}
 .header_q3p9go > .title {
 	flex: 1 1 auto;
 	white-space: nowrap;

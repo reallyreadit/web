@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { ProfileScreen, Deps, getProps } from '../screens/ProfileScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import Icon from '../../../../common/components/Icon';
 import { Screen, SharedState } from '../Root';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'isDesktopDevice' | 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onInstallExtension' | 'onSetScreenState' | 'screenId'>> & { onOpenMenu: () => void }
+	deps: Pick<Deps, Exclude<keyof Deps, 'isDesktopDevice' | 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onInstallExtension' | 'onSetScreenState' | 'screenId'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -31,14 +30,6 @@ export default function createScreenFactory<TScreenKey>(
 					sharedState
 				)
 			} />
-		),
-		renderHeaderContent: () => (
-			<div
-				className="profile-screen_dci8co-header-content"
-				onClick={deps.onOpenMenu}
-			>
-				<Icon name="menu2" />
-			</div>
 		)
 	};
 }
