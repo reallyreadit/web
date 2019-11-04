@@ -36,8 +36,6 @@ function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean
 	return user && isDesktopDevice;
 }
 interface Props {
-	highlightedCommentId: string | null,
-	highlightedPostId: string | null,
 	isDesktopDevice: boolean,
 	isBrowserCompatible: boolean,
 	isIosDevice: boolean | null,
@@ -352,8 +350,6 @@ class HomeScreen extends React.Component<Props, State> {
 								aotd={this.state.communityReads && this.state.communityReads.value.aotd}
 								aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
 								articles={this.state.communityReads && this.state.communityReads.value.articles}
-								highlightedCommentId={this.props.highlightedCommentId}
-								highlightedPostId={this.props.highlightedPostId}
 								isLoading={this.state.isLoading}
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
@@ -414,7 +410,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'isExtensionInstalled' | 'isIosDevice' | 'screenId' | 'user' | 'view'>>
+	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'isIosDevice' | 'screenId' | 'user' | 'view'>>
 ) {
 	const route = findRouteByKey(routes, ScreenKey.Home);
 	return {
@@ -434,16 +430,6 @@ export default function createScreenFactory<TScreenKey>(
 					...{
 						...deps,
 						...sharedState,
-						highlightedCommentId: (
-							pathParams['highlightedType'] === 'comment' ?
-								pathParams['highlightedId'] :
-								null
-						),
-						highlightedPostId: (
-							pathParams['highlightedType'] === 'post' ?
-								pathParams['highlightedId'] :
-								null
-						),
 						screenId: screenState.id,
 						view: pathParams['view'] === 'trending' ?
 							View.Trending :

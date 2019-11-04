@@ -47,6 +47,8 @@ import FolloweeCountChange from '../../../../common/models/social/FolloweeCountC
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
 	captcha: Captcha,
+	highlightedCommentId: string | null,
+	highlightedPostId: string | null,
 	isDesktopDevice: boolean,
 	isIosDevice: boolean | null,
 	onClearAlerts: (alert: Alert) => void,
@@ -81,7 +83,7 @@ interface Props {
 	userAccount: UserAccount | null,
 	userName: string
 }
-export type Deps = Pick<Props, Exclude<keyof Props, 'userAccount' | 'userName'>>;
+export type Deps = Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'userAccount' | 'userName'>>;
 interface State {
 	isFollowingButtonBusy: boolean,
 	profile: Fetchable<Profile>,
@@ -460,6 +462,8 @@ export class ProfileScreen extends React.Component<Props, State> {
 										post => (
 											<li key={post.date}>
 												<PostDetails
+													highlightedCommentId={this.props.highlightedCommentId}
+													highlightedPostId={this.props.highlightedPostId}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onRead={this.props.onReadArticle}
@@ -501,10 +505,21 @@ export class ProfileScreen extends React.Component<Props, State> {
 	}
 }
 export function getProps(deps: Deps, state: Screen, sharedState: SharedState) {
+	const pathParams = route.getPathParams(state.location.path);
 	return {
 		...deps,
+		highlightedCommentId: (
+			pathParams['highlightedType'] === 'comment' ?
+				pathParams['highlightedId'] :
+				null
+		),
+		highlightedPostId: (
+			pathParams['highlightedType'] === 'post' ?
+				pathParams['highlightedId'] :
+				null
+		),
 		userAccount: sharedState.user,
-		userName: route.getPathParams(state.location.path)['userName']
+		userName: pathParams['userName']
 	};
 }
 export default function createScreenFactory<TScreenKey>(

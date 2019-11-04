@@ -30,8 +30,6 @@ import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 
 interface Props {
-	highlightedCommentId: string | null,
-	highlightedPostId: string | null,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -330,8 +328,6 @@ class HomeScreen extends React.Component<Props, State> {
 							aotd={this.state.communityReads && this.state.communityReads.value.aotd}
 							aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
 							articles={this.state.communityReads && this.state.communityReads.value.articles}
-							highlightedCommentId={this.props.highlightedCommentId}
-							highlightedPostId={this.props.highlightedPostId}
 							isLoading={this.state.isLoading}
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}
@@ -371,7 +367,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'screenId' | 'user' | 'view'>>
+	deps: Pick<Props, Exclude<keyof Props, 'screenId' | 'user' | 'view'>>
 ) {
 	const route = findRouteByKey(routes, ScreenKey.Home);
 	return {
@@ -387,16 +383,6 @@ export default function <TScreenKey>(
 				<HomeScreen {
 					...{
 						...deps,
-						highlightedCommentId: (
-							pathParams['highlightedType'] === 'comment' ?
-								pathParams['highlightedId'] :
-								null
-						),
-						highlightedPostId: (
-							pathParams['highlightedType'] === 'post' ?
-								pathParams['highlightedId'] :
-								null
-						),
 						screenId: screenState.id,
 						user: sharedState.user,
 						view: pathParams['view'] === 'trending' ?
