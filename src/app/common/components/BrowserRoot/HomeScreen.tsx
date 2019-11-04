@@ -82,6 +82,7 @@ class HomeScreen extends React.Component<Props, State> {
 	private readonly _changePage = (pageNumber: number) => {
 		this.setState({
 			isLoading: true,
+			isLoadingNewItems: false,
 			newItemMessage: null
 		});
 		this.fetchItems(this.props.view, this.state.sort, this.state.timeWindow, this.state.minLength, this.state.maxLength, pageNumber);

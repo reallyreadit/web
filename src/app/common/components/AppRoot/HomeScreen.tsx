@@ -26,6 +26,8 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Alert from '../../../../common/models/notifications/Alert';
+import { formatCountable } from '../../../../common/format';
+import UpdateBanner from '../../../../common/components/UpdateBanner';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -52,8 +54,10 @@ interface Props {
 interface State {
 	communityReads?: Fetchable<CommunityReads>,
 	isLoading: boolean,
+	isLoadingNewItems: boolean,
 	maxLength?: number,
 	minLength?: number,
+	newItemMessage: string | null,
 	posts?: Fetchable<PageResult<Post>>,
 	sort: CommunityReadSort,
 	timeWindow?: CommunityReadTimeWindow
@@ -63,6 +67,7 @@ class HomeScreen extends React.Component<Props, State> {
 	private readonly _changeParams = (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => {
 		this.setState({
 			isLoading: true,
+			newItemMessage: null,
 			sort, timeWindow, minLength, maxLength
 		});
 		this.props.onSetScreenState(
@@ -75,51 +80,15 @@ class HomeScreen extends React.Component<Props, State> {
 				}
 			})
 		);
-		switch (view) {
-			case View.Trending:
-				this.props.onGetCommunityReads(
-					{
-						pageNumber: 1,
-						pageSize: 10,
-						sort,
-						timeWindow,
-						minLength,
-						maxLength
-					},
-					this._asyncTracker.addCallback(
-						communityReads => {
-							this.setState({
-								communityReads,
-								isLoading: false
-							});
-							this.clearAotdAlertIfNeeded();
-						}
-					)
-				);
-				break;
-			case View.Following:
-				this.props.onGetFolloweesPosts(
-					{
-						pageNumber: 1,
-						minLength,
-						maxLength
-					},
-					this._asyncTracker.addCallback(
-						posts => {
-							this.setState({
-								isLoading: false,
-								posts
-							});
-							this.clearFollowingAlertIfNeeded();
-						}
-					)
-				);
-				break;
-		}
+		this.fetchItems(view, sort, timeWindow, minLength, maxLength, 1);
 	};
 	private _hasClearedAotdAlert = false;
 	private _hasClearedFollowingAlert = false;
 	private readonly _loadMore = () => {
+		this.setState({
+			isLoadingNewItems: false,
+			newItemMessage: null
+		});
 		return this._asyncTracker.addPromise(
 			new Promise<void>((resolve, reject) => {
 				switch (this.props.view) {
@@ -182,6 +151,10 @@ class HomeScreen extends React.Component<Props, State> {
 			})
 		);
 	};
+	private readonly _loadNewItems = () => {
+		this.setState({ isLoadingNewItems: true });
+		this.fetchItems(this.props.view, CommunityReadSort.Hot, null, null, null, 1);
+	};
 	constructor(props: Props) {
 		super(props);
 		switch (props.view) {
@@ -201,6 +174,8 @@ class HomeScreen extends React.Component<Props, State> {
 						)
 					),
 					isLoading: false,
+					isLoadingNewItems: false,
+					newItemMessage: null,
 					sort: CommunityReadSort.Hot
 				};
 				break;
@@ -220,6 +195,8 @@ class HomeScreen extends React.Component<Props, State> {
 						)
 					),
 					isLoading: false,
+					isLoadingNewItems: false,
+					newItemMessage: null,
 					sort: CommunityReadSort.Hot
 				};
 				break;
@@ -242,12 +219,85 @@ class HomeScreen extends React.Component<Props, State> {
 			this._hasClearedFollowingAlert = true;
 		}
 	}
+	private fetchItems(view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null, pageNumber: number) {
+		switch (view) {
+			case View.Trending:
+				this.props.onGetCommunityReads(
+					{
+						pageNumber: 1,
+						pageSize: 10,
+						sort,
+						timeWindow,
+						minLength,
+						maxLength
+					},
+					this._asyncTracker.addCallback(
+						communityReads => {
+							this.setState({
+								communityReads,
+								isLoading: false,
+								isLoadingNewItems: false,
+								newItemMessage: null,
+							});
+							this.clearAotdAlertIfNeeded();
+						}
+					)
+				);
+				break;
+			case View.Following:
+				this.props.onGetFolloweesPosts(
+					{
+						pageNumber: 1,
+						minLength,
+						maxLength
+					},
+					this._asyncTracker.addCallback(
+						posts => {
+							this.setState({
+								isLoading: false,
+								isLoadingNewItems: false,
+								newItemMessage: null,
+								posts
+							});
+							this.clearFollowingAlertIfNeeded();
+						}
+					)
+				);
+				break;
+		}
+	}
 	public componentDidMount() {
 		if (this.state.communityReads && !this.state.communityReads.isLoading) {
 			this.clearAotdAlertIfNeeded();
 		}
 		if (this.state.posts && !this.state.posts.isLoading) {
 			this.clearFollowingAlertIfNeeded();
+		}
+	}
+	public componentDidUpdate(prevProps: Props) {
+		switch (this.props.view) {
+			case View.Trending:
+				if (
+					this.props.user &&
+					this.props.user.aotdAlert &&
+					prevProps.user &&
+					!prevProps.user.aotdAlert
+				) {
+					this.setState({ newItemMessage: 'Show new Article of the Day' });
+					this._hasClearedAotdAlert = false;
+				}
+				break;
+			case View.Following:
+				if (this.props.user && prevProps.user) {
+					const newItemCount = Math.max(0, this.props.user.postAlertCount - prevProps.user.postAlertCount);
+					if (newItemCount) {
+						this.setState({
+							newItemMessage: `Show ${newItemCount} new ${formatCountable(newItemCount, 'post')}`
+						});
+						this._hasClearedFollowingAlert = false;
+					}
+				}
+				break;
 		}
 	}
 	public componentWillUnmount() {
@@ -268,6 +318,13 @@ class HomeScreen extends React.Component<Props, State> {
 							!this.state.communityReads.value.userReadCount
 						) ?
 							<WelcomeInfoBox /> :
+							null}
+						{this.state.newItemMessage ?
+							<UpdateBanner
+								isBusy={this.state.isLoadingNewItems}
+								onClick={this._loadNewItems}
+								text={this.state.newItemMessage}
+							/> :
 							null}
 						<CommunityReadsList
 							aotd={this.state.communityReads && this.state.communityReads.value.aotd}
