@@ -45,11 +45,13 @@
 	justify-content: space-evenly;
 }
 .app_79z645 > .alerts {
-	margin-bottom: 10px;	
+	margin-bottom: 10px;
+	text-align: center;
 }
-.app_79z645 > .alerts > .button_ovrlmi {
-	display: flex;
-	margin: 0 auto;
+.app_79z645 > .alerts > .wrapper {
+	display: inline-flex;
+	flex-flow: column;
+	align-items: flex-start;
 }
 .app_79z645 > .controls {
 	display: flex;

@@ -46,8 +46,17 @@ export default class extends React.Component<
 	private _goToComments = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Comments).createUrl(this.getArticleUrlParams()));
 	};
-	private _goToInbox = () => {
+	private readonly _goToFollowing = () => {
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Home).createUrl({ view: 'following' }));
+	};
+	private readonly _goToHome = () => {
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Home).createUrl());
+	};
+	private readonly _goToInbox = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
+	};
+	private readonly _goToProfileFollowers = () => {
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Profile, DialogKey.Followers).createUrl({ userName: this.props.user.name }));
 	};
 	private readonly _toggleReaderMode = (isEnabled: boolean) => {
 		if (isEnabled) {
@@ -175,14 +184,40 @@ export default class extends React.Component<
 					<>
 						{hasAlert(this.props.user) ?
 							<div className="alerts">
-								{hasAlert(this.props.user, Alert.Inbox) ?
-									<Button
-										badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
-										iconLeft="bell"
-										onClick={this._goToInbox}
-										text={`View ${this.props.user.replyAlertCount + this.props.user.loopbackAlertCount} new ${formatCountable(this.props.user.replyAlertCount + this.props.user.loopbackAlertCount, 'notification')}`}
-									/> :
-									null}
+								<div className="wrapper">
+									{hasAlert(this.props.user, Alert.Aotd) ?
+										<Button
+											badge={1}
+											iconLeft="bell"
+											onClick={this._goToHome}
+											text={"View new Article of the Day"}
+										/> :
+										null}
+									{hasAlert(this.props.user, Alert.Inbox) ?
+										<Button
+											badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
+											iconLeft="bell"
+											onClick={this._goToInbox}
+											text={`View ${this.props.user.replyAlertCount + this.props.user.loopbackAlertCount} new ${formatCountable(this.props.user.replyAlertCount + this.props.user.loopbackAlertCount, 'notification')}`}
+										/> :
+										null}
+									{hasAlert(this.props.user, Alert.Following) ?
+										<Button
+											badge={this.props.user.postAlertCount}
+											iconLeft="bell"
+											onClick={this._goToFollowing}
+											text={`View ${this.props.user.postAlertCount} new ${formatCountable(this.props.user.postAlertCount, 'post')}`}
+										/> :
+										null}
+									{hasAlert(this.props.user, Alert.Followers) ?
+										<Button
+											badge={this.props.user.followerAlertCount}
+											iconLeft="bell"
+											onClick={this._goToProfileFollowers}
+											text={`View ${this.props.user.followerAlertCount} new ${formatCountable(this.props.user.followerAlertCount, 'follower')}`}
+										/> :
+										null}
+								</div>
 							</div> :
 							null}
 						{this.props.activeTab && this.props.article ?
