@@ -346,6 +346,20 @@ server = server.get('/extension/uninstall', (req, res, next) => {
 	}
 	next();
 });
+server = server.get('/mailLink/:id', (req, res) => {
+	req.api
+		.fetchJson('POST', { path: '/Email/Link/' + req.params['id'] })
+		.then(
+			(result: { url: string }) => {
+				redirect(req, res, result.url);
+			}
+		)
+		.catch(
+			() => {
+				redirectToHomeScreen(req, res);
+			}
+		);
+});
 // render matched route or return 404
 server = server.use((req, res, next) => {
 	if (findRouteByRequest(req)) {
