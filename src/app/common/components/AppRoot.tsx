@@ -27,6 +27,7 @@ import createProfileScreenFactory from './AppRoot/ProfileScreen';
 import createInboxScreenFactory from './screens/InboxScreen';
 import DialogKey from '../../../common/routing/DialogKey';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
+import RouteLocation from '../../../common/routing/RouteLocation';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -49,6 +50,7 @@ export default class extends Root<
 	}
 > {
 	private _isUpdateAvailable: boolean = false;
+	private _signInLocation: RouteLocation | null;
 
 	// events
 	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
@@ -80,7 +82,6 @@ export default class extends Root<
 			this.props.analytics.sendPageview(screens[screens.length - 1]);
 		}
 	};
-	private _hasProcessedInitialLocation: boolean;
 	private readonly _popScreen = () => {
 		this.setState({ isPoppingScreen: true });
 	};
@@ -244,36 +245,7 @@ export default class extends Root<
 		};
 
 		// state
-		let screens: Screen[];
-		let dialog: React.ReactNode;
-		const route = findRouteByLocation(routes, props.initialLocation, unroutableQueryStringKeys);
-		if (route.screenKey === ScreenKey.Read) {
-			dialog = null;
-			if (props.initialUser) {
-				this._hasProcessedInitialLocation = true;
-				screens = [
-					this.createScreen(ScreenKey.Comments, route.getPathParams(props.initialLocation.path))
-				];
-			} else {
-				this._hasProcessedInitialLocation = false;
-				screens = [];
-			}
-		} else {
-			const locationState = this.getLocationDependentState(props.initialLocation);
-			if (props.initialUser) {
-				this._hasProcessedInitialLocation = true;
-				screens = [locationState.screen];
-				dialog = locationState.dialog;
-			} else {
-				this._hasProcessedInitialLocation = false;
-				screens = [];
-				dialog = (
-					route.dialogKey === DialogKey.ResetPassword ?
-						locationState.dialog :
-						null
-				);
-			}
-		}
+		const { screens, dialog } = this.processNavigationRequest(props.initialUser, props.initialLocation);
 		this.state = {
 			...this.state,
 			dialog: (
@@ -344,30 +316,67 @@ export default class extends Root<
 			.addListener(
 				'loadUrl',
 				urlString => {
-					if (this.state.user) {
-						const url = new URL(urlString);
-						const location = this.getLocationDependentState({
+					// check if the url matches a route
+					const
+						url = new URL(urlString),
+						location = {
 							path: url.pathname,
 							queryString: url.search
-						});
+						},
+						route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
+					if (route) {
+						const { screens, dialog } = this.processNavigationRequest(this.state.user, location);
 						this.setState({
 							dialog: (
-								location.dialog ?
+								dialog ?
 									{
-										element: location.dialog,
+										element: dialog,
 										isClosing: false
 									} :
 									null
 							),
 							isPoppingScreen: false,
 							menuState: 'closed',
-							screens: [location.screen]
+							screens
 						});
 					} else {
+						// must be a redirect url or broken link
+						// send to server for appropriate redirect
 						window.location.href = urlString;
 					}
 				}
 			);
+	}
+	private processNavigationRequest(user: UserAccount | null, location: RouteLocation) {
+		let screens: Screen[];
+		let dialog: React.ReactNode;
+		const route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
+		if (route.screenKey === ScreenKey.Read) {
+			dialog = null;
+			if (user) {
+				screens = [
+					this.createScreen(ScreenKey.Comments, route.getPathParams(location.path))
+				];
+			} else {
+				this._signInLocation = location;
+				screens = [];
+			}
+		} else {
+			const locationState = this.getLocationDependentState(location);
+			if (user) {
+				screens = [locationState.screen];
+				dialog = locationState.dialog;
+			} else {
+				this._signInLocation = location;
+				screens = [];
+				dialog = (
+					route.dialogKey === DialogKey.ResetPassword ?
+						locationState.dialog :
+						null
+				);
+			}
+		}
+		return { screens, dialog };
 	}
 	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		// create the new screen
@@ -409,13 +418,13 @@ export default class extends Root<
 		this.props.appApi.syncAuthCookie(user);
 		// set screen
 		let screen: Screen;
-		if (this._hasProcessedInitialLocation) {
+		if (!this._signInLocation) {
 			screen = this.createScreen(ScreenKey.Home);
 		} else {
-			const route = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
+			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
 			if (route.screenKey === ScreenKey.Read) {
 				const
-					pathParams = route.getPathParams(this.props.initialLocation.path),
+					pathParams = route.getPathParams(this._signInLocation.path),
 					slug = pathParams['sourceSlug'] + '_' + pathParams['articleSlug'];
 				screen = this.createScreen(ScreenKey.Comments, pathParams);
 				// iOS versions < 2.1 crash when calling readArticle using only the slug
@@ -436,10 +445,10 @@ export default class extends Root<
 				}
 			} else {
 				screen = this
-					.getLocationDependentState(this.props.initialLocation)
+					.getLocationDependentState(this._signInLocation)
 					.screen;
 			}
-			this._hasProcessedInitialLocation = true;
+			this._signInLocation = null;
 		}
 		// update analytics
 		this.props.analytics.setUserId(user.id);
