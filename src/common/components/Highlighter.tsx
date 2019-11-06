@@ -28,16 +28,19 @@ export default class Highlighter extends React.PureComponent<
 			this._asyncTracker.addTimeout(
 				window.setTimeout(
 					() => {
-						this._intersectionObserver = new IntersectionObserver(
-							entries => {
-								const entry = entries[0];
-								if (entry && entry.isIntersecting) {
-									this.setState({ fadeHighlight: true });
-									this._intersectionObserver.unobserve(entry.target);
+						// iOS 11 WKWebView doesn't support IntersectionObserver
+						if ('IntersectionObserver' in window) {
+							this._intersectionObserver = new IntersectionObserver(
+								entries => {
+									const entry = entries[0];
+									if (entry && entry.isIntersecting) {
+										this.setState({ fadeHighlight: true });
+										this._intersectionObserver.unobserve(entry.target);
+									}
 								}
-							}
-						);
-						this._intersectionObserver.observe(this._elementRef.current);
+							);
+							this._intersectionObserver.observe(this._elementRef.current);
+						}
 						const rect = this._elementRef.current.getBoundingClientRect();
 						if (rect.top < 0 || rect.bottom > window.innerHeight) {
 							this._elementRef.current.scrollIntoView({
