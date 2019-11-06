@@ -250,7 +250,7 @@ messagingContext.sendMessage(
 		reader.loadPage(page);
 		if (result.userArticle.isRead) {
 			insertEmbed();
-		} else if (page.getBookmarkScrollTop() > 0) {
+		} else if (page.getBookmarkScrollTop() > window.innerHeight) {
 			insertBookmarkPrompt();
 		}
 	}
