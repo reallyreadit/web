@@ -348,7 +348,7 @@ function loadUserInterface() {
 			insertBookmarkPrompt({
 				onConfirm: () => {
 					const bookmarkScrollTop = context.page.getBookmarkScrollTop();
-					if (bookmarkScrollTop > 0) {
+					if (bookmarkScrollTop > window.innerHeight) {
 						window.scrollTo({
 							behavior: 'smooth',
 							top: bookmarkScrollTop
