@@ -71,6 +71,29 @@ const eventPageApi = new EventPageApi({
 						// transition animation
 						document.body.style.opacity = '1';
 						document.body.classList.remove('com_readup_activating_reader_mode');
+						// bookmark prompt
+						if (
+							!isEmbedInserted &&
+							!context.lookupResult.userArticle.isRead &&
+							context.page.getBookmarkScrollTop() > window.innerHeight
+						) {
+							setTimeout(
+								() => {
+									insertBookmarkPrompt({
+										onConfirm: () => {
+											const bookmarkScrollTop = context.page.getBookmarkScrollTop();
+											if (bookmarkScrollTop > 0) {
+												window.scrollTo({
+													behavior: 'smooth',
+													top: bookmarkScrollTop
+												});
+											}
+										}
+									});
+								},
+								350
+							);
+						}
 					});
 			},
 			350
@@ -341,21 +364,6 @@ function loadUserInterface() {
 	if (context) {
 		if (shouldShowEmbed(context.lookupResult.userArticle)) {
 			insertEmbed(context.lookupResult.userArticle);
-		} else if (
-			!context.lookupResult.userArticle.isRead &&
-			context.page.getBookmarkScrollTop() > window.innerHeight
-		) {
-			insertBookmarkPrompt({
-				onConfirm: () => {
-					const bookmarkScrollTop = context.page.getBookmarkScrollTop();
-					if (bookmarkScrollTop > 0) {
-						window.scrollTo({
-							behavior: 'smooth',
-							top: bookmarkScrollTop
-						});
-					}
-				}
-			});
 		}
 	}
 }
