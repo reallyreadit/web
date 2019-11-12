@@ -137,6 +137,10 @@ export default {
 			contentSearchRootElementSelector: 'article'
 		},
 		{
+			hostname: 'nymag.com',
+			contentSearchRootElementSelector: '.article-content'
+		},
+		{
 			hostname: 'nytimes.com',
 			transpositions: [
 				{
@@ -400,6 +404,17 @@ export default {
 			textContainerSearch: {
 				selectorBlacklist: ['.art-insert']
 			}
+		},
+		{
+			hostname: 'lrb.co.uk',
+			transpositions: [
+				{
+					elementSelectors: [
+						'.article-body > .dropcap'
+					],
+					parentElementSelector: '#article-body'
+				}
+			]
 		},
 		{
 			hostname: 'telegraph.co.uk',
