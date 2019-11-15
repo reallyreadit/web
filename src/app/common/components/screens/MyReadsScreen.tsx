@@ -23,6 +23,7 @@ import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import { formatCountable } from '../../../../common/format';
+import Rating from '../../../../common/models/Rating';
 
 enum List {
 	History = 'History',
@@ -36,6 +37,7 @@ interface Props {
 	onGetStarredArticles: ArticleFetchFunction,
 	onGetUserArticleHistory: ArticleFetchFunction,
 	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function,
@@ -124,7 +126,15 @@ class MyReadsScreen extends React.Component<Props, State> {
 						this.setState(produce<State>(prevState => {
 							prevState.articles.value.items.forEach((article, index, articles) => {
 								if (article.id === event.article.id) {
-									articles.splice(articles.indexOf(article), 1, event.article);
+									// merge objects in case the new object is missing properties due to outdated iOS client
+									articles.splice(
+										articles.indexOf(article),
+										1,
+										{
+											...article,
+											...event.article
+										}
+									);
 								}
 							});
 						}));
@@ -225,6 +235,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onPost={this.props.onPostArticle}
+														onRateArticle={this.props.onRateArticle}
 														onRead={this.props.onReadArticle}
 														onShare={this.props.onShare}
 														onToggleStar={this.props.onToggleArticleStar}

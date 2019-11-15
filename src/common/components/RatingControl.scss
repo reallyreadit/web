@@ -1,0 +1,38 @@
+/*
+	componentPath: src/common/components/RatingControl
+	cssComponentId: rating-control_pyy0je
+*/
+
+.rating-control_pyy0je > .children > .seal {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 22px;
+	height: 22px;
+	box-sizing: border-box;
+	background-size: 22px;
+	cursor: pointer;
+}
+.rating-control_pyy0je > .children > .seal > span {
+	color: white;
+	font-family: 'Museo Sans (500)';
+	font-size: 8pt;
+}
+.rating-control_pyy0je > .menu > .content {
+	position: relative;
+	background-color: white;
+	padding: 10px;
+	font-size: 11pt;
+	white-space: nowrap;
+}
+.rating-control_pyy0je > .menu > .content > .my-rating {
+	margin: 10px 0 5px;
+}
+.rating-control_pyy0je > .menu > .content > .my-rating > .icon_rour3d {
+	margin-left: 5px;
+	vertical-align: middle;
+	font-size: 12pt;
+}
+.rating-control_pyy0je > .menu > .content > .rating-selector_epcgq9 {
+	width: 210px;
+}

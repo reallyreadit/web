@@ -66,6 +66,13 @@ const reader = new Reader(
 				}
 			},
 			(article: UserArticle) => {
+				// migrate deprecated article property if required due to an outdated app
+				if (!article.datesPosted) {
+					article.datesPosted = [];
+					if ((article as any).datePosted) {
+						article.datesPosted.push((article as any).datePosted);
+					}
+				}
 				if (article.isRead) {
 					if (embedRootElement) {
 						render({ article });
@@ -186,6 +193,13 @@ function postArticle(form: PostForm) {
 					data: form
 				},
 				(post: Post) => {
+					// migrate deprecated article property if required due to an outdated app
+					if (!post.article.datesPosted) {
+						post.article.datesPosted = [];
+						if ((post.article as any).datePosted) {
+							post.article.datesPosted.push((post.article as any).datePosted);
+						}
+					}
 					if (post.comment) {
 						render({
 							article: post.article,
@@ -245,6 +259,13 @@ messagingContext.sendMessage(
 		data: createPageParseResult(metadataParseResult, contentParseResult)
 	},
 	(result: ArticleLookupResult) => {
+		// migrate deprecated article property if required due to an outdated app
+		if (!result.userArticle.datesPosted) {
+			result.userArticle.datesPosted = [];
+			if ((result.userArticle as any).datePosted) {
+				result.userArticle.datesPosted.push((result.userArticle as any).datePosted);
+			}
+		}
 		lookupResult = result;
 		page.setReadState(result.userPage.readState);
 		reader.loadPage(page);

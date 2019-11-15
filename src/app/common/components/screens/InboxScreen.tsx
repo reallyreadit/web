@@ -23,6 +23,7 @@ import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
+import Rating from '../../../../common/models/Rating';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -31,6 +32,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetInboxPosts: FetchFunctionWithParams<InboxPostsQuery, PageResult<Post>>,
 	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -118,6 +120,7 @@ class InboxScreen extends React.Component<Props, State> {
 											highlightedCommentId={this.props.highlightedCommentId}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onRateArticle={this.props.onRateArticle}
 											onRead={this.props.onReadArticle}
 											onPost={this.props.onPostArticle}
 											onShare={this.props.onShare}

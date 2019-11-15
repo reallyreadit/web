@@ -37,10 +37,14 @@ class AppCommentsScreen extends React.Component<
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
 				if (this.state.article.value && this.state.article.value.id === event.article.id) {
+					// merge objects in case the new object is missing properties due to outdated iOS client
 					this.setState({
 						article: {
 							...this.state.article,
-							value: event.article
+							value: {
+								...this.state.article.value,
+								...event.article
+							}
 						}
 					});
 				}

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import ContentBox from './ContentBox';
 import UserArticle from '../models/UserArticle';
-import { formatTimestamp } from '../format';
+import { formatTimestamp, formatList } from '../format';
 import PostButton from './PostButton';
+import { MenuPosition } from './Popover';
 
 export default (
 	props: {
@@ -12,13 +13,13 @@ export default (
 	}
 ) => (
 	<ContentBox className="post-prompt_de6v6u">
-		{props.article.datePosted ?
-			<p>You posted this article on {formatTimestamp(props.article.datePosted)}</p> :
+		{props.article.datesPosted.length ?
+			<p>You posted this article on {formatList(props.article.datesPosted.map(formatTimestamp))}</p> :
 			<p>{props.promptMessage}</p>}
 		<PostButton
 			article={props.article}
+			menuPosition={MenuPosition.TopCenter}
 			onPost={props.onPost}
-			popoverEnabled={false}
 		/>
 	</ContentBox>
 );

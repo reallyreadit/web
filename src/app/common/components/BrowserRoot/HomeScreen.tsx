@@ -30,6 +30,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Alert from '../../../../common/models/notifications/Alert';
 import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
+import Rating from '../../../../common/models/Rating';
 
 const pageSize = 40;
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
@@ -50,6 +51,7 @@ interface Props {
 	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
@@ -357,6 +359,7 @@ class HomeScreen extends React.Component<Props, State> {
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 								onParamsChanged={this._changeParams}
 								onPostArticle={this.props.onPostArticle}
+								onRateArticle={this.props.onRateArticle}
 								onReadArticle={this.props.onReadArticle}
 								onShare={this.props.onShare}
 								onToggleArticleStar={this.props.onToggleArticleStar}

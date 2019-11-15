@@ -103,12 +103,28 @@ const browserActionApi = new BrowserActionApi({
 				}
 			);
 	},
+	onRateArticle: (articleId, score) => serverApi
+		.rateArticle(articleId, score)
+		.then(
+			result => {
+				webAppApi.articleUpdated({
+					article: result.article,
+					isCompletionCommit: false
+				});
+				return result;
+			}
+		),
 	onSetStarred: (articleId, isStarred) => serverApi
 		.setStarred(articleId, isStarred)
-		.then(article => {
-			webAppApi.articleUpdated({ article, isCompletionCommit: false });
-			return article;
-		}),
+		.then(
+			article => {
+				webAppApi.articleUpdated({
+					article,
+					isCompletionCommit: false
+				});
+				return article;
+			}
+		),
 	onToggleContentIdentificationDisplay: tabId => {
 		contentScriptApi.toggleContentIdentificationDisplay(tabId);
 	},

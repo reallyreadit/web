@@ -10,6 +10,7 @@ import ContentBox from './ContentBox';
 import PostHeader from './PostHeader';
 import CommentThread from '../models/CommentThread';
 import classNames from 'classnames';
+import Rating from '../models/Rating';
 
 interface Props {
 	highlightedCommentId?: string,
@@ -17,6 +18,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPost: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
@@ -45,6 +47,7 @@ export default class PostDetails extends React.Component<Props> {
 					isUserSignedIn={!!this.props.user}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onRateArticle={this.props.onRateArticle}
 					onPost={this.props.onPost}
 					onRead={this.props.onRead}
 					onShare={this.props.onShare}

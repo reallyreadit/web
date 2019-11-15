@@ -13,6 +13,8 @@ import { calculateEstimatedReadTime } from '../calculate';
 import getShareData from '../sharing/getShareData';
 import ContentBox from './ContentBox';
 import PostButton from './PostButton';
+import RatingControl from './RatingControl';
+import Rating from '../models/Rating';
 
 interface Props {
 	article: UserArticle,
@@ -21,6 +23,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPost: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
@@ -64,10 +67,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['articleSlug']: articleSlug,
 				['sourceSlug']: sourceSlug
 			},
-			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min',
-			averageRatingScore = this.props.article.averageRatingScore != null && this.props.article.averageRatingScore < 10 ?
-				this.props.article.averageRatingScore.toFixed(1) :
-				this.props.article.averageRatingScore;
+			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
 		// publisher metadata
 		const publisherMetadata = [this.props.article.source];
 		if (this.props.article.authors.length) {
@@ -87,10 +87,15 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		if (this.props.useAbsoluteUrls) {
 			commentsLinkHref = this.props.onCreateAbsoluteUrl(commentsLinkHref);
 		}
-		// rating image
-		const ratingStyle = {
-			backgroundImage: `url(${this.props.imagePath}/rating-seal.svg)`
-		};
+		// rating control
+		const ratingControl = (
+			<RatingControl
+				article={this.props.article}
+				imagePath={this.props.imagePath}
+				menuPosition={MenuPosition.TopCenter}
+				onRateArticle={this.props.onRateArticle}
+			/>
+		);
 		// share
 		const shareControl = (
 			<ShareControl
@@ -143,14 +148,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							>
 								{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 							</a>
-							{averageRatingScore != null ?
-								<div
-									className="rating"
-									style={ratingStyle}
-								>
-									<span>{averageRatingScore}</span>
-								</div> :
-								null}
+							{ratingControl}
 							{shareControl}
 						</div>
 					</div>
@@ -193,24 +191,18 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 								</a>
 							</div>
-							{averageRatingScore != null ?
-								<div
-									className="rating"
-									style={ratingStyle}
-								>
-									<span>{averageRatingScore}</span>
-								</div> :
-								null}
+							{ratingControl}
 							{shareControl}
 						</div>
 					</div>
 					{(
 						this.props.onPost &&
-						(this.props.article.isRead || this.props.article.datePosted)
+						(this.props.article.isRead || this.props.article.datesPosted.length)
 					 ) ?
 						<div className="post">
 							<PostButton
 								article={this.props.article}
+								menuPosition={MenuPosition.LeftMiddle}
 								onPost={this.props.onPost}
 							/>
 						</div> :

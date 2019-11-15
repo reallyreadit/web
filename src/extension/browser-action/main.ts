@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import App, { Props } from './components/App';
 import EventPageApi from './EventPageApi';
 import PostForm from '../../common/models/social/PostForm';
+import UserArticle from '../../common/models/UserArticle';
 
 const eventPageApi = new EventPageApi({
 	onPushState: state => {
@@ -17,6 +18,7 @@ eventPageApi
 			onActivateReaderMode: activateReaderMode,
 			onDeactivateReaderMode: deactiveReaderMode,
 			onPostArticle: postArticle,
+			onRateArticle: rateArticle,
 			onToggleContentIdentificationDisplay: toggleContentIdentificationDisplay,
 			onToggleReadStateDisplay: toggleReadStateDisplay,
 			onToggleStar: toggleArticleStar
@@ -46,17 +48,33 @@ function deactiveReaderMode() {
 	}
 }
 function postArticle(form: PostForm) {
-	return eventPageApi.postArticle(form);
+	return eventPageApi
+		.postArticle(form)
+		.then(
+			post => {
+				setState({ article: post.article });
+				return post;
+			}
+		);
+}
+function rateArticle(article: UserArticle, score: number) {
+	return eventPageApi
+		.rateArticle(props.article.id, score)
+		.then(
+			result => {
+				setState({ article });
+				return result.rating;
+			}
+		);
 }
 function toggleArticleStar() {
-	if (props.article) {
-		return eventPageApi
-			.setStarred(props.article.id, !props.article.dateStarred)
-			.then(article => {
+	return eventPageApi
+		.setStarred(props.article.id, !props.article.dateStarred)
+		.then(
+			article => {
 				setState({ article });
-			});
-	}
-	return Promise.reject();
+			}
+		);
 }
 function toggleContentIdentificationDisplay() {
 	if (props.activeTab) {

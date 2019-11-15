@@ -26,11 +26,13 @@ import Alert from '../../../common/models/notifications/Alert';
 import ContentBox from '../../../common/components/ContentBox';
 import { formatCountable } from '../../../common/format';
 import ToggleSwitch from '../../../common/components/ToggleSwitch';
+import Rating from '../../../common/models/Rating';
 
 export type Props = BrowserActionState & {
 	onActivateReaderMode: () => void,
 	onDeactivateReaderMode: () => void,
 	onPostArticle: (form: PostForm) => Promise<Post>,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onToggleContentIdentificationDisplay: () => void,
 	onToggleReadStateDisplay: () => void,
 	onToggleStar: () => Promise<void>
@@ -65,9 +67,6 @@ export default class extends React.Component<
 			this.props.onDeactivateReaderMode();
 		}
 	};
-	private _toggleStar = () => {
-		return this.props.onToggleStar();
-	};
 	private _preventDefault = (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
 	};
@@ -95,7 +94,7 @@ export default class extends React.Component<
 			() => {
 				this._dialog.openDialog(
 					<PostDialog
-						articleId={article.id}
+						article={article}
 						onCloseDialog={this._dialog.closeDialog}
 						onShowToast={this._toaster.addToast}
 						onSubmit={this.props.onPostArticle}
@@ -238,9 +237,10 @@ export default class extends React.Component<
 									onCopyTextToClipboard={this._clipboard.copyText}
 									onCreateAbsoluteUrl={this._createAbsoluteUrl}
 									onPost={this._openPostDialog}
+									onRateArticle={this.props.onRateArticle}
 									onRead={this._preventDefault}
 									onShare={this._handleShareRequest}
-									onToggleStar={this._toggleStar}
+									onToggleStar={this.props.onToggleStar}
 									onViewComments={this._goToComments}
 									shareMenuPosition={MenuPosition.RightBottom}
 									useAbsoluteUrls

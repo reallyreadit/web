@@ -2,25 +2,34 @@ import * as React from 'react';
 import classNames from 'classnames';
 
 export default class RatingSelector extends React.PureComponent<{
+	allowDeselect?: boolean,
 	onChange: (value?: number) => void,
+	promptText?: string,
+	showLabels?: boolean,
 	value?: number
 }> {
 	private readonly _selectRating = (event: React.MouseEvent<HTMLButtonElement>) => {
 		const value = parseInt(event.currentTarget.value);
-		this.props.onChange(
-			value !== this.props.value ?
-				value :
-				null
-		);
+		if (value !== this.props.value || this.props.allowDeselect) {
+			this.props.onChange(
+				value !== this.props.value ?
+					value :
+					null
+			);
+		}
 	};
 	public render() {
 		return (
 			<div className="rating-selector_epcgq9">
-				<div className="prompt-text">
-					<strong>Would you recommend this article to others?</strong>
-				</div>
+				{this.props.promptText ?
+					<div className="prompt-text">
+						<strong>{this.props.promptText}</strong>
+					</div> :
+					null}
 				<div className="rating-bar">
-					<label>No</label>
+					{this.props.showLabels ?
+						<label>No</label> :
+						null}
 					<div className="buttons">
 						{Array
 							.from(new Array(10))
@@ -41,7 +50,9 @@ export default class RatingSelector extends React.PureComponent<{
 								);
 							})}
 					</div>
-					<label>Yes</label>
+					{this.props.showLabels ?
+						<label>Yes</label> :
+						null}
 				</div>
 			</div>
 		);

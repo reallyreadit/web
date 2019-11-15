@@ -2,6 +2,7 @@ import BrowserActionState from '../common/BrowserActionState';
 import UserArticle from '../../common/models/UserArticle';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
+import Rating from '../../common/models/Rating';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'browserActionPage', from: 'eventPage', type, data }, responseCallback);
@@ -12,6 +13,7 @@ export default class BrowserActionApi {
 		onDeactivateReaderMode: (tabId: number) => void,
 		onLoad: () => Promise<BrowserActionState>,
 		onPostArticle: (form: PostForm) => Promise<Post>,
+	onRateArticle: (articleId: number, score: number) => Promise<{ article: UserArticle, rating: Rating }>,
 		onSetStarred: (articleId: number, isStarred: boolean) => Promise<UserArticle>,
 		onToggleContentIdentificationDisplay: (tabId: number) => void,
 		onToggleReadStateDisplay: (tabId: number) => void
@@ -33,6 +35,11 @@ export default class BrowserActionApi {
 					case 'postArticle':
 						handlers
 							.onPostArticle(message.data)
+							.then(sendResponse);
+						return true;
+					case 'rateArticle':
+						handlers
+							.onRateArticle(message.data.articleId, message.data.score)
 							.then(sendResponse);
 						return true;
 					case 'setStarred':

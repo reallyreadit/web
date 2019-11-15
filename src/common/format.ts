@@ -14,6 +14,12 @@ export function formatFetchable<T, U>(
 	}
 	return formatter(fetchable.value);
 }
+export function formatList<T>(list: T[]) {
+	if (list.length === 1) {
+		return list[0];
+	}
+	return `${list.slice(0, list.length - 1).join(', ')} & ${list[list.length - 1]}`;
+}
 export function formatTimestamp(timestamp: string) {
 	if (!timestamp || timestamp.length < 10) {
 		return timestamp;

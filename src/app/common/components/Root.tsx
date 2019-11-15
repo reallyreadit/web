@@ -221,7 +221,7 @@ export default abstract class Root<
 	protected readonly _openPostDialog = (article: UserArticle) => {
 		this._dialog.openDialog(
 			<PostDialog
-				articleId={article.id}
+				article={article}
 				onCloseDialog={this._dialog.closeDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this._postArticle}

@@ -57,6 +57,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 								isUserSignedIn={!!this.props.user}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onRateArticle={this.props.onRateArticle}
 								onPost={this.props.onPostArticle}
 								onRead={this.props.onReadArticle}
 								onShare={this.props.onShare}

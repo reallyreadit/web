@@ -2,6 +2,7 @@ import BrowserActionState from '../common/BrowserActionState';
 import UserArticle from '../../common/models/UserArticle';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
+import Rating from '../../common/models/Rating';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'eventPage', from: 'browserActionPage', type, data }, responseCallback);
@@ -40,6 +41,9 @@ export default class EventPageApi {
 	}
 	public postArticle(form: PostForm) {
 		return sendMessageAwaitingResponse<Post>('postArticle', form);
+	}
+	public rateArticle(articleId: number, score: number) {
+		return sendMessageAwaitingResponse<{ article: UserArticle, rating: Rating }>('rateArticle', { articleId, score });
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
 		return sendMessageAwaitingResponse<UserArticle>('setStarred', { articleId, isStarred });

@@ -43,6 +43,7 @@ import PageSelector from '../controls/PageSelector';
 import InfoBox from '../controls/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
+import Rating from '../../../../common/models/Rating';
 
 const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
@@ -66,6 +67,7 @@ interface Props {
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onOpenPasswordResetRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
@@ -231,12 +233,16 @@ export class ProfileScreen extends React.Component<Props, State> {
 						postItems.forEach(
 							(post, index, posts) => {
 								if (post.article.id === event.article.id) {
+									// merge objects in case the new object is missing properties due to outdated iOS client
 									posts.splice(
 										index,
 										1,
 										{
 											...post,
-											article: event.article
+											article: {
+												...post.article,
+												...event.article
+											}
 										}
 									);
 								}
@@ -466,6 +472,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 													highlightedPostId={this.props.highlightedPostId}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}
 													onPost={this.props.onPostArticle}
 													onShare={this.props.onShare}

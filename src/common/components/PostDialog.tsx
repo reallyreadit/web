@@ -4,9 +4,10 @@ import RatingSelector from './RatingSelector';
 import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
 import { Intent } from './Toaster';
+import UserArticle from '../models/UserArticle';
 
 interface Props {
-	articleId: number,
+	article: UserArticle,
 	onCloseDialog?: () => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSubmit: (form: PostForm) => Promise<Post>
@@ -29,7 +30,7 @@ export default class PostDialog extends React.PureComponent<
 	private readonly _submit = () => {
 		return this.props
 			.onSubmit({
-				articleId: this.props.articleId,
+				articleId: this.props.article.id,
 				ratingScore: this.state.ratingScore,
 				commentText: this.state.commentText
 			})
@@ -43,7 +44,7 @@ export default class PostDialog extends React.PureComponent<
 		super(props);
 		this.state = {
 			commentText: '',
-			ratingScore: null
+			ratingScore: props.article.ratingScore
 		};
 	}
 	public render() {
@@ -55,10 +56,15 @@ export default class PostDialog extends React.PureComponent<
 				onSubmit={this._submit}
 				title="Post Article"
 			>
-				<RatingSelector
-					onChange={this._changeRatingScore}
-					value={this.state.ratingScore}
-				/>
+				<div className="rating">
+					<RatingSelector
+						allowDeselect={this.props.article.ratingScore == null}
+						onChange={this._changeRatingScore}
+						showLabels
+						promptText="Would you recommend this article to others?"
+						value={this.state.ratingScore}
+					/>
+				</div>
 				<textarea
 					onChange={this._changeCommentText}
 					placeholder="Optional: Share your thoughts or ask a question."

@@ -3,9 +3,17 @@
 	cssComponentId: post-button_euo01q
 */
 
-.post-button_euo01q > .menu > .text {
-	display: inline-block;
+.post-button_euo01q > .menu > .content {
 	position: relative;
 	padding: 5px;
 	background-color: white;
+	text-align: center;
+}
+.post-button_euo01q > .menu > .content > ol {
+	overflow: hidden;
+	text-align: left;
+	margin-bottom: 5px;
+}
+.post-button_euo01q > .menu > .content > ol > li + li {
+	margin-top: 5px;
 }

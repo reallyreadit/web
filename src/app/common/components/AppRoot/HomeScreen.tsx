@@ -28,6 +28,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Alert from '../../../../common/models/notifications/Alert';
 import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
+import Rating from '../../../../common/models/Rating';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
@@ -37,6 +38,7 @@ interface Props {
 	onGetFolloweesPosts: FetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>,
 	onOpenMenu: () => void,
 	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
@@ -334,6 +336,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onParamsChanged={this._changeParams}
+							onRateArticle={this.props.onRateArticle}
 							onPostArticle={this.props.onPostArticle}
 							onReadArticle={this.props.onReadArticle}
 							onShare={this.props.onShare}

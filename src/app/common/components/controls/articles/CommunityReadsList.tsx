@@ -20,6 +20,7 @@ import PostDetails from '../../../../../common/components/PostDetails';
 import UserAccount from '../../../../../common/models/UserAccount';
 import CommentThread from '../../../../../common/models/CommentThread';
 import InfoBox from '../InfoBox';
+import Rating from '../../../../../common/models/Rating';
 
 export enum View {
 	Trending = 'Trending',
@@ -61,17 +62,33 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 	) {
 		this.setState(produce<State>(prevState => {
 			if (prevState.communityReads.value.aotd.id === updatedArticle.id) {
-				prevState.communityReads.value.aotd = updatedArticle;
+				// merge objects in case the new object is missing properties due to outdated iOS client
+				prevState.communityReads.value.aotd = {
+					...prevState.communityReads.value.aotd,
+					...updatedArticle
+				};
 			}
 			prevState.communityReads.value.articles.items.forEach((article, index, articles) => {
 				if (article.id === updatedArticle.id) {
-					articles.splice(articles.indexOf(article), 1, updatedArticle);
+					// merge objects in case the new object is missing properties due to outdated iOS client
+					articles.splice(
+						articles.indexOf(article),
+						1,
+						{
+							...article,
+							...updatedArticle
+						}
+					);
 				}
 			});
 			if (prevState.posts && prevState.posts.value) {
 				prevState.posts.value.items.forEach((post, index, posts) => {
 					if (post.article.id === updatedArticle.id) {
-						post.article = updatedArticle;
+						// merge objects in case the new object is missing properties due to outdated iOS client
+						post.article = {
+							...post.article,
+							...updatedArticle
+						};
 					}
 				});
 			}
@@ -92,6 +109,7 @@ export default class extends React.PureComponent<{
 	onCreateAbsoluteUrl: (path: string) => string,
 	onParamsChanged: (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => void,
 	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -203,6 +221,7 @@ export default class extends React.PureComponent<{
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
 											onRead={this.props.onReadArticle}
 											onShare={this.props.onShare}
 											onToggleStar={this.props.onToggleArticleStar}
@@ -219,6 +238,7 @@ export default class extends React.PureComponent<{
 												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 												onPost={this.props.onPostArticle}
+												onRateArticle={this.props.onRateArticle}
 												onRead={this.props.onReadArticle}
 												onShare={this.props.onShare}
 												onToggleStar={this.props.onToggleArticleStar}
@@ -236,6 +256,7 @@ export default class extends React.PureComponent<{
 												<PostDetails
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}
 													onPost={this.props.onPostArticle}
 													onShare={this.props.onShare}

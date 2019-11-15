@@ -168,6 +168,7 @@ export default class extends Root<
 				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
 				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onSetScreenState: this._setScreenState,
@@ -185,6 +186,7 @@ export default class extends Root<
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
 					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
@@ -206,6 +208,7 @@ export default class extends Root<
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterNewStarsHandler: this._registerNewStarsEventHandler,
@@ -229,6 +232,7 @@ export default class extends Root<
 				onOpenDialog: this._dialog.openDialog,
 				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
 				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
@@ -278,9 +282,23 @@ export default class extends Root<
 				}
 			)
 			.addListener('articlePosted', post => {
+				// migrate deprecated article property if required due to an outdated app
+				if (!post.article.datesPosted) {
+					post.article.datesPosted = [];
+					if ((post.article as any).datePosted) {
+						post.article.datesPosted.push((post.article as any).datePosted);
+					}
+				}
 				this.onArticlePosted(post);
 			})
 			.addListener('articleUpdated', event => {
+				// migrate deprecated article property if required due to an outdated app
+				if (!event.article.datesPosted) {
+					event.article.datesPosted = [];
+					if ((event.article as any).datePosted) {
+						event.article.datesPosted.push((event.article as any).datePosted);
+					}
+				}
 				this.onArticleUpdated(event);
 			})
 			.addListener('commentPosted', comment => {

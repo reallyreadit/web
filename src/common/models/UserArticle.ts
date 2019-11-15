@@ -1,3 +1,5 @@
+import ArticleFlair from './ArticleFlair';
+
 export default interface UserArticle {
 	id: number,
 	title: string,
@@ -19,7 +21,11 @@ export default interface UserArticle {
 	isRead: boolean,
 	dateStarred: string | null,
 	ratingScore: number | null,
-	datePosted: string | null,
+	datesPosted: string[],
+	hotScore: number,
+	ratingCount: number,
+	firstPoster: string | null,
+	flair: ArticleFlair,
 	proofToken: string | null
 }
 export function areEqual(a: UserArticle, b: UserArticle) {
@@ -49,7 +55,12 @@ export function areEqual(a: UserArticle, b: UserArticle) {
 		a.isRead === b.isRead &&
 		a.dateStarred === b.dateStarred &&
 		a.ratingScore === b.ratingScore &&
-		a.datePosted === b.datePosted &&
+		a.datesPosted.length === b.datesPosted.length &&
+		a.datesPosted.every(date => b.datesPosted.includes(date)) &&
+		a.hotScore === b.hotScore &&
+		a.ratingCount === b.ratingCount &&
+		a.firstPoster === b.firstPoster &&
+		a.flair === b.flair &&
 		a.proofToken === b.proofToken
 	);
 }

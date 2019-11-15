@@ -16,6 +16,7 @@ import Post from '../../common/models/social/Post';
 import UserAccount, { areEqual } from '../../common/models/UserAccount';
 import NotificationsQueryResult from '../common/models/NotificationsQueryResult';
 import DisplayedNotification from './DisplayedNotification';
+import Rating from '../../common/models/Rating';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -348,6 +349,15 @@ export default class ServerApi {
 	}
 	public getSourceRules(hostname: string) {
 		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
+	}
+	public rateArticle(articleId: number, score: number) {
+		return fetchJson<{ article: UserArticle, rating: Rating }>({ method: 'POST', path: '/Articles/Rate', data: { articleId, score } })
+			.then(
+				result => {
+					this.cacheArticle(result.article);
+					return result;
+				}
+			);
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
 		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/SetStarred', data: { articleId, isStarred } }).then(userArticle => {
