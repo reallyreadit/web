@@ -243,6 +243,7 @@ export default class extends React.PureComponent<{
 												onShare={this.props.onShare}
 												onToggleStar={this.props.onToggleArticleStar}
 												onViewComments={this.props.onViewComments}
+												showScore
 											/>
 										</li>
 									)}
