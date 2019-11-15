@@ -1,0 +1,21 @@
+/*
+	componentPath: src/common/components/SaveIndicator
+	cssComponentId: save-indicator_5lgdsz
+*/
+
+.save-indicator_5lgdsz.none {
+	visibility: hidden;
+}
+.save-indicator_5lgdsz.saved {
+	color: green;
+	animation: save-indicator_5lgdsz-fade-out 1500ms forwards;
+}
+
+@keyframes save-indicator_5lgdsz-fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0
+	}
+}

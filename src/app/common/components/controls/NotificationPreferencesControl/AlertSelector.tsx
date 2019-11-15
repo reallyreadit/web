@@ -2,8 +2,7 @@ import * as React from 'react';
 import ToggleSwitch from '../../../../../common/components/ToggleSwitch';
 import AlertEmailPreference from '../../../../../common/models/notifications/AlertEmailPreference';
 import AsyncTracker from '../../../../../common/AsyncTracker';
-import SpinnerIcon from '../../../../../common/components/SpinnerIcon';
-import Icon from '../../../../../common/components/Icon';
+import SaveIndicator, { State as SaveIndicatorState } from '../../../../../common/components/SaveIndicator';
 
 export interface Value {
 	isEnabled: boolean,
@@ -19,7 +18,7 @@ interface Props extends Value {
 	onChange: (value: Partial<Value>) => Promise<any>
 }
 interface State {
-	indicator: 'none' | 'saving' | 'saved'
+	indicator: SaveIndicatorState
 }
 export default class AlertSelector extends React.PureComponent<Props, State> {
 	public static defaultProps: Partial<Props> = {
@@ -70,17 +69,17 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			indicator: 'none'
+			indicator: SaveIndicatorState.None
 		};
 	}
 	private saveChanges(value: Partial<Value>) {
-		this.setState({ indicator: 'saving' });
+		this.setState({ indicator: SaveIndicatorState.Saving });
 		this._asyncTracker.addPromise(
 			this.props
 				.onChange(value)
 				.then(
 					() => {
-						this.setState({ indicator: 'saved' });
+						this.setState({ indicator: SaveIndicatorState.Saved });
 					}
 				)
 		);
@@ -103,14 +102,7 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 						{this.props.subtitle ?
 							<span>{this.props.subtitle}</span> :
 							null}
-						{this.state.indicator === 'saving' ?
-							<SpinnerIcon /> :
-							this.state.indicator === 'saved' ?
-								<Icon
-									className="saved"
-									name="checkmark"
-								/> :
-								null}
+						<SaveIndicator state={this.state.indicator} />
 					</div>
 					{this.props.isEnabled && this.props.showChannels ?
 						<ol>

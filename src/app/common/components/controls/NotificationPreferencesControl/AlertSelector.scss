@@ -26,10 +26,6 @@
 	vertical-align: middle;
 	font-size: 12pt;
 }
-.alert-selector_esabj4 > .controls > .header > .icon_rour3d.saved {
-	color: green;
-	animation: selector_esabj4-icon-fade-out 1500ms forwards;
-}
 .alert-selector_esabj4 > .controls > ol {
 	margin-top: 5px;
 }
@@ -47,13 +43,4 @@
 	box-sizing: border-box;
 	vertical-align: middle;;
 	margin-left: 5px;
-}
-
-@keyframes selector_esabj4-icon-fade-out {
-	from {
-		opacity: 1;
-	}
-	to {
-		opacity: 0
-	}
 }
