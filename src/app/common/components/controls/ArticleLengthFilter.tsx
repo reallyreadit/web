@@ -118,7 +118,7 @@ export default class ArticleLengthFilter extends React.PureComponent<
 				>
 					{
 						this.state.min === floor && this.state.max === ceil ?
-							'Any Article Length' :
+							'Filter by Length' :
 							this.state.min === this.state.max && this.state.max !== ceil ?
 								`Article Length = ${this.state.min} m` :
 								this.state.min === floor ?
