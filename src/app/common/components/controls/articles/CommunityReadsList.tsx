@@ -28,7 +28,7 @@ export enum View {
 }
 const headerSelectorLists = [View.Trending, View.Following];
 const sortOptions: { [key: string]: CommunityReadSort } = {
-	'Now': CommunityReadSort.Hot,
+	'AOTD': CommunityReadSort.Hot,
 	'All Time': CommunityReadSort.Top,
 	'Most Read': CommunityReadSort.MostRead,
 	'Most Comments': CommunityReadSort.MostComments,
