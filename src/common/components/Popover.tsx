@@ -44,7 +44,9 @@ export default class Popover extends React.PureComponent<
 	};
 	private readonly _handleBlur = () => {
 		if (!this.state.childElementWillReceiveFocus) {
-			this.props.onBeginClosing();
+			if (this.props.menuState === MenuState.Opened) {
+				this.props.onBeginClosing();
+			}
 		} else {
 			this.setState({ childElementWillReceiveFocus: false });
 		}
