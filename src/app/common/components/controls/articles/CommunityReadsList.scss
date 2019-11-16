@@ -28,11 +28,16 @@
 
 .community-reads-list_g4cy3n > .aotd {
 	flex: 0 0 auto;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
+	text-align: center;
+}
+.community-reads-list_g4cy3n > .aotd > .content-box_kkp9lc {
 	position: relative;
 	padding-top: 34px;
+	text-align: left;
+	margin-bottom: 10px;
 }
-.community-reads-list_g4cy3n > .aotd > .flair {
+.community-reads-list_g4cy3n > .aotd > .content-box_kkp9lc > .flair {
 	text-align: center;
 	position: absolute;
 	top: 0;

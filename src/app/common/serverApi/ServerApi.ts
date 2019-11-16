@@ -36,6 +36,7 @@ import PasswordResetForm from '../../../common/models/userAccounts/PasswordReset
 import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';
 import SignInForm from '../../../common/models/userAccounts/SignInForm';
 import SignOutForm from '../../../common/models/userAccounts/SignOutForm';
+import ArticleQuery from '../../../common/models/articles/ArticleQuery';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -133,6 +134,7 @@ export default abstract class {
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
 
 	// Articles
+	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
 	public readonly getComments = this.createFetchFunctionWithParams<{ slug: string }, CommentThread[]>('/Articles/ListComments');
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>('/Articles/CommunityReads');

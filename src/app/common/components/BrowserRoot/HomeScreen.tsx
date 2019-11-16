@@ -58,6 +58,7 @@ interface Props {
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewPrivacyPolicy: () => void,
 	onViewProfile: (userName: string) => void,
@@ -363,6 +364,7 @@ class HomeScreen extends React.Component<Props, State> {
 								onReadArticle={this.props.onReadArticle}
 								onShare={this.props.onShare}
 								onToggleArticleStar={this.props.onToggleArticleStar}
+								onViewAotdHistory={this.props.onViewAotdHistory}
 								onViewComments={this.props.onViewComments}
 								onViewProfile={this.props.onViewProfile}
 								onViewThread={this.props.onViewThread}

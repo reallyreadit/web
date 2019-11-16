@@ -33,6 +33,7 @@ import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
+import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -128,6 +129,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
+	private readonly _viewAotdHistory = () => {
+		this.setScreenState({
+			key: ScreenKey.AotdHistory,
+			method: 'push'
+		});
+	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
@@ -202,6 +209,21 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// screens
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
+			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
+				ScreenKey.AotdHistory,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetAotdHistory: this.props.serverApi.getAotdHistory,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments
+				}
+			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -246,6 +268,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
+				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
 				onViewPrivacyPolicy: this._viewPrivacyPolicy,
 				onViewProfile: this._viewProfile,

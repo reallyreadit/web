@@ -28,6 +28,7 @@ import createInboxScreenFactory from './screens/InboxScreen';
 import DialogKey from '../../../common/routing/DialogKey';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi
@@ -88,6 +89,9 @@ export default class extends Root<
 	private readonly _viewAdminPage = () => {
 		this.pushScreen(ScreenKey.Admin);
 	};
+	private readonly _viewAotdHistory = () => {
+		this.pushScreen(ScreenKey.AotdHistory);
+	};
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
 	};
@@ -145,6 +149,21 @@ export default class extends Root<
 		// screens
 		this._screenFactoryMap = {
 			...this._screenFactoryMap,
+			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
+				ScreenKey.AotdHistory,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetAotdHistory: this.props.serverApi.getAotdHistory,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments
+				}
+			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -174,6 +193,7 @@ export default class extends Root<
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
+				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread

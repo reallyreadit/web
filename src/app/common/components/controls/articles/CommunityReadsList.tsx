@@ -21,6 +21,7 @@ import UserAccount from '../../../../../common/models/UserAccount';
 import CommentThread from '../../../../../common/models/CommentThread';
 import InfoBox from '../InfoBox';
 import Rating from '../../../../../common/models/Rating';
+import ActionLink from '../../../../../common/components/ActionLink';
 
 export enum View {
 	Trending = 'Trending',
@@ -113,6 +114,7 @@ export default class extends React.PureComponent<{
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
@@ -210,24 +212,27 @@ export default class extends React.PureComponent<{
 						{this.props.view === View.Trending ?
 							<>
 								{this.props.sort === CommunityReadSort.Hot ?
-									<ContentBox
-										className="aotd"
-										highlight={this.props.aotdHasAlert}
-									>
-										<div className="flair">Article of the Day</div>
-										<ArticleDetails
-											article={this.props.aotd}
-											isUserSignedIn
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onPost={this.props.onPostArticle}
-											onRateArticle={this.props.onRateArticle}
-											onRead={this.props.onReadArticle}
-											onShare={this.props.onShare}
-											onToggleStar={this.props.onToggleArticleStar}
-											onViewComments={this.props.onViewComments}
+									<div className="aotd">
+										<ContentBox highlight={this.props.aotdHasAlert}>
+											<div className="flair">Article of the Day</div>
+											<ArticleDetails
+												article={this.props.aotd}
+												isUserSignedIn
+												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onPost={this.props.onPostArticle}
+												onRateArticle={this.props.onRateArticle}
+												onRead={this.props.onReadArticle}
+												onShare={this.props.onShare}
+												onToggleStar={this.props.onToggleArticleStar}
+												onViewComments={this.props.onViewComments}
+											/>
+										</ContentBox>
+										<ActionLink
+											text="Previous Winners"
+											onClick={this.props.onViewAotdHistory}
 										/>
-									</ContentBox> :
+									</div> :
 									null}
 								<ArticleList>
 									{this.props.articles.items.map(article =>

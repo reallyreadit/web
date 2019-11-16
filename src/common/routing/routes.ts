@@ -60,6 +60,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/admin$/,
 		screenKey: ScreenKey.Admin
 	},
+	{
+		analyticsName: 'AotdHistory',
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/aotd/history',
+		pathRegExp: /^\/aotd\/history$/,
+		screenKey: ScreenKey.AotdHistory
+	},
 	(function () {
 		const pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/;
 		return {

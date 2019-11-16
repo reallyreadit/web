@@ -1,5 +1,6 @@
 enum ScreenKey {
 	Admin,
+	AotdHistory,
 	Comments,
 	EmailConfirmation,
 	EmailSubscriptions,
