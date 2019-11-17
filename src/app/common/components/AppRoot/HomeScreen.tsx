@@ -332,6 +332,7 @@ class HomeScreen extends React.Component<Props, State> {
 							aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
 							articles={this.state.communityReads && this.state.communityReads.value.articles}
 							isLoading={this.state.isLoading}
+							isPaginated={false}
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}

@@ -53,15 +53,6 @@
 .community-reads-list_g4cy3n > .article-list_o9uw1n {
 	flex: 0 0 auto;
 }
-.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .score {
-	margin-left: 34px;
-}
-.community-reads-list_g4cy3n > .aotd > .article-meta,
-.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta {
-	position: relative;
-	padding: 3px 0;
-}
-.community-reads-list_g4cy3n > .aotd > .article-meta > .rank,
 .community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank {
 	display: flex;
 	justify-content: center;
@@ -78,10 +69,26 @@
 	font-family: 'Museo Sans (500)';
 	font-size: 14pt;
 }
-.community-reads-list_g4cy3n > .aotd > .article-meta > .rank > small,
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank.length-2 {
+	font-size: 12pt;
+}
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank.length-3 {
+	font-size: 8pt;
+}
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank.length-4 {
+	font-size: 6pt;
+}
 .community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank > small {
 	font-size: 8pt;
 	margin-right: 1px;
+}
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .score {
+	margin-left: 34px;
+}
+.community-reads-list_g4cy3n > .aotd > .article-meta,
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta {
+	position: relative;
+	padding: 3px 0;
 }
 .community-reads-list_g4cy3n > .aotd > .article-meta > .score,
 .community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .score {

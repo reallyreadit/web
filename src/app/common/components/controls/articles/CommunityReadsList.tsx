@@ -21,6 +21,7 @@ import CommentThread from '../../../../../common/models/CommentThread';
 import InfoBox from '../InfoBox';
 import Rating from '../../../../../common/models/Rating';
 import ActionLink from '../../../../../common/components/ActionLink';
+import classNames from 'classnames';
 
 export enum View {
 	Trending = 'Trending',
@@ -103,6 +104,7 @@ export default class extends React.PureComponent<{
 	aotdHasAlert?: boolean,
 	articles?: PageResult<UserArticle>,
 	isLoading: boolean,
+	isPaginated: boolean,
 	maxLength: number | null,
 	minLength: number | null,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -237,26 +239,32 @@ export default class extends React.PureComponent<{
 									<div className="section-header">Contenders for Tomorrow</div>
 									<ArticleList>
 										{this.props.articles.items.map(
-											(article, index) =>
-												<li key={article.id}>
-													<div className="article-meta">
-														<div className="rank"><small>#</small> {(index + 1) * this.props.articles.pageNumber}</div>
-														<div className="score">{`${article.hotScore} pts - First poster: ${article.firstPoster}`}</div>
-													</div>
-													<ArticleDetails
-														article={article}
-														isUserSignedIn
-														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-														onPost={this.props.onPostArticle}
-														onRateArticle={this.props.onRateArticle}
-														onRead={this.props.onReadArticle}
-														onShare={this.props.onShare}
-														onToggleStar={this.props.onToggleArticleStar}
-														onViewComments={this.props.onViewComments}
-													/>
-												</li>
-											)
+											(article, index) => {
+												let rank = index + 1;
+												if (this.props.isPaginated) {
+													rank += (this.props.articles.pageNumber - 1) * this.props.articles.pageSize;
+												}
+												return (
+													<li key={article.id}>
+														<div className="article-meta">
+															<div className={classNames('rank', 'length-' + rank.toString().length.toString())}><small>#</small> {rank}</div>
+															<div className="score">{`${article.hotScore} pts - First poster: ${article.firstPoster}`}</div>
+														</div>
+														<ArticleDetails
+															article={article}
+															isUserSignedIn
+															onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+															onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+															onPost={this.props.onPostArticle}
+															onRateArticle={this.props.onRateArticle}
+															onRead={this.props.onReadArticle}
+															onShare={this.props.onShare}
+															onToggleStar={this.props.onToggleArticleStar}
+															onViewComments={this.props.onViewComments}
+														/>
+													</li>
+												);
+											})
 										}
 									</ArticleList>	
 								</> :
