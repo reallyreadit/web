@@ -15,6 +15,7 @@ import ContentBox from './ContentBox';
 import PostButton from './PostButton';
 import RatingControl from './RatingControl';
 import Rating from '../models/Rating';
+import AotdPopover from './AotdPopover';
 
 interface Props {
 	article: UserArticle,
@@ -110,6 +111,12 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				/>
 			</ShareControl>
 		);
+		// aotd
+		const aotdPopover = (
+			this.props.article.aotdTimestamp ?
+				<AotdPopover timestamp={this.props.article.aotdTimestamp} /> :
+				null
+		);
 		return (
 			<ContentBox className="article-details_d2vnmv">
 				<div className="title">
@@ -150,6 +157,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							</a>
 							{ratingControl}
 							{shareControl}
+							{aotdPopover}
 						</div>
 					</div>
 					<div className="small-stats-article">
@@ -193,6 +201,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 							</div>
 							{ratingControl}
 							{shareControl}
+							{aotdPopover}
 						</div>
 					</div>
 					{(
