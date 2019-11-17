@@ -143,7 +143,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 							<div className="leaderboard">
 								{renderTable({
 									title: 'Top readers this week',
-									iconName: 'medal',
+									iconName: 'power',
 									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'read',
@@ -155,7 +155,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 							<div className="leaderboard">
 								{renderTable({
 									title: 'Top readers of all time',
-									iconName: 'trophy',
+									iconName: 'medal',
 									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
 									onViewProfile: this.props.onViewProfile,
 									scoreUnit: 'read',

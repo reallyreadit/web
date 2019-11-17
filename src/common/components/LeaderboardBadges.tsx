@@ -13,13 +13,13 @@ export default (
 	}[] = [];
 	if (props.badge & LeaderboardBadge.WeeklyReadCount) {
 		badges.push({
-			iconName: 'medal',
+			iconName: 'power',
 			title: 'Top reader this week'
 		});
 	}
 	if (props.badge & LeaderboardBadge.ReadCount) {
 		badges.push({
-			iconName: 'trophy',
+			iconName: 'medal',
 			title: 'Top reader of all time'
 		});
 	}
