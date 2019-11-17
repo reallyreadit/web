@@ -12,7 +12,7 @@
 	flex: 0 0 auto;
 	display: flex;
 	align-items: flex-end;
-	margin: 10px 0 20px 0;
+	margin-bottom: 20px;
 	flex-wrap: wrap;
 	justify-content: space-between;
 }
@@ -25,36 +25,67 @@
 .community-reads-list_g4cy3n > .controls > .select-group > .sort > .select-list_guiajx:not(:last-child) {
 	margin-right: 5px;
 }
-
-.community-reads-list_g4cy3n > .aotd {
-	flex: 0 0 auto;
-	margin-bottom: 20px;
-	text-align: center;
-}
-.community-reads-list_g4cy3n > .aotd > .content-box_kkp9lc {
-	position: relative;
-	padding-top: 34px;
-	text-align: left;
-	margin-bottom: 10px;
-}
-.community-reads-list_g4cy3n > .aotd > .content-box_kkp9lc > .flair {
-	text-align: center;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 24px;
-	line-height: 24px;
-	background-color: #999;
-	border-radius: 3px 3px 0 0;
-	color: white;
-	font-family: 'Museo Sans (500)';
-	font-size: 10pt;
-	text-transform: uppercase;
-}
 .community-reads-list_g4cy3n > .loading-overlay_zfgtd1,
 .community-reads-list_g4cy3n > .info-box_whou0t {
 	flex: 1 1 auto;
+}
+.community-reads-list_g4cy3n > .section-header {
+	flex: 0 0 auto;
+	font-size: 17pt;
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 10px;
+}
+.community-reads-list_g4cy3n > .aotd {
+	flex: 0 0 auto;
+}
+.community-reads-list_g4cy3n > .aotd > .action-link_ftamt8 {
+	display: block;
+	width: max-content;
+	white-space: nowrap;
+	margin: 10px auto 0;
+}
+.community-reads-list_g4cy3n > .separator {
+	flex: 0 0 auto;
+	width: 80%;
+	margin: 20px auto;
+	border-bottom: 1px solid #ccc;
+}
+.community-reads-list_g4cy3n > .article-list_o9uw1n {
+	flex: 0 0 auto;
+}
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .score {
+	margin-left: 34px;
+}
+.community-reads-list_g4cy3n > .aotd > .article-meta,
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta {
+	position: relative;
+	padding: 3px 0;
+}
+.community-reads-list_g4cy3n > .aotd > .article-meta > .rank,
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	z-index: 1;
+	top: -2px;
+	left: -3px;
+	width: 30px;
+	height: 30px;
+	background-color: white;
+	border: 1px solid #2A2326;
+	border-radius: 15px;
+	font-family: 'Museo Sans (500)';
+	font-size: 14pt;
+}
+.community-reads-list_g4cy3n > .aotd > .article-meta > .rank > small,
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .rank > small {
+	font-size: 8pt;
+	margin-right: 1px;
+}
+.community-reads-list_g4cy3n > .aotd > .article-meta > .score,
+.community-reads-list_g4cy3n > .article-list_o9uw1n > li > .article-meta > .score {
+	font-size: 11pt;
 }
 
 @media (max-width: 870px) {

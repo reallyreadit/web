@@ -13,7 +13,6 @@ import ShareData from '../../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../../common/models/CommunityReadTimeWindow';
 import ArticleLengthFilter from '../ArticleLengthFilter';
 import SelectList from '../../../../../common/components/SelectList';
-import ContentBox from '../../../../../common/components/ContentBox';
 import HeaderSelector from '../../HeaderSelector';
 import Post from '../../../../../common/models/social/Post';
 import PostDetails from '../../../../../common/components/PostDetails';
@@ -29,7 +28,7 @@ export enum View {
 }
 const headerSelectorLists = [View.Trending, View.Following];
 const sortOptions: { [key: string]: CommunityReadSort } = {
-	'AOTD': CommunityReadSort.Hot,
+	'Article of the Day': CommunityReadSort.Hot,
 	'All Time': CommunityReadSort.Top,
 	'Most Read': CommunityReadSort.MostRead,
 	'Most Comments': CommunityReadSort.MostComments,
@@ -210,30 +209,57 @@ export default class extends React.PureComponent<{
 					<LoadingOverlay position="static" /> :
 					<>
 						{this.props.view === View.Trending ?
-							<>
-								{this.props.sort === CommunityReadSort.Hot ?
+							this.props.sort === CommunityReadSort.Hot ?
+								<>
+									<div className="section-header">Article of the Day</div>
 									<div className="aotd">
-										<ContentBox highlight={this.props.aotdHasAlert}>
-											<div className="flair">Article of the Day</div>
-											<ArticleDetails
-												article={this.props.aotd}
-												isUserSignedIn
-												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-											/>
-										</ContentBox>
+										<div className="article-meta">
+											<div className="score">{`${this.props.aotd.hotScore} pts - First poster: ${this.props.aotd.firstPoster}`}</div>
+										</div>
+										<ArticleDetails
+											article={this.props.aotd}
+											isUserSignedIn
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+										/>
 										<ActionLink
 											text="Previous Winners"
 											onClick={this.props.onViewAotdHistory}
 										/>
-									</div> :
-									null}
+									</div>
+									<div className="separator"></div>
+									<div className="section-header">Contenders for Tomorrow</div>
+									<ArticleList>
+										{this.props.articles.items.map(
+											(article, index) =>
+												<li key={article.id}>
+													<div className="article-meta">
+														<div className="rank"><small>#</small> {(index + 1) * this.props.articles.pageNumber}</div>
+														<div className="score">{`${article.hotScore} pts - First poster: ${article.firstPoster}`}</div>
+													</div>
+													<ArticleDetails
+														article={article}
+														isUserSignedIn
+														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+														onPost={this.props.onPostArticle}
+														onRateArticle={this.props.onRateArticle}
+														onRead={this.props.onReadArticle}
+														onShare={this.props.onShare}
+														onToggleStar={this.props.onToggleArticleStar}
+														onViewComments={this.props.onViewComments}
+													/>
+												</li>
+											)
+										}
+									</ArticleList>	
+								</> :
 								<ArticleList>
 									{this.props.articles.items.map(article =>
 										<li key={article.id}>
@@ -248,12 +274,10 @@ export default class extends React.PureComponent<{
 												onShare={this.props.onShare}
 												onToggleStar={this.props.onToggleArticleStar}
 												onViewComments={this.props.onViewComments}
-												showScore
 											/>
 										</li>
 									)}
-								</ArticleList>
-							</> :
+								</ArticleList> :
 							this.props.posts.items.length ?
 								<ArticleList>
 									{this.props.posts.items.map(
