@@ -2,24 +2,37 @@ import * as React from 'react';
 import ContentBox from './ContentBox';
 import UserArticle from '../models/UserArticle';
 import { formatTimestamp, formatList } from '../format';
-import PostButton from './PostButton';
-import { MenuPosition } from './Popover';
+import ActionLink from './ActionLink';
+import Button from './Button';
 
-export default (
-	props: {
-		article: UserArticle,
-		onPost: (article: UserArticle) => void,
-		promptMessage: string
+export default class PostPrompt extends React.PureComponent<{
+	article: UserArticle,
+	onPost: (article: UserArticle) => void,
+	promptMessage: string
+}> {
+	private readonly _post = () => {
+		this.props.onPost(this.props.article);
+	};
+	public render() {
+		return (
+			<ContentBox className="post-prompt_de6v6u">
+				{this.props.article.datesPosted.length ?
+					<>
+						<p>You posted this article on {formatList(this.props.article.datesPosted.map(formatTimestamp))}.</p>
+						<ActionLink
+							text="Post Again"
+							onClick={this._post}
+						/>
+					</> :
+					<>
+						<p>{this.props.promptMessage}</p>
+						<Button
+							intent="success"
+							onClick={this._post}
+							text="Post"
+						/>
+					</>}
+			</ContentBox>
+		);
 	}
-) => (
-	<ContentBox className="post-prompt_de6v6u">
-		{props.article.datesPosted.length ?
-			<p>You posted this article on {formatList(props.article.datesPosted.map(formatTimestamp))}</p> :
-			<p>{props.promptMessage}</p>}
-		<PostButton
-			article={props.article}
-			menuPosition={MenuPosition.TopCenter}
-			onPost={props.onPost}
-		/>
-	</ContentBox>
-);
+}
