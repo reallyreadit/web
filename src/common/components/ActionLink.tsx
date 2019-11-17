@@ -25,7 +25,7 @@ export default class extends React.PureComponent<{
 				'action-link_ftamt8',
 				this.props.className,
 				{
-					disabled: this.props.state === 'disabled' || this.props.state === 'busy',
+					disabled: this.props.state === 'disabled',
 					busy: this.props.state === 'busy'
 				}
 			),

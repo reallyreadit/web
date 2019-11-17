@@ -9,6 +9,10 @@
 	cursor: pointer;
 	color: inherit;
 }
+.action-link_ftamt8.busy {
+	text-decoration: none;
+	cursor: default;
+}
 .action-link_ftamt8.disabled {
 	color: #ccc;
 	cursor: default;
