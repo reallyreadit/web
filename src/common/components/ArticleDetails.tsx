@@ -29,7 +29,6 @@ interface Props {
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	shareMenuPosition?: MenuPosition,
-	showScore?: boolean,
 	useAbsoluteUrls?: boolean
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
@@ -113,9 +112,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		);
 		return (
 			<ContentBox className="article-details_d2vnmv">
-				{this.props.showScore ?
-					<div className="score">Score: {this.props.article.hotScore}</div> :
-					null}
 				<div className="title">
 					{this.props.isUserSignedIn ?
 						<Star
