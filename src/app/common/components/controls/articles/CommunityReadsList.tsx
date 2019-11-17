@@ -21,7 +21,7 @@ import CommentThread from '../../../../../common/models/CommentThread';
 import InfoBox from '../InfoBox';
 import Rating from '../../../../../common/models/Rating';
 import ActionLink from '../../../../../common/components/ActionLink';
-import classNames from 'classnames';
+import AotdMetadata from './AotdMetadata';
 
 export enum View {
 	Trending = 'Trending',
@@ -215,9 +215,12 @@ export default class extends React.PureComponent<{
 								<>
 									<div className="section-header">Article of the Day</div>
 									<div className="aotd">
-										<div className="article-meta">
-											<div className="score">{`${this.props.aotd.hotScore} pts - First poster: ${this.props.aotd.firstPoster}`}</div>
-										</div>
+										<AotdMetadata
+											article={this.props.aotd}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onViewProfile={this.props.onViewProfile}
+											user={this.props.user}
+										/>
 										<ArticleDetails
 											article={this.props.aotd}
 											isUserSignedIn
@@ -246,10 +249,13 @@ export default class extends React.PureComponent<{
 												}
 												return (
 													<li key={article.id}>
-														<div className="article-meta">
-															<div className={classNames('rank', 'length-' + rank.toString().length.toString())}><small>#</small> {rank}</div>
-															<div className="score">{`${article.hotScore} pts - First poster: ${article.firstPoster}`}</div>
-														</div>
+														<AotdMetadata
+															article={article}
+															onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+															onViewProfile={this.props.onViewProfile}
+															rank={rank}
+															user={this.props.user}
+														/>
 														<ArticleDetails
 															article={article}
 															isUserSignedIn
