@@ -22,6 +22,7 @@ export default (model: {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+		<meta name="google-site-verification" content="9getaJHrSnp0LPyHlFeOT5cJ7fPK-EchoUkPRcAo8S0" />
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
