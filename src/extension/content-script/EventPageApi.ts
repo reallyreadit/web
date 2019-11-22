@@ -4,7 +4,7 @@ import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import CommentThread from '../../common/models/CommentThread';
-import PostCommentForm from '../../common/models/PostCommentForm';
+import CommentForm from '../../common/models/social/CommentForm';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
@@ -89,7 +89,7 @@ export default class EventPageApi {
 	public postArticle(form: PostForm) {
 		return sendMessageAwaitingResponse<Post>('postArticle', form);
 	}
-	public postComment(form: PostCommentForm) {
+	public postComment(form: CommentForm) {
 		return sendMessageAwaitingResponse<{ article: UserArticle, comment: CommentThread }>('postComment', form);
 	}
 }

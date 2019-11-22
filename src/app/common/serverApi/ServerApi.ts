@@ -37,6 +37,11 @@ import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm
 import SignInForm from '../../../common/models/userAccounts/SignInForm';
 import SignOutForm from '../../../common/models/userAccounts/SignOutForm';
 import ArticleQuery from '../../../common/models/articles/ArticleQuery';
+import CommentForm from '../../../common/models/social/CommentForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import CommentsQuery from '../../../common/models/social/CommentsQuery';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -87,20 +92,11 @@ export default abstract class {
 	public readonly signOut = (data: SignOutForm) => {
 		return this.post<void>({ path: '/UserAccounts/SignOut', data });
 	};
-	public readonly postComment = (text: string, articleId: number, parentCommentId?: string) => {
-		return this.post<{ article: UserArticle, comment: CommentThread }>({ path: '/Articles/PostComment', data: { text, articleId, parentCommentId } });
-	};
-	public readonly readReply = (commentId: string) => {
-		return this.post({ path: '/Articles/ReadReply', data: { commentId } });
-	};
 	public readonly starArticle = (articleId: number) => {
 		return this.post<UserArticle>({ path: '/Articles/Star', data: { articleId } });
 	};
 	public readonly unstarArticle = (articleId: number) => {
 		return this.post<UserArticle>({ path: '/Articles/Unstar', data: { articleId } });
-	};
-	public readonly listReplies = (pageNumber: number, callback: (comments: Fetchable<PageResult<CommentThread>>) => void) => {
-		return this.get<PageResult<CommentThread>>({ path: '/Articles/ListReplies', data: { pageNumber } }, callback);
 	};
 	public readonly ackNewReply = () => {
 		return this.post({ path: '/UserAccounts/AckNewReply' });
@@ -136,7 +132,6 @@ export default abstract class {
 	// Articles
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
-	public readonly getComments = this.createFetchFunctionWithParams<{ slug: string }, CommentThread[]>('/Articles/ListComments');
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>('/Articles/CommunityReads');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');
@@ -149,11 +144,16 @@ export default abstract class {
 	public readonly clearAlerts = (data: ClearAlertForm) => this.post({ path: '/Notifications/ClearAlerts', data });
 
 	// Social
-	public readonly followUser = (data : UserNameForm) => this.post({ path: '/Social/Follow', data });
+	public readonly deleteComment = (data: CommentDeletionForm) => this.post<CommentThread>({ path: '/Social/CommentDeletion', data });
+	public readonly followUser = (data: UserNameForm) => this.post({ path: '/Social/Follow', data });
+	public readonly getComments = this.createFetchFunctionWithParams<CommentsQuery, CommentThread[]>('/Social/Comments');
 	public readonly getFollowees = this.createFetchFunction<Following[]>('/Social/Followees');
 	public readonly getFollowers = this.createFetchFunctionWithParams<UserNameQuery, Following[]>('/Social/Followers');
-	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
 	public readonly getPostsFromFollowees = this.createFetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>('/Social/FolloweesPosts');
+	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
+	public readonly postComment = (data: CommentForm) => this.post<{ article: UserArticle, comment: CommentThread }>({ path: '/Social/Comment', data });
+	public readonly postCommentAddendum = (data: CommentAddendumForm) => this.post<CommentThread>({ path: '/Social/CommentAddendum', data });
+	public readonly postCommentRevision = (data: CommentRevisionForm) => this.post<CommentThread>({ path: '/Social/CommentRevision', data });
 	public readonly getPostsFromInbox = this.createFetchFunctionWithParams<InboxPostsQuery, PageResult<Post>>('/Social/InboxPosts');
 	public readonly getPostsFromUser = this.createFetchFunctionWithParams<UserPostsQuery, PageResult<Post>>('/Social/UserPosts');
 	public readonly getProfile = this.createFetchFunctionWithParams<UserNameQuery, Profile>('/Social/Profile');

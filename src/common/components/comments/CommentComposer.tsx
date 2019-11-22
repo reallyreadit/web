@@ -2,11 +2,12 @@ import * as React from 'react';
 import Button from '../Button';
 import classNames from 'classnames';
 import AsyncTracker from '../../AsyncTracker';
+import CommentForm from '../../models/social/CommentForm';
 
 interface Props {
 	articleId: number,
 	onCancel?: () => void,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	onPostComment: (form: CommentForm) => Promise<void>,
 	parentCommentId?: string
 }
 export default class CommentComposer extends React.PureComponent<Props, {
@@ -50,7 +51,11 @@ export default class CommentComposer extends React.PureComponent<Props, {
 	private _postComment = () => {
 		this.setState({ isPosting: true });
 		this.props
-			.onPostComment(this.state.commentText, this.props.articleId, this.props.parentCommentId)
+			.onPostComment({
+				text: this.state.commentText,
+				articleId: this.props.articleId,
+				parentCommentId: this.props.parentCommentId
+			})
 			.then(this._asyncTracker.addCallback(() => {
 				this.setState({
 					commentText: '',

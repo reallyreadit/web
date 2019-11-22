@@ -13,13 +13,14 @@ import UserAccount from '../../models/UserAccount';
 import { formatPossessive } from '../../format';
 import ContentBox from '../ContentBox';
 import PostHeader from '../PostHeader';
+import CommentForm from '../../models/social/CommentForm';
 
 interface Props {
 	comment: CommentThread,
 	highlightedCommentId?: string,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onPostComment?: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	onPostComment?: (form: CommentForm) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
 	onViewProfile?: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
@@ -34,9 +35,9 @@ export default class CommentDetails extends React.PureComponent<
 	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
 	private _showComposer = () => this.setState({ showComposer: true });
 	private _hideComposer = () => this.setState({ showComposer: false });
-	private _addComment = (text: string, articleId: number, parentCommentId?: string) => {
+	private _addComment = (form: CommentForm) => {
 		return this.props
-			.onPostComment(text, articleId, parentCommentId)
+			.onPostComment(form)
 			.then(this._asyncTracker.addCallback(() => {
 				this.setState({ showComposer: false });
 			}));

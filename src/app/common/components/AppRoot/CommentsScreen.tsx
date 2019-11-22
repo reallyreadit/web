@@ -9,13 +9,14 @@ import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { mergeComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import CommentForm from '../../../../common/models/social/CommentForm';
 
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onPostArticle: (article: UserArticle) => void,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
+	onPostComment: (form: CommentForm) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function
 }
@@ -27,9 +28,9 @@ class AppCommentsScreen extends React.Component<
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
+	private readonly _postComment = (form: CommentForm) => {
 		return this.props
-			.onPostComment(text, articleId, parentCommentId)
+			.onPostComment(form)
 			.then(() => { });
 	};
 	constructor(props: Props) {

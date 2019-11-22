@@ -7,6 +7,7 @@ import { mergeComment } from '../../../common/comments';
 import UserArticle from '../../../common/models/UserArticle';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
+import CommentForm from '../../../common/models/social/CommentForm';
 
 const contentScript = new IframeMessagingContext(
 	window.parent,
@@ -100,12 +101,12 @@ function postArticle(form: PostForm) {
 	);
 }
 
-function postComment(text: string, articleId: number, parentCommentId?: string) {
+function postComment(form: CommentForm) {
 	return new Promise<void>(resolve => {
 		contentScript.sendMessage(
 			{
 				type: 'postComment',
-				data: { text, articleId, parentCommentId }
+				data: form
 			},
 			(result: { article: UserArticle, comment: CommentThread }) => {
 				render(

@@ -10,7 +10,7 @@ import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import CommentThread from '../../common/models/CommentThread';
-import PostCommentForm from '../../common/models/PostCommentForm';
+import CommentForm from '../../common/models/social/CommentForm';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
 import UserAccount, { areEqual } from '../../common/models/UserAccount';
@@ -317,13 +317,13 @@ export default class ServerApi {
 				return post;
 			});
 	}
-	public postComment(form: PostCommentForm) {
+	public postComment(form: CommentForm) {
 		return fetchJson<{
 				article: UserArticle,
 				comment: CommentThread
 			}>({
 				method: 'POST',
-				path: '/Articles/PostComment',
+				path: '/Social/Comment',
 				data: form
 			})
 			.then(result => {

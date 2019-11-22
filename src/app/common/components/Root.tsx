@@ -47,6 +47,7 @@ import Fetchable from '../../../common/Fetchable';
 import Following from '../../../common/models/social/Following';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
+import CommentForm from '../../../common/models/social/CommentForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -140,9 +141,9 @@ export default abstract class Root<
 	protected readonly _clipboard: ClipboardService;
 
 	// comments
-	protected readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
+	protected readonly _postComment = (form: CommentForm) => {
 		return this.props.serverApi
-			.postComment(text, articleId, parentCommentId)
+			.postComment(form)
 			.then(result => {
 				this.onArticleUpdated(
 					{

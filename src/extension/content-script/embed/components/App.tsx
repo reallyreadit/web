@@ -21,12 +21,13 @@ import PostPrompt from '../../../../common/components/PostPrompt';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import CommentForm from '../../../../common/models/social/CommentForm';
 
 export interface Props {
 	article?: UserArticle
 	comments?: Fetchable<CommentThread[]>,
 	onPostArticle: (form: PostForm) => Promise<Post>,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	onPostComment: (form: CommentForm) => Promise<void>,
 	user?: UserAccount
 }
 export default class App extends React.Component<

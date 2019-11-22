@@ -14,6 +14,7 @@ import { formatFetchable, formatPossessive } from '../../../../common/format';
 import OnboardingScreen from './OnboardingScreen';
 import { mergeComment, findComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import CommentForm from '../../../../common/models/social/CommentForm';
 
 function shouldShowComments(
 	user: UserAccount | null,
@@ -36,7 +37,7 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onInstallExtension: () => void,
 	onPostArticle: (article: UserArticle) => void,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<CommentThread>,
+	onPostComment: (form: CommentForm) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
@@ -76,9 +77,9 @@ class BrowserCommentsScreen extends React.Component<
 			Skip
 		</a>
 	);
-	private readonly _postComment = (text: string, articleId: number, parentCommentId?: string) => {
+	private readonly _postComment = (form: CommentForm) => {
 		return this.props
-			.onPostComment(text, articleId, parentCommentId)
+			.onPostComment(form)
 			.then(() => { });
 	};
 	constructor(props: Props) {

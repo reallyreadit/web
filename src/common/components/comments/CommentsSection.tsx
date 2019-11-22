@@ -6,6 +6,7 @@ import ShareChannel from '../../sharing/ShareChannel';
 import ShareData from '../../sharing/ShareData';
 import CommentDetails from './CommentDetails';
 import ContentBox from '../ContentBox';
+import CommentForm from '../../models/social/CommentForm';
 
 export default (props: {
 	article: UserArticle,
@@ -15,7 +16,7 @@ export default (props: {
 	noCommentsMessage: string,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	onPostComment: (form: CommentForm) => Promise<void>,
 	onShare: (data: ShareData) => ShareChannel[],
 	onViewProfile?: (userName: string) => void,
 	user: UserAccount | null

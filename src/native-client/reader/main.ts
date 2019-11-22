@@ -21,6 +21,7 @@ import configs from '../../common/contentParsing/configuration/configs';
 import App, { Props as EmbedProps } from './components/App';
 import PostForm from '../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../common/models/social/Post';
+import CommentForm from '../../common/models/social/CommentForm';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -221,16 +222,12 @@ function postArticle(form: PostForm) {
 	);
 }
 
-function postComment(text: string, articleId: number, parentCommentId?: string) {
+function postComment(form: CommentForm) {
 	return new Promise<void>(resolve => {
 		messagingContext.sendMessage(
 			{
 				type: 'postComment',
-				data: {
-					articleId,
-					parentCommentId,
-					text
-				}
+				data: form
 			},
 			(result: { article: UserArticle, comment: CommentThread }) => {
 				resolve();

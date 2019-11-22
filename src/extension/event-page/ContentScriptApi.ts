@@ -4,7 +4,7 @@ import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import CommentThread from '../../common/models/CommentThread';
-import PostCommentForm from '../../common/models/PostCommentForm';
+import CommentForm from '../../common/models/social/CommentForm';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
@@ -22,7 +22,7 @@ export default class ContentScriptApi {
 		onLoadContentParser: (tabId: number) => void,
 		onGetComments: (slug: string) => Promise<CommentThread[]>,
 		onPostArticle: (form: PostForm) => Promise<Post>,
-		onPostComment: (form: PostCommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>
+		onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

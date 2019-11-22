@@ -16,12 +16,13 @@ import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
 import ShareData from '../../../common/sharing/ShareData';
 import PostPrompt from '../../../common/components/PostPrompt';
+import CommentForm from '../../../common/models/social/CommentForm';
 
 export interface Props {
 	article: UserArticle
 	comments: Fetchable<CommentThread[]>,
 	onPostArticle: (form: PostForm) => Promise<Post>,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	onPostComment: (form: CommentForm) => Promise<void>,
 	onShare: (data: ShareData) => void,
 	user: UserAccount
 }

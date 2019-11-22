@@ -14,6 +14,7 @@ import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
+import CommentForm from '../../../../common/models/social/CommentForm';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -35,7 +36,7 @@ export interface Props {
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostArticle: (article: UserArticle) => void,
-	onPostComment: (text: string, articleId: number, parentCommentId?: string) => Promise<void>,
+	onPostComment: (form: CommentForm) => Promise<void>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
