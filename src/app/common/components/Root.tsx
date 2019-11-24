@@ -48,6 +48,9 @@ import Following from '../../../common/models/social/Following';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import CommentForm from '../../../common/models/social/CommentForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -94,6 +97,7 @@ export type SharedEvents = {
 	'articlePosted': Post,
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread,
+	'commentUpdated': CommentThread,
 	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
@@ -141,6 +145,16 @@ export default abstract class Root<
 	protected readonly _clipboard: ClipboardService;
 
 	// comments
+	protected readonly _deleteComment = (form: CommentDeletionForm) => {
+		return this.props.serverApi
+			.deleteComment(form)
+			.then(
+				comment => {
+					this.onCommentUpdated(comment);
+					return comment;
+				}
+			);
+	};
 	protected readonly _postComment = (form: CommentForm) => {
 		return this.props.serverApi
 			.postComment(form)
@@ -154,6 +168,26 @@ export default abstract class Root<
 				this.onCommentPosted(result.comment);
 				return result.comment;
 			});
+	};
+	protected readonly _postCommentAddendum = (form: CommentAddendumForm) => {
+		return this.props.serverApi
+			.postCommentAddendum(form)
+			.then(
+				comment => {
+					this.onCommentUpdated(comment);
+					return comment;
+				}
+			);
+	};
+	protected readonly _postCommentRevision = (form: CommentRevisionForm) => {
+		return this.props.serverApi
+			.postCommentRevision(form)
+			.then(
+				comment => {
+					this.onCommentUpdated(comment);
+					return comment;
+				}
+			);
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
 	protected readonly _viewThread = (comment: CommentThread) => {
@@ -253,6 +287,9 @@ export default abstract class Root<
 	};
 	protected readonly _registerCommentPostedEventHandler = (handler: (comment: CommentThread) => void) => {
 		return this._eventManager.addListener('commentPosted', handler);
+	};
+	protected readonly _registerCommentUpdatedEventHandler = (handler: (comment: CommentThread) => void) => {
+		return this._eventManager.addListener('commentUpdated', handler);
 	};
 	protected readonly _registerFolloweeCountChangedEventHandler = (handler: (change: FolloweeCountChange) => void) => {
 		return this._eventManager.addListener('followeeCountChanged', handler);
@@ -632,6 +669,9 @@ export default abstract class Root<
 	}
 	protected onCommentPosted(comment: CommentThread) {
 		this._eventManager.triggerEvent('commentPosted', comment);
+	}
+	protected onCommentUpdated(comment: CommentThread) {
+		this._eventManager.triggerEvent('commentUpdated', comment);
 	}
 	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {

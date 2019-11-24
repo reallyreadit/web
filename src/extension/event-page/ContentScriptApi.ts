@@ -8,6 +8,9 @@ import CommentForm from '../../common/models/social/CommentForm';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
+import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
@@ -22,7 +25,10 @@ export default class ContentScriptApi {
 		onLoadContentParser: (tabId: number) => void,
 		onGetComments: (slug: string) => Promise<CommentThread[]>,
 		onPostArticle: (form: PostForm) => Promise<Post>,
-		onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>
+		onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
+		onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
+		onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+		onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -67,6 +73,21 @@ export default class ContentScriptApi {
 							.onPostComment(message.data)
 							.then(sendResponse);
 						return true;
+					case 'postCommentAddendum':
+						handlers
+							.onPostCommentAddendum(message.data)
+							.then(sendResponse);
+						return true;
+					case 'postCommentRevision':
+						handlers
+							.onPostCommentRevision(message.data)
+							.then(sendResponse);
+						return true;
+					case 'deleteComment':
+						handlers
+							.onDeleteComment(message.data)
+							.then(sendResponse);
+						return true;
 				}
 			}
 			return undefined;
@@ -80,6 +101,9 @@ export default class ContentScriptApi {
 	}
 	public commentPosted(tabId: number, comment: CommentThread) {
 		sendMessage(tabId, 'commentPosted', comment);
+	}
+	public commentUpdated(tabId: number, comment: CommentThread) {
+		sendMessage(tabId, 'commentUpdated', comment);
 	}
 	public deactivateReaderMode(tabId: number) {
 		sendMessage(tabId, 'deactivateReaderMode');

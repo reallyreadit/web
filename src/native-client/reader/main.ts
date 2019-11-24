@@ -10,7 +10,7 @@ import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import ShareData from '../../common/sharing/ShareData';
 import CommentThread from '../../common/models/CommentThread';
-import { mergeComment } from '../../common/comments';
+import { mergeComment, updateComment } from '../../common/comments';
 import BookmarkPrompt from './components/BookmarkPrompt';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
@@ -22,6 +22,8 @@ import App, { Props as EmbedProps } from './components/App';
 import PostForm from '../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../common/models/social/Post';
 import CommentForm from '../../common/models/social/CommentForm';
+import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -141,8 +143,11 @@ function insertBookmarkPrompt() {
 // embed
 let
 	embedProps: Partial<EmbedProps> = {
+		onDeleteComment: deleteComment,
 		onPostArticle: postArticle,
 		onPostComment: postComment,
+		onPostCommentAddendum: postCommentAddendum,
+		onPostCommentRevision: postCommentRevision,
 		onShare: share
 	},
 	embedRootElement: HTMLDivElement;
@@ -241,6 +246,72 @@ function postComment(form: CommentForm) {
 			}
 		);
 	});
+}
+
+function postCommentAddendum(form: CommentAddendumForm) {
+	return new Promise<CommentThread>(
+		resolve => {
+			messagingContext.sendMessage(
+				{
+					type: 'postCommentAddendum',
+					data: form
+				},
+				(comment: CommentThread) => {
+					render({
+						comments: {
+							...embedProps.comments,
+							value: updateComment(comment, embedProps.comments.value)
+						}
+					});
+					resolve(comment);
+				}
+			);
+		}
+	);
+}
+
+function postCommentRevision(form: CommentRevisionForm) {
+	return new Promise<CommentThread>(
+		resolve => {
+			messagingContext.sendMessage(
+				{
+					type: 'postCommentRevision',
+					data: form
+				},
+				(comment: CommentThread) => {
+					render({
+						comments: {
+							...embedProps.comments,
+							value: updateComment(comment, embedProps.comments.value)
+						}
+					});
+					resolve(comment);
+				}
+			);
+		}
+	);
+}
+
+function deleteComment(form: CommentRevisionForm) {
+	return new Promise<CommentThread>(
+		resolve => {
+			messagingContext.sendMessage(
+				{
+					type: 'deleteComment',
+					data: form
+				},
+				(comment: CommentThread) => {
+					render({
+						comments: {
+							...embedProps.comments,
+							value: updateComment(comment, embedProps.comments.value)
+						}
+					});
+					resolve(comment);
+				}
+			);
+		}
+	);
 }
 
 function share(data: ShareData) {

@@ -38,6 +38,9 @@ export default class extends BrowserApi {
 	public commentPosted(comment: CommentThread) {
 		this.broadcastUpdate('commentPosted', comment);
 	}
+	public commentUpdated(comment: CommentThread) {
+		this.broadcastUpdate('commentUpdated', comment);
+	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);
 	}

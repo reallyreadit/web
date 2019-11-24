@@ -10,6 +10,7 @@ export default interface Post {
 	article: UserArticle,
 	comment: PostComment | null,
 	silentPostId: string | null,
+	dateDeleted: string | null,
 	hasAlert: boolean
 }
 export function createCommentThread(post: Post): CommentThread {
@@ -17,12 +18,14 @@ export function createCommentThread(post: Post): CommentThread {
 		id: (post.comment && post.comment.id) || '',
 		dateCreated: post.date,
 		text: (post.comment && post.comment.text) || '',
+		addenda: (post.comment && post.comment.addenda) || [],
 		articleId: post.article.id,
 		articleTitle: post.article.title,
 		articleSlug: post.article.slug,
 		userAccount: post.userName,
 		badge: post.badge,
-		children: [],
-		parentCommentId: null
+		parentCommentId: null,
+		dateDeleted: post.dateDeleted,
+		children: []
 	};
 }

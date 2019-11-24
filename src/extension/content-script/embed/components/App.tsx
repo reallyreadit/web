@@ -22,12 +22,18 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import CommentForm from '../../../../common/models/social/CommentForm';
+import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
+import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 
 export interface Props {
 	article?: UserArticle
 	comments?: Fetchable<CommentThread[]>,
+	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
+	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
+	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	user?: UserAccount
 }
 export default class App extends React.Component<
@@ -113,9 +119,14 @@ export default class App extends React.Component<
 						comments={this.props.comments.value}
 						imagePath="./images"
 						noCommentsMessage="No comments on this article yet."
+						onCloseDialog={this._dialog.closeDialog}
 						onCopyTextToClipboard={this._clipboard.copyText}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
+						onDeleteComment={this.props.onDeleteComment}
+						onOpenDialog={this._dialog.openDialog}
 						onPostComment={this.props.onPostComment}
+						onPostCommentAddendum={this.props.onPostCommentAddendum}
+						onPostCommentRevision={this.props.onPostCommentRevision}
 						onShare={this._handleShareRequest}
 						onViewProfile={this._viewProfile}
 						user={this.props.user}

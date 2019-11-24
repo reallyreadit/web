@@ -12,7 +12,7 @@ import produce from 'immer';
 import { SharedState } from '../BrowserRoot';
 import { formatFetchable, formatPossessive } from '../../../../common/format';
 import OnboardingScreen from './OnboardingScreen';
-import { mergeComment, findComment } from '../../../../common/comments';
+import { mergeComment, findComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
 
@@ -40,6 +40,7 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onPostComment: (form: CommentForm) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
+	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onReloadArticle: (screenId: number, slug: string) => void,
@@ -97,7 +98,17 @@ class BrowserCommentsScreen extends React.Component<
 					this.setState({
 						comments: {
 							...this.state.comments,
-							value: mergeComment(comment, this.state.comments.value)
+							value: mergeComment(comment, this.state.comments.value.slice())
+						}
+					});
+				}
+			}),
+			props.onRegisterCommentUpdatedHandler(comment => {
+				if (this.props.article.value && this.props.article.value.id === comment.articleId && this.state.comments.value) {
+					this.setState({
+						comments: {
+							...this.state.comments,
+							value: updateComment(comment, this.state.comments.value.slice())
 						}
 					});
 				}

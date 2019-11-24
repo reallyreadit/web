@@ -15,6 +15,9 @@ import ShareData from '../../../../common/sharing/ShareData';
 import ScreenContainer from '../ScreenContainer';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import CommentForm from '../../../../common/models/social/CommentForm';
+import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
+import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -33,10 +36,15 @@ export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
+	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
+	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -71,9 +79,14 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 								highlightedCommentId={this.props.highlightedCommentId}
 								imagePath="/images"
 								noCommentsMessage="Be the first to post a comment on this article."
+								onCloseDialog={this.props.onCloseDialog}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onDeleteComment={this.props.onDeleteComment}
+								onOpenDialog={this.props.onOpenDialog}
 								onPostComment={this.props.onPostComment}
+								onPostCommentAddendum={this.props.onPostCommentAddendum}
+								onPostCommentRevision={this.props.onPostCommentRevision}
 								onShare={this.props.onShare}
 								onViewProfile={this.props.onViewProfile}
 								user={this.props.user}

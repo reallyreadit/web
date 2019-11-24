@@ -25,6 +25,7 @@ export default class WebAppApi {
 		handlers: {
 			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
 			onCommentPosted: (comment: CommentThread) => void,
+			onCommentUpdated: (comment: CommentThread) => void,
 			onUserUpdated: (user: UserAccount) => void
 		}
 	) {
@@ -35,6 +36,9 @@ export default class WebAppApi {
 					break;
 				case 'commentPosted':
 					handlers.onCommentPosted(message.data);
+					break;
+				case 'commentUpdated':
+					handlers.onCommentUpdated(message.data);
 					break;
 				case 'ping':
 					sendResponse(true);
@@ -54,6 +58,9 @@ export default class WebAppApi {
 	}
 	public commentPosted(comment: CommentThread) {
 		sendMessage('commentPosted', comment);
+	}
+	public commentUpdated(comment: CommentThread) {
+		sendMessage('commentUpdated', comment);
 	}
 	public extensionInstalled() {
 		sendMessage('extensionInstalled');

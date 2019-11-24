@@ -9,6 +9,7 @@ export default abstract class extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent,
 	'change': boolean,
 	'commentPosted': CommentThread,
+	'commentUpdated': CommentThread,
 	'userUpdated': UserAccount
 }> {
 	protected readonly _extensionId: string;
@@ -18,6 +19,7 @@ export default abstract class extends EventEmitter<{
 	}
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
 	public abstract commentPosted(comment: CommentThread): void;
+	public abstract commentUpdated(comment: CommentThread): void;
 	public abstract install(): void;
 	public abstract userUpdated(user: UserAccount): void;
 	public abstract get isInstalled(): boolean | undefined;

@@ -10,6 +10,9 @@ export default class extends ExtensionApi {
     public commentPosted(comment: CommentThread) {
         throw new Error('Operation not supported in server environment');
     }
+    public commentUpdated(comment: CommentThread) {
+        throw new Error('Operation not supported in server environment');
+    }
     public install() {
         throw new Error('Operation not supported in server environment');
     }

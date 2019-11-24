@@ -7,7 +7,7 @@ import { Screen, SharedState } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { mergeComment } from '../../../../common/comments';
+import { mergeComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
 
@@ -18,7 +18,8 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function
+	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
+	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function
 }
 class AppCommentsScreen extends React.Component<
 	Props,
@@ -56,6 +57,16 @@ class AppCommentsScreen extends React.Component<
 						comments: {
 							...this.state.comments,
 							value: mergeComment(comment, this.state.comments.value.slice())
+						}
+					});
+				}
+			}),
+			props.onRegisterCommentUpdatedHandler(comment => {
+				if (this.state.article.value && this.state.article.value.id === comment.articleId && this.state.comments.value) {
+					this.setState({
+						comments: {
+							...this.state.comments,
+							value: updateComment(comment, this.state.comments.value.slice())
 						}
 					});
 				}

@@ -165,16 +165,22 @@ export default class extends Root<
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
+				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
+				onPostCommentAddendum: this._postCommentAddendum,
+				onPostCommentRevision: this._postCommentRevision,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
+				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
@@ -256,6 +262,7 @@ export default class extends Root<
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
+				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onShowToast: this._toaster.addToast,
@@ -309,6 +316,10 @@ export default class extends Root<
 						post.article.datesPosted.push((post.article as any).datePosted);
 					}
 				}
+				// create addenda array if required due to an outdated app
+				if (post.comment && !post.comment.addenda) {
+					post.comment.addenda = [];
+				}
 				this.onArticlePosted(post);
 			})
 			.addListener('articleUpdated', event => {
@@ -322,7 +333,18 @@ export default class extends Root<
 				this.onArticleUpdated(event);
 			})
 			.addListener('commentPosted', comment => {
+				// create addenda array if required due to an outdated app
+				if (!comment.addenda) {
+					comment.addenda = [];
+				}
 				this.onCommentPosted(comment);
+			})
+			.addListener('commentUpdated', comment => {
+				// create addenda array if required due to an outdated app
+				if (!comment.addenda) {
+					comment.addenda = [];
+				}
+				this.onCommentUpdated(comment);
 			})
 			.addListener(
 				'didBecomeActive',

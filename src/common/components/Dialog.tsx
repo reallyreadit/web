@@ -11,6 +11,7 @@ interface Props {
 	onSubmit?: () => Promise<any>,
 	size?: 'small',
 	submitButtonText?: string,
+	textAlign?: 'left' | 'center' | 'right',
 	title: string
 }
 export default class Dialog extends React.PureComponent<
@@ -66,7 +67,7 @@ export default class Dialog extends React.PureComponent<
 				}
 			>
 				<div className="header">{this.props.title}</div>
-				<div className="children">{this.props.children}</div>
+				<div className={classNames('children', this.props.textAlign || 'left')}>{this.props.children}</div>
 				<div className={
 					classNames(
 						'buttons',

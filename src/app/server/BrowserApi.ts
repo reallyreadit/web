@@ -20,6 +20,9 @@ export default class extends BrowserApi {
 	public commentPosted(comment: CommentThread) {
 		throw new Error('Operation not supported in server environment');
 	}
+	public commentUpdated(comment: CommentThread) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public getTitle() {
 		return this._title;
 	}

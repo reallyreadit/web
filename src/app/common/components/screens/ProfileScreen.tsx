@@ -71,6 +71,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
+	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
@@ -284,6 +285,44 @@ export class ProfileScreen extends React.Component<Props, State> {
 								}
 							}
 						});
+					}
+				}
+			),
+			props.onRegisterCommentUpdatedHandler(
+				comment => {
+					if (this.state.posts.value) {
+						const post = this.state.posts.value.items.find(post => post.comment && post.comment.id === comment.id);
+						if (post) {
+							const items = this.state.posts.value.items.slice();
+							if (comment.dateDeleted) {
+								items.splice(
+									items.indexOf(post),
+									1
+								);
+							} else {
+								items.splice(
+									items.indexOf(post),
+									1,
+									{
+										...post,
+										comment: {
+											...post.comment,
+											text: comment.text,
+											addenda: comment.addenda
+										}
+									}
+								);
+							}
+							this.setState({
+								posts: {
+									...this.state.posts,
+									value: {
+										...this.state.posts.value,
+										items
+									}
+								}
+							});
+						}
 					}
 				}
 			)

@@ -21,19 +21,20 @@ export default (
 	}
 ) => (
 	<div className="post-header_f4a846">
-		{props.onViewProfile ?
+		{props.onViewProfile && !!props.userName ?
 			<ProfileLink
 				className="user-name"
 				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 				onViewProfile={props.onViewProfile}
 				userName={props.userName}
 			/> :
-			<span className="user-name">{props.userName}</span>}
+			<span className="user-name">{props.userName || '[user]'}</span>}
 		{props.leaderboardBadge !== LeaderboardBadge.None ?
 			<LeaderboardBadges badge={props.leaderboardBadge} /> :
 			null}
 		<span className="age">{timeago().format(props.date.replace(/([^Z])$/, '$1Z'))}</span>
 		{(
+			props.userName &&
 			props.onCopyTextToClipboard &&
 			props.onGetShareData &&
 			props.onShare

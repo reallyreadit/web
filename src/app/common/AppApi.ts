@@ -15,6 +15,7 @@ export default abstract class extends EventEmitter<{
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
 	'commentPosted': CommentThread,
+	'commentUpdated': CommentThread,
 	'didBecomeActive': AppActivationEvent,
 	'loadUrl': string
 }> {

@@ -34,6 +34,6 @@
 .comment-composer_fgo1ny > textarea:focus::placeholder {
 	visibility: hidden;
 }
-.comment-composer_fgo1ny > .button_ovrlmi:not(:last-child) {
-	margin-right: (8 + 6) + px;
+.comment-composer_fgo1ny > .button_ovrlmi + .button_ovrlmi {
+	margin-left: 15px;
 }

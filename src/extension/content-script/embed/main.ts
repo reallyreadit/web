@@ -3,11 +3,14 @@ import * as ReactDOM from 'react-dom';
 import App, { Props } from './components/App';
 import IframeMessagingContext from './IframeMessagingContext';
 import CommentThread from '../../../common/models/CommentThread';
-import { mergeComment } from '../../../common/comments';
+import { mergeComment, updateComment } from '../../../common/comments';
 import UserArticle from '../../../common/models/UserArticle';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
 import CommentForm from '../../../common/models/social/CommentForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 
 const contentScript = new IframeMessagingContext(
 	window.parent,
@@ -23,6 +26,20 @@ contentScript.addListener(message => {
 						comments: {
 							...props.comments,
 							value: mergeComment(message.data, props.comments.value)
+						}
+					},
+					setIframeHeight
+				);
+			}
+			break;
+		case 'commentUpdated':
+			if (props.comments && !props.comments.isLoading) {
+				render(
+					props = {
+						...props,
+						comments: {
+							...props.comments,
+							value: updateComment(message.data, props.comments.value)
 						}
 					},
 					setIframeHeight
@@ -126,11 +143,92 @@ function postComment(form: CommentForm) {
 	});
 }
 
+function postCommentAddendum(form: CommentAddendumForm) {
+	return new Promise<CommentThread>(
+		resolve => {
+			contentScript.sendMessage(
+				{
+					type: 'postCommentAddendum',
+					data: form
+				},
+				(comment: CommentThread) => {
+					render(
+						props = {
+							...props,
+							comments: {
+								...props.comments,
+								value: updateComment(comment, props.comments.value)
+							}
+						},
+						setIframeHeight
+					);
+					resolve(comment);
+				}
+			);
+		}
+	);
+}
+
+function postCommentRevision(form: CommentRevisionForm) {
+	return new Promise<CommentThread>(
+		resolve => {
+			contentScript.sendMessage(
+				{
+					type: 'postCommentRevision',
+					data: form
+				},
+				(comment: CommentThread) => {
+					render(
+						props = {
+							...props,
+							comments: {
+								...props.comments,
+								value: updateComment(comment, props.comments.value)
+							}
+						},
+						setIframeHeight
+					);
+					resolve(comment);
+				}
+			);
+		}
+	);
+}
+
+function deleteComment(form: CommentDeletionForm) {
+	return new Promise<CommentThread>(
+		resolve => {
+			contentScript.sendMessage(
+				{
+					type: 'deleteComment',
+					data: form
+				},
+				(comment: CommentThread) => {
+					render(
+						props = {
+							...props,
+							comments: {
+								...props.comments,
+								value: updateComment(comment, props.comments.value)
+							}
+						},
+						setIframeHeight
+					);
+					resolve(comment);
+				}
+			);
+		}
+	);
+}
+
 const root = document.getElementById('root');
 
 let props: Props = {
+	onDeleteComment: deleteComment,
 	onPostArticle: postArticle,
-	onPostComment: postComment
+	onPostComment: postComment,
+	onPostCommentAddendum: postCommentAddendum,
+	onPostCommentRevision: postCommentRevision
 };
 
 function render(props: Props, callback?: () => void) {

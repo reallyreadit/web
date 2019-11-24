@@ -120,6 +120,14 @@ const eventPageApi = new EventPageApi({
 			});
 		}
 	},
+	onCommentUpdated: comment => {
+		if (embed) {
+			embed.sendMessage({
+				type: 'commentUpdated',
+				data: comment
+			});
+		}
+	},
 	onDeactivateReaderMode: () => {
 		window.location.reload();
 	},
@@ -256,6 +264,21 @@ function insertEmbed(article: UserArticle) {
 						context.lookupResult.userArticle = result.article;
 						sendResponse(result);
 					});
+				break;
+			case 'postCommentAddendum':
+				eventPageApi
+					.postCommentAddendum(message.data)
+					.then(sendResponse);
+				break;
+			case 'postCommentRevision':
+				eventPageApi
+					.postCommentRevision(message.data)
+					.then(sendResponse);
+				break;
+			case 'deleteComment':
+				eventPageApi
+					.deleteComment(message.data)
+					.then(sendResponse);
 				break;
 			case 'setHeight':
 				// add extra height to account for CommentComposer expanding textarea, post dialog and additional overflow

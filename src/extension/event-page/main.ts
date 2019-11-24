@@ -248,6 +248,36 @@ const contentScriptApi = new ContentScriptApi({
 				webAppApi.commentPosted(result.comment);
 				return result;
 			});
+	},
+	onPostCommentAddendum: form => {
+		return serverApi
+			.postCommentAddendum(form)
+			.then(
+				comment => {
+					webAppApi.commentUpdated(comment);
+					return comment;
+				}
+			);
+	},
+	onPostCommentRevision: form => {
+		return serverApi
+			.postCommentRevision(form)
+			.then(
+				comment => {
+					webAppApi.commentUpdated(comment);
+					return comment;
+				}
+			);
+	},
+	onDeleteComment: form => {
+		return serverApi
+			.deleteComment(form)
+			.then(
+				comment => {
+					webAppApi.commentUpdated(comment);
+					return comment;
+				}
+			);
 	}
 });
 
@@ -271,6 +301,15 @@ const webAppApi = new WebAppApi({
 			.filter(tab => tab.articleId === comment.articleId)
 			.forEach(tab => {
 				contentScriptApi.commentPosted(tab.id, comment);
+			});
+	},
+	onCommentUpdated: comment => {
+		// update content script
+		tabs
+			.getAll()
+			.filter(tab => tab.articleId === comment.articleId)
+			.forEach(tab => {
+				contentScriptApi.commentUpdated(tab.id, comment);
 			});
 	},
 	onUserUpdated: user => {

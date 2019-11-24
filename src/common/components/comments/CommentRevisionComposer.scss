@@ -1,0 +1,39 @@
+/*
+	componentPath: src/common/components/comments/CommentRevisionComposer
+	cssComponentId: comment-revision-composer_dnzrxr
+*/
+
+.comment-revision-composer_dnzrxr > textarea {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 5px;
+	margin-bottom: 5px;
+	font-family: inherit;
+	border: 1px solid silver;
+	outline: none;
+}
+.comment-revision-composer_dnzrxr > .controls {
+	display: flex;
+	justify-content: space-between;
+}
+.comment-revision-composer_dnzrxr > .controls > .timer {
+	font-size: 11pt;
+}
+.comment-revision-composer_dnzrxr > .buttons {
+	flex: 0 0 auto;
+}
+.comment-revision-composer_dnzrxr > .buttons > .button_ovrlmi + .button_ovrlmi {
+	margin-left: 15px;
+}
+
+@media (max-width: 600px) {
+	.comment-revision-composer_dnzrxr > .controls {
+		display: flex;
+		flex-flow: column;
+	}
+	.comment-revision-composer_dnzrxr > .controls > .buttons {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 10px;
+	}
+}

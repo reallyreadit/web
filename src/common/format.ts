@@ -1,5 +1,8 @@
 import Fetchable from "./Fetchable";
 
+export function formatIsoDateAsUtc(isoDate: string) {
+	return isoDate.endsWith('Z') ? isoDate : isoDate + 'Z';
+}
 export function formatFetchable<T, U>(
 	fetchable: Fetchable<T>,
 	formatter: ((value: T) => U),
@@ -29,6 +32,12 @@ export function formatTimestamp(timestamp: string) {
 		parseInt(timestamp.substr(8, 2)) + '/' +
 		timestamp.substr(2, 2)
 	);
+}
+export function htmlDecode(text: string) {
+	return new DOMParser()
+		.parseFromString(text, 'text/html')
+		.documentElement
+		.textContent;
 }
 export function truncateText(text: string, length: number) {
 	if (!text) {

@@ -17,6 +17,9 @@ import UserAccount, { areEqual } from '../../common/models/UserAccount';
 import NotificationsQueryResult from '../common/models/NotificationsQueryResult';
 import DisplayedNotification from './DisplayedNotification';
 import Rating from '../../common/models/Rating';
+import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -330,6 +333,27 @@ export default class ServerApi {
 				this.cacheArticle(result.article);
 				return result;
 			});
+	}
+	public postCommentAddendum(form: CommentAddendumForm) {
+		return fetchJson<CommentThread>({
+			method: 'POST',
+			path: '/Social/CommentAddendum',
+			data: form
+		});
+	}
+	public postCommentRevision(form: CommentRevisionForm) {
+		return fetchJson<CommentThread>({
+			method: 'POST',
+			path: '/Social/CommentRevision',
+			data: form
+		});
+	}
+	public deleteComment(form: CommentDeletionForm) {
+		return fetchJson<CommentThread>({
+			method: 'POST',
+			path: '/Social/CommentDeletion',
+			data: form
+		});
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
 		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/CommitReadState', data })

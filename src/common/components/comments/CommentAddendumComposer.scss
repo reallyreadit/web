@@ -1,0 +1,25 @@
+/*
+	componentPath: src/common/components/comments/CommentAddendumComposer
+	cssComponentId: comment-addendum-composer_z77dhy
+*/
+
+.comment-addendum-composer_z77dhy {
+	max-width: 600px;
+}
+.comment-addendum-composer_z77dhy > textarea {
+	box-sizing: border-box;
+	width: 100%;
+	height: 130px;
+	padding: 5px;
+	margin: 5px 0;
+	font-family: inherit;
+	border: 1px solid silver;
+	outline: none;
+}
+.comment-addendum-composer_z77dhy > .controls {
+	display: flex;
+	justify-content: flex-end;
+}
+.comment-addendum-composer_z77dhy > .buttons > .button_ovrlmi + .button_ovrlmi {
+	margin-left: 15px;
+}

@@ -10,10 +10,30 @@
 	padding: 10px 0;
 	overflow-wrap: break-word;
 }
+.comment-details_qker1u > .text.deleted {
+	color: #999;
+}
+.comment-details_qker1u > .addenda {
+	padding-bottom: 10px;
+}
+.comment-details_qker1u > .addenda > .addendum + .addendum {
+	margin-top: 10px;
+}
+.comment-details_qker1u > .addenda > .addendum > .date {
+	font-family: 'Museo Sans (500)';
+}
+.comment-details_qker1u > .addenda > .addendum > .text {
+	overflow-wrap: break-word;
+}
 .comment-details_qker1u > .actions {
 	font-size: 12pt;
 	font-family: 'Museo Sans (500)';	
 }
+.comment-details_qker1u > .actions > .action-link_ftamt8 + .action-link_ftamt8 {
+	margin-left: 10px;
+}
+.comment-details_qker1u > .comment-revision-composer_dnzrxr,
+.comment-details_qker1u > .comment-addendum-composer_z77dhy,
 .comment-details_qker1u > .comment-composer_fgo1ny {
 	margin-top: 10px;
 }
@@ -35,6 +55,9 @@
 }
 .comment-details_qker1u.post-embed > .text {
 	padding: 10px;
+}
+.comment-details_qker1u.post-embed > .addenda {
+	padding: 0 10px 10px 10px;
 }
 .comment-details_qker1u.post-embed > .actions {
 	margin: 0 10px 10px 10px;

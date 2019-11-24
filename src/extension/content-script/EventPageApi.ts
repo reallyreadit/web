@@ -8,6 +8,9 @@ import CommentForm from '../../common/models/social/CommentForm';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
+import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'eventPage', from: 'contentScript', type, data }, responseCallback);
@@ -26,6 +29,7 @@ export default class EventPageApi {
 		onActivateReaderMode: () => void,
 		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
 		onCommentPosted: (comment: CommentThread) => void,
+		onCommentUpdated: (comment: CommentThread) => void,
 		onDeactivateReaderMode: () => void,
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
@@ -43,6 +47,9 @@ export default class EventPageApi {
 					break;
 				case 'commentPosted':
 					handlers.onCommentPosted(message.data);
+					break;
+				case 'commentUpdated':
+					handlers.onCommentUpdated(message.data);
 					break;
 				case 'deactivateReaderMode':
 					handlers.onDeactivateReaderMode();
@@ -91,5 +98,14 @@ export default class EventPageApi {
 	}
 	public postComment(form: CommentForm) {
 		return sendMessageAwaitingResponse<{ article: UserArticle, comment: CommentThread }>('postComment', form);
+	}
+	public postCommentAddendum(form: CommentAddendumForm) {
+		return sendMessageAwaitingResponse<CommentThread>('postCommentAddendum', form);
+	}
+	public postCommentRevision(form: CommentRevisionForm) {
+		return sendMessageAwaitingResponse<CommentThread>('postCommentRevision', form);
+	}
+	public deleteComment(form: CommentDeletionForm) {
+		return sendMessageAwaitingResponse<CommentThread>('postCommentDeletion', form);
 	}
 }

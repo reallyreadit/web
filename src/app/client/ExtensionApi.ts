@@ -36,6 +36,9 @@ export default class extends ExtensionApi {
                     case 'commentPosted':
                         this.emitEvent('commentPosted', message.data);
                         break;
+                    case 'commentUpdated':
+                        this.emitEvent('commentUpdated', message.data);
+                        break;
                     case 'userUpdated':
                         this.emitEvent('userUpdated', message.data);
                         break;
@@ -64,6 +67,9 @@ export default class extends ExtensionApi {
     }
     public commentPosted(comment: CommentThread) {
         this.sendMessage('commentPosted', comment);
+    }
+    public commentUpdated(comment: CommentThread) {
+        this.sendMessage('commentUpdated', comment);
     }
     public install() {
         window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');

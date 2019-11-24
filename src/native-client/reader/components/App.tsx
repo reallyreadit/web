@@ -17,12 +17,18 @@ import Post from '../../../common/models/social/Post';
 import ShareData from '../../../common/sharing/ShareData';
 import PostPrompt from '../../../common/components/PostPrompt';
 import CommentForm from '../../../common/models/social/CommentForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 
 export interface Props {
 	article: UserArticle
 	comments: Fetchable<CommentThread[]>,
+	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
+	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
+	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (data: ShareData) => void,
 	user: UserAccount
 }
@@ -91,9 +97,14 @@ export default class App extends React.Component<
 						comments={this.props.comments.value}
 						imagePath="./images"
 						noCommentsMessage="No comments on this article yet."
+						onCloseDialog={this._dialog.closeDialog}
 						onCopyTextToClipboard={this._copyTextToClipboard}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
+						onDeleteComment={this.props.onDeleteComment}
+						onOpenDialog={this._dialog.openDialog}
 						onPostComment={this.props.onPostComment}
+						onPostCommentAddendum={this.props.onPostCommentAddendum}
+						onPostCommentRevision={this.props.onPostCommentRevision}
 						onShare={this._handleShareRequest}
 						user={this.props.user}
 					/> :

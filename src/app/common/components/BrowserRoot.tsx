@@ -226,18 +226,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
 				onInstallExtension: this._installExtension,
+				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
+				onPostCommentAddendum: this._postCommentAddendum,
+				onPostCommentRevision: this._postCommentRevision,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
+				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
@@ -335,6 +341,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
+				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
@@ -400,6 +407,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment, EventSource.Remote);
 			})
+			.addListener('commentUpdated', comment => {
+				this.onCommentUpdated(comment, EventSource.Remote);
+			})
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
@@ -438,6 +448,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			})
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment, EventSource.Remote);
+			})
+			.addListener('commentUpdated', comment => {
+				this.onCommentUpdated(comment, EventSource.Remote);
 			})
 			.addListener('userUpdated', user => {
 				if (!areUsersEqual(this.state.user, user)) {
@@ -585,6 +598,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.extensionApi.commentPosted(comment);
 		}
 		super.onCommentPosted(comment);
+	}
+	protected onCommentUpdated(comment: CommentThread, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.commentUpdated(comment);
+			this.props.extensionApi.commentUpdated(comment);
+		}
+		super.onCommentUpdated(comment);
 	}
 	protected onLocationChanged(path: string, title?: string) {
 		window.history.pushState(

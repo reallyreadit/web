@@ -31,6 +31,9 @@ export default class extends AppApi {
 				case 'commentPosted':
 					this.emitEvent('commentPosted', message.data);
 					break;
+				case 'commentUpdated':
+					this.emitEvent('commentUpdated', message.data);
+					break;
 				case 'didBecomeActive':
 					this.emitEvent('didBecomeActive', message.data);
 					break;

@@ -7,6 +7,9 @@ import ShareData from '../../sharing/ShareData';
 import CommentDetails from './CommentDetails';
 import ContentBox from '../ContentBox';
 import CommentForm from '../../models/social/CommentForm';
+import CommentDeletionForm from '../../models/social/CommentDeletionForm';
+import CommentRevisionForm from '../../models/social/CommentRevisionForm';
+import CommentAddendumForm from '../../models/social/CommentAddendumForm';
 
 export default (props: {
 	article: UserArticle,
@@ -14,9 +17,14 @@ export default (props: {
 	highlightedCommentId?: string | null,
 	imagePath: string,
 	noCommentsMessage: string,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
+	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
+	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (data: ShareData) => ShareChannel[],
 	onViewProfile?: (userName: string) => void,
 	user: UserAccount | null
@@ -43,11 +51,36 @@ export default (props: {
 								<CommentDetails
 									comment={comment}
 									highlightedCommentId={props.highlightedCommentId}
+									onCloseDialog={
+										isAllowedToPost ?
+											props.onCloseDialog :
+											null
+									}
 									onCopyTextToClipboard={props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
+									onDeleteComment={
+										isAllowedToPost ?
+											props.onDeleteComment :
+											null
+									}
+									onOpenDialog={
+										isAllowedToPost ?
+											props.onOpenDialog :
+											null
+									}
 									onPostComment={
 										isAllowedToPost ?
 											props.onPostComment :
+											null
+									}
+									onPostCommentAddendum={
+										isAllowedToPost ?
+											props.onPostCommentAddendum :
+											null
+									}
+									onPostCommentRevision={
+										isAllowedToPost ?
+											props.onPostCommentRevision :
 											null
 									}
 									onShare={props.onShare}
