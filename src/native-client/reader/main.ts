@@ -165,7 +165,7 @@ function insertEmbed() {
 		(comments: CommentThread[]) => {
 			render({
 				comments: {
-					...embedProps.comments,
+					isLoading: false,
 					value: comments
 				}
 			});

@@ -20,6 +20,8 @@ import CommentForm from '../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import ContentBox from '../../../common/components/ContentBox';
+import SpinnerIcon from '../../../common/components/SpinnerIcon';
 
 export interface Props {
 	article: UserArticle
@@ -84,14 +86,15 @@ export default class App extends React.Component<
 	public render() {
 		return (
 			<div className="app_n0jlkg">
-				{this.props.article ?
-					<PostPrompt
-						article={this.props.article}
-						onPost={this._openPostDialog}
-						promptMessage="Post this article."
-					/> :
-					null}
-				{this.props.article && this.props.comments && this.props.comments.value ?
+				<PostPrompt
+					article={this.props.article}
+					onPost={this._openPostDialog}
+					promptMessage="Post this article."
+				/>
+				{this.props.comments.isLoading ?
+					<ContentBox className="loading-comments">
+						<SpinnerIcon /> Loading comments...
+					</ContentBox> :
 					<CommentsSection
 						article={this.props.article}
 						comments={this.props.comments.value}
@@ -107,8 +110,7 @@ export default class App extends React.Component<
 						onPostCommentRevision={this.props.onPostCommentRevision}
 						onShare={this._handleShareRequest}
 						user={this.props.user}
-					/> :
-					null}
+					/>}
 				{this.state.dialog ?
 					<DialogManager
 						dialog={this.state.dialog.element}
