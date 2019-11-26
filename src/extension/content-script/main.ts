@@ -206,11 +206,11 @@ function insertEmbed(article: UserArticle) {
 	iframe.id = 'com_readup_embed'
 	iframe.src = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/embed/index.html#` + encodeURIComponent(window.location.protocol + '//' + window.location.host);
 	iframe.style.width = '100%';
+	iframe.style.height = '0';
 	iframe.style.minWidth = '320px';
 	iframe.style.maxHeight = '150vh';
 	iframe.style.border = 'none';
-	iframe.style.padding = '50px 0';
-	iframe.style.boxSizing = 'border-box';
+	iframe.style.transition = 'padding 500ms, height 500ms';
 	iframe.addEventListener('load', () => {
 		eventPageApi
 			.getComments(article.slug)
@@ -281,8 +281,10 @@ function insertEmbed(article: UserArticle) {
 					.then(sendResponse);
 				break;
 			case 'setHeight':
-				// add extra height to account for CommentComposer expanding textarea, post dialog and additional overflow
-				iframe.style.height = (message.data + 265) + 'px';
+				iframe.style.height = message.data + 'px';
+				if (!iframe.style.padding) {
+					iframe.style.padding = '50px 0';
+				}
 				break;
 		}
 	});
@@ -372,7 +374,9 @@ function loadPage() {
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
 									// load the user interface
-									loadUserInterface();
+									if (shouldShowEmbed(lookupResult.userArticle)) {
+										insertEmbed(lookupResult.userArticle);
+									}
 								})
 								.catch(() => {
 									unloadPage();
@@ -382,13 +386,6 @@ function loadPage() {
 			}
 		}
 	});
-}
-function loadUserInterface() {
-	if (context) {
-		if (shouldShowEmbed(context.lookupResult.userArticle)) {
-			insertEmbed(context.lookupResult.userArticle);
-		}
-	}
 }
 function unloadPage() {
 	if (context) {

@@ -25,16 +25,18 @@ import CommentForm from '../../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
 import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
+import ContentBox from '../../../../common/components/ContentBox';
+import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 
 export interface Props {
-	article?: UserArticle
-	comments?: Fetchable<CommentThread[]>,
+	article: UserArticle
+	comments: Fetchable<CommentThread[]>,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	user?: UserAccount
+	user: UserAccount
 }
 export default class App extends React.Component<
 	Props,
@@ -103,17 +105,16 @@ export default class App extends React.Component<
 	public render() {
 		return (
 			<div className="app_5ii7ja">
-				{this.props.article ?
-					<>
-						<Logo />
-						<PostPrompt
-							article={this.props.article}
-							onPost={this._openPostDialog}
-							promptMessage="Post this article on Readup."
-						/>
-					</> :
-					null}
-				{this.props.article && this.props.comments && this.props.comments.value ?
+				<Logo />
+				<PostPrompt
+					article={this.props.article}
+					onPost={this._openPostDialog}
+					promptMessage="Post this article on Readup."
+				/>
+				{this.props.comments.isLoading ?
+					<ContentBox className="loading-comments">
+						<SpinnerIcon /> Loading comments...
+					</ContentBox> :
 					<CommentsSection
 						article={this.props.article}
 						comments={this.props.comments.value}
@@ -130,8 +131,7 @@ export default class App extends React.Component<
 						onShare={this._handleShareRequest}
 						onViewProfile={this._viewProfile}
 						user={this.props.user}
-					/> :
-					null}
+					/>}
 				{this.state.dialog ?
 					<DialogManager
 						dialog={this.state.dialog.element}

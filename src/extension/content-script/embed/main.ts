@@ -20,64 +20,31 @@ contentScript.addListener(message => {
 	switch (message.type) {
 		case 'commentPosted':
 			if (props.comments && !props.comments.isLoading) {
-				render(
-					props = {
-						...props,
-						comments: {
-							...props.comments,
-							value: mergeComment(message.data, props.comments.value)
-						}
-					},
-					setIframeHeight
-				);
+				render({
+					comments: {
+						...props.comments,
+						value: mergeComment(message.data, props.comments.value)
+					}
+				});
 			}
 			break;
 		case 'commentUpdated':
 			if (props.comments && !props.comments.isLoading) {
-				render(
-					props = {
-						...props,
-						comments: {
-							...props.comments,
-							value: updateComment(message.data, props.comments.value)
-						}
-					},
-					setIframeHeight
-				);
+				render({
+					comments: {
+						...props.comments,
+						value: updateComment(message.data, props.comments.value)
+					}
+				});
 			}
 			break;
 		case 'pushState':
-			// set height after rendering if new components will be added
-			let callback: (() => void);
-			if (
-				(!props.article && message.data.article) ||
-				(!props.comments && message.data.comments) ||
-				(
-					props.comments &&
-					message.data.comments &&
-					props.comments.isLoading !== message.data.comments.isLoading
-				)
-			) {
-				callback = setIframeHeight;
-			}
-			// render
-			render(
-				props = {
-					...props,
-					...message.data
-				},
-				callback
-			);
+			render({
+				...message.data
+			});
 			break;
 	}
 });
-
-function setIframeHeight() {
-	contentScript.sendMessage({
-		type: 'setHeight',
-		data: document.body.clientHeight
-	});
-}
 
 function postArticle(form: PostForm) {
 	return new Promise<Post>(
@@ -89,27 +56,20 @@ function postArticle(form: PostForm) {
 				},
 				(post: Post) => {
 					if (post.comment) {
-						render(
-							props = {
-								...props,
-								article: post.article,
-								comments: {
-									...props.comments,
-									value: mergeComment(
-										createCommentThread(post),
-										props.comments.value
-									)
-								}
-							},
-							setIframeHeight
-						);
-					} else {
-						render(
-							props = {
-								...props,
-								article: post.article
+						render({
+							article: post.article,
+							comments: {
+								...props.comments,
+								value: mergeComment(
+									createCommentThread(post),
+									props.comments.value
+								)
 							}
-						);
+						});
+					} else {
+						render({
+							article: post.article
+						});
 					}
 					resolve(post);
 				}
@@ -126,17 +86,13 @@ function postComment(form: CommentForm) {
 				data: form
 			},
 			(result: { article: UserArticle, comment: CommentThread }) => {
-				render(
-					props = {
-						...props,
-						article: result.article,
-						comments: {
-							...props.comments,
-							value: mergeComment(result.comment, props.comments.value)
-						}
-					},
-					setIframeHeight
-				);
+				render({
+					article: result.article,
+					comments: {
+						...props.comments,
+						value: mergeComment(result.comment, props.comments.value)
+					}
+				});
 				resolve();
 			}
 		);
@@ -152,16 +108,12 @@ function postCommentAddendum(form: CommentAddendumForm) {
 					data: form
 				},
 				(comment: CommentThread) => {
-					render(
-						props = {
-							...props,
-							comments: {
-								...props.comments,
-								value: updateComment(comment, props.comments.value)
-							}
-						},
-						setIframeHeight
-					);
+					render({
+						comments: {
+							...props.comments,
+							value: updateComment(comment, props.comments.value)
+						}
+					});
 					resolve(comment);
 				}
 			);
@@ -178,16 +130,12 @@ function postCommentRevision(form: CommentRevisionForm) {
 					data: form
 				},
 				(comment: CommentThread) => {
-					render(
-						props = {
-							...props,
-							comments: {
-								...props.comments,
-								value: updateComment(comment, props.comments.value)
-							}
-						},
-						setIframeHeight
-					);
+					render({
+						comments: {
+							...props.comments,
+							value: updateComment(comment, props.comments.value)
+						}
+					});
 					resolve(comment);
 				}
 			);
@@ -204,16 +152,12 @@ function deleteComment(form: CommentDeletionForm) {
 					data: form
 				},
 				(comment: CommentThread) => {
-					render(
-						props = {
-							...props,
-							comments: {
-								...props.comments,
-								value: updateComment(comment, props.comments.value)
-							}
-						},
-						setIframeHeight
-					);
+					render({
+						comments: {
+							...props.comments,
+							value: updateComment(comment, props.comments.value)
+						}
+					});
 					resolve(comment);
 				}
 			);
@@ -223,20 +167,49 @@ function deleteComment(form: CommentDeletionForm) {
 
 const root = document.getElementById('root');
 
-let props: Props = {
+let props: Props;
+
+props = {
+	...props,
 	onDeleteComment: deleteComment,
 	onPostArticle: postArticle,
 	onPostComment: postComment,
 	onPostCommentAddendum: postCommentAddendum,
-	onPostCommentRevision: postCommentRevision
+	onPostCommentRevision: postCommentRevision,
 };
 
-function render(props: Props, callback?: () => void) {
+function render(nextProps: Partial<Props>) {
+	// cache the current height
+	const bodyHeightBeforeRender = document.body.offsetHeight;
+	// prevent the scrollbar from being shown if it is not currently visible
+	// while the iframe height is animating to its new value
+	if (bodyHeightBeforeRender <= window.innerHeight) {
+		document.body.style.overflow = 'hidden';
+	}
 	ReactDOM.render(
-		React.createElement(App, props),
+		React.createElement(
+			App,
+			props = {
+				...props,
+				...nextProps
+			}
+		),
 		root,
-		callback
+		() => {
+			if (document.body.offsetHeight > bodyHeightBeforeRender) {
+				contentScript.sendMessage({
+					type: 'setHeight',
+					data: document.body.offsetHeight + 275 // leave some room for expaning comment composers
+				});
+				setTimeout(
+					() => {
+						document.body.style.overflow = 'auto';
+					},
+					500 + 50
+				);
+			} else {
+				document.body.style.overflow = 'auto';
+			}
+		}
 	);
 }
-
-render(props);

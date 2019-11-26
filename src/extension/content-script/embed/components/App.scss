@@ -3,6 +3,30 @@
 	cssComponentId: app_5ii7ja
 */
 
+.app_5ii7ja {
+	opacity: 0;
+	animation: app_5ii7ja-fade-in 500ms 500ms forwards;
+}
 .app_5ii7ja > .post-prompt_de6v6u {
 	margin-bottom: 15px;
+}
+.app_5ii7ja > .loading-comments {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.app_5ii7ja > .loading-comments > .spinner-icon_6s5uk2 {
+	margin-right: 5px;
+}
+.app_5ii7ja > .comments-section_mqmgnd {
+	animation: app_5ii7ja-fade-in 500ms forwards;
+}
+
+@keyframes app_5ii7ja-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
