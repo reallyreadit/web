@@ -2,7 +2,7 @@ import * as React from 'react';
 import CommentThread from '../../models/CommentThread';
 import CommentRevisionForm from '../../models/social/CommentRevisionForm';
 import Button from '../Button';
-import { htmlDecode, formatIsoDateAsUtc } from '../../format';
+import { formatIsoDateAsUtc } from '../../format';
 import { DateTime, Duration } from 'luxon';
 import AsyncTracker from '../../AsyncTracker';
 import ActionLink from '../ActionLink';
@@ -25,7 +25,6 @@ export default class CommentRevisionComposer extends React.PureComponent<
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _timerInterval: number;
 	private readonly _timeoutDate: DateTime;
-	private readonly _originalText: string;
 	private readonly _changeText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		this.setState({ text: event.currentTarget.value });
 	};
@@ -41,10 +40,9 @@ export default class CommentRevisionComposer extends React.PureComponent<
 		this._timeoutDate = DateTime
 			.fromISO(formatIsoDateAsUtc(props.comment.dateCreated))
 			.plus({ minutes: 3 });
-		this._originalText = htmlDecode(props.comment.text);
 		this.state = {
 			isPosting: false,
-			text: this._originalText,
+			text: props.comment.text,
 			timeRemaining: this.getTimeRemaining()
 		};
 		this._timerInterval = this._asyncTracker.addInterval(
@@ -104,7 +102,7 @@ export default class CommentRevisionComposer extends React.PureComponent<
 							state={
 								this.state.isPosting ?
 									'busy' :
-									this.state.timeRemaining.seconds > 0 && trimmedText && trimmedText !== this._originalText ?
+									this.state.timeRemaining.seconds > 0 && trimmedText && trimmedText !== this.props.comment.text ?
 										'normal' :
 										'disabled'
 							}

@@ -6,14 +6,15 @@
 .comment-details_qker1u > .post-header_f4a846 {
 	border-radius: 3px;
 }
-.comment-details_qker1u > .text {
-	padding: 10px 0;
+.comment-details_qker1u > .text-wrapper > .text {
+	margin: 10px 0;
 	overflow-wrap: break-word;
 }
-.comment-details_qker1u > .text.deleted {
+.comment-details_qker1u > .text-wrapper > .text.deleted {
 	color: #999;
 }
 .comment-details_qker1u > .addenda {
+	margin-top: 10px;
 	padding-bottom: 10px;
 }
 .comment-details_qker1u > .addenda > .addendum + .addendum {
@@ -53,8 +54,8 @@
 .comment-details_qker1u.post-embed > .post-header_f4a846 {
 	border-radius: 3px 3px 0 0;
 }
-.comment-details_qker1u.post-embed > .text {
-	padding: 10px;
+.comment-details_qker1u.post-embed > .text-wrapper > .text {
+	margin: 10px;
 }
 .comment-details_qker1u.post-embed > .addenda {
 	padding: 0 10px 10px 10px;

@@ -10,7 +10,7 @@ import ShareChannel from '../../sharing/ShareChannel';
 import ShareData from '../../sharing/ShareData';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
-import { formatPossessive, htmlDecode, formatIsoDateAsUtc } from '../../format';
+import { formatPossessive, formatIsoDateAsUtc } from '../../format';
 import ContentBox from '../ContentBox';
 import PostHeader from '../PostHeader';
 import CommentForm from '../../models/social/CommentForm';
@@ -21,6 +21,7 @@ import CommentRevisionComposer from './CommentRevisionComposer';
 import Dialog from '../Dialog';
 import CommentAddendumComposer from './CommentAddendumComposer';
 import { DateTime } from 'luxon';
+import MarkdownContent from './MarkdownContent';
 
 enum CompositionState {
 	None,
@@ -123,8 +124,7 @@ export default class CommentDetails extends React.Component<
 		const
 			articleTitle = this.props.comment.articleTitle,
 			commentAuthor = this.props.comment.userAccount,
-			commentText = htmlDecode(this.props.comment.text),
-			quotedCommentText = commentText
+			quotedCommentText = this.props.comment.text
 				.split(/\n\n+/)
 				.map((paragraph, index, paragraphs) => `"${paragraph}${index === paragraphs.length - 1 ? '"' : ''}`)
 				.join('\n\n'),
@@ -140,7 +140,7 @@ export default class CommentDetails extends React.Component<
 			},
 			text: (
 				this.props.user && this.props.user.name === commentAuthor ?
-					commentText :
+					this.props.comment.text :
 					`Check out ${formatPossessive(commentAuthor)} comment on "${articleTitle}"`
 			),
 			url: shareUrl
@@ -158,9 +158,6 @@ export default class CommentDetails extends React.Component<
 			this._textDivRef = React.createRef();
 		}
 	}
-	private formatCommentText(text: string) {
-		return text.replace(/\n/g, '<br />');
-	}
 	private getCommentAbsoluteUrl() {
 		const [sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_');
 		return this.props.onCreateAbsoluteUrl(
@@ -177,7 +174,7 @@ export default class CommentDetails extends React.Component<
 	public render() {
 		const commentText = (
 			!this.props.comment.dateDeleted ?
-				this.formatCommentText(this.props.comment.text) :
+				this.props.comment.text :
 				`This comment was deleted on ${DateTime.fromISO(formatIsoDateAsUtc(this.props.comment.dateDeleted)).toLocaleString(DateTime.DATE_SHORT)}`
 		);
 		return (
@@ -203,17 +200,21 @@ export default class CommentDetails extends React.Component<
 				{this.state.compositionState === CompositionState.Revision ?
 					<CommentRevisionComposer
 						comment={this.props.comment}
-						initialHeight={(this._textDivRef.current && this._textDivRef.current.offsetHeight) || 0}
+						initialHeight={(this._textDivRef.current && this._textDivRef.current.offsetHeight + 30) || 0}
 						onClose={this._closeComposer}
 						onCreateAddendum={this._openEditComposer}
 						onPostRevision={this._postCommentRevision}
 					/> :
 					<>
 						<div
-							className={classNames('text', { 'deleted': !!this.props.comment.dateDeleted })}
-							dangerouslySetInnerHTML={{ __html: commentText }}
+							className="text-wrapper"
 							ref={this._textDivRef}
-						/>
+						>
+							<MarkdownContent
+								className={classNames('text', { 'deleted': !!this.props.comment.dateDeleted })}
+								text={commentText}
+							/>
+						</div>
 						{this.props.comment.addenda.length ?
 							<ol className="addenda">
 								{this.props.comment.addenda.map(
@@ -223,9 +224,9 @@ export default class CommentDetails extends React.Component<
 											key={addendum.dateCreated}
 										>
 											<span className="date">Update ({DateTime.fromISO(formatIsoDateAsUtc(addendum.dateCreated)).toLocaleString(DateTime.DATE_SHORT)}):</span>
-											<div
+											<MarkdownContent
 												className="text"
-												dangerouslySetInnerHTML={{ __html: this.formatCommentText(addendum.textContent) }}
+												text={addendum.textContent}
 											/>
 										</li>
 									)

@@ -33,12 +33,6 @@ export function formatTimestamp(timestamp: string) {
 		timestamp.substr(2, 2)
 	);
 }
-export function htmlDecode(text: string) {
-	return new DOMParser()
-		.parseFromString(text, 'text/html')
-		.documentElement
-		.textContent;
-}
 export function truncateText(text: string, length: number) {
 	if (!text) {
 		return text;

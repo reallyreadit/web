@@ -1,0 +1,100 @@
+/*
+	componentPath: src/common/components/comments/MarkdownContent
+	cssComponentId: markdown-content_cculki
+*/
+
+.markdown-content_cculki blockquote,
+.markdown-content_cculki h1,
+.markdown-content_cculki h2,
+.markdown-content_cculki h3,
+.markdown-content_cculki h4,
+.markdown-content_cculki h5,
+.markdown-content_cculki h6,
+.markdown-content_cculki img
+.markdown-content_cculki ol,
+.markdown-content_cculki p,
+.markdown-content_cculki pre,
+.markdown-content_cculki ul {
+	margin: 10px 0;
+}
+.markdown-content_cculki a[href] {
+	text-decoration: underline;
+}
+.markdown-content_cculki blockquote {
+	border-left: 0.15em solid #ddd;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color: #fafafa;
+	overflow: hidden;
+	border-radius: 0.25em;
+}
+.markdown-content_cculki code {
+	border: 1px solid #ddd;
+	border-radius: 0.25em;
+	padding: 0 0.25em;
+	background-color: #fafafa;
+	font-family: monospace;
+	font-size: 11pt;
+}
+.markdown-content_cculki h1 {
+	font-weight: normal;
+	font-size: 1.6em;
+}
+.markdown-content_cculki h2 {
+	font-weight: normal;
+	font-size: 1.5em;
+}
+.markdown-content_cculki h3 {
+	font-weight: normal;
+	font-size: 1.4em;
+}
+.markdown-content_cculki h4 {
+	font-weight: normal;
+	font-size: 1.3em;
+}
+.markdown-content_cculki h5 {
+	font-weight: normal;
+	font-size: 1.2em;
+}
+.markdown-content_cculki h6 {
+	font-weight: normal;
+	font-size: 1.1em;
+}
+.markdown-content_cculki hr {
+	width: 75%;
+	margin: 15px auto;
+	border-top: none;
+	border-bottom: 1px solid #ccc;
+}
+.markdown-content_cculki img {
+	display: block;
+	max-width: 100%;
+	max-height: 50vh;
+}
+.markdown-content_cculki ol {
+	padding-left: 1.5em;
+	list-style-type: decimal;
+}
+.markdown-content_cculki pre {
+	border: 1px solid #ddd;
+	border-radius: 0.25em;
+	padding: 0.5em;
+	background-color: #fafafa;
+	overflow: auto;
+	font-family: monospace;
+	font-size: 11pt;
+}
+.markdown-content_cculki pre code {
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	background-color: transparent;
+}
+.markdown-content_cculki strong {
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+}
+.markdown-content_cculki ul {
+	padding-left: 1.5em;
+	list-style-type: disc;
+}

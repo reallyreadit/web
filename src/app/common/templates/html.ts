@@ -47,11 +47,13 @@ export default (model: {
 		${icons}
 		<div id="root">${model.content}</div>
 		<script type="text/javascript">
+			//<!--
 			window.reallyreadit = {
 				app: {
 					initData: ${JSON.stringify(model.initData)}
 				}
 			};
+			//-->
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
 		${model.initData.captchaSiteKey ?
