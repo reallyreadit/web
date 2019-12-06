@@ -99,6 +99,7 @@ export default class App extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			dialogs: [],
 			toasts: []
 		};
 	}
@@ -132,15 +133,12 @@ export default class App extends React.Component<
 						onViewProfile={this._viewProfile}
 						user={this.props.user}
 					/>}
-				{this.state.dialog ?
-					<DialogManager
-						dialog={this.state.dialog.element}
-						isClosing={this.state.dialog.isClosing}
-						onRemove={this._dialog.removeDialog}
-						style="light"
-						verticalAlignment="top"
-					/> :
-					null}
+				<DialogManager
+					dialogs={this.state.dialogs}
+					onTransitionComplete={this._dialog.handleTransitionCompletion}
+					style="light"
+					verticalAlignment="top"
+				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

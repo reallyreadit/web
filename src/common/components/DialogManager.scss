@@ -10,34 +10,48 @@
 	bottom: 0;
 	left: 0;
 	z-index: 100;
+}
+.dialog-manager_b1yvhp > .container {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
 	justify-content: flex-start;
+	z-index: 1;
 }
-.dialog-manager_b1yvhp.light {
+.dialog-manager_b1yvhp > .container.light {
 	animation: dialog-manager_b1yvhp-overlay-fade-in-light 250ms forwards;
 }
-.dialog-manager_b1yvhp.dark {
+.dialog-manager_b1yvhp > .container.dark {
 	animation: dialog-manager_b1yvhp-overlay-fade-in-dark 250ms forwards;
 }
-.dialog-manager_b1yvhp.light.closing {
+.dialog-manager_b1yvhp > .container.light.closing {
 	animation: dialog-manager_b1yvhp-overlay-fade-out-light 250ms forwards;
 }
-.dialog-manager_b1yvhp.dark.closing {
+.dialog-manager_b1yvhp > .container.dark.closing {
 	animation: dialog-manager_b1yvhp-overlay-fade-out-dark 250ms forwards;
 }
-.dialog-manager_b1yvhp::before {
+.dialog-manager_b1yvhp > .container.light.obscured {
+	animation: dialog-manager_b1yvhp-overlay-obscured-light 250ms forwards;
+}
+.dialog-manager_b1yvhp > .container.dark.obscured {
+	animation: dialog-manager_b1yvhp-overlay-obscured-dark 250ms forwards;
+}
+.dialog-manager_b1yvhp > .container::before {
 	content: "";
 	min-height: 10px;
 	flex: 1 1 auto;
 }
-.dialog-manager_b1yvhp.top::before {
+.dialog-manager_b1yvhp > .container.top::before {
 	content: "";
 	min-height: 20px;
 	flex: 0 1 auto;
 }
-.dialog-manager_b1yvhp::after {
+.dialog-manager_b1yvhp > .container::after {
 	content: "";
 	min-height: 10px;
 	flex: 3 1 auto;
@@ -59,6 +73,14 @@
 		background-color: rgba(0, 0, 0, 0);
 	}
 }
+@keyframes dialog-manager_b1yvhp-overlay-obscured-light {
+	from {
+		background-color: rgba(255, 255, 255, 0.3);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0);
+	}
+}
 @keyframes dialog-manager_b1yvhp-overlay-fade-in-dark {
 	from {
 		background-color: rgba(0, 0, 0, 0);
@@ -68,6 +90,14 @@
 	}
 }
 @keyframes dialog-manager_b1yvhp-overlay-fade-out-dark {
+	from {
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+	to {
+		background-color: rgba(0, 0, 0, 0);
+	}
+}
+@keyframes dialog-manager_b1yvhp-overlay-obscured-dark {
 	from {
 		background-color: rgba(0, 0, 0, 0.3);
 	}

@@ -279,13 +279,14 @@ export default class extends Root<
 		const { screens, dialog } = this.processNavigationRequest(props.initialUser, props.initialLocation);
 		this.state = {
 			...this.state,
-			dialog: (
+			dialogs: (
 				dialog ?
-					{
+					[{
 						element: dialog,
-						isClosing: false
-					} :
-					null
+						key: 0,
+						state: 'opening'
+					}] :
+					[]
 			),
 			isPoppingScreen: false,
 			menuState: 'closed',
@@ -387,13 +388,14 @@ export default class extends Root<
 					if (route) {
 						const { screens, dialog } = this.processNavigationRequest(this.state.user, location);
 						this.setState({
-							dialog: (
+							dialogs: (
 								dialog ?
-									{
+									[{
 										element: dialog,
-										isClosing: false
-									} :
-									null
+										key: 0,
+										state: 'opening'
+									}] :
+									[]
 							),
 							isPoppingScreen: false,
 							menuState: 'closed',
@@ -604,13 +606,10 @@ export default class extends Root<
 						onShowToast={this._toaster.addToast}
 						onSignIn={this._signIn}
 					/>}
-				{this.state.dialog ?
-					<DialogManager
-						dialog={this.state.dialog.element}
-						isClosing={this.state.dialog.isClosing}
-						onRemove={this._dialog.removeDialog}
-					/> :
-					null}
+				<DialogManager
+					dialogs={this.state.dialogs}
+					onTransitionComplete={this._dialog.handleTransitionCompletion}
+				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

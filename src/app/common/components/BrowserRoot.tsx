@@ -373,16 +373,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 			locationState = this.getLocationDependentState(props.initialLocation);
 		this.state = {
 			...this.state,
-			dialog: (
+			dialogs: (
 				locationState.dialog && (
 					route.dialogKey !== DialogKey.Followers ||
 					props.initialUser
 				) ?
-					{
+					[{
 						element: locationState.dialog,
-						isClosing: false
-					} :
-					null
+						key: 0,
+						state: 'opening'
+					}] :
+					[]
 			),
 			isExtensionInstalled: null,
 			isIosDevice: (
@@ -770,13 +771,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 						userAccount={this.state.user}
 					/> :
 					null}
-				{this.state.dialog ?
-					<DialogManager
-						dialog={this.state.dialog.element}
-						isClosing={this.state.dialog.isClosing}
-						onRemove={this._dialog.removeDialog}
-					/> :
-					null}
+				<DialogManager
+					dialogs={this.state.dialogs}
+					onTransitionComplete={this._dialog.handleTransitionCompletion}
+				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

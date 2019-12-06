@@ -80,6 +80,7 @@ export default class App extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			dialogs: [],
 			toasts: []
 		};
 	}
@@ -111,13 +112,10 @@ export default class App extends React.Component<
 						onShare={this._handleShareRequest}
 						user={this.props.user}
 					/>}
-				{this.state.dialog ?
-					<DialogManager
-						dialog={this.state.dialog.element}
-						isClosing={this.state.dialog.isClosing}
-						onRemove={this._dialog.removeDialog}
-					/> :
-					null}
+				<DialogManager
+					dialogs={this.state.dialogs}
+					onTransitionComplete={this._dialog.handleTransitionCompletion}
+				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

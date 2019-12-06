@@ -85,9 +85,11 @@ export default class extends React.Component<
 			this.setState(delegate);
 		}
 	});
-	protected readonly _removeDialog = () => {
-		this._dialog.removeDialog();
-		window.document.documentElement.style.height = this._htmlHeight + 'px';
+	protected readonly _handleDialogTransitionCompletion = (key: number, transition: 'closing' | 'opening') => {
+		this._dialog.handleTransitionCompletion(key, transition);
+		if (this.state.dialogs.length === 1 && transition === 'closing') {
+			window.document.documentElement.style.height = this._htmlHeight + 'px';
+		}
 	};
 	protected readonly _openPostDialog = (article: UserArticle) => {
 		window.setTimeout(
@@ -130,6 +132,7 @@ export default class extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			dialogs: [],
 			toasts: []
 		};
 	}
@@ -266,13 +269,10 @@ export default class extends React.Component<
 									null}
 							</>}
 					</>}
-				{this.state.dialog ?
-					<DialogManager
-						dialog={this.state.dialog.element}
-						isClosing={this.state.dialog.isClosing}
-						onRemove={this._removeDialog}
-					/> :
-					null}
+				<DialogManager
+					dialogs={this.state.dialogs}
+					onTransitionComplete={this._handleDialogTransitionCompletion}
+				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
