@@ -258,6 +258,7 @@ export default abstract class Root<
 			<PostDialog
 				article={article}
 				onCloseDialog={this._dialog.closeDialog}
+				onOpenDialog={this._dialog.openDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this._postArticle}
 			/>

@@ -3,10 +3,14 @@ import Button from '../Button';
 import classNames from 'classnames';
 import AsyncTracker from '../../AsyncTracker';
 import CommentForm from '../../models/social/CommentForm';
+import ActionLink from '../ActionLink';
+import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
 	articleId: number,
 	onCancel?: () => void,
+	onCloseDialog: () => void,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	parentCommentId?: string
 }
@@ -47,6 +51,13 @@ export default class CommentComposer extends React.PureComponent<Props, {
 				}
 			}, 100);
 		}
+	};
+	private readonly _openMarkdownDialog = () => {
+		this.props.onOpenDialog(
+			<MarkdownDialog
+				onClose={this.props.onCloseDialog}
+			/>
+		);
 	};
 	private _postComment = () => {
 		this.setState({ isPosting: true });
@@ -111,29 +122,38 @@ export default class CommentComposer extends React.PureComponent<Props, {
 					placeholder="Share your thoughts."
 					style={textareaStyle}
 				/>
-				{this.props.parentCommentId ?
-					<Button
-						text="Cancel"
-						state={
-							this.state.isPosting ?
-								'disabled' :
-								'normal'
-						}
-						onClick={this._cancel}
-					/> :
-					null}
-				<Button
-					text={`Post ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
-					style="preferred"
-					state={
-						this.state.isPosting ?
-							'busy' :
-							this.state.hasContent ?
-								'normal' :
-								'disabled'
-					}
-					onClick={this._postComment}
-				/>
+				<div className="controls">
+					<ActionLink
+						iconLeft="question-circle"
+						onClick={this._openMarkdownDialog}
+						text="Formatting Guide"
+					/>
+					<div className="buttons">
+						{this.props.parentCommentId ?
+							<Button
+								text="Cancel"
+								state={
+									this.state.isPosting ?
+										'disabled' :
+										'normal'
+								}
+								onClick={this._cancel}
+							/> :
+							null}
+						<Button
+							text={`Post ${this.props.parentCommentId ? 'Reply' : 'Comment'}`}
+							style="preferred"
+							state={
+								this.state.isPosting ?
+									'busy' :
+									this.state.hasContent ?
+										'normal' :
+										'disabled'
+							}
+							onClick={this._postComment}
+						/>
+					</div>
+				</div>
 			</div>
 		);
 	}

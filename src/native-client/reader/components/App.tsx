@@ -55,6 +55,7 @@ export default class App extends React.Component<
 			<PostDialog
 				article={article}
 				onCloseDialog={this._dialog.closeDialog}
+				onOpenDialog={this._dialog.openDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this.props.onPostArticle}
 			/>

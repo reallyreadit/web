@@ -1,0 +1,42 @@
+/*
+	componentPath: src/common/components/MarkdownDialog
+	cssComponentId: markdown-dialog_1fmodc
+*/
+
+.markdown-dialog_1fmodc > .children > table > thead > tr > th {
+	font-weight: normal;
+	text-align: left;
+	padding: 3px 0;
+	border-bottom: 1px solid #ccc;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td {
+	padding: 3px 0;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td:first-child {
+	padding-right: 2px;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td:last-child {
+	padding-left: 2px;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td > em {
+	font-style: italic;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td > strong {
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td > .link {
+	text-decoration: underline;
+	cursor: pointer;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td > blockquote {
+	border-left: 0.15em solid #ddd;
+	padding: 2px 0.5em;
+	background-color: #fafafa;
+	overflow: hidden;
+	border-radius: 0.25em;
+}
+.markdown-dialog_1fmodc > .children > table > tbody > tr > td > ul {
+	padding-left: 1.5em;
+	list-style-type: disc;
+}

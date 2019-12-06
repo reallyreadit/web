@@ -34,6 +34,19 @@
 .comment-composer_fgo1ny > textarea:focus::placeholder {
 	visibility: hidden;
 }
-.comment-composer_fgo1ny > .button_ovrlmi + .button_ovrlmi {
-	margin-left: 15px;
+.comment-composer_fgo1ny > .controls {
+	display: flex;
+	justify-content: space-between;
+	text-align: left;
+}
+
+@media (max-width: 475px) {
+	.comment-composer_fgo1ny > .controls {
+		flex-flow: column;
+	}
+	.comment-composer_fgo1ny > .controls > .buttons {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 5px;
+	}
 }

@@ -5,10 +5,13 @@ import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
 import { Intent } from './Toaster';
 import UserArticle from '../models/UserArticle';
+import ActionLink from './ActionLink';
+import MarkdownDialog from './MarkdownDialog';
 
 interface Props {
 	article: UserArticle,
 	onCloseDialog?: () => void,
+	onOpenDialog: (dialog: React.ReactNode, method: 'push' | 'replace') => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSubmit: (form: PostForm) => Promise<Post>
 }
@@ -26,6 +29,14 @@ export default class PostDialog extends React.PureComponent<
 	};
 	private readonly _changeRatingScore = (ratingScore?: number) => {
 		this.setState({ ratingScore });
+	};
+	private readonly _openMarkdownDialog = () => {
+		this.props.onOpenDialog(
+			<MarkdownDialog
+				onClose={this.props.onCloseDialog}
+			/>,
+			'push'
+		);
 	};
 	private readonly _submit = () => {
 		return this.props
@@ -69,6 +80,11 @@ export default class PostDialog extends React.PureComponent<
 					onChange={this._changeCommentText}
 					placeholder="Optional: Share your thoughts or ask a question."
 					value={this.state.commentText}
+				/>
+				<ActionLink
+					iconLeft="question-circle"
+					onClick={this._openMarkdownDialog}
+					text="Formatting Guide"
 				/>
 			</Dialog>
 		);

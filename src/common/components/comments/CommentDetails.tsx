@@ -202,7 +202,9 @@ export default class CommentDetails extends React.Component<
 						comment={this.props.comment}
 						initialHeight={(this._textDivRef.current && this._textDivRef.current.offsetHeight + 30) || 0}
 						onClose={this._closeComposer}
+						onCloseDialog={this.props.onCloseDialog}
 						onCreateAddendum={this._openEditComposer}
+						onOpenDialog={this.props.onOpenDialog}
 						onPostRevision={this._postCommentRevision}
 					/> :
 					<>
@@ -238,6 +240,8 @@ export default class CommentDetails extends React.Component<
 					<CommentAddendumComposer
 						comment={this.props.comment}
 						onClose={this._closeComposer}
+						onCloseDialog={this.props.onCloseDialog}
+						onOpenDialog={this.props.onOpenDialog}
 						onPostAddendum={this._postCommentAddendum}
 					/> :
 					null}
@@ -245,6 +249,8 @@ export default class CommentDetails extends React.Component<
 					<CommentComposer
 						articleId={this.props.comment.articleId}
 						onCancel={this._closeComposer}
+						onCloseDialog={this.props.onCloseDialog}
+						onOpenDialog={this.props.onOpenDialog}
 						onPostComment={this._postComment}
 						parentCommentId={this.props.comment.id}
 					/> :

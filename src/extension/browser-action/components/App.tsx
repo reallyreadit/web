@@ -98,6 +98,7 @@ export default class extends React.Component<
 					<PostDialog
 						article={article}
 						onCloseDialog={this._dialog.closeDialog}
+						onOpenDialog={this._dialog.openDialog}
 						onShowToast={this._toaster.addToast}
 						onSubmit={this.props.onPostArticle}
 					/>
@@ -106,7 +107,7 @@ export default class extends React.Component<
 			250
 		);
 		this._htmlHeight = window.document.documentElement.offsetHeight;
-		window.document.documentElement.style.height = '320px';
+		window.document.documentElement.style.height = '350px';
 	};
 
 	// routing

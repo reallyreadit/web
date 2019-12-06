@@ -6,11 +6,14 @@ import { formatIsoDateAsUtc } from '../../format';
 import { DateTime, Duration } from 'luxon';
 import AsyncTracker from '../../AsyncTracker';
 import ActionLink from '../ActionLink';
+import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
 	comment: CommentThread,
 	initialHeight: number,
 	onClose: () => void,
+	onCloseDialog: () => void,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onCreateAddendum: () => void,
 	onPostRevision: (form: CommentRevisionForm) => Promise<CommentThread>
 }
@@ -27,6 +30,13 @@ export default class CommentRevisionComposer extends React.PureComponent<
 	private readonly _timeoutDate: DateTime;
 	private readonly _changeText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		this.setState({ text: event.currentTarget.value });
+	};
+	private readonly _openMarkdownDialog = () => {
+		this.props.onOpenDialog(
+			<MarkdownDialog
+				onClose={this.props.onCloseDialog}
+			/>
+		);
 	};
 	private readonly _postRevision = () => {
 		this.setState({ isPosting: true });
@@ -75,16 +85,23 @@ export default class CommentRevisionComposer extends React.PureComponent<
 					style={{ minHeight: this.props.initialHeight }}
 				/>
 				<div className="controls">
-					<div className="timer">
-						{!this.state.isPosting ?
-							this.state.timeRemaining.seconds > 0 ?
-								<>
-									<div>You have {this.state.timeRemaining.minutes > 0 ? <span>{this.state.timeRemaining.minutes}m </span> : null}{Math.floor(this.state.timeRemaining.seconds)}s remaining to fix typos. After that you can add updates.</div>
-								</> :
-								<>
-									<div>The typo timer ran out. Copy your work and <ActionLink text="add an update" onClick={this.props.onCreateAddendum} /> instead.</div>
-								</> :
-								null}
+					<div className="left-group">
+						<ActionLink
+							iconLeft="question-circle"
+							onClick={this._openMarkdownDialog}
+							text="Formatting Guide"
+						/>
+						<div className="timer">
+							{!this.state.isPosting ?
+								this.state.timeRemaining.seconds > 0 ?
+									<>
+										<div>You have {this.state.timeRemaining.minutes > 0 ? <span>{this.state.timeRemaining.minutes}m </span> : null}{Math.floor(this.state.timeRemaining.seconds)}s remaining to fix typos. After that you can add updates.</div>
+									</> :
+									<>
+										<div>The typo timer ran out. Copy your work and <ActionLink text="add an update" onClick={this.props.onCreateAddendum} /> instead.</div>
+									</> :
+									null}
+						</div>
 					</div>
 					<div className="buttons">
 						<Button

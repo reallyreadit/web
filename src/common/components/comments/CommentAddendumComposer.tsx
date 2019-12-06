@@ -3,10 +3,14 @@ import CommentAddendumForm from '../../models/social/CommentAddendumForm';
 import CommentThread from '../../models/CommentThread';
 import Button from '../Button';
 import { DateTime } from 'luxon';
+import ActionLink from '../ActionLink';
+import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
 	comment: CommentThread,
 	onClose: () => void,
+	onCloseDialog: () => void,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostAddendum: (form: CommentAddendumForm) => Promise<CommentThread>
 }
 export default class CommentAddendumComposer extends React.PureComponent<
@@ -18,6 +22,13 @@ export default class CommentAddendumComposer extends React.PureComponent<
 > {
 	private readonly _changeText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		this.setState({ text: event.currentTarget.value });
+	};
+	private readonly _openMarkdownDialog = () => {
+		this.props.onOpenDialog(
+			<MarkdownDialog
+				onClose={this.props.onCloseDialog}
+			/>
+		);
 	};
 	private readonly _postAddendum = () => {
 		this.setState({ isPosting: true });
@@ -45,6 +56,11 @@ export default class CommentAddendumComposer extends React.PureComponent<
 					value={this.state.text}
 				/>
 				<div className="controls">
+					<ActionLink
+						iconLeft="question-circle"
+						onClick={this._openMarkdownDialog}
+						text="Formatting Guide"
+					/>
 					<div className="buttons">
 						<Button
 							text="Cancel"

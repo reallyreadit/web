@@ -18,8 +18,16 @@
 }
 .comment-addendum-composer_z77dhy > .controls {
 	display: flex;
-	justify-content: flex-end;
+	justify-content: space-between;
 }
-.comment-addendum-composer_z77dhy > .buttons > .button_ovrlmi + .button_ovrlmi {
-	margin-left: 15px;
+
+@media (max-width: 475px) {
+	.comment-addendum-composer_z77dhy > .controls {
+		flex-flow: column;
+	}
+	.comment-addendum-composer_z77dhy > .controls > .buttons {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 5px;
+	}
 }
