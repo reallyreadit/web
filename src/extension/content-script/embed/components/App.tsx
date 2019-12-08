@@ -18,7 +18,7 @@ import CommentsSection from '../../../../common/components/comments/CommentsSect
 import PostForm from '../../../../common/models/social/PostForm';
 import Post from '../../../../common/models/social/Post';
 import PostPrompt from '../../../../common/components/PostPrompt';
-import { findRouteByKey } from '../../../../common/routing/Route';
+import { findRouteByKey, parseUrlForRoute } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import CommentForm from '../../../../common/models/social/CommentForm';
@@ -70,16 +70,26 @@ export default class App extends React.Component<
 
 	// profile links
 	private readonly _viewProfile = (userName: string) => {
-		window.open(
+		this.openInNewTab(
 			this._createAbsoluteUrl(
 				findRouteByKey(routes, ScreenKey.Profile).createUrl({ userName })
-			),
-			'_blank'
+			)
 		);
 	};
 
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
+	private readonly _navTo = (url: string) => {
+		const result = parseUrlForRoute(url);
+		if (
+			(result.isInternal && result.route) ||
+			(!result.isInternal && result.url)
+		) {
+			this.openInNewTab(result.url.href);
+			return true;
+		}
+		return false;
+	}
 
 	// sharing
 	private readonly _handleShareRequest = () => {
@@ -104,6 +114,9 @@ export default class App extends React.Component<
 			toasts: []
 		};
 	}
+	private openInNewTab(url: string) {
+		window.open(url, '_blank');
+	}
 	public render() {
 		return (
 			<div className="app_5ii7ja">
@@ -126,6 +139,7 @@ export default class App extends React.Component<
 						onCopyTextToClipboard={this._clipboard.copyText}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onDeleteComment={this.props.onDeleteComment}
+						onNavTo={this._navTo}
 						onOpenDialog={this._dialog.openDialog}
 						onPostComment={this.props.onPostComment}
 						onPostCommentAddendum={this.props.onPostCommentAddendum}

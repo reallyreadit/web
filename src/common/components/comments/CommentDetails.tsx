@@ -32,16 +32,17 @@ enum CompositionState {
 interface Props {
 	comment: CommentThread,
 	highlightedCommentId?: string,
-	onCloseDialog?: () => void,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment?: (form: CommentDeletionForm) => Promise<CommentThread>,
-	onOpenDialog?: (dialog: React.ReactNode) => void,
+	onNavTo: (url: string) => boolean,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostComment?: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum?: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision?: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (data: ShareData) => ShareChannel[],
-	onViewProfile?: (userName: string) => void,
+	onViewProfile: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,
 	user: UserAccount | null
@@ -84,6 +85,23 @@ export default class CommentDetails extends React.Component<
 				<p>Comment deletion is permanant. You can't undo this action.</p>
 			</Dialog>
 		);
+	};
+	private readonly _navTo = (url: string) => {
+		const result = this.props.onNavTo(url);
+		if (!result) {
+			this.props.onOpenDialog(
+				<Dialog
+					closeButtonText="Ok"
+					onClose={this.props.onCloseDialog}
+					size="small"
+					textAlign="center"
+					title="Navigation Error"
+				>
+					<p>This link is invalid.</p>
+				</Dialog>
+			);
+		}
+		return result;
 	};
 	private readonly _postComment = (form: CommentForm) => {
 		return this.props
@@ -214,6 +232,7 @@ export default class CommentDetails extends React.Component<
 						>
 							<MarkdownContent
 								className={classNames('text', { 'deleted': !!this.props.comment.dateDeleted })}
+								onNavTo={this._navTo}
 								text={commentText}
 							/>
 						</div>
@@ -228,6 +247,7 @@ export default class CommentDetails extends React.Component<
 											<span className="date">Update ({DateTime.fromISO(formatIsoDateAsUtc(addendum.dateCreated)).toLocaleString(DateTime.DATE_SHORT)}):</span>
 											<MarkdownContent
 												className="text"
+												onNavTo={this._navTo}
 												text={addendum.textContent}
 											/>
 										</li>
@@ -294,6 +314,7 @@ export default class CommentDetails extends React.Component<
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onDeleteComment={this.props.onDeleteComment}
+										onNavTo={this.props.onNavTo}
 										onOpenDialog={this.props.onOpenDialog}
 										onPostComment={this.props.onPostComment}
 										onPostCommentAddendum={this.props.onPostCommentAddendum}

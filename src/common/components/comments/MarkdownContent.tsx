@@ -55,14 +55,29 @@ function render(plainText: string) {
 	}
 	return writer.render(ast);
 }
-export default (
-	props: {
-		className?: ClassValue,
-		text: string
+export default class MarkdownContent extends React.PureComponent<{
+	className?: ClassValue,
+	onNavTo: (url: string) => boolean,
+	text: string
+}> {
+	private readonly _handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+		let anchorElement = event.target as HTMLElement;
+		while (anchorElement && anchorElement.tagName !== 'A') {
+			anchorElement = anchorElement.parentElement;
+		}
+		if (anchorElement) {
+			this.props.onNavTo((anchorElement as HTMLAnchorElement).href);
+		}
+	};
+	public render() {
+		return (
+			<div
+				className={classNames('markdown-content_cculki', this.props.className)}
+				dangerouslySetInnerHTML={{ __html: render(this.props.text) }}
+				onClick={this._handleClick}
+			/>
+		);
 	}
-) => (
-	<div
-		className={classNames('markdown-content_cculki', props.className)}
-		dangerouslySetInnerHTML={{ __html: render(props.text) }}
-	/>
-);
+}

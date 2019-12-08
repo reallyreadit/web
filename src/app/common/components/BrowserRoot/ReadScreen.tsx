@@ -45,7 +45,9 @@ class ReadScreen extends React.PureComponent<Props> {
 		);
 	}
 	private navigateToArticle() {
-		window.location.href = this.props.article.value.url;
+		if (this.props.article.value) {
+			window.location.href = this.props.article.value.url;
+		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -59,6 +61,11 @@ class ReadScreen extends React.PureComponent<Props> {
 						description: (
 							!this.props.user || this.props.isExtensionInstalled === false ?
 								formatFetchable(this.props.article, article => `"${article.title}"`, 'Loading...') :
+								null
+						),
+						errorMessage: (
+							this.props.article.errors ?
+								'Error loading article.' :
 								null
 						),
 						unsupportedBypass: formatFetchable(
@@ -90,7 +97,11 @@ export default function createReadScreenFactory<TScreenKey>(
 					article => {
 						deps.onSetScreenState(id, produce<Screen<Fetchable<UserArticle>>>(currentState => {
 							currentState.componentState = article;
-							currentState.title = article.value.title;
+							if (article.value) {
+								currentState.title = article.value.title;
+							} else {
+								currentState.title = 'Article not found';
+							}
 						}));
 					}
 				);
@@ -100,7 +111,7 @@ export default function createReadScreenFactory<TScreenKey>(
 				key,
 				location,
 				templateSection: TemplateSection.None,
-				title: formatFetchable(article, article => article.title, 'Loading...')
+				title: formatFetchable(article, article => article.title, 'Loading...', 'Article not found.')
 			};
 		},
 		render: (screenState: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => {

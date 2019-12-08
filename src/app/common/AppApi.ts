@@ -19,6 +19,7 @@ export default abstract class extends EventEmitter<{
 	'didBecomeActive': AppActivationEvent,
 	'loadUrl': string
 }> {
+	public abstract openExternalUrl(url: string): void;
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract share(data: ShareData): void;
 	public abstract syncAuthCookie(user?: UserAccount): void;

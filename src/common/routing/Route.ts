@@ -1,6 +1,7 @@
 import RouteLocation from './RouteLocation';
-import { parseQueryString } from './queryString';
+import { parseQueryString, unroutableQueryStringKeys } from './queryString';
 import UserAccountRole from '../models/UserAccountRole';
+import routes from './routes';
 
 export interface Route<TDialogKey, TScreenKey> {
 	analyticsName: string,
@@ -52,4 +53,44 @@ export function findRouteByKey<TDialogKey, TScreenKey>(routes: Route<TDialogKey,
 		return matches[0];
 	}
 	return null;
+}
+export function parseUrlForRoute(urlString: string) {
+	try {
+		const url = new URL(urlString);
+		if (['readup.com', 'readup.org', 'reallyread.it'].includes(url.hostname)) {
+			const route = findRouteByLocation(
+				routes,
+				{
+					path: url.pathname,
+					queryString: url.search
+				},
+				unroutableQueryStringKeys
+			);
+			if (route) {
+				return {
+					isInternal: true,
+					route,
+					url
+				};
+			} else {
+				return {
+					isInternal: true,
+					route: null,
+					url
+				};
+			}
+		} else {
+			return {
+				isInternal: false,
+				route: null,
+				url
+			};
+		}
+	} catch {
+		return {
+			isInternal: false,
+			route: null,
+			url: null
+		};
+	}
 }

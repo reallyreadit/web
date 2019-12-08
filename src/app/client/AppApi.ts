@@ -69,6 +69,12 @@ export default class extends AppApi {
 			appVersion: new SemanticVersion(deviceInfo.appVersion)
 		};
 	}
+	public openExternalUrl(url: string) {
+		this._messagingContext.sendMessage({
+			type: 'openExternalUrl',
+			data: url
+		});
+	}
 	public readArticle(reference: ArticleReference) {
 		this._messagingContext.sendMessage({
 			type: 'readArticle',

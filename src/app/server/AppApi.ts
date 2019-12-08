@@ -5,6 +5,9 @@ import DeviceInfo from '../../common/models/app/DeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
 
 export default class extends AppApi {
+	public openExternalUrl(url: string) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public readArticle(reference: ArticleReference) {
 		throw new Error('Operation not supported in server environment');
 	}

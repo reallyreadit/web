@@ -28,9 +28,12 @@ import Rating from '../../../../common/models/Rating';
 interface Props {
 	highlightedCommentId: string | null,
 	onClearAlerts: (alert: Alert) => void,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetInboxPosts: FetchFunctionWithParams<InboxPostsQuery, PageResult<Post>>,
+	onNavTo: (url: string) => boolean,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -118,8 +121,11 @@ class InboxScreen extends React.Component<Props, State> {
 									<li key={post.date}>
 										<PostDetails
 											highlightedCommentId={this.props.highlightedCommentId}
+											onCloseDialog={this.props.onCloseDialog}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
+											onOpenDialog={this.props.onOpenDialog}
 											onRateArticle={this.props.onRateArticle}
 											onRead={this.props.onReadArticle}
 											onPost={this.props.onPostArticle}

@@ -15,8 +15,11 @@ import Rating from '../models/Rating';
 interface Props {
 	highlightedCommentId?: string,
 	highlightedPostId?: string,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onNavTo: (url: string) => boolean,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -57,8 +60,11 @@ export default class PostDetails extends React.Component<Props> {
 				{this.props.post.comment ?
 					<CommentDetails
 						comment={createCommentThread(this.props.post)}
+						onCloseDialog={this.props.onCloseDialog}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
+						onOpenDialog={this.props.onOpenDialog}
 						onShare={this.props.onShare}
 						onViewProfile={this.props.onViewProfile}
 						onViewThread={this.props.onViewThread}

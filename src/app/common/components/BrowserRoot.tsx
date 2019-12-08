@@ -14,7 +14,7 @@ import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
 import BrowserApi from '../BrowserApi';
 import ExtensionApi from '../ExtensionApi';
-import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
+import { findRouteByKey, findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import UpdateToast from './UpdateToast';
@@ -121,6 +121,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _dismissRedirectBanner = () => {
 		this.setState({ showRedirectBanner: false });
 	};
+
+	// routing
+	private readonly _navTo = (url: string) => {
+		const result = parseUrlForRoute(url);
+		if (result.isInternal && result.route) {
+			this.setScreenState({
+				key: result.route.screenKey,
+				method: 'push',
+				urlParams: result.route.getPathParams ?
+					result.route.getPathParams(result.url.pathname) :
+					null
+			});
+			return true;
+		} else if (!result.isInternal && result.url) {
+			window.open(result.url.href, '_blank');
+			return true;
+		}
+		return false;
+	}
 
 	// screens
 	private readonly _viewAdminPage = () => {
@@ -234,6 +253,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
 				onInstallExtension: this._installExtension,
+				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
@@ -259,11 +279,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				marketingScreenVariant: this.props.marketingScreenVariant,
 				onClearAlerts: this._clearAlerts,
+				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
+				onNavTo: this._navTo,
+				onOpenDialog: this._dialog.openDialog,
 				onInstallExtension: this._installExtension,
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onPostArticle: this._openPostDialog,
@@ -284,9 +307,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Inbox,
 				{
 					onClearAlerts: this._clearAlerts,
+					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
+					onNavTo: this._navTo,
+					onOpenDialog: this._dialog.openDialog,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -334,6 +360,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
 				onInstallExtension: this._installExtension,
+				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
 				onPostArticle: this._openPostDialog,

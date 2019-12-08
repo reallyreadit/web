@@ -21,12 +21,13 @@ export default (props: {
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
+	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (data: ShareData) => ShareChannel[],
-	onViewProfile?: (userName: string) => void,
+	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }) => {
 	const isAllowedToPost = props.article && props.user && props.article.isRead;
@@ -51,11 +52,7 @@ export default (props: {
 								<CommentDetails
 									comment={comment}
 									highlightedCommentId={props.highlightedCommentId}
-									onCloseDialog={
-										isAllowedToPost ?
-											props.onCloseDialog :
-											null
-									}
+									onCloseDialog={props.onCloseDialog}
 									onCopyTextToClipboard={props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 									onDeleteComment={
@@ -63,11 +60,8 @@ export default (props: {
 											props.onDeleteComment :
 											null
 									}
-									onOpenDialog={
-										isAllowedToPost ?
-											props.onOpenDialog :
-											null
-									}
+									onNavTo={props.onNavTo}
+									onOpenDialog={props.onOpenDialog}
 									onPostComment={
 										isAllowedToPost ?
 											props.onPostComment :

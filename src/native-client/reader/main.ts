@@ -144,10 +144,13 @@ function insertBookmarkPrompt() {
 let
 	embedProps: Partial<EmbedProps> = {
 		onDeleteComment: deleteComment,
+		onNavTo: navTo,
+		onOpenExternalUrl: openExternalUrl,
 		onPostArticle: postArticle,
 		onPostComment: postComment,
 		onPostCommentAddendum: postCommentAddendum,
 		onPostCommentRevision: postCommentRevision,
+		onReadArticle: readArticle,
 		onShare: share
 	},
 	embedRootElement: HTMLDivElement;
@@ -188,6 +191,20 @@ function render(props: Partial<EmbedProps>) {
 		),
 		embedRootElement
 	);
+}
+
+function navTo(url: string) {
+	messagingContext.sendMessage({
+		type: 'navTo',
+		data: url
+	});
+}
+
+function openExternalUrl(url: string) {
+	messagingContext.sendMessage({
+		type: 'openExternalUrl',
+		data: url
+	});
 }
 
 function postArticle(form: PostForm) {
@@ -312,6 +329,13 @@ function deleteComment(form: CommentRevisionForm) {
 			);
 		}
 	);
+}
+
+function readArticle(slug: string) {
+	messagingContext.sendMessage({
+		type: 'readArticle',
+		data: slug
+	});
 }
 
 function share(data: ShareData) {

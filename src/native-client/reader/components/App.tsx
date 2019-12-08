@@ -22,15 +22,21 @@ import CommentAddendumForm from '../../../common/models/social/CommentAddendumFo
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import ContentBox from '../../../common/components/ContentBox';
 import SpinnerIcon from '../../../common/components/SpinnerIcon';
+import { findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
+import ScreenKey from '../../../common/routing/ScreenKey';
 
 export interface Props {
 	article: UserArticle
 	comments: Fetchable<CommentThread[]>,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
+	onNavTo: (url: string) => void,
+	onOpenExternalUrl: (url: string) => void,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+	onReadArticle: (slug: string) => void,
 	onShare: (data: ShareData) => void,
 	user: UserAccount
 }
@@ -62,8 +68,33 @@ export default class App extends React.Component<
 		);
 	};
 
+	// profile links
+	private readonly _viewProfile = (userName: string) => {
+		this.props.onNavTo(
+			this._createAbsoluteUrl(
+				findRouteByKey(routes, ScreenKey.Profile).createUrl({ userName })
+			)
+		);
+	};
+
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
+	private readonly _navTo = (url: string) => {
+		const result = parseUrlForRoute(url);
+		if (result.isInternal && result.route) {
+			if (result.route.screenKey === ScreenKey.Read) {
+				const params = result.route.getPathParams(result.url.pathname);
+				this.props.onReadArticle(params['sourceSlug'] + '_' + params['articleSlug']);
+			} else {
+				this.props.onNavTo(result.url.href);
+			}
+			return true;
+		} else if (!result.isInternal && result.url) {
+			this.props.onOpenExternalUrl(result.url.href);
+			return true;
+		}
+		return false;
+	}
 
 	// sharing
 	private readonly _handleShareRequest = (data: ShareData) => {
@@ -106,11 +137,13 @@ export default class App extends React.Component<
 						onCopyTextToClipboard={this._copyTextToClipboard}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onDeleteComment={this.props.onDeleteComment}
+						onNavTo={this._navTo}
 						onOpenDialog={this._dialog.openDialog}
 						onPostComment={this.props.onPostComment}
 						onPostCommentAddendum={this.props.onPostCommentAddendum}
 						onPostCommentRevision={this.props.onPostCommentRevision}
 						onShare={this._handleShareRequest}
+						onViewProfile={this._viewProfile}
 						user={this.props.user}
 					/>}
 				<DialogManager

@@ -32,10 +32,13 @@ import Rating from '../../../../common/models/Rating';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
 	onGetFolloweesPosts: FetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>,
+	onNavTo: (url: string) => boolean,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onOpenMenu: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -335,8 +338,11 @@ class HomeScreen extends React.Component<Props, State> {
 							isPaginated={false}
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}
+							onCloseDialog={this.props.onCloseDialog}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onNavTo={this.props.onNavTo}
+							onOpenDialog={this.props.onOpenDialog}
 							onParamsChanged={this._changeParams}
 							onRateArticle={this.props.onRateArticle}
 							onPostArticle={this.props.onPostArticle}

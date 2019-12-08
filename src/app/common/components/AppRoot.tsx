@@ -18,7 +18,7 @@ import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys 
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
-import { findRouteByLocation } from '../../../common/routing/Route';
+import { findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
@@ -68,6 +68,29 @@ export default class extends Root<
 	private readonly _openMenu = () => {
 		this.setState({ menuState: 'opened' });
 	};
+
+	// routing
+	private readonly _navTo = (url: string) => {
+		const result = parseUrlForRoute(url);
+		if (result.isInternal && result.route) {
+			if (result.route.screenKey === ScreenKey.Read) {
+				const params = result.route.getPathParams(result.url.pathname);
+				this.props.appApi.readArticle({ slug: params['sourceSlug'] + '_' + params['articleSlug'] });
+			} else {
+				this.pushScreen(
+					result.route.screenKey,
+					result.route.getPathParams ?
+						result.route.getPathParams(result.url.pathname) :
+						null
+				);
+			}
+			return true;
+		} else if (!result.isInternal && result.url) {
+			this.props.appApi.openExternalUrl(result.url.href);
+			return true;
+		}
+		return false;
+	}
 
 	// screens
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
@@ -171,6 +194,7 @@ export default class extends Root<
 				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
+				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
@@ -187,10 +211,13 @@ export default class extends Root<
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,
+				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
+				onNavTo: this._navTo,
+				onOpenDialog: this._dialog.openDialog,
 				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
@@ -208,9 +235,12 @@ export default class extends Root<
 				ScreenKey.Inbox,
 				{
 					onClearAlerts: this._clearAlerts,
+					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
+					onNavTo: this._navTo,
+					onOpenDialog: this._dialog.openDialog,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -255,6 +285,7 @@ export default class extends Root<
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
+				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
 				onPostArticle: this._openPostDialog,

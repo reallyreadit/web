@@ -218,7 +218,11 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 						id,
 						produce<Screen<Fetchable<UserArticle>>>(currentState => {
 							currentState.componentState = article;
-							currentState.title = article.value.title;
+							if (article.value) {
+								currentState.title = article.value.title;
+							} else {
+								currentState.title = 'Article not found';
+							}
 						})
 					);
 				});
@@ -228,7 +232,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				key,
 				location,
 				templateSection: shouldShowComments(sharedState.user, sharedState.isExtensionInstalled) ? null : TemplateSection.None,
-				title: formatFetchable(article, article => article.title, 'Loading...')
+				title: formatFetchable(article, article => article.title, 'Loading...', 'Article not found.')
 			};
 		},
 		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => {

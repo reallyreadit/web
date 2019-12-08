@@ -9,6 +9,7 @@ import Button from '../../../../common/components/Button';
 
 interface Props {
 	description: string,
+	errorMessage?: string,
 	extensionBypass?: React.ReactNode,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
@@ -41,71 +42,77 @@ export default class OnboardingScreen extends React.Component<Props> {
 							/>
 						</a>
 					</div>
-					{this.props.isExtensionInstalled == null || !this.props.description ?
-						<Spinner /> :
-						<>
-							<div className="description">
-								<span>Taking you to:</span>
-								<strong>
-									{this.props.description}
-								</strong>
-							</div>
-							{isIosDevice(window.navigator.userAgent) ?
-								<div className="prompt download ios">
-									<a
-										className="text"
-										href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
-										onClick={this.props.onCopyAppReferrerTextToClipboard}
-									>
-										Download the app to continue
-										<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-									</a>
-								</div> :
-								this.props.user ?
-									this.props.isBrowserCompatible ?
-										<div className="prompt download chrome">
-											<a
-												className="text"
-												onClick={this.props.onInstallExtension}
-											>
-												Add the Chrome extension to continue
-												<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-											</a>
-											{this.props.extensionBypass ?
-												<div className="bypass">
-													{this.props.extensionBypass}
-												</div> :
-												null}
-										</div> :
-										<div className="prompt unsupported">
-											<span className="text">Get Readup on iOS and Chrome</span>
-											<div className="badges">
-												<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
-													<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-												</a>
-												<a onClick={this.props.onInstallExtension}>
+					{this.props.errorMessage ?
+						<div className="description">
+							<strong>
+								{this.props.errorMessage}
+							</strong>
+						</div> :
+						this.props.isExtensionInstalled == null || !this.props.description ?
+							<Spinner /> :
+							<>
+								<div className="description">
+									<span>Taking you to:</span>
+									<strong>
+										{this.props.description}
+									</strong>
+								</div>
+								{isIosDevice(window.navigator.userAgent) ?
+									<div className="prompt download ios">
+										<a
+											className="text"
+											href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
+											onClick={this.props.onCopyAppReferrerTextToClipboard}
+										>
+											Download the app to continue
+											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+										</a>
+									</div> :
+									this.props.user ?
+										this.props.isBrowserCompatible ?
+											<div className="prompt download chrome">
+												<a
+													className="text"
+													onClick={this.props.onInstallExtension}
+												>
+													Add the Chrome extension to continue
 													<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
 												</a>
+												{this.props.extensionBypass ?
+													<div className="bypass">
+														{this.props.extensionBypass}
+													</div> :
+													null}
+											</div> :
+											<div className="prompt unsupported">
+												<span className="text">Get Readup on iOS and Chrome</span>
+												<div className="badges">
+													<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+														<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+													</a>
+													<a onClick={this.props.onInstallExtension}>
+														<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+													</a>
+												</div>
+												{this.props.unsupportedBypass}
+											</div> :
+										<div className="prompt authenticate">
+											<span className="text">Sign up or log in to continue</span>
+											<div className="buttons">
+												<Button
+													intent="loud"
+													onClick={this.props.onShowCreateAccountDialog}
+													size="large"
+													text="Sign Up"
+												/>
+												<Button
+													onClick={this.props.onShowSignInDialog}
+													size="large"
+													text="Log In"
+												/>
 											</div>
-											{this.props.unsupportedBypass}
-										</div> :
-									<div className="prompt authenticate">
-										<span className="text">Sign up or log in to continue</span>
-										<div className="buttons">
-											<Button
-												intent="loud"
-												onClick={this.props.onShowCreateAccountDialog}
-												size="large"
-												text="Sign Up"
-											/>
-											<Button
-												onClick={this.props.onShowSignInDialog}
-												size="large"
-												text="Log In"
-											/>
-										</div>
-									</div>}
-						</>}
+										</div>}
+							</>}
 				</div>
 			</div>
 		);

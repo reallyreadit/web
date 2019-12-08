@@ -64,6 +64,7 @@ interface Props {
 	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
 	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 	onInstallExtension: () => void,
+	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onOpenPasswordResetRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
@@ -447,105 +448,115 @@ export class ProfileScreen extends React.Component<Props, State> {
 			<ScreenContainer className="profile-screen_1u1j1e">
 				{this.state.profile.isLoading || this.state.posts.isLoading ?
 					<LoadingOverlay position="static" /> :
-					<>
-						<div className="profile">
-							<div className="user-name">
-								<span className="name">{this.state.profile.value.userName}</span>
-								{this.state.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
-									<LeaderboardBadges badge={this.state.profile.value.leaderboardBadge} /> :
-									null}
-							</div>
-							{isOwnProfile ?
-								<>
-									{this.state.profile.value.followeeCount ?
-										<ActionLink
-											className="following-count followees"
-											onClick={this._showFollowees}
-											text={followeesText}
-										/> :
-										<span className="following-count followees">{followeesText}</span>}
-									<Button
-										onClick={this._openGetFollowersDialog}
-										text="Get Followers"
-										intent="loud"
-										size="large"
-									/>
-								</> :
-								<FollowButton
-									following={this.state.profile.value}
-									isBusy={this.state.isFollowingButtonBusy}
-									onFollow={this._followUser}
-									onUnfollow={this._unfollowUser}
-									size="large"
-								/>}
-							{this.state.profile.value.followerCount ?
-								<ActionLink
-									badge={isOwnProfile && this.props.userAccount.followerAlertCount}
-									className="following-count followers"
-									onClick={this._showFollowers}
-									text={followersText}
-								/> :
-								<span className="following-count followers">{followersText}</span>}
-						</div>
-						{this.props.userAccount && !this.props.isDesktopDevice && !this.props.isIosDevice ?
-							<ContentBox className="unsupported">
-								<span className="text">Get Readup on iOS and Chrome</span>
-								<div className="badges">
-									<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
-										<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-									</a>
-									<a onClick={this.props.onInstallExtension}>
-										<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-									</a>
+					!this.state.profile.value || !this.state.posts.value ?
+						<InfoBox
+							position="static"
+							style="normal"
+						>
+							<p>Profile not found.</p>
+						</InfoBox> :
+						<>
+							<div className="profile">
+								<div className="user-name">
+									<span className="name">{this.state.profile.value.userName}</span>
+									{this.state.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
+										<LeaderboardBadges badge={this.state.profile.value.leaderboardBadge} /> :
+										null}
 								</div>
-							</ContentBox> :
-							null}
-						{this.state.posts.value.items.length ?
-							<>
-								<ArticleList>
-									{this.state.posts.value.items.map(
-										post => (
-											<li key={post.date}>
-												<PostDetails
-													highlightedCommentId={this.props.highlightedCommentId}
-													highlightedPostId={this.props.highlightedPostId}
-													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onRateArticle={this.props.onRateArticle}
-													onRead={this.props.onReadArticle}
-													onPost={this.props.onPostArticle}
-													onShare={this.props.onShare}
-													onToggleStar={this.props.onToggleArticleStar}
-													onViewComments={this.props.onViewComments}
-													onViewThread={this.props.onViewThread}
-													post={post}
-													user={this.props.userAccount}
-												/>
-											</li>
-										)
-									)}
-								</ArticleList>
-								{this.props.userAccount ?
-									<PageSelector
-										pageNumber={this.state.posts.value.pageNumber}
-										pageCount={this.state.posts.value.pageCount}
-										onChange={this._changePageNumber}
-									/> :
-									null}
-							</> :
-							<InfoBox
-								position="static"
-								style="normal"
-							>
 								{isOwnProfile ?
 									<>
-										<p>You haven't posted anything.</p>
+										{this.state.profile.value.followeeCount ?
+											<ActionLink
+												className="following-count followees"
+												onClick={this._showFollowees}
+												text={followeesText}
+											/> :
+											<span className="following-count followees">{followeesText}</span>}
+										<Button
+											onClick={this._openGetFollowersDialog}
+											text="Get Followers"
+											intent="loud"
+											size="large"
+										/>
 									</> :
-									<>
-										<p>This user hasn't posted anything.</p>
-									</>}
-							</InfoBox>}
-					</>}
+									<FollowButton
+										following={this.state.profile.value}
+										isBusy={this.state.isFollowingButtonBusy}
+										onFollow={this._followUser}
+										onUnfollow={this._unfollowUser}
+										size="large"
+									/>}
+								{this.state.profile.value.followerCount ?
+									<ActionLink
+										badge={isOwnProfile && this.props.userAccount.followerAlertCount}
+										className="following-count followers"
+										onClick={this._showFollowers}
+										text={followersText}
+									/> :
+									<span className="following-count followers">{followersText}</span>}
+							</div>
+							{this.props.userAccount && !this.props.isDesktopDevice && !this.props.isIosDevice ?
+								<ContentBox className="unsupported">
+									<span className="text">Get Readup on iOS and Chrome</span>
+									<div className="badges">
+										<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+										</a>
+										<a onClick={this.props.onInstallExtension}>
+											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+										</a>
+									</div>
+								</ContentBox> :
+								null}
+							{this.state.posts.value.items.length ?
+								<>
+									<ArticleList>
+										{this.state.posts.value.items.map(
+											post => (
+												<li key={post.date}>
+													<PostDetails
+														highlightedCommentId={this.props.highlightedCommentId}
+														highlightedPostId={this.props.highlightedPostId}
+														onCloseDialog={this.props.onCloseDialog}
+														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+														onNavTo={this.props.onNavTo}
+														onOpenDialog={this.props.onOpenDialog}
+														onRateArticle={this.props.onRateArticle}
+														onRead={this.props.onReadArticle}
+														onPost={this.props.onPostArticle}
+														onShare={this.props.onShare}
+														onToggleStar={this.props.onToggleArticleStar}
+														onViewComments={this.props.onViewComments}
+														onViewThread={this.props.onViewThread}
+														post={post}
+														user={this.props.userAccount}
+													/>
+												</li>
+											)
+										)}
+									</ArticleList>
+									{this.props.userAccount ?
+										<PageSelector
+											pageNumber={this.state.posts.value.pageNumber}
+											pageCount={this.state.posts.value.pageCount}
+											onChange={this._changePageNumber}
+										/> :
+										null}
+								</> :
+								<InfoBox
+									position="static"
+									style="normal"
+								>
+									{isOwnProfile ?
+										<>
+											<p>You haven't posted anything.</p>
+										</> :
+										<>
+											<p>This user hasn't posted anything.</p>
+										</>}
+								</InfoBox>}
+						</>}
 			</ScreenContainer>
 		)
 	}

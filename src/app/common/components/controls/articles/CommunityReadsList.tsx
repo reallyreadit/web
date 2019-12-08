@@ -107,8 +107,11 @@ export default class extends React.PureComponent<{
 	isPaginated: boolean,
 	maxLength: number | null,
 	minLength: number | null,
+	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onNavTo: (url: string) => boolean,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onParamsChanged: (view: View, sort: CommunityReadSort, timeWindow: CommunityReadTimeWindow | null, minLength: number | null, maxLength: number | null) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -298,8 +301,11 @@ export default class extends React.PureComponent<{
 										post => (
 											<li key={post.date}>
 												<PostDetails
+													onCloseDialog={this.props.onCloseDialog}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onNavTo={this.props.onNavTo}
+													onOpenDialog={this.props.onOpenDialog}
 													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}
 													onPost={this.props.onPostArticle}

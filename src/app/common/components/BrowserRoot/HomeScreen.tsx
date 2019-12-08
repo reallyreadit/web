@@ -43,12 +43,15 @@ interface Props {
 	isExtensionInstalled: boolean | null,
 	marketingScreenVariant: number,
 	onClearAlerts: (alert: Alert) => void,
+	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
 	onGetFolloweesPosts: FetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>,
 	onInstallExtension: () => void,
+	onNavTo: (url: string) => boolean,
+	onOpenDialog: (dialog: React.ReactNode) => void,
 	onOpenCreateAccountDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -357,8 +360,11 @@ class HomeScreen extends React.Component<Props, State> {
 								isPaginated
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
+								onCloseDialog={this.props.onCloseDialog}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onNavTo={this.props.onNavTo}
+								onOpenDialog={this.props.onOpenDialog}
 								onParamsChanged={this._changeParams}
 								onPostArticle={this.props.onPostArticle}
 								onRateArticle={this.props.onRateArticle}
