@@ -6,11 +6,8 @@ export default class RequestStore {
 	constructor(exchanges: Exchange[] = []) {
 		this._exchanges = exchanges;
 	}
-	private getExchange(request: Request) {
+	public getExchange(request: Request) {
 		return this.exchanges.find(exchange => areEqual(exchange.request, request));
-	}
-	public getResponseData(request: Request) {
-		return this.getExchange(request).responseData;
 	}
 	public addRequest(request: Request) {
 		if (!this.getExchange(request)) {

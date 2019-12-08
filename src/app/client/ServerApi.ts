@@ -71,10 +71,18 @@ export default class extends ServerApi {
 	} 
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (!this._isInitialized) {
-			return {
-				isLoading: false,
-				value: this._reqStore.getResponseData(request) as T
-			};
+			const exchange = this._reqStore.getExchange(request);
+			if (exchange.responseData) {
+				return {
+					isLoading: false,
+					value: exchange.responseData as T
+				};
+			} else {
+				return {
+					isLoading: false,
+					errors: exchange.responseErrors
+				};
+			}
 		} else {
 			this.fetchJson<T>('GET', request)
 				.then(value => callback({ isLoading: false, value }))

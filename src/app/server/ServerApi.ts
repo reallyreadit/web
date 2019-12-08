@@ -68,10 +68,18 @@ export default class extends ServerApi {
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (this._isInitialized) {
-			return {
-				isLoading: false,
-				value: this._reqStore.getResponseData(request) as T
-			};
+			const exchange = this._reqStore.getExchange(request);
+			if (exchange.responseData) {
+				return {
+					isLoading: false,
+					value: exchange.responseData as T
+				};
+			} else {
+				return {
+					isLoading: false,
+					errors: exchange.responseErrors
+				};
+			}
 		} else {
 			this._reqStore.addRequest(request);
 			return { isLoading: true };
@@ -81,21 +89,28 @@ export default class extends ServerApi {
 		return this.fetchJson<T>('POST', request);
 	}
 	public processRequests() {
-		// TODO: support catching errors and assigning to RequestData
 		return Promise
 			.all(
-				this._reqStore.exchanges
-					.map(
-						exchange => this
-							.fetchJson('GET', exchange.request)
-							.then(value => {
+				this._reqStore.exchanges.map(
+					exchange => this
+						.fetchJson('GET', exchange.request)
+						.then(
+							value => {
 								exchange.responseData = value;
-							})
-					)
+							}
+						)
+						.catch(
+							errors => {
+								exchange.responseErrors = errors;
+							}
+						)
+				)
 			)
-			.then(() => {
-				this._isInitialized = true;
-			});
+			.then(
+				() => {
+					this._isInitialized = true;
+				})
+			;
 	}
 	public hasAuthCookie() {
 		return !!this._authCookie.value;
