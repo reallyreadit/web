@@ -10,7 +10,7 @@ export default (
 		className="markdown-dialog_1fmodc"
 		closeButtonText="Ok"
 		onClose={props.onClose}
-		title="Formatting Guid"
+		title="Formatting Guide"
 	>
 		<table>
 			<thead>
