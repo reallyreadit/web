@@ -453,9 +453,12 @@ export default abstract class Root<
 				initialPath: this.props.initialLocation.path,
 				pushDevice: this.getPushDeviceForm()
 			})
-			.then(user => {
-				this.onUserSignedIn(user);
-			});
+			.then(
+				user => {
+					this.props.analytics.sendSignUp();
+					this.onUserSignedIn(user);
+				}
+			);
 	};
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi

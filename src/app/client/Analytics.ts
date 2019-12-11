@@ -24,6 +24,9 @@ export default class Analytics extends AnalyticsBase {
 	private isScreenParams(params: PageviewParams): params is PageviewScreenParams {
 		return (params as PageviewScreenParams).key != null;
 	}
+	public sendSignUp() {
+		gtag('event', 'sign_up', { method: 'email' });
+	}
 	public sendPageview(params: PageviewParams) {
 		let
 			page_title: string,
