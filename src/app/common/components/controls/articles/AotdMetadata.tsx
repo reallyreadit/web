@@ -21,7 +21,7 @@ export default (
 			<span>{`${props.article.hotScore} pts`}</span>
 			{props.article.firstPoster ?
 				<>
-					<span> - First poster: </span>
+					<span> - Scout: </span>
 					{!props.user || props.user.name !== props.article.firstPoster ?
 						<ProfileLink
 							onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
