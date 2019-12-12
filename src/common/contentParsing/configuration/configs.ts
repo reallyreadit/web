@@ -300,7 +300,7 @@ export default {
 			hostname: 'washingtonpost.com',
 			imageStrategy: LazyImageStrategy.WashingtonPostScaleUp,
 			textContainerSearch: {
-				selectorBlacklist: ['.pg-navigation', '.pg-article-bottom', '.utility-bar', '[data-qa="article-body-ad"]', '.hide-for-print']
+				selectorBlacklist: ['.pg-navigation', '.pg-article-bottom', '.utility-bar', '[data-qa="article-body-ad"]', '.hide-for-print', '.annotation-details']
 			},
 			textContainerFilter: {
 				attributeFullWordBlacklist: ['helper', 'interstitial']
@@ -310,7 +310,10 @@ export default {
 					elementSelectors: ['article header#pg-content p.pg-body-copy'],
 					parentElementSelector: 'article .article-body'
 				}
-			]
+			],
+			imageContainerSearch: {
+				selectorBlacklist: ['.annotation-details']
+			}
 		},
 		{
 			hostname: 'wired.com',
