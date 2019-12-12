@@ -299,9 +299,18 @@ export default {
 		{
 			hostname: 'washingtonpost.com',
 			imageStrategy: LazyImageStrategy.WashingtonPostScaleUp,
+			textContainerSearch: {
+				selectorBlacklist: ['.pg-navigation', '.pg-article-bottom', '.utility-bar', '[data-qa="article-body-ad"]', '.hide-for-print']
+			},
 			textContainerFilter: {
-				attributeFullWordBlacklist: ['interstitial']
-			}
+				attributeFullWordBlacklist: ['helper', 'interstitial']
+			},
+			transpositions: [
+				{
+					elementSelectors: ['article header#pg-content p.pg-body-copy'],
+					parentElementSelector: 'article .article-body'
+				}
+			]
 		},
 		{
 			hostname: 'wired.com',
