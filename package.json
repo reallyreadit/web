@@ -8,11 +8,11 @@
       "contentScript": 0.22,
       "extension": {
         "package": "2.5.0",
-        "content-parser": "1.0.10"
+        "content-parser": "1.0.11"
       },
       "native-client": {
-        "reader": "7.0.1",
-        "share-extension": "3.0.10"
+        "reader": "7.0.2",
+        "share-extension": "3.0.11"
       }
     }
   },
