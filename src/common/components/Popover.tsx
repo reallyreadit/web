@@ -69,18 +69,18 @@ export default class Popover extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<div
+			<span
 				className={classNames('popover_r7v81v', this.props.className)}
 				onAnimationEnd={this._handleAnimationEnd}
 				onBlur={this._handleBlur}
 				tabIndex={-1}
 			>
-				<div
+				<span
 					className="children"
 					onClick={this._handleChildrenClick}
 				>
 					{this.props.children}
-				</div>
+				</span>
 				{this.props.menuState !== MenuState.Closed ?
 					<Menu
 						isClosing={this.props.menuState === MenuState.Closing}
@@ -90,7 +90,7 @@ export default class Popover extends React.PureComponent<
 						{this.props.menuChildren}
 					</Menu>:
 					null}
-			</div>
+			</span>
 		);
 	}
 }
