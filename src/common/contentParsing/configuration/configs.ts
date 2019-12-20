@@ -89,6 +89,10 @@ export default {
 			]
 		},
 		{
+			hostname: 'gizmodo.com',
+			imageStrategy: LazyImageStrategy.GizmodoImgUrl
+		},
+		{
 			hostname: 'abcnews.go.com',
 			textContainerSearch: {
 				selectorBlacklist: ['[class*="insert"]']

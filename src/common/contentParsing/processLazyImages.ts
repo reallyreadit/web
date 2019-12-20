@@ -2,6 +2,7 @@ import { createMetadataElements } from "./figureContent";
 
 export enum LazyImageStrategy {
 	DataSrcSrcset,
+	GizmodoImgUrl,
 	GoverningImgSrcCorrection,
 	MediumScaleUp,
 	NautilusHostSwap,
@@ -92,6 +93,17 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 								}
 							}
 						);
+				}
+			);
+			break;
+		case LazyImageStrategy.GizmodoImgUrl:
+			createObserver(
+				Array.from(document.querySelectorAll('figure[data-id][data-format]')),
+				(figure: HTMLElement) => {
+					const img = figure.getElementsByTagName('img')[0];
+					if (img && img.src.startsWith('data:')) {
+						img.src = `https://i.kinja-img.com/gawker-media/image/upload/c_scale,f_auto,fl_progressive,q_80,w_${selectImageWidth([80, 320, 470, 800, 1600])}/${figure.dataset['id']}.${figure.dataset['format'].toLowerCase()}`;
+					}
 				}
 			);
 			break;
