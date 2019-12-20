@@ -66,7 +66,8 @@ function selectImageWidth(widths: number[]) {
 	const sortedWidths = widths
 		.slice()
 		.sort((a, b) => a - b);
-	return sortedWidths.find(width => width >= window.innerWidth) || sortedWidths[sortedWidths.length - 1];
+	const screenPixelWidth = window.screen.availWidth * window.devicePixelRatio;
+	return sortedWidths.find(width => width >= screenPixelWidth) || sortedWidths[sortedWidths.length - 1];
 }
 export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 	switch (strategy) {
