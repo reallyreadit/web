@@ -11,7 +11,7 @@
 	left: 0;
 	z-index: 100;
 }
-.dialog-manager_b1yvhp > .container {
+.dialog-manager_b1yvhp > .overlay {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -23,38 +23,50 @@
 	justify-content: flex-start;
 	z-index: 1;
 }
-.dialog-manager_b1yvhp > .container.light {
+.dialog-manager_b1yvhp.light > .overlay:not(.animated) {
+	background-color: rgba(255, 255, 255, 0.3);
+}
+.dialog-manager_b1yvhp.dark > .overlay:not(.animated) {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+.dialog-manager_b1yvhp.light > .overlay.animated {
 	animation: dialog-manager_b1yvhp-overlay-fade-in-light 250ms forwards;
 }
-.dialog-manager_b1yvhp > .container.dark {
+.dialog-manager_b1yvhp.dark > .overlay.animated {
 	animation: dialog-manager_b1yvhp-overlay-fade-in-dark 250ms forwards;
 }
-.dialog-manager_b1yvhp > .container.light.closing {
-	animation: dialog-manager_b1yvhp-overlay-fade-out-light 250ms forwards;
-}
-.dialog-manager_b1yvhp > .container.dark.closing {
-	animation: dialog-manager_b1yvhp-overlay-fade-out-dark 250ms forwards;
-}
-.dialog-manager_b1yvhp > .container.light.obscured {
+.dialog-manager_b1yvhp.light > .overlay.animated.obscured {
 	animation: dialog-manager_b1yvhp-overlay-obscured-light 250ms forwards;
 }
-.dialog-manager_b1yvhp > .container.dark.obscured {
+.dialog-manager_b1yvhp.dark > .overlay.animated.obscured {
 	animation: dialog-manager_b1yvhp-overlay-obscured-dark 250ms forwards;
 }
-.dialog-manager_b1yvhp > .container::before {
+.dialog-manager_b1yvhp.light > .overlay.animated.closing {
+	animation: dialog-manager_b1yvhp-overlay-fade-out-light 250ms forwards;
+}
+.dialog-manager_b1yvhp.dark > .overlay.animated.closing {
+	animation: dialog-manager_b1yvhp-overlay-fade-out-dark 250ms forwards;
+}
+.dialog-manager_b1yvhp > .overlay::before {
 	content: "";
 	min-height: 10px;
 	flex: 1 1 auto;
 }
-.dialog-manager_b1yvhp > .container.top::before {
+.dialog-manager_b1yvhp.top > .overlay::before {
 	content: "";
 	min-height: 20px;
 	flex: 0 1 auto;
 }
-.dialog-manager_b1yvhp > .container::after {
+.dialog-manager_b1yvhp > .overlay::after {
 	content: "";
 	min-height: 10px;
 	flex: 3 1 auto;
+}
+.dialog-manager_b1yvhp > .overlay > .container {
+	animation: dialog-manager_b1yvhp-dialog-slide-in 250ms forwards;
+}
+.dialog-manager_b1yvhp > .overlay > .container.closing {
+	animation: dialog-manager_b1yvhp-dialog-slide-out 250ms forwards;
 }
 
 @keyframes dialog-manager_b1yvhp-overlay-fade-in-light {
@@ -103,5 +115,26 @@
 	}
 	to {
 		background-color: rgba(0, 0, 0, 0);
+	}
+}
+
+@keyframes dialog-manager_b1yvhp-dialog-slide-in {
+	from {
+		transform: translateY(20%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+@keyframes dialog-manager_b1yvhp-dialog-slide-out {
+	from {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateY(20%);
+		opacity: 0;
 	}
 }

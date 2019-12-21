@@ -312,11 +312,7 @@ export default class extends Root<
 			...this.state,
 			dialogs: (
 				dialog ?
-					[{
-						element: dialog,
-						key: 0,
-						state: 'opening'
-					}] :
+					[this._dialog.createDialog(dialog)] :
 					[]
 			),
 			isPoppingScreen: false,
@@ -421,11 +417,7 @@ export default class extends Root<
 						this.setState({
 							dialogs: (
 								dialog ?
-									[{
-										element: dialog,
-										key: 0,
-										state: 'opening'
-									}] :
+									[this._dialog.createDialog(dialog)] :
 									[]
 							),
 							isPoppingScreen: false,

@@ -405,11 +405,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					route.dialogKey !== DialogKey.Followers ||
 					props.initialUser
 				) ?
-					[{
-						element: locationState.dialog,
-						key: 0,
-						state: 'opening'
-					}] :
+					[this._dialog.createDialog(locationState.dialog)] :
 					[]
 			),
 			isExtensionInstalled: null,
