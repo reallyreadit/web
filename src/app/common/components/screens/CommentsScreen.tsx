@@ -58,51 +58,49 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => { };
 	public render() {
 		return (
-			<ScreenContainer>
-				<div className="comments-screen_udh2l6">
-					{this.props.article.isLoading || this.props.comments.isLoading ?
-						<LoadingOverlay /> :
-						!this.props.article.value || !this.props.comments.value ?
-							<InfoBox
-								position="absolute"
-								style="normal"
-							>
-								<p>Error loading comments.</p>
-							</InfoBox> :
-							<>
-								<ArticleDetails
-									article={this.props.article.value}
-									isUserSignedIn={!!this.props.user}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onRateArticle={this.props.onRateArticle}
-									onPost={this.props.onPostArticle}
-									onRead={this.props.onReadArticle}
-									onShare={this.props.onShare}
-									onToggleStar={this.props.onToggleArticleStar}
-									onViewComments={this._noop}
-								/>
-								<CommentsSection
-									article={this.props.article.value}
-									comments={this.props.comments.value}
-									highlightedCommentId={this.props.highlightedCommentId}
-									imagePath="/images"
-									noCommentsMessage="Be the first to post a comment on this article."
-									onCloseDialog={this.props.onCloseDialog}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onDeleteComment={this.props.onDeleteComment}
-									onNavTo={this.props.onNavTo}
-									onOpenDialog={this.props.onOpenDialog}
-									onPostComment={this.props.onPostComment}
-									onPostCommentAddendum={this.props.onPostCommentAddendum}
-									onPostCommentRevision={this.props.onPostCommentRevision}
-									onShare={this.props.onShare}
-									onViewProfile={this.props.onViewProfile}
-									user={this.props.user}
-								/>
-							</>}
-				</div>
+			<ScreenContainer className="comments-screen_udh2l6">
+				{this.props.article.isLoading || this.props.comments.isLoading ?
+					<LoadingOverlay position="static" /> :
+					!this.props.article.value || !this.props.comments.value ?
+						<InfoBox
+							position="static"
+							style="normal"
+						>
+							<p>Error loading comments.</p>
+						</InfoBox> :
+						<>
+							<ArticleDetails
+								article={this.props.article.value}
+								isUserSignedIn={!!this.props.user}
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onRateArticle={this.props.onRateArticle}
+								onPost={this.props.onPostArticle}
+								onRead={this.props.onReadArticle}
+								onShare={this.props.onShare}
+								onToggleStar={this.props.onToggleArticleStar}
+								onViewComments={this._noop}
+							/>
+							<CommentsSection
+								article={this.props.article.value}
+								comments={this.props.comments.value}
+								highlightedCommentId={this.props.highlightedCommentId}
+								imagePath="/images"
+								noCommentsMessage="Be the first to post a comment on this article."
+								onCloseDialog={this.props.onCloseDialog}
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onDeleteComment={this.props.onDeleteComment}
+								onNavTo={this.props.onNavTo}
+								onOpenDialog={this.props.onOpenDialog}
+								onPostComment={this.props.onPostComment}
+								onPostCommentAddendum={this.props.onPostCommentAddendum}
+								onPostCommentRevision={this.props.onPostCommentRevision}
+								onShare={this.props.onShare}
+								onViewProfile={this.props.onViewProfile}
+								user={this.props.user}
+							/>
+						</>}
 			</ScreenContainer>
 		);
 	}

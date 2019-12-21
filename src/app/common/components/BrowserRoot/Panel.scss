@@ -1,0 +1,40 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/Panel
+	cssComponentId: panel_zd0n2d
+*/
+
+.panel_zd0n2d {
+	overflow: hidden;
+}
+.panel_zd0n2d > .content {
+	max-width: 980px;
+	padding: 0 20px;
+	margin: 40px auto;
+}
+.panel_zd0n2d > .content > h2 {
+	font-weight: normal;
+	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+	text-align: center;
+}
+.panel_zd0n2d > .content > p {
+	margin: 20px 0;
+	font-family: 'Cambria (Regular)';
+	font-size: 16pt;
+	line-height: 1.35em;
+}
+.panel_zd0n2d > .content > .buttons {
+	margin: 40px 0;
+	text-align: center;
+	line-height: 0;
+}
+
+@media (max-width: 450px) {
+	.panel_zd0n2d > .content {
+		padding: 0 10px;
+		margin: 20px auto;
+	}
+	.panel_zd0n2d > .content > .buttons {
+		margin: 20px 0;
+	}
+}

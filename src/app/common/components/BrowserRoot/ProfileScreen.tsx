@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ProfileScreen, Deps, getProps } from '../screens/ProfileScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, TemplateSection } from '../Root';
+import { Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
 
 export default function createScreenFactory<TScreenKey>(
@@ -15,11 +15,6 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			templateSection: (
-				sharedState.user && deps.isDesktopDevice ?
-					null:
-					TemplateSection.Header
-			),
 			title: 'Profile'
 		}),
 		render: (state: Screen, sharedState: SharedState) => (

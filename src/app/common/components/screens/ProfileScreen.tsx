@@ -17,7 +17,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import { Screen, SharedState, TemplateSection } from '../Root';
+import { Screen, SharedState } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -404,7 +404,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 		) {
 			let profileCallback: (profile: Profile) => void;
 			if (this.props.userAccount && !prevProps.userAccount) {
-				this.props.onSetScreenState(this.props.screenId, () => ({ templateSection: null }));
 				if (this._followOnSignIn) {
 					if (!this.isOwnProfile()) {
 						this.setState({ isFollowingButtonBusy: true });
@@ -425,8 +424,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 					}
 					this._followOnSignIn = false;
 				}
-			} else if (!this.props.userAccount && prevProps.userAccount) {
-				this.props.onSetScreenState(this.props.screenId, () => ({ templateSection: TemplateSection.Header }));
 			}
 			this.fetchProfile(profileCallback);
 			this.fetchPosts(1);

@@ -39,7 +39,7 @@ export default class AotdView extends React.Component<{
 					/>
 					<ArticleDetails
 						article={this.props.aotd}
-						isUserSignedIn
+						isUserSignedIn={!!this.props.user}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onPost={this.props.onPostArticle}
@@ -74,7 +74,7 @@ export default class AotdView extends React.Component<{
 									/>
 									<ArticleDetails
 										article={article}
-										isUserSignedIn
+										isUserSignedIn={!!this.props.user}
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onPost={this.props.onPostArticle}

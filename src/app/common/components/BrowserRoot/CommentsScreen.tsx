@@ -4,44 +4,27 @@ import Fetchable from '../../../../common/Fetchable';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommentsScreen, { getPathParams, Props as CommentScreenProps } from '../screens/CommentsScreen';
-import { Screen, TemplateSection } from '../Root';
+import { Screen } from '../Root';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
 import { SharedState } from '../BrowserRoot';
-import { formatFetchable, formatPossessive } from '../../../../common/format';
-import OnboardingScreen from './OnboardingScreen';
-import { mergeComment, findComment, updateComment } from '../../../../common/comments';
+import { formatFetchable } from '../../../../common/format';
+import { mergeComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
 
-function shouldShowComments(
-	user: UserAccount | null,
-	isExtensionInstalled: boolean | null,
-	hasDeclinedExtensionInstallPrompt?: boolean
-) {
-	return (
-		!!user &&
-		(
-			isExtensionInstalled === true ||
-			hasDeclinedExtensionInstallPrompt === true
-		)
-	);
-}
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'comments' | 'onPostComment'>> {
 	articleSlug: string,
 	isBrowserCompatible: boolean | null,
-	isExtensionInstalled: boolean | null,
 	onCopyAppReferrerTextToClipboard: () => void,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
-	onInstallExtension: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<CommentThread>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterCommentPostedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
-	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onReloadArticle: (screenId: number, slug: string) => void,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void,
@@ -53,31 +36,10 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 class BrowserCommentsScreen extends React.Component<
 	Props,
 	{
-		comments: Fetchable<CommentThread[]>,
-		hasDeclinedExtensionInstallPrompt: boolean
+		comments: Fetchable<CommentThread[]>
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _declineExtensionInstallLink = (
-		<a
-			onClick={
-				() => {
-					this.setState({ hasDeclinedExtensionInstallPrompt: true });
-					this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
-						currentState.templateSection = shouldShowComments(
-								this.props.user,
-								this.props.isExtensionInstalled,
-								true
-							) ?
-								null :
-								TemplateSection.None;
-					}));
-				}
-			}
-		>
-			Skip
-		</a>
-	);
 	private readonly _postComment = (form: CommentForm) => {
 		return this.props
 			.onPostComment(form)
@@ -113,28 +75,8 @@ class BrowserCommentsScreen extends React.Component<
 					});
 				}
 			}),
-			props.onRegisterExtensionChangeHandler(isExtensionInstalled => {
-				this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
-					currentState.templateSection = shouldShowComments(
-							this.props.user,
-							isExtensionInstalled,
-							this.state.hasDeclinedExtensionInstallPrompt
-						) ?
-							null :
-							TemplateSection.None;
-				}));
-			}),
 			props.onRegisterUserChangeHandler(user => {
 				this.props.onReloadArticle(this.props.screenId, this.props.articleSlug);
-				this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
-					currentState.templateSection = shouldShowComments(
-							user,
-							this.props.isExtensionInstalled,
-							this.state.hasDeclinedExtensionInstallPrompt
-						) ?
-							null :
-							TemplateSection.None;
-				}));
 			})
 		);
 		this.state = {
@@ -143,62 +85,27 @@ class BrowserCommentsScreen extends React.Component<
 				this._asyncTracker.addCallback(comments => {
 					this.setState({ comments });
 				})
-			),
-			hasDeclinedExtensionInstallPrompt: false
+			)
 		};
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		let screen: React.ReactNode;
-		if (
-			shouldShowComments(
-				this.props.user,
-				this.props.isExtensionInstalled,
-				this.state.hasDeclinedExtensionInstallPrompt
-			)
-		) {
-			screen = (
-				<CommentsScreen
-					{
-					...{
-						...this.props,
-						comments: this.state.comments,
-						onPostComment: this._postComment
-					}
-					}
-				/>
-			);
-		} else {
-			let description: string;
-			if (this.props.article.value && this.state.comments.value) {
-				const comment = findComment(this.props.highlightedCommentId, this.state.comments.value);
-				if (comment) {
-					description = `${formatPossessive(comment.userAccount)} comment on "${comment.articleTitle}"`;
-				} else {
-					description = `Comments on "${this.props.article.value.title}"`;
+		return (
+			<CommentsScreen
+				{
+				...{
+					...this.props,
+					comments: this.state.comments,
+					onPostComment: this._postComment
 				}
-			} else {
-				description = 'Loading...';
-			}
-			screen = (
-				<OnboardingScreen
-					{
-					...{
-						...this.props,
-						description,
-						extensionBypass: this._declineExtensionInstallLink,
-						unsupportedBypass: this._declineExtensionInstallLink
-					}
-					}
-				/>
-			);
-		}
-		return screen;
+				}
+			/>
+		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'isExtensionInstalled' | 'onReloadArticle' | 'screenId' | 'user'>> & {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'onReloadArticle' | 'screenId' | 'user'>> & {
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 };
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
@@ -231,7 +138,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				componentState: article,
 				key,
 				location,
-				templateSection: shouldShowComments(sharedState.user, sharedState.isExtensionInstalled) ? null : TemplateSection.None,
 				title: formatFetchable(article, article => article.title, 'Loading...', 'Article not found.')
 			};
 		},
