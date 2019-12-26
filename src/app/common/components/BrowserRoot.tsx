@@ -33,7 +33,7 @@ import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
-import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
+import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -231,9 +231,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
+					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
+					onOpenCreateAccountDialog: this._openCreateAccountDialog,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,

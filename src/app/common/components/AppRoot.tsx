@@ -28,7 +28,7 @@ import createInboxScreenFactory from './screens/InboxScreen';
 import DialogKey from '../../../common/routing/DialogKey';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
+import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi
