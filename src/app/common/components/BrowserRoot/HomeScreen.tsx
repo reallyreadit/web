@@ -40,7 +40,6 @@ interface Props {
 	isBrowserCompatible: boolean,
 	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
-	marketingScreenVariant: number,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: () => void,
@@ -62,7 +61,6 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
-	onViewPrivacyPolicy: () => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
 	screenId: number,
@@ -426,12 +424,10 @@ class HomeScreen extends React.Component<Props, State> {
 		return (
 			<MarketingScreen
 				communityReads={this.state.communityReads}
-				isDesktopDevice={this.props.isDesktopDevice}
 				isIosDevice={this.props.isIosDevice}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onInstallExtension={this.props.onInstallExtension}
 				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}
@@ -440,9 +436,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onToggleArticleStar={this.props.onToggleArticleStar}
 				onViewAotdHistory={this.props.onViewAotdHistory}
 				onViewComments={this.props.onViewComments}
-				onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
 				onViewProfile={this.props.onViewProfile}
-				variant={this.props.marketingScreenVariant}
 				user={this.props.user}
 			/>
 		);

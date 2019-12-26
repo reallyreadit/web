@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Button from '../../../../common/components/Button';
 import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
@@ -14,16 +13,14 @@ import Rating from '../../../../common/models/Rating';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import Panel from './Panel';
-import AppleDownloadButton from './AppleDownloadButton';
+import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
-	isDesktopDevice: boolean,
 	isIosDevice: boolean | null,
 	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -32,10 +29,8 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
-	onViewPrivacyPolicy: () => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
-	variant: number
 }
 export default class MarketingScreen extends React.Component<
 	Props,
@@ -68,25 +63,19 @@ export default class MarketingScreen extends React.Component<
 		};
 	}
 	public render () {
-		let button: React.ReactNode;
-		if (this.props.isIosDevice) {
-			button = (
-				<AppleDownloadButton
-					onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-				/>
-			);
-		} else if (this.props.isIosDevice === false) {
-			button = (
-				<Button
-					size="x-large"
-					intent="loud"
-					text="Get Started"
-					onClick={this.props.onOpenCreateAccountDialog}
-				/>
-			);
-		}
 		return (
 			<div className="marketing-screen_n5a6wc">
+				<Panel className="header">
+					<h1>Join our community of readers.</h1>
+					<h3>Find and share the best articles on the web.</h3>
+					<div className="buttons">
+						<GetStartedButton
+							isIosDevice={this.props.isIosDevice}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+						/>
+					</div>
+				</Panel>
 				<Panel className="aotd">
 					{this.props.communityReads.isLoading ?
 						<LoadingOverlay position="static" /> :
@@ -109,7 +98,8 @@ export default class MarketingScreen extends React.Component<
 				</Panel>
 				<Panel className="about">
 					<h2>About</h2>
-					<p>We're on a quest to reinvent social media. Other platforms have to maximize the numbers of ads you see, so they're addictive and distracting and they zap your attention span. Readup does the opposite. We obliterate ads and distractions and the overall result is an experience that feels slower, deeper, and profoundly more fulfilling.</p>
+					<p>We're on a quest to reinvent social media. Other platforms have to maximize the number of ads you see, so they're addictive and distracting.</p>
+					<p>Readup does the opposite. We obliterate ads and distractions and the overall result is an experience that feels slower, deeper, and more fulfilling.</p>
 					<p className="bios">
 						<a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a> are the two humans behind Readup.&#32;
 						<Popover
@@ -140,7 +130,11 @@ export default class MarketingScreen extends React.Component<
 						&#32;And let us know what you think.
 					</p>
 					<div className="buttons">
-						{button}
+						<GetStartedButton
+							isIosDevice={this.props.isIosDevice}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+						/>
 					</div>
 				</Panel>
 			</div>

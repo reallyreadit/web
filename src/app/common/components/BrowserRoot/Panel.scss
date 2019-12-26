@@ -3,17 +3,26 @@
 	cssComponentId: panel_zd0n2d
 */
 
-.panel_zd0n2d {
-	overflow: hidden;
-}
 .panel_zd0n2d > .content {
 	max-width: 980px;
-	padding: 0 20px;
-	margin: 40px auto;
+	padding: 40px 20px;
+	margin: 0 auto;
+}
+.panel_zd0n2d > .content > h1 {
+	font-weight: normal;
+	font-family: 'Cambria (bold)';
+	font-size: 36pt;
+	margin-bottom: 30px;
+	line-height: 1em;
 }
 .panel_zd0n2d > .content > h2 {
 	font-weight: normal;
 	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+	text-align: center;
+}
+.panel_zd0n2d > .content > h3 {
+	font-weight: normal;
 	font-size: 20pt;
 	text-align: center;
 }
@@ -28,11 +37,28 @@
 	text-align: center;
 	line-height: 0;
 }
+.panel_zd0n2d > .content > :first-child {
+	margin-top: 0 !important;
+}
+.panel_zd0n2d > .content > :last-child {
+	margin-bottom: 0 !important;
+}
 
-@media (max-width: 450px) {
+@media (max-width: 449px) {
 	.panel_zd0n2d > .content {
-		padding: 0 10px;
-		margin: 20px auto;
+		padding: 24px 10px;
+		margin: 0 auto;
+	}
+	.panel_zd0n2d > .content > h1 {
+		font-size: 24pt;
+		margin-bottom: 20px;
+	}
+	.panel_zd0n2d > .content > h3 {
+		font-size: 16pt;
+	}
+	.panel_zd0n2d > .content > p {
+		margin: 10px 0;
+		line-height: 1.3em;
 	}
 	.panel_zd0n2d > .content > .buttons {
 		margin: 20px 0;

@@ -34,7 +34,6 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
-import MarketingPanel from './BrowserRoot/MarketingPanel';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -52,7 +51,6 @@ export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled' |
 type Events = SharedEvents & {
 	'extensionInstallationStatusChanged': boolean
 };
-const marketingPanelScreenKeys = [ScreenKey.AotdHistory, ScreenKey.Comments, ScreenKey.Home, ScreenKey.Profile];
 export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
 	private _isUpdateAvailable: boolean = false;
@@ -277,7 +275,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isDesktopDevice: this._isDesktopDevice,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
-				marketingScreenVariant: this.props.marketingScreenVariant,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -299,7 +296,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
-				onViewPrivacyPolicy: this._viewPrivacyPolicy,
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
@@ -763,14 +759,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 								className="screen"
 								key={screen.id}
 							>
-								{!this.state.user && marketingPanelScreenKeys.includes(screen.key) ?
-									<MarketingPanel
-										isIosDevice={this.state.isIosDevice}
-										onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
-										onOpenCreateAccountDialog={this._openCreateAccountDialog}
-										variant={this.props.marketingScreenVariant}
-									/> :
-									null}
 								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
 								{(
 									(

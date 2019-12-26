@@ -9,6 +9,8 @@ import ShareData from '../../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import PageResult from '../../../../../common/models/PageResult';
 import UserAccount from '../../../../../common/models/UserAccount';
+import PointsCallout from './PointsCallout';
+import RankCallout from './RankCallout';
 
 export default class AotdView extends React.Component<{
 	aotd: UserArticle,
@@ -35,6 +37,11 @@ export default class AotdView extends React.Component<{
 						article={this.props.aotd}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onViewProfile={this.props.onViewProfile}
+						pointsCallout={
+							!this.props.user ?
+								<PointsCallout /> :
+								null
+						}
 						user={this.props.user}
 					/>
 					<ArticleDetails
@@ -70,6 +77,11 @@ export default class AotdView extends React.Component<{
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onViewProfile={this.props.onViewProfile}
 										rank={rank}
+										rankCallout={
+											index === 0 && !this.props.user ?
+												<RankCallout /> :
+												null
+										}
 										user={this.props.user}
 									/>
 									<ArticleDetails
