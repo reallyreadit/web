@@ -17,8 +17,6 @@ import CommentForm from '../../../../common/models/social/CommentForm';
 
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'comments' | 'onPostComment'>> {
 	articleSlug: string,
-	isBrowserCompatible: boolean | null,
-	onCopyAppReferrerTextToClipboard: () => void,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<CommentThread>,
@@ -28,9 +26,6 @@ interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProp
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onReloadArticle: (screenId: number, slug: string) => void,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void,
-	onShowCreateAccountDialog: () => void,
-	onShowSignInDialog: () => void,
-	onViewHomeScreen: () => void,
 	screenId: number
 }
 class BrowserCommentsScreen extends React.Component<
@@ -105,7 +100,7 @@ class BrowserCommentsScreen extends React.Component<
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'onReloadArticle' | 'screenId' | 'user'>> & {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'isIosDevice' | 'onReloadArticle' | 'screenId' | 'user'>> & {
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 };
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {

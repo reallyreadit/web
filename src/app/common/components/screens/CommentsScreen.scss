@@ -4,17 +4,12 @@
 */
 
 .comments-screen_udh2l6 {
-	display: flex;
-	flex-flow: column;
+	min-height: 100%;
 }
-.comments-screen_udh2l6 > .loading-overlay_zfgtd1,
-.comments-screen_udh2l6 > .info-box_whou0t {
-	flex: 1 1 auto;
+.comments-screen_udh2l6 > .header {
+	text-align: center;
+	background-color: #efefef;
 }
-.comments-screen_udh2l6 > .article-details_d2vnmv,
-.comments-screen_udh2l6 > .comments-section_mqmgnd {
-	flex: 0 0 auto;
-}
-.comments-screen_udh2l6 > .article-details_d2vnmv {
+.comments-screen_udh2l6 > .main > .content > .article-details_d2vnmv {
 	margin-bottom: 15px;
 }

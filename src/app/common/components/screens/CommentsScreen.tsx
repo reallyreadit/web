@@ -12,13 +12,14 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
-import ScreenContainer from '../ScreenContainer';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import CommentForm from '../../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
 import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import InfoBox from '../controls/InfoBox';
+import Panel from '../BrowserRoot/Panel';
+import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -37,11 +38,14 @@ export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
+	isIosDevice: boolean | null,
 	onCloseDialog: () => void,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
+	onOpenCreateAccountDialog: () => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
@@ -58,50 +62,65 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => { };
 	public render() {
 		return (
-			<ScreenContainer className="comments-screen_udh2l6">
+			<div className="comments-screen_udh2l6">
 				{this.props.article.isLoading || this.props.comments.isLoading ?
-					<LoadingOverlay position="static" /> :
+					<LoadingOverlay position="absolute" /> :
 					!this.props.article.value || !this.props.comments.value ?
 						<InfoBox
-							position="static"
+							position="absolute"
 							style="normal"
 						>
 							<p>Error loading comments.</p>
 						</InfoBox> :
 						<>
-							<ArticleDetails
-								article={this.props.article.value}
-								isUserSignedIn={!!this.props.user}
-								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onRateArticle={this.props.onRateArticle}
-								onPost={this.props.onPostArticle}
-								onRead={this.props.onReadArticle}
-								onShare={this.props.onShare}
-								onToggleStar={this.props.onToggleArticleStar}
-								onViewComments={this._noop}
-							/>
-							<CommentsSection
-								article={this.props.article.value}
-								comments={this.props.comments.value}
-								highlightedCommentId={this.props.highlightedCommentId}
-								imagePath="/images"
-								noCommentsMessage="Be the first to post a comment on this article."
-								onCloseDialog={this.props.onCloseDialog}
-								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onDeleteComment={this.props.onDeleteComment}
-								onNavTo={this.props.onNavTo}
-								onOpenDialog={this.props.onOpenDialog}
-								onPostComment={this.props.onPostComment}
-								onPostCommentAddendum={this.props.onPostCommentAddendum}
-								onPostCommentRevision={this.props.onPostCommentRevision}
-								onShare={this.props.onShare}
-								onViewProfile={this.props.onViewProfile}
-								user={this.props.user}
-							/>
+							{!this.props.user ?
+								<Panel className="header">
+									<h1>Join our community of readers.</h1>
+									<h3>Find and share the best articles on the web.</h3>
+									<div className="buttons">
+										<GetStartedButton
+											isIosDevice={this.props.isIosDevice}
+											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+											onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+										/>
+									</div>
+								</Panel> :
+								null}
+							<Panel className="main">
+								<ArticleDetails
+									article={this.props.article.value}
+									isUserSignedIn={!!this.props.user}
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onRateArticle={this.props.onRateArticle}
+									onPost={this.props.onPostArticle}
+									onRead={this.props.onReadArticle}
+									onShare={this.props.onShare}
+									onToggleStar={this.props.onToggleArticleStar}
+									onViewComments={this._noop}
+								/>
+								<CommentsSection
+									article={this.props.article.value}
+									comments={this.props.comments.value}
+									highlightedCommentId={this.props.highlightedCommentId}
+									imagePath="/images"
+									noCommentsMessage="Be the first to post a comment on this article."
+									onCloseDialog={this.props.onCloseDialog}
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onDeleteComment={this.props.onDeleteComment}
+									onNavTo={this.props.onNavTo}
+									onOpenDialog={this.props.onOpenDialog}
+									onPostComment={this.props.onPostComment}
+									onPostCommentAddendum={this.props.onPostCommentAddendum}
+									onPostCommentRevision={this.props.onPostCommentRevision}
+									onShare={this.props.onShare}
+									onViewProfile={this.props.onViewProfile}
+									user={this.props.user}
+								/>
+							</Panel>
 						</>}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

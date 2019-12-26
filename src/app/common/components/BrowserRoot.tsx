@@ -246,7 +246,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
-				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -255,6 +254,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
 				onNavTo: this._navTo,
+				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
@@ -268,9 +268,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
-				onShowCreateAccountDialog: this._openCreateAccountDialog,
-				onShowSignInDialog: this._openSignInDialog,
-				onViewHomeScreen: this._viewHome,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
