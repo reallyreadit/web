@@ -19,7 +19,7 @@ import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ScreenContainerPanel from '../ScreenContainerPanel';
+import ScreenContainer from '../ScreenContainer';
 import CommentThread from '../../../../common/models/CommentThread';
 import Post from '../../../../common/models/social/Post';
 import PageResult from '../../../../common/models/PageResult';
@@ -341,7 +341,7 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice)) {
 			return (
-				<ScreenContainerPanel className="home-screen_1sjipy">
+				<ScreenContainer className="home-screen_1sjipy">
 					{this.props.user && this.props.isExtensionInstalled === false ?
 						<ReadReadinessInfoBox
 							isBrowserCompatible={this.props.isBrowserCompatible}
@@ -418,7 +418,7 @@ class HomeScreen extends React.Component<Props, State> {
 								/> :
 								null}
 						</>}
-				</ScreenContainerPanel>
+				</ScreenContainer>
 			);
 		}
 		return (

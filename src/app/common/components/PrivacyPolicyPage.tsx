@@ -1,9 +1,9 @@
 import * as React from 'react';
-import ScreenContainerPanel from './ScreenContainerPanel';
+import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 
 const privacyPolicyPage = () => (
-	<ScreenContainerPanel>
+	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
 			<section>
 				<p><strong>Readup Privacy Policy</strong></p>
@@ -58,7 +58,7 @@ const privacyPolicyPage = () => (
 				<p><strong>CONTACT INFORMATION.</strong> Our email address is <a href="mailto:support@readup.com">support@readup.com</a>.</p>
 			</section>
 		</div>
-	</ScreenContainerPanel>
+	</ScreenContainer>
 );
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {

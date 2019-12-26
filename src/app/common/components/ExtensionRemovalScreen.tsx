@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ScreenContainerPanel from './ScreenContainerPanel';
+import ScreenContainer from './ScreenContainer';
 import Button from '../../../common/components/Button';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import { parseQueryString } from '../../../common/routing/queryString';
@@ -39,7 +39,7 @@ class ExtensionRemovalScreen extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<ScreenContainerPanel className="extension-removal-screen_6csgkd">
+			<ScreenContainer className="extension-removal-screen_6csgkd">
 				{!this.props.installationId || this.state.formSubmissionStatus === 'submitted' ?
 					<strong>Thank you for your feedback.</strong> :
 					<>
@@ -62,7 +62,7 @@ class ExtensionRemovalScreen extends React.PureComponent<
 							text="Submit"
 						/>
 					</>}
-			</ScreenContainerPanel>
+			</ScreenContainer>
 		);
 	}
 }

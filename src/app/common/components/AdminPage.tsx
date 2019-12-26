@@ -8,7 +8,7 @@ import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../../../common/components/Toaster';
 import AsyncTracker from '../../../common/AsyncTracker';
 import { Screen, SharedState } from './Root';
-import ScreenContainerPanel from './ScreenContainerPanel';
+import ScreenContainer from './ScreenContainer';
 import { FetchFunctionWithParams } from '../serverApi/ServerApi';
 import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import { DateTime } from 'luxon';
@@ -172,7 +172,7 @@ class AdminPage extends React.Component<
 	}
 	public render() {
 		return (
-			<ScreenContainerPanel>
+			<ScreenContainer>
 				<div className="admin-page_czkowo">
 					<table>
 						<caption>
@@ -367,7 +367,7 @@ class AdminPage extends React.Component<
 						</tbody>
 					</table>
 				</div>
-			</ScreenContainerPanel>
+			</ScreenContainer>
 		);
 	}
 }

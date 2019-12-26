@@ -3,7 +3,7 @@ import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import UserAccount from '../../../../common/models/UserAccount';
 import Leaderboards from '../../../../common/models/Leaderboards';
-import ScreenContainerPanel from '../ScreenContainerPanel';
+import ScreenContainer from '../ScreenContainer';
 import { formatCountable } from '../../../../common/format';
 import Icon, { IconName } from '../../../../common/components/Icon';
 import LeaderboardRanking from '../../../../common/models/LeaderboardRanking';
@@ -128,7 +128,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 				null
 		);
 		return (
-			<ScreenContainerPanel className="leaderboards-screen_wuzsob">
+			<ScreenContainer className="leaderboards-screen_wuzsob">
 				{this.props.leaderboards.isLoading ?
 					<LoadingOverlay /> :
 					!this.props.leaderboards.value.userRankings.readCount.score ?
@@ -224,7 +224,7 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 							</div>
 							<div className="leaderboard hidden"></div>
 						</div>}
-			</ScreenContainerPanel>
+			</ScreenContainer>
 		);
 	}
 }

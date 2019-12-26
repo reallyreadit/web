@@ -6,7 +6,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
-import ScreenContainerPanel from '../ScreenContainerPanel';
+import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -198,7 +198,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainerPanel className="my-reads-screen_56ihtk">
+			<ScreenContainer className="my-reads-screen_56ihtk">
 				{this.state.isScreenLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
@@ -266,7 +266,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 										</>}
 								</InfoBox>}
 					</>}
-			</ScreenContainerPanel>
+			</ScreenContainer>
 		);
 	}
 }

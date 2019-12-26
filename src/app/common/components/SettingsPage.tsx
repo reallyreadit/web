@@ -11,7 +11,7 @@ import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncActionLink from './controls/AsyncActionLink';
-import ScreenContainerPanel from './ScreenContainerPanel';
+import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import Fetchable from '../../../common/Fetchable';
 import AsyncTracker from '../../../common/AsyncTracker';
@@ -132,7 +132,7 @@ class SettingsPage extends React.PureComponent<
 	public render() {
 		const user = this.props.user;
 		return (
-			<ScreenContainerPanel className="settings-page_ejwkk">
+			<ScreenContainer className="settings-page_ejwkk">
 				{this.state.settings.isLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
@@ -197,7 +197,7 @@ class SettingsPage extends React.PureComponent<
 							</div>
 						</div>
 					</>}
-			</ScreenContainerPanel>
+			</ScreenContainer>
 		);
 	}
 }
