@@ -6,7 +6,7 @@ import RouteLocation from '../../../common/routing/RouteLocation';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import ScreenContainer from './ScreenContainer';
+import ScreenContainerPanel from './ScreenContainerPanel';
 
 const resultMessages: {
 	[key: string]: {
@@ -51,13 +51,13 @@ interface Props {
 export default class EmailConfirmationPage extends React.PureComponent<Props> {
 	public render() {
 		return (
-			<ScreenContainer>
+			<ScreenContainerPanel>
 				<div className="email-confirmation-page_9gvf3g">
 					<strong className={classNames({ 'success': resultMessages[this.props.result].intent === Intent.Success })}>
 						{resultMessages[this.props.result].text}
 					</strong>
 				</div>
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

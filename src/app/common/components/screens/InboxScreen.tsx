@@ -10,7 +10,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import ScreenContainer from '../ScreenContainer';
+import ScreenContainerPanel from '../ScreenContainerPanel';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ArticleList from '../controls/articles/ArticleList';
 import PostDetails from '../../../../common/components/PostDetails';
@@ -104,7 +104,7 @@ class InboxScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="inbox-screen_yq0iay">
+			<ScreenContainerPanel className="inbox-screen_yq0iay">
 				{this.state.posts.isLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
@@ -141,7 +141,7 @@ class InboxScreen extends React.Component<Props, State> {
 							)}
 						</ArticleList>
 					</>}
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

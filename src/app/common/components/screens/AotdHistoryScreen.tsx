@@ -6,7 +6,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
-import ScreenContainer from '../ScreenContainer';
+import ScreenContainerPanel from '../ScreenContainerPanel';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -124,7 +124,7 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="aotd-history-screen_lpelxe">
+			<ScreenContainerPanel className="aotd-history-screen_lpelxe">
 				{this.state.isScreenLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
@@ -166,7 +166,7 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 								/>
 							</>}
 					</>}
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

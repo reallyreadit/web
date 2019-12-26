@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import ScreenContainer from '../ScreenContainer';
+import ScreenContainerPanel from '../ScreenContainerPanel';
 import ReadingTimeTotalsTimeWindow from '../../../../common/models/ReadingTimeTotalsTimeWindow';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -156,7 +156,7 @@ class StatsScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="stats-screen_mqbxl8">
+			<ScreenContainerPanel className="stats-screen_mqbxl8">
 				{!this.state.componentDidMount || this.state.isScreenLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<div className="reading-time">
@@ -240,7 +240,7 @@ class StatsScreen extends React.Component<Props, State> {
 							<li>To Completion</li>
 						</ol>
 					</div>}
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

@@ -16,7 +16,7 @@ import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ScreenContainer from '../ScreenContainer';
+import ScreenContainerPanel from '../ScreenContainerPanel';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import CommentThread from '../../../../common/models/CommentThread';
 import FolloweesPostsQuery from '../../../../common/models/social/FolloweesPostsQuery';
@@ -309,7 +309,7 @@ class HomeScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="home-screen_an7vm5">
+			<ScreenContainerPanel className="home-screen_an7vm5">
 				{(
 					(this.state.communityReads && this.state.communityReads.isLoading) ||
 					(this.state.posts && this.state.posts.isLoading)
@@ -373,7 +373,7 @@ class HomeScreen extends React.Component<Props, State> {
 							</div> :
 							null}
 					</>}
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

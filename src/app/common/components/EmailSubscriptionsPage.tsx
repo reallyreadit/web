@@ -5,7 +5,7 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import { parseQueryString } from '../../../common/routing/queryString';
 import { Screen } from './Root';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import ScreenContainer from './ScreenContainer';
+import ScreenContainerPanel from './ScreenContainerPanel';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import NotificationPreferencesControl from './controls/NotificationPreferencesControl';
 
@@ -54,7 +54,7 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<ScreenContainer>
+			<ScreenContainerPanel>
 				<div className="email-subscriptions-page_tqh2pd">
 					{this.state.request ?
 						this.state.request.isLoading ?
@@ -72,7 +72,7 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 								<strong>Invalid token</strong> :
 						<strong>Invalid token</strong>}
 				</div>
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

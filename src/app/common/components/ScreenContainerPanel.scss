@@ -1,0 +1,18 @@
+/*
+	componentPath: src/app/common/components/ScreenContainerPanel
+	cssComponentId: screen-container-panel_8bimi6
+*/
+
+.screen-container-panel_8bimi6 {
+	min-height: 100%;
+	max-width: 980px;
+	padding: 40px 20px;
+	margin: 0 auto;
+	box-sizing: border-box;
+}
+
+@media (max-width: 449px) {
+	.screen-container-panel_8bimi6 {
+		padding: 20px 10px;
+	}
+}

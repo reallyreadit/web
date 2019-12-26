@@ -12,7 +12,7 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
-import ScreenContainer from '../ScreenContainer';
+import ScreenContainerPanel from '../ScreenContainerPanel';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import CommentForm from '../../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
@@ -58,7 +58,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => { };
 	public render() {
 		return (
-			<ScreenContainer className="comments-screen_udh2l6">
+			<ScreenContainerPanel className="comments-screen_udh2l6">
 				{this.props.article.isLoading || this.props.comments.isLoading ?
 					<LoadingOverlay position="static" /> :
 					!this.props.article.value || !this.props.comments.value ?
@@ -101,7 +101,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 								user={this.props.user}
 							/>
 						</>}
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		);
 	}
 }

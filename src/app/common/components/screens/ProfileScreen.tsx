@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ScreenContainer from '../ScreenContainer';
+import ScreenContainerPanel from '../ScreenContainerPanel';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
@@ -442,7 +442,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 			followersText = this.state.profile.value.followerCount + ' ' + formatCountable(this.state.profile.value.followerCount, 'follower');
 		}
 		return (
-			<ScreenContainer className="profile-screen_1u1j1e">
+			<ScreenContainerPanel className="profile-screen_1u1j1e">
 				{this.state.profile.isLoading || this.state.posts.isLoading ?
 					<LoadingOverlay position="static" /> :
 					!this.state.profile.value || !this.state.posts.value ?
@@ -554,7 +554,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 										</>}
 								</InfoBox>}
 						</>}
-			</ScreenContainer>
+			</ScreenContainerPanel>
 		)
 	}
 }
