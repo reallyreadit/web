@@ -19,6 +19,7 @@ import AotdPopover from './AotdPopover';
 
 interface Props {
 	article: UserArticle,
+	highlight?: boolean,
 	imagePath?: string,
 	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -118,7 +119,10 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				null
 		);
 		return (
-			<ContentBox className="article-details_d2vnmv">
+			<ContentBox
+				className="article-details_d2vnmv"
+				highlight={this.props.highlight}
+			>
 				<div className="title">
 					{this.props.isUserSignedIn ?
 						<Star

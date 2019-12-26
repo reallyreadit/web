@@ -14,6 +14,7 @@ import RankCallout from './RankCallout';
 
 export default class AotdView extends React.Component<{
 	aotd: UserArticle,
+	aotdHasAlert?: boolean,
 	articles: PageResult<UserArticle>,
 	isPaginated: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -46,6 +47,7 @@ export default class AotdView extends React.Component<{
 					/>
 					<ArticleDetails
 						article={this.props.aotd}
+						highlight={this.props.aotdHasAlert}
 						isUserSignedIn={!!this.props.user}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}

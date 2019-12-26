@@ -216,6 +216,7 @@ export default class extends React.PureComponent<{
 							this.props.sort === CommunityReadSort.Hot ?
 								<AotdView
 									aotd={this.props.aotd}
+									aotdHasAlert={this.props.aotdHasAlert}
 									articles={this.props.articles}
 									isPaginated={this.props.isPaginated}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
