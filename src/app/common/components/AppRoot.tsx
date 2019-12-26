@@ -295,6 +295,7 @@ export default class extends Root<
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
 				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
+				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShowToast: this._toaster.addToast,
 				onSignIn: this._signIn,
@@ -474,9 +475,9 @@ export default class extends Root<
 		// send the pageview
 		this.props.analytics.sendPageview(screen);
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
+	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		// create the new screen
-		const screen = this.createScreen(key, urlParams);
+		const screen = this.createScreen(key, urlParams, title);
 		// replace the screen
 		this.setScreenState([screen]);
 		// send the pageview
@@ -659,12 +660,14 @@ export default class extends Root<
 		if (userName) {
 			this.pushScreen(
 				ScreenKey.Profile,
-				{ userName }
+				{ userName },
+				'@' + userName
 			);
 		} else {
 			this.replaceScreen(
 				ScreenKey.Profile,
-				{ userName: this.state.user.name }
+				{ userName: this.state.user.name },
+				'@' + this.state.user.name
 			);
 		}
 	}
