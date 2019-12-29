@@ -4,6 +4,7 @@ export enum LazyImageStrategy {
 	DataSrcSrcset,
 	GizmodoImgUrl,
 	GoverningImgSrcCorrection,
+	HttpToHttps,
 	MediumScaleUp,
 	NautilusHostSwap,
 	NoscriptImgContent,
@@ -115,6 +116,14 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 					target.src = target.src
 						.replace(/^http:/, 'https:')
 						.replace(/&.*$/, '');
+				}
+			);
+			break;
+		case LazyImageStrategy.HttpToHttps:
+			createObserver(
+				Array.from(document.getElementsByTagName('img')),
+				(target: HTMLImageElement) => {
+					target.src = target.src.replace(/^http:/, 'https:');
 				}
 			);
 			break;
@@ -308,6 +317,10 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			matches = document.querySelectorAll(dataSrcSrcsetSelector);
 			if (matches.length) {
 				return procesLazyImages(LazyImageStrategy.DataSrcSrcset);
+			}
+			matches = document.querySelectorAll('img[src^="http:"]');
+			if (matches.length) {
+				return procesLazyImages(LazyImageStrategy.HttpToHttps);
 			}
 			matches = document.querySelectorAll('noscript');
 			if (matches.length) {
