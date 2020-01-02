@@ -21,7 +21,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, redirectedQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import DeviceType from '../DeviceType';
 import { isIosDevice } from '../userAgent';
@@ -44,12 +44,18 @@ interface State extends RootState {
 	isExtensionInstalled: boolean | null,
 	isIosDevice: boolean | null,
 	menuState: MenuState,
-	showRedirectBanner: boolean
+	welcomeMessage: WelcomeMessage | null
 }
 type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled' | 'isIosDevice'>;
 type Events = SharedEvents & {
 	'extensionInstallationStatusChanged': boolean
+};
+enum WelcomeMessage {
+	Rebrand = 'rebrand'
+}
+const welcomeMessages = {
+	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!'
 };
 export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
@@ -117,9 +123,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setState({ menuState: 'opened' });
 	};
 
-	// redirect notice
-	private readonly _dismissRedirectBanner = () => {
-		this.setState({ showRedirectBanner: false });
+	// welcome message
+	private readonly _dismissWelcomeMessage = () => {
+		this.setState({ welcomeMessage: null });
 	};
 
 	// routing
@@ -397,7 +403,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// state
 		const
 			route = findRouteByLocation(routes, props.initialLocation, unroutableQueryStringKeys),
-			locationState = this.getLocationDependentState(props.initialLocation);
+			locationState = this.getLocationDependentState(props.initialLocation),
+			welcomeMessage = parseQueryString(props.initialLocation.queryString)[messageQueryStringKey] as WelcomeMessage;
 		this.state = {
 			...this.state,
 			dialogs: (
@@ -420,7 +427,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			),
 			menuState: 'closed',
 			screens: [locationState.screen],
-			showRedirectBanner: redirectedQueryStringKey in parseQueryString(props.initialLocation.queryString)
+			welcomeMessage: (
+				welcomeMessage in welcomeMessages ?
+					welcomeMessage :
+					null
+			)
 		};
 
 		// BrowserApi
@@ -717,13 +728,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 			sharedState = this.getSharedState();
 		return (
 			<>
-				{this.state.showRedirectBanner ?
-					<div className="redirect-banner">
-						Heads up, we changed our name. reallyread.it is now Readup!
+				{this.state.welcomeMessage ?
+					<div className="welcome-message">
+						{welcomeMessages[this.state.welcomeMessage]}
 						<Icon
 							className="icon"
 							name="cancel"
-							onClick={this._dismissRedirectBanner}
+							onClick={this._dismissWelcomeMessage}
 						/>
 					</div> :
 					null}

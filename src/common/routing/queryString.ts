@@ -47,12 +47,12 @@ export function createQueryString(kvps: { [key: string]: string | Array<string> 
 	return '';
 }
 export const clientTypeQueryStringKey = 'clientType';
-export const redirectedQueryStringKey = 'redirected';
 export const marketingScreenVariantQueryStringKey = 'marketingScreenVariant';
 export const referrerUrlQueryStringKey = 'referrerUrl';
+export const messageQueryStringKey = 'message';
 export const unroutableQueryStringKeys = [
 	clientTypeQueryStringKey,
-	redirectedQueryStringKey,
 	marketingScreenVariantQueryStringKey,
-	referrerUrlQueryStringKey
+	referrerUrlQueryStringKey,
+	messageQueryStringKey
 ];
