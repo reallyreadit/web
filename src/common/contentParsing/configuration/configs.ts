@@ -277,6 +277,12 @@ export default {
 			contentSearchRootElementSelector: 'article.Body'
 		},
 		{
+			hostname: 'theguardian.com',
+			textContainerSearch: {
+				selectorBlacklist: ['.contributions__epic']
+			}
+		},
+		{
 			hostname: 'thenewatlantis.com',
 			textContainerSearch: {
 				selectorBlacklist: ['.author, .epigraph, [style*="BellMT"], h2']
