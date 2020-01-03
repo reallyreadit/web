@@ -11,7 +11,7 @@ export default (props: {
 	className?: ClassValue,
 	onClick?: () => void
 }) => (
-	<div
+	<span
 		className={
 			classNames(
 				'icon_rour3d',
@@ -28,5 +28,5 @@ export default (props: {
 				null}
 			<use xlinkHref={'#icon-' + props.name}></use>
 		</svg>
-	</div>
+	</span>
 );

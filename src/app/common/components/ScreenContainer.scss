@@ -6,13 +6,13 @@
 .screen-container_ayqss6 {
 	min-height: 100%;
 	max-width: 980px;
-	padding: 20px;
+	padding: 40px 20px;
 	margin: 0 auto;
 	box-sizing: border-box;
 }
 
-@media (max-width: 450px) {
+@media (max-width: 449px) {
 	.screen-container_ayqss6 {
-		padding: 15px 10px;
+		padding: 20px 10px;
 	}
 }

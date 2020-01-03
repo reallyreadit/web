@@ -6,9 +6,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
-import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
 import ArticleLengthFilter from '../controls/ArticleLengthFilter';
@@ -18,18 +16,25 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import { DateTime } from 'luxon';
+import Panel from '../BrowserRoot/Panel';
+import UserAccount from '../../../../common/models/UserAccount';
+import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
-interface Props {
+export interface Props {
+	isIosDevice: boolean | null,
+	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
+	onOpenCreateAccountDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	user: UserAccount | null
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
@@ -37,7 +42,7 @@ interface State {
 	maxLength: number | null,
 	minLength: number | null
 }
-class AotdHistoryScreen extends React.Component<Props, State> {
+export default class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
@@ -124,60 +129,64 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="aotd-history-screen_lpelxe">
+			<div className="aotd-history-screen_lpelxe">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay position="static" /> :
+					<LoadingOverlay position="absolute" /> :
 					<>
-						<div className="controls">
-							<ArticleLengthFilter
-								max={this.state.maxLength}
-								min={this.state.minLength}
-								onChange={this._changeLengthRange}
-							/>
-						</div>
-						{this.state.articles.isLoading ?
-							<LoadingOverlay position="static" /> :
-							<>
-								<ArticleList>
-									{this.state.articles.value.items.map(
-										article => (
-											<li key={article.id}>
-												<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
-												<ArticleDetails
-													article={article}
-													isUserSignedIn
-													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onPost={this.props.onPostArticle}
-													onRateArticle={this.props.onRateArticle}
-													onRead={this.props.onReadArticle}
-													onShare={this.props.onShare}
-													onToggleStar={this.props.onToggleArticleStar}
-													onViewComments={this.props.onViewComments}
-												/>
-											</li>
-										)
-									)}
-								</ArticleList>
-								<PageSelector
-									pageNumber={this.state.articles.value.pageNumber}
-									pageCount={this.state.articles.value.pageCount}
-									onChange={this._changePageNumber}
+						{!this.props.user ?
+							<Panel className="header">
+								<h1>Join our community of readers.</h1>
+								<h3>Find and share the best articles on the web.</h3>
+								<div className="buttons">
+									<GetStartedButton
+										isIosDevice={this.props.isIosDevice}
+										onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+										onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+									/>
+								</div>
+							</Panel> :
+							null}
+						<Panel className="main">
+							<div className="controls">
+								<ArticleLengthFilter
+									max={this.state.maxLength}
+									min={this.state.minLength}
+									onChange={this._changeLengthRange}
 								/>
-							</>}
+							</div>
+							{this.state.articles.isLoading ?
+								<LoadingOverlay position="static" /> :
+								<>
+									<ArticleList>
+										{this.state.articles.value.items.map(
+											article => (
+												<li key={article.id}>
+													<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
+													<ArticleDetails
+														article={article}
+														isUserSignedIn
+														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+														onPost={this.props.onPostArticle}
+														onRateArticle={this.props.onRateArticle}
+														onRead={this.props.onReadArticle}
+														onShare={this.props.onShare}
+														onToggleStar={this.props.onToggleArticleStar}
+														onViewComments={this.props.onViewComments}
+													/>
+												</li>
+											)
+										)}
+									</ArticleList>
+									<PageSelector
+										pageNumber={this.state.articles.value.pageNumber}
+										pageCount={this.state.articles.value.pageCount}
+										onChange={this._changePageNumber}
+									/>
+								</>}
+						</Panel>
 					</>}
-			</ScreenContainer>
+			</div>
 		);
 	}
-}
-export default function createAotdHistoryScreenFactory<TScreenKey>(
-	key: TScreenKey,
-	deps: Props
-) {
-	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Previous AOTD Winners' }),
-		render: () => (
-			<AotdHistoryScreen {...deps} />
-		)
-	};
 }

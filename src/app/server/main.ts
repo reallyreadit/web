@@ -27,7 +27,7 @@ import VerificationTokenData from '../../common/models/VerificationTokenData';
 import DeviceType from '../common/DeviceType';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
-import { variants as marketingScreenVariants } from '../common/components/BrowserRoot/MarketingScreen';
+import { variants as marketingScreenVariants } from '../common/marketingTesting';
 import UserAccount from '../../common/models/UserAccount';
 
 // route helper function

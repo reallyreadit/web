@@ -61,6 +61,12 @@ function createObserver(elements: Element[], handler: (target: Element) => void)
 	}
 }
 const dataSrcSrcsetSelector = 'img[data-src], img[data-srcset], source[data-src], source[data-srcset]';
+function selectImageWidth(widths: number[]) {
+	const sortedWidths = widths
+		.slice()
+		.sort((a, b) => a - b);
+	return sortedWidths.find(width => width >= window.innerWidth) || sortedWidths[sortedWidths.length - 1];
+}
 export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 	switch (strategy) {
 		case LazyImageStrategy.DataSrcSrcset:
@@ -185,30 +191,31 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 					}
 				);
 			}
-			const
-				dataPatternImgSelector = 'img[data-pattern][data-widths]',
-				dataPatternFigures = figures.filter(
-					figure => !!figure.querySelector(dataPatternImgSelector)
-				);
-			if (dataPatternFigures.length) {
+			const dataPatternImages = Array.from(document.querySelectorAll('img[data-pattern][data-widths]'));
+			if (dataPatternImages.length) {
 				createObserver(
-					dataPatternFigures,
-					target => {
-						const img = target.querySelector(dataPatternImgSelector) as HTMLImageElement;
-						if (img) {
-							let src: string;
-							try {
-								const
-									widths = JSON.parse(img.dataset['widths']) as { master: { size: number, filename: string }[] },
-									masterWidths = widths.master.sort((a, b) => a.size - b.size),
-									width = masterWidths.find(width => width.size >= window.innerWidth) || masterWidths[masterWidths.length - 1];
-								src = img.dataset['pattern'].replace('{{file}}', width.filename);
-							} catch (ex) {
-								src = img.dataset['mediaviewerSrc'];
+					dataPatternImages,
+					(img: HTMLImageElement) => {
+						let src: string;
+						try {
+							let widths = JSON.parse(img.dataset['widths']) as { master: { size: number, filename: string }[] } | number[];
+							if (Array.isArray(widths)) {
+								src = img.dataset['pattern'].replace(
+									'{{size}}',
+									selectImageWidth(widths).toString()
+								);
+							} else {
+								const selectedSize = selectImageWidth(widths.master.map(width => width.size));
+								src = img.dataset['pattern'].replace(
+									'{{file}}',
+									widths.master.find(width => width.size === selectedSize).filename
+								);
 							}
-							if (src) {
-								img.src = src;
-							}
+						} catch (ex) {
+							src = img.dataset['mediaviewerSrc'];
+						}
+						if (src) {
+							img.src = src;
 						}
 					}
 				);

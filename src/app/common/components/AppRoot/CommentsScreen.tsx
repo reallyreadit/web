@@ -11,7 +11,8 @@ import { mergeComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
 
-interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'onPostComment'>> {
+function noop() { }
+interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onOpenCreateAccountDialog' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
@@ -97,6 +98,9 @@ class AppCommentsScreen extends React.Component<
 					...{
 						...this.props,
 						...this.state,
+						isIosDevice: true,
+						onCopyAppReferrerTextToClipboard: noop,
+						onOpenCreateAccountDialog: noop,
 						onPostComment: this._postComment
 					}
 				}

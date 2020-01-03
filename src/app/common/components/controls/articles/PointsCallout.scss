@@ -1,0 +1,182 @@
+/*
+	componentPath: src/app/common/components/controls/articles/PointsCallout
+	cssComponentId: points-callout_ksplby
+*/
+
+.callout_k8z57c.points-callout_ksplby > .ellipse {
+	top: -6px;
+	right: -6px;
+	bottom: -5px;
+	left: -6px;
+	border-width: 3px;
+	border-radius: 44%;
+}
+.callout_k8z57c.points-callout_ksplby > .note {
+	font-size: 11pt;
+}
+
+/**
+created using css-callout with params:
+{
+   "arrow": {
+      "dst": {
+         "x": 70,
+         "y": -3
+      },
+      "src": {
+         "x": -5,
+         "y": 25
+      },
+      "width": 3,
+      "point": {
+         "length": 18,
+         "rotation": -6
+      }
+   },
+   "note": {
+      "pos": {
+         "x": 188,
+         "y": -76
+      },
+      "width": 100
+   },
+   "selector": ".callout_k8z57c.points-callout_ksplby"
+}
+**/
+.callout_k8z57c.points-callout_ksplby > .arrow {
+   top: -3px;
+   left: 70px;
+   border-width: 3px;
+   font-size: 170.63px;
+   transform-origin: 26.93px 26.93px;
+   transform: translate(-26.93px, -26.93px) rotate(-0.40rad);
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::before,
+.callout_k8z57c.points-callout_ksplby > .arrow::after {
+   width: 18px;
+   height: 3px;
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::before {
+   transform: translate(23.93px, 22.43px) rotate(-73.5deg);
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::after {
+   transform: translate(23.93px, 22.43px) rotate(-6deg);
+}
+.callout_k8z57c.points-callout_ksplby > .note {
+   top: -76px;
+   left: 188px;
+   width: 100px;
+}
+
+@media (min-width: 375px) {
+/**
+created using css-callout with params:
+{
+   "arrow": {
+      "dst": {
+         "x": 70,
+         "y": -3
+      },
+      "src": {
+         "x": -5,
+         "y": 25
+      },
+      "width": 3,
+      "point": {
+         "length": 18,
+         "rotation": -6
+      }
+   },
+   "note": {
+      "pos": {
+         "x": 242,
+         "y": -76
+      },
+      "width": 100
+   },
+   "selector": ".callout_k8z57c.points-callout_ksplby"
+}
+**/
+.callout_k8z57c.points-callout_ksplby > .arrow {
+   top: -3px;
+   left: 70px;
+   border-width: 3px;
+   font-size: 242.74px;
+   transform-origin: 37.49px 37.49px;
+   transform: translate(-37.49px, -37.49px) rotate(-0.28rad);
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::before,
+.callout_k8z57c.points-callout_ksplby > .arrow::after {
+   width: 18px;
+   height: 3px;
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::before {
+   transform: translate(34.49px, 32.99px) rotate(-73.5deg);
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::after {
+   transform: translate(34.49px, 32.99px) rotate(-6deg);
+}
+.callout_k8z57c.points-callout_ksplby > .note {
+   top: -76px;
+   left: 242px;
+   width: 100px;
+}
+}
+
+@media (min-width: 450px) {
+.callout_k8z57c.points-callout_ksplby > .note {
+	font-size: 13pt;
+}
+/**
+created using css-callout with params:
+{
+   "arrow": {
+      "dst": {
+         "x": 70,
+         "y": -3
+      },
+      "src": {
+         "x": -5,
+         "y": 25
+      },
+      "width": 3,
+      "point": {
+         "length": 18,
+         "rotation": -6
+      }
+   },
+   "note": {
+      "pos": {
+         "x": 203,
+         "y": -94
+      },
+      "width": 140
+   },
+   "selector": ".callout_k8z57c.points-callout_ksplby"
+}
+**/
+.callout_k8z57c.points-callout_ksplby > .arrow {
+   top: -3px;
+   left: 70px;
+   border-width: 3px;
+   font-size: 200.67px;
+   transform-origin: 31.33px 31.33px;
+   transform: translate(-31.33px, -31.33px) rotate(-0.48rad);
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::before,
+.callout_k8z57c.points-callout_ksplby > .arrow::after {
+   width: 18px;
+   height: 3px;
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::before {
+   transform: translate(28.33px, 26.83px) rotate(-73.5deg);
+}
+.callout_k8z57c.points-callout_ksplby > .arrow::after {
+   transform: translate(28.33px, 26.83px) rotate(-6deg);
+}
+.callout_k8z57c.points-callout_ksplby > .note {
+   top: -94px;
+   left: 203px;
+   width: 140px;
+}
+}

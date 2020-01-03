@@ -1,5 +1,4 @@
 import * as React from 'react';
-import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import UserAccount from '../../../../common/models/UserAccount';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
@@ -17,7 +16,6 @@ import UserArticle from '../../../../common/models/UserArticle';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import { Screen, SharedState, TemplateSection } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -31,7 +29,6 @@ import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from '../FollowingListDialog';
-import produce from 'immer';
 import CreateAccountDialog from '../CreateAccountDialog';
 import Captcha from '../../Captcha';
 import { Intent } from '../../../../common/components/Toaster';
@@ -44,8 +41,8 @@ import InfoBox from '../controls/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 import Rating from '../../../../common/models/Rating';
+import Panel from '../BrowserRoot/Panel';
 
-const route = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
 	captcha: Captcha,
 	highlightedCommentId: string | null,
@@ -62,7 +59,8 @@ interface Props {
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
-	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
+	onReloadProfile: (screenId: number, userName: string) => Promise<Profile>,
+	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
 	onInstallExtension: () => void,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -74,7 +72,6 @@ interface Props {
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
 	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
-	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
 	onShare: (data: ShareData) => ShareChannel[],
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (emailAddress: string, password: string) => Promise<void>,
@@ -83,6 +80,7 @@ interface Props {
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
+	profile: Fetchable<Profile>,
 	screenId: number,
 	userAccount: UserAccount | null,
 	userName: string
@@ -90,7 +88,6 @@ interface Props {
 export type Deps = Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'userAccount' | 'userName'>>;
 interface State {
 	isFollowingButtonBusy: boolean,
-	profile: Fetchable<Profile>,
 	posts: Fetchable<PageResult<Post>>
 }
 const postsPageSize = 40;
@@ -205,13 +202,12 @@ export class ProfileScreen extends React.Component<Props, State> {
 			.then(
 				() => {
 					if (form.userName === this.props.userName) {
-						this.setState(
-							produce(
-								(state: State) => {
-									state.profile.value.isFollowed = false;
-									state.profile.value.followerCount--;
-								}
-							)
+						this.props.onUpdateProfile(
+							this.props.screenId,
+							{
+								isFollowed: false,
+								followerCount: this.props.profile.value.followerCount - 1
+							}
 						);
 					}
 				}
@@ -221,7 +217,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			isFollowingButtonBusy: false,
-			profile: this.fetchProfile(),
 			posts: this.fetchPosts(1)
 		};
 		this._asyncTracker.addCancellationDelegate(
@@ -331,36 +326,20 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterFolloweeCountChangedHandler(
 				change => {
-					if (this.state.profile.value && this.isOwnProfile()) {
-						this.setState({
-							profile: {
-								...this.state.profile,
-								value: {
-									...this.state.profile.value,
-									followeeCount: Math.max(
-										this.state.profile.value.followeeCount + (
-											change === FolloweeCountChange.Increment ?
-												1 :
-												-1
-										),
-										0
-									)
-								}
+					if (this.props.profile.value && this.isOwnProfile()) {
+						this.props.onUpdateProfile(
+							this.props.screenId,
+							{
+								followeeCount: Math.max(
+									this.props.profile.value.followeeCount + (
+										change === FolloweeCountChange.Increment ?
+											1 :
+											-1
+									),
+									0
+								)
 							}
-						});
-					}
-				}
-			)
-		);
-	}
-	private fetchProfile(callback?: (profile: Profile) => void) {
-		return this.props.onGetProfile(
-			{ userName: this.props.userName },
-			this._asyncTracker.addCallback(
-				profile => {
-					this.setState({ profile });
-					if (callback) {
-						callback(profile.value);
+						);
 					}
 				}
 			)
@@ -384,13 +363,12 @@ export class ProfileScreen extends React.Component<Props, State> {
 		return this.props.userAccount && this.props.userAccount.name === this.props.userName;
 	}
 	private setIsFollowed() {
-		this.setState(
-			produce(
-				(state: State) => {
-					state.profile.value.isFollowed = true;
-					state.profile.value.followerCount++;
-				}
-			)
+		this.props.onUpdateProfile(
+			this.props.screenId,
+			{
+				isFollowed: true,
+				followerCount: this.props.profile.value.followerCount + 1
+			}
 		);
 	}
 	public componentDidUpdate(prevProps: Props) {
@@ -404,7 +382,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 		) {
 			let profileCallback: (profile: Profile) => void;
 			if (this.props.userAccount && !prevProps.userAccount) {
-				this.props.onSetScreenState(this.props.screenId, () => ({ templateSection: null }));
 				if (this._followOnSignIn) {
 					if (!this.isOwnProfile()) {
 						this.setState({ isFollowingButtonBusy: true });
@@ -425,10 +402,19 @@ export class ProfileScreen extends React.Component<Props, State> {
 					}
 					this._followOnSignIn = false;
 				}
-			} else if (!this.props.userAccount && prevProps.userAccount) {
-				this.props.onSetScreenState(this.props.screenId, () => ({ templateSection: TemplateSection.Header }));
 			}
-			this.fetchProfile(profileCallback);
+			this._asyncTracker.addPromise(
+				this.props
+					.onReloadProfile(this.props.screenId, this.props.userName)
+					.then(
+						profile => {
+							if (profileCallback) {
+								profileCallback(profile);
+							}
+						}
+					)
+					.catch()
+			);
 			this.fetchPosts(1);
 		}
 	}
@@ -440,131 +426,139 @@ export class ProfileScreen extends React.Component<Props, State> {
 		let
 			followeesText: string,
 			followersText: string;
-		if (this.state.profile.value) {
-			followeesText = `Following ${this.state.profile.value.followeeCount}`;
-			followersText = this.state.profile.value.followerCount + ' ' + formatCountable(this.state.profile.value.followerCount, 'follower');
+		if (this.props.profile.value) {
+			followeesText = `Following ${this.props.profile.value.followeeCount}`;
+			followersText = this.props.profile.value.followerCount + ' ' + formatCountable(this.props.profile.value.followerCount, 'follower');
 		}
 		return (
-			<ScreenContainer className="profile-screen_1u1j1e">
-				{this.state.profile.isLoading || this.state.posts.isLoading ?
-					<LoadingOverlay position="static" /> :
-					!this.state.profile.value || !this.state.posts.value ?
+			<div className="profile-screen_1u1j1e">
+				{this.props.profile.isLoading || this.state.posts.isLoading ?
+					<LoadingOverlay position="absolute" /> :
+					!this.props.profile.value || !this.state.posts.value ?
 						<InfoBox
-							position="static"
+							position="absolute"
 							style="normal"
 						>
 							<p>Profile not found.</p>
 						</InfoBox> :
 						<>
-							<div className="profile">
-								<div className="user-name">
-									<span className="name">{this.state.profile.value.userName}</span>
-									{this.state.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
-										<LeaderboardBadges badge={this.state.profile.value.leaderboardBadge} /> :
-										null}
-								</div>
-								{isOwnProfile ?
-									<>
-										{this.state.profile.value.followeeCount ?
-											<ActionLink
-												className="following-count followees"
-												onClick={this._showFollowees}
-												text={followeesText}
-											/> :
-											<span className="following-count followees">{followeesText}</span>}
-										<Button
-											onClick={this._openGetFollowersDialog}
-											text="Get Followers"
-											intent="loud"
-											size="large"
-										/>
-									</> :
-									<FollowButton
-										following={this.state.profile.value}
-										isBusy={this.state.isFollowingButtonBusy}
-										onFollow={this._followUser}
-										onUnfollow={this._unfollowUser}
-										size="large"
-									/>}
-								{this.state.profile.value.followerCount ?
-									<ActionLink
-										badge={isOwnProfile && this.props.userAccount.followerAlertCount}
-										className="following-count followers"
-										onClick={this._showFollowers}
-										text={followersText}
-									/> :
-									<span className="following-count followers">{followersText}</span>}
-							</div>
-							{this.props.userAccount && !this.props.isDesktopDevice && !this.props.isIosDevice ?
-								<ContentBox className="unsupported">
-									<span className="text">Get Readup on iOS and Chrome</span>
-									<div className="badges">
-										<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
-											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-										</a>
-										<a onClick={this.props.onInstallExtension}>
-											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-										</a>
-									</div>
-								</ContentBox> :
+							{!this.props.userAccount ?
+								<Panel className="header">
+									<h1>Join our community of readers.</h1>
+									<h3>Find and share the best articles on the web.</h3>
+								</Panel> :
 								null}
-							{this.state.posts.value.items.length ?
-								<>
-									<ArticleList>
-										{this.state.posts.value.items.map(
-											post => (
-												<li key={post.date}>
-													<PostDetails
-														highlightedCommentId={this.props.highlightedCommentId}
-														highlightedPostId={this.props.highlightedPostId}
-														onCloseDialog={this.props.onCloseDialog}
-														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-														onNavTo={this.props.onNavTo}
-														onOpenDialog={this.props.onOpenDialog}
-														onRateArticle={this.props.onRateArticle}
-														onRead={this.props.onReadArticle}
-														onPost={this.props.onPostArticle}
-														onShare={this.props.onShare}
-														onToggleStar={this.props.onToggleArticleStar}
-														onViewComments={this.props.onViewComments}
-														onViewThread={this.props.onViewThread}
-														post={post}
-														user={this.props.userAccount}
-													/>
-												</li>
-											)
-										)}
-									</ArticleList>
-									{this.props.userAccount ?
-										<PageSelector
-											pageNumber={this.state.posts.value.pageNumber}
-											pageCount={this.state.posts.value.pageCount}
-											onChange={this._changePageNumber}
-										/> :
-										null}
-								</> :
-								<InfoBox
-									position="static"
-									style="normal"
-								>
+							<Panel className="main">
+								<div className="profile">
+									<div className="user-name">
+										<span className="name">{this.props.profile.value.userName}</span>
+										{this.props.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
+											<LeaderboardBadges badge={this.props.profile.value.leaderboardBadge} /> :
+											null}
+									</div>
 									{isOwnProfile ?
 										<>
-											<p>You haven't posted anything.</p>
+											{this.props.profile.value.followeeCount ?
+												<ActionLink
+													className="following-count followees"
+													onClick={this._showFollowees}
+													text={followeesText}
+												/> :
+												<span className="following-count followees">{followeesText}</span>}
+											<Button
+												onClick={this._openGetFollowersDialog}
+												text="Get Followers"
+												intent="loud"
+												size="large"
+											/>
 										</> :
-										<>
-											<p>This user hasn't posted anything.</p>
-										</>}
-								</InfoBox>}
+										<FollowButton
+											following={this.props.profile.value}
+											isBusy={this.state.isFollowingButtonBusy}
+											onFollow={this._followUser}
+											onUnfollow={this._unfollowUser}
+											size="large"
+										/>}
+									{this.props.profile.value.followerCount ?
+										<ActionLink
+											badge={isOwnProfile && this.props.userAccount.followerAlertCount}
+											className="following-count followers"
+											onClick={this._showFollowers}
+											text={followersText}
+										/> :
+										<span className="following-count followers">{followersText}</span>}
+								</div>
+								{this.props.userAccount && !this.props.isDesktopDevice && !this.props.isIosDevice ?
+									<ContentBox className="unsupported">
+										<span className="text">Get Readup on iOS and Chrome</span>
+										<div className="badges">
+											<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+												<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+											</a>
+											<a onClick={this.props.onInstallExtension}>
+												<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+											</a>
+										</div>
+									</ContentBox> :
+									null}
+								{this.state.posts.value.items.length ?
+									<>
+										<ArticleList>
+											{this.state.posts.value.items.map(
+												post => (
+													<li key={post.date}>
+														<PostDetails
+															highlightedCommentId={this.props.highlightedCommentId}
+															highlightedPostId={this.props.highlightedPostId}
+															onCloseDialog={this.props.onCloseDialog}
+															onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+															onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+															onNavTo={this.props.onNavTo}
+															onOpenDialog={this.props.onOpenDialog}
+															onRateArticle={this.props.onRateArticle}
+															onRead={this.props.onReadArticle}
+															onPost={this.props.onPostArticle}
+															onShare={this.props.onShare}
+															onToggleStar={this.props.onToggleArticleStar}
+															onViewComments={this.props.onViewComments}
+															onViewThread={this.props.onViewThread}
+															post={post}
+															user={this.props.userAccount}
+														/>
+													</li>
+												)
+											)}
+										</ArticleList>
+										{this.props.userAccount ?
+											<PageSelector
+												pageNumber={this.state.posts.value.pageNumber}
+												pageCount={this.state.posts.value.pageCount}
+												onChange={this._changePageNumber}
+											/> :
+											null}
+									</> :
+									<InfoBox
+										position="static"
+										style="normal"
+									>
+										{isOwnProfile ?
+											<>
+												<p>You haven't posted anything.</p>
+											</> :
+											<>
+												<p>This user hasn't posted anything.</p>
+											</>}
+									</InfoBox>}
+							</Panel>
 						</>}
-			</ScreenContainer>
+			</div>
 		)
 	}
 }
-export function getProps(deps: Deps, state: Screen, sharedState: SharedState) {
-	const pathParams = route.getPathParams(state.location.path);
+export function getPathParams(location: RouteLocation) {
+	const pathParams = findRouteByKey(routes, ScreenKey.Profile)
+		.getPathParams(location.path);
 	return {
-		...deps,
 		highlightedCommentId: (
 			pathParams['highlightedType'] === 'comment' ?
 				pathParams['highlightedId'] :
@@ -575,18 +569,6 @@ export function getProps(deps: Deps, state: Screen, sharedState: SharedState) {
 				pathParams['highlightedId'] :
 				null
 		),
-		userAccount: sharedState.user,
 		userName: pathParams['userName']
-	};
-}
-export default function createScreenFactory<TScreenKey>(
-	key: TScreenKey,
-	deps: Deps
-) {
-	return {
-		create: (location: RouteLocation) => ({ key, location, title: 'Profile' }),
-		render: (state: Screen, sharedState: SharedState) => (
-			<ProfileScreen {...getProps(deps, state, sharedState)} />
-		)
 	};
 }

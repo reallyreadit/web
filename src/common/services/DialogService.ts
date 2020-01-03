@@ -7,6 +7,7 @@ export interface State {
 	dialogs: Dialog[]
 }
 export default class DialogService {
+	private _key = 0;
 	private readonly _setState: (state: (prevState: State) => Pick<State, keyof State>) => void;
 	constructor(
 		{
@@ -35,6 +36,13 @@ export default class DialogService {
 			}
 		);
 	};
+	public createDialog(dialogElement: React.ReactNode): Dialog {
+		return {
+			element: dialogElement,
+			key: this._key++,
+			state: 'opening'
+		};
+	}
 	public handleTransitionCompletion = (key: number, transition: 'closing' | 'opening') => {
 		switch (transition) {
 			case 'closing':
@@ -45,6 +53,9 @@ export default class DialogService {
 							dialogs.findIndex(dialog => dialog.key === key),
 							1
 						);
+						if (!dialogs.length) {
+							this._key = 0;
+						}
 						return {
 							dialogs
 						}
@@ -76,20 +87,17 @@ export default class DialogService {
 	public openDialog = (dialogElement: React.ReactNode, method: 'push' | 'replace' = 'replace') => {
 		this._setState(
 			prevState => {
-				let dialogs: Dialog[];
-				const dialog: Dialog = {
-					element: dialogElement,
-					key: Math.max(...prevState.dialogs.map(dialog => dialog.key), 0) + 1,
-					state: 'opening'
-				};
-				switch (method) {
-					case 'push':
-						dialogs = prevState.dialogs.slice();
-						dialogs.push(dialog);
-						break;
-					case 'replace':
-						dialogs = [dialog];
-						break;
+				const dialogs = prevState.dialogs.slice();
+				dialogs.push(this.createDialog(dialogElement));
+				if (method === 'replace' && dialogs.length > 1) {
+					dialogs.splice(
+						dialogs.length - 2,
+						1,
+						{
+							...dialogs[dialogs.length - 2],
+							state: 'closing'
+						}
+					);
 				}
 				return {
 					dialogs

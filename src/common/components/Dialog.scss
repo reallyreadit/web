@@ -16,9 +16,6 @@
 	border-radius: 5px;
    box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
 }
-.dialog_1wfm87.closing {
-	animation: dialog_1wfm87-slide-out 250ms forwards;
-}
 .dialog_1wfm87.small {
 	max-width: 400px;
 }
@@ -58,25 +55,4 @@
 }
 .dialog_1wfm87 > .buttons.double {
 	justify-content: space-between;
-}
-
-@keyframes dialog_1wfm87-slide-in {
-	from {
-		transform: translateY(20%);
-		opacity: 0;
-	}
-	to {
-		transform: translateY(0);
-		opacity: 1;
-	}
-}
-@keyframes dialog_1wfm87-slide-out {
-	from {
-		transform: translateY(0);
-		opacity: 1;
-	}
-	to {
-		transform: translateY(20%);
-		opacity: 0;
-	}
 }

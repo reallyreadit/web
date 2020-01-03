@@ -10,7 +10,7 @@ export default (props: {
 }) => {
 	const menuPosition = props.position.split('/');
 	return (
-		<div
+		<span
 			className={
 				classNames(
 					'menu_qla37i',
@@ -23,6 +23,6 @@ export default (props: {
 			onMouseDown={props.onMouseDown}
 		>
 			{props.children}
-		</div>
+		</span>
 	);
 };

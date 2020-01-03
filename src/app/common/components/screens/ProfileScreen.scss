@@ -4,63 +4,57 @@
 */
 
 .profile-screen_1u1j1e {
-	display: flex;
-	flex-flow: column;
+	min-height: 100%;
 }
-.profile-screen_1u1j1e > .loading-overlay_zfgtd1,
-.profile-screen_1u1j1e > .info-box_whou0t {
-	flex: 1 1 auto;
+.profile-screen_1u1j1e > .header {
+	text-align: center;
+	background-color: #efefef;
 }
-.profile-screen_1u1j1e > .profile,
-.profile-screen_1u1j1e > .article-list_o9uw1n,
-.profile-screen_1u1j1e > .page-selector_a8tbpb {
-	flex: 0 0 auto;
-}
-.profile-screen_1u1j1e > .profile {
+.profile-screen_1u1j1e > .main > .content > .profile {
 	display: flex;
 	flex-flow: column;
 	align-items: center;
-	margin: 10px 0 20px;
+	margin-bottom: 20px;
 }
-.profile-screen_1u1j1e > .profile > .user-name {
+.profile-screen_1u1j1e > .main > .content > .profile > .user-name {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	margin-bottom: 15px;
 }
-.profile-screen_1u1j1e > .profile > .user-name > .name {
+.profile-screen_1u1j1e > .main > .content > .profile > .user-name > .name {
 	font-family: 'Museo Sans (700)';
 	font-size: 22pt;
 }
-.profile-screen_1u1j1e > .profile > .user-name > .leaderboard-badges_s4o6nj {
+.profile-screen_1u1j1e > .main > .content > .profile > .user-name > .leaderboard-badges_s4o6nj {
 	font-size: 16pt;
 	margin-left: 15px;
 }
-.profile-screen_1u1j1e > .profile > .following-count {
+.profile-screen_1u1j1e > .main > .content > .profile > .following-count {
 	font-family: 'Museo Sans (500)';
 	font-size: 15pt;
 }
-.profile-screen_1u1j1e > .profile > .following-count.followees {
+.profile-screen_1u1j1e > .main > .content > .profile > .following-count.followees {
 	margin-bottom: 15px;
 }
-.profile-screen_1u1j1e > .profile > .following-count.followers {
+.profile-screen_1u1j1e > .main > .content > .profile > .following-count.followers {
 	margin-top: 15px;
 }
-.profile-screen_1u1j1e > .unsupported {
+.profile-screen_1u1j1e > .main > .content > .unsupported {
 	margin-bottom: 20px;
 	text-align: center;
 }
-.profile-screen_1u1j1e > .unsupported > .badges {
+.profile-screen_1u1j1e > .main > .content > .unsupported > .badges {
 	display: flex;
 	margin: 0 auto;
 	justify-content: center;
 	flex-wrap: wrap;
 }
-.profile-screen_1u1j1e > .unsupported > .badges > a {
+.profile-screen_1u1j1e > .main > .content > .unsupported > .badges > a {
 	margin: 10px 10px 0 10px;
 	cursor: pointer;
 }
-.profile-screen_1u1j1e > .unsupported > .badges > a > img {
+.profile-screen_1u1j1e > .main > .content > .unsupported > .badges > a > img {
 	display: block;
 	height: 55px;
 }

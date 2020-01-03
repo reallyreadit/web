@@ -20,8 +20,7 @@ import UserAccount from '../../../../../common/models/UserAccount';
 import CommentThread from '../../../../../common/models/CommentThread';
 import InfoBox from '../InfoBox';
 import Rating from '../../../../../common/models/Rating';
-import ActionLink from '../../../../../common/components/ActionLink';
-import AotdMetadata from './AotdMetadata';
+import AotdView from './AotdView';
 
 export enum View {
 	Trending = 'Trending',
@@ -215,68 +214,23 @@ export default class extends React.PureComponent<{
 					<>
 						{this.props.view === View.Trending ?
 							this.props.sort === CommunityReadSort.Hot ?
-								<>
-									<div className="section-header">Article of the Day</div>
-									<div className="aotd">
-										<AotdMetadata
-											article={this.props.aotd}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onViewProfile={this.props.onViewProfile}
-											user={this.props.user}
-										/>
-										<ArticleDetails
-											article={this.props.aotd}
-											isUserSignedIn
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onPost={this.props.onPostArticle}
-											onRateArticle={this.props.onRateArticle}
-											onRead={this.props.onReadArticle}
-											onShare={this.props.onShare}
-											onToggleStar={this.props.onToggleArticleStar}
-											onViewComments={this.props.onViewComments}
-										/>
-										<ActionLink
-											text="Previous Winners"
-											onClick={this.props.onViewAotdHistory}
-										/>
-									</div>
-									<div className="separator"></div>
-									<div className="section-header">Contenders for Tomorrow</div>
-									<ArticleList>
-										{this.props.articles.items.map(
-											(article, index) => {
-												let rank = index + 1;
-												if (this.props.isPaginated) {
-													rank += (this.props.articles.pageNumber - 1) * this.props.articles.pageSize;
-												}
-												return (
-													<li key={article.id}>
-														<AotdMetadata
-															article={article}
-															onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-															onViewProfile={this.props.onViewProfile}
-															rank={rank}
-															user={this.props.user}
-														/>
-														<ArticleDetails
-															article={article}
-															isUserSignedIn
-															onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-															onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-															onPost={this.props.onPostArticle}
-															onRateArticle={this.props.onRateArticle}
-															onRead={this.props.onReadArticle}
-															onShare={this.props.onShare}
-															onToggleStar={this.props.onToggleArticleStar}
-															onViewComments={this.props.onViewComments}
-														/>
-													</li>
-												);
-											})
-										}
-									</ArticleList>	
-								</> :
+								<AotdView
+									aotd={this.props.aotd}
+									aotdHasAlert={this.props.aotdHasAlert}
+									articles={this.props.articles}
+									isPaginated={this.props.isPaginated}
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onPostArticle={this.props.onPostArticle}
+									onRateArticle={this.props.onRateArticle}
+									onReadArticle={this.props.onReadArticle}
+									onShare={this.props.onShare}
+									onToggleArticleStar={this.props.onToggleArticleStar}
+									onViewAotdHistory={this.props.onViewAotdHistory}
+									onViewComments={this.props.onViewComments}
+									onViewProfile={this.props.onViewProfile}
+									user={this.props.user}
+								/> :
 								<ArticleList>
 									{this.props.articles.items.map(article =>
 										<li key={article.id}>

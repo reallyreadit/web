@@ -33,7 +33,7 @@ import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
-import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
+import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -237,9 +237,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
+					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
+					onOpenCreateAccountDialog: this._openCreateAccountDialog,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -250,7 +252,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
-				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -258,8 +259,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
-				onInstallExtension: this._installExtension,
 				onNavTo: this._navTo,
+				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
@@ -270,20 +271,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
-				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
-				onShowCreateAccountDialog: this._openCreateAccountDialog,
-				onShowSignInDialog: this._openSignInDialog,
-				onViewHomeScreen: this._viewHome,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isDesktopDevice: this._isDesktopDevice,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
-				marketingScreenVariant: this.props.marketingScreenVariant,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -305,7 +301,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
-				onViewPrivacyPolicy: this._viewPrivacyPolicy,
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
@@ -412,11 +407,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					route.dialogKey !== DialogKey.Followers ||
 					props.initialUser
 				) ?
-					[{
-						element: locationState.dialog,
-						key: 0,
-						state: 'opening'
-					}] :
+					[this._dialog.createDialog(locationState.dialog)] :
 					[]
 			),
 			isExtensionInstalled: null,
@@ -841,6 +832,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setScreenState({
 			key: ScreenKey.Profile,
 			method: userName ? 'push' : 'replace',
+			title: '@' + (userName || this.state.user.name),
 			urlParams: { userName: userName || this.state.user.name }
 		});
 	}

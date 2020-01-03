@@ -1,33 +1,38 @@
 import * as React from 'react';
-import Spinner from '../../../../common/components/Spinner';
-import Footer from './Footer';
-import Icon from '../../../../common/components/Icon';
-import Button from '../../../../common/components/Button';
 import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
+import AotdView from '../controls/articles/AotdView';
+import Fetchable from '../../../../common/Fetchable';
+import UserArticle from '../../../../common/models/UserArticle';
+import UserAccount from '../../../../common/models/UserAccount';
+import ShareData from '../../../../common/sharing/ShareData';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import Rating from '../../../../common/models/Rating';
+import LoadingOverlay from '../controls/LoadingOverlay';
+import CommunityReads from '../../../../common/models/CommunityReads';
+import Panel from './Panel';
+import GetStartedButton from './GetStartedButton';
 
 interface Props {
-	isDesktopDevice: boolean,
+	communityReads: Fetchable<CommunityReads>,
 	isIosDevice: boolean | null,
-	isUserSignedIn: boolean,
 	onCopyAppReferrerTextToClipboard: () => void,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onInstallExtension: () => void,
 	onOpenCreateAccountDialog: () => void,
-	onViewPrivacyPolicy: () => void,
+	onPostArticle: (article: UserArticle) => void,
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onShare: (data: ShareData) => ShareChannel[],
+	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onViewAotdHistory: () => void,
+	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
-	variant: number
+	user: UserAccount | null
 }
-export const variants: {
-	[key: number]: string
-} = {
-	1: 'Make yourself a better reader.',
-	2: 'Read with friends.',
-	3: 'Social media for people who read.'
-};
-export default class MarketingScreen extends React.PureComponent<
+export default class MarketingScreen extends React.Component<
 	Props,
 	{ menuState: MenuState }
 > {
@@ -41,13 +46,6 @@ export default class MarketingScreen extends React.PureComponent<
 		this.setState({ menuState: MenuState.Opened });
 	};
 	private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
-	private readonly _secondSectionElementRef: React.RefObject<HTMLDivElement>;
-	private readonly _scrollDown = () => {
-		this._secondSectionElementRef.current.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start'
-		});
-	};
 	private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
 		event.preventDefault();
 		this._beginClosingMenu();
@@ -60,182 +58,85 @@ export default class MarketingScreen extends React.PureComponent<
 	};
 	constructor(props: Props) {
 		super(props);
-		this._secondSectionElementRef = React.createRef();
 		this.state = {
 			menuState: MenuState.Closed
 		};
 	}
 	public render () {
-		if (
-			this.props.isDesktopDevice ||
-			this.props.isIosDevice ||
-			(this.props.isIosDevice === false && !this.props.isUserSignedIn)
-		) {
-			let button: React.ReactNode;
-			if (this.props.isIosDevice) {
-				button = (
-					<a
-						className="download-app-button"
-						href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
-						onClick={this.props.onCopyAppReferrerTextToClipboard}
-					>
-						<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-					</a>
-				);
-			} else {
-				button = (
-					<Button
-						size="x-large"
-						intent="loud"
-						text="Get Started"
-						onClick={this.props.onOpenCreateAccountDialog}
-					/>
-				);
-			}
-			return (
-				<div className="marketing-screen_n5a6wc">
-					<div className="section home">
-						<div className="content">
-							<h1>{variants[this.props.variant]}</h1>
-							<div className="video">
-								<div className="aspect-container">
-									<iframe
-										allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-										allowFullScreen
-										src="https://www.youtube.com/embed/rpw3gpH42Aw"
-									></iframe>
-								</div>
-							</div>
-							{button}
-							{this.props.isDesktopDevice || this.props.isIosDevice === false ?
-								<div className="platforms">
-									<span className="text">Available on iOS and Chrome</span>
-									<div className="badges">
-										<a
-											href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
-											target="_blank"
-										>
-											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-										</a>
-										<a onClick={this.props.onInstallExtension}>
-											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-										</a>
-									</div>
-								</div> :
-								null}
-						</div>
-						<div className="read-more">
-							<Icon
-								className="icon"
-								name="chevron-down"
-								onClick={this._scrollDown}
-							/>
-						</div>
-					</div>
-					<div
-						className="section what-is-it"
-						ref={this._secondSectionElementRef}
-					>
-						<div className="content">
-							<h2>What is Readup?</h2>
-							<p>Readup is a reading platform that incentivizes thoughtful, deep reading of the world's best free content. We are a community that believes in a moonshot idea: that reading can revitalize the internet, make it more sane, more human.</p>
-							<div className="paragraph bios">
-								<a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a> are the co-founders.&#32;
-								<Popover
-									menuChildren={
-										<div className="links">
-											<a
-												href={this.props.onCreateAbsoluteUrl(this._profileRoute.createUrl({ 'userName': 'bill' }))}
-												onClick={this._viewBillsProfile}
-											>
-												readup.com/@bill
-											</a>
-											<a
-												href={this.props.onCreateAbsoluteUrl(this._profileRoute.createUrl({ 'userName': 'jeff' }))}
-												onClick={this._viewJeffsProfile}
-											>
-												readup.com/@jeff
-											</a>
-										</div>
-									}
-									menuPosition={MenuPosition.TopCenter}
-									menuState={this.state.menuState}
-									onBeginClosing={this._beginClosingMenu}
-									onClose={this._closeMenu}
-									onOpen={this._openMenu}
-								>
-									Read with us
-								</Popover>
-								&#32;and let us know what you think!
-							</div>
-						</div>
-					</div>
-					<div className="section how-it-works">
-						<div className="content">
-							<h2>How it works</h2>
-							<ol>
-								<li>
-									<img src="/images/read.svg" />
-									<span>Read anything you want without distractions. No ads. No links.</span>
-								</li>
-								<li>
-									<img src="/images/projector-screen-chart.svg" />
-									<span>Track and improve your online reading habits.</span>
-								</li>
-								<li>
-									<img src="/images/bubble-emoji.svg" />
-									<span>Have conversations with others about articles you've read.</span>
-								</li>
-								<li>
-									<img src="/images/priority-increase.svg" />
-									<span>Vote with your attention. Reads are like "upvotes" or "likes."</span>
-								</li>
-								<li>
-									<img src="/images/group-circle.svg" />
-									<span>A community of readers creating a better web for everyone.</span>
-								</li>
-							</ol>
-						</div>
-					</div>
-					<div className="section community">
-						<div className="content">
-							<h2>From the community</h2>
-							<p>“Reading the articles has opened me in a way that is exciting and expansive. I love the quality of the selections, the community - the ease of use. This is VERY important, especially given all the evidence recently that people are having a really difficult time even being able to read, to have the ability to concentrate, to focus, to care what the hell they are even putting in their minds! I am SUCH a HUGE fan and grateful for this app.” <em>-Pegeen</em></p>
-							<p>“WOW. This content is crazy good.” <em>-Natalie</em></p>
-							<p>“From a mindfulness perspective, I enjoy seeing how much my monkey mind tries to make me skip sections and how good a practice it is to stick with it anyway.” <em>-Leo</em></p>
-							<p>“I love how thoughtful the comments are.” <em>-Crystal Hana Kim, novelist.</em></p>
-							{button}
-						</div>
-					</div>
-					<Footer
-						onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
-					/>
-				</div>
-			);
-		}
-		if (this.props.isIosDevice == null) {
-			return (
-				<div className="marketing-screen_n5a6wc loading">
-					<Spinner />
-				</div>
-			);
-		}
 		return (
-			<div className="marketing-screen_n5a6wc unsupported">
-				<div className="prompt">
-					<span className="text">Get Readup on iOS and Chrome</span>
-					<div className="badges">
-						<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
-							<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-						</a>
-						<a onClick={this.props.onInstallExtension}>
-							<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-						</a>
+			<div className="marketing-screen_n5a6wc">
+				<Panel className="header">
+					<h1>Join our community of readers.</h1>
+					<h3>Find and share the best articles on the web.</h3>
+					<div className="buttons">
+						<GetStartedButton
+							isIosDevice={this.props.isIosDevice}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+						/>
 					</div>
-				</div>
-				<Footer
-					onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
-				/>
+				</Panel>
+				<Panel className="aotd">
+					{this.props.communityReads.isLoading ?
+						<LoadingOverlay position="static" /> :
+						<AotdView
+							aotd={this.props.communityReads.value.aotd}
+							articles={this.props.communityReads.value.articles}
+							isPaginated={false}
+							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onPostArticle={this.props.onPostArticle}
+							onRateArticle={this.props.onRateArticle}
+							onReadArticle={this.props.onReadArticle}
+							onShare={this.props.onShare}
+							onToggleArticleStar={this.props.onToggleArticleStar}
+							onViewAotdHistory={this.props.onViewAotdHistory}
+							onViewComments={this.props.onViewComments}
+							onViewProfile={this.props.onViewProfile}
+							user={this.props.user}
+						/>}
+				</Panel>
+				<Panel className="about">
+					<h2>About</h2>
+					<p>We're on a quest to reinvent social media. Other platforms have to maximize the number of ads you see, so they're addictive and distracting.</p>
+					<p>Readup does the opposite. We obliterate ads and distractions and the overall result is an experience that feels slower, deeper, and more fulfilling.</p>
+					<p className="bios">
+						<a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a> are the two humans behind Readup.&#32;
+						<Popover
+							menuChildren={
+								<span className="links">
+									<a
+										href={this.props.onCreateAbsoluteUrl(this._profileRoute.createUrl({ 'userName': 'bill' }))}
+										onClick={this._viewBillsProfile}
+									>
+										readup.com/@bill
+									</a>
+									<a
+										href={this.props.onCreateAbsoluteUrl(this._profileRoute.createUrl({ 'userName': 'jeff' }))}
+										onClick={this._viewJeffsProfile}
+									>
+										readup.com/@jeff
+									</a>
+								</span>
+							}
+							menuPosition={MenuPosition.TopCenter}
+							menuState={this.state.menuState}
+							onBeginClosing={this._beginClosingMenu}
+							onClose={this._closeMenu}
+							onOpen={this._openMenu}
+						>
+							Read with us!
+						</Popover>
+						&#32;And let us know what you think.
+					</p>
+					<div className="buttons">
+						<GetStartedButton
+							isIosDevice={this.props.isIosDevice}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+						/>
+					</div>
+				</Panel>
 			</div>
 		);
 	}

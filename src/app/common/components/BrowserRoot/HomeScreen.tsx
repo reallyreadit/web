@@ -7,7 +7,7 @@ import CommunityReadsList, { updateCommunityReads, View } from '../controls/arti
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen, TemplateSection } from '../Root';
+import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
@@ -32,7 +32,6 @@ import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 
-const pageSize = 40;
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
 	return user && isDesktopDevice;
 }
@@ -41,7 +40,6 @@ interface Props {
 	isBrowserCompatible: boolean,
 	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
-	marketingScreenVariant: number,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: () => void,
@@ -63,7 +61,6 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
-	onViewPrivacyPolicy: () => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
 	screenId: number,
@@ -124,7 +121,7 @@ class HomeScreen extends React.Component<Props, State> {
 						communityReads: props.onGetCommunityReads(
 							{
 								pageNumber: 1,
-								pageSize,
+								pageSize: 40,
 								sort: CommunityReadSort.Hot
 							},
 							this._asyncTracker.addCallback(
@@ -164,9 +161,23 @@ class HomeScreen extends React.Component<Props, State> {
 			}
 		} else {
 			this.state = {
+				communityReads: props.onGetCommunityReads(
+					{
+						pageNumber: 1,
+						pageSize: 5,
+						sort: CommunityReadSort.Hot
+					},
+					this._asyncTracker.addCallback(
+						communityReads => {
+							this.setState({ communityReads });
+							this.clearAotdAlertIfNeeded();
+						}
+					)
+				),
 				isLoading: false,
 				isLoadingNewItems: false,
-				newItemMessage: null
+				newItemMessage: null,
+				sort: CommunityReadSort.Hot
 			};
 		}
 		this._asyncTracker.addCancellationDelegate(
@@ -179,7 +190,7 @@ class HomeScreen extends React.Component<Props, State> {
 						communityReads: props.onGetCommunityReads(
 							{
 								pageNumber: 1,
-								pageSize,
+								pageSize: 40,
 								sort: CommunityReadSort.Hot
 							},
 							this._asyncTracker.addCallback(
@@ -196,16 +207,27 @@ class HomeScreen extends React.Component<Props, State> {
 					this.props.onSetScreenState(
 						this.props.screenId,
 						() => ({
-							location: { path: '/' },
-							templateSection: null
+							location: { path: '/' }
 						})
 					);
 				} else {
 					this.setState({
-						communityReads: null,
+						communityReads: props.onGetCommunityReads(
+							{
+								pageNumber: 1,
+								pageSize: 5,
+								sort: CommunityReadSort.Hot
+							},
+							this._asyncTracker.addCallback(
+								communityReads => {
+									this.setState({ communityReads });
+									this.clearAotdAlertIfNeeded();
+								}
+							)
+						),
 						isLoading: false,
 						newItemMessage: null,
-						sort: null,
+						sort: CommunityReadSort.Hot,
 						timeWindow: null,
 						minLength: null,
 						maxLength: null
@@ -213,8 +235,7 @@ class HomeScreen extends React.Component<Props, State> {
 					this.props.onSetScreenState(
 						this.props.screenId,
 						() => ({
-							location: { path: '/' },
-							templateSection: TemplateSection.Header
+							location: { path: '/' }
 						})
 					);
 				}
@@ -239,7 +260,7 @@ class HomeScreen extends React.Component<Props, State> {
 				this.props.onGetCommunityReads(
 					{
 						pageNumber,
-						pageSize,
+						pageSize: 40,
 						sort,
 						timeWindow,
 						minLength,
@@ -318,11 +339,7 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		if (
-			shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice) &&
-			(this.state.communityReads || this.state.posts) &&
-			this.state.sort != null
-		) {
+		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice)) {
 			return (
 				<ScreenContainer className="home-screen_1sjipy">
 					{this.props.user && this.props.isExtensionInstalled === false ?
@@ -406,16 +423,21 @@ class HomeScreen extends React.Component<Props, State> {
 		}
 		return (
 			<MarketingScreen
-				isDesktopDevice={this.props.isDesktopDevice}
+				communityReads={this.state.communityReads}
 				isIosDevice={this.props.isIosDevice}
-				isUserSignedIn={!!this.props.user}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onInstallExtension={this.props.onInstallExtension}
 				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
-				onViewPrivacyPolicy={this.props.onViewPrivacyPolicy}
+				onPostArticle={this.props.onPostArticle}
+				onRateArticle={this.props.onRateArticle}
+				onReadArticle={this.props.onReadArticle}
+				onShare={this.props.onShare}
+				onToggleArticleStar={this.props.onToggleArticleStar}
+				onViewAotdHistory={this.props.onViewAotdHistory}
+				onViewComments={this.props.onViewComments}
 				onViewProfile={this.props.onViewProfile}
-				variant={this.props.marketingScreenVariant}
+				user={this.props.user}
 			/>
 		);
 	}
@@ -430,9 +452,6 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			templateSection: shouldShowHomeScreen(sharedState.user, deps.isDesktopDevice) ?
-				null :
-				TemplateSection.Header,
 			title: 'Readup'
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => {
