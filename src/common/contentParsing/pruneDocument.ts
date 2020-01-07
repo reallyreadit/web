@@ -1,6 +1,6 @@
 import ParseResult from './ParseResult';
 import ContentContainer from './ContentContainer';
-import { buildLineage, zipContentLineages, isImageContainerElement, isElement } from './utils';
+import { buildLineage, zipContentLineages, isImageContainerElement, isElement, isReadupElement } from './utils';
 import ImageContainer from './ImageContainer';
 import { isValidContent, createMetadataElements } from './figureContent';
 import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
@@ -15,7 +15,7 @@ const whitelistedScriptTypes = [
 function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[], config: ImageContainerContentConfig) {
 	if (
 		isElement(element) &&
-		(element.id.startsWith('com_readup_') || element.nodeName === 'NOSCRIPT' || element.nodeName === 'BR')
+		(isReadupElement(element) || element.nodeName === 'NOSCRIPT' || element.nodeName === 'BR')
 	) {
 		return;
 	} else if (
@@ -143,7 +143,7 @@ export default function pruneDocument(parseResult: ParseResult) {
 		...Array
 			.from(document.body.children)
 			.filter(
-				child => !child.id.startsWith('com_readup_')
+				child => !isReadupElement(child)
 			)
 	);
 	document.body.prepend(contentRoot);

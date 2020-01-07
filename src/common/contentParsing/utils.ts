@@ -31,6 +31,9 @@ export function isImageContainerElement(node: Node): node is Element {
 		node.nodeName === 'PICTURE'
 	);
 }
+export function isReadupElement(element: Element) {
+	return (element.getAttribute('id') || '').startsWith('com_readup_');
+}
 export function isValidImgElement(imgElement: HTMLImageElement) {
 	return (
 		(imgElement.naturalWidth <= 1 && imgElement.naturalHeight <= 1) || (

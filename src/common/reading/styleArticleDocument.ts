@@ -1,3 +1,5 @@
+import { isReadupElement } from '../contentParsing/utils';
+
 const styleContent = `
 #com_readup_article {
 	font-family: serif;
@@ -117,7 +119,7 @@ export default (document: Document, title: string | null, byline: string | null)
 	Array
 		.from(document.getElementsByTagName('style'))
 		.forEach(style => {
-			if (!style.id.startsWith('com_readup_')) {
+			if (!isReadupElement(style)) {
 				style.remove();	
 			}
 		});
@@ -128,7 +130,7 @@ export default (document: Document, title: string | null, byline: string | null)
 		.from(document.querySelectorAll('[align], [style]'))
 		.forEach(
 			element => {
-				if (!element.id.startsWith('com_readup_')) {
+				if (!isReadupElement(element)) {
 					element.removeAttribute('align');
 					element.removeAttribute('style');
 				}
