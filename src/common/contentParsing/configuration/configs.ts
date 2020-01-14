@@ -266,6 +266,12 @@ export default {
 			}
 		},
 		{
+			hostname: 'thecorrespondent.com',
+			textContainerSearch: {
+				selectorBlacklist: ['.contentitem-infocard__toggle-icon', '.contentitem-sidenote__note']
+			}
+		},
+		{
 			hostname: 'thecut.com',
 			contentSearchRootElementSelector: '[itemprop="articleBody"]',
 			textContainerSearch: {
