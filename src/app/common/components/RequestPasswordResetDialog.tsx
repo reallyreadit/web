@@ -3,15 +3,21 @@ import InputField from './controls/InputField';
 import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
 import Captcha from '../Captcha';
 import { Intent } from '../../../common/components/Toaster';
+import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
 
 interface Props {
+	authServiceToken?: string,
+	autoFocus?: boolean,
 	captcha: Captcha,
-	onRequestPasswordReset: (email: string, captchaResponse: string) => Promise<void>
+	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>
 }
 export default class RequestPasswordResetDialog extends FormDialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string
 }> {
+	public static defaultProps: Partial<Props> = {
+		autoFocus: true
+	};
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	constructor(props: Props & FormDialogProps) {
 		super(
@@ -30,7 +36,7 @@ export default class RequestPasswordResetDialog extends FormDialog<void, Props, 
 				type="email"
 				label="Email Address"
 				value={this.state.email}
-				autoFocus
+				autoFocus={this.props.autoFocus}
 				required
 				error={this.state.emailError}
 				showError={this.state.showErrors}
@@ -44,10 +50,13 @@ export default class RequestPasswordResetDialog extends FormDialog<void, Props, 
 	protected submitForm() {
 		return this.props.captcha
 			.execute('requestPasswordReset')
-			.then(captchaResponse => this.props.onRequestPasswordReset(
-				this.state.email,
-				captchaResponse
-			));
+			.then(
+				captchaResponse => this.props.onRequestPasswordReset({
+					authServiceToken: this.props.authServiceToken,
+					captchaResponse,
+					email: this.state.email
+				})
+			);
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'UserAccountNotFound')) {

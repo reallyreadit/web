@@ -62,7 +62,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	},
 	{
 		analyticsName: 'AotdHistory',
-		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/aotd/history',
 		pathRegExp: /^\/aotd\/history$/,
 		screenKey: ScreenKey.AotdHistory

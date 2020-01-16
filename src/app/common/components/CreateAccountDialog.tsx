@@ -5,13 +5,19 @@ import PasswordField from './controls/authentication/PasswordField';
 import UsernameField from './controls/authentication/UsernameField';
 import Captcha from '../../server/Captcha';
 import { Intent } from '../../../common/components/Toaster';
+import AuthServiceDialogFooter from './AuthServiceDialogFooter';
+import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';
 
 interface Props {
+	analyticsAction: string,
+	autoFocus?: boolean,
 	captcha: Captcha,
-	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
+	onCreateAccount: (form: Form) => Promise<void>,
 	onSignIn?: () => void,
+	onSignInWithApple?: (analyticsAction: string) => void,
 	title?: string
 }
+export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
 export default class CreateAccountDialog extends FormDialog<void, Props, Partial<State> & {
 	name?: string,
 	nameError?: string,
@@ -20,9 +26,15 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 	password?: string,
 	passwordError?: string
 }> {
-	private _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
-	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
-	private _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
+	public static defaultProps: Partial<Props> = {
+		autoFocus: true
+	};
+	private readonly _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
+	private readonly _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
+	private readonly _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
+	private readonly _signInWithApple = () => {
+		this.props.onSignInWithApple(this.props.analyticsAction);
+	};
 	constructor(props: Props & FormDialogProps) {
 		super(
 			{
@@ -36,7 +48,7 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 		return (
 			<>
 				<UsernameField
-					autoFocus
+					autoFocus={this.props.autoFocus}
 					error={this.state.nameError}
 					key="username"
 					onChange={this._handleNameChange}
@@ -65,6 +77,16 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 			</>
 		);
 	}
+	protected renderFooter() {
+		if (this.props.onSignInWithApple) {
+			return (
+				<AuthServiceDialogFooter
+					onSignInWithApple={this._signInWithApple}
+				/>
+			);
+		}
+		return null;
+	}
 	protected getClientErrors() {
 		return [{
 			name: this.state.nameError,
@@ -75,12 +97,15 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 	protected submitForm() {
 		return this.props.captcha
 			.execute('createUserAccount')
-			.then(captchaResponse => this.props.onCreateAccount(
-				this.state.name,
-				this.state.email,
-				this.state.password,
-				captchaResponse
-			));
+			.then(
+				captchaResponse => this.props.onCreateAccount({
+					email: this.state.email,
+					name: this.state.name,
+					password: this.state.password,
+					captchaResponse,
+					analyticsAction: this.props.analyticsAction
+				})
+			);
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'DuplicateName')) {

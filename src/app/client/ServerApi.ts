@@ -22,10 +22,7 @@ export default class extends ServerApi {
 		);
 	}
 	private addCustomHeaders(req: XMLHttpRequest, params: Request) {
-		req.setRequestHeader('X-Readup-Client', `web/app/client#${this._clientType}@${this._clientVersion}`);
-		if (params.context) {
-			req.setRequestHeader('X-Readup-Context', params.context);
-		}
+		req.setRequestHeader('X-Readup-Client', this.getClientHeaderValue());
 	}
 	private fetchJson<T>(method: 'GET' | 'POST', params: Request) {
 		return new Promise<T>((resolve, reject) => {
@@ -92,6 +89,9 @@ export default class extends ServerApi {
 	}
 	protected post<T>(request: Request) {
 		return this.fetchJson<T>('POST', request);
+	}
+	public getClientHeaderValue() {
+		return `web/app/client#${this._clientType}@${this._clientVersion}`;
 	}
 	public initialize() : void {
 		this._isInitialized = true;

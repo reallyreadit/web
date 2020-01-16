@@ -6,9 +6,7 @@ import ShareData from '../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
-import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
 import ArticleLengthFilter from '../controls/ArticleLengthFilter';
@@ -18,8 +16,10 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import { DateTime } from 'luxon';
+import ScreenContainer from '../ScreenContainer';
+import UserAccount from '../../../../common/models/UserAccount';
 
-interface Props {
+export interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
@@ -29,7 +29,8 @@ interface Props {
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void
+	onViewComments: (article: UserArticle) => void,
+	user: UserAccount | null
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
@@ -37,7 +38,7 @@ interface State {
 	maxLength: number | null,
 	minLength: number | null
 }
-class AotdHistoryScreen extends React.Component<Props, State> {
+export default class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
@@ -126,7 +127,7 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 		return (
 			<ScreenContainer className="aotd-history-screen_lpelxe">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay position="static" /> :
+					<LoadingOverlay position="absolute" /> :
 					<>
 						<div className="controls">
 							<ArticleLengthFilter
@@ -145,7 +146,7 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 												<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
 												<ArticleDetails
 													article={article}
-													isUserSignedIn
+													isUserSignedIn={!!this.props.user}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onPost={this.props.onPostArticle}
@@ -169,15 +170,4 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 			</ScreenContainer>
 		);
 	}
-}
-export default function createAotdHistoryScreenFactory<TScreenKey>(
-	key: TScreenKey,
-	deps: Props
-) {
-	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Previous AOTD Winners' }),
-		render: () => (
-			<AotdHistoryScreen {...deps} />
-		)
-	};
 }

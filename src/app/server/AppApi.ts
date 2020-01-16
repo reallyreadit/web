@@ -11,6 +11,9 @@ export default class extends AppApi {
 	public readArticle(reference: ArticleReference) {
 		throw new Error('Operation not supported in server environment');
 	}
+	public requestAppleIdCredential() {
+		throw new Error('Operation not supported in server environment');
+	}
 	public share(data: ShareData) {
 		throw new Error('Operation not supported in server environment');
 	}

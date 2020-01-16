@@ -1,4 +1,5 @@
 import PushDeviceForm from './PushDeviceForm';
+import SignUpAnalyticsForm from './SignUpAnalyticsForm';
 
 export default interface UserAccountForm {
 	name: string,
@@ -6,8 +7,6 @@ export default interface UserAccountForm {
 	password: string,
 	captchaResponse: string,
 	timeZoneName: string,
-	marketingScreenVariant: number,
-	referrerUrl: string,
-	initialPath: string,
+	analytics: SignUpAnalyticsForm,
 	pushDevice: PushDeviceForm
 }

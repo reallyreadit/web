@@ -1,0 +1,26 @@
+/*
+	componentPath: src/app/common/components/controls/articles/AotdView
+	cssComponentId: aotd-view_hgax0h
+*/
+
+.aotd-view_hgax0h > .section-header {
+	flex: 0 0 auto;
+	font-size: 17pt;
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 10px;
+}
+.aotd-view_hgax0h > .aotd {
+	flex: 0 0 auto;
+}
+.aotd-view_hgax0h > .aotd > .action-link_ftamt8 {
+	display: block;
+	width: max-content;
+	white-space: nowrap;
+	margin: 10px auto 0;
+}
+.aotd-view_hgax0h > .separator {
+	flex: 0 0 auto;
+	width: 80%;
+	margin: 20px auto;
+	border-bottom: 1px solid #ccc;
+}

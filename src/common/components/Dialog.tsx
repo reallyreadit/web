@@ -6,7 +6,7 @@ interface Props {
 	children: React.ReactNode,
 	className?: ClassValue,
 	closeButtonText?: string,
-	isClosing?: boolean,
+	footer?: React.ReactNode,
 	onClose?: () => void,
 	onSubmit?: () => Promise<any>,
 	size?: 'small',
@@ -17,12 +17,10 @@ interface Props {
 export default class Dialog extends React.PureComponent<
 	Props,
 	{
-		isClosing: boolean,
 		isSubmitting: boolean
 	}
 > {
 	private readonly _close = () => {
-		this.setState({ isClosing: true });
 		this.props.onClose();
 	};
 	private readonly _submit = () => {
@@ -32,7 +30,6 @@ export default class Dialog extends React.PureComponent<
 			.then(
 				() => {
 					if (this.props.onClose) {
-						this.setState({ isClosing: true });
 						this.props.onClose();
 					} else {
 						this.setState({ isSubmitting: false });
@@ -48,7 +45,6 @@ export default class Dialog extends React.PureComponent<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			isClosing: false,
 			isSubmitting: false
 		};
 	}
@@ -60,7 +56,6 @@ export default class Dialog extends React.PureComponent<
 						'dialog_1wfm87',
 						this.props.className,
 						{
-							'closing': this.props.isClosing || this.state.isClosing,
 							'small': this.props.size === 'small'
 						}
 					)
@@ -92,6 +87,7 @@ export default class Dialog extends React.PureComponent<
 						/> :
 						null}
 				</div>
+				{this.props.footer}
 			</div>
 		);
 	}

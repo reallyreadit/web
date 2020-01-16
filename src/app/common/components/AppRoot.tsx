@@ -28,13 +28,23 @@ import createInboxScreenFactory from './screens/InboxScreen';
 import DialogKey from '../../../common/routing/DialogKey';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
+import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
+import AppReferral from '../AppReferral';
+import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
+import Dialog from '../../../common/components/Dialog';
 
 interface Props extends RootProps {
-	appApi: AppApi
+	appApi: AppApi,
+	appReferral: AppReferral
+}
+export enum AppleIdAuthState {
+	None,
+	Authenticating,
+	Error
 }
 type MenuState = 'opened' | 'closing' | 'closed';
 interface State extends RootState {
+	appleIdAuthState: AppleIdAuthState,
 	isPoppingScreen: boolean,
 	menuState: MenuState,
 }
@@ -150,6 +160,25 @@ export default class extends Root<
 		}
 	};
 	
+	// user account
+	private readonly _signInWithApple = () => {
+		if (this.props.appApi.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0) {
+			this.props.appApi.requestAppleIdCredential();
+		} else {
+			this._dialog.openDialog(
+				<Dialog
+					closeButtonText="Dismiss"
+					onClose={this._dialog.closeDialog}
+					size="small"
+					textAlign="center"
+					title="Update Required"
+				>
+					<p>Readup must be updated in the App Store to use this feature.</p>
+				</Dialog>
+			);
+		}
+	};
+
 	// window
 	private readonly _handleVisibilityChange = () => {
 		if (!this._isUpdateAvailable && !window.document.hidden) {
@@ -167,7 +196,7 @@ export default class extends Root<
 	};
 
 	constructor(props: Props) {
-		super('app-root_vc3j5h', props);
+		super('app-root_vc3j5h', false, props);
 
 		// screens
 		this._screenFactoryMap = {
@@ -295,6 +324,7 @@ export default class extends Root<
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
 				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
+				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShowToast: this._toaster.addToast,
 				onSignIn: this._signIn,
@@ -312,13 +342,10 @@ export default class extends Root<
 			...this.state,
 			dialogs: (
 				dialog ?
-					[{
-						element: dialog,
-						key: 0,
-						state: 'opening'
-					}] :
+					[this._dialog.createDialog(dialog)] :
 					[]
 			),
+			appleIdAuthState: AppleIdAuthState.None,
 			isPoppingScreen: false,
 			menuState: 'closed',
 			screens
@@ -364,6 +391,41 @@ export default class extends Root<
 				}
 				this.onArticleUpdated(event);
 			})
+			.addListener(
+				'authenticateAppleIdCredential',
+				credential => {
+					this.setState({ appleIdAuthState: AppleIdAuthState.Authenticating });
+					this.props.serverApi
+						.authenticateAppleIdCredential({
+							...credential,
+							analytics: this.getSignUpAnalyticsForm(null),
+							pushDevice: this.getPushDeviceForm()
+						})
+						.then(
+							res => {
+								if (res.authServiceToken) {
+									this._dialog.openDialog(
+										<CreateAuthServiceAccountDialog
+											onCloseDialog={this._dialog.closeDialog}
+											onCreateAuthServiceAccount={this._createAuthServiceAccount}
+											onLinkExistingAccount={this._openLinkAuthServiceAccountDialog}
+											onShowToast={this._toaster.addToast}
+											token={res.authServiceToken}
+										/>
+									);
+								} else {
+									this.onUserSignedIn(res.user);
+								}
+								this.setState({ appleIdAuthState: AppleIdAuthState.None });
+							}
+						)
+						.catch(
+							() => {
+								this.setState({ appleIdAuthState: AppleIdAuthState.Error });
+							}
+						);
+				}
+			)
 			.addListener('commentPosted', comment => {
 				// create addenda array if required due to an outdated app
 				if (!comment.addenda) {
@@ -421,11 +483,7 @@ export default class extends Root<
 						this.setState({
 							dialogs: (
 								dialog ?
-									[{
-										element: dialog,
-										key: 0,
-										state: 'opening'
-									}] :
+									[this._dialog.createDialog(dialog)] :
 									[]
 							),
 							isPoppingScreen: false,
@@ -482,9 +540,9 @@ export default class extends Root<
 		// send the pageview
 		this.props.analytics.sendPageview(screen);
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
+	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		// create the new screen
-		const screen = this.createScreen(key, urlParams);
+		const screen = this.createScreen(key, urlParams, title);
 		// replace the screen
 		this.setScreenState([screen]);
 		// send the pageview
@@ -505,6 +563,15 @@ export default class extends Root<
 	}
 	protected getSharedState() {
 		return { user: this.state.user };
+	}
+	protected getSignUpAnalyticsForm(action: string) {
+		return {
+			action: this.props.appReferral.action,
+			currentPath: this.props.initialLocation.path,
+			initialPath: this.props.appReferral.initialPath,
+			marketingVariant: this.props.marketingVariant,
+			referrerUrl: this.props.appReferral.referrerUrl
+		};
 	}
 	protected onUserSignedIn(user: UserAccount) {
 		// sync auth state with app
@@ -631,11 +698,15 @@ export default class extends Root<
 							null}
 					</> :
 					<AuthScreen
+						appleIdAuthState={this.state.appleIdAuthState}
 						captcha={this.props.captcha}
+						onCloseDialog={this._dialog.closeDialog}
 						onCreateAccount={this._createAccount}
+						onOpenDialog={this._dialog.openDialog}
 						onOpenRequestPasswordResetDialog={this._openRequestPasswordResetDialog}
 						onShowToast={this._toaster.addToast}
 						onSignIn={this._signIn}
+						onSignInWithApple={this._signInWithApple}
 					/>}
 				<DialogManager
 					dialogs={this.state.dialogs}
@@ -667,12 +738,14 @@ export default class extends Root<
 		if (userName) {
 			this.pushScreen(
 				ScreenKey.Profile,
-				{ userName }
+				{ userName },
+				'@' + userName
 			);
 		} else {
 			this.replaceScreen(
 				ScreenKey.Profile,
-				{ userName: this.state.user.name }
+				{ userName: this.state.user.name },
+				'@' + this.state.user.name
 			);
 		}
 	}

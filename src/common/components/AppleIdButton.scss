@@ -1,0 +1,49 @@
+/*
+	componentPath: src/common/components/AppleIdButton
+	cssComponentId: apple-id-button_mrmms4
+*/
+
+.apple-id-button_mrmms4 {
+	width: 210px;
+	height: 40px;
+	cursor: pointer;
+}
+.apple-id-button_mrmms4 > div {
+	font-synthesis: none;
+	outline: none;
+	-moz-font-feature-settings: kern;
+	font-feature-settings: kern;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	width: 100%;
+	height: 100%;
+	min-width: 130px;
+	max-width: 375px;
+	min-height: 30px;
+	max-height: 64px;
+	position: relative;
+}
+.apple-id-button_mrmms4 > div > div:first-child {
+	padding-right: 8%;
+	padding-left: 8%;
+	position: absolute;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+}
+.apple-id-button_mrmms4 > div > div:first-child > svg {
+	pointer-events: none;
+	overflow: visible;
+}
+.apple-id-button_mrmms4 > div > div:first-child > svg > g > svg {
+	overflow: visible;
+}
+.apple-id-button_mrmms4 > div > div:last-child {
+	padding: 1px;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+.apple-id-button_mrmms4 > div > div:last-child > svg {
+	overflow: visible;
+}

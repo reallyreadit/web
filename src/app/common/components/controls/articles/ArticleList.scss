@@ -3,9 +3,6 @@
 	cssComponentId: article-list_o9uw1n
 */
 
-.article-list_o9uw1n > li {
-	margin-bottom: 15px;
-}
-.article-list_o9uw1n > li:last-child {
-	margin-bottom: none;
+.article-list_o9uw1n > li + li {
+	margin-top: 15px;
 }

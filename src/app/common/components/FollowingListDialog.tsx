@@ -29,7 +29,6 @@ interface Props {
 }
 interface State {
 	followings: Fetchable<Following[]>,
-	isClosing: boolean,
 	isLoadingNewItems: boolean,
 	newItemCount: number
 }
@@ -85,7 +84,6 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 	};
 	private readonly _viewProfile = (userName: string) => {
 		this.props.onViewProfile(userName);
-		this.setState({ isClosing: true });
 		this.props.onCloseDialog();
 	};
 	constructor(props: Props) {
@@ -99,7 +97,6 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 					}
 				)
 			),
-			isClosing: false,
 			isLoadingNewItems: false,
 			newItemCount: 0
 		};
@@ -136,7 +133,6 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 			<Dialog
 				className="following-list-dialog_7vsgrb"
 				closeButtonText="Ok"
-				isClosing={this.state.isClosing}
 				onClose={this.props.onCloseDialog}
 				title={this.props.title}
 			>

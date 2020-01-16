@@ -39,8 +39,7 @@ const rootProps = {
 	),
 	initialLocation: initData.initialLocation,
 	initialUser: initData.userAccount,
-	iosReferrerUrl: initData.iosReferrerUrl,
-	marketingScreenVariant: initData.marketingScreenVariant,
+	marketingVariant: initData.marketingVariant,
 	serverApi,
 	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint
@@ -57,7 +56,8 @@ switch (initData.clientType) {
 			AppRoot,
 			{
 				...rootProps,
-				appApi: new AppApi(messagingContext)
+				appApi: new AppApi(messagingContext),
+				appReferral: initData.appReferral
 			}
 		);
 		break;

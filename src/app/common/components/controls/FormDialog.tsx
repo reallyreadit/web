@@ -62,6 +62,9 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 		} as S;
 	}
 	protected abstract renderFields(): JSX.Element | JSX.Element[];
+	protected renderFooter(): React.ReactNode {
+		return null;
+	}
 	protected getClientErrors(): { [key: string]: string }[] {
 		return [];
 	};
@@ -73,6 +76,7 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 			<Dialog
 				className={classNames('form-dialog_bdppnq', this._className)}
 				closeButtonText="Cancel"
+				footer={this.renderFooter()}
 				onClose={this.props.onCloseDialog}
 				onSubmit={this._submit}
 				submitButtonText={this._submitButtonText}

@@ -13,16 +13,25 @@ interface Props {
 	extensionBypass?: React.ReactNode,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
-	onCopyAppReferrerTextToClipboard: () => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onInstallExtension: () => void,
+	onOpenCreateAccountDialog: (analyticsAction: string) => void,
+	onOpenSignInDialog: (analyticsAction: string) => void,
 	onViewHomeScreen: () => void,
-	onShowCreateAccountDialog: () => void,
-	onShowSignInDialog: () => void,
 	unsupportedBypass: React.ReactNode,
 	user: UserAccount |  null
 }
 export default class OnboardingScreen extends React.Component<Props> {
+	private readonly _copyAppReferrerTextToClipboard = () => {
+		this.props.onCopyAppReferrerTextToClipboard('ReadScreen');
+	};
 	private readonly _homeScreenUrl = findRouteByKey(routes, ScreenKey.Home).createUrl();
+	private readonly _openCreateAccountDialog = () => {
+		this.props.onOpenCreateAccountDialog('ReadScreen');
+	};
+	private readonly _openSignInDialog = () => {
+		this.props.onOpenSignInDialog('ReadScreen');
+	};
 	private readonly _viewHomeScreen = (ev: React.MouseEvent) => {
 		ev.preventDefault();
 		this.props.onViewHomeScreen();
@@ -62,7 +71,7 @@ export default class OnboardingScreen extends React.Component<Props> {
 										<a
 											className="text"
 											href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
-											onClick={this.props.onCopyAppReferrerTextToClipboard}
+											onClick={this._copyAppReferrerTextToClipboard}
 										>
 											Download the app to continue
 											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
@@ -101,12 +110,12 @@ export default class OnboardingScreen extends React.Component<Props> {
 											<div className="buttons">
 												<Button
 													intent="loud"
-													onClick={this.props.onShowCreateAccountDialog}
+													onClick={this._openCreateAccountDialog}
 													size="large"
 													text="Sign Up"
 												/>
 												<Button
-													onClick={this.props.onShowSignInDialog}
+													onClick={this._openSignInDialog}
 													size="large"
 													text="Log In"
 												/>

@@ -3,17 +3,6 @@
 	cssComponentId: aotd-history-screen_lpelxe
 */
 
-.aotd-history-screen_lpelxe {
-	display: flex;
-	flex-flow: column;
-}
-.aotd-history-screen_lpelxe > .loading-overlay_zfgtd1 {
-	flex: 1 1 auto;
-}
-.aotd-history-screen_lpelxe > .article-list_o9uw1n,
-.aotd-history-screen_lpelxe > .page-selector_a8tbpb {
-	flex: 0 0 auto;
-}
 .aotd-history-screen_lpelxe > .controls {
 	flex: 0 0 auto;
 	display: flex;

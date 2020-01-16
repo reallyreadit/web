@@ -9,16 +9,24 @@ export default (
 		article: UserArticle,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onViewProfile: (userName: string) => void,
+		pointsCallout?: React.ReactNode,
 		rank?: number,
+		rankCallout?: React.ReactNode,
 		user: UserAccount | null
 	}
 ) => (
 	<div className="aotd-metadata_3itnfw">
 		{props.rank != null ?
-			<div className={classNames('rank', 'length-' + props.rank.toString().length.toString())}><small>#</small> {props.rank}</div> :
+			<div className={classNames('rank', 'length-' + props.rank.toString().length.toString())}>
+				<small>#</small> {props.rank}
+				{props.rankCallout}
+			</div> :
 			null}
 		<div className="score">
-			<span>{`${props.article.hotScore} pts`}</span>
+			<span className="points">
+				{`${props.article.hotScore} pts`}
+				{props.pointsCallout}
+			</span>
 			{props.article.firstPoster ?
 				<>
 					<span> - Scout: </span>

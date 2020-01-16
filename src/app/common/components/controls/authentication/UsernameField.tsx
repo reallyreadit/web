@@ -10,8 +10,9 @@ export default (props: {
 	value: string
 }) => (
 		<InputField
+			autoFocus={props.autoFocus}
 			error={props.error}
-			label="Username"
+			label="User name"
 			labelPosition={props.labelPosition}
 			minLength={3}
 			maxLength={30}

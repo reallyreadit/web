@@ -12,13 +12,14 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import Rating from '../../../../common/models/Rating';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
-import ScreenContainer from '../ScreenContainer';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import CommentForm from '../../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
 import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import InfoBox from '../controls/InfoBox';
+import Panel from '../BrowserRoot/Panel';
+import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -37,11 +38,14 @@ export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
+	isIosDevice: boolean | null,
 	onCloseDialog: () => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
+	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
@@ -55,21 +59,40 @@ export interface Props {
 	user: UserAccount | null
 }
 export default class CommentsScreen extends React.PureComponent<Props> {
+	private readonly _copyAppReferrerTextToClipboard = () => {
+		this.props.onCopyAppReferrerTextToClipboard('CommentsScreen');
+	};
+	private readonly _openCreateAccountDialog = () => {
+		this.props.onOpenCreateAccountDialog('CommentsScreen');
+	};
 	private readonly _noop = () => { };
 	public render() {
 		return (
-			<ScreenContainer>
-				<div className="comments-screen_udh2l6">
-					{this.props.article.isLoading || this.props.comments.isLoading ?
-						<LoadingOverlay /> :
-						!this.props.article.value || !this.props.comments.value ?
-							<InfoBox
-								position="absolute"
-								style="normal"
-							>
-								<p>Error loading comments.</p>
-							</InfoBox> :
-							<>
+			<div className="comments-screen_udh2l6">
+				{this.props.article.isLoading || this.props.comments.isLoading ?
+					<LoadingOverlay position="absolute" /> :
+					!this.props.article.value || !this.props.comments.value ?
+						<InfoBox
+							position="absolute"
+							style="normal"
+						>
+							<p>Error loading comments.</p>
+						</InfoBox> :
+						<>
+							{!this.props.user ?
+								<Panel className="header">
+									<h1>Join our community of readers.</h1>
+									<h3>Find and share the best articles on the web.</h3>
+									<div className="buttons">
+										<GetStartedButton
+											isIosDevice={this.props.isIosDevice}
+											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onOpenCreateAccountDialog={this._openCreateAccountDialog}
+										/>
+									</div>
+								</Panel> :
+								null}
+							<Panel className="main">
 								<ArticleDetails
 									article={this.props.article.value}
 									isUserSignedIn={!!this.props.user}
@@ -101,9 +124,9 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									onViewProfile={this.props.onViewProfile}
 									user={this.props.user}
 								/>
-							</>}
-				</div>
-			</ScreenContainer>
+							</Panel>
+						</>}
+			</div>
 		);
 	}
 }

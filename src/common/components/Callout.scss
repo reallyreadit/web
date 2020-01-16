@@ -1,0 +1,44 @@
+/*
+	componentPath: src/common/components/Callout
+	cssComponentId: callout_k8z57c
+*/
+
+.callout_k8z57c {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	pointer-events: none;
+}
+.callout_k8z57c > .ellipse {
+	position: absolute;
+	border-style: solid;
+	border-color: rgba(255,0,0,0.5);
+	border-radius: 50%;
+	transform: rotate(-3deg);
+}
+.callout_k8z57c > .arrow {
+	position: absolute;
+	width: 1em;
+	height: 1em;
+	border-style: solid;
+	border-color: rgba(255,0,0,0.5) transparent transparent transparent;
+	border-radius: 50%;
+}
+.callout_k8z57c > .arrow::before,
+.callout_k8z57c > .arrow::after {
+	content: "";
+	display: block;
+	position: absolute;
+	transform-origin: 0 50%;
+	background-color: rgba(255,0,0,0.5);
+}
+.callout_k8z57c > .note {
+	position: absolute;
+	padding: 5px;
+	box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2);
+	background: linear-gradient(135deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+	transform: rotate(-3deg);
+	transform-origin: 0 0;
+}

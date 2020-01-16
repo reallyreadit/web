@@ -1,39 +1,100 @@
 import * as React from 'react';
-import { ProfileScreen, Deps, getProps } from '../screens/ProfileScreen';
+import { ProfileScreen, Deps, getPathParams } from '../screens/ProfileScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, TemplateSection } from '../Root';
+import { Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
+import Profile from '../../../../common/models/social/Profile';
+import UserNameQuery from '../../../../common/models/social/UserNameQuery';
+import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import produce from 'immer';
+import Fetchable from '../../../../common/Fetchable';
+import { formatFetchable } from '../../../../common/format';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'isIosDevice' | 'screenId'>> & {
-		isDesktopDevice: boolean
+	deps: Pick<Deps, Exclude<keyof Deps, 'isIosDevice' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
+		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
+		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
 	}
 ) {
-	return {
-		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
-			id,
-			key,
-			location,
-			templateSection: (
-				sharedState.user && deps.isDesktopDevice ?
-					null:
-					TemplateSection.Header
-			),
-			title: 'Profile'
-		}),
-		render: (state: Screen, sharedState: SharedState) => (
-			<ProfileScreen {
-				...getProps(
-					{
-						...deps,
-						isIosDevice: sharedState.isIosDevice,
-						screenId: state.id
-					},
-					state,
-					sharedState
+	const
+		createScreenUpdater = (result: Fetchable<Profile>) => produce<Screen<Fetchable<Profile>>>(
+			currentState => {
+				currentState.componentState = result;
+				if (result.value) {
+					currentState.title = '@' + result.value.userName;
+				} else {
+					currentState.title = 'Profile not found';
+				}
+			}
+		),
+		reloadProfile = (screenId: number, userName: string) => new Promise<Profile>(
+			(resolve, reject) => {
+				deps.onGetProfile(
+					{ userName },
+					result => {
+						deps.onSetScreenState(screenId, createScreenUpdater(result));
+						if (result.value) {
+							resolve(result.value);
+						} else {
+							reject(result.errors);
+						}
+					}
+				);
+			}
+		),
+		updateProfile = (screenId: number, newValues: Partial<Profile>) => {
+			deps.onSetScreenState(
+				screenId,
+				produce<Screen<Fetchable<Profile>>>(
+					currentState => {
+						currentState.componentState.value = {
+							...currentState.componentState.value,
+							...newValues
+						};
+					}
 				)
-			} />
-		)
+			)
+		};
+	return {
+		create: (id: number, location: RouteLocation) => {
+			const profile = deps.onGetProfile(
+				{
+					userName: getPathParams(location).userName
+				},
+				result => {
+					deps.onSetScreenState(id, createScreenUpdater(result));
+				}
+			);
+			return {
+				id,
+				componentState: profile,
+				key,
+				location,
+				title: formatFetchable(
+					profile,
+					profile => '@' + profile.userName,
+					'Loading...',
+					'Profile not found'
+				)
+			};
+		},
+		render: (state: Screen, sharedState: SharedState) => {
+			const pathParams = getPathParams(state.location);
+			return (
+				<ProfileScreen {
+					...{
+							...deps,
+							...pathParams,
+							isIosDevice: sharedState.isIosDevice,
+							onReloadProfile: reloadProfile,
+							onUpdateProfile: updateProfile,
+							profile: state.componentState,
+							screenId: state.id,
+							userAccount: sharedState.user
+					}
+				} />
+			);
+		}
 	};
 }

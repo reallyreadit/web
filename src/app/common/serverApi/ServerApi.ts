@@ -42,6 +42,10 @@ import CommentAddendumForm from '../../../common/models/social/CommentAddendumFo
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 import CommentsQuery from '../../../common/models/social/CommentsQuery';
+import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
+import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
+import AppleIdCredentialAuthForm from '../../../common/models/app/AppleIdCredentialAuthForm';
+import AppleIdCredentialAuthResponse from '../../../common/models/app/AppleIdCredentialAuthResponse';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -65,6 +69,7 @@ export default abstract class {
 	}
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
+	public abstract getClientHeaderValue(): string;
 	public readonly createUserAccount = (data: UserAccountForm) => {
 		return this.post<UserAccount>({ path: '/UserAccounts/CreateAccount', data });
 	};
@@ -80,14 +85,8 @@ export default abstract class {
 	public readonly changeEmailAddress = (email: string) => {
 		return this.post<UserAccount>({ path: '/UserAccounts/ChangeEmailAddress', data: { email } });
 	};
-	public readonly requestPasswordReset = (email: string, captchaResponse: string) => {
-		return this.post({ path: '/UserAccounts/RequestPasswordReset', data: { email, captchaResponse } });
-	};
 	public readonly getUserAccount = (callback: (userAccount: Fetchable<UserAccount>) => void) => {
 		return this.get<UserAccount>({ path: '/UserAccounts/GetUserAccount' }, callback);
-	};
-	public readonly signIn = (data: SignInForm) => {
-		return this.post<UserAccount>({ path: '/UserAccounts/SignIn', data });
 	};
 	public readonly signOut = (data: SignOutForm) => {
 		return this.post<void>({ path: '/UserAccounts/SignOut', data });
@@ -137,6 +136,9 @@ export default abstract class {
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });
 
+	// Auth
+	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AppleIdCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
+
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });
 
@@ -167,6 +169,10 @@ export default abstract class {
 	// UserAccounts
 	public readonly changeNotificationPreference = (data: NotificationPreference) => this.post<NotificationPreference>({ path: '/UserAccounts/NotificationPreference', data });
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });
+	public readonly createAuthServiceAccount = (data: AuthServiceAccountForm) => this.post<UserAccount>({ path: '/UserAccounts/AuthServiceAccount', data });
 	public readonly getSettings = this.createFetchFunction<Settings>('/UserAccounts/Settings');
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
+	public readonly requestPasswordReset = (data: PasswordResetRequestForm) => this.post({ path: '/UserAccounts/RequestPasswordReset', data });
+	public readonly sendPasswordCreationEmail = () => this.post({ path: '/UserAccounts/PasswordCreationEmailDispatch' });
+	public readonly signIn = (data: SignInForm) => this.post<UserAccount>({ path: '/UserAccounts/SignIn', data });
 }

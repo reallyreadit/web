@@ -8,12 +8,14 @@ import DeviceInfo from '../../common/models/app/DeviceInfo';
 import AppActivationEvent from '../../common/models/app/AppActivationEvent';
 import UserAccount from '../../common/models/UserAccount';
 import AlertStatus from '../../common/models/app/AlertStatus';
+import AppleIdCredential from '../../common/models/app/AppleIdCredential';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
 	'alertStatusUpdated': AlertStatus,
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
+	'authenticateAppleIdCredential': AppleIdCredential,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
 	'didBecomeActive': AppActivationEvent,
@@ -21,6 +23,7 @@ export default abstract class extends EventEmitter<{
 }> {
 	public abstract openExternalUrl(url: string): void;
 	public abstract readArticle(reference: ArticleReference): void;
+	public abstract requestAppleIdCredential(): void;
 	public abstract share(data: ShareData): void;
 	public abstract syncAuthCookie(user?: UserAccount): void;
 	public abstract get appVersion(): SemanticVersion;
