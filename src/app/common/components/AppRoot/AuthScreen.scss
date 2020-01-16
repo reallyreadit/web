@@ -6,79 +6,44 @@
 .auth-screen_gnq77a {
 	flex: 1 1 auto;
 	display: flex;
-	flex-flow: column;
 	height: 100%;
 	justify-content: center;
 	align-items: center;
 	padding: 0 10px;
 }
-.auth-screen_gnq77a > .content {
-	width: 100%;
-	max-width: 400px;
-}
-.auth-screen_gnq77a > .content > .logo > img {
+.auth-screen_gnq77a > .content > img {
 	display: block;
 	height: 60px;
-	margin: 0 auto 20px;
-}
-.auth-screen_gnq77a > .content > .flip-container {
-	height: 340px;
-	perspective: 1000px;
-}
-.auth-screen_gnq77a > .content > .flip-container > .flipper {
-	transition: 500ms;
-	transform-style: preserve-3d;
-	position: relative;
-	height: 100%;
-}
-.auth-screen_gnq77a > .content > .flip-container > .flipper.flipped {
-	animation: auth-screen_gnq77a-flip-forward 500ms forwards;
-}
-.auth-screen_gnq77a > .content > .flip-container > .flipper.backwards {
-	animation: auth-screen_gnq77a-flip-back 500ms forwards;
-}
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front,
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .back {
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-}
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front {
-	z-index: 2;
-	transform: translateZ(0);
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-}
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_ovrlmi.block {
-	flex: 0 0 auto;
-	width: 80%;
 	margin: 0 auto;
 }
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .front > .button_ovrlmi:not(:last-child) {
-	margin-bottom: 20px;
+.auth-screen_gnq77a > .content > .apple-id-auth {
+	margin: 50px auto 50px auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
-.auth-screen_gnq77a > .content > .flip-container > .flipper > .back {
-	transform: rotateY(180deg);
+.auth-screen_gnq77a > .content > .apple-id-auth.hidden {
+	visibility: hidden;
 }
-
-@keyframes auth-screen_gnq77a-flip-forward {
-	from {
-		transform: rotateY(0);
-	}
-	to {
-		transform: rotateY(-180deg);
-	}
+.auth-screen_gnq77a > .content > .apple-id-auth > .spinner-icon_6s5uk2 {
+	margin-right: 5px;
 }
-@keyframes auth-screen_gnq77a-flip-back {
-	from {
-		transform: rotateY(-180deg);
-	}
-	to {
-		transform: rotateY(0);
-	}
+.auth-screen_gnq77a > .content > .apple-id-button_mrmms4 {
+	margin: 0 auto;
+}
+.auth-screen_gnq77a > .content > .email-button {
+	width: 210px;
+	height: 40px;
+	margin: 20px auto 0;
+	background-color: #999;
+	color: white;
+	border-radius: 5px;
+	font-family: 'Museo Sans (500)';
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.auth-screen_gnq77a > .content > .email-button > .icon_rour3d {
+	font-size: 12pt;
+	margin-right: 5px;
 }

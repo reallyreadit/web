@@ -4,10 +4,9 @@ import AotdHistoryScreen, { Props } from '../screens/AotdHistoryScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { SharedState, Screen } from '../Root';
 
-function noop() { }
 export default function createAotdHistoryScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onOpenCreateAccountDialog' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Previous AOTD Winners' }),
@@ -16,9 +15,6 @@ export default function createAotdHistoryScreenFactory<TScreenKey>(
 				{
 					...{
 						...deps,
-						isIosDevice: true,
-						onCopyAppReferrerTextToClipboard: noop,
-						onOpenCreateAccountDialog: noop,
 						user: sharedState.user
 					}
 				}

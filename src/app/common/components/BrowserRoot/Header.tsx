@@ -10,8 +10,8 @@ import UserAccount from '../../../../common/models/UserAccount';
 interface Props {
 	isDesktopDevice: boolean,
 	onOpenMenu: () => void,
-	onShowCreateAccountDialog: () => void,
-	onShowSignInDialog: () => void,
+	onOpenCreateAccountDialog: (analyticsAction: string) => void,
+	onOpenSignInDialog: (analyticsAction: string) => void,
 	onViewHome: () => void,
 	onViewInbox: () => void,
 	user: UserAccount | null
@@ -20,6 +20,12 @@ export default class extends React.PureComponent<Props> {
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		e.preventDefault();
 		this.props.onViewHome();
+	};
+	private readonly _openCreateAccountDialog = () => {
+		this.props.onOpenCreateAccountDialog('Header');
+	};
+	private readonly _openSignInDialog = () => {
+		this.props.onOpenSignInDialog('Header');
 	};
 	public render() {
 		const
@@ -59,13 +65,13 @@ export default class extends React.PureComponent<Props> {
 								<Button
 									text="Login"
 									size="large"
-									onClick={this.props.onShowSignInDialog}
+									onClick={this._openSignInDialog}
 								/>
 								<Button
 									text="Sign Up"
 									size="large"
 									intent="loud"
-									onClick={this.props.onShowCreateAccountDialog}
+									onClick={this._openCreateAccountDialog}
 								/>
 							</> :
 							null}

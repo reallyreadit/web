@@ -6,6 +6,7 @@ interface Props {
 	children: React.ReactNode,
 	className?: ClassValue,
 	closeButtonText?: string,
+	footer?: React.ReactNode,
 	onClose?: () => void,
 	onSubmit?: () => Promise<any>,
 	size?: 'small',
@@ -86,6 +87,7 @@ export default class Dialog extends React.PureComponent<
 						/> :
 						null}
 				</div>
+				{this.props.footer}
 			</div>
 		);
 	}

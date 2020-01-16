@@ -19,6 +19,10 @@ import Settings from '../../../common/models/Settings';
 import LoadingOverlay from './controls/LoadingOverlay';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import NotificationPreferencesControl from './controls/NotificationPreferencesControl';
+import AuthServiceProvider from '../../../common/models/userAccounts/AuthServiceProvider';
+import SetPasswordDialog from './SettingsPage/SetPasswordDialog';
+import { DateTime } from 'luxon';
+import { formatIsoDateAsUtc } from '../../../common/format';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -31,6 +35,7 @@ interface Props {
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
 	onResendConfirmationEmail: () => Promise<void>,
+	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	user: UserAccount
 }
@@ -88,6 +93,16 @@ class SettingsPage extends React.PureComponent<
 			/>
 		);
 	};
+	private readonly _openSetPasswordDialog = () => {
+		this.props.onOpenDialog(
+			<SetPasswordDialog
+				email={this.props.user.email}
+				onCloseDialog={this.props.onCloseDialog}
+				onSendPasswordCreationEmail={this.props.onSendPasswordCreationEmail}
+				onShowToast={this.props.onShowToast}
+			/>
+		)
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -140,7 +155,13 @@ class SettingsPage extends React.PureComponent<
 							<div className="header">
 								<span className="label">Username</span>
 								<Separator />
-								<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} />
+								{user.isPasswordSet ?
+									<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} /> :
+									<ActionLink
+										iconLeft="locked"
+										onClick={this._openSetPasswordDialog}
+										text="Set Password"
+									/>}
 							</div>
 							<div className="section">
 								{user.name}
@@ -196,6 +217,43 @@ class SettingsPage extends React.PureComponent<
 								{this.state.settings.value.timeZoneDisplayName}
 							</div>
 						</div>
+						<div className="setting accounts">
+							<div className="header">
+								<span className="label">Linked Accounts</span>
+							</div>
+							<div className="section">
+								{this.state.settings.value.authServiceAccounts.length ?
+									<table>
+										<thead>
+											<tr>
+												<th>Date Added</th>
+												<th>Provider</th>
+												<th>Email Address</th>
+											</tr>
+										</thead>
+										<tbody>
+											{this.state.settings.value.authServiceAccounts.map(
+												account => {
+													let provider: string;
+													switch (account.provider) {
+														case AuthServiceProvider.Apple:
+															provider = 'Apple';
+															break;
+													}
+													return (
+														<tr key={account.dateAssociated}>
+															<td>{DateTime.fromISO(formatIsoDateAsUtc(account.dateAssociated)).toLocaleString(DateTime.DATE_MED)}</td>
+															<td>{provider}</td>
+															<td>{account.emailAddress}</td>
+														</tr>
+													);
+												}
+											)}
+										</tbody>
+									</table> :
+									'No linked accounts found.'}
+							</div>
+						</div>
 					</>}
 			</ScreenContainer>
 		);
@@ -216,6 +274,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 				onGetTimeZones={deps.onGetTimeZones}
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
+				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}
 				user={sharedState.user}
 			/>

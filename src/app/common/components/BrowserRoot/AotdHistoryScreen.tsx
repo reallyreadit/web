@@ -6,7 +6,7 @@ import { Screen } from '../Root';
 
 export default function createAotdHistoryScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isIosDevice' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Previous AOTD Winners' }),
@@ -15,7 +15,6 @@ export default function createAotdHistoryScreenFactory<TScreenKey>(
 				{
 					...{
 						...deps,
-						isIosDevice: sharedState.isIosDevice,
 						user: sharedState.user
 					}
 				}

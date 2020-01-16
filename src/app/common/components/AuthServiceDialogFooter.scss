@@ -1,0 +1,32 @@
+/*
+	componentPath: src/app/common/components/AuthServiceDialogFooter
+	cssComponentId: auth-service-dialog-footer_xr7co1
+*/
+
+.auth-service-dialog-footer_xr7co1 > .rule {
+	display: flex;
+	height: 20px;
+	width: 80%;
+	margin: 0 auto;
+	align-items: center;
+	text-transform: uppercase;
+	font-family: 'Museo Sans (900)';
+	font-size: 10pt;
+}
+.auth-service-dialog-footer_xr7co1 > .rule::before,
+.auth-service-dialog-footer_xr7co1 > .rule::after {
+	content: "";
+	flex: 1 1 auto;
+	display: block;
+	height: 1px;
+	background-color: #2A2326;
+}
+.auth-service-dialog-footer_xr7co1 > .rule::before {
+	margin-right: 10px;
+}
+.auth-service-dialog-footer_xr7co1 > .rule::after {
+	margin-left: 10px;
+}
+.auth-service-dialog-footer_xr7co1 > .apple-id-button_mrmms4 {
+	margin: 10px auto 15px;	
+}

@@ -21,7 +21,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import DeviceType from '../DeviceType';
 import { isIosDevice } from '../userAgent';
@@ -34,6 +34,9 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
+import CreateAccountDialog from './CreateAccountDialog';
+import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
+import SignInDialog from './SignInDialog';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -52,9 +55,15 @@ type Events = SharedEvents & {
 	'extensionInstallationStatusChanged': boolean
 };
 enum WelcomeMessage {
+	AppleIdInvalidJwt = 'AppleIdInvalidJwt',
+	AppleIdInvalidSession = 'AppleIdInvalidSession',
+	AppleIdUnknownError = 'AppleIdUnknownError',
 	Rebrand = 'rebrand'
 }
 const welcomeMessages = {
+	[WelcomeMessage.AppleIdInvalidJwt]: 'We were unable to validate the ID token.',
+	[WelcomeMessage.AppleIdInvalidSession]: 'We were unable to validate your session ID.',
+	[WelcomeMessage.AppleIdUnknownError]: 'An unknown Apple authentication error occurred.',
 	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!'
 };
 export default class extends Root<Props, State, SharedState, Events> {
@@ -63,14 +72,19 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private _updateCheckInterval: number | null = null;
 
 	// app
-	private readonly _copyAppReferrerTextToClipboard = () => {
+	private readonly _copyAppReferrerTextToClipboard = (analyticsAction: string) => {
 		this._clipboard.copyText(
 			'com.readup.nativeClientClipboardReferrer:' +
 			JSON.stringify({
-				marketingScreenVariant: this.props.marketingScreenVariant,
-				path: window.location.pathname,
+				action: analyticsAction,
+				currentPath: window.location.pathname,
+				initialPath: this.props.initialLocation.path,
+				marketingVariant: this.props.marketingVariant,
 				referrerUrl: window.document.referrer,
-				timestamp: Date.now()
+				timestamp: Date.now(),
+				// legacy compatibility
+				marketingScreenVariant: this.props.marketingVariant,
+				path: window.location.pathname
 			})
 		);
 	};
@@ -79,26 +93,28 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _isDesktopDevice: boolean;
 
 	// dialogs
-	private readonly _openCreateAccountDialog = () => {
+	private readonly _openCreateAccountDialog = (analyticsAction: string) => {
 		this._dialog.openDialog(
-			this._dialogCreatorMap[DialogKey.CreateAccount](
-				{
-					path: window.location.pathname,
-					queryString: window.location.search
-				},
-				this.getSharedState()
-			)
+			<CreateAccountDialog
+				analyticsAction={analyticsAction}
+				captcha={this.props.captcha}
+				onCreateAccount={this._createAccount}
+				onCloseDialog={this._dialog.closeDialog}
+				onShowToast={this._toaster.addToast}
+				onSignInWithApple={this._signInWithApple}
+			/>
 		);
 	};
-	private readonly _openSignInDialog = () => {
+	private readonly _openSignInDialog = (analyticsAction: string) => {
 		this._dialog.openDialog(
-			this._dialogCreatorMap[DialogKey.SignIn](
-				{
-					path: window.location.pathname,
-					queryString: window.location.search
-				},
-				this.getSharedState()
-			)
+			<SignInDialog
+				analyticsAction={analyticsAction}
+				onCloseDialog={this._dialog.closeDialog}
+				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+				onShowToast={this._toaster.addToast}
+				onSignIn={this._signIn}
+				onSignInWithApple={this._signInWithApple}
+			/>
 		);
 	};
 
@@ -212,6 +228,28 @@ export default class extends Root<Props, State, SharedState, Events> {
 		];
 	};
 
+	// user account
+	private readonly _signInWithApple = (action: string) => {
+		const url = new URL('https://appleid.apple.com/auth/authorize');
+		url.searchParams.set('client_id', 'com.readup.webapp');
+		url.searchParams.set('redirect_uri', 'https://api.readup.com/Auth/AppleWeb');
+		url.searchParams.set('response_type', 'code id_token');
+		url.searchParams.set('scope', 'email');
+		url.searchParams.set('response_mode', 'form_post');
+		url.searchParams.set(
+			'state',
+			JSON.stringify({
+				action,
+				client: this.props.serverApi.getClientHeaderValue(),
+				currentPath: window.location.pathname,
+				initialPath: this.props.initialLocation.path,
+				marketingVariant: this.props.marketingVariant,
+				referrerUrl: window.document.referrer
+			})
+		);
+		window.location.href = url.href;
+	};
+
 	// window
 	private readonly _handleHistoryPopState = () => {
 		this.setScreenState({ method: 'pop' });
@@ -226,10 +264,44 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	constructor(props: Props) {
-		super('browser-root_6tjc3j', props);
+		super('browser-root_6tjc3j', true, props);
 
 		// device type
 		this._isDesktopDevice = !!(props.deviceType & DeviceType.Desktop);
+
+		// dialogs
+		this._dialogCreatorMap = {
+			...this._dialogCreatorMap,
+			[DialogKey.CreateAccount]: () => (
+				<CreateAccountDialog
+					analyticsAction="ExtensionBAIPopup"
+					captcha={this.props.captcha}
+					onCreateAccount={this._createAccount}
+					onCloseDialog={this._dialog.closeDialog}
+					onShowToast={this._toaster.addToast}
+					onSignInWithApple={this._signInWithApple}
+				/>
+			),
+			[DialogKey.CreateAuthServiceAccount]: (location) => (
+				<CreateAuthServiceAccountDialog
+					onCloseDialog={this._dialog.closeDialog}
+					onCreateAuthServiceAccount={this._createAuthServiceAccount}
+					onLinkExistingAccount={this._openLinkAuthServiceAccountDialog}
+					onShowToast={this._toaster.addToast}
+					token={parseQueryString(location.queryString)[authServiceTokenQueryStringKey]}
+				/>
+			),
+			[DialogKey.SignIn]: () => (
+				<SignInDialog
+					analyticsAction="ExtensionBAIPopup"
+					onCloseDialog={this._dialog.closeDialog}
+					onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+					onShowToast={this._toaster.addToast}
+					onSignIn={this._signIn}
+					onSignInWithApple={this._signInWithApple}
+				/>
+			)
+		};
 
 		// screens
 		this._screenFactoryMap = {
@@ -237,11 +309,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
-					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
-					onOpenCreateAccountDialog: this._openCreateAccountDialog,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -375,6 +445,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onShowToast: this._toaster.addToast,
 				onSignIn: this._signIn,
+				onSignInWithApple: this._signInWithApple,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
@@ -386,29 +457,41 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
 				onInstallExtension: this._installExtension,
+				onOpenCreateAccountDialog: this._openCreateAccountDialog,
+				onOpenSignInDialog: this._openSignInDialog,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
-				onShowCreateAccountDialog: this._openCreateAccountDialog,
-				onShowSignInDialog: this._openSignInDialog,
 				onViewHomeScreen: this._viewHome
 			})
 		};
 
-		// state
+		// route state
 		const
 			route = findRouteByLocation(routes, props.initialLocation, unroutableQueryStringKeys),
-			locationState = this.getLocationDependentState(props.initialLocation),
-			welcomeMessage = parseQueryString(props.initialLocation.queryString)[messageQueryStringKey] as WelcomeMessage;
+			locationState = this.getLocationDependentState(props.initialLocation);
+
+		// query string state
+		const
+			queryStringParams = parseQueryString(props.initialLocation.queryString),
+			welcomeMessage = queryStringParams[messageQueryStringKey] as WelcomeMessage;
+		
 		this.state = {
 			...this.state,
 			dialogs: (
-				locationState.dialog && (
-					route.dialogKey !== DialogKey.Followers ||
-					props.initialUser
-				) ?
-					[this._dialog.createDialog(locationState.dialog)] :
-					[]
+				authServiceTokenQueryStringKey in queryStringParams ?
+					[this._dialog.createDialog(
+						this._dialogCreatorMap[DialogKey.CreateAuthServiceAccount](
+							props.initialLocation,
+							this.getSharedState()
+						)
+					)] :
+					locationState.dialog && (
+						route.dialogKey !== DialogKey.Followers ||
+						props.initialUser
+					) ?
+						[this._dialog.createDialog(locationState.dialog)] :
+						[]
 			),
 			isExtensionInstalled: null,
 			isIosDevice: (
@@ -609,6 +692,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 			user: this.state.user
 		};
 	}
+	protected getSignUpAnalyticsForm(action: string) {
+		return {
+			action,
+			currentPath: window.location.pathname,
+			initialPath: this.props.initialLocation.path,
+			marketingVariant: this.props.marketingVariant,
+			referrerUrl: window.document.referrer
+		};
+	}
 	protected onArticleUpdated(event: ArticleUpdatedEvent, eventSource: EventSource = EventSource.Local) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.articleUpdated(event);
@@ -736,8 +828,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					<Header
 						isDesktopDevice={this._isDesktopDevice}
 						onOpenMenu={this._openMenu}
-						onShowCreateAccountDialog={this._openCreateAccountDialog}
-						onShowSignInDialog={this._openSignInDialog}
+						onOpenCreateAccountDialog={this._openCreateAccountDialog}
+						onOpenSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
 						onViewInbox={this._viewInbox}
 						user={this.state.user}

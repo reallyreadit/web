@@ -11,8 +11,6 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
 import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
-import CreateAccountDialog from './CreateAccountDialog';
-import SignInDialog from './SignInDialog';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
 import createSettingsPageScreenFactory from './SettingsPage';
@@ -51,14 +49,17 @@ import CommentForm from '../../../common/models/social/CommentForm';
 import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import { Form as CreateAccountDialogForm } from './CreateAccountDialog';
+import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceAccountDialog';
+import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
+import SignUpAnalyticsForm from '../../../common/models/userAccounts/SignUpAnalyticsForm';
 
 export interface Props {
 	analytics: Analytics,
 	captcha: Captcha,
 	initialLocation: RouteLocation,
 	initialUser: UserAccount | null,
-	iosReferrerUrl: string | null
-	marketingScreenVariant: number,
+	marketingVariant: number,
 	serverApi: ServerApi,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
@@ -108,6 +109,7 @@ export default abstract class Root<
 	TEvents extends SharedEvents
 > extends React.Component<P, S> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _autoFocusInputs: boolean;
 	private readonly _concreteClassName: ClassValue;
 
 	// articles
@@ -206,15 +208,7 @@ export default abstract class Root<
 			this.setState(delegate);
 		}
 	});
-	protected readonly _dialogCreatorMap: { [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode } = {
-		[DialogKey.CreateAccount]: () => (
-			<CreateAccountDialog
-				captcha={this.props.captcha}
-				onCreateAccount={this._createAccount}
-				onCloseDialog={this._dialog.closeDialog}
-				onShowToast={this._toaster.addToast}
-			/>
-		),
+	protected _dialogCreatorMap: Partial<{ [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode }> = {
 		[DialogKey.Followers]: (location, sharedState) => (
 			<FollowingListDialog
 				clearFollowersAlerts
@@ -243,15 +237,20 @@ export default abstract class Root<
 					token={kvps['token']}
 				/>
 			);
-		},
-		[DialogKey.SignIn]: () => (
+		}
+	};
+	protected readonly _openLinkAuthServiceAccountDialog = (token: string) => {
+		this._dialog.openDialog(
 			<SignInDialog
+				analyticsAction="LinkAuthServiceAccount"
+				authServiceToken={token}
+				autoFocus={this._autoFocusInputs}
 				onCloseDialog={this._dialog.closeDialog}
 				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
 				onShowToast={this._toaster.addToast}
 				onSignIn={this._signIn}
 			/>
-		)
+		);
 	};
 	protected readonly _openPostDialog = (article: UserArticle) => {
 		this._dialog.openDialog(
@@ -264,9 +263,11 @@ export default abstract class Root<
 			/>
 		);
 	};
-	protected readonly _openRequestPasswordResetDialog = () => {
+	protected readonly _openRequestPasswordResetDialog = (authServiceToken?: string) => {
 		this._dialog.openDialog(
 			<RequestPasswordResetDialog
+				authServiceToken={authServiceToken}
+				autoFocus={this._autoFocusInputs}
 				captcha={this.props.captcha}
 				onCloseDialog={this._dialog.closeDialog}
 				onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
@@ -440,17 +441,29 @@ export default abstract class Root<
 				this.onUserUpdated(user);
 			});
 	};
-	protected readonly _createAccount = (name: string, email: string, password: string, captchaResponse: string) => {
+	protected readonly _createAccount = (form: CreateAccountDialogForm) => {
 		return this.props.serverApi
 			.createUserAccount({
-				name, 
-				email,
-				password,
-				captchaResponse,
+				name: form.name,
+				email: form.email,
+				password: form.password,
+				captchaResponse: form.captchaResponse,
 				timeZoneName: DateTime.local().zoneName,
-				marketingScreenVariant: this.props.marketingScreenVariant,
-				referrerUrl: this.props.iosReferrerUrl || window.document.referrer,
-				initialPath: this.props.initialLocation.path,
+				analytics: this.getSignUpAnalyticsForm(form.analyticsAction),
+				pushDevice: this.getPushDeviceForm()
+			})
+			.then(
+				user => {
+					this.props.analytics.sendSignUp();
+					this.onUserSignedIn(user);
+				}
+			);
+	};
+	protected readonly _createAuthServiceAccount = (form: CreateAuthServiceAccountDialogForm) => {
+		return this.props.serverApi
+			.createAuthServiceAccount({
+				...form,
+				timeZoneName: DateTime.local().zoneName,
 				pushDevice: this.getPushDeviceForm()
 			})
 			.then(
@@ -484,11 +497,13 @@ export default abstract class Root<
 				);
 			});
 	};
-	protected readonly _signIn = (email: string, password: string) => {
+	protected readonly _sendPasswordCreationEmail = () => {
+		return this.props.serverApi.sendPasswordCreationEmail();
+	};
+	protected readonly _signIn = (form: SignInDialogForm) => {
 		return this.props.serverApi
 			.signIn({
-				email,
-				password,
+				...form,
 				pushDevice: this.getPushDeviceForm()
 			})
 			.then(user => {
@@ -521,8 +536,9 @@ export default abstract class Root<
 		this.reloadWindow();
 	};
 
-	constructor(className: ClassValue, props: P) {
+	constructor(className: ClassValue, autoFocusInputs: boolean, props: P) {
 		super(props);
+		this._autoFocusInputs = autoFocusInputs;
 		this._concreteClassName = className;
 
 		// state
@@ -581,6 +597,7 @@ export default abstract class Root<
 				onOpenDialog: this._dialog.openDialog,
 				onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 				onResendConfirmationEmail: this._resendConfirmationEmail,
+				onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 				onShowToast: this._toaster.addToast
 			}),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
@@ -665,6 +682,7 @@ export default abstract class Root<
 	}
 	protected abstract getPushDeviceForm(): PushDeviceForm | null;
 	protected abstract getSharedState(): TSharedState;
+	protected abstract getSignUpAnalyticsForm(action: string): SignUpAnalyticsForm;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);
 	}

@@ -16,7 +16,6 @@ export function areEqual(a: Request, b: Request) {
 	return true;
 }
 export default interface Request {
-	context?: string,
 	data?: { [key: string]: any },
 	path: string
 }

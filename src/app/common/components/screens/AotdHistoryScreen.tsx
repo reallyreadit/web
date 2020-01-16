@@ -16,17 +16,13 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import { DateTime } from 'luxon';
-import Panel from '../BrowserRoot/Panel';
+import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 export interface Props {
-	isIosDevice: boolean | null,
-	onCopyAppReferrerTextToClipboard: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
-	onOpenCreateAccountDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -129,64 +125,49 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="aotd-history-screen_lpelxe">
+			<ScreenContainer className="aotd-history-screen_lpelxe">
 				{this.state.isScreenLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
-						{!this.props.user ?
-							<Panel className="header">
-								<h1>Join our community of readers.</h1>
-								<h3>Find and share the best articles on the web.</h3>
-								<div className="buttons">
-									<GetStartedButton
-										isIosDevice={this.props.isIosDevice}
-										onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-										onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
-									/>
-								</div>
-							</Panel> :
-							null}
-						<Panel className="main">
-							<div className="controls">
-								<ArticleLengthFilter
-									max={this.state.maxLength}
-									min={this.state.minLength}
-									onChange={this._changeLengthRange}
+						<div className="controls">
+							<ArticleLengthFilter
+								max={this.state.maxLength}
+								min={this.state.minLength}
+								onChange={this._changeLengthRange}
+							/>
+						</div>
+						{this.state.articles.isLoading ?
+							<LoadingOverlay position="static" /> :
+							<>
+								<ArticleList>
+									{this.state.articles.value.items.map(
+										article => (
+											<li key={article.id}>
+												<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
+												<ArticleDetails
+													article={article}
+													isUserSignedIn={!!this.props.user}
+													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onPost={this.props.onPostArticle}
+													onRateArticle={this.props.onRateArticle}
+													onRead={this.props.onReadArticle}
+													onShare={this.props.onShare}
+													onToggleStar={this.props.onToggleArticleStar}
+													onViewComments={this.props.onViewComments}
+												/>
+											</li>
+										)
+									)}
+								</ArticleList>
+								<PageSelector
+									pageNumber={this.state.articles.value.pageNumber}
+									pageCount={this.state.articles.value.pageCount}
+									onChange={this._changePageNumber}
 								/>
-							</div>
-							{this.state.articles.isLoading ?
-								<LoadingOverlay position="static" /> :
-								<>
-									<ArticleList>
-										{this.state.articles.value.items.map(
-											article => (
-												<li key={article.id}>
-													<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
-													<ArticleDetails
-														article={article}
-														isUserSignedIn
-														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-														onPost={this.props.onPostArticle}
-														onRateArticle={this.props.onRateArticle}
-														onRead={this.props.onReadArticle}
-														onShare={this.props.onShare}
-														onToggleStar={this.props.onToggleArticleStar}
-														onViewComments={this.props.onViewComments}
-													/>
-												</li>
-											)
-										)}
-									</ArticleList>
-									<PageSelector
-										pageNumber={this.state.articles.value.pageNumber}
-										pageCount={this.state.articles.value.pageCount}
-										onChange={this._changePageNumber}
-									/>
-								</>}
-						</Panel>
+							</>}
 					</>}
-			</div>
+			</ScreenContainer>
 		);
 	}
 }

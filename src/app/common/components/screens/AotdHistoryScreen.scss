@@ -3,20 +3,13 @@
 	cssComponentId: aotd-history-screen_lpelxe
 */
 
-.aotd-history-screen_lpelxe {
-	min-height: 100%;
-}
-.aotd-history-screen_lpelxe > .header {
-	text-align: center;
-	background-color: #efefef;
-}
-.aotd-history-screen_lpelxe > .main > .content > .controls {
+.aotd-history-screen_lpelxe > .controls {
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: flex-end;
 	margin-bottom: 20px;
 }
-.aotd-history-screen_lpelxe > .main > .content > .article-list_o9uw1n > li > .date {
+.aotd-history-screen_lpelxe > .article-list_o9uw1n > li > .date {
 	margin-bottom: 5px;
 	font-family: 'Museo Sans (500)';
 }

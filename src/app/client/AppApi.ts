@@ -28,6 +28,9 @@ export default class extends AppApi {
 				case 'articleUpdated':
 					this.emitEvent('articleUpdated', message.data);
 					break;
+				case 'authenticateAppleIdCredential':
+					this.emitEvent('authenticateAppleIdCredential', message.data);
+					break;
 				case 'commentPosted':
 					this.emitEvent('commentPosted', message.data);
 					break;
@@ -79,6 +82,11 @@ export default class extends AppApi {
 		this._messagingContext.sendMessage({
 			type: 'readArticle',
 			data: reference
+		});
+	}
+	public requestAppleIdCredential() {
+		this._messagingContext.sendMessage({
+			type: 'requestAppleIdCredential'
 		});
 	}
 	public share(data: ShareData) {

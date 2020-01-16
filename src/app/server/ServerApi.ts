@@ -34,7 +34,7 @@ export default class extends ServerApi {
 				method,
 				uri: url,
 				headers: {
-					'X-Readup-Client': `web/app/server#${this._clientType}@${this._clientVersion}`
+					'X-Readup-Client': this.getClientHeaderValue()
 				},
 				json: true,
 				callback: (error, res, body) => {
@@ -54,9 +54,6 @@ export default class extends ServerApi {
 					}
 				}
 			};
-			if (params.context) {
-				options.headers['X-Readup-Context'] = params.context;
-			}
 			if (this.hasAuthCookie()) {
 				options.headers['Cookie'] = this._authCookie.key + '=' + this._authCookie.value;
 			}
@@ -65,6 +62,9 @@ export default class extends ServerApi {
 			}
 			return request(options);
 		});
+	}
+	public getClientHeaderValue() {
+		return `web/app/server#${this._clientType}@${this._clientVersion}`;
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (this._isInitialized) {

@@ -1,5 +1,6 @@
 enum DialogKey {
 	CreateAccount,
+	CreateAuthServiceAccount,
 	Followers,
 	ResetPassword,
 	SignIn

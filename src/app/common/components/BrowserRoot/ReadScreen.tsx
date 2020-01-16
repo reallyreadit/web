@@ -18,12 +18,12 @@ interface Props {
 	article: Fetchable<UserArticle>,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
-	onCopyAppReferrerTextToClipboard: () => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onInstallExtension: () => void,
+	onOpenCreateAccountDialog: (analyticsAction: string) => void,
+	onOpenSignInDialog: (analyticsAction: string) => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onShowCreateAccountDialog: () => void,
-	onShowSignInDialog: () => void,
 	onViewHomeScreen: () => void,
 	user: UserAccount | null
 }

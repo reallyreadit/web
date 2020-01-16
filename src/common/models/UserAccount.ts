@@ -13,7 +13,8 @@ export default interface UserAccount {
 	replyAlertCount: number,
 	loopbackAlertCount: number,
 	postAlertCount: number,
-	followerAlertCount: number
+	followerAlertCount: number,
+	isPasswordSet: boolean
 }
 export function areEqual(a: UserAccount, b: UserAccount) {
 	if (!a || !b) {
@@ -31,7 +32,8 @@ export function areEqual(a: UserAccount, b: UserAccount) {
 		a.replyAlertCount === b.replyAlertCount &&
 		a.loopbackAlertCount === b.loopbackAlertCount &&
 		a.postAlertCount === b.postAlertCount &&
-		a.followerAlertCount === b.followerAlertCount
+		a.followerAlertCount === b.followerAlertCount &&
+		a.isPasswordSet === b.isPasswordSet
 	);
 }
 export function hasAlert(user: UserAccount, alert?: Alert) {

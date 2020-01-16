@@ -29,10 +29,10 @@ import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from '../FollowingListDialog';
-import CreateAccountDialog from '../CreateAccountDialog';
+import CreateAccountDialog, { Form as CreateAccountDialogForm } from '../CreateAccountDialog';
 import Captcha from '../../Captcha';
 import { Intent } from '../../../../common/components/Toaster';
-import SignInDialog from '../SignInDialog';
+import SignInDialog, { Form as SignInDialogForm } from '../SignInDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
 import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadIosAppDialog';
 import ContentBox from '../../../../common/components/ContentBox';
@@ -51,10 +51,10 @@ interface Props {
 	isIosDevice: boolean | null,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
-	onCopyAppReferrerTextToClipboard: () => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateAccount: (name: string, email: string, password: string, captchaResponse: string) => Promise<void>,
+	onCreateAccount: (form: CreateAccountDialogForm) => Promise<void>,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
@@ -74,7 +74,8 @@ interface Props {
 	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSignIn: (emailAddress: string, password: string) => Promise<void>,
+	onSignIn: (form: SignInDialogForm) => Promise<void>,
+	onSignInWithApple: (analyticsAction: string) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -99,6 +100,9 @@ export class ProfileScreen extends React.Component<Props, State> {
 		});
 		this.fetchPosts(pageNumber);
 	};
+	private readonly _copyAppReferrerTextToClipboard = () => {
+		this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
+	};
 	private _followOnSignIn: boolean;
 	private readonly _followUser = (form: UserNameForm) => {
 		if (this.props.userAccount) {
@@ -120,10 +124,11 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this.props.onOpenDialog(
 			this.props.isIosDevice ?
 				<DownloadIosAppDialog
-					onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+					onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
 					onClose={cancel}
 				/> :
 				<CreateAccountDialog
+					analyticsAction="ProfileScreenFollow"
 					captcha={this.props.captcha}
 					onCreateAccount={this.props.onCreateAccount}
 					onCloseDialog={cancel}
@@ -133,15 +138,18 @@ export class ProfileScreen extends React.Component<Props, State> {
 							() => {
 								this.props.onOpenDialog(
 									<SignInDialog
+										analyticsAction="ProfileScreenFollow"
 										onOpenPasswordResetDialog={this.props.onOpenPasswordResetRequestDialog}
 										onCloseDialog={cancel}
 										onShowToast={this.props.onShowToast}
 										onSignIn={this.props.onSignIn}
+										onSignInWithApple={this.props.onSignInWithApple}
 									/>
 								);
 							} :
 							null
 					}
+					onSignInWithApple={this.props.onSignInWithApple}
 					title={`Sign up to follow ${this.props.userName}`}
 				/>
 		);

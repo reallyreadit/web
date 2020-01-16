@@ -40,12 +40,12 @@ export interface Props {
 	highlightedCommentId: string | null,
 	isIosDevice: boolean | null,
 	onCloseDialog: () => void,
-	onCopyAppReferrerTextToClipboard: () => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
-	onOpenCreateAccountDialog: () => void,
+	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
@@ -59,6 +59,12 @@ export interface Props {
 	user: UserAccount | null
 }
 export default class CommentsScreen extends React.PureComponent<Props> {
+	private readonly _copyAppReferrerTextToClipboard = () => {
+		this.props.onCopyAppReferrerTextToClipboard('CommentsScreen');
+	};
+	private readonly _openCreateAccountDialog = () => {
+		this.props.onOpenCreateAccountDialog('CommentsScreen');
+	};
 	private readonly _noop = () => { };
 	public render() {
 		return (
@@ -80,8 +86,8 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									<div className="buttons">
 										<GetStartedButton
 											isIosDevice={this.props.isIosDevice}
-											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-											onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
+											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onOpenCreateAccountDialog={this._openCreateAccountDialog}
 										/>
 									</div>
 								</Panel> :
