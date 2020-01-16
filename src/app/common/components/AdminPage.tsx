@@ -296,9 +296,11 @@ class AdminPage extends React.Component<
 								<th>Name</th>
 								<th>Time Zone Name</th>
 								<th>Client Mode</th>
-								<th>Marketing Screen Variant</th>
+								<th>Marketing Variant</th>
 								<th>Referrer Url</th>
 								<th>Initial Path</th>
+								<th>Current Path</th>
+								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -311,9 +313,11 @@ class AdminPage extends React.Component<
 											<td>{row.name}</td>
 											<td>{row.timeZoneName}</td>
 											<td>{row.clientMode}</td>
-											<td>{row.marketingScreenVariant}</td>
+											<td>{row.marketingVariant}</td>
 											<td>{row.referrerUrl}</td>
 											<td>{row.initialPath}</td>
+											<td>{row.currentPath}</td>
+											<td>{row.action}</td>
 										</tr>
 									)) :
 									<tr>

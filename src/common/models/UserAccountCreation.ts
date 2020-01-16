@@ -4,7 +4,9 @@ export default interface UserAccountCreation {
 	dateCreated: string,
 	timeZoneName: string,
 	clientMode: string,
-	marketingScreenVariant: number,
+	marketingVariant: number,
 	referrerUrl: string | null,
-	initialPath: string | null
+	initialPath: string | null,
+	currentPath: string | null,
+	action: string | null
 }
