@@ -14,13 +14,22 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import Panel from './Panel';
 import GetStartedButton from './GetStartedButton';
+import { variants as marketingVariants } from '../../marketingTesting';
+import PageResult from '../../../../common/models/PageResult';
+import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
+import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import AsyncTracker from '../../../../common/AsyncTracker';
+import ArticleList from '../controls/articles/ArticleList';
+import ArticleDetails from '../../../../common/components/ArticleDetails';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	isIosDevice: boolean | null,
+	marketingVariant: number,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -34,8 +43,12 @@ interface Props {
 }
 export default class MarketingScreen extends React.Component<
 	Props,
-	{ menuState: MenuState }
+	{
+		blogPosts: Fetchable<PageResult<UserArticle>>,
+		menuState: MenuState
+	}
 > {
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _copyAppReferrerTextToClipboardFromFooter = () => {
 		this.props.onCopyAppReferrerTextToClipboard('HomeScreenFooter');
 	};
@@ -71,15 +84,33 @@ export default class MarketingScreen extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			blogPosts: props.onGetPublisherArticles(
+				{
+					pageNumber: 1,
+					minLength: null,
+					maxLength: null,
+					pageSize: 3,
+					slug: 'blogreadupcom'
+				},
+				this._asyncTracker.addCallback(
+					blogPosts => {
+						this.setState({ blogPosts });
+					}
+				)
+			),
 			menuState: MenuState.Closed
 		};
 	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
+	}
 	public render () {
+		const marketingVariant = marketingVariants[this.props.marketingVariant];
 		return (
 			<div className="marketing-screen_n5a6wc">
 				<Panel className="header">
-					<h1>Join our community of readers.</h1>
-					<h3>Find and share the best articles on the web.</h3>
+					<h1>{marketingVariant.headline}</h1>
+					<h3>{marketingVariant.subtext}</h3>
 					<div className="buttons">
 						<GetStartedButton
 							isIosDevice={this.props.isIosDevice}
@@ -89,6 +120,7 @@ export default class MarketingScreen extends React.Component<
 					</div>
 				</Panel>
 				<Panel className="aotd">
+					<h2>What we're reading</h2>
 					{this.props.communityReads.isLoading ?
 						<LoadingOverlay position="static" /> :
 						<AotdView
@@ -110,10 +142,9 @@ export default class MarketingScreen extends React.Component<
 				</Panel>
 				<Panel className="about">
 					<h2>About</h2>
-					<p>We're on a quest to reinvent social media. Other platforms have to maximize the number of ads you see, so they're addictive and distracting.</p>
-					<p>Readup does the opposite. We obliterate ads and distractions and the overall result is an experience that feels slower, deeper, and more fulfilling.</p>
+					<p>Readup is a social reading platform - the new best way to find, read, and share articles and stories online. It's powered by a global community of readers and free-thinkers <em>who vote with their attention</em>. No interference. No distractions.</p>
 					<p className="bios">
-						<a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a> are the two humans behind Readup.&#32;
+						Readup was invented by two friends, <a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a>. (We're in the&#32;
 						<Popover
 							menuChildren={
 								<span className="links">
@@ -137,9 +168,9 @@ export default class MarketingScreen extends React.Component<
 							onClose={this._closeMenu}
 							onOpen={this._openMenu}
 						>
-							Read with us!
+							comments
 						</Popover>
-						&#32;And let us know what you think.
+						&#32;every day!) If you have any questions or ideas, don't hesitate to reach out. We love getting emails from the community.
 					</p>
 					<div className="buttons">
 						<GetStartedButton
@@ -148,6 +179,30 @@ export default class MarketingScreen extends React.Component<
 							onOpenCreateAccountDialog={this._openCreateAccountDialogFromFooter}
 						/>
 					</div>
+				</Panel>
+				<Panel className="blog">
+					<h2>From the Readup blog</h2>
+					{this.state.blogPosts.isLoading ?
+						<LoadingOverlay position="static" /> :
+						<ArticleList>
+							{this.state.blogPosts.value.items.map(
+								article => (
+									<li key={article.id}>
+										<ArticleDetails
+											article={article}
+											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+										/>
+									</li>
+								)
+							)}
+						</ArticleList>}
 				</Panel>
 			</div>
 		);

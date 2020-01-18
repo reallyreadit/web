@@ -14,15 +14,14 @@ import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
-import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
-import { DateTime } from 'luxon';
 import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
+import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 
 export interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
+	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -39,7 +38,7 @@ interface State {
 	maxLength: number | null,
 	minLength: number | null
 }
-export default class AotdHistoryScreen extends React.Component<Props, State> {
+export default class BlogScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
@@ -109,8 +108,14 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		maxLength: number | null,
 		callback?: () => void
 	) {
-		return this.props.onGetAotdHistory(
-			{ pageNumber, minLength, maxLength },
+		return this.props.onGetPublisherArticles(
+			{
+				slug: 'blogreadupcom',
+				pageSize: 40,
+				pageNumber,
+				minLength,
+				maxLength
+			},
 			this._asyncTracker.addCallback(
 				articles => {
 					this.setState({ articles });
@@ -126,7 +131,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="aotd-history-screen_lpelxe">
+			<ScreenContainer className="blog-screen_61pk1b">
 				{this.state.isScreenLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
@@ -147,7 +152,6 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 									{this.state.articles.value.items.map(
 										article => (
 											<li key={article.id}>
-												<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
 												<ArticleDetails
 													article={article}
 													isUserSignedIn={!!this.props.user}

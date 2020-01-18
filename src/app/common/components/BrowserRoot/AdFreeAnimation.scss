@@ -1,0 +1,370 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/AdFreeAnimation
+	cssComponentId: ad-free-animation_lv6n94
+*/
+
+.ad-free-animation_lv6n94 {
+	position: relative;
+	width: 6em;
+	height: 10em;
+	border: 1px solid #555;
+	border-radius: 0.5em;
+	background-color: #333;
+}
+.ad-free-animation_lv6n94 .screen {
+	position: absolute;
+	top: 0.3em;
+	right: 0.3em;
+	bottom: 0.3em;
+	left: 0.3em;
+	background-color: white;
+	overflow: hidden;
+}
+.ad-free-animation_lv6n94 article {
+	padding: 0.25em;
+}
+.ad-free-animation_lv6n94 h1 {
+	height: 0.25em;
+	width: 80%;
+	background-color: #999;
+	margin: 0.25em 0;
+	font-size: inherit;
+}
+.ad-free-animation_lv6n94 h2 {
+	height: 0.2em;
+	width: 30%;
+	background-color: #999;
+	margin: 0.25em 0;
+	font-size: inherit;
+}
+.ad-free-animation_lv6n94 p {
+	position: relative;
+	margin: 0.5em 0;
+}
+.ad-free-animation_lv6n94 span {
+	position: relative;
+	display: block;
+	height: 0.15em;
+	width: 100%;
+	background-color: #999;
+}
+.ad-free-animation_lv6n94 span + span {
+	margin-top: 0.15em;
+}
+.ad-free-animation_lv6n94 span > a {
+	position: absolute;
+	display: block;
+	height: 100%;
+	background-color: blue;
+	animation: ad-free-animation_lv6n94-links 6s ease-in-out infinite alternate;
+}
+.ad-free-animation_lv6n94 figure {
+	margin: 0.5em 0;
+}
+.ad-free-animation_lv6n94 figure > div {
+	width: 2em;
+	height: 1em;
+	background-color: #ccc;
+	margin: 0 auto;
+}
+.ad-free-animation_lv6n94 figcaption {
+	display: block;
+	height: 0.15em;
+	width: 25%;
+	background-color: #999;
+	margin: 0.25em auto 0 auto;
+}
+
+.ad-free-animation_lv6n94 p:nth-of-type(1) > span:nth-child(1) > a {
+	width: 10%;
+	left: 20%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(1) > span:nth-child(2) > a {
+	width: 15%;
+	left: 80%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(1) > span:last-child {
+	width: 90%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(2) > span:nth-child(1) > a {
+	width: 20%;
+	left: 0%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(2) > span:nth-child(2) > a {
+	width: 15%;
+	left: 70%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(2) > span:nth-child(4) > a {
+	width: 15%;
+	left: 50%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(2) > span:last-child {
+	width: 80%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(3) > span:last-child {
+	width: 85%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(4) > span:nth-child(2) > a:nth-child(1) {
+	width: 10%;
+	left: 20%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(4) > span:nth-child(2) > a:nth-child(2) {
+	width: 15%;
+	left: 60%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(4) > span:nth-child(4) > a {
+	width: 15%;
+	left: 60%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(4) > span:last-child {
+	width: 40%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(5) > span:nth-child(2) > a {
+	width: 10%;
+	left: 30%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(5) > span:last-child {
+	width: 82%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(6) > span:nth-child(1) > a {
+	width: 10%;
+	left: 40%;
+}
+.ad-free-animation_lv6n94 p:nth-of-type(6) > span:last-child {
+	width: 75%;
+}
+
+.ad-free-animation_lv6n94 .banner {
+	display: flex;
+	align-items: center;
+	background-color: yellow;
+	height: 2.5em;
+	padding: 0 0.25em;
+	animation: ad-free-animation_lv6n94-banner 6s ease-in-out infinite alternate;
+}
+.ad-free-animation_lv6n94 .banner > .video {
+	position: relative;
+	flex: 1 1 35%;
+	height: 1.5em;
+	background-color: #ccc;
+}
+.ad-free-animation_lv6n94 .banner > .video::before {
+	content: "";
+	position: absolute;
+	border-width: 0.4em 0 0.4em 0.6em;
+	border-style: solid;
+	border-color: transparent transparent transparent white;
+	left: calc(50% - 0.3em);
+	top: calc(50% - 0.4em);
+}
+.ad-free-animation_lv6n94 .banner > .text {
+	flex: 1 1 65%;
+	margin: 0 0.25em;
+}
+
+.ad-free-animation_lv6n94 .popup {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	animation: ad-free-animation_lv6n94-popup 6s ease-in-out infinite alternate;
+}
+.ad-free-animation_lv6n94 .popup > .dialog {
+	position: absolute;
+	width: 4em;
+	height: 4em;
+	background-color: darksalmon;
+	z-index: 1;
+	left: calc(50% - 2em);
+	top: calc(50% - 2em);
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .close {
+	position: absolute;
+	top: 0.25em;
+	right: 0.25em;
+	width: 0.5em;
+	height: 0.5em;
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .close::before,
+.ad-free-animation_lv6n94 .popup > .dialog > .close::after {
+	content: "";
+	position: absolute;
+	width: 25%;
+	height: 100%;
+	left: calc(50% - 25%);
+	background-color: white;
+	transform-origin: 50% 50%;
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .close::before {
+	transform: rotate(-45deg);
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .close::after {
+	transform: rotate(45deg);
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .title {
+	background-color: #ccc;
+	height: 0.3em;
+	width: 60%;
+	top: 1.25em;
+	position: absolute;
+	left: calc(50% - 30%);
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .input {
+	background-color: white;
+	height: 0.5em;
+	width: 80%;
+	top: 2.0em;
+	position: absolute;
+	left: calc(50% - 40%);
+}
+.ad-free-animation_lv6n94 .popup > .dialog > .button {
+	background-color: #999;
+	height: 0.5em;
+	width: 30%;
+	top: 3.0em;
+	position: absolute;
+	left: calc(50% - 15%);
+}
+
+.ad-free-animation_lv6n94 .prompt {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 1em;
+	display: flex;
+	align-items: center;
+	background-color: palegreen;
+	z-index: 1;
+	overflow: hidden;
+	animation: ad-free-animation_lv6n94-prompt 6s ease-in-out infinite alternate;
+}
+.ad-free-animation_lv6n94 .prompt > div {
+	height: 0.3em;
+	background-color: darkseagreen;
+	margin: 0 0.15em;
+}
+.ad-free-animation_lv6n94 .prompt > div:nth-child(1) {
+	flex: 4 1 auto;
+}
+.ad-free-animation_lv6n94 .prompt > div:nth-child(2) {
+	flex: 1 1 auto;
+}
+.ad-free-animation_lv6n94 .prompt > div:nth-child(3) {
+	flex: 1 1 auto;
+}
+
+@keyframes ad-free-animation_lv6n94-links {
+	0% {
+		opacity: 1;
+	}
+	25% {
+		opacity: 1;
+	}
+	75% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes ad-free-animation_lv6n94-banner {
+	0% {
+		margin-top: 0;
+	}
+	25% {
+		margin-top: 0;
+	}
+	75% {
+		margin-top: -2.5em;
+	}
+	100% {
+		margin-top: -2.5em;
+	}
+}
+@keyframes ad-free-animation_lv6n94-popup {
+	0% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(0);
+	}
+	75% {
+		transform: translateX(100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+@keyframes ad-free-animation_lv6n94-prompt {
+	0% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(0);
+	}
+	75% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+// @keyframes ad-free-animation_lv6n94-links {
+// 	0% {
+// 		opacity: 1;
+// 	}
+// 	66% {
+// 		opacity: 1;
+// 	}
+// 	83% {
+// 		opacity: 0;
+// 	}
+// 	100% {
+// 		opacity: 0;
+// 	}
+// }
+// @keyframes ad-free-animation_lv6n94-banner {
+// 	0% {
+// 		margin-top: 0;
+// 	}
+// 	50% {
+// 		margin-top: 0;
+// 	}
+// 	66% {
+// 		margin-top: -2.5em;
+// 	}
+// 	100% {
+// 		margin-top: -2.5em;
+// 	}
+// }
+// @keyframes ad-free-animation_lv6n94-popup {
+// 	0% {
+// 		transform: translateX(0);
+// 	}
+// 	16% {
+// 		transform: translateX(0);
+// 	}
+// 	33% {
+// 		transform: translateX(100%);
+// 	}
+// 	100% {
+// 		transform: translateX(100%);
+// 	}
+// }
+// @keyframes ad-free-animation_lv6n94-prompt {
+// 	0% {
+// 		transform: translateX(0);
+// 	}
+// 	33% {
+// 		transform: translateX(0);
+// 	}
+// 	50% {
+// 		transform: translateX(-100%);
+// 	}
+// 	100% {
+// 		transform: translateX(-100%);
+// 	}
+// }

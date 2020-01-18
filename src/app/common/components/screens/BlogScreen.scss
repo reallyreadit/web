@@ -1,0 +1,27 @@
+/*
+	componentPath: src/app/common/components/screens/BlogScreen
+	cssComponentId: blog-screen_61pk1b
+*/
+
+.blog-screen_61pk1b > .controls {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	margin-bottom: 20px;
+}
+.blog-screen_61pk1b > .controls > h1 {
+	font-weight: normal;
+	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+}
+
+@media (max-width: 580px) {
+	.blog-screen_61pk1b > .controls {
+		justify-content: flex-end;
+	}
+	.blog-screen_61pk1b > .controls > h1 {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+}

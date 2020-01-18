@@ -46,6 +46,7 @@ import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServ
 import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
 import AppleIdCredentialAuthForm from '../../../common/models/app/AppleIdCredentialAuthForm';
 import AppleIdCredentialAuthResponse from '../../../common/models/app/AppleIdCredentialAuthResponse';
+import PublisherArticleQuery from '../../../common/models/articles/PublisherArticleQuery';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -132,6 +133,7 @@ export default abstract class {
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>('/Articles/CommunityReads');
+	public readonly getPublisherArticles = this.createFetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>('/Articles/Publisher');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });

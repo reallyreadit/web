@@ -31,6 +31,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
+import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 
 function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
 	return user && isDesktopDevice;
@@ -40,12 +41,14 @@ interface Props {
 	isBrowserCompatible: boolean,
 	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
+	marketingVariant: number,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
+	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetFolloweesPosts: FetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>,
 	onInstallExtension: () => void,
 	onNavTo: (url: string) => boolean,
@@ -425,9 +428,11 @@ class HomeScreen extends React.Component<Props, State> {
 			<MarketingScreen
 				communityReads={this.state.communityReads}
 				isIosDevice={this.props.isIosDevice}
+				marketingVariant={this.props.marketingVariant}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}

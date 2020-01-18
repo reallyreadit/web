@@ -37,6 +37,8 @@ import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import CreateAccountDialog from './CreateAccountDialog';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import SignInDialog from './SignInDialog';
+import createBlogScreenFactory from './BrowserRoot/BlogScreen';
+import CountdownBanner from './BrowserRoot/CountdownBanner';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -173,6 +175,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewAotdHistory = () => {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
+			method: 'push'
+		});
+	};
+	private readonly _viewBlog = () => {
+		this.setScreenState({
+			key: ScreenKey.Blog,
 			method: 'push'
 		});
 	};
@@ -321,7 +329,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewComments: this._viewComments
 				}
 			),
+			[ScreenKey.Blog]: createBlogScreenFactory(
+				ScreenKey.Blog,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments
+				}
+			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				marketingVariant: this.props.marketingVariant,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -350,12 +374,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				isDesktopDevice: this._isDesktopDevice,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				marketingVariant: this.props.marketingVariant,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
+				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
@@ -391,6 +417,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
 					onViewThread: this._viewThread
 				}
 			),
@@ -453,16 +480,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
+				captcha: this.props.captcha,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				marketingVariant: this.props.marketingVariant,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
 				onInstallExtension: this._installExtension,
 				onOpenCreateAccountDialog: this._openCreateAccountDialog,
-				onOpenSignInDialog: this._openSignInDialog,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
-				onSetScreenState: this._setScreenState,
-				onViewHomeScreen: this._viewHome
+				onSetScreenState: this._setScreenState
 			})
 		};
 
@@ -821,6 +848,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div> :
 					null}
+				{!this.state.user && (
+					this._isDesktopDevice ||
+					topScreen.key === ScreenKey.Home
+				) ?
+					<CountdownBanner onGetUserCount={this.props.serverApi.getUserCount} /> :
+					null}
 				{(
 					topScreen.templateSection == null ||
 					(topScreen.templateSection & TemplateSection.Header)
@@ -845,6 +878,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						this._isDesktopDevice
 					) ?
 						<NavBar
+							onViewBlog={this._viewBlog}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewMyReads={this._viewMyReads}
@@ -873,6 +907,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 									)
 								) ?
 									<Footer
+										onViewBlog={this._viewBlog}
 										onViewPrivacyPolicy={this._viewPrivacyPolicy}
 									/> :
 									null}

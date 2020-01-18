@@ -32,6 +32,7 @@ import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
 import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import Dialog from '../../../common/components/Dialog';
+import createBlogScreenFactory from './AppRoot/BlogScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -216,7 +217,23 @@ export default class extends Root<
 					onViewComments: this._viewComments
 				}
 			),
+			[ScreenKey.Blog]: createBlogScreenFactory(
+				ScreenKey.Blog,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments
+				}
+			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				marketingVariant: this.props.marketingVariant,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -277,6 +294,7 @@ export default class extends Root<
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
 					onViewThread: this._viewThread
 				}
 			),

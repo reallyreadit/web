@@ -1,0 +1,131 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/ReadScreen
+	cssComponentId: read-screen_ikr26q
+*/
+
+.read-screen_ikr26q {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+.read-screen_ikr26q > .article {
+	flex: 0 0 auto;
+	max-width: 550px;
+}
+.read-screen_ikr26q > .article > .meta {
+	margin-bottom: 5px;
+	font-size: 11pt;
+}
+.read-screen_ikr26q > .article > .meta > .authors,
+.read-screen_ikr26q > .article > .meta > .source {
+	text-transform: uppercase;
+	font-family: 'Museo Sans (700)';
+}
+.read-screen_ikr26q > .article > .meta > .source {
+	font-style: italic;
+}
+.read-screen_ikr26q > .article > .title {
+	font-family: 'Cambria (bold)';
+	font-size: 20pt;
+	line-height: 1.1em;
+	font-style: italic;
+}
+.read-screen_ikr26q > .spacer {
+	flex: 1 1 auto;
+	min-height: 10px;
+	max-height: 40px;
+}
+.read-screen_ikr26q > .ad-free-animation_lv6n94 {
+	flex: 0 0 auto;
+	font-size: 15pt;
+}
+.read-screen_ikr26q > .animation-caption {
+	position: relative;
+	font-size: 16pt;
+	font-family: 'Museo Sans (700)';
+	text-align: center;
+}
+.read-screen_ikr26q > .animation-caption > li:first-child {
+	animation: read-screen_ikr26q-caption-1 6s ease-in-out infinite alternate;
+}
+.read-screen_ikr26q > .animation-caption > li:last-child {
+	animation: read-screen_ikr26q-caption-2 6s ease-in-out infinite alternate;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+.read-screen_ikr26q > .prompt {
+	flex: 0 0 auto;
+	text-align: center;
+}
+.read-screen_ikr26q > .prompt > .text {
+	font-family: 'Museo Sans (300)';
+	font-size: 16pt;
+}
+.read-screen_ikr26q > .download > a {
+	display: block;
+	cursor: pointer;
+}
+.read-screen_ikr26q > .download > a > img {
+	display: block;
+	margin: 0 auto 0 auto;
+}
+.read-screen_ikr26q > .download.chrome > a > img {
+	width: 250px;
+	margin-top: 10px;
+}
+.read-screen_ikr26q > .download.ios > a > img {
+	width: 175px;
+}
+.read-screen_ikr26q > .authenticate > .button_ovrlmi {
+	margin: 0 auto 0 auto;
+}
+.read-screen_ikr26q > .unsupported > .badges {
+	display: flex;
+	margin: 10px auto 0 auto;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.read-screen_ikr26q > .unsupported > .badges > a {
+	margin: 0 10px 10px 10px;
+	cursor: pointer;
+}
+.read-screen_ikr26q > .unsupported > .badges > a > img {
+	display: block;
+	height: 55px;
+}
+.read-screen_ikr26q > .unsupported > .bypass > a {
+	color: #666;
+	font-size: 11pt;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+@keyframes read-screen_ikr26q-caption-1 {
+	0% {
+		opacity: 1;
+	}
+	25% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes read-screen_ikr26q-caption-2 {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 0;
+	}
+	75% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}

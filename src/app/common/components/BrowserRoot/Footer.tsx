@@ -5,8 +5,13 @@ import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 
 export default class extends React.PureComponent<{
+	onViewBlog: () => void,
 	onViewPrivacyPolicy: () => void
 }> {
+	private readonly _viewBlog = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+		ev.preventDefault();
+		this.props.onViewBlog();
+	};
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
@@ -14,14 +19,19 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<div className="footer_ink40x">
-				<a href="https://blog.readup.com">Blog</a>
+				<a
+					href={findRouteByKey(routes, ScreenKey.Blog).createUrl()}
+					onClick={this._viewBlog}
+				>
+					Blog
+				</a>
 				<Separator />
 				<a
 					href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
 					onClick={this._viewPrivacyPolicy}
 				>
 					Privacy Policy
-					</a>
+				</a>
 				<br />
 				<a href="mailto:support@readup.com">support@readup.com</a>
 			</div>

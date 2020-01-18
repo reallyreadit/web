@@ -16,6 +16,7 @@ const
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
 
 export default (props: {
+	onViewBlog: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
 	onViewMyReads: () => void,
@@ -92,6 +93,9 @@ export default (props: {
 				/>
 			</li>
 		</ol>
-		<Footer onViewPrivacyPolicy={props.onViewPrivacyPolicy} />
+		<Footer
+			onViewBlog={props.onViewBlog}
+			onViewPrivacyPolicy={props.onViewPrivacyPolicy}
+		/>
 	</div>
 );

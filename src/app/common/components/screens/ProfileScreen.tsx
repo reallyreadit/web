@@ -42,6 +42,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 import Rating from '../../../../common/models/Rating';
 import Panel from '../BrowserRoot/Panel';
+import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 interface Props {
 	captcha: Captcha,
@@ -101,7 +102,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this.fetchPosts(pageNumber);
 	};
 	private readonly _copyAppReferrerTextToClipboard = () => {
-		this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
+		this.props.onCopyAppReferrerTextToClipboard('ProfileScreenCreateAccount');
 	};
 	private _followOnSignIn: boolean;
 	private readonly _followUser = (form: UserNameForm) => {
@@ -124,7 +125,11 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this.props.onOpenDialog(
 			this.props.isIosDevice ?
 				<DownloadIosAppDialog
-					onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+					onCopyAppReferrerTextToClipboard={
+						() => {
+							this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
+						}
+					}
 					onClose={cancel}
 				/> :
 				<CreateAccountDialog
@@ -154,6 +159,28 @@ export class ProfileScreen extends React.Component<Props, State> {
 				/>
 		);
 		return Promise.resolve();
+	};
+	private readonly _openCreateAccountDialog = () => {
+		this.props.onOpenDialog(
+			this.props.isIosDevice ?
+				<DownloadIosAppDialog
+					onCopyAppReferrerTextToClipboard={
+						() => {
+							this.props.onCopyAppReferrerTextToClipboard('ProfileScreenCreateAccount');
+						}
+					}
+					onClose={this.props.onCloseDialog}
+				/> :
+				<CreateAccountDialog
+					analyticsAction="ProfileScreenCreateAccount"
+					captcha={this.props.captcha}
+					onCreateAccount={this.props.onCreateAccount}
+					onCloseDialog={this.props.onCloseDialog}
+					onShowToast={this.props.onShowToast}
+					onSignInWithApple={this.props.onSignInWithApple}
+					title="Sign Up"
+				/>
+		);
 	};
 	private readonly _openGetFollowersDialog = () => {
 		this.props.onOpenDialog(
@@ -452,8 +479,14 @@ export class ProfileScreen extends React.Component<Props, State> {
 						<>
 							{!this.props.userAccount ?
 								<Panel className="header">
-									<h1>Join our community of readers.</h1>
-									<h3>Find and share the best articles on the web.</h3>
+									<h1>Join Readup to read with {this.props.profile.value.userName}.</h1>
+									<h3>
+										<GetStartedButton
+											isIosDevice={this.props.isIosDevice}
+											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onOpenCreateAccountDialog={this._openCreateAccountDialog}
+										/>
+									</h3>
 								</Panel> :
 								null}
 							<Panel className="main">

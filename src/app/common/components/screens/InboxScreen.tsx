@@ -41,6 +41,7 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void
 	user: UserAccount
 }
@@ -132,6 +133,7 @@ class InboxScreen extends React.Component<Props, State> {
 											onShare={this.props.onShare}
 											onToggleStar={this.props.onToggleArticleStar}
 											onViewComments={this.props.onViewComments}
+											onViewProfile={this.props.onViewProfile}
 											onViewThread={this.props.onViewThread}
 											post={post}
 											user={this.props.user}

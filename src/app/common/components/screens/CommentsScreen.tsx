@@ -20,6 +20,7 @@ import CommentRevisionForm from '../../../../common/models/social/CommentRevisio
 import InfoBox from '../controls/InfoBox';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import { variants as marketingVariants } from '../../marketingTesting';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -39,6 +40,7 @@ export interface Props {
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
 	isIosDevice: boolean | null,
+	marketingVariant: number,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
@@ -67,6 +69,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 	};
 	private readonly _noop = () => { };
 	public render() {
+		const marketingVariant = marketingVariants[this.props.marketingVariant];
 		return (
 			<div className="comments-screen_udh2l6">
 				{this.props.article.isLoading || this.props.comments.isLoading ?
@@ -81,8 +84,8 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 						<>
 							{!this.props.user ?
 								<Panel className="header">
-									<h1>Join our community of readers.</h1>
-									<h3>Find and share the best articles on the web.</h3>
+									<h1>{marketingVariant.headline}</h1>
+									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
 										<GetStartedButton
 											isIosDevice={this.props.isIosDevice}
