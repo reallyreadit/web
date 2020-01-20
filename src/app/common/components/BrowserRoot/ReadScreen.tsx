@@ -134,7 +134,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								<div className="prompt authenticate">
 									<Button
 										onClick={this._openCreateAccountDialog}
-										text="Read it on Readup"
+										text="Get Started"
 										intent="loud"
 										size="large"
 									/>
