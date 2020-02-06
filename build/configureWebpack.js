@@ -1,8 +1,8 @@
-const path = require('path'),
-	  fs = require('fs'),
-	  webpack = require('webpack');
-
-const project = require('./project');
+const
+	path = require('path'),
+	fs = require('fs'),
+	webpack = require('webpack'),
+	project = require('./project');
 
 // empty plugins array causes build to fail
 function addPlugin(webpackConfig, plugin) {
@@ -45,6 +45,9 @@ function configureWebpack(params) {
 					}
 				]
 			},
+			performance: {
+				hints: false
+			},
 			watch: params.watch
 		};
 	let define;
@@ -54,7 +57,8 @@ function configureWebpack(params) {
 		webpackConfig.module.rules.push({
 			test: /\.js$/,
 			enforce: 'pre',
-			loader: 'source-map-loader'
+			loader: 'source-map-loader',
+			exclude: /node_modules/
 		});
 	} else {
 		webpackConfig.devtool = false;

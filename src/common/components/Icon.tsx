@@ -1,5 +1,6 @@
 import * as React from 'react';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 import AlertBadge from './AlertBadge';
 
 export type IconName = 'article-details-star' | 'at-sign' | 'backward' | 'bell' | 'binoculars' | 'bookmark' | 'box' | 'cancel' | 'checkmark' | 'chevron-down' | 'chevron-left' | 'clock' | 'comments' | 'earth' | 'email' | 'exclamation' | 'fire' | 'forbid' | 'graduation' | 'line-chart' | 'link' | 'locked' | 'medal' | 'menu2' | 'paper-plane' | 'plus' | 'podium' | 'power' | 'question-circle' | 'quill' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'trophy' | 'twitter' | 'user' | 'warning' | 'write';

@@ -158,7 +158,7 @@ export default function createReadScreenFactory<TScreenKey>(
 				article = deps.onGetArticle(
 					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
 					article => {
-						deps.onSetScreenState(id, produce<Screen<Fetchable<UserArticle>>>(currentState => {
+						deps.onSetScreenState(id, produce((currentState: Screen<Fetchable<UserArticle>>) => {
 							currentState.componentState = article;
 							if (article.value) {
 								currentState.title = article.value.title;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Icon, { IconName } from '../../../../common/components/Icon';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 
 export default (props: {
 	children: React.ReactNode,

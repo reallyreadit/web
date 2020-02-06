@@ -1,7 +1,8 @@
 import * as React from 'react';
 import FormField , { LabelPosition } from './FormField';
 import InputControl, { Props } from './InputControl';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 
 export { LabelPosition };
 export default (props: Props & {

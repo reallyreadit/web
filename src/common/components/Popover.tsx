@@ -1,5 +1,6 @@
 import * as React from 'react';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 import Menu from './Popover/Menu';
 
 export enum MenuPosition {

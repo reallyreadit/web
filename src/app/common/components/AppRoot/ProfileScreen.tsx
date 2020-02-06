@@ -18,8 +18,8 @@ export default function createScreenFactory<TScreenKey>(
 ) {
 	const
 		noop = () => { },
-		createScreenUpdater = (result: Fetchable<Profile>) => produce<Screen<Fetchable<Profile>>>(
-			currentState => {
+		createScreenUpdater = (result: Fetchable<Profile>) => produce(
+			(currentState: Screen<Fetchable<Profile>>) => {
 				currentState.componentState = result;
 				if (result.value) {
 					currentState.title = '@' + result.value.userName;
@@ -46,8 +46,8 @@ export default function createScreenFactory<TScreenKey>(
 		updateProfile = (screenId: number, newValues: Partial<Profile>) => {
 			deps.onSetScreenState(
 				screenId,
-				produce<Screen<Fetchable<Profile>>>(
-					currentState => {
+				produce(
+					(currentState: Screen<Fetchable<Profile>>) => {
 						currentState.componentState.value = {
 							...currentState.componentState.value,
 							...newValues

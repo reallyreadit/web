@@ -1,9 +1,8 @@
-const gulp = require('gulp')
+const { src, dest } = require('gulp')
 
 function buildStaticAssets(params) {
-	return gulp
-		.src(params.src, { base: params.base })
-		.pipe(gulp.dest(params.dest))
+	return src(params.src, { base: params.base })
+		.pipe(dest(params.dest))
 		.on('end', params.onComplete || function () {});
 }
 

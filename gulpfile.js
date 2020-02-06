@@ -1,5 +1,5 @@
 const
-	gulp = require('gulp'),
+	{ parallel, series } = require('gulp'),
 	project = require('./build/project'),
 	Server = require('./build/targets/Server'),
 	client = require('./build/targets/client'),
@@ -10,74 +10,164 @@ const
 /**
  * app
  */
-gulp.task('clean:dev:app', ['clean:dev:server', 'clean:dev:browser']);
-gulp.task('build:dev:app', ['build:dev:server', 'build:dev:browser']);
-gulp.task('run:dev:app', ['run:dev:server', 'build:dev:browser']);
-gulp.task('watch:dev:app', ['watch:dev:server', 'watch:dev:browser']);
-
-gulp.task('clean:stage:app', ['clean:stage:server', 'clean:stage:browser']);
-gulp.task('build:stage:app', ['build:stage:server', 'build:stage:browser']);
-
-gulp.task('clean:prod:app', ['clean:prod:server', 'clean:prod:browser']);
-gulp.task('build:prod:app', ['build:prod:server', 'build:prod:browser']);
-
 const server = new Server();
-gulp.task('clean:dev:server', () => server.clean(project.env.dev));
-gulp.task('build:dev:server', () => server.build(project.env.dev));
-gulp.task('run:dev:server', ['build:dev:server'], server.run);
-gulp.task('watch:dev:server', ['run:dev:server'], server.watch);
+function cleanDevServer() {
+	return server.clean(project.env.dev);
+}
+function buildDevServer() {
+	return server.build(project.env.dev);
+}
 
-gulp.task('clean:stage:server', () => server.clean(project.env.stage));
-gulp.task('build:stage:server', () => server.build(project.env.stage));
+function cleanStageServer() {
+	return server.clean(project.env.stage);
+}
+function buildStageServer() {
+	return server.build(project.env.stage);
+}
 
-gulp.task('clean:prod:server', () => server.clean(project.env.prod));
-gulp.task('build:prod:server', () => server.build(project.env.prod));
+function cleanProdServer() {
+	return server.clean(project.env.prod);
+}
+function buildProdServer() {
+	return server.build(project.env.prod);
+}
 
-gulp.task('clean:dev:browser', () => client.clean(project.env.dev));
-gulp.task('build:dev:browser', () => client.build(project.env.dev));
-gulp.task('watch:dev:browser', client.watch);
+function cleanDevBrowser() {
+	return client.clean(project.env.dev);
+}
+function buildDevBrowser() {
+	return client.build(project.env.dev);
+}
 
-gulp.task('clean:stage:browser', () => client.clean(project.env.stage));
-gulp.task('build:stage:browser', () => client.build(project.env.stage));
+function cleanStageBrowser() {
+	return client.clean(project.env.stage);
+}
+function buildStageBrowser() {
+	return client.build(project.env.stage);
+}
 
-gulp.task('clean:prod:browser', () => client.clean(project.env.prod));
-gulp.task('build:prod:browser', () => client.build(project.env.prod));
+function cleanProdBrowser() {
+	return client.clean(project.env.prod);
+}
+function buildProdBrowser() {
+	return client.build(project.env.prod);
+}
 
 /**
  * extension
  */
-gulp.task('clean:dev:extension', () => extension.clean(project.env.dev));
-gulp.task('build:dev:extension', () => extension.build(project.env.dev));
-gulp.task('watch:dev:extension', () => extension.watch());
+function cleanDevExtension() {
+	return extension.clean(project.env.dev);
+}
+function buildDevExtension() {
+	return extension.build(project.env.dev);
+}
 
-gulp.task('clean:stage:extension', () => extension.clean(project.env.stage));
-gulp.task('build:stage:extension', () => extension.build(project.env.stage));
+function cleanStageExtension() {
+	return extension.clean(project.env.stage);
+}
+function buildStageExtension() {
+	return extension.build(project.env.stage);
+}
 
-gulp.task('clean:prod:extension', () => extension.clean(project.env.prod));
-gulp.task('build:prod:extension', () => extension.build(project.env.prod));
+function cleanProdExtension() {
+	return extension.clean(project.env.prod);
+}
+function buildProdExtension() {
+	return extension.build(project.env.prod);
+}
 
 /**
  * native client reader
  */
-gulp.task('clean:dev:native-client-reader', () => nativeClientReader.clean(project.env.dev));
-gulp.task('build:dev:native-client-reader', () => nativeClientReader.build(project.env.dev));
-gulp.task('watch:dev:native-client-reader', () => nativeClientReader.watch());
+function cleanDevNativeClientReader() {
+	return nativeClientReader.clean(project.env.dev);
+}
+function buildDevNativeClientReader() {
+	return nativeClientReader.build(project.env.dev);
+}
 
-gulp.task('clean:stage:native-client-reader', () => nativeClientReader.clean(project.env.stage));
-gulp.task('build:stage:native-client-reader', () => nativeClientReader.build(project.env.stage));
+function cleanStageNativeClientReader() {
+	return nativeClientReader.clean(project.env.stage);
+}
+function buildStageNativeClientReader() {
+	return nativeClientReader.build(project.env.stage);
+}
 
-gulp.task('clean:prod:native-client-reader', () => nativeClientReader.clean(project.env.prod));
-gulp.task('build:prod:native-client-reader', () => nativeClientReader.build(project.env.prod));
+function cleanProdNativeClientReader() {
+	return nativeClientReader.clean(project.env.prod);
+}
+function buildProdNativeClientReader() {
+	return nativeClientReader.build(project.env.prod);
+}
 
 /**
  * native client share extension
  */
-gulp.task('clean:dev:native-client-share-extension', () => nativeClientShareExtension.clean(project.env.dev));
-gulp.task('build:dev:native-client-share-extension', () => nativeClientShareExtension.build(project.env.dev));
-gulp.task('watch:dev:native-client-share-extension', () => nativeClientShareExtension.watch());
+function cleanDevNativeClientShareExtension() {
+	return nativeClientShareExtension.clean(project.env.dev);
+}
+function buildDevNativeClientShareExtension() {
+	return nativeClientShareExtension.build(project.env.dev);
+}
 
-gulp.task('clean:stage:native-client-share-extension', () => nativeClientShareExtension.clean(project.env.stage));
-gulp.task('build:stage:native-client-share-extension', () => nativeClientShareExtension.build(project.env.stage));
+function cleanStageNativeClientShareExtension() {
+	return nativeClientShareExtension.clean(project.env.stage);
+}
+function buildStageNativeClientShareExtension() {
+	return nativeClientShareExtension.build(project.env.stage);
+}
 
-gulp.task('clean:prod:native-client-share-extension', () => nativeClientShareExtension.clean(project.env.prod));
-gulp.task('build:prod:native-client-share-extension', () => nativeClientShareExtension.build(project.env.prod));
+function cleanProdNativeClientShareExtension() {
+	return nativeClientShareExtension.clean(project.env.prod);
+}
+function buildProdNativeClientShareExtension() {
+	return nativeClientShareExtension.build(project.env.prod);
+}
+
+module.exports = {
+	'clean:dev:app': parallel(cleanDevServer, cleanDevBrowser),
+	'build:dev:app': parallel(buildDevServer, buildDevBrowser),
+	'run:dev:app': series(parallel(buildDevServer, buildDevBrowser), server.run),
+	'watch:dev:app': parallel(client.watch, server.watch),
+	'clean:stage:app': parallel(cleanStageServer, cleanStageBrowser),
+	'build:stage:app': parallel(buildStageServer, buildStageBrowser),
+	'clean:prod:app': parallel(cleanProdServer, cleanProdBrowser),
+	'build:prod:app': parallel(buildProdServer, buildProdBrowser),
+	'clean:dev:server': cleanDevServer,
+	'build:dev:server': buildDevServer,
+	'run:dev:server': series(buildDevServer, server.run),
+	'watch:dev:server': server.watch,
+	'clean:stage:server': cleanStageServer,
+	'build:stage:server': buildStageServer,
+	'clean:prod:server': cleanProdServer,
+	'build:prod:server': buildProdServer,
+	'clean:dev:browser': cleanDevBrowser,
+	'build:dev:browser': buildDevBrowser,
+	'watch:dev:browser': client.watch,
+	'clean:stage:browser': cleanStageBrowser,
+	'build:stage:browser': buildStageBrowser,
+	'clean:prod:browser': cleanProdBrowser,
+	'build:prod:browser': buildProdBrowser,
+	'clean:dev:extension': cleanDevExtension,
+	'build:dev:extension': buildDevExtension,
+	'watch:dev:extension': extension.watch,
+	'clean:stage:extension': cleanStageExtension,
+	'build:stage:extension': buildStageExtension,
+	'clean:prod:extension': cleanProdExtension,
+	'build:prod:extension': buildProdExtension,
+	'clean:dev:native-client-reader': cleanDevNativeClientReader,
+	'build:dev:native-client-reader': buildDevNativeClientReader,
+	'watch:dev:native-client-reader': nativeClientReader.watch,
+	'clean:stage:native-client-reader': cleanStageNativeClientReader,
+	'build:stage:native-client-reader': buildStageNativeClientReader,
+	'clean:prod:native-client-reader': cleanProdNativeClientReader,
+	'build:prod:native-client-reader': buildProdNativeClientReader,
+	'clean:dev:native-client-share-extension': cleanDevNativeClientShareExtension,
+	'build:dev:native-client-share-extension': buildDevNativeClientShareExtension,
+	'watch:dev:native-client-share-extension': nativeClientShareExtension.watch,
+	'clean:stage:native-client-share-extension': cleanStageNativeClientShareExtension,
+	'build:stage:native-client-share-extension': buildStageNativeClientShareExtension,
+	'clean:prod:native-client-share-extension': cleanProdNativeClientShareExtension,
+	'build:prod:native-client-share-extension': buildProdNativeClientShareExtension
+};

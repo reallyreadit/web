@@ -83,7 +83,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 						this.state.articles.value &&
 						this.state.articles.value.items.some(article => article.id === event.article.id)
 					) {
-						this.setState(produce<State>(prevState => {
+						this.setState(produce((prevState: State) => {
 							prevState.articles.value.items.forEach((article, index, articles) => {
 								if (article.id === event.article.id) {
 									// merge objects in case the new object is missing properties due to outdated iOS client

@@ -1,18 +1,11 @@
-const path = require('path'),
-	  del = require('del'),
-	  childProcess = require('child_process');
-
-const project = require('../project'),
-	  delayedWatch = require('../delayedWatch'),
-	  buildTypescript = require('../buildTypescript'),
-	  buildStaticAssets = require('../buildStaticAssets'),
-	  tsConfig = require('../../tsconfig.json');
-
-const srcGlob = [
-		  `${project.srcDir}/app/{server,common}/**/*.{ts,tsx}`,
-		  `${project.srcDir}/common/**/*.{ts,tsx}`
-	  ],
-	  targetPath = 'app/server';
+const
+	path = require('path'),
+	del = require('del'),
+	childProcess = require('child_process'),
+	project = require('../project'),
+	buildStaticAssets = require('../buildStaticAssets'),
+	TscWatchClient = require('tsc-watch/client'),
+	targetPath = 'app/server';
 
 class Server {
 	constructor() {
@@ -30,13 +23,30 @@ class Server {
 	}
 	build(env) {
 		const tasks = [
-			new Promise((resolve, reject) => buildTypescript({
-				src: srcGlob,
-				dest: project.getOutPath(targetPath, env),
-				sourceMaps: env === project.env.dev,
-				compilerOptions: tsConfig.compilerOptions,
-				onComplete: resolve
-			}))
+			new Promise(
+				resolve => {
+					const args = [
+						'--project',
+						'tsconfig.server.json',
+						'--outDir',
+						project.getOutPath(targetPath, env)
+					];
+					if (env === project.env.dev) {
+						args.push('--incremental');
+						args.push('--sourcemap');
+					}
+					childProcess
+						.spawn(
+							'tsc',
+							args,
+							{
+								shell: true,
+								stdio: 'inherit'
+							}
+						)
+						.on('exit', resolve);
+				}
+			)
 		];
 		if (env === project.env.prod) {
 			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
@@ -59,25 +69,49 @@ class Server {
 		return Promise.all(tasks);
 	}
 	run() {
-		this.process = childProcess
-			.spawn('node', [
+		this.serverProcess = childProcess.spawn(
+			'node',
+			[
 				'--inspect',
 				'--no-lazy',
 				path.join(project.getOutPath(targetPath, project.env.dev), 'app/server/main.js')
-			], { stdio: 'inherit' });
+			],
+			{
+				stdio: 'inherit'
+			}
+		);
+		return Promise.resolve();
 	}
 	watch() {
-		return delayedWatch(
-			srcGlob, 
-			() => this.process
-				.on(
-					'exit',
-					() => this
-						.build(project.env.dev)
-						.then(() => this.run())
-				)
-				.kill()
+		const watcher = new TscWatchClient();
+		watcher.on(
+			'success',
+			() => {
+				if (this.serverProcess) {
+					this.serverProcess
+						.on(
+							'exit',
+							() => {
+								this.run();
+							}
+						)
+						.kill();
+				} else {
+					this.run();
+				}
+			}
 		);
+		watcher.start(
+			...[
+				'--project',
+				'tsconfig.server.json',
+				'--outDir',
+				project.getOutPath(targetPath, project.env.dev),
+				'--incremental',
+				'--sourcemap'
+			]
+		);
+		return Promise.resolve();
 	}
 }
 

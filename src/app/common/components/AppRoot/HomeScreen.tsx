@@ -110,8 +110,8 @@ class HomeScreen extends React.Component<Props, State> {
 								communityReads => {
 									resolve();
 									this.setState(
-										produce<State>(
-											state => {
+										produce(
+											(state: State) => {
 												state.communityReads.value.articles = {
 													...communityReads.value.articles,
 													items: state.communityReads.value.articles.items.concat(
@@ -136,8 +136,8 @@ class HomeScreen extends React.Component<Props, State> {
 								posts => {
 									resolve();
 									this.setState(
-										produce<State>(
-											state => {
+										produce(
+											(state: State) => {
 												state.posts.value = {
 													...posts.value,
 													items: state.posts.value.items.concat(

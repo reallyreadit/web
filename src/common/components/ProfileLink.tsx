@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ActionLink from './ActionLink';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 import { findRouteByKey } from '../routing/Route';
 import routes from '../routing/routes';
 import ScreenKey from '../routing/ScreenKey';

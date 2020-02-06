@@ -1,5 +1,6 @@
 import * as React from 'react';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 import Icon, { IconName } from './Icon';
 import SpinnerIcon from './SpinnerIcon';
 

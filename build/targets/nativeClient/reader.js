@@ -112,6 +112,8 @@ const build = createBuild({
 							])
 							.then(resolve || (() => { }));
 					});
+			} else {
+				resolve();
 			}
 		};
 	}()),

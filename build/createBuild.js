@@ -4,7 +4,7 @@ const
 
 const
 	project = require('./project'),
-	delayedWatch = require('./delayedWatch'),
+	watch = require('./watch'),
 	configureWebpack = require('./configureWebpack'),
 	runWebpack = require('./runWebpack'),
 	buildStaticAssets = require('./buildStaticAssets'),
@@ -120,91 +120,96 @@ function createBuild(params) {
 			return Promise.all(tasks);
 		},
 		watch: function () {
-			// set the output path
-			const devOutPath = project.getOutPath(params.path, project.env.dev);
+			const
+				outPath = project.getOutPath(params.path, project.env.dev),
+				tasks = [];
 			if (params.webpack) {
-				runWebpack(
-					getWebpackConfig({
-						env: project.env.dev,
-						watch: true
-					}),
-					() => {
-						params.onBuildComplete({
-							build: 'webpack',
-							env: project.env.dev,
-							outPath: devOutPath
-						});
-					}
+				tasks.push(
+					new Promise(
+						resolve => {
+							runWebpack(
+								getWebpackConfig({
+									env: project.env.dev,
+									watch: true
+								}),
+								() => {
+									params.onBuildComplete(
+										{
+											build: 'webpack',
+											env: project.env.dev,
+											outPath: outPath
+										},
+										resolve
+									);
+								}
+							);
+						}
+					)
 				);
 			}
 			if (params.scss) {
-				buildScss({
-					src: params.scss,
-					dest: devOutPath,
-					base: srcPath,
-					env: project.env.dev,
-					onComplete: () => {
-						delayedWatch(
-							params.scss,
-							() => {
-								buildScss({
-									src: params.scss,
-									dest: devOutPath,
-									base: srcPath,
-									env: project.env.dev,
-									onComplete: () => {
-										params.onBuildComplete({
-											build: 'scss',
-											env: project.env.dev,
-											outPath: devOutPath
-										});
-									}
-								});
-							}
-						);
-						params.onBuildComplete({
-							build: 'scss',
-							env: project.env.dev,
-							outPath: devOutPath
-						});
-					}
-				});
-			}
-			if (staticAssets) {
-				staticAssets.forEach(asset => {
-					buildStaticAssets({
-						src: asset.src,
-						dest: devOutPath,
-						base: asset.base,
-						env: project.env.dev,
-						onComplete: () => {
-							delayedWatch(
-								asset.src,
+				tasks.push(
+					new Promise(
+						resolve => {
+							watch(
+								params.scss,
 								() => {
-									buildStaticAssets({
-										src: asset.src,
-										dest: devOutPath,
-										base: asset.base,
+									buildScss({
+										src: params.scss,
+										dest: outPath,
+										base: srcPath,
 										env: project.env.dev,
 										onComplete: () => {
-											params.onBuildComplete({
-												build: 'staticAssets',
-												env: project.env.dev,
-												outPath: devOutPath
-											});
+											params.onBuildComplete(
+												{
+													build: 'scss',
+													env: project.env.dev,
+													outPath: outPath
+												},
+												resolve
+											);
 										}
 									});
 								}
 							);
-							params.onBuildComplete({
-								build: 'staticAssets',
-								env: project.env.dev,
-								outPath: devOutPath
-							});
 						}
-					});
-				});
+					)
+				);
 			}
+			if (staticAssets) {
+				staticAssets.forEach(
+					asset => {
+						tasks.push(
+							new Promise(
+								resolve => {
+									watch(
+										asset.src,
+										() => {
+											buildStaticAssets({
+												src: asset.src,
+												dest: outPath,
+												base: asset.base,
+												env: project.env.dev,
+												onComplete: () => {
+													params.onBuildComplete(
+														{
+															build: 'staticAssets',
+															env: project.env.dev,
+															outPath: outPath
+														},
+														resolve
+													);
+												}
+											});
+										}
+									);
+								}
+							)
+						);
+					}
+				);
+			}
+			return Promise.all(tasks);
 		}
 	};
 }

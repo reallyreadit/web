@@ -60,7 +60,7 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 			(!this.state.communityReads.value.userReadCount && isCompletionCommit)
 		)
 	) {
-		this.setState(produce<State>(prevState => {
+		this.setState(produce((prevState: State) => {
 			if (prevState.communityReads.value.aotd.id === updatedArticle.id) {
 				// merge objects in case the new object is missing properties due to outdated iOS client
 				prevState.communityReads.value.aotd = {

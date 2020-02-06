@@ -45,7 +45,7 @@ class BrowserCommentsScreen extends React.Component<
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
 				if (this.props.article.value && this.props.article.value.id === event.article.id) {
-					this.props.onSetScreenState(this.props.screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
+					this.props.onSetScreenState(this.props.screenId, produce((currentState: Screen<Fetchable<UserArticle>>) => {
 						currentState.componentState.value = event.article;
 					}));
 				}
@@ -106,7 +106,7 @@ type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'ar
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
 	const reloadArticle = (screenId: number, slug: string) => {
 		deps.onGetArticle({ slug }, article => {
-			deps.onSetScreenState(screenId, produce<Screen<Fetchable<UserArticle>>>(currentState => {
+			deps.onSetScreenState(screenId, produce((currentState: Screen<Fetchable<UserArticle>>) => {
 				currentState.componentState = article;
 			}));
 		});
@@ -118,7 +118,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				article = deps.onGetArticle({ slug: pathParams.slug }, article => {
 					deps.onSetScreenState(
 						id,
-						produce<Screen<Fetchable<UserArticle>>>(currentState => {
+						produce((currentState: Screen<Fetchable<UserArticle>>) => {
 							currentState.componentState = article;
 							if (article.value) {
 								currentState.title = article.value.title;

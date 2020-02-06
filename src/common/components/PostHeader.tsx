@@ -3,7 +3,7 @@ import LeaderboardBadge from '../models/LeaderboardBadge';
 import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import LeaderboardBadges from './LeaderboardBadges';
-import timeago from 'timeago.js';
+import { format } from 'timeago.js';
 import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ProfileLink from './ProfileLink';
@@ -32,7 +32,7 @@ export default (
 		{props.leaderboardBadge !== LeaderboardBadge.None ?
 			<LeaderboardBadges badge={props.leaderboardBadge} /> :
 			null}
-		<span className="age">{timeago().format(props.date.replace(/([^Z])$/, '$1Z'))}</span>
+		<span className="age">{format(props.date.replace(/([^Z])$/, '$1Z'))}</span>
 		{(
 			props.userName &&
 			props.onCopyTextToClipboard &&

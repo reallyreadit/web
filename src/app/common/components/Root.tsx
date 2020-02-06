@@ -20,7 +20,8 @@ import { createScreenFactory as createPasswordScreenFactory } from './PasswordPa
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
-import classNames, { ClassValue } from 'classnames';
+import classNames from 'classnames';
+import { ClassValue } from 'classnames/types';
 import RootErrorBoundary from './RootErrorBoundary';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
