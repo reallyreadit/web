@@ -50,9 +50,9 @@ export default class TrackingStep extends React.PureComponent<
 					{this.state.controlState === ControlState.Continue ?
 						<Button
 							className="continue"
+							intent="loud"
 							onClick={this.props.onContinue}
 							size="large"
-							style="preferred"
 							text="Continue"
 						/> :
 						<ActionLink
