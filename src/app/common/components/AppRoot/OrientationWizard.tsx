@@ -82,8 +82,11 @@ export default class OrientationWizard extends React.PureComponent<
 	};
 	private readonly _handleShareCompletion = (result?: ShareResult) => {
 		if (result) {
-			if (result.activityType === 'it.reallyread.mobile.share-extension') {
-				// ignore a share to our own extension
+			if (
+				!result.completed ||
+				result.activityType === 'it.reallyread.mobile.share-extension'
+			) {
+				// ignore a cancelled activity or a share to our own extension
 				return;
 			}
 			this._analytics.shareResultId = result.id;
