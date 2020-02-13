@@ -11,6 +11,9 @@
 	border-bottom: 1px solid #ccc;
 	background-color: #eaeaea;
 }
+.header_cvm3v7:not(.menu) {
+	justify-content: center;
+}
 .header_cvm3v7 > .logo-container {
 	display: flex;
 	align-items: center;
@@ -35,10 +38,6 @@
 @media (max-width: 499px) {
 	.header_cvm3v7 {
 		padding: 10px;
-	}
-	.header_cvm3v7:not(.menu) {
-		flex-flow: column;
-		align-items: center;
 	}
 	.header_cvm3v7:not(.menu) > .menu-container {
 		margin-top: 10px;
