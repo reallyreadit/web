@@ -11,8 +11,8 @@ export default class ShareStep extends React.PureComponent<Props> {
 	public render() {
 		return (
 			<div className="share-step_okemw2">
-				<h1>Read with Friends.</h1>
-				<h2>Invite your friends to follow you. It makes Readup more fun. (And it helps us grow!)</h2>
+				<h1>Spread the word.</h1>
+				<h2>Help us grow. Tell others why you're excited about Readup.</h2>
 				<Icon name="megaphone" />
 				<Button
 					intent="loud"
