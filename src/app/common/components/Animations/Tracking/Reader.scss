@@ -1,0 +1,362 @@
+/*
+	componentPath: src/app/common/components/Animations/Tracking/Reader
+	cssComponentId: reader_s9p6xn
+*/
+
+.reader_s9p6xn {
+	position: relative;
+	width: 8em;
+	height: 11em;
+}
+.reader_s9p6xn > .device {
+	position: absolute;
+	right: 0;
+	width: 6em;
+	height: 10em;
+	border: 1px solid #555;
+	border-radius: 0.5em;
+	background-color: #666;
+	box-sizing: border-box;
+}
+.reader_s9p6xn > .device > .screen {
+	position: absolute;
+	top: 0.3em;
+	right: 0.3em;
+	bottom: 0.3em;
+	left: 0.3em;
+	display: flex;
+	flex-flow: column;
+	background-color: white;
+}
+.reader_s9p6xn > .device > .screen > nav {
+	flex: 0 0 auto;
+	position: relative;
+	height: 1em;
+	background: #eee;
+}
+.reader_s9p6xn > .device > .screen > nav > .progress {
+	position: absolute;
+	top: 0.1em;
+	right: 0.1em;
+	bottom: 0.1em;
+	width: 0.8em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: white;
+	border: 1px solid #ccc;
+	overflow: hidden;
+	border-radius: 10%;
+	z-index: 1;
+}
+.reader_s9p6xn > .device > .screen > nav > .progress > .icon_rour3d {
+	position: relative;
+	font-size: 0.5em;
+	color: white;
+	z-index: 2;
+}
+.reader_s9p6xn.n-1 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-2 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-3 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-4 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-6 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-7 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-8 > .device.device > .screen > nav > .progress,
+.reader_s9p6xn.n-9 > .device.device > .screen > nav > .progress {
+	box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .25);
+	transform: scale(2.75);
+}
+.reader_s9p6xn.playing.n-5 > .device.device > .screen > nav > .progress {
+	animation: reader_s9p6xn-progress-scale 0.5s forwards 3s;
+}
+.reader_s9p6xn.finished.n-5 > .device.device > .screen > nav > .progress {
+	transform: scale(2.75);
+}
+.reader_s9p6xn > .device > .screen > nav > .progress::after {
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	transform: translateY(100%);
+	z-index: 3;
+}
+.reader_s9p6xn.playing.n-1 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 7s;
+}
+.reader_s9p6xn.playing.n-2 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 6s;
+}
+.reader_s9p6xn.playing.n-3 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-66 6.5s forwards linear 9s;
+}
+.reader_s9p6xn.playing.n-4 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-33 6.5s forwards linear 9s;
+}
+.reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 0s;
+}
+.reader_s9p6xn.playing.n-6 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 4s;
+}
+.reader_s9p6xn.playing.n-7 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 5s;
+}
+.reader_s9p6xn.playing.n-8 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-66 6.5s forwards linear 7s;
+}
+.reader_s9p6xn.playing.n-9 > .device > .screen > nav > .progress::after {
+	animation: reader_s9p6xn-progress-fill-33 6.5s forwards linear 8s;
+}
+.reader_s9p6xn.finished.n-4 > .device > .screen > nav > .progress::after,
+.reader_s9p6xn.finished.n-9 > .device > .screen > nav > .progress::after {
+	transform: translateY(66%);
+	background-color: pink;
+}
+.reader_s9p6xn.finished.n-3 > .device > .screen > nav > .progress::after,
+.reader_s9p6xn.finished.n-8 > .device > .screen > nav > .progress::after {
+	transform: translateY(33%);
+	background-color: pink;
+}
+.reader_s9p6xn.finished.n-1 > .device > .screen > nav > .progress::after,
+.reader_s9p6xn.finished.n-2 > .device > .screen > nav > .progress::after,
+.reader_s9p6xn.finished.n-5 > .device > .screen > nav > .progress::after,
+.reader_s9p6xn.finished.n-6 > .device > .screen > nav > .progress::after,
+.reader_s9p6xn.finished.n-7 > .device > .screen > nav > .progress::after {
+	transform: translateY(0);
+	background-color: palegreen;
+	z-index: 1;
+}
+.reader_s9p6xn > .device > .screen > main {
+	flex: 1 1 auto;
+	position: relative;
+	overflow: hidden;
+}
+.reader_s9p6xn > .device > .screen > main > .article_pw2r68 {
+	position: absolute;
+	box-sizing: border-box;
+	width: 100%;
+}
+.reader_s9p6xn.playing.n-1 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-100 6s forwards 7s;
+}
+.reader_s9p6xn.playing.n-2 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-100 6s forwards 5s;
+}
+.reader_s9p6xn.playing.n-3 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-66 6s forwards 9s;
+}
+.reader_s9p6xn.playing.n-4 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-33 6s forwards 9s;
+}
+.reader_s9p6xn.playing.n-5 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-100 6s forwards 0s;
+}
+.reader_s9p6xn.playing.n-6 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-100 6s forwards 7s;
+}
+.reader_s9p6xn.playing.n-7 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-100 6s forwards 5s;
+}
+.reader_s9p6xn.playing.n-8 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-66 6s forwards 7s;
+}
+.reader_s9p6xn.playing.n-9 > .device > .screen > main > .article_pw2r68 {
+	animation: reader_s9p6xn-scroll-33 6s forwards 11s;
+}
+.reader_s9p6xn.finished.n-4 > .device > .screen > main > .article_pw2r68,
+.reader_s9p6xn.finished.n-9 > .device > .screen > main > .article_pw2r68 {
+	top: 17%;
+	transform: translateY(-33%);
+}
+.reader_s9p6xn.finished.n-3 > .device > .screen > main > .article_pw2r68,
+.reader_s9p6xn.finished.n-8 > .device > .screen > main > .article_pw2r68 {
+	top: 33%;
+	transform: translateY(-67%);
+}
+.reader_s9p6xn.finished.n-1 > .device > .screen > main > .article_pw2r68,
+.reader_s9p6xn.finished.n-2 > .device > .screen > main > .article_pw2r68,
+.reader_s9p6xn.finished.n-5 > .device > .screen > main > .article_pw2r68,
+.reader_s9p6xn.finished.n-6 > .device > .screen > main > .article_pw2r68,
+.reader_s9p6xn.finished.n-7 > .device > .screen > main > .article_pw2r68 {
+	top: 50%;
+	transform: translateY(-100%);
+}
+
+.reader_s9p6xn > .cat_tpgfsr {
+	position: absolute;
+	bottom: 0;
+	font-size: 5em;
+}
+
+@keyframes reader_s9p6xn-progress-fill-33 {
+	0% {
+		transform: translateY(100%);
+		background-color: pink;
+	}
+	10% {
+		transform: translateY(100%);
+	}
+	33% {
+		transform: translateY(66%);
+	}
+	100% {
+		transform: translateY(66%);
+		background-color: pink;
+	}
+}
+@keyframes reader_s9p6xn-progress-fill-66 {
+	0% {
+		transform: translateY(100%);
+		background-color: pink;
+	}
+	10% {
+		transform: translateY(100%);
+	}
+	66% {
+		transform: translateY(33%);
+	}
+	100% {
+		transform: translateY(33%);
+		background-color: pink;
+	}
+}
+@keyframes reader_s9p6xn-progress-fill-100 {
+	0% {
+		transform: translateY(100%);
+		background-color: pink;
+	}
+	10% {
+		transform: translateY(100%);
+	}
+	99% {
+		background-color: pink;
+		z-index: 3;
+	}
+	100% {
+		transform: translateY(0);
+		background-color: palegreen;
+		z-index: 1;
+	}
+}
+@keyframes reader_s9p6xn-progress-scale {
+	0% {
+		transform: scale(1);
+	}
+	75% {
+		transform: scale(3);
+		box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .25);
+	}
+	100% {
+		transform: scale(2.75);
+	}
+}
+@keyframes reader_s9p6xn-scroll-33 {
+	0% {
+		top: 0;
+		transform: translateY(0);
+	}
+	12% {
+		top: 8%;
+		transform: translateY(-17%);
+	}
+	18% {
+		top: 8%;
+		transform: translateY(-17%);
+	}
+	29% {
+		top: 17%;
+		transform: translateY(-33%);
+	}
+	100% {
+		top: 17%;
+		transform: translateY(-33%);
+	}
+}
+@keyframes reader_s9p6xn-scroll-66 {
+	0% {
+		top: 0;
+		transform: translateY(0);
+	}
+	12% {
+		top: 8%;
+		transform: translateY(-17%);
+	}
+	18% {
+		top: 8%;
+		transform: translateY(-17%);
+	}
+	29% {
+		top: 17%;
+		transform: translateY(-33%);
+	}
+	35% {
+		top: 17%;
+		transform: translateY(-33%);
+	}
+	47% {
+		top: 25%;
+		transform: translateY(-50%);
+	}
+	53% {
+		top: 25%;
+		transform: translateY(-50%);
+	}
+	65% {
+		top: 33%;
+		transform: translateY(-67%);
+	}
+	100% {
+		top: 33%;
+		transform: translateY(-67%);
+	}
+}
+@keyframes reader_s9p6xn-scroll-100 {
+	0% {
+		top: 0;
+		transform: translateY(0);
+	}
+	12% {
+		top: 8%;
+		transform: translateY(-17%);
+	}
+	18% {
+		top: 8%;
+		transform: translateY(-17%);
+	}
+	29% {
+		top: 17%;
+		transform: translateY(-33%);
+	}
+	35% {
+		top: 17%;
+		transform: translateY(-33%);
+	}
+	47% {
+		top: 25%;
+		transform: translateY(-50%);
+	}
+	53% {
+		top: 25%;
+		transform: translateY(-50%);
+	}
+	65% {
+		top: 33%;
+		transform: translateY(-67%);
+	}
+	71% {
+		top: 33%;
+		transform: translateY(-67%);
+	}
+	82% {
+		top: 42%;
+		transform: translateY(-83%);
+	}
+	88% {
+		top: 42%;
+		transform: translateY(-83%);
+	}
+	100% {
+		top: 50%;
+		transform: translateY(-100%);
+	}
+}

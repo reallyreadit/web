@@ -1,0 +1,134 @@
+/*
+	componentPath: src/app/common/components/Animations/Tracking/Cat
+	cssComponentId: cat_tpgfsr
+*/
+
+.cat_tpgfsr {
+	position: relative;
+	width: 1em;
+	height: 1.32em;
+}
+.cat_tpgfsr > .head {
+	position: absolute;
+	top: 5%;
+	left: 13.5%;
+	width: 50%;
+	height: 34%;
+	border-radius: 50%;
+	background: #777;
+}
+.cat_tpgfsr > .head::before {
+	content: "";
+	position: absolute;
+	width: 55%;
+	height: 41%;
+	top: 0%;
+	left: -6%;
+	border-radius: 50%;
+	transform: rotate(35deg) skewY(30deg);
+	background: #777;
+}
+.cat_tpgfsr > .head::after {
+	content: "";
+	position: absolute;
+	width: 55%;
+	height: 41%;
+	top: 0%;
+	left: 50%;
+	border-radius: 50%;
+	transform: rotate(-35deg) skewY(-30deg);
+	background: #777;
+}
+.cat_tpgfsr > .upper-body {
+	position: absolute;
+	top: 28%;
+	left: 11%;
+	width: 55%;
+	height: 39%;
+	border-radius: 50%;
+	background: #777;
+}
+.cat_tpgfsr > .lower-body {
+	position: absolute;
+	top: 43%;
+	left: 0%;
+	width: 77%;
+	height: 48%;
+	background: #777;
+	border-radius: 50%;
+}
+.cat_tpgfsr > .tail {
+	position: absolute;
+	top: 37%;
+	left: -13%;
+	width: 72%;
+	height: 40%;
+	border-width: 0.1em;
+	border-style: solid;
+	border-color: transparent #777 #777 transparent;
+	border-radius: 50%;
+	transform-origin: 50% 100%;
+	transform: rotate(38deg);
+}
+.cat_tpgfsr.playing.n-1 > .tail {
+	animation: cat_tpgfsr-wag 2.1s 7 0s;
+}
+.cat_tpgfsr.playing.n-2 > .tail {
+	animation: cat_tpgfsr-wag 2.2s 6 0s;
+}
+.cat_tpgfsr.playing.n-3 > .tail {
+	animation: cat_tpgfsr-wag 2.1s 7 0s;
+}
+.cat_tpgfsr.playing.n-4 > .tail {
+	animation: cat_tpgfsr-wag 2s 6 0s;
+}
+.cat_tpgfsr.playing.n-5 > .tail {
+	animation: cat_tpgfsr-wag 2s 4 0s;
+}
+.cat_tpgfsr.playing.n-6 > .tail {
+	animation: cat_tpgfsr-wag 2.2s 7 0s;
+}
+.cat_tpgfsr.playing.n-7 > .tail {
+	animation: cat_tpgfsr-wag 2.1s 6 0s;
+}
+.cat_tpgfsr.playing.n-8 > .tail {
+	animation: cat_tpgfsr-wag 2s 6 0s;
+}
+.cat_tpgfsr.playing.n-9 > .tail {
+	animation: cat_tpgfsr-wag 2.1s 7 0s;
+}
+.cat_tpgfsr.finished.n-1 > .tail,
+.cat_tpgfsr.finished.n-2 > .tail,
+.cat_tpgfsr.finished.n-3 > .tail,
+.cat_tpgfsr.finished.n-4 > .tail,
+.cat_tpgfsr.finished.n-5 > .tail,
+.cat_tpgfsr.finished.n-6 > .tail,
+.cat_tpgfsr.finished.n-7 > .tail,
+.cat_tpgfsr.finished.n-8 > .tail,
+.cat_tpgfsr.finished.n-9 > .tail {
+	transform: rotate(38deg);
+}
+.cat_tpgfsr > .tail::before {
+	content: "";
+	position: absolute;
+	width: 0.1em;
+	height: 0.1em;
+	background: #777;
+	border-radius: 50%;
+   right: 0.01em;
+}
+
+@keyframes cat_tpgfsr-wag {
+	0% {
+		transform: rotate(38deg);
+	}
+	25% {
+		transform: rotate(48deg);
+	}
+	50% {
+		transform: rotate(38deg);
+	}
+	100% {
+		transform: rotate(38deg);
+	}
+}

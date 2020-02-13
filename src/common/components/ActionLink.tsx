@@ -10,6 +10,7 @@ export default class extends React.PureComponent<{
 	className?: ClassValue,
 	href?: string,
 	iconLeft?: IconName,
+	onAnimationEnd?: (event: React.AnimationEvent) => void,
 	onClick?: (e: React.MouseEvent<HTMLElement>, href?: string) => void,
 	state?: 'normal' | 'disabled' | 'busy',
 	text: string,
@@ -50,6 +51,7 @@ export default class extends React.PureComponent<{
 		return (
 			this.props.href ?
 				<a
+					onAnimationEnd={this.props.onAnimationEnd}
 					className={cssClass}
 					href={this.props.href}
 					onClick={this._handleClick}
@@ -57,6 +59,7 @@ export default class extends React.PureComponent<{
 					{content}
 				</a> :
 				<span
+					onAnimationEnd={this.props.onAnimationEnd}
 					className={cssClass}
 					onClick={this._handleClick}
 				>

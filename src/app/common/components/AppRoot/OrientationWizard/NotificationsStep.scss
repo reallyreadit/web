@@ -1,0 +1,31 @@
+/*
+	componentPath: src/app/common/components/AppRoot/OrientationWizard/NotificationsStep
+	cssComponentId: notifications-step_uaqf5m
+*/
+
+.notifications-step_uaqf5m {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+.notifications-step_uaqf5m > h1 {
+	font-size: 26pt;
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 30px;
+}
+.notifications-step_uaqf5m > h2 {
+	font-size: 16pt;
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+	margin: 0 10px 30px 10px;
+	text-align: center;
+}
+.notifications-step_uaqf5m > .icon_rour3d {
+	font-size: 130px;
+	margin-bottom: 30px;
+}
+.notifications-step_uaqf5m > .button_ovrlmi {
+	margin: 10px 0 40px;
+}

@@ -1,0 +1,45 @@
+/*
+	componentPath: src/app/common/components/AppRoot/OrientationWizard
+	cssComponentId: orientation-wizard_3wn522
+*/
+
+.orientation-wizard_3wn522 {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #fff;
+}
+.orientation-wizard_3wn522.closing {
+	animation: orientation-wizard_3wn522-fade-out 1s forwards;
+}
+.orientation-wizard_3wn522 > .container.advancing {
+	animation: orientation-wizard_3wn522-fade-out 250ms forwards;
+}
+.orientation-wizard_3wn522 > .container.advanced {
+	animation: orientation-wizard_3wn522-fade-in 250ms forwards;
+}
+.orientation-wizard_3wn522 > .container.initial {
+	animation: orientation-wizard_3wn522-fade-in 1s forwards;
+}
+@keyframes orientation-wizard_3wn522-fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes orientation-wizard_3wn522-fade-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

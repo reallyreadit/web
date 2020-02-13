@@ -5,6 +5,8 @@ import ShareData from '../../common/sharing/ShareData';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import SerializedDeviceInfo from '../../common/models/app/SerializedDeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
+import ShareResult from '../../common/models/app/ShareResult';
+import NotificationAuthorizationRequestResult from '../../common/models/app/NotificationAuthorizationRequestResult';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -89,11 +91,30 @@ export default class extends AppApi {
 			type: 'requestAppleIdCredential'
 		});
 	}
+	public requestNotificationAuthorization() {
+		return new Promise<NotificationAuthorizationRequestResult>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestNotificationAuthorization'
+					},
+					resolve
+				);
+			}
+		);
+	}
 	public share(data: ShareData) {
-		this._messagingContext.sendMessage({
-			type: 'share',
-			data
-		});
+		return new Promise<ShareResult>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'share',
+						data
+					},
+					resolve
+				);
+			}
+		);
 	}
 	public syncAuthCookie(user?: UserAccount) {
 		this._messagingContext.sendMessage({

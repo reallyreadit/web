@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, SharedEvents, SignInEventType } from './Root';
 import UserAccount, { hasAlert, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -33,6 +33,8 @@ import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import Dialog from '../../../common/components/Dialog';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
+import OrientationWizard from './AppRoot/OrientationWizard';
+import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -46,6 +48,7 @@ export enum AppleIdAuthState {
 type MenuState = 'opened' | 'closing' | 'closed';
 interface State extends RootState {
 	appleIdAuthState: AppleIdAuthState,
+	isInOrientation: boolean,
 	isPoppingScreen: boolean,
 	menuState: MenuState,
 }
@@ -80,6 +83,11 @@ export default class extends Root<
 		this.setState({ menuState: 'opened' });
 	};
 
+	// notifications
+	private readonly _requestNotificationAuthorization = () => {
+		return this.props.appApi.requestNotificationAuthorization();
+	};
+
 	// routing
 	private readonly _navTo = (url: string) => {
 		const result = parseUrlForRoute(url);
@@ -104,6 +112,12 @@ export default class extends Root<
 	}
 
 	// screens
+	private readonly _completeOrientation = (analytics: OrientationAnalytics) => {
+		this.setState({
+			isInOrientation: false
+		});
+		this.props.serverApi.logOrientationAnalytics(analytics);
+	};
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -159,6 +173,9 @@ export default class extends Root<
 		} else {
 			return [ShareChannel.Clipboard];
 		}
+	};
+	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
+		return this.props.appApi.share(data);
 	};
 	
 	// user account
@@ -364,6 +381,7 @@ export default class extends Root<
 					[]
 			),
 			appleIdAuthState: AppleIdAuthState.None,
+			isInOrientation: false,
 			isPoppingScreen: false,
 			menuState: 'closed',
 			screens
@@ -432,7 +450,7 @@ export default class extends Root<
 										/>
 									);
 								} else {
-									this.onUserSignedIn(res.user);
+									this.onUserSignedIn(res.user, SignInEventType.ExistingUser);
 								}
 								this.setState({ appleIdAuthState: AppleIdAuthState.None });
 							}
@@ -591,7 +609,7 @@ export default class extends Root<
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
 	}
-	protected onUserSignedIn(user: UserAccount) {
+	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType) {
 		// sync auth state with app
 		this.props.appApi.syncAuthCookie(user);
 		// set screen
@@ -628,12 +646,28 @@ export default class extends Root<
 			}
 			this._signInLocation = null;
 		}
+		// enter orientation for new users
+		let isInOrientation: boolean;
+		if (eventType === SignInEventType.NewUser) {
+			if (this.props.appApi.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0) {
+				isInOrientation = true;
+			} else {
+				isInOrientation = false;
+				this.props.appApi.requestNotificationAuthorization();
+			}
+		} else {
+			isInOrientation = false;
+		}
 		// update analytics
 		this.props.analytics.setUserId(user.id);
 		this.props.analytics.sendPageview(screen);
 		return super.onUserSignedIn(
 			user,
-			{ screens: [screen] }
+			eventType,
+			{
+				isInOrientation,
+				screens: [screen]
+			}
 		);
 	}
 	protected onUserSignedOut() {
@@ -712,6 +746,15 @@ export default class extends Root<
 								onViewSettings={this._viewSettings}
 								selectedScreenKey={this.state.screens[0].key}
 								userAccount={this.state.user}
+							/> :
+							null}
+						{this.state.isInOrientation ?
+							<OrientationWizard
+								onComplete={this._completeOrientation}
+								onCreateAbsoluteUrl={this._createAbsoluteUrl}
+								onRequestNotificationAuthorization={this._requestNotificationAuthorization}
+								onShare={this._handleShareRequestWithCompletion}
+								user={this.state.user}
 							/> :
 							null}
 					</> :

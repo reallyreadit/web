@@ -4,6 +4,7 @@ import routes from '../routing/routes';
 import ScreenKey from '../routing/ScreenKey';
 
 export default function getShareData(
+	action: string,
 	article: UserArticle,
 	onCreateAbsoluteUrl: (path: string) => string
 ) {
@@ -17,6 +18,7 @@ export default function getShareData(
 			findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
 		);
 	return {
+		action,
 		email: {
 			body: shareUrl,
 			subject: `"${article.title}"`,

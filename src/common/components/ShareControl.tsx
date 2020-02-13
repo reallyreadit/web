@@ -5,11 +5,13 @@ import ShareData from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import { truncateText } from '../format';
 import Popover, { MenuPosition, MenuState } from './Popover';
+import ShareForm from '../models/analytics/ShareForm';
 
 export { MenuPosition } from './Popover';
 interface Props {
 	children: React.ReactNode,
 	menuPosition: MenuPosition,
+	onComplete?: (form: ShareForm) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetData: () => ShareData,
 	onShare: (data: ShareData) => ShareChannel[]
@@ -32,6 +34,7 @@ export default class ShareControl extends React.PureComponent<
 		);
 		// need to call closeMenu() to handle iOS touch behavior
 		this._beginClosingMenu();
+		this.completeWithActivityType('Copy');
 	};
 	private readonly _closeMenu = () => {
 		this.setState({
@@ -39,6 +42,9 @@ export default class ShareControl extends React.PureComponent<
 			menuState: MenuState.Closed,
 			shareChannels: []
 		});
+	};
+	private readonly _handleEmailLinkClick = () => {
+		this.completeWithActivityType('Email');
 	};
 	private readonly _openMenu = () => {
 		const
@@ -55,13 +61,16 @@ export default class ShareControl extends React.PureComponent<
 	private readonly _openTweetComposer = () => {
 		const queryString = createQueryString({
 			'text': truncateText(this.state.data.text, 280 - 25),
-			'url': this.state.data.url
+			'url': this.state.data.url,
+			'hashtags': 'ReadOnReadup',
+			'via': 'ReadupDotCom'
 		});
 		window.open(
 			`https://twitter.com/intent/tweet${queryString}`,
 			'',
 			'height=300,location=0,menubar=0,toolbar=0,width=500'
 		);
+		this.completeWithActivityType('Twitter');
 	};
 	constructor(props: Props) {
 		super(props);
@@ -70,6 +79,17 @@ export default class ShareControl extends React.PureComponent<
 			menuState: MenuState.Closed,
 			shareChannels: []
 		};
+	}
+	private completeWithActivityType(activityType: string) {
+		if (this.props.onComplete) {
+			this.props.onComplete({
+				id: null,
+				action: this.state.data.action,
+				activityType,
+				completed: null,
+				error: null
+			});
+		}
 	}
 	public render() {
 		return (
@@ -93,6 +113,7 @@ export default class ShareControl extends React.PureComponent<
 									'body': this.state.data.email.body,
 									'subject': this.state.data.email.subject
 								})}`}
+								onClick={this._handleEmailLinkClick}
 								target="_blank"
 							>
 								<Icon name="paper-plane" />

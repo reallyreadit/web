@@ -18,6 +18,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 	private readonly _getShareData = () => {
 		const url = this.props.onCreateAbsoluteUrl(this.getProfilePath());
 		return {
+			action: 'GetFollowersDialog',
 			email: {
 				body: url,
 				subject: 'Follow me on Readup'

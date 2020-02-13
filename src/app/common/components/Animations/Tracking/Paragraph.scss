@@ -1,0 +1,19 @@
+/*
+	componentPath: src/app/common/components/Animations/Tracking/Paragraph
+	cssComponentId: paragraph_wznl0z
+*/
+
+.paragraph_wznl0z {
+	position: relative;
+	margin: 0.5em 0;
+}
+.paragraph_wznl0z > span {
+	position: relative;
+	display: block;
+	height: 0.15em;
+	width: 100%;
+	background-color: #999;
+}
+.paragraph_wznl0z > span + span {
+	margin-top: 0.15em;
+}

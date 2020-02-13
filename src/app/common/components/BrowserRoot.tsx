@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents, SignInEventType } from './Root';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -559,7 +559,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			})
 			.addListener('userSignedIn', user => {
-				this.onUserSignedIn(user, EventSource.Remote);
+				this.onUserSignedIn(user, SignInEventType.ExistingUser, EventSource.Remote);
 			})
 			.addListener('userSignedOut', () => {
 				this.onUserSignedOut(EventSource.Remote);
@@ -774,7 +774,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
-	protected onUserSignedIn(user: UserAccount, eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType, eventSource: (EventSource | Partial<State>) = EventSource.Local) {
 		// update analytics before potentially changing the screen
 		this.props.analytics.setUserId(user.id);
 		// check the event source to see if we should broadcast a local event
@@ -789,7 +789,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				method: 'replace'
 			});
 		}
-		return super.onUserSignedIn(user, supplementaryState);
+		return super.onUserSignedIn(user, eventType, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
 		// update analytics before potentially changing the screen

@@ -14,8 +14,11 @@ export default class extends AppApi {
 	public requestAppleIdCredential() {
 		throw new Error('Operation not supported in server environment');
 	}
+	public requestNotificationAuthorization() {
+		return Promise.reject('Operation not supported in server environment');
+	}
 	public share(data: ShareData) {
-		throw new Error('Operation not supported in server environment');
+		return Promise.reject('Operation not supported in server environment');
 	}
 	public syncAuthCookie(user?: UserAccount) {
 		throw new Error('Operation not supported in server environment');

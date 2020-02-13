@@ -148,6 +148,7 @@ export default class CommentDetails extends React.Component<
 				.join('\n\n'),
 			shareUrl = this.getCommentAbsoluteUrl();
 		return {
+			action: 'Comment',
 			email: {
 				body: `${quotedCommentText}\n\n${shareUrl}`,
 				subject: (

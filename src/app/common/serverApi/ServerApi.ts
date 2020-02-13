@@ -47,6 +47,8 @@ import PasswordResetRequestForm from '../../../common/models/userAccounts/Passwo
 import AppleIdCredentialAuthForm from '../../../common/models/app/AppleIdCredentialAuthForm';
 import AppleIdCredentialAuthResponse from '../../../common/models/app/AppleIdCredentialAuthResponse';
 import PublisherArticleQuery from '../../../common/models/articles/PublisherArticleQuery';
+import ShareForm from '../../../common/models/analytics/ShareForm';
+import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -128,6 +130,8 @@ export default abstract class {
 	public readonly getUserAccountCreations = this.createFetchFunctionWithParams<{ startDate: string, endDate: string }, UserAccountCreation[]>('/Analytics/UserAccountCreations');
 	public readonly logExtensionRemoval = (installationId: string) => this.post({ path: '/Extension/Uninstall', data: { installationId } });
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
+	public readonly logShareAnalytics = (data: ShareForm) => this.post({ path: '/Analytics/Share', data });
+	public readonly logOrientationAnalytics = (data: OrientationAnalytics) => this.post({ path: '/Analytics/Orientation', data });
 
 	// Articles
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');

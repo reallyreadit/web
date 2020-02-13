@@ -1,0 +1,48 @@
+/*
+	componentPath: src/app/common/components/AppRoot/OrientationWizard/TrackingStep
+	cssComponentId: tracking-step_444uyc
+*/
+
+.tracking-step_444uyc {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+.tracking-step_444uyc > h1 {
+	font-size: 26pt;
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 30px;
+}
+.tracking-step_444uyc > .tracking-animation_s8r7bq {
+	margin-bottom: 30px;
+}
+.tracking-step_444uyc > .controls {
+	display: flex;
+	align-items: flex-end;
+	height: 50px;
+}
+.tracking-step_444uyc > .controls > .continue {
+	animation: tracking-step_444uyc-fade-in 250ms forwards;
+}
+.tracking-step_444uyc > .controls > .skip.hidden {
+	animation: tracking-step_444uyc-fade-out 250ms forwards;
+}
+
+@keyframes tracking-step_444uyc-fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes tracking-step_444uyc-fade-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

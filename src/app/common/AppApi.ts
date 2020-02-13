@@ -9,6 +9,8 @@ import AppActivationEvent from '../../common/models/app/AppActivationEvent';
 import UserAccount from '../../common/models/UserAccount';
 import AlertStatus from '../../common/models/app/AlertStatus';
 import AppleIdCredential from '../../common/models/app/AppleIdCredential';
+import NotificationAuthorizationRequestResult from '../../common/models/app/NotificationAuthorizationRequestResult';
+import ShareResult from '../../common/models/app/ShareResult';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -24,7 +26,8 @@ export default abstract class extends EventEmitter<{
 	public abstract openExternalUrl(url: string): void;
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract requestAppleIdCredential(): void;
-	public abstract share(data: ShareData): void;
+	public abstract requestNotificationAuthorization(): Promise<NotificationAuthorizationRequestResult>;
+	public abstract share(data: ShareData): Promise<ShareResult>;
 	public abstract syncAuthCookie(user?: UserAccount): void;
 	public abstract get appVersion(): SemanticVersion;
 	public abstract get deviceInfo(): DeviceInfo;

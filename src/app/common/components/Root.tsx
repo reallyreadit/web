@@ -103,6 +103,10 @@ export type SharedEvents = {
 	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
+export enum SignInEventType {
+	ExistingUser,
+	NewUser
+}
 export default abstract class Root<
 	P extends Props,
 	S extends State,
@@ -456,7 +460,7 @@ export default abstract class Root<
 			.then(
 				user => {
 					this.props.analytics.sendSignUp();
-					this.onUserSignedIn(user);
+					this.onUserSignedIn(user, SignInEventType.NewUser);
 				}
 			);
 	};
@@ -470,7 +474,7 @@ export default abstract class Root<
 			.then(
 				user => {
 					this.props.analytics.sendSignUp();
-					this.onUserSignedIn(user);
+					this.onUserSignedIn(user, SignInEventType.NewUser);
 				}
 			);
 	};
@@ -481,7 +485,7 @@ export default abstract class Root<
 				password,
 				pushDevice: this.getPushDeviceForm()
 			})
-			.then(user => this.onUserSignedIn(user));
+			.then(user => this.onUserSignedIn(user, SignInEventType.ExistingUser));
 	};
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
@@ -511,7 +515,7 @@ export default abstract class Root<
 				if (user.timeZoneId == null) {
 					this.setTimeZone();
 				}
-				return this.onUserSignedIn(user);
+				return this.onUserSignedIn(user, SignInEventType.ExistingUser);
 			});
 	};
 	protected readonly _signOut = () => {
@@ -701,7 +705,7 @@ export default abstract class Root<
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
 	protected onTitleChanged(title: string) { }
-	protected onUserSignedIn(user: UserAccount, supplementaryState?: Partial<S>) {
+	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType, supplementaryState?: Partial<S>) {
 		return this.setUserAuthChangedState(user, supplementaryState);
 	}
 	protected onUserSignedOut(supplementaryState?: Partial<S>) {

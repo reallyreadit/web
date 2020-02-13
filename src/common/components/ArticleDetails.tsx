@@ -40,6 +40,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	};
 	private readonly _getShareData = () => {
 		return getShareData(
+			'Article',
 			this.props.article,
 			this.props.onCreateAbsoluteUrl
 		);

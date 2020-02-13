@@ -1,0 +1,117 @@
+/*
+	componentPath: src/app/common/components/Animations/Tracking/PointsCounter
+	cssComponentId: points-counter_bsm3lr
+*/
+
+.points-counter_bsm3lr {
+	display: flex;
+	align-items: center;
+	background: white;
+	border: 1px solid #ccc;
+	padding: 0.1em 0.5em;
+	border-radius: 5px;
+	box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+	font-size: 15pt;
+	font-family: 'Museo Sans (700)';
+	transform: scale(0);
+}
+.points-counter_bsm3lr.playing {
+	animation: points-counter_bsm3lr-pop-in-pop-out 4s forwards 16.5s;
+}
+.points-counter_bsm3lr.finished {
+	transform: scale(0);
+}
+.points-counter_bsm3lr > .digit {
+	flex: 0 0 auto;
+	position: relative;
+	width: 0.6em;
+	display: flex;
+	flex-flow: column;
+	height: 1em;
+	overflow: hidden;
+}
+.points-counter_bsm3lr > .digit > .number {
+	position: relative;
+	height: 1em;
+}
+.points-counter_bsm3lr > label {
+	margin-left: 0.25em;
+}
+
+.points-counter_bsm3lr > .digit:nth-child(1) > .number {
+	top: -5em;
+}
+.points-counter_bsm3lr.playing > .digit:nth-child(1) > .number {
+	animation: points-counter_bsm3lr-number-1 1s forwards 18.5s;
+}
+.points-counter_bsm3lr.finished > .digit:nth-child(1) > .number {
+	top: -7em;
+}
+.points-counter_bsm3lr.playing > .digit:nth-child(2) > .number {
+	animation: points-counter_bsm3lr-number-2 1s forwards 18s;
+}
+.points-counter_bsm3lr.finished > .digit:nth-child(2) > .number {
+	top: -5em;
+}
+.points-counter_bsm3lr.playing > .digit:nth-child(3) > .number {
+	animation: points-counter_bsm3lr-number-3 1s forwards 17.5s;
+}
+.points-counter_bsm3lr.finished > .digit:nth-child(3) > .number {
+	top: -10em;
+}
+.points-counter_bsm3lr.playing > .digit:nth-child(4) > .number {
+	animation: points-counter_bsm3lr-number-4 1s forwards 17s;
+}
+.points-counter_bsm3lr.finished > .digit:nth-child(4) > .number {
+	top: -10em;
+}
+
+@keyframes points-counter_bsm3lr-pop-in-pop-out {
+	0% {
+		transform: scale(0);
+	}
+	9% {
+		transform: scale(1.1);
+	}
+	12% {
+		transform: scale(1);
+	}
+	88% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(0);
+	}
+}
+@keyframes points-counter_bsm3lr-number-1 {
+	0% {
+		top: -5em;
+	}
+	100% {
+		top: -7em;
+	}
+}
+@keyframes points-counter_bsm3lr-number-2 {
+	0% {
+		top: 0;
+	}
+	100% {
+		top: -5em;
+	}
+}
+@keyframes points-counter_bsm3lr-number-3 {
+	0% {
+		top: 0;
+	}
+	100% {
+		top: -10em;
+	}
+}
+@keyframes points-counter_bsm3lr-number-4 {
+	0% {
+		top: 0;
+	}
+	100% {
+		top: -10em;
+	}
+}

@@ -1,0 +1,151 @@
+/*
+	componentPath: src/app/common/components/Animations/Tracking/Clock
+	cssComponentId: clock_sgh5id
+*/
+
+.clock_sgh5id {
+	position: relative;
+	width: 3em;
+	height: 3em;
+	background: white;
+	border: 0.25em solid #555;
+	border-radius: 50%;
+	box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+	transform: scale(0);
+}
+.clock_sgh5id.playing {
+	animation: clock_sgh5id-face 3.5s forwards 22.5s;
+}
+.clock_sgh5id.finished {
+	transform: scale(0);
+}
+.clock_sgh5id > .ticks,
+.clock_sgh5id > .hands {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.clock_sgh5id > .ticks > .tick {
+	position: absolute;
+	width: 95%;
+	height: 3%;
+	transform-origin: 50% 50%;
+	display: flex;
+	justify-content: space-between;
+}
+.clock_sgh5id > .ticks > .tick::before,
+.clock_sgh5id > .ticks > .tick::after {
+	content: "";
+	height: 100%;
+	width: 8%;
+	background: #666;
+	border-radius: 50%;
+}
+.clock_sgh5id > .ticks > .tick:nth-child(1)::before,
+.clock_sgh5id > .ticks > .tick:nth-child(1)::after {
+	width: 10%;
+}
+.clock_sgh5id > .ticks > .tick:nth-child(2) {
+	transform: rotate(30deg);
+}
+.clock_sgh5id > .ticks > .tick:nth-child(3) {
+	transform: rotate(60deg);
+}
+.clock_sgh5id > .ticks > .tick:nth-child(4) {
+	transform: rotate(90deg);
+}
+.clock_sgh5id > .ticks > .tick:nth-child(4)::before,
+.clock_sgh5id > .ticks > .tick:nth-child(4)::after {
+	width: 10%;
+}
+.clock_sgh5id > .ticks > .tick:nth-child(5) {
+	transform: rotate(120deg);
+}
+.clock_sgh5id > .ticks > .tick:nth-child(6) {
+	transform: rotate(150deg);
+}
+.clock_sgh5id > .hands > .hand {
+	position: absolute;
+	width: 100%;
+	height: 3%;
+	transform-origin: 50% 50%;
+}
+.clock_sgh5id > .hands > .hand::before {
+	content: "";
+	display: block;
+	position: relative;
+	height: 100%;
+	background: #666;
+}
+.clock_sgh5id > .hands > .hand:nth-child(1) {
+	transform: rotate(90deg);
+}
+.clock_sgh5id.playing > .hands > .hand:nth-child(1) {
+	animation: clock_sgh5id-minute-hand 3.5s forwards 22.5s;
+}
+.clock_sgh5id.finished > .hands > .hand:nth-child(1) {
+	transform: rotate(1170deg);
+}
+.clock_sgh5id > .hands > .hand:nth-child(1)::before {
+	width: 40%;
+	left: 10%;
+}
+.clock_sgh5id.playing > .hands > .hand:nth-child(2) {
+	animation: clock_sgh5id-hour-hand 3.5s forwards 22.5s;
+}
+.clock_sgh5id.finished > .hands > .hand:nth-child(2) {
+	transform: rotate(90deg);
+}
+.clock_sgh5id > .hands > .hand:nth-child(2)::before {
+	width: 30%;
+	left: 20%;
+}
+
+@keyframes clock_sgh5id-face {
+	0% {
+		transform: scale(0);
+	}
+	12% {
+		transform: scale(1.1);
+	}
+	14% {
+		transform: scale(1);
+	}
+	86% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(0);
+	}
+}
+@keyframes clock_sgh5id-minute-hand {
+	0% {
+		transform: rotate(90deg);
+	}
+	14% {
+		transform: rotate(90deg);
+	}
+	71% {
+		transform: rotate(1170deg);
+	}
+	100% {
+		transform: rotate(1170deg);
+	}
+}
+@keyframes clock_sgh5id-hour-hand {
+	0% {
+		transform: rotate(0);
+	}
+	14% {
+		transform: rotate(0);
+	}
+	71% {
+		transform: rotate(90deg);
+	}
+	100% {
+		transform: rotate(90deg);
+	}
+}
