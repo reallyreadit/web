@@ -11,7 +11,6 @@ import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
-import WelcomeInfoBox from '../WelcomeInfoBox';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
@@ -357,14 +356,6 @@ class HomeScreen extends React.Component<Props, State> {
 					) ?
 						<LoadingOverlay position="static" /> :
 						<>
-							{(
-								this.props.user &&
-								this.props.isExtensionInstalled &&
-								!this.state.posts &&
-								!this.state.communityReads.value.userReadCount
-							) ?
-								<WelcomeInfoBox /> :
-								null}
 							{this.state.newItemMessage ?
 								<UpdateBanner
 									isBusy={this.state.isLoadingNewItems}

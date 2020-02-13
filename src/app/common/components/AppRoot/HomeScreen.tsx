@@ -10,7 +10,6 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen, SharedState } from '../Root';
 import AsyncActionLink from '../controls/AsyncActionLink';
 import produce from 'immer';
-import WelcomeInfoBox from '../WelcomeInfoBox';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
 import ShareData from '../../../../common/sharing/ShareData';
@@ -316,13 +315,6 @@ class HomeScreen extends React.Component<Props, State> {
 				) ?
 					<LoadingOverlay position="static" /> :
 					<>
-						{(
-							this.props.user &&
-							!this.state.posts &&
-							!this.state.communityReads.value.userReadCount
-						) ?
-							<WelcomeInfoBox /> :
-							null}
 						{this.state.newItemMessage ?
 							<UpdateBanner
 								isBusy={this.state.isLoadingNewItems}
