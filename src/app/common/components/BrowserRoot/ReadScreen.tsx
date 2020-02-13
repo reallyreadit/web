@@ -13,21 +13,15 @@ import { formatFetchable, formatList } from '../../../../common/format';
 import produce from 'immer';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import Button from '../../../../common/components/Button';
-import Captcha from '../../Captcha';
 import AdFreeAnimation from './AdFreeAnimation';
 import ScreenContainer from '../ScreenContainer';
 
 interface Props {
 	article: Fetchable<UserArticle>,
-	captcha: Captcha,
 	isBrowserCompatible: boolean | null,
 	isExtensionInstalled: boolean | null,
-	isIosDevice: boolean | null,
-	marketingVariant: number,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onInstallExtension: () => void,
-	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	user: UserAccount | null
@@ -36,9 +30,6 @@ class ReadScreen extends React.PureComponent<Props> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _copyAppReferrerTextToClipboard = () => {
 		this.props.onCopyAppReferrerTextToClipboard('ReadScreen');
-	};
-	private readonly _openCreateAccountDialog = () => {
-		this.props.onOpenCreateAccountDialog('ReadScreen');
 	};
 	constructor(props: Props) {
 		super(props);
@@ -97,7 +88,31 @@ class ReadScreen extends React.PureComponent<Props> {
 							<li>Read it on Readup.</li>
 						</ul>
 						<div className="spacer"></div>
-						{this.props.isIosDevice ?
+						{this.props.user ?
+							this.props.isBrowserCompatible ?
+								<div className="prompt download chrome">
+									<a
+										className="text"
+										onClick={this.props.onInstallExtension}
+									>
+										Add the Chrome extension to continue
+										<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+									</a>
+								</div> :
+								<div className="prompt unsupported">
+									<span className="text">Get Readup on iOS and Chrome</span>
+									<div className="badges">
+										<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+										</a>
+										<a onClick={this.props.onInstallExtension}>
+											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
+										</a>
+									</div>
+									<div className="bypass">
+										<a href={this.props.article.value.url}>Continue to publisher's site</a>
+									</div>
+								</div> :
 							<div className="prompt download ios">
 								<a
 									href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
@@ -105,40 +120,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								>
 									<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
 								</a>
-							</div> :
-							this.props.user ?
-								this.props.isBrowserCompatible ?
-									<div className="prompt download chrome">
-										<a
-											className="text"
-											onClick={this.props.onInstallExtension}
-										>
-											Add the Chrome extension to continue
-											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-										</a>
-									</div> :
-									<div className="prompt unsupported">
-										<span className="text">Get Readup on iOS and Chrome</span>
-										<div className="badges">
-											<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
-												<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-											</a>
-											<a onClick={this.props.onInstallExtension}>
-												<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-											</a>
-										</div>
-										<div className="bypass">
-											<a href={this.props.article.value.url}>Continue to publisher's site</a>
-										</div>
-									</div> :
-								<div className="prompt authenticate">
-									<Button
-										onClick={this._openCreateAccountDialog}
-										text="Get Started"
-										intent="loud"
-										size="large"
-									/>
-								</div>}
+							</div>}
 					</>}
 			</ScreenContainer>
 		);
@@ -146,7 +128,7 @@ class ReadScreen extends React.PureComponent<Props> {
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'article' | 'isExtensionInstalled' | 'isIosDevice' | 'user'>> & {
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'isExtensionInstalled' | 'user'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
@@ -183,7 +165,6 @@ export default function createReadScreenFactory<TScreenKey>(
 						...deps,
 						article: screenState.componentState,
 						isExtensionInstalled: sharedState.isExtensionInstalled,
-						isIosDevice: sharedState.isIosDevice,
 						user: sharedState.user
 					}
 				} />

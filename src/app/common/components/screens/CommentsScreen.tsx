@@ -39,7 +39,6 @@ export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
-	isIosDevice: boolean | null,
 	marketingVariant: number,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -47,7 +46,6 @@ export interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
-	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
@@ -63,9 +61,6 @@ export interface Props {
 export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _copyAppReferrerTextToClipboard = () => {
 		this.props.onCopyAppReferrerTextToClipboard('CommentsScreen');
-	};
-	private readonly _openCreateAccountDialog = () => {
-		this.props.onOpenCreateAccountDialog('CommentsScreen');
 	};
 	private readonly _noop = () => { };
 	public render() {
@@ -88,9 +83,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
 										<GetStartedButton
-											isIosDevice={this.props.isIosDevice}
 											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
-											onOpenCreateAccountDialog={this._openCreateAccountDialog}
 										/>
 									</div>
 								</Panel> :

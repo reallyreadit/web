@@ -2,7 +2,6 @@ import * as React from 'react';
 import InfoBox from '../controls/InfoBox';
 
 export default class extends React.PureComponent<{
-	isBrowserCompatible: boolean,
 	onInstallExtension: () => void
 }> {
 	public render() {

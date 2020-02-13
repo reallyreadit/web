@@ -29,13 +29,8 @@ import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from '../FollowingListDialog';
-import CreateAccountDialog, { Form as CreateAccountDialogForm } from '../CreateAccountDialog';
-import Captcha from '../../Captcha';
-import { Intent } from '../../../../common/components/Toaster';
-import SignInDialog, { Form as SignInDialogForm } from '../SignInDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
 import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadIosAppDialog';
-import ContentBox from '../../../../common/components/ContentBox';
 import PageSelector from '../controls/PageSelector';
 import InfoBox from '../controls/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
@@ -45,27 +40,21 @@ import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 interface Props {
-	captcha: Captcha,
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
-	isDesktopDevice: boolean,
-	isIosDevice: boolean | null,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateAccount: (form: CreateAccountDialogForm) => Promise<void>,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
 	onReloadProfile: (screenId: number, userName: string) => Promise<Profile>,
 	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
-	onInstallExtension: () => void,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
-	onOpenPasswordResetRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -74,9 +63,6 @@ interface Props {
 	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
 	onShare: (data: ShareData) => ShareChannel[],
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSignIn: (form: SignInDialogForm) => Promise<void>,
-	onSignInWithApple: (analyticsAction: string) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -123,64 +109,16 @@ export class ProfileScreen extends React.Component<Props, State> {
 			this.props.onCloseDialog();
 		};
 		this.props.onOpenDialog(
-			this.props.isIosDevice ?
-				<DownloadIosAppDialog
-					onCopyAppReferrerTextToClipboard={
-						() => {
-							this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
-						}
+			<DownloadIosAppDialog
+				onCopyAppReferrerTextToClipboard={
+					() => {
+						this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
 					}
-					onClose={cancel}
-				/> :
-				<CreateAccountDialog
-					analyticsAction="ProfileScreenFollow"
-					captcha={this.props.captcha}
-					onCreateAccount={this.props.onCreateAccount}
-					onCloseDialog={cancel}
-					onShowToast={this.props.onShowToast}
-					onSignIn={
-						this.props.isDesktopDevice ?
-							() => {
-								this.props.onOpenDialog(
-									<SignInDialog
-										analyticsAction="ProfileScreenFollow"
-										onOpenPasswordResetDialog={this.props.onOpenPasswordResetRequestDialog}
-										onCloseDialog={cancel}
-										onShowToast={this.props.onShowToast}
-										onSignIn={this.props.onSignIn}
-										onSignInWithApple={this.props.onSignInWithApple}
-									/>
-								);
-							} :
-							null
-					}
-					onSignInWithApple={this.props.onSignInWithApple}
-					title={`Sign up to follow ${this.props.userName}`}
-				/>
+				}
+				onClose={cancel}
+			/>
 		);
 		return Promise.resolve();
-	};
-	private readonly _openCreateAccountDialog = () => {
-		this.props.onOpenDialog(
-			this.props.isIosDevice ?
-				<DownloadIosAppDialog
-					onCopyAppReferrerTextToClipboard={
-						() => {
-							this.props.onCopyAppReferrerTextToClipboard('ProfileScreenCreateAccount');
-						}
-					}
-					onClose={this.props.onCloseDialog}
-				/> :
-				<CreateAccountDialog
-					analyticsAction="ProfileScreenCreateAccount"
-					captcha={this.props.captcha}
-					onCreateAccount={this.props.onCreateAccount}
-					onCloseDialog={this.props.onCloseDialog}
-					onShowToast={this.props.onShowToast}
-					onSignInWithApple={this.props.onSignInWithApple}
-					title="Sign Up"
-				/>
-		);
 	};
 	private readonly _openGetFollowersDialog = () => {
 		this.props.onOpenDialog(
@@ -482,9 +420,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 									<h1>Join Readup to read with {this.props.profile.value.userName}.</h1>
 									<h3>
 										<GetStartedButton
-											isIosDevice={this.props.isIosDevice}
 											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
-											onOpenCreateAccountDialog={this._openCreateAccountDialog}
 										/>
 									</h3>
 								</Panel> :
@@ -529,19 +465,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 										/> :
 										<span className="following-count followers">{followersText}</span>}
 								</div>
-								{this.props.userAccount && !this.props.isDesktopDevice && !this.props.isIosDevice ?
-									<ContentBox className="unsupported">
-										<span className="text">Get Readup on iOS and Chrome</span>
-										<div className="badges">
-											<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
-												<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-											</a>
-											<a onClick={this.props.onInstallExtension}>
-												<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-											</a>
-										</div>
-									</ContentBox> :
-									null}
 								{this.state.posts.value.items.length ?
 									<>
 										<ArticleList>

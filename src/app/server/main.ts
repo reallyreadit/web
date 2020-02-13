@@ -24,7 +24,6 @@ import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import * as path from 'path';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
-import DeviceType from '../common/DeviceType';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
 import { variants as marketingVariants } from '../common/marketingTesting';
@@ -69,14 +68,6 @@ function redirectToHomeScreen(req: express.Request, res: express.Response) {
 function replaceSpacesWithPlusSign(token: string) {
 	return token.replace(/\s/g, '+');
 }
-
-// cloudfront device type headers
-const deviceTypeHeaderMap: { [key: string]: DeviceType } = {
-	'CloudFront-Is-Desktop-Viewer': DeviceType.Desktop,
-	'CloudFront-Is-Mobile-Viewer': DeviceType.Mobile,
-	'CloudFront-Is-SmartTV-Viewer': DeviceType.SmartTV,
-	'CloudFront-Is-Tablet-Viewer': DeviceType.Tablet
-};
 
 // read package.json version info
 const version = JSON
@@ -442,20 +433,6 @@ server = server.get('/*', (req, res) => {
 	}
 	// prepare props
 	const browserApi = new BrowserApi();
-	const deviceType = (
-		Object
-			.keys(deviceTypeHeaderMap)
-			.reduce(
-				(deviceType, header) => {
-					if (req.header(header) === 'true') {
-						deviceType |= deviceTypeHeaderMap[header];
-					}
-					return deviceType;
-				},
-				DeviceType.None
-			) ||
-			DeviceType.Desktop
-	);
 	const rootProps = {
 		analytics: new Analytics(),
 		captcha: new Captcha(),
@@ -492,7 +469,6 @@ server = server.get('/*', (req, res) => {
 				{
 					...rootProps,
 					browserApi,
-					deviceType,
 					extensionApi: new ExtensionApi(config.extensionId)
 				}
 			);
@@ -526,7 +502,6 @@ server = server.get('/*', (req, res) => {
 				},
 				captchaSiteKey: config.captchaSiteKey,
 				clientType: req.clientType,
-				deviceType,
 				exchanges: req.api.exchanges,
 				extensionId: config.extensionId,
 				marketingVariant,

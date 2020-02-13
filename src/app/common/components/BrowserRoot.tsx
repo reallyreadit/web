@@ -23,8 +23,6 @@ import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
-import DeviceType from '../DeviceType';
-import { isIosDevice } from '../userAgent';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
@@ -42,17 +40,15 @@ import CountdownBanner from './BrowserRoot/CountdownBanner';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
-	deviceType: DeviceType,
 	extensionApi: ExtensionApi
 }
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
-	isIosDevice: boolean | null,
 	menuState: MenuState,
 	welcomeMessage: WelcomeMessage | null
 }
 type MenuState = 'opened' | 'closing' | 'closed';
-export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled' | 'isIosDevice'>;
+export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 type Events = SharedEvents & {
 	'extensionInstallationStatusChanged': boolean
 };
@@ -88,35 +84,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				marketingScreenVariant: this.props.marketingVariant,
 				path: window.location.pathname
 			})
-		);
-	};
-
-	// device
-	private readonly _isDesktopDevice: boolean;
-
-	// dialogs
-	private readonly _openCreateAccountDialog = (analyticsAction: string) => {
-		this._dialog.openDialog(
-			<CreateAccountDialog
-				analyticsAction={analyticsAction}
-				captcha={this.props.captcha}
-				onCreateAccount={this._createAccount}
-				onCloseDialog={this._dialog.closeDialog}
-				onShowToast={this._toaster.addToast}
-				onSignInWithApple={this._signInWithApple}
-			/>
-		);
-	};
-	private readonly _openSignInDialog = (analyticsAction: string) => {
-		this._dialog.openDialog(
-			<SignInDialog
-				analyticsAction={analyticsAction}
-				onCloseDialog={this._dialog.closeDialog}
-				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
-				onShowToast={this._toaster.addToast}
-				onSignIn={this._signIn}
-				onSignInWithApple={this._signInWithApple}
-			/>
 		);
 	};
 
@@ -274,9 +241,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	constructor(props: Props) {
 		super('browser-root_6tjc3j', true, props);
 
-		// device type
-		this._isDesktopDevice = !!(props.deviceType & DeviceType.Desktop);
-
 		// dialogs
 		this._dialogCreatorMap = {
 			...this._dialogCreatorMap,
@@ -354,7 +318,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
 				onNavTo: this._navTo,
-				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
@@ -372,8 +335,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
-				isDesktopDevice: this._isDesktopDevice,
-				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
 				marketingVariant: this.props.marketingVariant,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
@@ -386,7 +347,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onInstallExtension: this._installExtension,
-				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -444,23 +404,18 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewComments: this._viewComments
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
-				captcha: this.props.captcha,
-				isDesktopDevice: this._isDesktopDevice,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onCreateAccount: this._createAccount,
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
 				onGetProfile: this.props.serverApi.getProfile,
-				onInstallExtension: this._installExtension,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
-				onOpenPasswordResetRequestDialog: this._openRequestPasswordResetDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -470,9 +425,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
-				onShowToast: this._toaster.addToast,
-				onSignIn: this._signIn,
-				onSignInWithApple: this._signInWithApple,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
@@ -480,13 +432,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
-				captcha: this.props.captcha,
 				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
-				marketingVariant: this.props.marketingVariant,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
 				onInstallExtension: this._installExtension,
-				onOpenCreateAccountDialog: this._openCreateAccountDialog,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState
@@ -521,11 +470,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						[]
 			),
 			isExtensionInstalled: null,
-			isIosDevice: (
-				this._isDesktopDevice ?
-					false :
-					null
-			),
 			menuState: 'closed',
 			screens: [locationState.screen],
 			welcomeMessage: (
@@ -715,7 +659,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected getSharedState() {
 		return {
 			isExtensionInstalled: this.state.isExtensionInstalled,
-			isIosDevice: this.state.isIosDevice,
 			user: this.state.user
 		};
 	}
@@ -848,10 +791,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div> :
 					null}
-				{!this.state.user && (
-					this._isDesktopDevice ||
-					topScreen.key === ScreenKey.Home
-				) ?
+				{!this.state.user ?
 					<CountdownBanner onGetUserCount={this.props.serverApi.getUserCount} /> :
 					null}
 				{(
@@ -859,10 +799,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
 					<Header
-						isDesktopDevice={this._isDesktopDevice}
 						onOpenMenu={this._openMenu}
-						onOpenCreateAccountDialog={this._openCreateAccountDialog}
-						onOpenSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
 						onViewInbox={this._viewInbox}
 						user={this.state.user}
@@ -874,8 +811,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							topScreen.templateSection == null ||
 							(topScreen.templateSection & TemplateSection.Navigation)
 						) &&
-						this.state.user &&
-						this._isDesktopDevice
+						this.state.user
 					) ?
 						<NavBar
 							onViewBlog={this._viewBlog}
@@ -902,8 +838,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 										(screen.templateSection & TemplateSection.Footer)
 									) &&
 									(
-										!this.state.user ||
-										!this._isDesktopDevice
+										!this.state.user
 									)
 								) ?
 									<Footer
@@ -987,12 +922,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.browserApi.userUpdated(this.state.user);
 			this.props.extensionApi.userUpdated(this.state.user);
 			this._hasBroadcastInitialUser = true;
-		}
-		// check user agent for device type
-		if (this.state.isIosDevice == null) {
-			this.setState({
-				isIosDevice: isIosDevice(window.navigator.userAgent)
-			});
 		}
 		// send the initial pageview
 		this.props.analytics.sendPageview(this.state.screens[0]);

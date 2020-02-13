@@ -40,21 +40,3 @@
 .profile-screen_1u1j1e > .main > .content > .profile > .following-count.followers {
 	margin-top: 15px;
 }
-.profile-screen_1u1j1e > .main > .content > .unsupported {
-	margin-bottom: 20px;
-	text-align: center;
-}
-.profile-screen_1u1j1e > .main > .content > .unsupported > .badges {
-	display: flex;
-	margin: 0 auto;
-	justify-content: center;
-	flex-wrap: wrap;
-}
-.profile-screen_1u1j1e > .main > .content > .unsupported > .badges > a {
-	margin: 10px 10px 0 10px;
-	cursor: pointer;
-}
-.profile-screen_1u1j1e > .main > .content > .unsupported > .badges > a > img {
-	display: block;
-	height: 55px;
-}

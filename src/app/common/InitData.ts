@@ -3,7 +3,6 @@ import ClientType from './ClientType';
 import RouteLocation from '../../common/routing/RouteLocation';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import Exchange from './serverApi/Exchange';
-import DeviceType from './DeviceType';
 import AppReferral from './AppReferral';
 
 export default interface InitData {
@@ -12,7 +11,6 @@ export default interface InitData {
 	appReferral: AppReferral,
 	captchaSiteKey: string | null,
 	clientType: ClientType,
-	deviceType: DeviceType,
 	extensionId: string,
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,

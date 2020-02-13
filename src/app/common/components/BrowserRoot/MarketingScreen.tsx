@@ -24,13 +24,11 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
-	isIosDevice: boolean | null,
 	marketingVariant: number,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
-	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -60,12 +58,6 @@ export default class MarketingScreen extends React.Component<
 	};
 	private readonly _closeMenu = () => {
 		this.setState({ menuState: MenuState.Closed });
-	};
-	private readonly _openCreateAccountDialogFromFooter = () => {
-		this.props.onOpenCreateAccountDialog('HomeScreenFooter');
-	};
-	private readonly _openCreateAccountDialogFromHeader = () => {
-		this.props.onOpenCreateAccountDialog('HomeScreenHeader');
 	};
 	private readonly _openMenu = () => {
 		this.setState({ menuState: MenuState.Opened });
@@ -113,9 +105,7 @@ export default class MarketingScreen extends React.Component<
 					<h3>{marketingVariant.subtext}</h3>
 					<div className="buttons">
 						<GetStartedButton
-							isIosDevice={this.props.isIosDevice}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromHeader}
-							onOpenCreateAccountDialog={this._openCreateAccountDialogFromHeader}
 						/>
 					</div>
 				</Panel>
@@ -174,9 +164,7 @@ export default class MarketingScreen extends React.Component<
 					</p>
 					<div className="buttons">
 						<GetStartedButton
-							isIosDevice={this.props.isIosDevice}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromFooter}
-							onOpenCreateAccountDialog={this._openCreateAccountDialogFromFooter}
 						/>
 					</div>
 				</Panel>

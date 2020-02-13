@@ -32,13 +32,7 @@ import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 
-function shouldShowHomeScreen(user: UserAccount | null, isDesktopDevice: boolean) {
-	return user && isDesktopDevice;
-}
 interface Props {
-	isDesktopDevice: boolean,
-	isBrowserCompatible: boolean,
-	isIosDevice: boolean | null,
 	isExtensionInstalled: boolean | null,
 	marketingVariant: number,
 	onClearAlerts: (alert: Alert) => void,
@@ -52,7 +46,6 @@ interface Props {
 	onInstallExtension: () => void,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
-	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -116,7 +109,7 @@ class HomeScreen extends React.Component<Props, State> {
 	private _hasClearedFollowingAlert = false;
 	constructor(props: Props) {
 		super(props);
-		if (shouldShowHomeScreen(props.user, props.isDesktopDevice)) {
+		if (props.user) {
 			switch (props.view) {
 				case View.Trending:
 					this.state = {
@@ -187,7 +180,7 @@ class HomeScreen extends React.Component<Props, State> {
 				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
 			}),
 			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
-				if (shouldShowHomeScreen(user, this.props.isDesktopDevice)) {
+				if (user) {
 					this.setState({
 						communityReads: props.onGetCommunityReads(
 							{
@@ -341,12 +334,11 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		if (shouldShowHomeScreen(this.props.user, this.props.isDesktopDevice)) {
+		if (this.props.user) {
 			return (
 				<ScreenContainer className="home-screen_1sjipy">
 					{this.props.user && this.props.isExtensionInstalled === false ?
 						<ReadReadinessInfoBox
-							isBrowserCompatible={this.props.isBrowserCompatible}
 							onInstallExtension={this.props.onInstallExtension}
 						/> :
 						null}
@@ -418,13 +410,11 @@ class HomeScreen extends React.Component<Props, State> {
 		return (
 			<MarketingScreen
 				communityReads={this.state.communityReads}
-				isIosDevice={this.props.isIosDevice}
 				marketingVariant={this.props.marketingVariant}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
-				onOpenCreateAccountDialog={this.props.onOpenCreateAccountDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}
@@ -440,7 +430,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'isIosDevice' | 'screenId' | 'user' | 'view'>>
+	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'screenId' | 'user' | 'view'>>
 ) {
 	const route = findRouteByKey(routes, ScreenKey.Home);
 	return {
