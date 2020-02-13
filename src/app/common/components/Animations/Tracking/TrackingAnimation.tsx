@@ -5,34 +5,42 @@ import PointsCounter from './PointsCounter';
 import Clock from './Clock';
 import classNames from 'classnames';
 import AnimationPlayState from '../AnimationPlayState';
+import AsyncTracker from '../../../../../common/AsyncTracker';
 
 interface Props {
+	autoPlay?: boolean,
 	onFinished?: () => void,
 	onPlay?: () => void
 }
 export default class TrackingAnimation extends React.PureComponent<
 	Props,
 	{
+		autoPlay: boolean,
 		hasFinished: boolean,
 		playState: AnimationPlayState
 	}
 > {
+	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _elementRef: React.RefObject<HTMLDivElement>;
 	private readonly _handleArticle3AnimationEnd = (event: React.AnimationEvent) => {
 		if (event.animationName === 'article-details_brocy1-article-3') {
-			setTimeout(
-				() => {
-					this.setState(
-						{
-							hasFinished: true,
-							playState: AnimationPlayState.Finished
-						},
-						this.props.onFinished
-					);
-				},
-				1000
+			this._asyncTracker.addTimeout(
+				window.setTimeout(
+					() => {
+						this.setState(
+							{
+								hasFinished: true,
+								playState: AnimationPlayState.Finished
+							},
+							this.props.onFinished
+						);
+					},
+					1000
+				)
 			);
 		}
 	};
+	private _intersectionObserver: IntersectionObserver;
 	private readonly _play = () => {
 		if (this.state.playState !== AnimationPlayState.Playing) {
 			this.setState(
@@ -46,9 +54,43 @@ export default class TrackingAnimation extends React.PureComponent<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			autoPlay: props.autoPlay || false,
 			hasFinished: false,
 			playState: AnimationPlayState.Unstarted
 		};
+		if (props.autoPlay) {
+			this._elementRef = React.createRef();
+		}
+	}
+	public componentDidMount() {
+		if (this.props.autoPlay) {
+			// iOS 11 WKWebView doesn't support IntersectionObserver
+			if ('IntersectionObserver' in window) {
+				this._intersectionObserver = new IntersectionObserver(
+					entries => {
+						const entry = entries[0];
+						if (entry && entry.isIntersecting) {
+							this._play();
+							this._intersectionObserver.unobserve(entry.target);
+						}
+					},
+					{
+						threshold: 1
+					}
+				);
+				this._intersectionObserver.observe(this._elementRef.current);
+			} else {
+				this.setState({
+					autoPlay: false
+				});
+			}
+		}
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
+		if (this._intersectionObserver) {
+			this._intersectionObserver.disconnect();
+		}
 	}
 	public render() {
 		return (
@@ -57,9 +99,13 @@ export default class TrackingAnimation extends React.PureComponent<
 					classNames(
 						'tracking-animation_s8r7bq',
 						this.state.playState,
-						{ 'initial': !this.state.hasFinished }
+						{
+							'auto-play': this.state.autoPlay,
+							'initial': !this.state.hasFinished
+						}
 					)
 				}
+				ref={this._elementRef}
 			>
 				<div className="viewport">
 					<div className="articles-frame">

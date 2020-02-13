@@ -185,6 +185,7 @@
 	border-color: transparent transparent transparent #ccc;
 	transform: translate(-40%, -50%);
 }
+.tracking-animation_s8r7bq.auto-play.initial > .viewport > .play-button,
 .tracking-animation_s8r7bq.playing > .viewport > .play-button {
 	display: none;
 }
@@ -210,10 +211,10 @@
 	box-sizing: border-box;
 	opacity: 0;
 }
-.tracking-animation_s8r7bq.unstarted > .captions > .caption:nth-child(1) {
+.tracking-animation_s8r7bq.unstarted:not(.auto-play) > .captions > .caption:nth-child(1) {
 	opacity: 1;
 }
-.tracking-animation_s8r7bq.playing.initial > .captions > .caption:nth-child(1) {
+.tracking-animation_s8r7bq.playing.initial:not(.auto-play) > .captions > .caption:nth-child(1) {
 	animation: tracking-animation_s8r7bq-caption-first 0.5s forwards linear 0s;
 }
 .tracking-animation_s8r7bq.playing > .captions > .caption:nth-child(2) {
