@@ -4,10 +4,13 @@ import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
+import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
 
 interface Props {
+	isExtensionInstalled: boolean,
 	onOpenMenu: () => void,
+	onOpenSignInDialog: (analyticsAction: string) => void,
 	onViewHome: () => void,
 	onViewInbox: () => void,
 	user: UserAccount | null
@@ -17,12 +20,18 @@ export default class extends React.PureComponent<Props> {
 		e.preventDefault();
 		this.props.onViewHome();
 	};
+	private readonly _openSignInDialog = () => {
+		this.props.onOpenSignInDialog('Header');
+	};
 	public render() {
+		const
+			showAuthButtons = !this.props.user && this.props.isExtensionInstalled,
+			showMenu = this.props.user;
 		return (
 			<header className={
 				classNames(
 					'header_cvm3v7',
-					{ 'menu': !!this.props.user }
+					{ 'menu': showAuthButtons || showMenu }
 				)
 			}>
 				<a
@@ -32,17 +41,28 @@ export default class extends React.PureComponent<Props> {
 				>
 					<img src="/images/logo.svg" alt="logo" />
 				</a>
-				{this.props.user ?
+				{showAuthButtons || showMenu ?
 					<div className="menu-container">
-						<Icon
-							badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
-							name="bell"
-							onClick={this.props.onViewInbox}
-						/>
-						<Icon
-							name="menu2"
-							onClick={this.props.onOpenMenu}
-						/>
+						{showMenu ?
+							<>
+								<Icon
+									badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
+									name="bell"
+									onClick={this.props.onViewInbox}
+								/>
+								<Icon
+									name="menu2"
+									onClick={this.props.onOpenMenu}
+								/>
+							</> :
+							null}
+						{showAuthButtons ?
+							<Button
+								text="Login"
+								size="large"
+								onClick={this._openSignInDialog}
+							/> :
+							null}
 					</div> :
 					null}
 			</header>

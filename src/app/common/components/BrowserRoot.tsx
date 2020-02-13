@@ -87,6 +87,20 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 
+	// dialogs
+	private readonly _openSignInDialog = (analyticsAction: string) => {
+		this._dialog.openDialog(
+			<SignInDialog
+				analyticsAction={analyticsAction}
+				onCloseDialog={this._dialog.closeDialog}
+				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+				onShowToast={this._toaster.addToast}
+				onSignIn={this._signIn}
+				onSignInWithApple={this._signInWithApple}
+			/>
+		);
+	};
+
 	// events
 	private readonly _registerExtensionChangeEventHandler = (handler: (isInstalled: boolean) => void) => {
 		return this._eventManager.addListener('extensionInstallationStatusChanged', handler);
@@ -799,7 +813,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
 					<Header
+						isExtensionInstalled={this.state.isExtensionInstalled}
 						onOpenMenu={this._openMenu}
+						onOpenSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
 						onViewInbox={this._viewInbox}
 						user={this.state.user}
