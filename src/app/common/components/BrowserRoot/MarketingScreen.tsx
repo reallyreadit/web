@@ -21,6 +21,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
+import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -109,6 +110,10 @@ export default class MarketingScreen extends React.Component<
 						/>
 					</div>
 				</Panel>
+				<Panel className="how-it-works">
+					<h2>How Readup works</h2>
+					<TrackingAnimation autoPlay />
+				</Panel>
 				<Panel className="aotd">
 					<h2>What we're reading</h2>
 					{this.props.communityReads.isLoading ?
@@ -132,7 +137,7 @@ export default class MarketingScreen extends React.Component<
 				</Panel>
 				<Panel className="about">
 					<h2>About</h2>
-					<p>Readup is a social reading platform - the new best way to find, read, and share articles and stories online. It's powered by a global community of readers and free-thinkers <em>who vote with their attention</em>. No interference. No distractions.</p>
+					<p>Readup is a social reading platform - the best way to find, read, and share articles and stories online. It's powered by a global community of readers and free-thinkers <em>who vote with their attention</em>. No interference. No distractions.</p>
 					<p className="bios">
 						Readup was invented by two friends, <a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a>. (We're in the&#32;
 						<Popover

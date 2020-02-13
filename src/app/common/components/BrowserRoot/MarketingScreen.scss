@@ -3,15 +3,22 @@
 	cssComponentId: marketing-screen_n5a6wc
 */
 
+.marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(odd) {
+	background-color: #efefef;
+}
 .marketing-screen_n5a6wc > .header {
 	text-align: center;
-	background-color: #efefef;
 }
 .marketing-screen_n5a6wc > .aotd > .content > h2 {
 	margin-bottom: 70px;
 }
-.marketing-screen_n5a6wc > .about {
-	background-color: #efefef;
+.marketing-screen_n5a6wc > .how-it-works > .content {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+.marketing-screen_n5a6wc > .how-it-works > .content > h2 {
+	margin-bottom: 20px;
 }
 .marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .children {
 	text-decoration: underline;
