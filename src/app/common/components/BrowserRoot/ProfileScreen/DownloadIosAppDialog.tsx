@@ -4,13 +4,14 @@ import Dialog from '../../../../../common/components/Dialog';
 export default (
 	props: {
 		onCopyAppReferrerTextToClipboard: () => void,
-		onClose: () => void
+		onClose: () => void,
+		title?: string
 	}
 ) => (
 	<Dialog
 		className="download-ios-app-dialog_i96v9f"
 		onClose={props.onClose}
-		title="Get the App"
+		title={props.title || 'Get the App'}
 	>
 		<a
 			className="download-app-button"

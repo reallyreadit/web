@@ -90,7 +90,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _copyAppReferrerTextToClipboard = () => {
 		this.props.onCopyAppReferrerTextToClipboard('ProfileScreenCreateAccount');
 	};
-	private _followOnSignIn: boolean;
 	private readonly _followUser = (form: UserNameForm) => {
 		if (this.props.userAccount) {
 			return this.props
@@ -103,11 +102,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 					}
 				);
 		}
-		this._followOnSignIn = true;
-		const cancel = () => {
-			this._followOnSignIn = false;
-			this.props.onCloseDialog();
-		};
 		this.props.onOpenDialog(
 			<DownloadIosAppDialog
 				onCopyAppReferrerTextToClipboard={
@@ -115,7 +109,8 @@ export class ProfileScreen extends React.Component<Props, State> {
 						this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
 					}
 				}
-				onClose={cancel}
+				onClose={this.props.onCloseDialog}
+				title={`Get the app to follow ${this.props.userName}`}
 			/>
 		);
 		return Promise.resolve();
@@ -353,41 +348,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 					!!prevProps.userAccount
 			)
 		) {
-			let profileCallback: (profile: Profile) => void;
-			if (this.props.userAccount && !prevProps.userAccount) {
-				if (this._followOnSignIn) {
-					if (!this.isOwnProfile()) {
-						this.setState({ isFollowingButtonBusy: true });
-						profileCallback = profile => {
-							if (!profile.isFollowed) {
-								this.props
-									.onFollowUser({ userName: profile.userName })
-									.then(
-										() => {
-											this.setState({ isFollowingButtonBusy: false });
-											this.setIsFollowed();
-										}
-									)
-							} else {
-								this.setState({ isFollowingButtonBusy: false });
-							}
-						};
-					}
-					this._followOnSignIn = false;
-				}
-			}
-			this._asyncTracker.addPromise(
-				this.props
-					.onReloadProfile(this.props.screenId, this.props.userName)
-					.then(
-						profile => {
-							if (profileCallback) {
-								profileCallback(profile);
-							}
-						}
-					)
-					.catch()
-			);
+			this.props.onReloadProfile(this.props.screenId, this.props.userName);
 			this.fetchPosts(1);
 		}
 	}
