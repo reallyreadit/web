@@ -7,6 +7,8 @@ import SerializedDeviceInfo from '../../common/models/app/SerializedDeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
 import ShareResult from '../../common/models/app/ShareResult';
 import NotificationAuthorizationRequestResult from '../../common/models/app/NotificationAuthorizationRequestResult';
+import SignInEventType from '../../common/models/userAccounts/SignInEventType';
+import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -16,6 +18,7 @@ export default class extends AppApi {
 		name: '',
 		token: null
 	};
+	private readonly _deviceInfoQueue: ((deviceInfo: DeviceInfo) => void)[] = [];
 	constructor(messagingContext: WebViewMessagingContext) {
 		super();
 		this._messagingContext = messagingContext;
@@ -50,12 +53,17 @@ export default class extends AppApi {
 					break;
 			}
 		});
+		// one day we'll switch to calling initialize()
+		// from AppRoot componentDidMount() and setting the
+		// device info there.
+		// for now we'll keep sending/setting this asap
 		messagingContext.sendMessage(
 			{
 				type: 'getDeviceInfo'
 			},
 			(deviceInfo: SerializedDeviceInfo) => {
 				this.setDeviceInfo(deviceInfo);
+				this.flushDeviceInfoQueue();
 			}
 		);
 		// legacy app < version 5.0.0
@@ -65,14 +73,45 @@ export default class extends AppApi {
 			},
 			(version: string) => {
 				this._deviceInfo.appVersion = new SemanticVersion(version);
+				this.flushDeviceInfoQueue();
 			}
 		);
+	}
+	private flushDeviceInfoQueue() {
+		while (this._deviceInfoQueue.length) {
+			this._deviceInfoQueue.shift()(this._deviceInfo);
+		}
 	}
 	private setDeviceInfo(deviceInfo: SerializedDeviceInfo) {
 		this._deviceInfo = {
 			...deviceInfo,
 			appVersion: new SemanticVersion(deviceInfo.appVersion)
 		};
+	}
+	public getDeviceInfo() {
+		if (this._deviceInfo.appVersion.compareTo(new SemanticVersion('0.0.0')) > 0) {
+			return Promise.resolve(this._deviceInfo);
+		}
+		return new Promise<DeviceInfo>(
+			resolve => {
+				this._deviceInfoQueue.push(resolve);
+			}
+		);
+	}
+	public initialize(user?: UserAccount) {
+		return new Promise<DeviceInfo>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'initialize',
+						data: {
+							user
+						}
+					},
+					resolve
+				);
+			}
+		);
 	}
 	public openExternalUrl(url: string) {
 		this._messagingContext.sendMessage({
@@ -116,14 +155,32 @@ export default class extends AppApi {
 			}
 		);
 	}
+	public signIn(user: UserAccount, eventType: SignInEventType) {
+		return new Promise<SignInEventResponse>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'signIn',
+						data: {
+							user,
+							eventType
+						}
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public signOut() {
+		this._messagingContext.sendMessage({
+			type: 'signOut'
+		});
+	}
 	public syncAuthCookie(user?: UserAccount) {
 		this._messagingContext.sendMessage({
 			type: 'syncAuthCookie',
 			data: user
 		});
-	}
-	public get appVersion() {
-		return this._deviceInfo.appVersion;
 	}
 	public get deviceInfo() {
 		return this._deviceInfo;

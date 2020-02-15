@@ -1,10 +1,16 @@
 import AppApi, { ArticleReference } from '../common/AppApi';
 import ShareData from '../../common/sharing/ShareData';
-import SemanticVersion from '../../common/SemanticVersion';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
+import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 
 export default class extends AppApi {
+	public getDeviceInfo() {
+		return Promise.reject('Operation not supported in server environment');
+	}
+	public initialize(user?: UserAccount) {
+		return Promise.reject('Operation not supported in server environment');
+	}
 	public openExternalUrl(url: string) {
 		throw new Error('Operation not supported in server environment');
 	}
@@ -20,11 +26,14 @@ export default class extends AppApi {
 	public share(data: ShareData) {
 		return Promise.reject('Operation not supported in server environment');
 	}
-	public syncAuthCookie(user?: UserAccount) {
+	public signIn(user: UserAccount, eventType: SignInEventType) {
+		return Promise.reject('Operation not supported in server environment');
+	}
+	public signOut() {
 		throw new Error('Operation not supported in server environment');
 	}
-	public get appVersion() {
-		return null as SemanticVersion;
+	public syncAuthCookie(user?: UserAccount) {
+		throw new Error('Operation not supported in server environment');
 	}
 	public get deviceInfo() {
 		return null as DeviceInfo;

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents, SignInEventType } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -37,6 +37,7 @@ import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import SignInDialog from './SignInDialog';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import CountdownBanner from './BrowserRoot/CountdownBanner';
+import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,

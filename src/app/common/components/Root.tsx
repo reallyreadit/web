@@ -54,6 +54,7 @@ import { Form as CreateAccountDialogForm } from './CreateAccountDialog';
 import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceAccountDialog';
 import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
 import SignUpAnalyticsForm from '../../../common/models/userAccounts/SignUpAnalyticsForm';
+import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 
 export interface Props {
 	analytics: Analytics,
@@ -103,10 +104,6 @@ export type SharedEvents = {
 	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
-export enum SignInEventType {
-	ExistingUser,
-	NewUser
-}
 export default abstract class Root<
 	P extends Props,
 	S extends State,

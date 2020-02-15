@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, SharedEvents, SignInEventType } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
 import UserAccount, { hasAlert, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -35,6 +35,8 @@ import Dialog from '../../../common/components/Dialog';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import OrientationWizard from './AppRoot/OrientationWizard';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
+import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
+import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -164,15 +166,8 @@ export default class extends Root<
 
 	// sharing
 	private readonly _handleShareRequest = (data: ShareData) => {
-		if (
-			this.props.appApi.appVersion &&
-			this.props.appApi.appVersion.compareTo(new SemanticVersion('2.2.1')) > 0
-		) {
-			this.props.appApi.share(data);
-			return [];
-		} else {
-			return [ShareChannel.Clipboard];
-		}
+		this.props.appApi.share(data);
+		return [] as ShareChannel[];
 	};
 	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
 		return this.props.appApi.share(data);
@@ -180,21 +175,27 @@ export default class extends Root<
 	
 	// user account
 	private readonly _signInWithApple = () => {
-		if (this.props.appApi.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0) {
-			this.props.appApi.requestAppleIdCredential();
-		} else {
-			this._dialog.openDialog(
-				<Dialog
-					closeButtonText="Dismiss"
-					onClose={this._dialog.closeDialog}
-					size="small"
-					textAlign="center"
-					title="Update Required"
-				>
-					<p>Readup must be updated in the App Store to use this feature.</p>
-				</Dialog>
+		this.props.appApi
+			.getDeviceInfo()
+			.then(
+				deviceInfo => {
+					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0) {
+						this.props.appApi.requestAppleIdCredential();
+					} else {
+						this._dialog.openDialog(
+							<Dialog
+								closeButtonText="Dismiss"
+								onClose={this._dialog.closeDialog}
+								size="small"
+								textAlign="center"
+								title="Update Required"
+							>
+								<p>Readup must be updated in the App Store to use this feature.</p>
+							</Dialog>
+						);
+					}
+				}
 			);
-		}
 	};
 
 	// window
@@ -606,7 +607,22 @@ export default class extends Root<
 	}
 	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType) {
 		// sync auth state with app
-		this.props.appApi.syncAuthCookie(user);
+		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.2')) >= 0) {
+			this.props.appApi
+				.signIn(user, eventType)
+				.then(
+					response => {
+						if (
+							eventType === SignInEventType.ExistingUser &&
+							response.notificationAuthorizationStatus === NotificationAuthorizationStatus.NotDetermined
+						) {
+							this.props.appApi.requestNotificationAuthorization();
+						}
+					}
+				);
+		} else {
+			this.props.appApi.syncAuthCookie(user);
+		}
 		// set screen
 		let screen: Screen;
 		if (!this._signInLocation) {
@@ -614,26 +630,11 @@ export default class extends Root<
 		} else {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
 			if (route.screenKey === ScreenKey.Read) {
-				const
-					pathParams = route.getPathParams(this._signInLocation.path),
-					slug = pathParams['sourceSlug'] + '_' + pathParams['articleSlug'];
+				const pathParams = route.getPathParams(this._signInLocation.path);
 				screen = this.createScreen(ScreenKey.Comments, pathParams);
-				// iOS versions < 2.1 crash when calling readArticle using only the slug
-				if (
-					!this.props.appApi.appVersion ||
-					this.props.appApi.appVersion.compareTo(new SemanticVersion('2.1.1')) < 0
-				) {
-					this.props.serverApi.getArticle(
-						{ slug },
-						result => {
-							if (result.value) {
-								this.props.appApi.readArticle(result.value);
-							}
-						}
-					);
-				} else {
-					this.props.appApi.readArticle({ slug });
-				}
+				this.props.appApi.readArticle({
+					slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+				});
 			} else {
 				screen = this
 					.getLocationDependentState(this._signInLocation)
@@ -644,7 +645,7 @@ export default class extends Root<
 		// enter orientation for new users
 		let isInOrientation: boolean;
 		if (eventType === SignInEventType.NewUser) {
-			if (this.props.appApi.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0) {
+			if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0) {
 				isInOrientation = true;
 			} else {
 				isInOrientation = false;
@@ -667,7 +668,11 @@ export default class extends Root<
 	}
 	protected onUserSignedOut() {
 		// sync auth state with app
-		this.props.appApi.syncAuthCookie();
+		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
+			this.props.appApi.signOut();
+		} else {
+			this.props.appApi.syncAuthCookie();
+		}
 		// update analytics
 		this.props.analytics.setUserId(null);
 		this.props.analytics.sendPageview(authScreenPageviewParams);
@@ -807,7 +812,17 @@ export default class extends Root<
 	}
 	public componentDidMount() {
 		// sync auth state with app
-		this.props.appApi.syncAuthCookie(this.props.initialUser);
+		this.props.appApi
+			.getDeviceInfo()
+			.then(
+				deviceInfo => {
+					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
+						this.props.appApi.initialize(this.props.initialUser);
+					} else {
+						this.props.appApi.syncAuthCookie(this.props.initialUser);
+					}
+				}
+			);
 		// super
 		super.componentDidMount();
 		// get the initial route
@@ -837,28 +852,10 @@ export default class extends Root<
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
 		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUser) {
-			const
-				pathParams = initialRoute.getPathParams(this.props.initialLocation.path),
-				slug = pathParams['sourceSlug'] + '_' + pathParams['articleSlug'];
-			// iOS versions < 2.1 crash when calling readArticle using only the slug
-			if (
-				!this.props.appApi.appVersion ||
-				this.props.appApi.appVersion.compareTo(new SemanticVersion('2.1.1')) < 0
-			) {
-				// can't call serverApi for new request until it's been initialized
-				window.setTimeout(() => {
-					this.props.serverApi.getArticle(
-						{ slug },
-						result => {
-							if (result.value) {
-								this.props.appApi.readArticle(result.value);
-							}
-						}
-					);
-				}, 0);
-			} else {
-				this.props.appApi.readArticle({ slug });
-			}
+			const pathParams = initialRoute.getPathParams(this.props.initialLocation.path);
+			this.props.appApi.readArticle({
+				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+			});
 		}
 	}
 	public componentWillUnmount() {
