@@ -93,6 +93,12 @@ export default (props: {
 				/>
 			</li>
 		</ol>
+		<div className="download-app">
+			<a href="https://apps.apple.com/us/app/readup-app/id1441825432" target="_blank">
+				<span>Download the Readup iOS App</span>
+				<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+			</a>
+		</div>
 		<Footer
 			onViewBlog={props.onViewBlog}
 			onViewPrivacyPolicy={props.onViewPrivacyPolicy}

@@ -15,6 +15,26 @@
 	display: flex;
 	flex-flow: column;
 }
+.nav-bar_yh8orf > .download-app {
+	flex: 0 0 auto;
+}
+.nav-bar_yh8orf > .download-app > a {
+	display: block;
+	text-decoration: none;
+}
+.nav-bar_yh8orf > .download-app > a > span {
+	display: block;
+	width: 200px;
+	margin: 0 auto 10px auto;
+	text-align: center;
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+}
+.nav-bar_yh8orf > .download-app > a > img {
+	display: block;
+	width: 80%;
+	margin: 0 auto 20px auto;
+}
 .nav-bar_yh8orf > .footer_ink40x {
 	flex: 0 0 auto;
 	border-top: none;
