@@ -102,7 +102,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								<div className="prompt unsupported">
 									<span className="text">Get Readup on iOS and Chrome</span>
 									<div className="badges">
-										<a href="https://itunes.apple.com/us/app/reallyread-it/id1441825432">
+										<a href="https://apps.apple.com/us/app/readup-app/id1441825432">
 											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
 										</a>
 										<a onClick={this.props.onInstallExtension}>
@@ -115,7 +115,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								</div> :
 							<div className="prompt download ios">
 								<a
-									href="https://itunes.apple.com/us/app/reallyread-it/id1441825432"
+									href="https://apps.apple.com/us/app/readup-app/id1441825432"
 									onClick={this._copyAppReferrerTextToClipboard}
 								>
 									<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
