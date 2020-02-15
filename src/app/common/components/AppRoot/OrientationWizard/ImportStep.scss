@@ -1,0 +1,33 @@
+/*
+	componentPath: src/app/common/components/AppRoot/OrientationWizard/ImportStep
+	cssComponentId: import-step_jg2xdw
+*/
+
+.import-step_jg2xdw {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+.import-step_jg2xdw > h1 {
+	font-size: 26pt;
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 30px;
+	text-align: center;
+}
+.import-step_jg2xdw > h2 {
+	font-size: 16pt;
+	font-weight: normal;
+	font-family: 'Museo Sans (500)';
+	margin: 0 10px 30px 10px;
+	text-align: center;
+}
+.import-step_jg2xdw > img {
+	width: 80%;
+	max-width: 320px;
+	border: 1px solid #e0e0e0;
+}
+.import-step_jg2xdw > .button_ovrlmi {
+	margin: 30px 0 0 0;
+}

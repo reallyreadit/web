@@ -11,6 +11,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import ShareStep from './OrientationWizard/ShareStep';
 import ShareResult from '../../../../common/models/app/ShareResult';
 import OrientationAnalytics from '../../../../common/models/analytics/OrientationAnalytics';
+import ImportStep from './OrientationWizard/ImportStep';
 
 interface Props {
 	onComplete: (analytics: OrientationAnalytics) => void,
@@ -20,8 +21,9 @@ interface Props {
 	user: UserAccount
 }
 enum Step {
-	Notifications,
 	Tracking,
+	Import,
+	Notifications,
 	Share
 }
 export default class OrientationWizard extends React.PureComponent<
@@ -33,7 +35,7 @@ export default class OrientationWizard extends React.PureComponent<
 	}
 > {
 	private readonly _analytics: OrientationAnalytics;
-	private readonly _continueFromTracking = () => {
+	private readonly _continue = () => {
 		this.advance();
 	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
@@ -49,6 +51,10 @@ export default class OrientationWizard extends React.PureComponent<
 			switch (this.state.step) {
 				case Step.Tracking:
 					this._analytics.trackingDuration = stepDuration;
+					nextStep = Step.Import;
+					break;
+				case Step.Import:
+					this._analytics.importDuration = stepDuration;
 					nextStep = Step.Notifications;
 					break;
 				case Step.Notifications:
@@ -135,17 +141,22 @@ export default class OrientationWizard extends React.PureComponent<
 		this.advance();
 	};
 	private readonly _stepMap = {
+		[Step.Tracking]: (
+			<TrackingStep
+				onContinue={this._continue}
+				onPlay={this._logTrackingPlay}
+				onSkip={this._skipTracking}
+			/>
+		),
+		[Step.Import]: (
+			<ImportStep
+				onContinue={this._continue}
+			/>
+		),
 		[Step.Notifications]: (
 			<NotificationsStep
 				onRequestAuthorization={this._requestNotificationAuthorization}
 				onSkip={this._skipNotifications}
-			/>
-		),
-		[Step.Tracking]: (
-			<TrackingStep
-				onContinue={this._continueFromTracking}
-				onPlay={this._logTrackingPlay}
-				onSkip={this._skipTracking}
 			/>
 		),
 		[Step.Share]: (
