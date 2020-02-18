@@ -153,8 +153,8 @@ function createBuild(params) {
 						resolve => {
 							watch(
 								params.scss,
-								() => {
-									buildScss({
+								function buildScssTask() {
+									return buildScss({
 										src: params.scss,
 										dest: outPath,
 										base: srcPath,
@@ -184,8 +184,8 @@ function createBuild(params) {
 								resolve => {
 									watch(
 										asset.src,
-										() => {
-											buildStaticAssets({
+										function buildStaticAssetsTask() {
+											return buildStaticAssets({
 												src: asset.src,
 												dest: outPath,
 												base: asset.base,
