@@ -734,7 +734,6 @@ export default class extends Root<
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewMyReads={this._viewMyReads}
 							onViewProfile={this._viewProfile}
-							onViewStats={this._viewStats}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 						/>
@@ -747,6 +746,7 @@ export default class extends Root<
 								onViewAdminPage={this._viewAdminPage}
 								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 								onViewSettings={this._viewSettings}
+								onViewStats={this._viewStats}
 								selectedScreenKey={this.state.screens[0].key}
 								userAccount={this.state.user}
 							/> :

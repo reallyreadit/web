@@ -14,6 +14,7 @@ interface Props {
 	onViewAdminPage: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewSettings: () => void,
+	onViewStats: () => void,
 	selectedScreenKey: ScreenKey,
 	userAccount: UserAccount | null
 }
@@ -79,6 +80,14 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								</button>
 							</li> :
 							null}
+						<li>
+							<button
+								className={this.props.selectedScreenKey === ScreenKey.Stats ? 'selected' : null}
+								onClick={this.props.onViewStats}
+							>
+								Stats
+							</button>
+						</li>
 						<li>
 							<button
 								className={this.props.selectedScreenKey === ScreenKey.Settings ? 'selected' : null}

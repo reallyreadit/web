@@ -15,6 +15,7 @@ interface Props {
 	onSignOut: () => Promise<void>,
 	onViewAdminPage: () => void,
 	onViewSettings: () => void,
+	onViewStats: () => void,
 	selectedScreenKey: ScreenKey,
 	userAccount: UserAccount | null
 }
@@ -84,6 +85,16 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								/>
 							</li> :
 							null}
+						<li>
+							<Button
+								href={findRouteByKey(routes, ScreenKey.Stats).createUrl()}
+								onClick={this.props.onViewStats}
+								state={this.props.selectedScreenKey === ScreenKey.Stats ? 'selected' : 'normal'}
+								text="Stats"
+								size="x-large"
+								display="block"
+							/>
+						</li>
 						<li>
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}

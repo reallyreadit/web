@@ -13,7 +13,6 @@ interface Props {
 	onViewLeaderboards: () => void,
 	onViewMyReads: () => void,
 	onViewProfile: () => void,
-	onViewStats: () => void,
 	selectedScreen: Screen,
 	user: UserAccount
 }
@@ -63,15 +62,6 @@ export default class NavTray extends React.PureComponent<Props>{
 							name="user"
 						/>
 						<label>Profile</label>
-					</button>
-				</li>
-				<li>
-					<button
-						className={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : null}
-						onClick={this.props.onViewStats}
-					>
-						<Icon name="line-chart" />
-						<label>Stats</label>
 					</button>
 				</li>
 				<li>

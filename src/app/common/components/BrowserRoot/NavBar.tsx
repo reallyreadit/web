@@ -12,7 +12,6 @@ const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl(),
 	profileRoute = findRouteByKey(routes, ScreenKey.Profile),
-	statsUrl = findRouteByKey(routes, ScreenKey.Stats).createUrl(),
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
 
 export default (props: {
@@ -22,7 +21,6 @@ export default (props: {
 	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewProfile: () => void,
-	onViewStats: () => void,
 	selectedScreen: Screen,
 	user: UserAccount
 }) => (
@@ -66,17 +64,6 @@ export default (props: {
 					}
 					iconLeft="user"
 					text="Profile"
-					size="x-large"
-					display="block"
-				/>
-			</li>
-			<li>
-				<Button
-					href={statsUrl}
-					onClick={props.onViewStats}
-					state={props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
-					iconLeft="line-chart"
-					text="Stats"
 					size="x-large"
 					display="block"
 				/>
