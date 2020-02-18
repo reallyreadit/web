@@ -379,7 +379,7 @@ export default function <TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Discover'
+			title: 'Article of the Day'
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => {
 			const pathParams = route.getPathParams(screenState.location.path);

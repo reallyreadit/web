@@ -11,6 +11,7 @@ const profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
+	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	onViewProfile: () => void,
 	selectedScreen: Screen,
@@ -31,9 +32,18 @@ export default class NavTray extends React.PureComponent<Props>{
 					>
 						<Icon
 							badge={this.props.user.postAlertCount + (hasAlert(this.props.user, Alert.Aotd) ? 1 : 0)}
-							name="earth"
+							name="trophy"
 						/>
-						<label>Discover</label>
+						<label>AOTD</label>
+					</button>
+				</li>
+				<li>
+					<button
+						className={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : null}
+						onClick={this.props.onViewMyFeed}
+					>
+						<Icon name="group-circle" />
+						<label>My Feed</label>
 					</button>
 				</li>
 				<li>

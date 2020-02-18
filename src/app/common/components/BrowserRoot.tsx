@@ -37,6 +37,7 @@ import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import SignInDialog from './SignInDialog';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
+import createMyFeedScreenFactory from './screens/MyFeedScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -180,6 +181,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewLeaderboards = () => {
 		this.setScreenState({
 			key: ScreenKey.Leaderboards,
+			method: 'replace'
+		});
+	};
+	private readonly _viewMyFeed = () => {
+		this.setScreenState({
+			key: ScreenKey.MyFeed,
 			method: 'replace'
 		});
 	};
@@ -406,6 +413,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onViewProfile: this._viewProfile
 			}),
+			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
+				ScreenKey.MyFeed,
+				{}
+			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -834,6 +845,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewBlog={this._viewBlog}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
+							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewProfile={this._viewProfile}

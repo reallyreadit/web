@@ -126,6 +126,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
+		analyticsName: 'MyFeed',
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/feed',
+		pathRegExp: /^\/feed$/,
+		screenKey: ScreenKey.MyFeed
+	},
+	{
 		analyticsName: 'Leaderboards',
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/leaderboards',

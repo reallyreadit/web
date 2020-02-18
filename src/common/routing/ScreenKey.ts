@@ -9,6 +9,7 @@ enum ScreenKey {
 	Home,
 	Inbox,
 	Leaderboards,
+	MyFeed,
 	MyReads,
 	Password,
 	PrivacyPolicy,

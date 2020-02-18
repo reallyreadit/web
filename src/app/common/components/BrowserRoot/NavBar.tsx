@@ -10,6 +10,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
+	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl(),
 	profileRoute = findRouteByKey(routes, ScreenKey.Profile),
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
@@ -18,6 +19,7 @@ export default (props: {
 	onViewBlog: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
+	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewProfile: () => void,
@@ -32,8 +34,19 @@ export default (props: {
 					href={homeUrl}
 					onClick={props.onViewHome}
 					state={props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
-					iconLeft="earth"
-					text="Discover"
+					iconLeft="trophy"
+					text="AOTD"
+					size="x-large"
+					display="block"
+				/>
+			</li>
+			<li>
+				<Button
+					href={myFeedUrl}
+					onClick={props.onViewMyFeed}
+					state={props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}
+					iconLeft="group-circle"
+					text="My Feed"
 					size="x-large"
 					display="block"
 				/>

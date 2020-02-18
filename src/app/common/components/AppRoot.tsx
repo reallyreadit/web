@@ -37,6 +37,7 @@ import OrientationWizard from './AppRoot/OrientationWizard';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
+import createMyFeedScreenFactory from './screens/MyFeedScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -150,6 +151,9 @@ export default class extends Root<
 	};
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
+	};
+	private readonly _viewMyFeed = () => {
+		this.replaceScreen(ScreenKey.MyFeed);
 	};
 	private readonly _viewMyReads = () => {
 		this.replaceScreen(ScreenKey.MyReads);
@@ -325,6 +329,10 @@ export default class extends Root<
 				onOpenDialog: this._dialog.openDialog,
 				onViewProfile: this._viewProfile
 			}),
+			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
+				ScreenKey.MyFeed,
+				{}
+			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -732,6 +740,7 @@ export default class extends Root<
 						<NavTray
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
+							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
 							onViewProfile={this._viewProfile}
 							selectedScreen={this.state.screens[0]}
