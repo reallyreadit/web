@@ -7,6 +7,7 @@ import { format } from 'timeago.js';
 import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ProfileLink from './ProfileLink';
+import UserAccount from '../models/UserAccount';
 
 export default (
 	props: {
@@ -17,11 +18,12 @@ export default (
 		onCreateAbsoluteUrl: (path: string) => string,
 		onGetShareData?: () => ShareData,
 		onShare?: (data: ShareData) => ShareChannel[],
-		onViewProfile?: (userName: string) => void
+		onViewProfile: (userName: string) => void,
+		user?: UserAccount
 	}
 ) => (
 	<div className="post-header_f4a846">
-		{props.onViewProfile && !!props.userName ?
+		{!!props.userName && (!props.user || props.user.name !== props.userName) ?
 			<ProfileLink
 				className="user-name"
 				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}

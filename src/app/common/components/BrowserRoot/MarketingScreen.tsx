@@ -191,6 +191,7 @@ export default class MarketingScreen extends React.Component<
 											onShare={this.props.onShare}
 											onToggleStar={this.props.onToggleArticleStar}
 											onViewComments={this.props.onViewComments}
+											onViewProfile={this.props.onViewProfile}
 										/>
 									</li>
 								)

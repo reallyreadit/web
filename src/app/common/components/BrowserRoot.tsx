@@ -305,7 +305,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
 				}
 			),
 			[ScreenKey.Blog]: createBlogScreenFactory(
@@ -320,7 +321,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
@@ -416,7 +418,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewComments: this._viewComments
+				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				onClearAlerts: this._clearAlerts,

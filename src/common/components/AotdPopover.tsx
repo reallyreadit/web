@@ -42,7 +42,7 @@ export default class AotdPopover extends React.PureComponent<
 						AOTD on {formatTimestamp(this.props.timestamp)}
 					</div>
 				}
-				menuPosition={MenuPosition.LeftMiddle}
+				menuPosition={MenuPosition.RightMiddle}
 				menuState={this.state.menuState}
 				onBeginClosing={this._beginClosingMenu}
 				onClose={this._closeMenu}

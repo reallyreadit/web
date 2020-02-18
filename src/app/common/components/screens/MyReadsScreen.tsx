@@ -17,13 +17,14 @@ import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import InfoBox from '../controls/InfoBox';
 import HeaderSelector from '../HeaderSelector';
-import { Screen } from '../Root';
+import { Screen, SharedState } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import { formatCountable } from '../../../../common/format';
 import Rating from '../../../../common/models/Rating';
+import UserAccount from '../../../../common/models/UserAccount';
 
 enum List {
 	History = 'History',
@@ -45,7 +46,9 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	screenId: number
+	onViewProfile: (userName: string) => void,
+	screenId: number,
+	user: UserAccount
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
@@ -231,7 +234,6 @@ class MyReadsScreen extends React.Component<Props, State> {
 												<li key={article.id}>
 													<ArticleDetails
 														article={article}
-														isUserSignedIn
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onPost={this.props.onPostArticle}
@@ -240,6 +242,8 @@ class MyReadsScreen extends React.Component<Props, State> {
 														onShare={this.props.onShare}
 														onToggleStar={this.props.onToggleArticleStar}
 														onViewComments={this.props.onViewComments}
+														onViewProfile={this.props.onViewProfile}
+														user={this.props.user}
 													/>
 												</li>
 											)
@@ -272,19 +276,20 @@ class MyReadsScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'list' | 'screenId'>>
+	deps: Pick<Props, Exclude<keyof Props, 'list' | 'screenId' | 'user'>>
 ) {
 	const route = findRouteByKey(routes, ScreenKey.MyReads);
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'My Reads' }),
-		render: (screen: Screen) => (
+		render: (screen: Screen, sharedState: SharedState) => (
 			<MyReadsScreen {
 				...{
 					...deps,
 					list: route.getPathParams(screen.location.path)['view'] === 'starred' ?
 						List.Starred :
 						List.History,
-					screenId: screen.id
+					screenId: screen.id,
+					user: sharedState.user
 				}
 			} />
 		)

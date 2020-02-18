@@ -1,5 +1,4 @@
 import * as React from 'react';
-import AotdMetadata from './AotdMetadata';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import ActionLink from '../../../../../common/components/ActionLink';
 import ArticleList from './ArticleList';
@@ -34,21 +33,9 @@ export default class AotdView extends React.Component<{
 			<div className="aotd-view_hgax0h">
 				<div className="section-header">Article of the Day</div>
 				<div className="aotd">
-					<AotdMetadata
-						article={this.props.aotd}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onViewProfile={this.props.onViewProfile}
-						pointsCallout={
-							!this.props.user ?
-								<PointsCallout /> :
-								null
-						}
-						user={this.props.user}
-					/>
 					<ArticleDetails
 						article={this.props.aotd}
 						highlight={this.props.aotdHasAlert}
-						isUserSignedIn={!!this.props.user}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onPost={this.props.onPostArticle}
@@ -57,6 +44,13 @@ export default class AotdView extends React.Component<{
 						onShare={this.props.onShare}
 						onToggleStar={this.props.onToggleArticleStar}
 						onViewComments={this.props.onViewComments}
+						onViewProfile={this.props.onViewProfile}
+						pointsCallout={
+							!this.props.user ?
+								<PointsCallout /> :
+								null
+						}
+						user={this.props.user}
 					/>
 					<ActionLink
 						text="Previous Winners"
@@ -67,41 +61,29 @@ export default class AotdView extends React.Component<{
 				<div className="section-header">Contenders for Tomorrow</div>
 				<ArticleList>
 					{this.props.articles.items.map(
-						(article, index) => {
-							let rank = index + 1;
-							if (this.props.isPaginated) {
-								rank += (this.props.articles.pageNumber - 1) * this.props.articles.pageSize;
-							}
-							return (
-								<li key={article.id}>
-									<AotdMetadata
-										article={article}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-										onViewProfile={this.props.onViewProfile}
-										rank={rank}
-										rankCallout={
-											index === 0 && !this.props.user ?
-												<RankCallout /> :
-												null
-										}
-										user={this.props.user}
-									/>
-									<ArticleDetails
-										article={article}
-										isUserSignedIn={!!this.props.user}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-										onPost={this.props.onPostArticle}
-										onRateArticle={this.props.onRateArticle}
-										onRead={this.props.onReadArticle}
-										onShare={this.props.onShare}
-										onToggleStar={this.props.onToggleArticleStar}
-										onViewComments={this.props.onViewComments}
-									/>
-								</li>
-							);
-						})
-					}
+						(article, index) => (
+							<li key={article.id}>
+								<ArticleDetails
+									article={article}
+									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onPost={this.props.onPostArticle}
+									onRateArticle={this.props.onRateArticle}
+									onRead={this.props.onReadArticle}
+									onShare={this.props.onShare}
+									onToggleStar={this.props.onToggleArticleStar}
+									onViewComments={this.props.onViewComments}
+									onViewProfile={this.props.onViewProfile}
+									rankCallout = {
+										index === 0 && !this.props.user ?
+										<RankCallout /> :
+										null
+									}
+									user={this.props.user}
+								/>
+							</li>
+						)
+					)}
 				</ArticleList>	
 			</div>
 		);

@@ -15,13 +15,13 @@ import ContentBox from './ContentBox';
 import PostButton from './PostButton';
 import RatingControl from './RatingControl';
 import Rating from '../models/Rating';
-import AotdPopover from './AotdPopover';
+import AotdMetadata from './AotdMetadata';
+import UserAccount from '../models/UserAccount';
 
 interface Props {
 	article: UserArticle,
 	highlight?: boolean,
 	imagePath?: string,
-	isUserSignedIn: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPost: (article: UserArticle) => void,
@@ -30,13 +30,19 @@ interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewProfile: (userName: string) => void,
+	pointsCallout?: React.ReactNode,
+	rankCallout?: React.ReactNode,
 	shareMenuPosition?: MenuPosition,
-	useAbsoluteUrls?: boolean
+	showAotdMetadata?: boolean,
+	useAbsoluteUrls?: boolean,
+	user?: UserAccount
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps: Partial<Props> = {
 		imagePath: '/images',
-		shareMenuPosition: MenuPosition.RightMiddle
+		shareMenuPosition: MenuPosition.RightMiddle,
+		showAotdMetadata: true
 	};
 	private readonly _getShareData = () => {
 		return getShareData(
@@ -113,116 +119,120 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				/>
 			</ShareControl>
 		);
-		// aotd
-		const aotdPopover = (
-			this.props.article.aotdTimestamp ?
-				<AotdPopover timestamp={this.props.article.aotdTimestamp} /> :
-				null
-		);
 		return (
-			<ContentBox
-				className="article-details_d2vnmv"
-				highlight={this.props.highlight}
-			>
-				<div className="title">
-					{this.props.isUserSignedIn ?
-						<Star
-							starred={!!this.props.article.dateStarred}
-							busy={this.state.isStarring}
-							onClick={this._toggleStar}
-						/> :
-						null}
-					{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
-						<div className="bookmark">
-							<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
-							<Icon name="bookmark" />
-						</div> :
-						null}
-					<a
-						className="title-link"
-						href={this.props.article.url}
-						onClick={this._read}
-					>
-						{this.props.article.title}
-					</a>
-				</div>
-				<div className="columns">
-					<div className="article">
-						<div className="meta">
-							{publisherMetadata.join(' | ')}
-						</div>
-						<div className="stats">
-							<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-							<a
-								className="comments"
-								href={commentsLinkHref}
-								onClick={this._viewComments}
-							>
-								{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
-							</a>
-							{ratingControl}
-							{shareControl}
-							{aotdPopover}
-						</div>
+			<div className="article-details_d2vnmv">
+				{this.props.showAotdMetadata ?
+					<AotdMetadata
+						article={this.props.article}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onViewProfile={this.props.onViewProfile}
+						pointsCallout={this.props.pointsCallout}
+						rankCallout={this.props.rankCallout}
+						user={this.props.user}
+					/> :
+					null}
+				<ContentBox
+					className="content"
+					highlight={this.props.highlight}
+				>
+					<div className="title">
+						{this.props.user ?
+							<Star
+								starred={!!this.props.article.dateStarred}
+								busy={this.state.isStarring}
+								onClick={this._toggleStar}
+							/> :
+							null}
+						{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
+							<div className="bookmark">
+								<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
+								<Icon name="bookmark" />
+							</div> :
+							null}
+						<a
+							className="title-link"
+							href={this.props.article.url}
+							onClick={this._read}
+						>
+							{this.props.article.title}
+						</a>
 					</div>
-					<div className="small-stats-article">
-						<div className="meta">
-							<div className="publisher">
-								{this.props.article.source}
+					<div className="columns">
+						<div className="article">
+							<div className="meta">
+								{publisherMetadata.join(' | ')}
 							</div>
-							<div className="author-date-length">
-								{this.props.article.authors.length ?
-									<span className="author">
-										{this.props.article.authors.join(', ')}
-									</span> :
-									null}
-								{this.props.article.authors.length && this.props.article.datePublished ?
-									<span className="spacer">|</span> :
-									null}
-								{this.props.article.datePublished ?
-									<span className="date">
-										{formatTimestamp(this.props.article.datePublished)}
-									</span> :
-									null}
-								{this.props.article.authors.length || this.props.article.datePublished ?
-									<span className="spacer">|</span> :
-									null}
-								<span className="length">
-									{estimatedReadTime}
-								</span>
-							</div>
-						</div>
-						<div className="stats">
-							<div className="reads">
-								<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-							</div>
-							<div className="comments">
+							<div className="stats">
+								<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 								<a
+									className="comments"
 									href={commentsLinkHref}
 									onClick={this._viewComments}
 								>
 									{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 								</a>
+								{ratingControl}
+								{shareControl}
 							</div>
-							{ratingControl}
-							{shareControl}
-							{aotdPopover}
 						</div>
+						<div className="small-stats-article">
+							<div className="meta">
+								<div className="publisher">
+									{this.props.article.source}
+								</div>
+								<div className="author-date-length">
+									{this.props.article.authors.length ?
+										<span className="author">
+											{this.props.article.authors.join(', ')}
+										</span> :
+										null}
+									{this.props.article.authors.length && this.props.article.datePublished ?
+										<span className="spacer">|</span> :
+										null}
+									{this.props.article.datePublished ?
+										<span className="date">
+											{formatTimestamp(this.props.article.datePublished)}
+										</span> :
+										null}
+									{this.props.article.authors.length || this.props.article.datePublished ?
+										<span className="spacer">|</span> :
+										null}
+									<span className="length">
+										{estimatedReadTime}
+									</span>
+								</div>
+							</div>
+							<div className="stats">
+								<div className="reads">
+									<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+								</div>
+								<div className="comments">
+									<a
+										href={commentsLinkHref}
+										onClick={this._viewComments}
+									>
+										{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+									</a>
+								</div>
+								{ratingControl}
+								{shareControl}
+							</div>
+						</div>
+						{(
+							this.props.onPost &&
+							(this.props.article.isRead || this.props.article.datesPosted.length)
+						) ?
+							<div className="post">
+								<PostButton
+									article={this.props.article}
+									menuPosition={MenuPosition.LeftMiddle}
+									onPost={this.props.onPost}
+								/>
+							</div> :
+							null}
 					</div>
-					{(
-						this.props.onPost &&
-						(this.props.article.isRead || this.props.article.datesPosted.length)
-					 ) ?
-						<div className="post">
-							<PostButton
-								article={this.props.article}
-								menuPosition={MenuPosition.LeftMiddle}
-								onPost={this.props.onPost}
-							/>
-						</div> :
-						null}
-				</div>
-			</ContentBox>
+				</ContentBox>
+			</div>
 		);
 	}
 }

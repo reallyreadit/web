@@ -91,7 +91,6 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 							<Panel className="main">
 								<ArticleDetails
 									article={this.props.article.value}
-									isUserSignedIn={!!this.props.user}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onRateArticle={this.props.onRateArticle}
@@ -100,6 +99,8 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									onShare={this.props.onShare}
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this._noop}
+									onViewProfile={this.props.onViewProfile}
+									user={this.props.user}
 								/>
 								<CommentsSection
 									article={this.props.article.value}

@@ -236,7 +236,6 @@ export default class extends React.PureComponent<{
 										<li key={article.id}>
 											<ArticleDetails
 												article={article}
-												isUserSignedIn
 												onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 												onPost={this.props.onPostArticle}
@@ -245,6 +244,8 @@ export default class extends React.PureComponent<{
 												onShare={this.props.onShare}
 												onToggleStar={this.props.onToggleArticleStar}
 												onViewComments={this.props.onViewComments}
+												onViewProfile={this.props.onViewProfile}
+												user={this.props.user}
 											/>
 										</li>
 									)}

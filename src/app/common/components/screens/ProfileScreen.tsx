@@ -446,6 +446,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 															onShare={this.props.onShare}
 															onToggleStar={this.props.onToggleArticleStar}
 															onViewComments={this.props.onViewComments}
+															onViewProfile={this.props.onViewProfile}
 															onViewThread={this.props.onViewThread}
 															post={post}
 															user={this.props.userAccount}

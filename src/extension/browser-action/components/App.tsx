@@ -57,6 +57,9 @@ export default class extends React.Component<
 	private readonly _goToInbox = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Inbox).createUrl());
 	};
+	private readonly _goToProfile = (userName: string) => {
+		this._openInNewTab(findRouteByKey(routes, ScreenKey.Profile).createUrl({ userName: userName }));
+	};
 	private readonly _goToProfileFollowers = () => {
 		this._openInNewTab(findRouteByKey(routes, ScreenKey.Profile, DialogKey.Followers).createUrl({ userName: this.props.user.name }));
 	};
@@ -237,7 +240,6 @@ export default class extends React.Component<
 								<ArticleDetails
 									article={this.props.article}
 									imagePath='./images'
-									isUserSignedIn={true}
 									onCopyTextToClipboard={this._clipboard.copyText}
 									onCreateAbsoluteUrl={this._createAbsoluteUrl}
 									onPost={this._openPostDialog}
@@ -246,8 +248,10 @@ export default class extends React.Component<
 									onShare={this._handleShareRequest}
 									onToggleStar={this.props.onToggleStar}
 									onViewComments={this._goToComments}
+									onViewProfile={this._goToProfile}
 									shareMenuPosition={MenuPosition.RightBottom}
 									useAbsoluteUrls
+									user={this.props.user}
 								/>
 								{this.props.debug ?
 									<ul className="debug">

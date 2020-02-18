@@ -26,6 +26,7 @@ export default interface UserArticle {
 	ratingCount: number,
 	firstPoster: string | null,
 	flair: ArticleFlair,
+	aotdContenderRank: number,
 	proofToken: string | null
 }
 export function areEqual(a: UserArticle, b: UserArticle) {
@@ -61,6 +62,7 @@ export function areEqual(a: UserArticle, b: UserArticle) {
 		a.ratingCount === b.ratingCount &&
 		a.firstPoster === b.firstPoster &&
 		a.flair === b.flair &&
+		a.aotdContenderRank === b.aotdContenderRank &&
 		a.proofToken === b.proofToken
 	);
 }

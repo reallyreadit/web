@@ -29,6 +29,7 @@ export interface Props {
 	onShare: (data: ShareData) => ShareChannel[],
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
+	onViewProfile: (userName: string) => void,
 	title?: string,
 	user: UserAccount | null
 }
@@ -154,7 +155,6 @@ export default class BlogScreen extends React.Component<Props, State> {
 											<li key={article.id}>
 												<ArticleDetails
 													article={article}
-													isUserSignedIn={!!this.props.user}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onPost={this.props.onPostArticle}
@@ -163,6 +163,8 @@ export default class BlogScreen extends React.Component<Props, State> {
 													onShare={this.props.onShare}
 													onToggleStar={this.props.onToggleArticleStar}
 													onViewComments={this.props.onViewComments}
+													onViewProfile={this.props.onViewProfile}
+													user={this.props.user}
 												/>
 											</li>
 										)

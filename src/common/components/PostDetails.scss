@@ -3,16 +3,16 @@
 	cssComponentId: post-details_8qx033
 */
 
-.post-details_8qx033.alert {
+.post-details_8qx033 > .content.alert {
 	background-color: #FFF599;
 	animation: post-details_8qx033-alert 2500ms forwards;
 	animation-delay: 500ms;
 }
-.post-details_8qx033 > .post-header_f4a846,
-.post-details_8qx033 > .comment-details_qker1u {
+.post-details_8qx033 > .content > .post-header_f4a846,
+.post-details_8qx033 > .content > .comment-details_qker1u {
 	margin-top: 10px;
 }
-.post-details_8qx033 > .post-header_f4a846 {
+.post-details_8qx033 > .content > .post-header_f4a846 {
 	border-radius: 3px;
 }
 
