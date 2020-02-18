@@ -5,7 +5,7 @@ import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadsList, { updateCommunityReads, View } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
@@ -43,6 +43,7 @@ interface Props {
 	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetFolloweesPosts: FetchFunctionWithParams<FolloweesPostsQuery, PageResult<Post>>,
+	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onInstallExtension: () => void,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -415,6 +416,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
+				onGetUserCount={this.props.onGetUserCount}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}

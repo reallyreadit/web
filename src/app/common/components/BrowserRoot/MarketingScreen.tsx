@@ -17,11 +17,12 @@ import GetStartedButton from './GetStartedButton';
 import { variants as marketingVariants } from '../../marketingTesting';
 import PageResult from '../../../../common/models/PageResult';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
-import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
+import CountdownBanner from './CountdownBanner';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -30,6 +31,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
+	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -101,6 +103,9 @@ export default class MarketingScreen extends React.Component<
 		const marketingVariant = marketingVariants[this.props.marketingVariant];
 		return (
 			<div className="marketing-screen_n5a6wc">
+				<CountdownBanner
+					onGetUserCount={this.props.onGetUserCount}
+				/>
 				<Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>

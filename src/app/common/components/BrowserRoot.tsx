@@ -36,7 +36,6 @@ import CreateAccountDialog from './CreateAccountDialog';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import SignInDialog from './SignInDialog';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
-import CountdownBanner from './BrowserRoot/CountdownBanner';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 
 interface Props extends RootProps {
@@ -361,6 +360,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
+				onGetUserCount: this.props.serverApi.getUserCount,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onInstallExtension: this._installExtension,
@@ -808,9 +808,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onClick={this._dismissWelcomeMessage}
 						/>
 					</div> :
-					null}
-				{!this.state.user ?
-					<CountdownBanner onGetUserCount={this.props.serverApi.getUserCount} /> :
 					null}
 				{(
 					topScreen.templateSection == null ||
