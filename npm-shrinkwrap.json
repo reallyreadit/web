@@ -6458,6 +6458,11 @@
         "resize-observer-polyfill": "^1.5.0"
       }
     },
+    "react-schemaorg": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/react-schemaorg/-/react-schemaorg-1.0.0.tgz",
+      "integrity": "sha512-dMSxyXBeFB0A3VLpsGLMK8W1rMh05+N7YzlBgp0WLMqt+9Y1yHDCO/gR4+dK8lu9574kknYomeZr79woBtFRYw=="
+    },
     "react-smooth": {
       "version": "1.0.5",
       "resolved": "https://registry.npmjs.org/react-smooth/-/react-smooth-1.0.5.tgz",
@@ -6872,6 +6877,11 @@
         "loose-envify": "^1.1.0",
         "object-assign": "^4.1.1"
       }
+    },
+    "schema-dts": {
+      "version": "0.5.1",
+      "resolved": "https://registry.npmjs.org/schema-dts/-/schema-dts-0.5.1.tgz",
+      "integrity": "sha512-IIr5/ujC3yKjXwsU96+v30ycWi3zJjfYSXdsNzwhdXQW+Omq3JiWdWDvHbWlDupefuYkWcmyQw8peFhxPFnrVw=="
     },
     "schema-utils": {
       "version": "1.0.0",

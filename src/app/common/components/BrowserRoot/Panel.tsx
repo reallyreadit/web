@@ -5,10 +5,14 @@ import { ClassValue } from 'classnames/types';
 export default (
 	props: {
 		children: React.ReactNode,
-		className?: ClassValue
+		className?: ClassValue,
+		noGoogleSnippet?: boolean
 	}
 ) => (
-	<div className={classNames('panel_zd0n2d', props.className)}>
+	<div
+		className={classNames('panel_zd0n2d', props.className)}
+		data-nosnippet={props.noGoogleSnippet ? '' : null}
+	>
 		<div className="content">
 			{props.children}
 		</div>

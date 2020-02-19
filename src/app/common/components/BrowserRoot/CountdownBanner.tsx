@@ -33,7 +33,10 @@ export default class CountdownBanner extends React.Component<
 		if (this.state.userCount.value) {
 			const remaining = 10000 - this.state.userCount.value.userCount;
 			return (
-				<div className="countdown-banner_yodmpa">
+				<div
+					className="countdown-banner_yodmpa"
+					data-nosnippet
+				>
 					<span>Heads up: We're making Readup free <em>for life</em> to the first 10k users.</span>
 					<span>{remaining.toLocaleString()} {formatCountable(remaining, 'spot')} remaining!</span>
 				</div>

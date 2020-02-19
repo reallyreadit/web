@@ -23,6 +23,8 @@ import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
 import CountdownBanner from './CountdownBanner';
+import { Corporation } from 'schema-dts';
+import { JsonLd } from 'react-schemaorg';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -109,17 +111,26 @@ export default class MarketingScreen extends React.Component<
 				<Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>
-					<div className="buttons">
+					<div
+						className="buttons"
+						data-nosnippet
+					>
 						<GetStartedButton
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromHeader}
 						/>
 					</div>
 				</Panel>
-				<Panel className="how-it-works">
+				<Panel
+					className="how-it-works"
+					noGoogleSnippet
+				>
 					<h2>How Readup works</h2>
 					<TrackingAnimation autoPlay />
 				</Panel>
-				<Panel className="aotd">
+				<Panel
+					className="aotd"
+					noGoogleSnippet
+				>
 					<h2>What we're reading</h2>
 					{this.props.communityReads.isLoading ?
 						<LoadingOverlay position="static" /> :
@@ -140,7 +151,10 @@ export default class MarketingScreen extends React.Component<
 							user={this.props.user}
 						/>}
 				</Panel>
-				<Panel className="about">
+				<Panel
+					className="about"
+					noGoogleSnippet
+				>
 					<h2>About</h2>
 					<p>Readup is a social reading platform - the best way to find, read, and share articles and stories online. It's powered by a global community of readers and free-thinkers <em>who vote with their attention</em>. No interference. No distractions.</p>
 					<p className="bios">
@@ -178,7 +192,10 @@ export default class MarketingScreen extends React.Component<
 						/>
 					</div>
 				</Panel>
-				<Panel className="blog">
+				<Panel
+					className="blog"
+					noGoogleSnippet
+				>
 					<h2>From the Readup blog</h2>
 					{this.state.blogPosts.isLoading ?
 						<LoadingOverlay position="static" /> :
@@ -203,6 +220,40 @@ export default class MarketingScreen extends React.Component<
 							)}
 						</ArticleList>}
 				</Panel>
+				<JsonLd<Corporation>
+					item={{
+						"@context": "https://schema.org",
+						"@type": "Corporation",
+						"description": "Social media powered by reading.",
+						"founders": [
+							{
+								"@type": "Person",
+								"name": "Bill Loundy",
+								"url": "https://billloundy.com/"
+							},
+							{
+								"@type": "Person",
+								"name": "Jeff Camera",
+								"url": "https://jeffcamera.com/"
+							}
+						],
+						"legalName": "reallyread.it, inc.",
+						"location": {
+							"@type": "Place",
+							"address": {
+								"@type": "PostalAddress",
+								"addressCountry": "USA",
+								"addressLocality": "Toms River",
+								"addressRegion": "New Jersey"
+							}
+						},
+						"logo": "https://static.readup.com/media/logo-512.png",
+						"naics": "519130",
+						"name": "Readup",
+						"slogan": "The best way to find, read and share articles online.",
+						"url": "https://readup.com/"
+					}}
+				/>
 			</div>
 		);
 	}
