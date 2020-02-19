@@ -131,99 +131,91 @@ export default class LeaderboardsScreen extends React.PureComponent<{
 			<ScreenContainer className="leaderboards-screen_wuzsob">
 				{this.props.leaderboards.isLoading ?
 					<LoadingOverlay /> :
-					!this.props.leaderboards.value.userRankings.readCount.score ?
-						<div className="placeholder">
-							<img
-								alt="Padlock"
-								src="/images/padlock.svg"
-							/>
-							Read at least one full article to unlock the leaderboards.
-						</div> :
-						<div className="leaderboards">
-							<div className="leaderboard">
-								{renderTable({
-									title: 'Top readers this week',
-									iconName: 'power',
-									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
-									onViewProfile: this.props.onViewProfile,
-									scoreUnit: 'read',
-									rankings: this.props.leaderboards.value.weeklyReadCount,
-									userRanking: this.props.leaderboards.value.userRankings.weeklyReadCount,
-									userName: this.props.user.name
-								})}
-							</div>
-							<div className="leaderboard">
-								{renderTable({
-									title: 'Top readers of all time',
-									iconName: 'medal',
-									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
-									onViewProfile: this.props.onViewProfile,
-									scoreUnit: 'read',
-									rankings: this.props.leaderboards.value.readCount,
-									userRanking: this.props.leaderboards.value.userRankings.readCount,
-									userName: this.props.user.name
-								})}
-							</div>
-							<div className="leaderboard">
-								{renderTable({
-									title: 'Reading streaks',
-									iconName: 'fire',
-									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
-									onViewProfile: this.props.onViewProfile,
-									scoreUnit: 'day',
-									rankings: this.props.leaderboards.value.streak,
-									userRanking: {
-										score: streak.dayCount,
-										rank: streak.rank
-									},
-									userName: this.props.user.name
-								})}
-								{streak.dayCount ?
-									<div className="streak-status">
-										<div className="text">
-											{streak.includesToday ?
-												'You\'re safe until tomorrow' :
-												`Don\'t lose your ${streak.dayCount} day streak!`}
-										</div>
-										{!streak.includesToday ?
-											<div className="timer">
-												<StreakTimer
-													timeZoneName={this.props.leaderboards.value.timeZoneName}
-												/>
-											</div> :
-											null}
-									</div> :
-									null}
-							</div>
-							<div className="leaderboard">
-								{renderTable({
-									title: 'Scouts',
-									iconName: 'binoculars',
-									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
-									onViewProfile: this.props.onViewProfile,
-									scoreUnit: 'AOTD',
-									rankings: this.props.leaderboards.value.scout,
-									userRanking: this.props.leaderboards.value.userRankings.scoutCount,
-									userName: this.props.user.name,
-									onOpenExplainer: this._openScoutExplainer
-								})}
-							</div>
-							<div className="leaderboard">
-								{renderTable({
-									title: 'Scribes',
-									iconName: 'quill',
-									onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
-									onViewProfile: this.props.onViewProfile,
-									scoreUnit: 'reply',
-									pluralScoreUnit: 'replies',
-									rankings: this.props.leaderboards.value.scribe,
-									userRanking: this.props.leaderboards.value.userRankings.scribeCount,
-									userName: this.props.user.name,
-									onOpenExplainer: this._openScribeExplainer
-								})}
-							</div>
-							<div className="leaderboard hidden"></div>
-						</div>}
+					<div className="leaderboards">
+						<div className="leaderboard">
+							{renderTable({
+								title: 'Top readers this week',
+								iconName: 'power',
+								onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
+								onViewProfile: this.props.onViewProfile,
+								scoreUnit: 'read',
+								rankings: this.props.leaderboards.value.weeklyReadCount,
+								userRanking: this.props.leaderboards.value.userRankings.weeklyReadCount,
+								userName: this.props.user.name
+							})}
+						</div>
+						<div className="leaderboard">
+							{renderTable({
+								title: 'Top readers of all time',
+								iconName: 'medal',
+								onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
+								onViewProfile: this.props.onViewProfile,
+								scoreUnit: 'read',
+								rankings: this.props.leaderboards.value.readCount,
+								userRanking: this.props.leaderboards.value.userRankings.readCount,
+								userName: this.props.user.name
+							})}
+						</div>
+						<div className="leaderboard">
+							{renderTable({
+								title: 'Reading streaks',
+								iconName: 'fire',
+								onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
+								onViewProfile: this.props.onViewProfile,
+								scoreUnit: 'day',
+								rankings: this.props.leaderboards.value.streak,
+								userRanking: {
+									score: streak.dayCount,
+									rank: streak.rank
+								},
+								userName: this.props.user.name
+							})}
+							{streak.dayCount ?
+								<div className="streak-status">
+									<div className="text">
+										{streak.includesToday ?
+											'You\'re safe until tomorrow' :
+											`Don\'t lose your ${streak.dayCount} day streak!`}
+									</div>
+									{!streak.includesToday ?
+										<div className="timer">
+											<StreakTimer
+												timeZoneName={this.props.leaderboards.value.timeZoneName}
+											/>
+										</div> :
+										null}
+								</div> :
+								null}
+						</div>
+						<div className="leaderboard">
+							{renderTable({
+								title: 'Scouts',
+								iconName: 'binoculars',
+								onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
+								onViewProfile: this.props.onViewProfile,
+								scoreUnit: 'AOTD',
+								rankings: this.props.leaderboards.value.scout,
+								userRanking: this.props.leaderboards.value.userRankings.scoutCount,
+								userName: this.props.user.name,
+								onOpenExplainer: this._openScoutExplainer
+							})}
+						</div>
+						<div className="leaderboard">
+							{renderTable({
+								title: 'Scribes',
+								iconName: 'quill',
+								onCreateAbsoluteUrl: this.props.onCreateAbsoluteUrl,
+								onViewProfile: this.props.onViewProfile,
+								scoreUnit: 'reply',
+								pluralScoreUnit: 'replies',
+								rankings: this.props.leaderboards.value.scribe,
+								userRanking: this.props.leaderboards.value.userRankings.scribeCount,
+								userName: this.props.user.name,
+								onOpenExplainer: this._openScribeExplainer
+							})}
+						</div>
+						<div className="leaderboard hidden"></div>
+					</div>}
 			</ScreenContainer>
 		);
 	}
