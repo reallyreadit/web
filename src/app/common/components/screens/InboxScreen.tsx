@@ -24,6 +24,8 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
+import PageSelector from '../controls/PageSelector';
+import InfoBox from '../controls/InfoBox';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -52,11 +54,40 @@ interface State {
 }
 class InboxScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changePageNumber = (pageNumber: number) => {
+		this.setState({
+			posts: {
+				isLoading: true
+			}
+		});
+		this.fetchPosts(pageNumber);
+	};
 	private _hasClearedAlerts = false;
 	private readonly _loadNewItems = () => {
-		this.setState({ isLoadingNewItems: true });
-		this.props.onGetInboxPosts(
-			{ pageNumber: 1 },
+		this.setState({
+			isLoadingNewItems: true
+		});
+		this.fetchPosts(1);
+	};
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			isLoadingNewItems: false,
+			newItemCount: 0,
+			posts: this.fetchPosts(1)
+		};
+	}
+	private clearAlertsIfNeeded() {
+		if (!this._hasClearedAlerts && hasAlert(this.props.user, Alert.Inbox)) {
+			this.props.onClearAlerts(Alert.Inbox);
+			this._hasClearedAlerts = true;
+		}
+	}
+	private fetchPosts(pageNumber: number) {
+		return this.props.onGetInboxPosts(
+			{
+				pageNumber
+			},
 			this._asyncTracker.addCallback(
 				posts => {
 					this.setState({
@@ -68,28 +99,6 @@ class InboxScreen extends React.Component<Props, State> {
 				}
 			)
 		);
-	};
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			isLoadingNewItems: false,
-			newItemCount: 0,
-			posts: props.onGetInboxPosts(
-				{ pageNumber: 1 },
-				this._asyncTracker.addCallback(
-					posts => {
-						this.setState({ posts });
-						this.clearAlertsIfNeeded();
-					}
-				)
-			)
-		};
-	}
-	private clearAlertsIfNeeded() {
-		if (!this._hasClearedAlerts && hasAlert(this.props.user, Alert.Inbox)) {
-			this.props.onClearAlerts(Alert.Inbox);
-			this._hasClearedAlerts = true;
-		}
 	}
 	public componentDidMount() {
 		if (!this.state.posts.isLoading) {
@@ -116,32 +125,46 @@ class InboxScreen extends React.Component<Props, State> {
 								text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'notification')}`}
 							/> :
 							null}
-						<ArticleList>
-							{this.state.posts.value.items.map(
-								post => (
-									<li key={post.date}>
-										<PostDetails
-											highlightedCommentId={this.props.highlightedCommentId}
-											onCloseDialog={this.props.onCloseDialog}
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onNavTo={this.props.onNavTo}
-											onOpenDialog={this.props.onOpenDialog}
-											onRateArticle={this.props.onRateArticle}
-											onRead={this.props.onReadArticle}
-											onPost={this.props.onPostArticle}
-											onShare={this.props.onShare}
-											onToggleStar={this.props.onToggleArticleStar}
-											onViewComments={this.props.onViewComments}
-											onViewProfile={this.props.onViewProfile}
-											onViewThread={this.props.onViewThread}
-											post={post}
-											user={this.props.user}
-										/>
-									</li>
-								)
-							)}
-						</ArticleList>
+						{this.state.posts.value.items.length ?
+							<>
+								<ArticleList>
+									{this.state.posts.value.items.map(
+										post => (
+											<li key={post.date}>
+												<PostDetails
+													highlightedCommentId={this.props.highlightedCommentId}
+													onCloseDialog={this.props.onCloseDialog}
+													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onNavTo={this.props.onNavTo}
+													onOpenDialog={this.props.onOpenDialog}
+													onRateArticle={this.props.onRateArticle}
+													onRead={this.props.onReadArticle}
+													onPost={this.props.onPostArticle}
+													onShare={this.props.onShare}
+													onToggleStar={this.props.onToggleArticleStar}
+													onViewComments={this.props.onViewComments}
+													onViewProfile={this.props.onViewProfile}
+													onViewThread={this.props.onViewThread}
+													post={post}
+													user={this.props.user}
+												/>
+											</li>
+										)
+									)}
+								</ArticleList>
+								<PageSelector
+									pageNumber={this.state.posts.value.pageNumber}
+									pageCount={this.state.posts.value.pageCount}
+									onChange={this._changePageNumber}
+								/>
+							</> :
+							<InfoBox
+								position="absolute"
+								style="normal"
+							>
+								<p>You have 0 notifications.</p>
+							</InfoBox>}
 					</>}
 			</ScreenContainer>
 		);
