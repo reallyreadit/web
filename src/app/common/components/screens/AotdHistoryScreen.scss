@@ -3,29 +3,40 @@
 	cssComponentId: aotd-history-screen_lpelxe
 */
 
+.aotd-history-screen_lpelxe {
+	display: flex;
+	flex-flow: column;
+}
+.aotd-history-screen_lpelxe > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}
+.aotd-history-screen_lpelxe > .article-list_o9uw1n,
+.aotd-history-screen_lpelxe > .page-selector_a8tbpb {
+	flex: 0 0 auto;
+}
+.aotd-history-screen_lpelxe > h1 {
+	font-weight: normal;
+	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+	margin-bottom: 20px;
+}
 .aotd-history-screen_lpelxe > .controls {
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: space-between;
-	flex-wrap: wrap;
+	align-items: flex-end;
 	margin-bottom: 20px;
 }
-.aotd-history-screen_lpelxe > .controls > h1 {
-	font-weight: normal;
-	font-family: 'Museo Sans (700)';
-	font-size: 20pt;
-}
-.aotd-history-screen_lpelxe > .article-list_o9uw1n > li > .date {
-	margin-bottom: 5px;
-	font-family: 'Museo Sans (500)';
+.aotd-history-screen_lpelxe > .controls > .header-selector_9li9z5 {
+	flex: 0 0 auto;
 }
 
-@media (max-width: 580px) {
+@media (max-width: 870px) {
 	.aotd-history-screen_lpelxe > .controls {
-		justify-content: flex-end;
+		flex-flow: column;
 	}
-	.aotd-history-screen_lpelxe > .controls > h1 {
+	.aotd-history-screen_lpelxe > .controls > .header-selector_9li9z5 {
 		width: 100%;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 	}
 }

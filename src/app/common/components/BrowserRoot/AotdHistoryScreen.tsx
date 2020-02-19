@@ -9,13 +9,13 @@ export default function createAotdHistoryScreenFactory<TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Previous AOTD Winners' }),
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Winners' }),
 		render: (state: Screen, sharedState: SharedState) => (
 			<AotdHistoryScreen
 				{
 					...{
 						...deps,
-						title: 'Previous AOTD Winners',
+						title: 'Winners',
 						user: sharedState.user
 					}
 				}

@@ -230,6 +230,7 @@ export default class extends Root<
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
+					onGetCommunityReads: this.props.serverApi.getCommunityReads,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,

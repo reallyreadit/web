@@ -15,14 +15,22 @@ import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
-import { DateTime } from 'luxon';
 import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
+import HeaderSelector from '../HeaderSelector';
+import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
+import CommunityReads from '../../../../common/models/CommunityReads';
+import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 
+enum List {
+	Recent = 'Recent',
+	BestEver = 'Best Ever'
+}
 export interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
+	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -37,6 +45,7 @@ export interface Props {
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
 	isScreenLoading: boolean,
+	list: List,
 	maxLength: number | null,
 	minLength: number | null
 }
@@ -44,35 +53,52 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
-			articles: { isLoading: true },
+			articles: {
+				isLoading: true
+			},
 			minLength,
 			maxLength
 		});
-		this.fetchArticles(1, minLength, maxLength);
+		this.fetchArticles(this.state.list, 1, minLength, maxLength);
+	};
+	private readonly _changeList = (value: string) => {
+		const list = value as List;
+		if (list !== this.state.list) {
+			this.setState({
+				articles: {
+					isLoading: true
+				},
+				list
+			});
+			this.fetchArticles(list, 1, this.state.minLength, this.state.maxLength);
+		}
 	};
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
-			articles: { isLoading: true }
+			articles: {
+				isLoading: true
+			}
 		});
-		this.fetchArticles(pageNumber, this.state.minLength, this.state.maxLength);
+		this.fetchArticles(this.state.list, pageNumber, this.state.minLength, this.state.maxLength);
 	};
+	private readonly _headerSelectorItems = [
+		{
+			value: List.Recent
+		},
+		{
+			value: List.BestEver
+		}
+	];
 	constructor(props: Props) {
 		super(props);
 		const
+			list = List.Recent,
 			minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(
-				1,
-				minLength,
-				maxLength,
-				() => {
-					this.setState({
-						isScreenLoading: false
-					});
-				}
-			);
+			articles = this.fetchArticles(list, 1, minLength, maxLength);
 		this.state = {
-			articles,
+			articles: articles as Fetchable<PageResult<UserArticle>>,
+			list,
 			isScreenLoading: articles.isLoading,
 			maxLength,
 			minLength
@@ -105,22 +131,50 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		);
 	}
 	private fetchArticles(
+		list: List,
 		pageNumber: number,
 		minLength: number | null,
-		maxLength: number | null,
-		callback?: () => void
+		maxLength: number | null
 	) {
-		return this.props.onGetAotdHistory(
-			{ pageNumber, minLength, maxLength },
-			this._asyncTracker.addCallback(
-				articles => {
-					this.setState({ articles });
-					if (callback) {
-						callback();
-					}
-				}
-			)
-		);
+		switch (list) {
+			case List.Recent:
+				return this.props.onGetAotdHistory(
+					{
+						maxLength,
+						minLength,
+						pageNumber
+					},
+					this._asyncTracker.addCallback(
+						articles => {
+							this.setState({
+								articles,
+								isScreenLoading: false
+							});
+						}
+					)
+				);
+			case List.BestEver:
+				return this.props.onGetCommunityReads(
+					{
+						maxLength,
+						minLength,
+						pageNumber,
+						pageSize: 40,
+						sort: CommunityReadSort.Top
+					},
+					this._asyncTracker.addCallback(
+						communityReads => {
+							this.setState({
+								articles: {
+									isLoading: false,
+									value: communityReads.value.articles
+								},
+								isScreenLoading: false
+							});
+						}
+					)
+				);
+		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -129,12 +183,18 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		return (
 			<ScreenContainer className="aotd-history-screen_lpelxe">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay position="absolute" /> :
+					<LoadingOverlay position="static" /> :
 					<>
+						{this.props.title ?
+							<h1>{this.props.title}</h1> :
+							null}
 						<div className="controls">
-							{this.props.title ?
-								<h1>{this.props.title}</h1> :
-								null}
+							<HeaderSelector
+								disabled={this.state.articles.isLoading}
+								items={this._headerSelectorItems}
+								onChange={this._changeList}
+								value={this.state.list}
+							/>
 							<ArticleLengthFilter
 								max={this.state.maxLength}
 								min={this.state.minLength}
@@ -148,7 +208,6 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 									{this.state.articles.value.items.map(
 										article => (
 											<li key={article.id}>
-												<div className="date">{DateTime.fromISO(article.aotdTimestamp).toLocaleString(DateTime.DATE_MED)}</div>
 												<ArticleDetails
 													article={article}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
