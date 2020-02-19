@@ -1,6 +1,5 @@
 import * as React from 'react';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
-import ActionLink from '../../../../../common/components/ActionLink';
 import ArticleList from './ArticleList';
 import UserArticle from '../../../../../common/models/UserArticle';
 import Rating from '../../../../../common/models/Rating';
@@ -10,6 +9,7 @@ import PageResult from '../../../../../common/models/PageResult';
 import UserAccount from '../../../../../common/models/UserAccount';
 import PointsCallout from './PointsCallout';
 import RankCallout from './RankCallout';
+import Button from '../../../../../common/components/Button';
 
 export default class AotdView extends React.Component<{
 	aotd: UserArticle,
@@ -52,9 +52,13 @@ export default class AotdView extends React.Component<{
 						}
 						user={this.props.user}
 					/>
-					<ActionLink
-						text="Previous Winners"
+					<Button
+						display="block"
+						iconRight="chevron-right"
+						intent="default"
 						onClick={this.props.onViewAotdHistory}
+						style="preferred"
+						text="Previous Winners"
 					/>
 				</div>
 				<div className="separator"></div>
