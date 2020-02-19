@@ -3,6 +3,17 @@
 	cssComponentId: blog-screen_61pk1b
 */
 
+.blog-screen_61pk1b {
+	display: flex;
+	flex-flow: column;
+}
+.blog-screen_61pk1b > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}
+.blog-screen_61pk1b > .article-list_o9uw1n,
+.blog-screen_61pk1b > .page-selector_a8tbpb {
+	flex: 0 0 auto;
+}
 .blog-screen_61pk1b > .controls {
 	flex: 0 0 auto;
 	display: flex;
@@ -20,7 +31,7 @@
 	.blog-screen_61pk1b > .controls {
 		justify-content: flex-end;
 	}
-	.blog-screen_61pk1b > .controls > h1 {
+	.blog-screen_61pk1b > .controls > h1.has-title {
 		width: 100%;
 		margin-bottom: 20px;
 	}

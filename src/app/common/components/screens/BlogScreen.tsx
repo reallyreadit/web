@@ -17,6 +17,7 @@ import Rating from '../../../../common/models/Rating';
 import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
+import * as classNames from 'classnames';
 
 export interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -134,12 +135,10 @@ export default class BlogScreen extends React.Component<Props, State> {
 		return (
 			<ScreenContainer className="blog-screen_61pk1b">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay position="absolute" /> :
+					<LoadingOverlay position="static" /> :
 					<>
 						<div className="controls">
-							{this.props.title ?
-								<h1>{this.props.title}</h1> :
-								null}
+							<h1 className={classNames({ 'has-title': !!this.props.title })}>{this.props.title}</h1>
 							<ArticleLengthFilter
 								max={this.state.maxLength}
 								min={this.state.minLength}
