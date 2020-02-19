@@ -2,3 +2,22 @@
 	componentPath: src/app/common/components/screens/MyFeedScreen
 	cssComponentId: my-feed-screen_921ddo
 */
+
+.my-feed-screen_921ddo {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+}
+.my-feed-screen_921ddo > .controls {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 20px;
+}
+.my-feed-screen_921ddo > .loading-overlay_zfgtd1,
+.my-feed-screen_921ddo > .info-box_whou0t {
+	flex: 1 1 auto;
+}
+.my-feed-screen_921ddo > .article-list_o9uw1n {
+	flex: 0 0 auto;
+}

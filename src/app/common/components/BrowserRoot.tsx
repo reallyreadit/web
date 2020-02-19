@@ -360,29 +360,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				marketingVariant: this.props.marketingVariant,
 				onClearAlerts: this._clearAlerts,
-				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
-				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
 				onGetUserCount: this.props.serverApi.getUserCount,
-				onNavTo: this._navTo,
-				onOpenDialog: this._dialog.openDialog,
 				onInstallExtension: this._installExtension,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
-				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
-				onViewProfile: this._viewProfile,
-				onViewThread: this._viewThread
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Inbox]: createInboxScreenFactory(
 				ScreenKey.Inbox,
@@ -415,7 +409,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
 				ScreenKey.MyFeed,
-				{}
+				{
+					onClearAlerts: this._clearAlerts,
+					onCloseDialog: this._dialog.closeDialog,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPosts: this.props.serverApi.getPostsFromFollowees,
+					onNavTo: this._navTo,
+					onOpenDialog: this._dialog.openDialog,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,

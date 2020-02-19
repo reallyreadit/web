@@ -31,7 +31,7 @@ export default class NavTray extends React.PureComponent<Props>{
 						onClick={this.props.onViewHome}
 					>
 						<Icon
-							badge={this.props.user.postAlertCount + (hasAlert(this.props.user, Alert.Aotd) ? 1 : 0)}
+							badge={hasAlert(this.props.user, Alert.Aotd) ? 1 : 0}
 							name="trophy"
 						/>
 						<label>AOTD</label>
@@ -42,7 +42,10 @@ export default class NavTray extends React.PureComponent<Props>{
 						className={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : null}
 						onClick={this.props.onViewMyFeed}
 					>
-						<Icon name="group-circle" />
+						<Icon
+							badge={this.props.user.postAlertCount}
+							name="group-circle"
+						/>
 						<label>My Feed</label>
 					</button>
 				</li>

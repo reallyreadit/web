@@ -30,7 +30,7 @@ export default (props: {
 		<ol>
 			<li>
 				<Button
-					badge={props.user.postAlertCount + (hasAlert(props.user, Alert.Aotd) ? 1 : 0)}
+					badge={hasAlert(props.user, Alert.Aotd) ? 1 : 0}
 					href={homeUrl}
 					onClick={props.onViewHome}
 					state={props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
@@ -42,6 +42,7 @@ export default (props: {
 			</li>
 			<li>
 				<Button
+					badge={props.user.postAlertCount}
 					href={myFeedUrl}
 					onClick={props.onViewMyFeed}
 					state={props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}

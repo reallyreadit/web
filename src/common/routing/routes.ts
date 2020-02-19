@@ -4,31 +4,12 @@ import ScreenKey from "./ScreenKey";
 import UserAccountRole from "../models/UserAccountRole";
 
 const routes: Route<DialogKey, ScreenKey>[] = [
-	(function () {
-		const pathRegExp = /^\/(following)?$/;
-		return {
-			analyticsName: 'Home',
-			createUrl: params => {
-				let url = '/';
-				if (params && params['view'] && params['view'] === 'following') {
-					url += 'following';
-				}
-				return url;
-			},
-			getPathParams: path => {
-				const
-					[, view] = path.match(pathRegExp),
-					params: {
-						view: 'trending' | 'following'
-					} = {
-						view: view === 'following' ? view : 'trending'
-					};
-				return params;
-			},
-			pathRegExp,
-			screenKey: ScreenKey.Home
-		} as Route<DialogKey, ScreenKey>;
-	})(),
+	{
+		analyticsName: 'Home',
+		createUrl: () => '/',
+		pathRegExp: /^\/$/,
+		screenKey: ScreenKey.Home
+	},
 	{
 		analyticsName: 'Home',
 		createUrl: () => '/?create-account',

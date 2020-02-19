@@ -258,6 +258,13 @@ server = server.get('/inbox', (req, res) => {
 		findRouteByKey(routes, ScreenKey.Inbox).createUrl()
 	);
 });
+server = server.get('/following', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.MyFeed).createUrl()
+	);
+});
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api

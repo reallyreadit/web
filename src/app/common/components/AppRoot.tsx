@@ -281,25 +281,18 @@ export default class extends Root<
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,
-				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
-				onGetFolloweesPosts: this.props.serverApi.getPostsFromFollowees,
-				onNavTo: this._navTo,
-				onOpenDialog: this._dialog.openDialog,
-				onOpenMenu: this._openMenu,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
-				onViewProfile: this._viewProfile,
-				onViewThread: this._viewThread
+				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Inbox]: createInboxScreenFactory(
 				ScreenKey.Inbox,
@@ -331,7 +324,24 @@ export default class extends Root<
 			}),
 			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
 				ScreenKey.MyFeed,
-				{}
+				{
+					onClearAlerts: this._clearAlerts,
+					onCloseDialog: this._dialog.closeDialog,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPosts: this.props.serverApi.getPostsFromFollowees,
+					onNavTo: this._navTo,
+					onOpenDialog: this._dialog.openDialog,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCopyTextToClipboard: this._clipboard.copyText,
