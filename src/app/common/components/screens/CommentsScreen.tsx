@@ -21,6 +21,8 @@ import InfoBox from '../controls/InfoBox';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { variants as marketingVariants } from '../../marketingTesting';
+import { AggregateRating } from 'schema-dts';
+import { JsonLd } from 'react-schemaorg';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -122,6 +124,29 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									user={this.props.user}
 								/>
 							</Panel>
+							<JsonLd<AggregateRating>
+								item={{
+									"@context": "https://schema.org",
+									"@type": "AggregateRating",
+									"bestRating": "10",
+									"itemReviewed": {
+										"@type": "Article",
+										"articleSection": this.props.article.value.section,
+										"datePublished": this.props.article.value.datePublished,
+										"description": this.props.article.value.description,
+										"headline": this.props.article.value.title,
+										"publisher": {
+											"@type": "Organization",
+											"name": this.props.article.value.source
+										},
+										"url": this.props.article.value.url
+									},
+									"ratingCount": this.props.article.value.ratingCount,
+									"ratingExplanation": "Readup verifies that users have read the article to completion before allowing them to leave a rating or review.",
+									"ratingValue": this.props.article.value.averageRatingScore,
+									"reviewCount": this.props.article.value.commentCount
+								}}
+							/>
 						</>}
 			</div>
 		);

@@ -15,6 +15,9 @@ import { mergeComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
 
+function createTitle(articleTitle: string) {
+	return `Comments on “${articleTitle}” • Readup`;
+}
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'comments' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
@@ -121,7 +124,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 						produce((currentState: Screen<Fetchable<UserArticle>>) => {
 							currentState.componentState = article;
 							if (article.value) {
-								currentState.title = article.value.title;
+								currentState.title = createTitle(article.value.title);
 							} else {
 								currentState.title = 'Article not found';
 							}
@@ -133,7 +136,12 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				componentState: article,
 				key,
 				location,
-				title: formatFetchable(article, article => article.title, 'Loading...', 'Article not found.')
+				title: formatFetchable(
+					article,
+					article => createTitle(article.title),
+					'Loading...',
+					'Article not found'
+				)
 			};
 		},
 		render: (state: Screen<Fetchable<UserArticle>>, sharedState: SharedState) => {
