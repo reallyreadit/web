@@ -12,10 +12,8 @@ import CommunityReads from '../../../common/models/CommunityReads';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import UserAccountStats from '../../../common/models/UserAccountStats';
 import Leaderboards from '../../../common/models/Leaderboards';
-import CommunityReadSort from '../../../common/models/CommunityReadSort';
 import Rating from '../../../common/models/Rating';
 import ClientType from '../ClientType';
-import CommunityReadTimeWindow from '../../../common/models/CommunityReadTimeWindow';
 import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
 import ReadingTimeTotalsTimeWindow from '../../../common/models/ReadingTimeTotalsTimeWindow';
 import ReadingTimeStats from '../../../common/models/ReadingTimeStats';
@@ -49,6 +47,7 @@ import AppleIdCredentialAuthResponse from '../../../common/models/app/AppleIdCre
 import PublisherArticleQuery from '../../../common/models/articles/PublisherArticleQuery';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
+import CommunityReadsQuery from '../../../common/models/articles/CommunityReadsQuery';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -136,7 +135,7 @@ export default abstract class {
 	// Articles
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
-	public readonly getCommunityReads = this.createFetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>('/Articles/CommunityReads');
+	public readonly getCommunityReads = this.createFetchFunctionWithParams<CommunityReadsQuery, CommunityReads>('/Articles/CommunityReads');
 	public readonly getPublisherArticles = this.createFetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>('/Articles/Publisher');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');

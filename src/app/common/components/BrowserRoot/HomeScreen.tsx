@@ -24,6 +24,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
+import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 
 interface Props {
 	isExtensionInstalled: boolean | null,
@@ -32,7 +33,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
+	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onInstallExtension: () => void,
@@ -88,6 +89,8 @@ class HomeScreen extends React.Component<Props, State> {
 			this.state = {
 				communityReads: props.onGetCommunityReads(
 					{
+						maxLength: null,
+						minLength: null,
 						pageNumber: 1,
 						pageSize: 40,
 						sort: CommunityReadSort.Hot
@@ -109,6 +112,8 @@ class HomeScreen extends React.Component<Props, State> {
 			this.state = {
 				communityReads: props.onGetCommunityReads(
 					{
+						maxLength: null,
+						minLength: null,
 						pageNumber: 1,
 						pageSize: 5,
 						sort: CommunityReadSort.Hot
@@ -136,6 +141,8 @@ class HomeScreen extends React.Component<Props, State> {
 					this.setState({
 						communityReads: props.onGetCommunityReads(
 							{
+								maxLength: null,
+								minLength: null,
 								pageNumber: 1,
 								pageSize: 40,
 								sort: CommunityReadSort.Hot
@@ -156,6 +163,8 @@ class HomeScreen extends React.Component<Props, State> {
 					this.setState({
 						communityReads: props.onGetCommunityReads(
 							{
+								maxLength: null,
+								minLength: null,
 								pageNumber: 1,
 								pageSize: 5,
 								sort: CommunityReadSort.Hot

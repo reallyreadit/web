@@ -20,12 +20,13 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
+import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<{ pageNumber: number, pageSize: number, sort: CommunityReadSort, timeWindow?: CommunityReadTimeWindow, minLength?: number, maxLength?: number }, CommunityReads>,
+	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -107,6 +108,8 @@ class HomeScreen extends React.Component<Props, State> {
 		this.state = {
 			communityReads: props.onGetCommunityReads(
 				{
+					maxLength: null,
+					minLength: null,
 					pageNumber: 1,
 					pageSize: 10,
 					sort: CommunityReadSort.Hot
