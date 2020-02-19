@@ -12,6 +12,7 @@ interface Props {
 	display?: 'block' | 'inline',
 	href?: string,
 	iconLeft?: IconName,
+	iconRight?: IconName,
 	intent?: 'normal' | 'default' | 'loud' | 'warning' | 'success',
 	onClick?: () => void,
 	onMouseEnter?: () => void,
@@ -68,6 +69,12 @@ export default class Button extends React.PureComponent<Props> {
 					<span className="text">
 						{this.props.text}
 					</span>
+					{this.props.iconRight ?
+						<Icon
+							badge={this.props.badge}
+							name={this.props.iconRight}
+						/> :
+						null}
 					{overlayChild ?
 						<span className="overlay">
 							{overlayChild}

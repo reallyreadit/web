@@ -16,7 +16,8 @@
 	position: relative;
 	text-decoration: none;
 }
-.button_ovrlmi > .icon_rour3d + .text {
+.button_ovrlmi > .icon_rour3d + .text,
+.button_ovrlmi > .text + .icon_rour3d {
 	margin-left: 0.5em;
 }
 /* display */
