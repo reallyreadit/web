@@ -9,6 +9,7 @@ export interface Route<TDialogKey, TScreenKey> {
 	createUrl: (params?: { [key: string]: string }) => string,
 	dialogKey?: TDialogKey,
 	getPathParams?: (path: string) => ({ [key: string]: string }),
+	noIndex?: boolean,
 	pathRegExp: RegExp,
 	queryStringKeys?: string[],
 	screenKey: TScreenKey

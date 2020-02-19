@@ -362,7 +362,9 @@ server = server.get('/mailLink/:id', (req, res) => {
 });
 // render matched route or return 404
 server = server.use((req, res, next) => {
-	if (findRouteByRequest(req)) {
+	const route = findRouteByRequest(req);
+	if (route) {
+		req.matchedRoute = route;
 		next();
 	} else {
 		redirectToHomeScreen(req, res);
@@ -517,6 +519,7 @@ server = server.get('/*', (req, res) => {
 				version: version.app,
 				webServerEndpoint: config.webServer
 			},
+			noIndex: req.matchedRoute.authLevel != null || req.matchedRoute.noIndex,
 			title: browserApi.getTitle()
 		}));
 	});
