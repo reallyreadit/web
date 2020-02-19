@@ -38,6 +38,8 @@ import FolloweeCountChange from '../../../../common/models/social/FolloweeCountC
 import Rating from '../../../../common/models/Rating';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import { ProfilePage } from 'schema-dts';
+import { JsonLd } from 'react-schemaorg';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -387,7 +389,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 								</Panel> :
 								null}
 							<Panel className="main">
-								<div className="profile">
+								<div className="profile" data-nosnippet>
 									<div className="user-name">
 										<span className="name">{this.props.profile.value.userName}</span>
 										{this.props.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
@@ -476,6 +478,14 @@ export class ProfileScreen extends React.Component<Props, State> {
 											</>}
 									</InfoBox>}
 							</Panel>
+							<JsonLd<ProfilePage>
+								item={{
+									"@context": "https://schema.org",
+									"@type": "ProfilePage",
+									"description": `Join Readup to read with ${this.props.profile.value.userName}`,
+									"name": this.props.profile.value.userName
+								}}
+							/>
 						</>}
 			</div>
 		)

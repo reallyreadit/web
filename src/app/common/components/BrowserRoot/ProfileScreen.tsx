@@ -10,6 +10,9 @@ import produce from 'immer';
 import Fetchable from '../../../../common/Fetchable';
 import { formatFetchable } from '../../../../common/format';
 
+function createTitle(userName: string) {
+	return `@${userName} • Readup`;
+}
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	deps: Pick<Deps, Exclude<keyof Deps, 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
@@ -22,7 +25,7 @@ export default function createScreenFactory<TScreenKey>(
 			(currentState: Screen<Fetchable<Profile>>) => {
 				currentState.componentState = result;
 				if (result.value) {
-					currentState.title = '@' + result.value.userName;
+					currentState.title = createTitle(result.value.userName);
 				} else {
 					currentState.title = 'Profile not found';
 				}
@@ -73,7 +76,7 @@ export default function createScreenFactory<TScreenKey>(
 				location,
 				title: formatFetchable(
 					profile,
-					profile => '@' + profile.userName,
+					profile => createTitle(profile.userName),
 					'Loading...',
 					'Profile not found'
 				)
