@@ -21,6 +21,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
+import StickyNote from '../../../../common/components/StickyNote';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
@@ -186,7 +187,7 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<ScreenContainer className="home-screen_an7vm5">
-				{this.state.communityReads && this.state.communityReads.isLoading ?
+				{this.state.communityReads.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
 						{this.state.newAotd ?
@@ -195,6 +196,12 @@ class HomeScreen extends React.Component<Props, State> {
 								onClick={this._loadNewItems}
 								text="Show new Article of the Day"
 							/> :
+							null}
+						{!this.state.communityReads.value.userReadCount ?
+							<StickyNote>
+								<strong>Welcome to Readup.</strong>
+								<span>It's time to start reading!</span>
+							</StickyNote> :
 							null}
 						<CommunityReadsList
 							aotd={this.state.communityReads.value.aotd}

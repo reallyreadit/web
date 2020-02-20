@@ -25,6 +25,7 @@ import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
+import StickyNote from '../../../../common/components/StickyNote';
 
 interface Props {
 	isExtensionInstalled: boolean | null,
@@ -255,6 +256,12 @@ class HomeScreen extends React.Component<Props, State> {
 									onClick={this._loadNewItems}
 									text="Show new Article of the Day"
 								/> :
+								null}
+							{!this.state.communityReads.value.userReadCount && this.props.isExtensionInstalled ?
+								<StickyNote>
+									<strong>Welcome to Readup.</strong>
+									<span>It's time to start reading!</span>
+								</StickyNote> :
 								null}
 							<CommunityReadsList
 								aotd={this.state.communityReads && this.state.communityReads.value.aotd}
