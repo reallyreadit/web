@@ -1,0 +1,17 @@
+/*
+	componentPath: src/common/components/StickyNote
+	cssComponentId: sticky-note_zcw6jg
+*/
+
+.sticky-note_zcw6jg {
+	padding: 5px;
+	box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2);
+	background: linear-gradient(135deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+	transform: rotate(-3deg);
+	transform-origin: 0 0;
+}
+.sticky-note_zcw6jg > strong {
+	display: block;
+	font-weight: normal;
+	font-family: 'Museo Sans (700)';
+}
