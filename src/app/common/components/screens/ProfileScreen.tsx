@@ -44,6 +44,7 @@ import StickyNote from '../../../../common/components/StickyNote';
 interface Props {
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
+	isIosDevice: boolean,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -57,6 +58,7 @@ interface Props {
 	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -383,7 +385,9 @@ export class ProfileScreen extends React.Component<Props, State> {
 									<h1>Join Readup to read with {this.props.profile.value.userName}.</h1>
 									<h3>
 										<GetStartedButton
+											isIosDevice={this.props.isIosDevice}
 											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</h3>
 								</Panel> :

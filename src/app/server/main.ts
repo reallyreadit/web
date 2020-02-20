@@ -30,6 +30,7 @@ import { variants as marketingVariants } from '../common/marketingTesting';
 import UserAccount from '../../common/models/UserAccount';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
+import { isIosDevice } from '../common/userAgent';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -441,6 +442,7 @@ server = server.get('/*', (req, res) => {
 		);
 	}
 	// prepare props
+	const isRequestFromIosDevice = isIosDevice(req.headers['user-agent']);
 	const browserApi = new BrowserApi();
 	const rootProps = {
 		analytics: new Analytics(),
@@ -478,7 +480,8 @@ server = server.get('/*', (req, res) => {
 				{
 					...rootProps,
 					browserApi,
-					extensionApi: new ExtensionApi(config.extensionId)
+					extensionApi: new ExtensionApi(config.extensionId),
+					isIosDevice: isRequestFromIosDevice
 				}
 			);
 			break;
@@ -515,6 +518,7 @@ server = server.get('/*', (req, res) => {
 				extensionId: config.extensionId,
 				marketingVariant,
 				initialLocation: rootProps.initialLocation,
+				isIosDevice: isRequestFromIosDevice,
 				userAccount: req.user,
 				version: version.app,
 				webServerEndpoint: config.webServer

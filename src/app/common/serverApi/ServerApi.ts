@@ -48,6 +48,7 @@ import PublisherArticleQuery from '../../../common/models/articles/PublisherArti
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import CommunityReadsQuery from '../../../common/models/articles/CommunityReadsQuery';
+import NewPlatformNotificationRequest from '../../../common/models/analytics/NewPlatformNotificationRequest';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -130,6 +131,7 @@ export default abstract class {
 	public readonly logExtensionRemoval = (installationId: string) => this.post({ path: '/Extension/Uninstall', data: { installationId } });
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
 	public readonly logShareAnalytics = (data: ShareForm) => this.post({ path: '/Analytics/Share', data });
+	public readonly logNewPlatformNotificationRequest = (data: NewPlatformNotificationRequest) => this.post({ path: '/Analytics/NewPlatformNotificationRequest', data });
 	public readonly logOrientationAnalytics = (data: OrientationAnalytics) => this.post({ path: '/Analytics/Orientation', data });
 
 	// Articles

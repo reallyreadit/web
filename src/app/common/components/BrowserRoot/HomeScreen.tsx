@@ -29,6 +29,7 @@ import StickyNote from '../../../../common/components/StickyNote';
 
 interface Props {
 	isExtensionInstalled: boolean | null,
+	isIosDevice: boolean,
 	marketingVariant: number,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -38,6 +39,7 @@ interface Props {
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onInstallExtension: () => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -297,6 +299,7 @@ class HomeScreen extends React.Component<Props, State> {
 		}
 		return (
 			<MarketingScreen
+				isIosDevice={this.props.isIosDevice}
 				communityReads={this.state.communityReads}
 				marketingVariant={this.props.marketingVariant}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
@@ -304,6 +307,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onGetUserCount={this.props.onGetUserCount}
+				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}

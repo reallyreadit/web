@@ -11,7 +11,7 @@ import { formatFetchable } from '../../../../common/format';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'onCopyAppReferrerTextToClipboard' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
+	deps: Pick<Deps, Exclude<keyof Deps, 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
 		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
 	}
@@ -86,7 +86,9 @@ export default function createScreenFactory<TScreenKey>(
 					...{
 						...deps,
 						...pathParams,
+						isIosDevice: true,
 						onCopyAppReferrerTextToClipboard: noop,
+						onOpenNewPlatformNotificationRequestDialog: noop,
 						onReloadProfile: reloadProfile,
 						onUpdateProfile: updateProfile,
 						profile: state.componentState,

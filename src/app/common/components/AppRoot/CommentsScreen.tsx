@@ -12,7 +12,7 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
 
 function noop() { }
-interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'onCopyAppReferrerTextToClipboard' | 'onPostComment'>> {
+interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'isIosDevice' | 'comments' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
@@ -98,7 +98,9 @@ class AppCommentsScreen extends React.Component<
 					...{
 						...this.props,
 						...this.state,
+						isIosDevice: true,
 						onCopyAppReferrerTextToClipboard: noop,
+						onOpenNewPlatformNotificationRequestDialog: noop,
 						onPostComment: this._postComment
 					}
 				}

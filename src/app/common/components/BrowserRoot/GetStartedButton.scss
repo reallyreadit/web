@@ -6,7 +6,17 @@
 .get-started-button_z950ea {
 	display: inline-block;
 }
-.get-started-button_z950ea > img {
+.get-started-button_z950ea > a {
+	display: inline-block;
+}
+.get-started-button_z950ea > a > img {
 	display: block;
 	height: 60px;
+	margin: 0 auto;
+}
+.get-started-button_z950ea > span {
+	display: block;
+	margin-top: 10px;
+	color: #999;
+	font-size: 11pt;
 }

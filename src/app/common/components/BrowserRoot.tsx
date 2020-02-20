@@ -38,10 +38,12 @@ import SignInDialog from './SignInDialog';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
+import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
-	extensionApi: ExtensionApi
+	extensionApi: ExtensionApi,
+	isIosDevice: boolean
 }
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
@@ -89,6 +91,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// dialogs
+	private readonly _openNewPlatformNotificationRequestDialog = () => {
+		this._dialog.openDialog(
+			<NewPlatformNotificationRequestDialog
+				onCloseDialog={this._dialog.closeDialog}
+				onShowToast={this._toaster.addToast}
+				onSubmitRequest={this.props.serverApi.logNewPlatformNotificationRequest}
+			/>
+		);
+	};
 	private readonly _openSignInDialog = (analyticsAction: string) => {
 		this._dialog.openDialog(
 			<SignInDialog
@@ -333,6 +344,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				isIosDevice: this.props.isIosDevice,
 				marketingVariant: this.props.marketingVariant,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -343,6 +355,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetComments: this.props.serverApi.getComments,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
 				onPostCommentAddendum: this._postCommentAddendum,
@@ -359,6 +372,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				isIosDevice: this.props.isIosDevice,
 				marketingVariant: this.props.marketingVariant,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -368,6 +382,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
 				onInstallExtension: this._installExtension,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -447,6 +462,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				isIosDevice: this.props.isIosDevice,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -459,6 +475,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetProfile: this.props.serverApi.getProfile,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,

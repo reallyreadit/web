@@ -41,6 +41,7 @@ export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
 	highlightedCommentId: string | null,
+	isIosDevice: boolean,
 	marketingVariant: number,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -49,6 +50,7 @@ export interface Props {
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
@@ -85,7 +87,9 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
 										<GetStartedButton
+											isIosDevice={this.props.isIosDevice}
 											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</div>
 								</Panel> :

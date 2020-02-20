@@ -11,13 +11,17 @@
 .form-dialog_bdppnq > .children > .form-field_8ey399 + .form-field_8ey399 {
 	margin-top: 10px;
 }
-.form-dialog_bdppnq > .children > .link {
+.form-dialog_bdppnq > .children > .link,
+.form-dialog_bdppnq > .children > .note {
 	margin-top: 10px;
 	text-align: center;
 }
-.form-dialog_bdppnq > .children > .link > span {
+.form-dialog_bdppnq > .children > .link > span,
+.form-dialog_bdppnq > .children > .note > span {
 	color: #999;
+	font-size: 11pt;
+}
+.form-dialog_bdppnq > .children > .link > span {
 	cursor: pointer;
 	text-decoration: underline;
-	font-size: 11pt;
 }

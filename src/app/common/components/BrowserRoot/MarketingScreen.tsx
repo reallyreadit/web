@@ -27,6 +27,7 @@ import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 
 interface Props {
+	isIosDevice: boolean,
 	communityReads: Fetchable<CommunityReads>,
 	marketingVariant: number,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -34,6 +35,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -116,7 +118,9 @@ export default class MarketingScreen extends React.Component<
 						data-nosnippet
 					>
 						<GetStartedButton
+							isIosDevice={this.props.isIosDevice}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromHeader}
+							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>
 				</Panel>
@@ -188,7 +192,9 @@ export default class MarketingScreen extends React.Component<
 					</p>
 					<div className="buttons">
 						<GetStartedButton
+							isIosDevice={this.props.isIosDevice}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromFooter}
+							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>
 				</Panel>
