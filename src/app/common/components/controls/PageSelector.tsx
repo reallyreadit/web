@@ -13,6 +13,9 @@ export default class PageSelector extends React.PureComponent<Props> {
 	};
 	private _updatePageNumber = (e: React.ChangeEvent<HTMLSelectElement>) => this.props.onChange(parseInt(e.currentTarget.value));
 	public render() {
+		if (this.props.pageCount <= 1) {
+			return null;
+		}
 		return (
 			<form
 				autoComplete="off"
