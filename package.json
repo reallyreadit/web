@@ -4,10 +4,10 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.14.1",
+      "app": "1.15.0",
       "contentScript": 0.22,
       "extension": {
-        "package": "2.5.0",
+        "package": "2.6.0",
         "content-parser": "1.0.14"
       },
       "native-client": {
