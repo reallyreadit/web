@@ -18,13 +18,14 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import ArticleLengthFilter from '../controls/ArticleLengthFilter';
 import ArticleList from '../controls/articles/ArticleList';
 import PostDetails from '../../../../common/components/PostDetails';
-import InfoBox from '../controls/InfoBox';
 import PageSelector from '../controls/PageSelector';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import { formatCountable } from '../../../../common/format';
 import produce from 'immer';
+import StickyNote from '../../../../common/components/StickyNote';
+import CenteringContainer from '../../../../common/components/CenteringContainer';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
@@ -184,7 +185,7 @@ class MyFeedScreen extends React.Component<Props, State> {
 		return (
 			<ScreenContainer className="my-feed-screen_921ddo">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay position="absolute" /> :
+					<LoadingOverlay position="static" /> :
 					<>
 						{this.state.newItemCount ?
 							<UpdateBanner
@@ -193,13 +194,15 @@ class MyFeedScreen extends React.Component<Props, State> {
 								text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'post')}`}
 							/> :
 							null}
-						<div className="controls">
-							<ArticleLengthFilter
-								max={this.state.maxLength}
-								min={this.state.minLength}
-								onChange={this._changeLengthRange}
-							/>
-						</div>
+						{this.state.posts.isLoading || this.state.posts.value.items.length ?
+							<div className="controls">
+								<ArticleLengthFilter
+									max={this.state.maxLength}
+									min={this.state.minLength}
+									onChange={this._changeLengthRange}
+								/>
+							</div> :
+							null}
 						{this.state.posts.isLoading ?
 							<LoadingOverlay position="static" /> :
 							this.state.posts.value.items.length ?
@@ -235,12 +238,12 @@ class MyFeedScreen extends React.Component<Props, State> {
 										onChange={this._changePageNumber}
 									/>
 								</> :
-								<InfoBox
-									position="static"
-									style="normal"
-								>
-									<p>No posts from users you're following.</p>
-								</InfoBox>}
+								<CenteringContainer>
+									<StickyNote>
+										<strong>Follow readers who interest you.</strong>
+										<span>Their posts will appear here.</span>
+									</StickyNote>
+								</CenteringContainer>}
 						</>}
 			</ScreenContainer>
 		);
