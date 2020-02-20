@@ -15,7 +15,6 @@ import ArticleLengthFilter from '../controls/ArticleLengthFilter';
 import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
-import InfoBox from '../controls/InfoBox';
 import HeaderSelector from '../HeaderSelector';
 import { Screen, SharedState } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
@@ -25,6 +24,9 @@ import UpdateBanner from '../../../../common/components/UpdateBanner';
 import { formatCountable } from '../../../../common/format';
 import Rating from '../../../../common/models/Rating';
 import UserAccount from '../../../../common/models/UserAccount';
+import CenteringContainer from '../../../../common/components/CenteringContainer';
+import StickyNote from '../../../../common/components/StickyNote';
+import Dialog from '../../../../common/components/Dialog';
 
 enum List {
 	History = 'History',
@@ -37,6 +39,8 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetStarredArticles: ArticleFetchFunction,
 	onGetUserArticleHistory: ArticleFetchFunction,
+	onOpenDialog: (element: React.ReactNode) => void,
+	onCloseDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -52,6 +56,7 @@ interface Props {
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
+	isChangingList: boolean,
 	isScreenLoading: boolean,
 	maxLength: number | null,
 	minLength: number | null,
@@ -75,7 +80,10 @@ class MyReadsScreen extends React.Component<Props, State> {
 		const list = value as List;
 		if (list !== this.props.list) {
 			this.setState({
-				articles: { isLoading: true }
+				articles: {
+					isLoading: true
+				},
+				isChangingList: true
 			});
 			this.props.onSetScreenState(
 				this.props.screenId,
@@ -96,24 +104,26 @@ class MyReadsScreen extends React.Component<Props, State> {
 		});
 		this.fetchArticles(this.props.list, pageNumber, this.state.minLength, this.state.maxLength);
 	};
+	private readonly _openImportDialog = () => {
+		this.props.onOpenDialog(
+			<Dialog
+				onClose={this.props.onCloseDialog}
+				size="small"
+				title="Import Articles to Readup"
+			>
+				<img src="/images/import-screenshot.png" alt="Import Screenshot" style={{ maxWidth: '100%' }} />
+			</Dialog>
+		);
+	};
 	constructor(props: Props) {
 		super(props);
 		const
 			minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(
-				props.list,
-				1,
-				minLength,
-				maxLength,
-				() => {
-					this.setState({
-						isScreenLoading: false
-					});
-				}
-			);
+			articles = this.fetchArticles(props.list, 1, minLength, maxLength);
 		this.state = {
 			articles,
+			isChangingList: false,
 			isScreenLoading: articles.isLoading,
 			maxLength,
 			minLength,
@@ -154,15 +164,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 							maxLength: null,
 							newStarsCount
 						});
-						this.fetchArticles(
-							this.props.list,
-							1,
-							null,
-							null,
-							() => {
-								this.setState({ newStarsCount: 0 });
-							}
-						);
+						this.fetchArticles(this.props.list, 1, null, null);
 					}
 				}
 			)
@@ -172,8 +174,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 		list: List,
 		pageNumber: number,
 		minLength: number | null,
-		maxLength: number | null,
-		callback?: () => void
+		maxLength: number | null
 	) {
 		let fetchFunction: ArticleFetchFunction;
 		switch (list) {
@@ -188,12 +189,29 @@ class MyReadsScreen extends React.Component<Props, State> {
 			{ pageNumber, minLength, maxLength },
 			this._asyncTracker.addCallback(
 				articles => {
-					this.setState({ articles });
-					if (callback) {
-						callback();
-					}
+					this.setState({
+						articles,
+						isChangingList: false,
+						isScreenLoading: false,
+						newStarsCount: 0
+					});
 				}
 			)
+		);
+	}
+	private renderStickyNote() {
+		return (
+			<StickyNote>
+				{this.props.list === List.Starred ?
+					<>
+						<strong>Star the articles you want to read.</strong>
+						<span>Pro tip: Import articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span>
+					</> :
+					<>
+						<strong>Your reading history is private.</strong>
+						<span>You choose what you want to post.</span>
+					</>}
+			</StickyNote>
 		);
 	}
 	public componentWillUnmount() {
@@ -218,11 +236,21 @@ class MyReadsScreen extends React.Component<Props, State> {
 								onChange={this._changeList}
 								value={this.props.list}
 							/>
-							<ArticleLengthFilter
-								max={this.state.maxLength}
-								min={this.state.minLength}
-								onChange={this._changeLengthRange}
-							/>
+							{(
+								this.state.articles.isLoading ?
+									!this.state.isChangingList :
+									(
+										this.state.articles.value.items.length ||
+										this.state.minLength != null ||
+										this.state.maxLength != null
+									)
+							) ?
+								<ArticleLengthFilter
+									max={this.state.maxLength}
+									min={this.state.minLength}
+									onChange={this._changeLengthRange}
+								/> :
+								null}
 						</div>
 						{this.state.articles.isLoading ?
 							<LoadingOverlay position="static" /> :
@@ -249,26 +277,18 @@ class MyReadsScreen extends React.Component<Props, State> {
 											)
 										)}
 									</ArticleList>
+									{this.state.articles.value.pageNumber < 2 ?
+										this.renderStickyNote() :
+										null}
 									<PageSelector
 										pageNumber={this.state.articles.value.pageNumber}
 										pageCount={this.state.articles.value.pageCount}
 										onChange={this._changePageNumber}
 									/>
 								</> :
-								<InfoBox
-									position="static"
-									style="normal"
-								>
-									{this.props.list === List.Starred ?
-										<>
-											<p>You have 0 starred articles.</p>
-											<p><strong>Star articles to save them for later.</strong></p>
-										</> :
-										<>
-											<p>You've read 0 articles.</p>
-											<p><strong>Go read something!</strong></p>
-										</>}
-								</InfoBox>}
+								<CenteringContainer>
+									{this.renderStickyNote()}
+								</CenteringContainer>}
 					</>}
 			</ScreenContainer>
 		);
