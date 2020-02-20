@@ -40,7 +40,6 @@ export default class GetFollowersDialog extends React.PureComponent<{
 				size="small"
 				title="Get Followers"
 			>
-				<p><strong>Reading with friends is more fun than reading alone.</strong></p>
 				<p>Share this link with the most thoughtful, readerly people you know.</p>
 				<div className="url">
 					<ShareControl

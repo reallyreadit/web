@@ -19,7 +19,6 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import Button from '../../../../common/components/Button';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import PostDetails from '../../../../common/components/PostDetails';
 import ActionLink from '../../../../common/components/ActionLink';
@@ -40,6 +39,7 @@ import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
+import StickyNote from '../../../../common/components/StickyNote';
 
 interface Props {
 	highlightedCommentId: string | null,
@@ -405,12 +405,10 @@ export class ProfileScreen extends React.Component<Props, State> {
 													text={followeesText}
 												/> :
 												<span className="following-count followees">{followeesText}</span>}
-											<Button
-												onClick={this._openGetFollowersDialog}
-												text="Get Followers"
-												intent="loud"
-												size="large"
-											/>
+											<StickyNote>
+												<strong>Invite your friends.</strong>
+												<span onClick={this._openGetFollowersDialog}>Get followers.</span>
+											</StickyNote>
 										</> :
 										<FollowButton
 											following={this.props.profile.value}
@@ -465,18 +463,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 											/> :
 											null}
 									</> :
-									<InfoBox
-										position="static"
-										style="normal"
-									>
-										{isOwnProfile ?
-											<>
-												<p>You haven't posted anything.</p>
-											</> :
-											<>
-												<p>This user hasn't posted anything.</p>
-											</>}
-									</InfoBox>}
+									null}
 							</Panel>
 							<JsonLd<ProfilePage>
 								item={{
