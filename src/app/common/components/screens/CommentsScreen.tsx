@@ -135,6 +135,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 										"datePublished": this.props.article.value.datePublished,
 										"description": this.props.article.value.description,
 										"headline": this.props.article.value.title,
+										"name": this.props.article.value.title,
 										"publisher": {
 											"@type": "Organization",
 											"name": this.props.article.value.source
