@@ -190,7 +190,10 @@ export default class MarketingScreen extends React.Component<
 						</Popover>
 						&#32;every day!) If you have any questions or ideas, don't hesitate to reach out. We love getting emails from the community.
 					</p>
-					<div className="buttons">
+					<div
+						className="buttons"
+						data-nosnippet
+					>
 						<GetStartedButton
 							isIosDevice={this.props.isIosDevice}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromFooter}

@@ -18,7 +18,10 @@ export default class extends React.PureComponent<{
 	};
 	public render() {
 		return (
-			<div className="footer_ink40x">
+			<div
+				className="footer_ink40x"
+				data-nosnippet	
+			>
 				<a
 					href={findRouteByKey(routes, ScreenKey.Blog).createUrl()}
 					onClick={this._viewBlog}
