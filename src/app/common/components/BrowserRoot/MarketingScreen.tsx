@@ -25,10 +25,11 @@ import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
 import CountdownBanner from './CountdownBanner';
 import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
+import { DeviceType } from '../../DeviceType';
 
 interface Props {
-	isIosDevice: boolean,
 	communityReads: Fetchable<CommunityReads>,
+	deviceType: DeviceType,
 	marketingVariant: number,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -118,7 +119,7 @@ export default class MarketingScreen extends React.Component<
 						data-nosnippet
 					>
 						<GetStartedButton
-							isIosDevice={this.props.isIosDevice}
+							deviceType={this.props.deviceType}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromHeader}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
@@ -195,7 +196,7 @@ export default class MarketingScreen extends React.Component<
 						data-nosnippet
 					>
 						<GetStartedButton
-							isIosDevice={this.props.isIosDevice}
+							deviceType={this.props.deviceType}
 							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromFooter}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>

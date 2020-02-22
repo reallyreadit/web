@@ -1,5 +1,5 @@
 import { Intent } from "../components/Toaster";
-import { isIosDevice } from "../../app/common/userAgent";
+import { getDeviceType, DeviceType } from "../../app/common/DeviceType";
 
 export default class ClipboardService {
 	protected _clipboardTextInput: HTMLInputElement | undefined;
@@ -8,7 +8,7 @@ export default class ClipboardService {
 		this._addToast = onAddToast;
 	}
 	private setTextSelection() {
-		if (isIosDevice(window.navigator.userAgent)) {
+		if (getDeviceType(window.navigator.userAgent) === DeviceType.Ios) {
 			const
 				range = window.document.createRange(),
 				selection = window.getSelection();

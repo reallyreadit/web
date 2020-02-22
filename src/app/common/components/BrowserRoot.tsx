@@ -39,11 +39,12 @@ import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
+import { DeviceType } from '../DeviceType';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
-	extensionApi: ExtensionApi,
-	isIosDevice: boolean
+	deviceType: DeviceType,
+	extensionApi: ExtensionApi
 }
 interface State extends RootState {
 	isExtensionInstalled: boolean | null,
@@ -116,11 +117,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	// events
 	private readonly _registerExtensionChangeEventHandler = (handler: (isInstalled: boolean) => void) => {
 		return this._eventManager.addListener('extensionInstallationStatusChanged', handler);
-	};
-
-	// extension
-	private readonly _installExtension = () => {
-		this.props.extensionApi.install();
 	};
 
 	// menu
@@ -344,7 +340,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
-				isIosDevice: this.props.isIosDevice,
+				deviceType: this.props.deviceType,
 				marketingVariant: this.props.marketingVariant,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -372,7 +368,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
-				isIosDevice: this.props.isIosDevice,
+				deviceType: this.props.deviceType,
 				marketingVariant: this.props.marketingVariant,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -381,7 +377,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
-				onInstallExtension: this._installExtension,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
@@ -462,7 +457,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
-				isIosDevice: this.props.isIosDevice,
+				deviceType: this.props.deviceType,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -492,10 +487,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewThread: this._viewThread
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
-				isBrowserCompatible: this.props.extensionApi.isBrowserCompatible,
+				deviceType: this.props.deviceType,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
-				onInstallExtension: this._installExtension,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState

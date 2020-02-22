@@ -9,7 +9,6 @@ import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerAp
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
-import ReadReadinessInfoBox from './ReadReadinessInfoBox';
 import { SharedState } from '../BrowserRoot';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareChannel from '../../../../common/sharing/ShareChannel';
@@ -26,10 +25,10 @@ import Rating from '../../../../common/models/Rating';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import StickyNote from '../../../../common/components/StickyNote';
+import { DeviceType } from '../../DeviceType';
 
 interface Props {
-	isExtensionInstalled: boolean | null,
-	isIosDevice: boolean,
+	deviceType: DeviceType,
 	marketingVariant: number,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -38,7 +37,6 @@ interface Props {
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
-	onInstallExtension: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -244,11 +242,6 @@ class HomeScreen extends React.Component<Props, State> {
 		if (this.props.user) {
 			return (
 				<ScreenContainer className="home-screen_1sjipy">
-					{this.props.user && this.props.isExtensionInstalled === false ?
-						<ReadReadinessInfoBox
-							onInstallExtension={this.props.onInstallExtension}
-						/> :
-						null}
 					{this.state.communityReads && this.state.communityReads.isLoading ?
 						<LoadingOverlay position="static" /> :
 						<>
@@ -259,7 +252,7 @@ class HomeScreen extends React.Component<Props, State> {
 									text="Show new Article of the Day"
 								/> :
 								null}
-							{!this.state.communityReads.value.userReadCount && this.props.isExtensionInstalled ?
+							{!this.state.communityReads.value.userReadCount ?
 								<StickyNote>
 									<strong>Welcome to Readup.</strong>
 									<span>It's time to start reading!</span>
@@ -299,8 +292,8 @@ class HomeScreen extends React.Component<Props, State> {
 		}
 		return (
 			<MarketingScreen
-				isIosDevice={this.props.isIosDevice}
 				communityReads={this.state.communityReads}
+				deviceType={this.props.deviceType}
 				marketingVariant={this.props.marketingVariant}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}

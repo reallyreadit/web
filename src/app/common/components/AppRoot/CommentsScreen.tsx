@@ -10,9 +10,10 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import { mergeComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
+import { DeviceType } from '../../DeviceType';
 
 function noop() { }
-interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'isIosDevice' | 'comments' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onPostComment'>> {
+interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'deviceType' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
@@ -98,7 +99,7 @@ class AppCommentsScreen extends React.Component<
 					...{
 						...this.props,
 						...this.state,
-						isIosDevice: true,
+						deviceType: DeviceType.Ios,
 						onCopyAppReferrerTextToClipboard: noop,
 						onOpenNewPlatformNotificationRequestDialog: noop,
 						onPostComment: this._postComment

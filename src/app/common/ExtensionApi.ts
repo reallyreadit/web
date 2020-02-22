@@ -20,8 +20,6 @@ export default abstract class extends EventEmitter<{
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
-	public abstract install(): void;
 	public abstract userUpdated(user: UserAccount): void;
 	public abstract get isInstalled(): boolean | undefined;
-	public abstract get isBrowserCompatible(): boolean | undefined;
 }

@@ -8,10 +8,11 @@ import Profile from '../../../../common/models/social/Profile';
 import Fetchable from '../../../../common/Fetchable';
 import produce from 'immer';
 import { formatFetchable } from '../../../../common/format';
+import { DeviceType } from '../../DeviceType';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'isIosDevice' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
+	deps: Pick<Deps, Exclude<keyof Deps, 'deviceType' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
 		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
 	}
@@ -86,7 +87,7 @@ export default function createScreenFactory<TScreenKey>(
 					...{
 						...deps,
 						...pathParams,
-						isIosDevice: true,
+						deviceType: DeviceType.Ios,
 						onCopyAppReferrerTextToClipboard: noop,
 						onOpenNewPlatformNotificationRequestDialog: noop,
 						onReloadProfile: reloadProfile,

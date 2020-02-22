@@ -67,8 +67,8 @@ switch (initData.clientType) {
 			{
 				...rootProps,
 				browserApi: new BrowserApi(),
-				extensionApi: new ExtensionApi(initData.extensionId),
-				isIosDevice: initData.isIosDevice
+				deviceType: initData.deviceType,
+				extensionApi: new ExtensionApi(initData.extensionId)
 			}
 		);
 		break;

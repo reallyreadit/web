@@ -23,6 +23,7 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
+import { DeviceType } from '../../DeviceType';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -40,8 +41,8 @@ export function getPathParams(location: RouteLocation) {
 export interface Props {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]>,
+	deviceType: DeviceType,
 	highlightedCommentId: string | null,
-	isIosDevice: boolean,
 	marketingVariant: number,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -87,7 +88,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
 										<GetStartedButton
-											isIosDevice={this.props.isIosDevice}
+											deviceType={this.props.deviceType}
 											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>

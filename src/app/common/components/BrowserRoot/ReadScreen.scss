@@ -54,45 +54,11 @@
 	top: 0;
 	width: 100%;
 }
-.read-screen_ikr26q > .prompt {
-	flex: 0 0 auto;
-	text-align: center;
-}
-.read-screen_ikr26q > .prompt > .text {
-	font-family: 'Museo Sans (300)';
-	font-size: 16pt;
-}
-.read-screen_ikr26q > .download > a {
-	display: block;
-	cursor: pointer;
-}
-.read-screen_ikr26q > .download > a > img {
-	display: block;
-	margin: 0 auto 0 auto;
-}
-.read-screen_ikr26q > .download.chrome > a > img {
-	width: 250px;
+.read-screen_ikr26q > .bypass {
 	margin-top: 10px;
 }
-.read-screen_ikr26q > .download.ios > a > img {
-	height: 60px;
-}
-.read-screen_ikr26q > .unsupported > .badges {
-	display: flex;
-	margin: 10px auto 0 auto;
-	justify-content: center;
-	flex-wrap: wrap;
-}
-.read-screen_ikr26q > .unsupported > .badges > a {
-	margin: 0 10px 10px 10px;
-	cursor: pointer;
-}
-.read-screen_ikr26q > .unsupported > .badges > a > img {
-	display: block;
-	height: 60px;
-}
-.read-screen_ikr26q > .unsupported > .bypass > a {
-	color: #666;
+.read-screen_ikr26q > .bypass > a {
+	color: #999;
 	font-size: 11pt;
 	text-decoration: underline;
 	cursor: pointer;

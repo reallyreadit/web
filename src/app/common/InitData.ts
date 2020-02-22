@@ -4,6 +4,7 @@ import RouteLocation from '../../common/routing/RouteLocation';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import Exchange from './serverApi/Exchange';
 import AppReferral from './AppReferral';
+import { DeviceType } from './DeviceType';
 
 export default interface InitData {
 	analyticsTrackingCode: string | null,
@@ -11,10 +12,10 @@ export default interface InitData {
 	appReferral: AppReferral,
 	captchaSiteKey: string | null,
 	clientType: ClientType,
+	deviceType: DeviceType,
 	extensionId: string,
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,
-	isIosDevice: boolean,
 	marketingVariant: number,
 	userAccount: UserAccount,
 	version: string,

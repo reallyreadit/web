@@ -5,18 +5,22 @@
 
 .get-started-button_z950ea {
 	display: inline-block;
+	text-align: center;
 }
-.get-started-button_z950ea > a {
+.get-started-button_z950ea > .buttons > a {
 	display: inline-block;
+	margin: 0 10px 10px 10px;
 }
-.get-started-button_z950ea > a > img {
+.get-started-button_z950ea > .buttons > a > img {
 	display: block;
-	height: 60px;
 	margin: 0 auto;
+	height: 65px;
 }
 .get-started-button_z950ea > span {
 	display: block;
-	margin-top: 10px;
 	color: #999;
 	font-size: 11pt;
+}
+.get-started-button_z950ea > span > a {
+	color: #999;
 }

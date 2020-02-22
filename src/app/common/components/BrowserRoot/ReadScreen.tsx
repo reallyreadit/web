@@ -15,13 +15,15 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AdFreeAnimation from './AdFreeAnimation';
 import ScreenContainer from '../ScreenContainer';
+import { DeviceType } from '../../DeviceType';
+import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	article: Fetchable<UserArticle>,
-	isBrowserCompatible: boolean | null,
+	deviceType: DeviceType,
 	isExtensionInstalled: boolean | null,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onInstallExtension: () => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	user: UserAccount | null
@@ -49,6 +51,11 @@ class ReadScreen extends React.PureComponent<Props> {
 	private navigateToArticle() {
 		if (this.props.article.value) {
 			window.location.href = this.props.article.value.url;
+		}
+	}
+	public componentDidMount() {
+		if (this.props.user && this.props.isExtensionInstalled) {
+			this.navigateToArticle();
 		}
 	}
 	public componentWillUnmount() {
@@ -88,39 +95,16 @@ class ReadScreen extends React.PureComponent<Props> {
 							<li>Read it on Readup.</li>
 						</ul>
 						<div className="spacer"></div>
-						{this.props.user ?
-							this.props.isBrowserCompatible ?
-								<div className="prompt download chrome">
-									<a
-										className="text"
-										onClick={this.props.onInstallExtension}
-									>
-										Add the Chrome extension to continue
-										<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-									</a>
-								</div> :
-								<div className="prompt unsupported">
-									<span className="text">Get Readup on iOS and Chrome</span>
-									<div className="badges">
-										<a href="https://apps.apple.com/us/app/readup-app/id1441825432">
-											<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-										</a>
-										<a onClick={this.props.onInstallExtension}>
-											<img src="/images/ChromeWebStore_BadgeWBorder.svg" alt="Chrome Web Store Badge" />
-										</a>
-									</div>
-									<div className="bypass">
-										<a href={this.props.article.value.url}>Continue to publisher's site</a>
-									</div>
-								</div> :
-							<div className="prompt download ios">
-								<a
-									href="https://apps.apple.com/us/app/readup-app/id1441825432"
-									onClick={this._copyAppReferrerTextToClipboard}
-								>
-									<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-								</a>
-							</div>}
+						<GetStartedButton
+							deviceType={this.props.deviceType}
+							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+						/>
+						{this.props.deviceType !== DeviceType.Ios && this.props.deviceType !== DeviceType.DesktopChrome ?
+							<div className="bypass">
+								<a href={this.props.article.value.url}>Continue to publisher's site</a>
+							</div> :
+							null}
 					</>}
 			</ScreenContainer>
 		);

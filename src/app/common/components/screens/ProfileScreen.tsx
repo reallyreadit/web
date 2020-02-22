@@ -29,7 +29,7 @@ import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from '../FollowingListDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
-import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadIosAppDialog';
+import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadAppDialog';
 import PageSelector from '../controls/PageSelector';
 import InfoBox from '../controls/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
@@ -40,11 +40,12 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import StickyNote from '../../../../common/components/StickyNote';
+import { DeviceType } from '../../DeviceType';
 
 interface Props {
+	deviceType: DeviceType,
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
-	isIosDevice: boolean,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -108,11 +109,13 @@ export class ProfileScreen extends React.Component<Props, State> {
 		}
 		this.props.onOpenDialog(
 			<DownloadIosAppDialog
+				deviceType={this.props.deviceType}
 				onCopyAppReferrerTextToClipboard={
 					() => {
 						this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
 					}
 				}
+				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 				onClose={this.props.onCloseDialog}
 				title={`Get the app to follow ${this.props.userName}`}
 			/>
@@ -385,7 +388,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 									<h1>Join Readup to read with {this.props.profile.value.userName}.</h1>
 									<h3>
 										<GetStartedButton
-											isIosDevice={this.props.isIosDevice}
+											deviceType={this.props.deviceType}
 											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>

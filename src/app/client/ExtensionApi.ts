@@ -47,13 +47,12 @@ export default class extends ExtensionApi {
         });
     }
     private sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
-        if (this.isBrowserCompatible) {
-            try {
-                window.chrome.runtime.sendMessage(this._extensionId, { type, data }, responseCallback);
-                return true;
-            } catch (ex) { }
+        try {
+            window.chrome.runtime.sendMessage(this._extensionId, { type, data }, responseCallback);
+            return true;
+        } catch (ex) {
+            return false;
         }
-        return false;
     }
     private sendMessageAwaitingResponse<T>(type: string, data?: {}) {
         return new Promise<T>((resolve, reject) => {
@@ -71,20 +70,10 @@ export default class extends ExtensionApi {
     public commentUpdated(comment: CommentThread) {
         this.sendMessage('commentUpdated', comment);
     }
-    public install() {
-        window.open('https://chrome.google.com/webstore/detail/reallyreadit/mkeiglkfdfamdjehidenkklibndmljfi', '_blank');
-    }
     public userUpdated(user: UserAccount) {
         this.sendMessage('userUpdated', user);
     }
     public get isInstalled() {
         return this._isInstalled;
-    }
-    public get isBrowserCompatible() {
-        return (
-            /^(linux|mac|win)/i.test(window.navigator.platform) &&
-            window.navigator.userAgent.indexOf('Android') === -1 &&
-            window.navigator.vendor === 'Google Inc.'
-        );
     }
 }
