@@ -10,6 +10,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 interface Props {
 	isExtensionInstalled: boolean,
 	onOpenMenu: () => void,
+	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onOpenSignInDialog: (analyticsAction: string) => void,
 	onViewHome: () => void,
 	onViewInbox: () => void,
@@ -19,6 +20,9 @@ export default class extends React.PureComponent<Props> {
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		e.preventDefault();
 		this.props.onViewHome();
+	};
+	private readonly _openCreateAccountDialog = () => {
+		this.props.onOpenCreateAccountDialog('Header');
 	};
 	private readonly _openSignInDialog = () => {
 		this.props.onOpenSignInDialog('Header');
@@ -57,11 +61,19 @@ export default class extends React.PureComponent<Props> {
 							</> :
 							null}
 						{showAuthButtons ?
-							<Button
-								text="Login"
-								size="large"
-								onClick={this._openSignInDialog}
-							/> :
+							<>
+								<Button
+									text="Login"
+									size="large"
+									onClick={this._openSignInDialog}
+								/>
+								<Button
+									text="Sign Up"
+									size="large"
+									intent="loud"
+									onClick={this._openCreateAccountDialog}
+								/>
+							</> :
 							null}
 					</div> :
 					null}

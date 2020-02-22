@@ -92,6 +92,18 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// dialogs
+	private readonly _openCreateAccountDialog = (analyticsAction: string) => {
+		this._dialog.openDialog(
+			<CreateAccountDialog
+				analyticsAction={analyticsAction}
+				captcha={this.props.captcha}
+				onCreateAccount={this._createAccount}
+				onCloseDialog={this._dialog.closeDialog}
+				onShowToast={this._toaster.addToast}
+				onSignInWithApple={this._signInWithApple}
+			/>
+		);
+	};
 	private readonly _openNewPlatformNotificationRequestDialog = () => {
 		this._dialog.openDialog(
 			<NewPlatformNotificationRequestDialog
@@ -852,6 +864,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				 ) ?
 					<Header
 						isExtensionInstalled={this.state.isExtensionInstalled}
+						onOpenCreateAccountDialog={this._openCreateAccountDialog}
 						onOpenMenu={this._openMenu}
 						onOpenSignInDialog={this._openSignInDialog}
 						onViewHome={this._viewHome}
