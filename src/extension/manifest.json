@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Readup",
-  "description": "Read more. Read better.",
+  "description": "Find, read and share articles.",
 	
   "icons": {
     "16": "./icons/icon-16.png",
