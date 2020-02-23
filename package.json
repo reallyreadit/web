@@ -7,12 +7,12 @@
       "app": "1.16.1",
       "contentScript": 0.22,
       "extension": {
-        "package": "2.6.0",
-        "content-parser": "1.0.14"
+        "package": "2.6.2",
+        "content-parser": "1.0.15"
       },
       "native-client": {
-        "reader": "7.0.6",
-        "share-extension": "3.0.13"
+        "reader": "7.0.7",
+        "share-extension": "3.0.14"
       }
     }
   },
