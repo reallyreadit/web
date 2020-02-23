@@ -396,6 +396,10 @@ export default {
 			]
 		},
 		{
+			hostname: 'hackster.io',
+			contentSearchRootElementSelector: '#story'
+		},
+		{
 			hostname: 'dark-mountain.net',
 			transpositions: [
 				{
@@ -406,6 +410,10 @@ export default {
 					parentElementSelector: '.entry-content'
 				}
 			]
+		},
+		{
+			hostname: 'mcsweeneys.net',
+			contentSearchRootElementSelector: '.article-body'
 		},
 		{
 			hostname: 'churchofjesuschrist.org',
