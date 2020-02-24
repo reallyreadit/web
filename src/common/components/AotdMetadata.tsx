@@ -3,7 +3,8 @@ import UserArticle from '../models/UserArticle';
 import UserAccount from '../models/UserAccount';
 import classNames from 'classnames';
 import ProfileLink from './ProfileLink';
-import AotdPopover from './AotdPopover';
+import { formatTimestamp } from '../format';
+import Icon from './Icon';
 
 export default (
 	props: {
@@ -36,7 +37,10 @@ export default (
 				)
 			}>
 				{props.article.aotdTimestamp ?
-					<AotdPopover timestamp={props.article.aotdTimestamp} /> :
+					<Icon
+						display="block"
+						name="trophy"
+					/> :
 					isRanked ?
 						<>
 							<small>#</small> {props.article.aotdContenderRank}
@@ -46,7 +50,9 @@ export default (
 			</div>
 			<div className="score">
 				<span className="points">
-					{`${props.article.hotScore} pts`}
+					{props.article.aotdTimestamp ?
+						`AOTD on ${formatTimestamp(props.article.aotdTimestamp)}` :
+						`${props.article.hotScore} pts`}
 					{props.pointsCallout}
 				</span>
 				{props.article.firstPoster ?
