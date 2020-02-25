@@ -113,7 +113,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							href="#"
 							onClick={this._viewPrivacyPolicy}
 						>
-							Privacy
+							Terms of Service
 						</a>
 					</div>
 				</div>

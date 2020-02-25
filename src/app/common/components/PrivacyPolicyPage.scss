@@ -7,6 +7,11 @@
 	max-width: 600px;
 	margin: 0 auto;
 }
+.privacy-policy-page_75v4wh > h2 {
+	margin: 15px 0;
+	font-size: 16pt;
+	font-family: 'Museo Sans (500)';
+}
 .privacy-policy-page_75v4wh > section:not(:last-of-type)::after {
 	content: "...";
 	display: block;
@@ -14,25 +19,39 @@
 	margin: 10px 0;
 	letter-spacing: 1em;
 }
-.privacy-policy-page_75v4wh > p,
 .privacy-policy-page_75v4wh > section > p {
 	margin: 15px 0;
 }
-.privacy-policy-page_75v4wh > p:first-of-type,
 .privacy-policy-page_75v4wh > section:first-of-type > p {
 	margin-top: 0;
 }
-.privacy-policy-page_75v4wh > p:last-of-type,
 .privacy-policy-page_75v4wh > section:last-of-type > p {
 	margin-bottom: 0;
 }
-.privacy-policy-page_75v4wh > ul,
+.privacy-policy-page_75v4wh > section > ol {
+	list-style: lower-latin;
+	padding-left: 1.5em;
+	margin: 15px 0;
+}
+.privacy-policy-page_75v4wh > section > ol > li {
+	margin: 5px 0;
+}
+.privacy-policy-page_75v4wh > section > ol > li > ol {
+	list-style: lower-roman;
+	padding-left: 1.5em;
+	margin: 5px 0;
+}
+.privacy-policy-page_75v4wh > section > ol > li > ol > li {
+	margin: 5px 0;
+}
 .privacy-policy-page_75v4wh > section > ul {
 	list-style: disc;
 	padding-left: 1.5em;
-	margin-top: 5px;
+	margin: 15px 0;
 }
-.privacy-policy-page_75v4wh > p > a,
+.privacy-policy-page_75v4wh > section > ul > li {
+	margin: 5px 0;
+}
 .privacy-policy-page_75v4wh > section > p > a {
 	cursor: pointer;
 	text-decoration: underline;

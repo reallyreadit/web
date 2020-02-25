@@ -184,8 +184,8 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	},
 	{
 		analyticsName: 'PrivacyPolicy',
-		createUrl: () => '/privacy-policy',
-		pathRegExp: /^\/privacy-policy$/,
+		createUrl: () => '/terms',
+		pathRegExp: /^\/terms$/,
 		screenKey: ScreenKey.PrivacyPolicy
 	},
 	...(function () {

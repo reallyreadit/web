@@ -33,7 +33,7 @@ export default class extends React.PureComponent<{
 					href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
 					onClick={this._viewPrivacyPolicy}
 				>
-					Privacy Policy
+					Terms of Service
 				</a>
 				<br />
 				<a href="mailto:support@readup.com">support@readup.com</a>

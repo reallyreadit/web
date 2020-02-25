@@ -266,6 +266,13 @@ server = server.get('/following', (req, res) => {
 		findRouteByKey(routes, ScreenKey.MyFeed).createUrl()
 	);
 });
+server = server.get('/privacy-policy', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
+	);
+});
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api
