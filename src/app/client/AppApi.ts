@@ -9,6 +9,8 @@ import ShareResult from '../../common/models/app/ShareResult';
 import NotificationAuthorizationRequestResult from '../../common/models/app/NotificationAuthorizationRequestResult';
 import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 import SignInEventResponse from '../../common/models/app/SignInEventResponse';
+import WebAuthResponse from '../../common/models/app/WebAuthResponse';
+import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -136,6 +138,19 @@ export default class extends AppApi {
 				this._messagingContext.sendMessage(
 					{
 						type: 'requestNotificationAuthorization'
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public requestWebAuthentication(request: WebAuthRequest) {
+		return new Promise<WebAuthResponse>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestWebAuthentication',
+						data: request
 					},
 					resolve
 				);

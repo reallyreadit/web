@@ -38,6 +38,9 @@ import OrientationAnalytics from '../../../common/models/analytics/OrientationAn
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
+import createSettingsScreenFactory from './SettingsPage';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
+import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -178,6 +181,51 @@ export default class extends Root<
 	};
 	
 	// user account
+	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
+		return this.props.appApi
+			.getDeviceInfo()
+			.then(
+				deviceInfo => {
+					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
+						this.openAppUpdateRequiredDialog('5.7');
+						throw new Error('Unsupported');
+					}
+				}
+			)
+			.then(this.props.serverApi.requestTwitterWebViewRequestToken)
+			.then(
+				token => {
+					const url = new URL('https://api.twitter.com/oauth/authorize');
+					url.searchParams.set('oauth_token', token.value);
+					return this.props.appApi.requestWebAuthentication({
+						authUrl: url.href,
+						callbackScheme: 'readup'
+					});
+				}
+			)
+			.then(
+				webAuthResponse => {
+					if (!webAuthResponse.callbackURL) {
+						if (webAuthResponse.error === 'Unsupported') {
+							this.openIosUpdateRequiredDialog(
+								'13',
+								'You can link your Twitter account on the Readup website instead.'
+							);
+						}
+						throw (webAuthResponse.error ?? 'Unknown');
+					}
+					const url = new URL(webAuthResponse.callbackURL);
+					if (url.searchParams.has('denied')) {
+						throw 'Cancelled';
+					}
+					return this.props.serverApi.linkTwitterAccount({
+						integrations: integration,
+						oauthToken: url.searchParams.get('oauth_token'),
+						oauthVerifier: url.searchParams.get('oauth_verifier')
+					});
+				}
+			);
+	};
 	private readonly _signInWithApple = () => {
 		this.props.appApi
 			.getDeviceInfo()
@@ -186,17 +234,7 @@ export default class extends Root<
 					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0) {
 						this.props.appApi.requestAppleIdCredential();
 					} else {
-						this._dialog.openDialog(
-							<Dialog
-								closeButtonText="Dismiss"
-								onClose={this._dialog.closeDialog}
-								size="small"
-								textAlign="center"
-								title="Update Required"
-							>
-								<p>Readup must be updated in the App Store to use this feature.</p>
-							</Dialog>
-						);
+						this.openAppUpdateRequiredDialog('5.4');
 					}
 				}
 			);
@@ -388,7 +426,26 @@ export default class extends Root<
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
-			})
+			}),
+			[ScreenKey.Settings]: createSettingsScreenFactory(
+				ScreenKey.Settings,
+				{
+					onCloseDialog: this._dialog.closeDialog,
+					onChangeAuthServiceIntegrationPreference: this._changeAuthServiceIntegrationPreference,
+					onChangeEmailAddress: this._changeEmailAddress,
+					onChangeNotificationPreference: this._changeNotificationPreference,
+					onChangePassword: this._changePassword,
+					onChangeTimeZone: this._changeTimeZone,
+					onGetSettings: this.props.serverApi.getSettings,
+					onGetTimeZones: this.props.serverApi.getTimeZones,
+					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
+					onOpenDialog: this._dialog.openDialog,
+					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
+					onResendConfirmationEmail: this._resendConfirmationEmail,
+					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
+					onShowToast: this._toaster.addToast
+				}
+			)
 		};
 
 		// state
@@ -553,6 +610,43 @@ export default class extends Root<
 					}
 				}
 			);
+	}
+	private openAppUpdateRequiredDialog(versionRequired: string) {
+		this.openUpdateRequiredDialog(
+			'App Update Required',
+			[
+				`Readup must be updated in the App Store to version ${versionRequired} or greater to use this feature.`
+			]
+		);
+	}
+	private openIosUpdateRequiredDialog(versionRequired: string, message: string = null) {
+		const messages = [
+			`iOS ${versionRequired} or greater is required to use this feature.`
+		];
+		if (message) {
+			messages.push(message);
+		}
+		this.openUpdateRequiredDialog('iOS Update Required', messages);
+	}
+	private openUpdateRequiredDialog(title: string, messages: string[]) {
+		this._dialog.openDialog(
+			(
+				<Dialog
+					closeButtonText="Dismiss"
+					onClose={this._dialog.closeDialog}
+					size="small"
+					textAlign="center"
+					title={title}
+				>
+					{messages.map(
+						(message, index) => (
+							<p key={index}>{message}</p>
+						)
+					)}
+				</Dialog>
+			),
+			'push'
+		);
 	}
 	private processNavigationRequest(user: UserAccount | null, location: RouteLocation) {
 		let screens: Screen[];

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import ToggleSwitch from '../../../../../common/components/ToggleSwitch';
 import AlertEmailPreference from '../../../../../common/models/notifications/AlertEmailPreference';
 import AsyncTracker from '../../../../../common/AsyncTracker';
-import SaveIndicator, { State as SaveIndicatorState } from '../../../../../common/components/SaveIndicator';
+import { State as SaveIndicatorState } from '../../../../../common/components/SaveIndicator';
+import ToggleSwitchExpandableInput from '../../../../../common/components/ToggleSwitchExpandableInput';
 
 export interface Value {
 	isEnabled: boolean,
@@ -42,21 +42,21 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 				AlertEmailPreference.None
 		});
 	};
-	private readonly _toggleEnabled = () => {
+	private readonly _toggleEnabled = (isEnabled: boolean) => {
 		let value: Value;
-		if (this.props.isEnabled) {
+		if (isEnabled) {
 			value = {
-				isEnabled: false,
-				email: AlertEmailPreference.None,
-				extension: false,
-				push: false
-			};
-		} else {
-			value = {
-				isEnabled: true,
+				isEnabled,
 				email: AlertEmailPreference.Immediately,
 				extension: true,
 				push: true
+			};
+		} else {
+			value = {
+				isEnabled,
+				email: AlertEmailPreference.None,
+				extension: false,
+				push: false
 			};
 		}
 		this.saveChanges(value);
@@ -89,73 +89,65 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="alert-selector_esabj4">
-				<div className="switch-container">
-					<ToggleSwitch
-						isChecked={this.props.isEnabled}
-						onChange={this._toggleEnabled}
-					/>
-				</div>
-				<div className="controls">
-					<div className="header">
-						<label onClick={this._toggleEnabled}>{this.props.title}</label>
-						{this.props.subtitle ?
-							<span>{this.props.subtitle}</span> :
-							null}
-						<SaveIndicator state={this.state.indicator} />
-					</div>
-					{this.props.isEnabled && this.props.showChannels ?
-						<ol>
-							<li>
-								<label>
-									<input
-										type="checkbox"
-										checked={this.props.email !== AlertEmailPreference.None}
-										onChange={this._toggleEmail}
-									/>
-									<span>Email</span>
-								</label>
-								{this.props.email !== AlertEmailPreference.None ?
-									<select
-										value={this.props.email}
-										onChange={this._selectEmail}
-									>
-										{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.Immediately ?
-											<option value={AlertEmailPreference.Immediately}>Immediately</option> :
-											null}
-										{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.DailyDigest ?
-											<option value={AlertEmailPreference.DailyDigest}>Daily Digest</option> :
-											null}
-										{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.WeeklyDigest ?
-											<option value={AlertEmailPreference.WeeklyDigest}>Weekly Digest</option> :
-											null}
-									</select> :
-									null}
-							</li>
-							<li>
-								<label>
-									<input
-										type="checkbox"
-										checked={this.props.extension}
-										onChange={this._toggleExtension}
-									/>
-									<span>Chrome</span>
-								</label>
-							</li>
-							<li>
-								<label>
-									<input
-										type="checkbox"
-										checked={this.props.push}
-										onChange={this._togglePush}
-									/>
-									<span>iOS</span>
-								</label>
-							</li>
-						</ol> :
-						null}
-				</div>
-			</div>
+			<ToggleSwitchExpandableInput
+				className="alert-selector_esabj4"
+				isEnabled={this.props.isEnabled}
+				onChange={this._toggleEnabled}
+				saveIndicator={this.state.indicator}
+				subtitle={this.props.subtitle}
+				title={this.props.title}
+			>
+				{this.props.isEnabled && this.props.showChannels ?
+					<ol>
+						<li>
+							<label>
+								<input
+									type="checkbox"
+									checked={this.props.email !== AlertEmailPreference.None}
+									onChange={this._toggleEmail}
+								/>
+								<span>Email</span>
+							</label>
+							{this.props.email !== AlertEmailPreference.None ?
+								<select
+									value={this.props.email}
+									onChange={this._selectEmail}
+								>
+									{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.Immediately ?
+										<option value={AlertEmailPreference.Immediately}>Immediately</option> :
+										null}
+									{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.DailyDigest ?
+										<option value={AlertEmailPreference.DailyDigest}>Daily Digest</option> :
+										null}
+									{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.WeeklyDigest ?
+										<option value={AlertEmailPreference.WeeklyDigest}>Weekly Digest</option> :
+										null}
+								</select> :
+								null}
+						</li>
+						<li>
+							<label>
+								<input
+									type="checkbox"
+									checked={this.props.extension}
+									onChange={this._toggleExtension}
+								/>
+								<span>Chrome</span>
+							</label>
+						</li>
+						<li>
+							<label>
+								<input
+									type="checkbox"
+									checked={this.props.push}
+									onChange={this._togglePush}
+								/>
+								<span>iOS</span>
+							</label>
+						</li>
+					</ol> :
+					null}
+			</ToggleSwitchExpandableInput>
 		);
 	}
 }

@@ -40,6 +40,10 @@ import SignInEventType from '../../../common/models/userAccounts/SignInEventType
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { DeviceType } from '../DeviceType';
+import createSettingsScreenFactory from './SettingsPage';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
+import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
+import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -60,13 +64,19 @@ enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleIdInvalidJwt',
 	AppleIdInvalidSession = 'AppleIdInvalidSession',
 	AppleIdUnknownError = 'AppleIdUnknownError',
-	Rebrand = 'rebrand'
+	Rebrand = 'rebrand',
+	TwitterEmailAddressRequired = 'TwitterEmailAddressRequired',
+	TwitterVerificationFailed = 'TwitterVerificationFailed',
+	TwitterUnknownError = 'TwitterUnknownError'
 }
 const welcomeMessages = {
 	[WelcomeMessage.AppleIdInvalidJwt]: 'We were unable to validate the ID token.',
 	[WelcomeMessage.AppleIdInvalidSession]: 'We were unable to validate your session ID.',
 	[WelcomeMessage.AppleIdUnknownError]: 'An unknown Apple authentication error occurred.',
-	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!'
+	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!',
+	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
+	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.',
+	[WelcomeMessage.TwitterUnknownError]: 'An unknown Twitter authentication error occurred.'
 };
 export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
@@ -244,6 +254,26 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// user account
+	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
+		this.props.serverApi
+			.requestTwitterBrowserRequestToken({
+				integrations: integration,
+				redirectPath: window.location.pathname,
+				signUpAnalytics: null
+			})
+			.then(
+				token => {
+					const url = new URL('https://api.twitter.com/oauth/authorize');
+					url.searchParams.set('oauth_token', token.value);
+					window.location.href = url.href;
+				}
+			);
+		return new Promise<AuthServiceAccountAssociation>(
+			resolve => {
+				// leave the promise unresolved as the browser navigates
+			}
+		);
+	};
 	private readonly _signInWithApple = (action: string) => {
 		const url = new URL('https://appleid.apple.com/auth/authorize');
 		url.searchParams.set('client_id', 'com.readup.webapp');
@@ -254,12 +284,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 		url.searchParams.set(
 			'state',
 			JSON.stringify({
-				action,
 				client: this.props.serverApi.getClientHeaderValue(),
-				currentPath: window.location.pathname,
-				initialPath: this.props.initialLocation.path,
-				marketingVariant: this.props.marketingVariant,
-				referrerUrl: window.document.referrer
+				...(this.getSignUpAnalyticsForm(action))
 			})
 		);
 		window.location.href = url.href;
@@ -506,7 +532,26 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState
-			})
+			}),
+			[ScreenKey.Settings]: createSettingsScreenFactory(
+				ScreenKey.Settings,
+				{
+					onCloseDialog: this._dialog.closeDialog,
+					onChangeAuthServiceIntegrationPreference: this._changeAuthServiceIntegrationPreference,
+					onChangeEmailAddress: this._changeEmailAddress,
+					onChangeNotificationPreference: this._changeNotificationPreference,
+					onChangePassword: this._changePassword,
+					onChangeTimeZone: this._changeTimeZone,
+					onGetSettings: this.props.serverApi.getSettings,
+					onGetTimeZones: this.props.serverApi.getTimeZones,
+					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
+					onOpenDialog: this._dialog.openDialog,
+					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
+					onResendConfirmationEmail: this._resendConfirmationEmail,
+					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
+					onShowToast: this._toaster.addToast
+				}
+			)
 		};
 
 		// route state

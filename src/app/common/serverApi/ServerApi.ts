@@ -43,12 +43,18 @@ import CommentsQuery from '../../../common/models/social/CommentsQuery';
 import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
 import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
 import AppleIdCredentialAuthForm from '../../../common/models/app/AppleIdCredentialAuthForm';
-import AppleIdCredentialAuthResponse from '../../../common/models/app/AppleIdCredentialAuthResponse';
+import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import PublisherArticleQuery from '../../../common/models/articles/PublisherArticleQuery';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import CommunityReadsQuery from '../../../common/models/articles/CommunityReadsQuery';
 import NewPlatformNotificationRequest from '../../../common/models/analytics/NewPlatformNotificationRequest';
+import AuthServiceIntegrationPreferenceForm from '../../../common/models/userAccounts/AuthServiceIntegrationPreferenceForm';
+import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import TwitterCredentialAuthForm from '../../../common/models/auth/TwitterCredentialAuthForm';
+import TwitterBrowserRequestForm from '../../../common/models/auth/TwitterBrowserRequestForm';
+import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
+import TwitterCredentialLinkForm from '../../../common/models/auth/TwitterCredentialLinkForm';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -144,7 +150,11 @@ export default abstract class {
 	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });
 
 	// Auth
-	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AppleIdCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
+	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
+	public readonly authenticateTwitterCredential = (data: TwitterCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/TwitterAuthentication', data });
+	public readonly requestTwitterBrowserRequestToken = (data: TwitterBrowserRequestForm) => this.post<TwitterRequestToken>({ path: '/Auth/TwitterBrowserRequest', data });
+	public readonly requestTwitterWebViewRequestToken = () => this.post<TwitterRequestToken>({ path: '/Auth/TwitterWebViewRequest' });
+	public readonly linkTwitterAccount = (data: TwitterCredentialLinkForm) => this.post<AuthServiceAccountAssociation>({ path: '/Auth/TwitterLink', data });
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });
@@ -174,6 +184,7 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// UserAccounts
+	public readonly changeAuthServiceIntegrationPreference = (data: AuthServiceIntegrationPreferenceForm) => this.post<AuthServiceAccountAssociation>({ path: '/UserAccounts/AuthServiceIntegrationPreference', data });
 	public readonly changeNotificationPreference = (data: NotificationPreference) => this.post<NotificationPreference>({ path: '/UserAccounts/NotificationPreference', data });
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });
 	public readonly createAuthServiceAccount = (data: AuthServiceAccountForm) => this.post<UserAccount>({ path: '/UserAccounts/AuthServiceAccount', data });

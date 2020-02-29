@@ -3,42 +3,19 @@
 	cssComponentId: alert-selector_esabj4
 */
 
-.alert-selector_esabj4 {
-	display: flex;
-}
-.alert-selector_esabj4 > .controls {
-	padding-left: 10px;
-}
-.alert-selector_esabj4 > .controls > .header {
-	padding-top: 2px;
-}
-.alert-selector_esabj4 > .controls > .header > label {
-	margin-left: 5px;
-	font-family: 'Museo Sans (500)';
-}
-.alert-selector_esabj4 > .controls > .header > span {
-	margin-left: 5px;
-	font-family: 'Museo Sans (100)';
-	font-size: 12pt;
-}
-.alert-selector_esabj4 > .controls > .header > .icon_rour3d {
-	margin-left: 5px;
-	vertical-align: middle;
-	font-size: 12pt;
-}
-.alert-selector_esabj4 > .controls > ol {
+.alert-selector_esabj4 > .controls > .children > ol {
 	margin-top: 5px;
 }
-.alert-selector_esabj4 > .controls > ol > li {
+.alert-selector_esabj4 > .controls > .children > ol > li {
 	line-height: 24px;
 }
-.alert-selector_esabj4 > .controls > ol > li > label {
+.alert-selector_esabj4 > .controls > .children > ol > li > label {
 	vertical-align: middle;
 }
-.alert-selector_esabj4 > .controls > ol > li > label > span {
+.alert-selector_esabj4 > .controls > .children > ol > li > label > span {
 	margin-left: 5px;
 }
-.alert-selector_esabj4 > .controls > ol > li > select {
+.alert-selector_esabj4 > .controls > .children > ol > li > select {
 	height: 24px;
 	box-sizing: border-box;
 	vertical-align: middle;

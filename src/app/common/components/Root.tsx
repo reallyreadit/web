@@ -13,7 +13,6 @@ import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Rou
 import routes from '../../../common/routing/routes';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
-import createSettingsPageScreenFactory from './SettingsPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
@@ -53,8 +52,9 @@ import CommentDeletionForm from '../../../common/models/social/CommentDeletionFo
 import { Form as CreateAccountDialogForm } from './CreateAccountDialog';
 import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceAccountDialog';
 import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
-import SignUpAnalyticsForm from '../../../common/models/userAccounts/SignUpAnalyticsForm';
+import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalyticsForm';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
+import AuthServiceIntegrationPreferenceForm from '../../../common/models/userAccounts/AuthServiceIntegrationPreferenceForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -423,6 +423,9 @@ export default abstract class Root<
 				this.onUserUpdated(user);
 			});
 	};
+	protected readonly _changeAuthServiceIntegrationPreference = (data: AuthServiceIntegrationPreferenceForm) => {
+		return this.props.serverApi.changeAuthServiceIntegrationPreference(data);
+	};
 	protected readonly _changeNotificationPreference = (data: NotificationPreference) => {
 		return this.props.serverApi
 			.changeNotificationPreference(data)
@@ -588,20 +591,6 @@ export default abstract class Root<
 			}),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
-			[ScreenKey.Settings]: createSettingsPageScreenFactory(ScreenKey.Settings, {
-				onCloseDialog: this._dialog.closeDialog,
-				onChangeEmailAddress: this._changeEmailAddress,
-				onChangeNotificationPreference: this._changeNotificationPreference,
-				onChangePassword: this._changePassword,
-				onChangeTimeZone: this._changeTimeZone,
-				onGetSettings: this.props.serverApi.getSettings,
-				onGetTimeZones: this.props.serverApi.getTimeZones,
-				onOpenDialog: this._dialog.openDialog,
-				onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
-				onResendConfirmationEmail: this._resendConfirmationEmail,
-				onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
-				onShowToast: this._toaster.addToast
-			}),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler

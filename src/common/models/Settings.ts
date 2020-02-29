@@ -1,5 +1,5 @@
 import NotificationPreference from './notifications/NotificationPreference';
-import AuthServiceAccountAssociation from './userAccounts/AuthServiceAccountAssociation';
+import AuthServiceAccountAssociation from './auth/AuthServiceAccountAssociation';
 
 export default interface Settings {
 	userCount: number,

@@ -1,4 +1,5 @@
 enum AuthServiceProvider {
-	Apple
+	Apple,
+	Twitter
 }
 export default AuthServiceProvider;

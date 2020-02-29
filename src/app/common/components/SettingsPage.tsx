@@ -19,17 +19,25 @@ import Settings from '../../../common/models/Settings';
 import LoadingOverlay from './controls/LoadingOverlay';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import NotificationPreferencesControl from './controls/NotificationPreferencesControl';
-import AuthServiceProvider from '../../../common/models/userAccounts/AuthServiceProvider';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import SetPasswordDialog from './SettingsPage/SetPasswordDialog';
 import { DateTime } from 'luxon';
 import { formatIsoDateAsUtc } from '../../../common/format';
+import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
+import LinkAccountDialog from './SettingsPage/LinkAccountDialog';
+import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import AuthServiceIntegrationPreferenceForm from '../../../common/models/userAccounts/AuthServiceIntegrationPreferenceForm';
+import ContentBox from '../../../common/components/ContentBox';
+import ToggleSwitchInput from '../../../common/components/ToggleSwitchInput';
 
 interface Props {
 	onCloseDialog: () => void,
 	onChangeEmailAddress: (email: string) => Promise<void>,
+	onChangeAuthServiceIntegrationPreference: (data: AuthServiceIntegrationPreferenceForm) => Promise<AuthServiceAccountAssociation>,
 	onChangeNotificationPreference: (data: NotificationPreference) => Promise<NotificationPreference>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider, integration: AuthServiceIntegration) => Promise<AuthServiceAccountAssociation>,
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -42,10 +50,34 @@ interface Props {
 class SettingsPage extends React.PureComponent<
 	Props,
 	{
+		highlightedAuthServiceAccountId: number,
 		settings: Fetchable<Settings>
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changeAuthServiceIntegrationPreference = (identityIdString: string, isEnabled: boolean) => {
+		const
+			identityId = parseInt(identityIdString),
+			integration = (
+				isEnabled ?
+					AuthServiceIntegration.Post :
+					AuthServiceIntegration.None
+			);
+		this._mergeAuthServiceAccount({
+			...(
+				this.state.settings.value.authServiceAccounts.find(
+					account => account.identityId === identityId
+				)
+			),
+			integrations: integration
+		});
+		return this.props
+			.onChangeAuthServiceIntegrationPreference({
+				identityId,
+				integration
+			})
+			.then(this._mergeAuthServiceAccount);
+	};
 	private readonly _changeTimeZone = (id: number, timeZoneDisplayName: string) => {
 		return this.props
 			.onChangeTimeZone({ id })
@@ -62,6 +94,51 @@ class SettingsPage extends React.PureComponent<
 					});
 				}
 			);
+	};
+	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
+		return this.props
+			.onLinkAuthServiceAccount(provider, integration)
+			.catch(
+				(error?: string) => {
+					if (error !== 'Unsupported') {
+						let errorMessage: string;
+						if (error === 'Cancelled') {
+							errorMessage = 'Authentication cancelled.';
+						} else {
+							errorMessage = 'Error: ' + (error ?? 'Unknown error') + '.';
+						}
+						this.props.onShowToast(errorMessage, Intent.Danger);
+					}
+					throw error;
+				}
+			)
+			.then(this._mergeAuthServiceAccount);
+	};
+	private readonly _mergeAuthServiceAccount = (account: AuthServiceAccountAssociation) => {
+		const
+			authServiceAccounts = this.state.settings.value.authServiceAccounts.slice(),
+			existingAccountIndex = authServiceAccounts.findIndex(
+				existingAccount => existingAccount.identityId === account.identityId
+			);
+		if (existingAccountIndex !== -1) {
+			authServiceAccounts.splice(existingAccountIndex, 1, account);
+		} else {
+			authServiceAccounts.unshift(account);
+		}
+		this.setState({
+			highlightedAuthServiceAccountId: (
+				existingAccountIndex === -1 ?
+					account.identityId :
+					this.state.highlightedAuthServiceAccountId
+			),
+			settings: {
+				...this.state.settings,
+				value: {
+					...this.state.settings.value,
+					authServiceAccounts
+				}
+			}
+		});
 	};
 	private readonly _openChangePasswordDialog = () => {
 		this.props.onOpenDialog(
@@ -93,6 +170,14 @@ class SettingsPage extends React.PureComponent<
 			/>
 		);
 	};
+	private readonly _openLinkAccountDialog = () => {
+		this.props.onOpenDialog(
+			<LinkAccountDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onLinkAuthServiceAccount={this._linkAuthServiceAccount}
+			/>
+		);
+	};
 	private readonly _openSetPasswordDialog = () => {
 		this.props.onOpenDialog(
 			<SetPasswordDialog
@@ -106,6 +191,7 @@ class SettingsPage extends React.PureComponent<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			highlightedAuthServiceAccountId: 0,
 			settings: props.onGetSettings(
 				this._asyncTracker.addCallback(
 					settings => {
@@ -220,37 +306,52 @@ class SettingsPage extends React.PureComponent<
 						<div className="setting accounts">
 							<div className="header">
 								<span className="label">Linked Accounts</span>
+								<Separator />
+								<ActionLink text="Add" iconLeft="plus" onClick={this._openLinkAccountDialog} />
 							</div>
 							<div className="section">
 								{this.state.settings.value.authServiceAccounts.length ?
-									<table>
-										<thead>
-											<tr>
-												<th>Date Added</th>
-												<th>Provider</th>
-												<th>Email Address</th>
-											</tr>
-										</thead>
-										<tbody>
-											{this.state.settings.value.authServiceAccounts.map(
-												account => {
-													let provider: string;
-													switch (account.provider) {
-														case AuthServiceProvider.Apple:
-															provider = 'Apple';
-															break;
-													}
-													return (
-														<tr key={account.dateAssociated}>
-															<td>{DateTime.fromISO(formatIsoDateAsUtc(account.dateAssociated)).toLocaleString(DateTime.DATE_MED)}</td>
-															<td>{provider}</td>
-															<td>{account.emailAddress}</td>
-														</tr>
-													);
-												}
-											)}
-										</tbody>
-									</table> :
+									this.state.settings.value.authServiceAccounts.map(
+										account => {
+											let
+												identity: string,
+												provider: string,
+												supportsIntegrations: boolean;
+											switch (account.provider) {
+												case AuthServiceProvider.Apple:
+													provider = 'Apple';
+													identity = account.emailAddress;
+													supportsIntegrations = false;
+													break;
+												case AuthServiceProvider.Twitter:
+													provider = 'Twitter';
+													identity = '@' + account.handle;
+													supportsIntegrations = true;
+													break;
+											}
+											return (
+												<ContentBox
+													className="account"
+													highlight={account.identityId === this.state.highlightedAuthServiceAccountId}
+													key={account.identityId}
+												>
+													<div className="provider">{provider}</div>
+													<div className="date">Added on {DateTime.fromISO(formatIsoDateAsUtc(account.dateAssociated)).toLocaleString(DateTime.DATE_MED)}</div>
+													<div className="identity">{identity}</div>
+													{supportsIntegrations ?
+														<div className="integrations">
+															<ToggleSwitchInput
+																isEnabled={account.integrations === AuthServiceIntegration.Post}
+																onChangeAsync={this._changeAuthServiceIntegrationPreference}
+																title="Tweet my Readup posts"
+																value={account.identityId.toString()}
+															/>
+														</div> :
+														null}
+												</ContentBox>
+											);
+										}
+									) :
 									'No linked accounts found.'}
 							</div>
 						</div>
@@ -259,13 +360,14 @@ class SettingsPage extends React.PureComponent<
 		);
 	}
 }
-export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
+export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
+				onChangeAuthServiceIntegrationPreference={deps.onChangeAuthServiceIntegrationPreference}
 				onChangeNotificationPreference={deps.onChangeNotificationPreference}
 				onChangePassword={deps.onChangePassword}
 				onChangeTimeZone={deps.onChangeTimeZone}
@@ -273,6 +375,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
+				onLinkAuthServiceAccount={deps.onLinkAuthServiceAccount}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}

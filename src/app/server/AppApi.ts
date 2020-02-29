@@ -3,6 +3,7 @@ import ShareData from '../../common/sharing/ShareData';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
 import SignInEventType from '../../common/models/userAccounts/SignInEventType';
+import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 
 export default class extends AppApi {
 	public getDeviceInfo() {
@@ -21,6 +22,9 @@ export default class extends AppApi {
 		throw new Error('Operation not supported in server environment');
 	}
 	public requestNotificationAuthorization() {
+		return Promise.reject('Operation not supported in server environment');
+	}
+	public requestWebAuthentication(request: WebAuthRequest) {
 		return Promise.reject('Operation not supported in server environment');
 	}
 	public share(data: ShareData) {

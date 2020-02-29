@@ -1,0 +1,28 @@
+/*
+	componentPath: src/common/components/ToggleSwitchExpandableInput
+	cssComponentId: toggle-switch-expandable-input_i54wnk
+*/
+
+.toggle-switch-expandable-input_i54wnk{
+	display: flex;
+}
+.toggle-switch-expandable-input_i54wnk> .controls {
+	padding-left: 10px;
+}
+.toggle-switch-expandable-input_i54wnk> .controls > .header {
+	padding-top: 2px;
+}
+.toggle-switch-expandable-input_i54wnk> .controls > .header > label {
+	margin-left: 5px;
+	font-family: 'Museo Sans (500)';
+}
+.toggle-switch-expandable-input_i54wnk> .controls > .header > span {
+	margin-left: 5px;
+	font-family: 'Museo Sans (100)';
+	font-size: 12pt;
+}
+.toggle-switch-expandable-input_i54wnk> .controls > .header > .icon_rour3d {
+	margin-left: 5px;
+	vertical-align: middle;
+	font-size: 12pt;
+}

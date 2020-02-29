@@ -52,15 +52,20 @@
 	cursor: pointer;
 	text-decoration: underline;
 }
-.settings-page_ejwkk > .accounts > .section > table > thead> tr > th,
-.settings-page_ejwkk > .accounts > .section > table > tbody> tr > td {
-	padding: 5px;
+.settings-page_ejwkk > .accounts > .section > .account {
+	max-width: 300px;
 }
-.settings-page_ejwkk > .accounts > .section > table > thead> tr > th:first-child,
-.settings-page_ejwkk > .accounts > .section > table > tbody> tr > td:first-child {
-	padding-left: 0;
+.settings-page_ejwkk > .accounts > .section > .account + .account {
+	margin-top: 10px;
 }
-.settings-page_ejwkk > .accounts > .section > table > thead> tr > th:last-child,
-.settings-page_ejwkk > .accounts > .section > table > tbody> tr > td:last-child {
-	padding-right: 0;
+.settings-page_ejwkk > .accounts > .section > .account > .provider {
+	font-family: 'Museo Sans (500)';
+	font-size: 14pt;
+	margin-bottom: 5px;
+}
+.settings-page_ejwkk > .accounts > .section > .account > .date {
+	margin-bottom: 5px;
+}
+.settings-page_ejwkk > .accounts > .section > .account > .integrations {
+	margin-top: 10px;
 }

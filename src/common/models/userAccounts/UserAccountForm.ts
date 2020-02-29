@@ -1,5 +1,5 @@
 import PushDeviceForm from './PushDeviceForm';
-import SignUpAnalyticsForm from './SignUpAnalyticsForm';
+import SignUpAnalyticsForm from '../analytics/SignUpAnalyticsForm';
 
 export default interface UserAccountForm {
 	name: string,
