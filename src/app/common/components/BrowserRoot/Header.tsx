@@ -6,9 +6,10 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
+import { DeviceType } from '../../DeviceType';
 
 interface Props {
-	isExtensionInstalled: boolean,
+	deviceType: DeviceType,
 	onOpenMenu: () => void,
 	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onOpenSignInDialog: (analyticsAction: string) => void,
@@ -29,7 +30,11 @@ export default class extends React.PureComponent<Props> {
 	};
 	public render() {
 		const
-			showAuthButtons = !this.props.user && this.props.isExtensionInstalled,
+			showAuthButtons = (
+				!this.props.user &&
+				this.props.deviceType !== DeviceType.Android &&
+				this.props.deviceType !== DeviceType.Ios
+			),
 			showMenu = this.props.user;
 		return (
 			<header className={

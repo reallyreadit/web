@@ -908,7 +908,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
 					<Header
-						isExtensionInstalled={this.state.isExtensionInstalled}
+						deviceType={this.props.deviceType}
 						onOpenCreateAccountDialog={this._openCreateAccountDialog}
 						onOpenMenu={this._openMenu}
 						onOpenSignInDialog={this._openSignInDialog}
