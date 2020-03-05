@@ -7,7 +7,6 @@ import ShareData from '../../../../../common/sharing/ShareData';
 import ShareChannel from '../../../../../common/sharing/ShareChannel';
 import PageResult from '../../../../../common/models/PageResult';
 import UserAccount from '../../../../../common/models/UserAccount';
-import PointsCallout from './PointsCallout';
 import RankCallout from './RankCallout';
 import Button from '../../../../../common/components/Button';
 
@@ -45,11 +44,6 @@ export default class AotdView extends React.Component<{
 						onToggleStar={this.props.onToggleArticleStar}
 						onViewComments={this.props.onViewComments}
 						onViewProfile={this.props.onViewProfile}
-						pointsCallout={
-							!this.props.user ?
-								<PointsCallout /> :
-								null
-						}
 						user={this.props.user}
 					/>
 					<Button
