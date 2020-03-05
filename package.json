@@ -4,7 +4,7 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.17.1",
+      "app": "1.17.2",
       "contentScript": 0.22,
       "extension": {
         "package": "2.6.2",
