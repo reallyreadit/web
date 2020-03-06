@@ -10,6 +10,12 @@ const defaultPortConfigs = [
 		port: 443
 	}
 ];
+function prefixPath(path: string) {
+	if (!path.startsWith('/')) {
+		return '/' + path;
+	}
+	return path;
+}
 export function createUrl(endpoint: HttpEndpoint, path?: string, query?: { [key: string]: string }) {
 	let url = endpoint.protocol + '://' + endpoint.host;
 	if (endpoint.port != null) {
@@ -21,11 +27,11 @@ export function createUrl(endpoint: HttpEndpoint, path?: string, query?: { [key:
 			url += (':' + endpoint.port);
 		}
 	}
+	if (endpoint.path) {
+		url += prefixPath(endpoint.path);
+	}
 	if (path) {
-		if (!path.startsWith('/')) {
-			url += '/';
-		}
-		url += path;
+		url += prefixPath(path);
 	}
 	if (query) {
 		url += createQueryString(query);
@@ -35,5 +41,6 @@ export function createUrl(endpoint: HttpEndpoint, path?: string, query?: { [key:
 export default interface HttpEndpoint {
 	protocol: string,
 	host: string,
-	port?: number
+	port?: number,
+	path?: string
 }
