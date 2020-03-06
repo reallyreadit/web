@@ -22,7 +22,6 @@ import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
-import * as path from 'path';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
@@ -123,35 +122,6 @@ server = server.get('/apple-app-site-association', (req, res) => {
 // version check
 server = server.get('/version', (req, res) => {
 	res.status(200).send(version.app);
-});
-// app content script updating
-server = server.get('/assets/update/contentScript', (req, res) => {
-	if (!req.query['currentVersion'] || parseFloat(req.query['currentVersion']) < version.contentScript) {
-		res.setHeader('X-ReallyReadIt-Version', version.contentScript);
-		res.sendFile(
-			path.posix.join('assets', 'contentScript'),
-			{
-				headers: { 'Content-Type': 'text/plain' },
-				root: config.contentRootPath
-			}
-		);
-	} else {
-		res.sendStatus(200);
-	}
-});
-server = server.get('/assets/update/ContentScript.js', (req, res) => {
-	if (parseFloat(req.query['currentVersion']) < version.contentScript) {
-		res.setHeader('X-ReallyReadIt-Version', version.contentScript);
-		res.sendFile(
-			path.posix.join('assets', 'ContentScript.js'),
-			{
-				headers: { 'Content-Type': 'text/plain' },
-				root: config.contentRootPath
-			}
-		);
-	} else {
-		res.sendStatus(200);
-	}
 });
 // authenticate
 server = server.use((req, res, next) => {
