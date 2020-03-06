@@ -466,12 +466,6 @@ chrome.windows.onFocusChanged.addListener(
 		}
 	}
 );
-chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
-	if (details.transitionType === 'link' && tabs.get(details.tabId)) {
-		console.log('chrome.webNavigation.onHistoryStateUpdated (tabId: ' + details.tabId + ', ' + details.url + ')');
-		contentScriptApi.updateHistoryState(details.tabId, details.url);
-	}
-});
 chrome.alarms.onAlarm.addListener(
 	alarm => {
 		if (alarm.name === 'updateContentParser') {

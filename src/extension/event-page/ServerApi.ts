@@ -367,7 +367,7 @@ export default class ServerApi {
 	}
 	public getAuthStatus() {
 		return new Promise<boolean>(resolve => chrome.cookies.get({
-			url: createUrl(window.reallyreadit.extension.config.api),
+			url: createUrl(window.reallyreadit.extension.config.web),
 			name: window.reallyreadit.extension.config.cookieName
 		}, cookie => resolve(!!cookie)));
 	}

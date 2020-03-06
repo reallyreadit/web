@@ -15,7 +15,7 @@ const
 	staticAssets = createBuild({
 		onBuildComplete: (buildInfo, resolve) => {
 			const
-				fileName = path.join(buildInfo.outPath, 'manifest.json'),
+				fileName = path.posix.join(buildInfo.outPath, 'manifest.json'),
 				manifest = JSON.parse(
 					fs
 						.readFileSync(fileName)
@@ -25,8 +25,14 @@ const
 					fs
 						.readFileSync('./package.json')
 						.toString()
+				),
+				config = JSON.parse(
+					fs
+						.readFileSync(path.posix.join(project.srcDir, `extension/common/config.${buildInfo.env}.json`))
+						.toString()
 				);
 			manifest.version = package['it.reallyread'].version.extension.package.toString().padEnd(4, '0');
+			manifest.permissions.push(config.web.protocol + '://' + config.web.host + '/*');
 			fs.writeFileSync(
 				fileName,
 				JSON.stringify(manifest, null, 3)

@@ -22,25 +22,9 @@
     "page": "./event-page/index.html",
   	"persistent": false
   },
-  "externally_connectable": {
-    "matches": [
-      "*://*.readup.com/*"
-    ]
-  },
-  "content_scripts": [ 
-    {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "./content-script/bundle.js"
-      ]
-    }
-  ],
   "permissions": [
-    "*://*/*",
+    "activeTab",
     "cookies",
-    "webNavigation",
     "alarms",
     "notifications"
   ],
