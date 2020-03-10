@@ -41,6 +41,9 @@ export default class extends BrowserApi {
 	public commentUpdated(comment: CommentThread) {
 		this.broadcastUpdate('commentUpdated', comment);
 	}
+	public extensionUninstalled() {
+		this.broadcastUpdate('extensionUninstalled');
+	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);
 	}

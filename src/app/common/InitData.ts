@@ -16,6 +16,7 @@ export default interface InitData {
 	extensionId: string,
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,
+	isExtensionInstalled: boolean,
 	marketingVariant: number,
 	userAccount: UserAccount,
 	version: string,

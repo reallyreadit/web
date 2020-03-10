@@ -11,6 +11,7 @@ export default abstract class extends EventEmitter<{
 	'articlePosted': Post,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
+	'extensionUninstalled': void,
 	'notificationPreferenceChanged': NotificationPreference,
 	'updateAvailable': SemanticVersion,
 	'userSignedIn': UserAccount,
@@ -21,6 +22,7 @@ export default abstract class extends EventEmitter<{
 	public abstract articlePosted(post: Post): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
+	public abstract extensionUninstalled(): void;
 	public abstract notificationPreferenceChanged(preference: NotificationPreference): void;
 	public abstract setTitle(title: string): void;
 	public abstract updateAvailable(version: SemanticVersion): void;

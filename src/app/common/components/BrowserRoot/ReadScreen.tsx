@@ -21,7 +21,7 @@ import GetStartedButton from './GetStartedButton';
 interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
-	isExtensionInstalled: boolean | null,
+	isExtensionInstalled: boolean,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
@@ -64,7 +64,7 @@ class ReadScreen extends React.PureComponent<Props> {
 	public render() {
 		return (
 			<ScreenContainer className="read-screen_ikr26q">
-				{this.props.article.isLoading || this.props.isExtensionInstalled == null ?
+				{this.props.article.isLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
 						<div className="article">

@@ -318,9 +318,20 @@ server = server.get('/viewReply/:id?', (req, res) => {
 });
 server = server.get('/extension/uninstall', (req, res, next) => {
 	if ('installationId' in req.query) {
+		// log the removal
 		req.api
 			.logExtensionRemoval(req.query['installationId'])
 			.catch(() => {});
+		// clear the cookie
+		res.clearCookie(
+			'extensionVersion',
+			{
+				httpOnly: true,
+				domain: config.cookieDomain,
+				secure: config.secureCookie
+			}
+		);
+		delete req.cookies['extensionVersion'];
 	}
 	next();
 });
@@ -360,7 +371,8 @@ server = server.get('/*', (req, res) => {
 			{
 				httpOnly: true,
 				domain: config.cookieDomain,
-				secure: config.secureCookie
+				secure: config.secureCookie,
+				sameSite: 'none'
 			}
 		);
 	}
@@ -403,7 +415,8 @@ server = server.get('/*', (req, res) => {
 				maxAge: 7 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 				domain: config.cookieDomain,
-				secure: config.secureCookie
+				secure: config.secureCookie,
+				sameSite: 'none'
 			}
 		);
 	}
@@ -420,6 +433,7 @@ server = server.get('/*', (req, res) => {
 	}
 	// prepare props
 	const deviceType = getDeviceType(req.headers['user-agent']);
+	const isExtensionInstalled = 'extensionVersion' in req.cookies;
 	const browserApi = new BrowserApi();
 	const rootProps = {
 		analytics: new Analytics(),
@@ -458,7 +472,10 @@ server = server.get('/*', (req, res) => {
 					...rootProps,
 					browserApi,
 					deviceType,
-					extensionApi: new ExtensionApi(config.extensionId)
+					extensionApi: new ExtensionApi({
+						extensionId: config.extensionId,
+						isInstalled: isExtensionInstalled
+					})
 				}
 			);
 			break;
@@ -496,6 +513,7 @@ server = server.get('/*', (req, res) => {
 				extensionId: config.extensionId,
 				marketingVariant,
 				initialLocation: rootProps.initialLocation,
+				isExtensionInstalled,
 				userAccount: req.user,
 				version: version.app,
 				webServerEndpoint: config.webServer

@@ -23,6 +23,9 @@ export default class extends BrowserApi {
 	public commentUpdated(comment: CommentThread) {
 		throw new Error('Operation not supported in server environment');
 	}
+	public extensionUninstalled() {
+		throw new Error('Operation not supported in server environment');
+	}
 	public getTitle() {
 		return this._title;
 	}

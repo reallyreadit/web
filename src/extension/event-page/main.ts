@@ -12,8 +12,6 @@ import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
 import { hasAlert } from '../../common/models/UserAccount';
 
-console.log('loading main.ts...');
-
 // server
 const serverApi = new ServerApi({
 	onAuthenticationStatusChanged: isAuthenticated => {
@@ -388,7 +386,7 @@ function updateIcon(state: BrowserActionState) {
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
-	console.log('chrome.runtime.onInstalled');
+	console.log('[EventPage] installed, reason: ' + details.reason);
 	// initialize settings
 	localStorage.removeItem('parseMode');
 	localStorage.removeItem('showOverlay');
@@ -398,8 +396,11 @@ chrome.runtime.onInstalled.addListener(details => {
 	tabs.clear();
 	// update icon
 	getState().then(updateIcon);
-	// message rrit tabs
-	webAppApi.extensionInstalled();
+	// inject web app content script into open web app tabs
+	// we have to do this on updates as well as initial installs
+	// since content script extension contexts are invalidated
+	// on updates
+	webAppApi.injectContentScripts();
 	// log new installations or old unrecorded ones
 	if (
 		details.reason === 'install' ||
@@ -408,7 +409,6 @@ chrome.runtime.onInstalled.addListener(details => {
 			!localStorage.getItem('installationId')
 		)
 	) {
-		console.log('chrome.runtime.onInstalled (new installation)')
 		chrome.runtime.getPlatformInfo(platformInfo => {
 			serverApi
 				.logExtensionInstallation(platformInfo)
@@ -418,9 +418,14 @@ chrome.runtime.onInstalled.addListener(details => {
 					);
 					localStorage.setItem('installationId', result.installationId);
 				})
-				.catch(() => {
-					console.log('chrome.runtime.onInstalled (error logging installation)')
-				});
+				.catch(
+					error => {
+						console.log('[EventPage] error logging installation')
+						if (error) {
+							console.log(error);
+						}
+					}
+				);
 		});
 	}
 	// create alarms
@@ -444,6 +449,18 @@ chrome.runtime.onInstalled.addListener(details => {
 	});
 	// clean up old alarm
 	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
+	// set cookie
+	chrome.cookies.set({
+		url: createUrl(window.reallyreadit.extension.config.web),
+		domain: '.' + window.reallyreadit.extension.config.web.host,
+		expirationDate: Date.now() + (365 * 24 * 60 * 60),
+		httpOnly: true,
+		name: 'extensionVersion',
+		secure: window.reallyreadit.extension.config.web.protocol === 'https',
+		value: window.reallyreadit.extension.config.version,
+		path: '/',
+		sameSite: 'no_restriction'
+	});
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');

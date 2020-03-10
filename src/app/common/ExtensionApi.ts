@@ -4,6 +4,10 @@ import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
 
+export interface Params {
+	extensionId: string,
+	isInstalled: boolean
+}
 export default abstract class extends EventEmitter<{
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
@@ -13,13 +17,18 @@ export default abstract class extends EventEmitter<{
 	'userUpdated': UserAccount
 }> {
 	protected readonly _extensionId: string;
-	constructor(extensionId: string) {
+	protected _isInstalled: boolean;
+	constructor(params: Params) {
 		super();
-		this._extensionId = extensionId;
+		this._extensionId = params.extensionId;
+		this._isInstalled = params.isInstalled;
 	}
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
+	public abstract extensionUninstalled(): void;
 	public abstract userUpdated(user: UserAccount): void;
-	public abstract get isInstalled(): boolean | undefined;
+	public get isInstalled() {
+		return this._isInstalled;
+	}
 }

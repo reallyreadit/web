@@ -13,10 +13,10 @@ export default class extends ExtensionApi {
     public commentUpdated(comment: CommentThread) {
         throw new Error('Operation not supported in server environment');
     }
-    public userUpdated(user: UserAccount) {
+    public extensionUninstalled() {
         throw new Error('Operation not supported in server environment');
     }
-    public get isInstalled(): boolean | undefined {
-        return undefined;
+    public userUpdated(user: UserAccount) {
+        throw new Error('Operation not supported in server environment');
     }
 }

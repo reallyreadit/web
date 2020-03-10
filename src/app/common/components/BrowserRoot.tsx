@@ -51,7 +51,7 @@ interface Props extends RootProps {
 	extensionApi: ExtensionApi
 }
 interface State extends RootState {
-	isExtensionInstalled: boolean | null,
+	isExtensionInstalled: boolean,
 	menuState: MenuState,
 	welcomeMessage: WelcomeMessage | null
 }
@@ -581,7 +581,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						[this._dialog.createDialog(locationState.dialog)] :
 						[]
 			),
-			isExtensionInstalled: null,
+			isExtensionInstalled: props.extensionApi.isInstalled,
 			menuState: 'closed',
 			screens: [locationState.screen],
 			welcomeMessage: (
@@ -606,6 +606,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('commentUpdated', comment => {
 				this.onCommentUpdated(comment, EventSource.Remote);
 			})
+			.addListener(
+				'extensionUninstalled',
+				() => {
+					this.props.extensionApi.extensionUninstalled();
+				}
+			)
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
@@ -1035,6 +1041,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.browserApi.userUpdated(this.state.user);
 			this.props.extensionApi.userUpdated(this.state.user);
 			this._hasBroadcastInitialUser = true;
+		}
+		// broadcast extension removal to other tabs if not installed
+		// only broadcast if we're loading on the extension uninstall screen
+		// for now for compatibility with the old extension
+		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
+		if (initialRoute.screenKey === ScreenKey.ExtensionRemoval) {
+			this.props.browserApi.extensionUninstalled();
 		}
 		// send the initial pageview
 		this.props.analytics.sendPageview(this.state.screens[0]);

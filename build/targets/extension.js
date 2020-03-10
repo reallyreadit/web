@@ -8,7 +8,8 @@ const
 	createBuild = require('../createBuild'),
 	browserAction = require('./extension/browserAction'),
 	contentScript = require('./extension/contentScript'),
-	eventPage = require('./extension/eventPage');
+	eventPage = require('./extension/eventPage'),
+	webAppContentScript = require('./extension/webAppContentScript');
 
 const
 	targetPath = 'extension',
@@ -30,9 +31,11 @@ const
 					fs
 						.readFileSync(path.posix.join(project.srcDir, `extension/common/config.${buildInfo.env}.json`))
 						.toString()
-				);
+				),
+				webUrlPattern = config.web.protocol + '://' + config.web.host + '/*';
 			manifest.version = package['it.reallyread'].version.extension.package.toString().padEnd(4, '0');
-			manifest.permissions.push(config.web.protocol + '://' + config.web.host + '/*');
+			manifest.content_scripts[0].matches.push(webUrlPattern);
+			manifest.permissions.push(webUrlPattern);
 			fs.writeFileSync(
 				fileName,
 				JSON.stringify(manifest, null, 3)
@@ -56,7 +59,8 @@ function build(env) {
 		browserAction.build(env),
 		contentScript.build(env),
 		eventPage.build(env),
-		staticAssets.build(env)
+		staticAssets.build(env),
+		webAppContentScript.build(env)
 	]);
 }
 function watch() {
@@ -64,6 +68,7 @@ function watch() {
 	contentScript.watch();
 	eventPage.watch();
 	staticAssets.watch();
+	webAppContentScript.watch();
 }
 
 module.exports = {

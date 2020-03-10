@@ -22,6 +22,14 @@
     "page": "./event-page/index.html",
   	"persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": [],
+      "js": [
+        "./web-app-content-script/bundle.js"
+      ]
+    }
+  ],
   "permissions": [
     "activeTab",
     "cookies",
