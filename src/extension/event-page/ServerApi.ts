@@ -49,12 +49,6 @@ function fetchJson<T>(request: Request) {
 				} else {
 					reject(object || []);
 				}
-			} else if (this.status === 401) {
-				chrome.cookies.remove({
-					url: createUrl(window.reallyreadit.extension.config.api),
-					name: window.reallyreadit.extension.config.cookieName
-				});
-				reject(['Unauthenticated']);
 			} else {
 				reject([]);
 			}
