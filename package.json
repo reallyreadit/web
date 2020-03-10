@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.6",
-    "@types/chrome": "0.0.93",
+    "@types/chrome": "0.0.99",
     "@types/classnames": "^2.2.9",
     "@types/commonmark": "^0.27.4",
     "@types/cookie-parser": "^1.4.2",
