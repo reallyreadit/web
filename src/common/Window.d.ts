@@ -10,6 +10,7 @@ declare global {
 		reallyreadit: {
 			alertContentScript?: AlertContentScriptWindow,
 			app?: AppWindow,
+			readerContentScript?: ContentScriptWindow,
 			extension?: {
 				config?: {
 					api: HttpEndpoint,
@@ -20,8 +21,7 @@ declare global {
 					static: HttpEndpoint,
 					web: HttpEndpoint,
 					version: string
-				},
-				contentScript: ContentScriptWindow
+				}
 			},
 			nativeClient?: {
 				reader: ReaderWindow

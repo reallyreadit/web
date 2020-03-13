@@ -1,4 +1,3 @@
-import ContentScriptInitData from '../common/ContentScriptInitData';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
@@ -26,11 +25,9 @@ function sendMessageAwaitingResponse<T>(type: string, data ?: {}) {
 }
 export default class EventPageApi {
 	constructor(handlers: {
-		onActivateReaderMode: () => void,
 		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
 		onCommentPosted: (comment: CommentThread) => void,
 		onCommentUpdated: (comment: CommentThread) => void,
-		onDeactivateReaderMode: () => void,
 		onLoadPage: () => void,
 		onUnloadPage: () => void,
 		onToggleContentIdentificationDisplay: () => void,
@@ -39,9 +36,6 @@ export default class EventPageApi {
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
-				case 'activateReaderMode':
-					handlers.onActivateReaderMode();
-					break;
 				case 'articleUpdated':
 					handlers.onArticleUpdated(message.data);
 					break;
@@ -50,9 +44,6 @@ export default class EventPageApi {
 					break;
 				case 'commentUpdated':
 					handlers.onCommentUpdated(message.data);
-					break;
-				case 'deactivateReaderMode':
-					handlers.onDeactivateReaderMode();
 					break;
 				case 'loadPage':
 					handlers.onLoadPage();
@@ -73,7 +64,7 @@ export default class EventPageApi {
 		});
 	}
 	public registerContentScript(location: Location) {
-		return sendMessageAwaitingResponse<ContentScriptInitData>('registerContentScript', location.toString());
+		return sendMessageAwaitingResponse<void>('registerContentScript', location.toString());
 	}
 	public registerPage(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>('registerPage', data);

@@ -58,15 +58,8 @@ const contentScriptApi = new ContentScriptApi({
 		});
 		// update icon
 		getState().then(updateIcon);
-		// return config
-		return serverApi
-			.getAuthStatus()
-			.then(
-				isAuthenticated => ({
-					loadPage: isAuthenticated,
-					sourceRules: [] //serverApi.getBlacklist(new URL(url).hostname)
-				})
-			);
+		// return
+		return Promise.resolve();
 	},
 	onRegisterPage: (tabId, data) => {
 		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
@@ -403,37 +396,55 @@ chrome.windows.onFocusChanged.addListener(
 );
 chrome.browserAction.onClicked.addListener(
 	tab => {
-		// check which type of page we're looking at
-		if (!tab.url) {
-			return;
-		}
-		// web app
-		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.web))) {
-			chrome.tabs.executeScript(
-				tab.id,
-				{
-					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+		// check if we're logged in
+		serverApi
+			.getAuthStatus()
+			.then(
+				isAuthenticated => {
+					if (!isAuthenticated) {
+						chrome.tabs.create({
+							url: createUrl(window.reallyreadit.extension.config.web, '/', { 'create-account': null })
+						});
+						return;
+					}
+					// check which type of page we're looking at
+					if (!tab.url) {
+						return;
+					}
+					// web app
+					if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.web))) {
+						chrome.tabs.executeScript(
+							tab.id,
+							{
+								code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+							}
+						);
+						return;
+					}
+					// blacklisted
+					const blacklist = serverApi.getBlacklist();
+					if (
+						blacklist.some(
+							regex => regex.test(tab.url)
+						)
+					) {
+						chrome.tabs.executeScript(
+							tab.id,
+							{
+								code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+							}
+						);
+						return;
+					}
+					// article
+					chrome.tabs.executeScript(
+						tab.id,
+						{
+							code: "if (!window.reallyreadit?.readerContentScript) { window.reallyreadit = { ...window.reallyreadit, readerContentScript: { } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectReader' }); }"
+						}
+					);
 				}
 			);
-			return;
-		}
-		// blacklisted
-		const blacklist = serverApi.getBlacklist();
-		if (
-			blacklist.some(
-				regex => regex.test(tab.url)
-			)
-		) {
-			chrome.tabs.executeScript(
-				tab.id,
-				{
-					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
-				}
-			);
-			return;
-		}
-		// article
-
 	}
 );
 chrome.runtime.onMessage.addListener(
@@ -453,6 +464,20 @@ chrome.runtime.onMessage.addListener(
 					sender.tab.id,
 					{
 						file: './content-scripts/alert/bundle.js'
+					}
+				);
+				return;
+			case 'injectReader':
+				chrome.tabs.insertCSS(
+					sender.tab.id,
+					{
+						file: './content-scripts/ui/fonts.css'
+					}
+				);
+				chrome.tabs.executeScript(
+					sender.tab.id,
+					{
+						file: './content-script/bundle.js'
 					}
 				);
 				return;

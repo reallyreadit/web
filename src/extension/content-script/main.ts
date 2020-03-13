@@ -1,12 +1,10 @@
 import Page from '../../common/reading/Page';
 import EventPageApi from './EventPageApi';
-import { SourceRuleAction } from '../../common/models/SourceRule';
 import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
 import ContentElement from '../../common/reading/ContentElement';
 import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import UserArticle from '../../common/models/UserArticle';
-import { calculateEstimatedReadTime } from '../../common/calculate';
 import IframeMessagingContext from './embed/IframeMessagingContext';
 import insertBookmarkPrompt from './insertBookmarkPrompt';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
@@ -15,16 +13,16 @@ import styleArticleDocument from '../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 
 window.reallyreadit = {
-	extension: {
-		contentScript: {
-			contentParser: new LazyScript(() => {
+	readerContentScript: {
+		contentParser: new LazyScript(
+			() => {
 				eventPageApi.loadContentParser();
-			})
-		}
+			}
+		)
 	}
 };
 
-const { contentParser } = window.reallyreadit.extension.contentScript;
+const { contentParser } = window.reallyreadit.readerContentScript;
 
 let
 	path = window.location.pathname,
@@ -33,72 +31,12 @@ let
 		lookupResult: ArticleLookupResult,
 		page: Page,
 		isContentIdentificationDisplayEnabled: boolean
-	} | null,
-	initData: {
-		sourceRules: {
-			path: RegExp,
-			priority: number,
-			action: SourceRuleAction
-		}[]
-	};
+	} | null;
 
 // event page interface
 let historyStateUpdatedTimeout: number;
 
 const eventPageApi = new EventPageApi({
-	onActivateReaderMode: () => {
-		// transition animation
-		document.body.style.transition = 'opacity 350ms';
-		document.body.style.opacity = '0';
-		document.body.classList.add('com_readup_activating_reader_mode');
-		setTimeout(
-			() => {
-				contentParser
-					.get()
-					.then(parser => {
-						// remove iframe since pruning destorys its state
-						const isEmbedInserted = !!iframe;
-						if (isEmbedInserted) {
-							removeEmbed();
-						}
-						// prune and style
-						parser.prune(context.contentParseResult);
-						styleArticleDocument(document, context.lookupResult.userArticle.title, context.lookupResult.userArticle.authors.join(', '));
-						// restore iframe
-						if (isEmbedInserted) {
-							insertEmbed(context.lookupResult.userArticle);
-						}
-						// transition animation
-						document.body.style.opacity = '1';
-						document.body.classList.remove('com_readup_activating_reader_mode');
-						// bookmark prompt
-						if (
-							!isEmbedInserted &&
-							!context.lookupResult.userArticle.isRead &&
-							context.page.getBookmarkScrollTop() > window.innerHeight
-						) {
-							setTimeout(
-								() => {
-									insertBookmarkPrompt({
-										onConfirm: () => {
-											const bookmarkScrollTop = context.page.getBookmarkScrollTop();
-											if (bookmarkScrollTop > 0) {
-												window.scrollTo({
-													behavior: 'smooth',
-													top: bookmarkScrollTop
-												});
-											}
-										}
-									});
-								},
-								350
-							);
-						}
-					});
-			},
-			350
-		);
-	},
 	onArticleUpdated: event => {
 		if (context && context.lookupResult) {
 			context.lookupResult.userArticle = event.article;
@@ -127,9 +65,6 @@ const eventPageApi = new EventPageApi({
 				data: comment
 			});
 		}
-	},
-	onDeactivateReaderMode: () => {
-		window.location.reload();
 	},
 	onLoadPage: loadPage,
 	onUnloadPage: unloadPage,
@@ -300,13 +235,6 @@ function removeEmbed() {
 	}
 }
 
-function shouldShowEmbed(article: UserArticle) {
-	return (
-		article.isRead &&
-		(calculateEstimatedReadTime(article.wordCount) > 2)
-	);
-}
-
 // reader
 const reader = new Reader(
 	event => {
@@ -326,7 +254,7 @@ const reader = new Reader(
 								type: 'pushState',
 								data:  { article }
 							});
-						} else if (shouldShowEmbed(article)) {
+						} else {
 							insertEmbed(article);
 						}
 					}
@@ -337,30 +265,38 @@ const reader = new Reader(
 
 // page lifecycle
 function loadPage() {
-	unloadPage().then(() => {
-		// check for matching source rules
-		const rule = initData.sourceRules
-			.filter(rule => rule.path.test(path))
-			.sort((a, b) => b.priority - a.priority)[0];
-		// proceed if we're not ignoring the page
-		if (!rule || rule.action !== SourceRuleAction.Ignore) {
-			const metaParseResult = parseDocumentMetadata();
-			// proceed if we have a positive metadata result or if we're following a read rule
-			if (
-				(metaParseResult.isArticle && metaParseResult.metadata.url && metaParseResult.metadata.article.title) ||
-				(rule && rule.action === SourceRuleAction.Read)
-			) {
+	unloadPage()
+		.then(
+			() => {
+				const metaParseResult = parseDocumentMetadata();
 				contentParser
 					.get()
-					.then(parser => {
-						const content = parser.parse();
-						if (
-							content.primaryTextContainers.length &&
-							(metaParseResult.metadata.url && metaParseResult.metadata.article.title)
-						) {
+					.then(
+						parser => {
+							// parse content
+							const content = parser.parse();
+							// create page
 							const page = new Page(
 								content.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
 							);
+							// prune and style
+							parser.prune(content);
+							styleArticleDocument(
+								document,
+								metaParseResult.metadata.article.title,
+								metaParseResult.metadata.article.authors
+									.map(
+										author => author.name
+									)
+									.filter(
+										name => !!name
+									)
+									.join(', ')
+							);
+							// transition animation
+							document.body.style.opacity = '1';
+							document.body.classList.remove('com_readup_activating_reader_mode');
+							// get article
 							eventPageApi
 								.registerPage(createPageParseResult(metaParseResult, content))
 								.then(lookupResult => {
@@ -374,18 +310,37 @@ function loadPage() {
 									page.setReadState(lookupResult.userPage.readState);
 									reader.loadPage(page);
 									// load the user interface
-									if (shouldShowEmbed(lookupResult.userArticle)) {
-										insertEmbed(lookupResult.userArticle);
+									insertEmbed(lookupResult.userArticle);
+									// bookmark prompt
+									if (
+										!lookupResult.userArticle.isRead &&
+										context.page.getBookmarkScrollTop() > window.innerHeight
+									) {
+										setTimeout(
+											() => {
+												insertBookmarkPrompt({
+													onConfirm: () => {
+														const bookmarkScrollTop = context.page.getBookmarkScrollTop();
+														if (bookmarkScrollTop > 0) {
+															window.scrollTo({
+																behavior: 'smooth',
+																top: bookmarkScrollTop
+															});
+														}
+													}
+												});
+											},
+											350
+										);
 									}
 								})
 								.catch(() => {
 									unloadPage();
 								});
 						}
-					});
+					);
 			}
-		}
-	});
+		);
 }
 function unloadPage() {
 	if (context) {
@@ -411,14 +366,17 @@ window.addEventListener(
 // register content script
 eventPageApi
 	.registerContentScript(window.location)
-	.then(serializedInitData => {
-		// set initData
-		initData = {
-			...serializedInitData,
-			sourceRules: serializedInitData.sourceRules.map(rule => ({ ...rule, path: new RegExp(rule.path) }))
-		};
-		// load page
-		if (serializedInitData.loadPage) {
-			loadPage();
+	.then(
+		() => {
+			// transition animation
+			document.body.style.transition = 'opacity 350ms';
+			document.body.style.opacity = '0';
+			document.body.classList.add('com_readup_activating_reader_mode');
+			setTimeout(
+				() => {
+					loadPage();
+				},
+				350
+			);
 		}
-	});
+	);

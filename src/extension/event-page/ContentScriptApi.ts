@@ -1,4 +1,3 @@
-import ContentScriptInitData from '../common/ContentScriptInitData';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import ParseResult from '../../common/reading/ParseResult';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
@@ -17,7 +16,7 @@ function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback
 }
 export default class ContentScriptApi {
 	constructor(handlers: {
-		onRegisterContentScript: (tabId: number, url: string) => Promise<ContentScriptInitData>,
+		onRegisterContentScript: (tabId: number, url: string) => Promise<void>,
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
 		onUnregisterPage: (tabId: number) => void,
@@ -93,9 +92,6 @@ export default class ContentScriptApi {
 			return undefined;
 		});
 	}
-	public activateReaderMode(tabId: number) {
-		sendMessage(tabId, 'activateReaderMode');
-	}
 	public articleUpdated(tabId: number, event: ArticleUpdatedEvent) {
 		sendMessage(tabId, 'articleUpdated', event);
 	}
@@ -104,9 +100,6 @@ export default class ContentScriptApi {
 	}
 	public commentUpdated(tabId: number, comment: CommentThread) {
 		sendMessage(tabId, 'commentUpdated', comment);
-	}
-	public deactivateReaderMode(tabId: number) {
-		sendMessage(tabId, 'deactivateReaderMode');
 	}
 	public loadPage(tabId: number) {
 		sendMessage(tabId, 'loadPage');

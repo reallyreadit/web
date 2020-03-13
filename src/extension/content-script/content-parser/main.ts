@@ -2,7 +2,7 @@ import parseDocumentContent from "../../../common/contentParsing/parseDocumentCo
 import pruneDocument from "../../../common/contentParsing/pruneDocument";
 import ParseResult from "../../../common/contentParsing/ParseResult";
 
-window.reallyreadit.extension.contentScript.contentParser.set({
+window.reallyreadit.readerContentScript.contentParser.set({
 	parse: () => {
 		return parseDocumentContent();
 	},
