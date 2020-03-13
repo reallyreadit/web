@@ -15,8 +15,7 @@
   },
   "browser_action": {
     "default_icon": "./icons/default-browser-action-icon.png",
-    "default_title": "Readup",
-    "default_popup": "./browser-action/index.html"
+    "default_title": "Readup"
   },
   "background": {
     "page": "./event-page/index.html",

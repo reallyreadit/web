@@ -4,7 +4,6 @@ import SetStore from '../../common/webStorage/SetStore';
 import ContentScriptTab from '../common/ContentScriptTab';
 import ContentScriptApi from './ContentScriptApi';
 import ServerApi from './ServerApi';
-import BrowserActionApi from './BrowserActionApi';
 import BrowserActionState from '../common/BrowserActionState';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
@@ -33,14 +32,12 @@ const serverApi = new ServerApi({
 		console.log('serverApi.onCacheUpdated');
 		getState().then(state => {
 			updateIcon(state);
-			browserActionApi.pushState(state);
 		});
 	},
 	onUserUpdated: user => {
 		console.log('serverApi.onUserUpdated');
 		getState().then(state => {
 			updateIcon(state);
-			browserActionApi.pushState(state);
 		});
 		webAppApi.userUpdated(user);
 	}
@@ -48,88 +45,6 @@ const serverApi = new ServerApi({
 
 // tabs
 const tabs = new SetStore<number, ContentScriptTab>('tabs', t => t.id);
-
-// browser action
-const browserActionApi = new BrowserActionApi({
-	onActivateReaderMode: tabId => {
-		contentScriptApi.activateReaderMode(tabId);
-		tabs.set({
-			...tabs.get(tabId),
-			isReaderModeActivated: true
-		});
-	},
-	onDeactivateReaderMode: tabId => {
-		contentScriptApi.deactivateReaderMode(tabId);
-		tabs.set({
-			...tabs.get(tabId),
-			isReaderModeActivated: false
-		});
-	},
-	onLoad: () => getState(),
-	onPostArticle: form => {
-		return serverApi
-			.postArticle(form)
-			.then(
-				post => {
-					webAppApi.articlePosted(post);
-					webAppApi.articleUpdated({
-						article: post.article,
-						isCompletionCommit: false
-					});
-					if (post.comment) {
-						webAppApi.commentPosted(createCommentThread(post));
-					}
-					tabs
-						.getAll()
-						.forEach(
-							tab => {
-								if (tab.articleId === post.article.id) {
-									contentScriptApi.articleUpdated(
-										tab.id,
-										{
-											article: post.article,
-											isCompletionCommit: false
-										}
-									);
-									if (post.comment) {
-										contentScriptApi.commentPosted(tab.id, createCommentThread(post));
-									}
-								}
-							}
-						);
-					return post;
-				}
-			);
-	},
-	onRateArticle: (articleId, score) => serverApi
-		.rateArticle(articleId, score)
-		.then(
-			result => {
-				webAppApi.articleUpdated({
-					article: result.article,
-					isCompletionCommit: false
-				});
-				return result;
-			}
-		),
-	onSetStarred: (articleId, isStarred) => serverApi
-		.setStarred(articleId, isStarred)
-		.then(
-			article => {
-				webAppApi.articleUpdated({
-					article,
-					isCompletionCommit: false
-				});
-				return article;
-			}
-		),
-	onToggleContentIdentificationDisplay: tabId => {
-		contentScriptApi.toggleContentIdentificationDisplay(tabId);
-	},
-	onToggleReadStateDisplay: tabId => {
-		contentScriptApi.toggleReadStateDisplay(tabId);
-	}
-});
 
 // content script
 const contentScriptApi = new ContentScriptApi({
@@ -314,7 +229,6 @@ const webAppApi = new WebAppApi({
 		serverApi.updateUser(user);
 		getState().then(state => {
 			updateIcon(state);
-			browserActionApi.pushState(state);
 		});
 	}
 });
