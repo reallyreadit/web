@@ -1,0 +1,28 @@
+@font-face {
+	font-family: 'Cambria (bold)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/cambria-bold.ttf');
+}
+@font-face {
+	font-family: 'Cambria (regular)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/cambria-regular.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (100)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/museo-sans-100.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (300)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/museo-sans-300.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (500)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/museo-sans-500.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (700)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/museo-sans-700.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (900)';
+	src: url('chrome-extension://{EXTENSION_ID}/content-scripts/ui/fonts/museo-sans-900.ttf');
+}

@@ -397,6 +397,51 @@ chrome.windows.onFocusChanged.addListener(
 		}
 	}
 );
+chrome.browserAction.onClicked.addListener(
+	tab => {
+		// check which type of page we're looking at
+		if (!tab.url) {
+			return;
+		}
+		// web app
+		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.web))) {
+			chrome.tabs.executeScript(
+				tab.id,
+				{
+					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+				}
+			);
+			return;
+		}
+		// blacklisted
+		
+		// article
+
+	}
+);
+chrome.runtime.onMessage.addListener(
+	(message, sender) => {
+		if (message.from !== 'contentScriptInitializer' || message.to !== 'eventPage') {
+			return;
+		}
+		switch (message.type) {
+			case 'injectAlert':
+				chrome.tabs.insertCSS(
+					sender.tab.id,
+					{
+						file: './content-scripts/ui/fonts.css'
+					}
+				);
+				chrome.tabs.executeScript(
+					sender.tab.id,
+					{
+						file: './content-scripts/alert/bundle.js'
+					}
+				);
+				return;
+		}
+	}
+);
 chrome.alarms.onAlarm.addListener(
 	alarm => {
 		if (alarm.name === 'updateContentParser') {
