@@ -42,7 +42,14 @@ componentStyleLink.rel = 'stylesheet';
 componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/alert/bundle.css`;
 
 const shadowHost = document.createElement('div');
-shadowHost.style.position = 'relative';
+shadowHost.style.position = 'fixed';
+shadowHost.style.top = '0';
+shadowHost.style.right = '0';
+shadowHost.style.width = '0';
+shadowHost.style.height = '0';
+shadowHost.style.margin = '0';
+shadowHost.style.padding = '0';
+shadowHost.style.transform = 'none';
 shadowHost.style.zIndex = '2147483647';
 
 const shadowRoot = document.body
