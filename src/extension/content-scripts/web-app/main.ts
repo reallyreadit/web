@@ -1,12 +1,12 @@
-import ContentScriptMessagingContext from '../../common/ContentScriptMessagingContext';
-import { Message } from '../../common/MessagingContext';
+import ContentScriptMessagingContext from '../../../common/ContentScriptMessagingContext';
+import { Message } from '../../../common/MessagingContext';
 
 // ensure that we don't set up a duplicate context
 if (!window.reallyreadit) {
 	window.reallyreadit = { };
 
 	const webApp = new ContentScriptMessagingContext({
-		localId: 'com.readup.web.extension.web-app-content-script',
+		localId: 'com.readup.web.extension.content-scripts.web-app',
 		remoteId: 'com.readup.web.app.client'
 	});
 

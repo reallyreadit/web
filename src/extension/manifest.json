@@ -25,7 +25,7 @@
     {
       "matches": [],
       "js": [
-        "./web-app-content-script/bundle.js"
+        "./content-scripts/web-app/bundle.js"
       ]
     }
   ],

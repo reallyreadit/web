@@ -43,7 +43,7 @@ export default class extends ExtensionApi {
         // status so that we'll be ready when the script is injected
         this._contentScriptMessagingContext = new ContentScriptMessagingContext({
             localId: 'com.readup.web.app.client',
-            remoteId: 'com.readup.web.extension.web-app-content-script'
+            remoteId: 'com.readup.web.extension.content-scripts.web-app'
         });
         this._contentScriptMessagingContext.addListener(
             (message, sendResponse) => {

@@ -8,7 +8,7 @@ const
 	createBuild = require('../createBuild'),
 	contentScript = require('./extension/contentScript'),
 	eventPage = require('./extension/eventPage'),
-	webAppContentScript = require('./extension/webAppContentScript'),
+	webAppContentScript = require('./extension/contentScripts/webApp'),
 	alertContentScript = require('./extension/contentScripts/alert');
 
 const

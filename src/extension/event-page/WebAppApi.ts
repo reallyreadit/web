@@ -74,7 +74,7 @@ export default class WebAppApi {
 		chrome.tabs.executeScript(
 			tabId,
 			{
-				file: './web-app-content-script/bundle.js'
+				file: './content-scripts/web-app/bundle.js'
 			}
 		);
 	}
