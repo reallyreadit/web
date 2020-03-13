@@ -64,7 +64,7 @@ const contentScriptApi = new ContentScriptApi({
 			.then(
 				isAuthenticated => ({
 					loadPage: isAuthenticated,
-					sourceRules: serverApi.getSourceRules(new URL(url).hostname)
+					sourceRules: [] //serverApi.getBlacklist(new URL(url).hostname)
 				})
 			);
 	},
@@ -305,6 +305,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('parseMode');
 	localStorage.removeItem('showOverlay');
 	localStorage.removeItem('newReplyNotification');
+	localStorage.removeItem('sourceRules');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// clear storage
 	tabs.clear();
@@ -357,10 +358,13 @@ chrome.runtime.onInstalled.addListener(details => {
 			periodInMinutes: 2.5
 		}
 	);
-	chrome.alarms.create(ServerApi.alarms.getSourceRules, {
-		when: Date.now(),
-		periodInMinutes: 120
-	});
+	chrome.alarms.create(
+		ServerApi.alarms.getBlacklist,
+		{
+			when: Date.now(),
+			periodInMinutes: 120
+		}
+	);
 	// clean up old alarm
 	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
 	// set cookie
@@ -414,7 +418,20 @@ chrome.browserAction.onClicked.addListener(
 			return;
 		}
 		// blacklisted
-		
+		const blacklist = serverApi.getBlacklist();
+		if (
+			blacklist.some(
+				regex => regex.test(tab.url)
+			)
+		) {
+			chrome.tabs.executeScript(
+				tab.id,
+				{
+					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+				}
+			);
+			return;
+		}
 		// article
 
 	}

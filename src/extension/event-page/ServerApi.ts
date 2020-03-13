@@ -5,7 +5,6 @@ import ParseResult from '../../common/reading/ParseResult';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import Request from './Request';
 import { Cached, cache, isExpired } from './Cached';
-import SourceRule from '../../common/models/SourceRule';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
@@ -71,7 +70,7 @@ function fetchJson<T>(request: Request) {
 export default class ServerApi {
 	public static alarms = {
 		checkNotifications: 'ServerApi.checkNotifications',
-		getSourceRules: 'ServerApi.getSourceRules'
+		getBlacklist: 'ServerApi.getBlacklist'
 	};
 	// cached local storage
 	private _articles = new SetStore<number, Cached<UserArticle>>('articles', a => a.value.id);
@@ -79,7 +78,7 @@ export default class ServerApi {
 		'displayedNotifications',
 		notification => notification.id
 	);
-	private _sourceRules = new ObjectStore<Cached<SourceRule[]>>('sourceRules', {
+	private _blacklist = new ObjectStore<Cached<string[]>>('blacklist', {
 		value: [],
 		timestamp: 0,
 		expirationTimespan: 0
@@ -103,7 +102,7 @@ export default class ServerApi {
 			// clear entire cache
 			this._articles.clear();
 			this._displayedNotifications.clear();
-			this._sourceRules.clear();
+			this._blacklist.clear();
 			this._user.clear();
 		});
 		// cookie change
@@ -117,7 +116,7 @@ export default class ServerApi {
 				// check source rules cache
 				if (isAuthenticated) {
 					this.checkNotifications();
-					this.checkSourceRulesCache();
+					this.checkBlacklistCache();
 				}
 				// fire handler
 				handlers.onAuthenticationStatusChanged(isAuthenticated);
@@ -137,10 +136,10 @@ export default class ServerApi {
 							}
 						);
 					break;
-				case ServerApi.alarms.getSourceRules:
+				case ServerApi.alarms.getBlacklist:
 					this.getAuthStatus().then(isAuthenticated => {
 						if (isAuthenticated) {
-							this.checkSourceRulesCache();
+							this.checkBlacklistCache();
 						}
 					});
 					break;
@@ -246,10 +245,10 @@ export default class ServerApi {
 			}
 		);
 	}
-	private checkSourceRulesCache() {
-		if (isExpired(this._sourceRules.get())) {
-			fetchJson<SourceRule[]>({ method: 'GET', path: '/Extension/GetSourceRules' })
-				.then(rules => this._sourceRules.set(cache(rules, 719000)))
+	private checkBlacklistCache() {
+		if (isExpired(this._blacklist.get())) {
+			fetchJson<string[]>({ method: 'GET', path: '/Extension/Blacklist' })
+				.then(rules => this._blacklist.set(cache(rules, 719000)))
 				.catch(() => {});
 		}
 	}
@@ -365,8 +364,12 @@ export default class ServerApi {
 			name: window.reallyreadit.extension.config.cookieName
 		}, cookie => resolve(!!cookie)));
 	}
-	public getSourceRules(hostname: string) {
-		return this._sourceRules.get().value.filter(rule => hostname.endsWith(rule.hostname));
+	public getBlacklist() {
+		return this._blacklist
+			.get().value
+			.map(
+				pattern => new RegExp(pattern)
+			);
 	}
 	public rateArticle(articleId: number, score: number) {
 		return fetchJson<{ article: UserArticle, rating: Rating }>({ method: 'POST', path: '/Articles/Rate', data: { articleId, score } })
