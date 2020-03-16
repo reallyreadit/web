@@ -5,12 +5,15 @@ const
 const
 	project = require('../../project'),
 	createBuild = require('../../createBuild'),
-	contentParserBuild = require('./contentScript/contentParser'),
-	embedBuild = require('./contentScript/embed');
+	contentParserBuild = require('./contentScript/contentParser');
 
 const
 	targetPath = 'extension/content-script',
 	contentScriptBuild = createBuild({
+		scss: [
+			`${project.srcDir}/common/**/*.{css,scss}`,
+			`${project.srcDir}/extension/content-script/**/*.{css,scss}`
+		],
 		webpack: {
 			appConfig: {
 				path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
@@ -27,15 +30,13 @@ function clean(env) {
 function build(env) {
 	return Promise.all([
 		contentScriptBuild.build(env),
-		contentParserBuild.build(env),
-		embedBuild.build(env)
+		contentParserBuild.build(env)
 	]);
 }
 function watch() {
 	return Promise.all([
 		contentScriptBuild.watch(),
-		contentParserBuild.watch(),
-		embedBuild.watch()
+		contentParserBuild.watch()
 	]);
 }
 

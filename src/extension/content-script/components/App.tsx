@@ -1,32 +1,32 @@
 import * as React from 'react';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
-import ClipboardTextInput from '../../../../common/components/ClipboardTextInput';
-import Toaster from '../../../../common/components/Toaster';
-import ClipboardService from '../../../../common/services/ClipboardService';
-import { createUrl } from '../../../../common/HttpEndpoint';
-import ToasterService, { State as ToasterState } from '../../../../common/services/ToasterService';
-import DialogService, { State as DialogState } from '../../../../common/services/DialogService';
-import AsyncTracker from '../../../../common/AsyncTracker';
-import UserArticle from '../../../../common/models/UserArticle';
+import ShareChannel from '../../../common/sharing/ShareChannel';
+import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
+import Toaster from '../../../common/components/Toaster';
+import ClipboardService from '../../../common/services/ClipboardService';
+import { createUrl } from '../../../common/HttpEndpoint';
+import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
+import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import AsyncTracker from '../../../common/AsyncTracker';
+import UserArticle from '../../../common/models/UserArticle';
 import Logo from './Logo';
-import Fetchable from '../../../../common/Fetchable';
-import CommentThread from '../../../../common/models/CommentThread';
-import UserAccount from '../../../../common/models/UserAccount';
-import PostDialog from '../../../../common/components/PostDialog';
-import DialogManager from '../../../../common/components/DialogManager';
-import CommentsSection from '../../../../common/components/comments/CommentsSection';
-import PostForm from '../../../../common/models/social/PostForm';
-import Post from '../../../../common/models/social/Post';
-import PostPrompt from '../../../../common/components/PostPrompt';
-import { findRouteByKey, parseUrlForRoute } from '../../../../common/routing/Route';
-import routes from '../../../../common/routing/routes';
-import ScreenKey from '../../../../common/routing/ScreenKey';
-import CommentForm from '../../../../common/models/social/CommentForm';
-import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
-import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
-import ContentBox from '../../../../common/components/ContentBox';
-import SpinnerIcon from '../../../../common/components/SpinnerIcon';
+import Fetchable from '../../../common/Fetchable';
+import CommentThread from '../../../common/models/CommentThread';
+import UserAccount from '../../../common/models/UserAccount';
+import PostDialog from '../../../common/components/PostDialog';
+import DialogManager from '../../../common/components/DialogManager';
+import CommentsSection from '../../../common/components/comments/CommentsSection';
+import PostForm from '../../../common/models/social/PostForm';
+import Post from '../../../common/models/social/Post';
+import PostPrompt from '../../../common/components/PostPrompt';
+import { findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import CommentForm from '../../../common/models/social/CommentForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import ContentBox from '../../../common/components/ContentBox';
+import SpinnerIcon from '../../../common/components/SpinnerIcon';
 
 export interface Props {
 	article: UserArticle
@@ -133,7 +133,7 @@ export default class App extends React.Component<
 					<CommentsSection
 						article={this.props.article}
 						comments={this.props.comments.value}
-						imagePath="./images"
+						imagePath={`chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/ui/images/`}
 						noCommentsMessage="No comments on this article yet."
 						onCloseDialog={this._dialog.closeDialog}
 						onCopyTextToClipboard={this._clipboard.copyText}
@@ -152,7 +152,6 @@ export default class App extends React.Component<
 					dialogs={this.state.dialogs}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
 					style="light"
-					verticalAlignment="top"
 				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}

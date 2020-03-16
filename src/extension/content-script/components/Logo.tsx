@@ -4,7 +4,7 @@ export default () => (
 	<div className="logo_dlp7ba">
 		<img
 			alt="logo"
-			src="./images/logo.svg"
+			src={`chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/ui/images/logo.svg`}
 		/>
 	</div>
 );

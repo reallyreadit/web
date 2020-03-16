@@ -36,17 +36,7 @@
     "notifications"
   ],
   "web_accessible_resources": [
-    "content-script/embed/bundle.css",
-    "content-script/embed/bundle.js",
-    "content-script/embed/fonts/cambria-bold.ttf",
-    "content-script/embed/fonts/cambria-regular.ttf",
-    "content-script/embed/fonts/museo-sans-100.ttf",
-    "content-script/embed/fonts/museo-sans-300.ttf",
-    "content-script/embed/fonts/museo-sans-500.ttf",
-    "content-script/embed/fonts/museo-sans-700.ttf",
-    "content-script/embed/fonts/museo-sans-900.ttf",
-    "content-script/embed/images/logo.svg",
-    "content-script/embed/index.html",
+    "content-script/bundle.css",
     "content-scripts/alert/bundle.css",
     "content-scripts/ui/fonts/cambria-bold.ttf",
     "content-scripts/ui/fonts/cambria-regular.ttf",
