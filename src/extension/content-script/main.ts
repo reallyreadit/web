@@ -514,8 +514,10 @@ Promise
 							page.setReadState(lookupResult.userPage.readState);
 							reader.loadPage(page);
 
-							// load the user interface
-							insertEmbed(lookupResult.userArticle);
+							// load the embed user interface
+							if (lookupResult.userArticle.isRead) {
+								insertEmbed(lookupResult.userArticle);
+							}
 
 							// return the article and page for the bookmark prompt
 							return {
