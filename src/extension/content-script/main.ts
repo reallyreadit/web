@@ -191,6 +191,9 @@ function insertGlobalUi() {
 			reactRoot
 		);
 	}
+
+	// initial render
+	setState({ });
 }
 
 // embed
@@ -391,6 +394,9 @@ function insertEmbed(article: UserArticle) {
 				});
 			}
 		);
+
+	// initial render
+	setState({ });
 }
 
 // reader
