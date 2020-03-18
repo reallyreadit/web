@@ -10,23 +10,9 @@ import ParseResult from '../../../common/contentParsing/ParseResult';
 import styleArticleDocument from '../../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { mergeComment, updateComment } from '../../../common/comments';
-import CommentThread from '../../../common/models/CommentThread';
-import BrowserCommentsSection, { Props as CommentsSectionProps } from './components/BrowserCommentsSection';
-import PostForm from '../../../common/models/social/PostForm';
-import { createCommentThread } from '../../../common/models/social/Post';
-import CommentForm from '../../../common/models/social/CommentForm';
-import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
-import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import ClipboardService from '../../../common/services/ClipboardService';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
-import AsyncTracker from '../../../common/AsyncTracker';
-import Global from './components/Global';
 import Dialog from '../../../common/components/Dialog';
-import { createReactShadowDom } from './shadowDom';
+import GlobalComponentHost from './GlobalComponentHost';
+import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -52,15 +38,13 @@ const eventPageApi = new EventPageApi({
 		if (context && context.lookupResult) {
 			context.lookupResult.userArticle = event.article;
 		}
-		embed?.pushState({
-			article: event.article
-		});
+		commentsSection.articleUpdated(event.article);
 	},
 	onCommentPosted: comment => {
-		embed?.commentPosted(comment);
+		commentsSection.commentPosted(comment);
 	},
 	onCommentUpdated: comment => {
-		embed?.commentUpdated(comment);
+		commentsSection.commentUpdated(comment);
 	},
 	onToggleContentIdentificationDisplay: () => {
 		if (context) {
@@ -115,272 +99,79 @@ const eventPageApi = new EventPageApi({
 });
 
 // global ui
-let globalUi: {
-	clipboard: ClipboardService,
-	dialog: DialogService,
-	toaster: ToasterService
-};
-function insertGlobalUi() {
-	globalUi = {
-		clipboard: new ClipboardService(
-			(content, intent) => {
-				globalUi.toaster.addToast(content, intent);
-			}
-		),
-		dialog: new DialogService({
-			setState: delegate => {
-				setState(delegate(state));
-			}
-		}),
-		toaster: new ToasterService({
-			asyncTracker: new AsyncTracker(),
-			setState: (delegate: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
-				setState(delegate(state));
-			}
-		})
-	};
-
-	const reactRoot = createReactShadowDom(
-		document.body.appendChild(
-			document.createElement('div')
-		)
-	);
-
-	let state: ToasterState & DialogState = {
-		dialogs: [],
-		toasts: []
-	};
-
-	function setState(nextState: Partial<ToasterState & DialogState>) {
-		ReactDOM.render(
-			React.createElement(
-				Global,
-				{
-					clipboardService: globalUi.clipboard,
-					dialogService: globalUi.dialog,
-					toasterService: globalUi.toaster,
-					...(
-						state = {
-							...state,
-							...nextState
-						}
-					)
-				}
-			),
-			reactRoot
-		);
+const globalUi = new GlobalComponentHost({
+	domAttachmentDelegate: shadowHost => {
+		document.body.appendChild(shadowHost);
 	}
+});
 
-	// initial render
-	setState({ });
-}
-
-// embed
-let embed: {
-	commentPosted: (comment: CommentThread) => void,
-	commentUpdated: (comment: CommentThread) => void,
-	pushState: (state: { article: UserArticle }) => void
-};
-function insertEmbed(article: UserArticle) {
-	embed = {
-		commentPosted: comment => {
-			if (state.comments && !state.comments.isLoading) {
-				setState({
-					comments: {
-						...state.comments,
-						value: mergeComment(comment, state.comments.value)
-					}
-				});
-			}
-		},
-		commentUpdated: comment => {
-			if (state.comments && !state.comments.isLoading) {
-				setState({
-					comments: {
-						...state.comments,
-						value: updateComment(comment, state.comments.value)
-					}
-				});
-			}
-		},
-		pushState: state => {
-			setState({
-				...state
-			});
-		}
-	};
-
-	function postArticle(form: PostForm) {
-		return eventPageApi
+// comments ui
+const commentsSection = new CommentsSectionComponentHost({
+	domAttachmentDelegate: shadowHost => {
+		context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
+			'afterend',
+			shadowHost
+		)
+	},
+	services: {
+		clipboardService: globalUi.clipboard,
+		dialogService: globalUi.dialogs,
+		onDeleteComment: form => eventPageApi.deleteComment(form),
+		onPostArticle: form => eventPageApi
 			.postArticle(form)
 			.then(
 				post => {
 					context.lookupResult.userArticle = post.article;
-					if (post.comment) {
-						setState({
-							article: post.article,
-							comments: {
-								...state.comments,
-								value: mergeComment(
-									createCommentThread(post),
-									state.comments.value
-								)
-							}
-						});
-					} else {
-						setState({
-							article: post.article
-						});
-					}
 					return post;
 				}
-			);
-	}
-
-	function postComment(form: CommentForm) {
-		return eventPageApi
+			),
+		onPostComment: form => eventPageApi
 			.postComment(form)
-			.then(result => {
-				context.lookupResult.userArticle = result.article;
-				setState({
-					article: result.article,
-					comments: {
-						...state.comments,
-						value: mergeComment(result.comment, state.comments.value)
-					}
-				});
-			});
-	}
-
-	function postCommentAddendum(form: CommentAddendumForm) {
-		return eventPageApi
-			.postCommentAddendum(form)
 			.then(
-				comment => {
-					setState({
-						comments: {
-							...state.comments,
-							value: updateComment(comment, state.comments.value)
-						}
-					});
-					return comment;
-				}
-			);
-	}
-
-	function postCommentRevision(form: CommentRevisionForm) {
-		return eventPageApi
-			.postCommentRevision(form)
-			.then(
-				comment => {
-					setState({
-						comments: {
-							...state.comments,
-							value: updateComment(comment, state.comments.value)
-						}
-					});
-					return comment;
-				}
-			);
-	}
-
-	function deleteComment(form: CommentDeletionForm) {
-		return eventPageApi
-			.deleteComment(form)
-			.then(
-				comment => {
-					setState({
-						comments: {
-							...state.comments,
-							value: updateComment(comment, state.comments.value)
-						}
-					});
-					return comment;
-				}
-			);
-	}
-
-	const reactRoot = createReactShadowDom(
-		context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
-			'afterend',
-			document.createElement('div')
-		)
-	);
-
-	let state: Pick<CommentsSectionProps, 'article' | 'comments' | 'user'> = {
-		article,
-		comments: {
-			isLoading: true
-		},
-		user: context.lookupResult.user,
-	};
-
-	function setState(nextState: Partial<Pick<CommentsSectionProps, 'article' | 'comments' | 'user'>>) {
-		ReactDOM.render(
-			React.createElement(
-				BrowserCommentsSection,
-				{
-					clipboardService: globalUi.clipboard,
-					dialogService: globalUi.dialog,
-					onDeleteComment: deleteComment,
-					onPostArticle: postArticle,
-					onPostComment: postComment,
-					onPostCommentAddendum: postCommentAddendum,
-					onPostCommentRevision: postCommentRevision,
-					toasterService: globalUi.toaster,
-					...(
-						state = {
-							...state,
-							...nextState
-						}
-					)
+				result => {
+					context.lookupResult.userArticle = result.article;
+					return result;
 				}
 			),
-			reactRoot
-		);
+		onPostCommentAddendum: form => eventPageApi.postCommentAddendum(form),
+		onPostCommentRevision: form => eventPageApi.postCommentRevision(form),
+		toasterService: globalUi.toaster
 	}
+});
 
+function showComments() {
+	commentsSection
+		.initialize(context.lookupResult.userArticle, context.lookupResult.user)
+		.attach();
 	eventPageApi
-		.getComments(article.slug)
+		.getComments(context.lookupResult.userArticle.slug)
 		.then(
 			comments => {
-				setState({
-					comments: {
-						isLoading: false,
-						value: comments
-					}
-				});
+				commentsSection.commentsLoaded(comments);
 			}
 		);
-
-	// initial render
-	setState({ });
 }
 
 // reader
 const reader = new Reader(
 	event => {
-		if (context) {
-			eventPageApi
-				.commitReadState(
-					{
-						readState: event.readStateArray,
-						userPageId: context.lookupResult.userPage.id
-					},
-					event.isCompletionCommit
-				)
-				.then(article => {
-					if (article.isRead) {
-						if (embed) {
-							embed.pushState({
-								article
-							});
-						} else {
-							insertEmbed(article);
-						}
+		eventPageApi
+			.commitReadState(
+				{
+					readState: event.readStateArray,
+					userPageId: context.lookupResult.userPage.id
+				},
+				event.isCompletionCommit
+			)
+			.then(
+				article => {
+					context.lookupResult.userArticle = article;
+					if (event.isCompletionCommit) {
+						showComments();
 					}
-				});
-		}
+					commentsSection.articleUpdated(article);
+				}
+			);
 	}
 )
 
@@ -441,7 +232,7 @@ Promise
 			);
 
 			// set up the user interface
-			insertGlobalUi();
+			globalUi.attach();
 			
 			// begin fade in animation
 			document.body.style.opacity = '1';
@@ -480,7 +271,7 @@ Promise
 
 							// load the embed user interface
 							if (lookupResult.userArticle.isRead) {
-								insertEmbed(lookupResult.userArticle);
+								showComments();
 							}
 
 							// return the article and page for the bookmark prompt
@@ -501,13 +292,13 @@ Promise
 							!results[0].article.isRead &&
 							results[0].page.getBookmarkScrollTop() > window.innerHeight
 						) {
-							globalUi.dialog.openDialog(
+							globalUi.dialogs.openDialog(
 								React.createElement(
 									Dialog,
 									{
 										children: 'Want to pick up where you left off?',
 										closeButtonText: 'No',
-										onClose: globalUi.dialog.closeDialog,
+										onClose: globalUi.dialogs.closeDialog,
 										onSubmit: () => {
 											const bookmarkScrollTop = results[0].page.getBookmarkScrollTop();
 											if (bookmarkScrollTop > 0) {
