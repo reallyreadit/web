@@ -6,8 +6,9 @@ const project = require('../../../project'),
 const build = createBuild({
 	path: 'extension/content-scripts/alert',
 	scss: [
-		`${project.srcDir}/common/**/*.{css,scss}`,
-		`${project.srcDir}/extension/content-scripts/alert/main.css`
+		`${project.srcDir}/common/templates/global.css`,
+		`${project.srcDir}/extension/content-scripts/alert/main.css`,
+		`${project.srcDir}/extension/content-scripts/ui/shadow-host.css`
 	],
 	webpack: {
 		appConfig: {
