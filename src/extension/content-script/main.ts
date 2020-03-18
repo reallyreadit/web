@@ -13,7 +13,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { mergeComment, updateComment } from '../../common/comments';
 import CommentThread from '../../common/models/CommentThread';
-import App, { Props as AppProps } from './components/App';
+import BrowserCommentsSection, { Props as CommentsSectionProps } from './components/BrowserCommentsSection';
 import PostForm from '../../common/models/social/PostForm';
 import { createCommentThread } from '../../common/models/social/Post';
 import CommentForm from '../../common/models/social/CommentForm';
@@ -349,7 +349,7 @@ function insertEmbed(article: UserArticle) {
 	shadowRoot.append(iconsElement);
 	shadowRoot.append(reactRoot);
 
-	let state: Pick<AppProps, 'article' | 'comments' | 'user'> = {
+	let state: Pick<CommentsSectionProps, 'article' | 'comments' | 'user'> = {
 		article,
 		comments: {
 			isLoading: true
@@ -357,10 +357,10 @@ function insertEmbed(article: UserArticle) {
 		user: context.lookupResult.user,
 	};
 
-	function setState(nextState: Partial<Pick<AppProps, 'article' | 'comments' | 'user'>>) {
+	function setState(nextState: Partial<Pick<CommentsSectionProps, 'article' | 'comments' | 'user'>>) {
 		ReactDOM.render(
 			React.createElement(
-				App,
+				BrowserCommentsSection,
 				{
 					clipboardService: globalUi.clipboard,
 					dialogService: globalUi.dialog,

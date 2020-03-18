@@ -87,7 +87,7 @@ export default class App extends React.Component<Props> {
 	}
 	public render() {
 		return (
-			<div className="app_5ii7ja">
+			<div className="browser-comments-section_hyo38z">
 				<Logo />
 				<PostPrompt
 					article={this.props.article}
