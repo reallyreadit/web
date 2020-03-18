@@ -101,7 +101,7 @@ export default class App extends React.Component<Props> {
 					<CommentsSection
 						article={this.props.article}
 						comments={this.props.comments.value}
-						imagePath={`chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/ui/images/`}
+						imagePath={`chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/ui/images`}
 						noCommentsMessage="No comments on this article yet."
 						onCloseDialog={this.props.dialogService.closeDialog}
 						onCopyTextToClipboard={this.props.clipboardService.copyText}
