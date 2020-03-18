@@ -20,13 +20,13 @@ import CommentForm from '../../../common/models/social/CommentForm';
 import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import icons from '../../../common/svg/icons';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
 import ClipboardService from '../../../common/services/ClipboardService';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import AsyncTracker from '../../../common/AsyncTracker';
 import Global from './components/Global';
 import Dialog from '../../../common/components/Dialog';
+import { createReactShadowDom } from './shadowDom';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -140,32 +140,11 @@ function insertGlobalUi() {
 		})
 	};
 
-	const iconsElement = document.createElement('div');
-	iconsElement.innerHTML = icons;
-
-	const componentStyleLink = document.createElement('link');
-	componentStyleLink.rel = 'stylesheet';
-	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/reader/bundle.css`;
-
-	const reactRoot = document.createElement('div');
-
-	const shadowRoot = document.body
-		.appendChild(
+	const reactRoot = createReactShadowDom(
+		document.body.appendChild(
 			document.createElement('div')
 		)
-		.attachShadow({
-			mode: 'open'
-		});
-
-	// react compatibility hack (https://github.com/facebook/react/issues/9242)
-	Object.defineProperty(reactRoot, 'ownerDocument', { value: shadowRoot });
-	(shadowRoot as any).createElement = (...args: any[]) => (document as any).createElement(...args);
-	(shadowRoot as any).createElementNS = (...args: any[]) => (document as any).createElementNS(...args);
-	(shadowRoot as any).createTextNode = (...args: any[]) => (document as any).createTextNode(...args);
-
-	shadowRoot.append(componentStyleLink);
-	shadowRoot.append(iconsElement);
-	shadowRoot.append(reactRoot);
+	);
 
 	let state: ToasterState & DialogState = {
 		dialogs: [],
@@ -321,33 +300,12 @@ function insertEmbed(article: UserArticle) {
 			);
 	}
 
-	const iconsElement = document.createElement('div');
-	iconsElement.innerHTML = icons;
-
-	const componentStyleLink = document.createElement('link');
-	componentStyleLink.rel = 'stylesheet';
-	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/reader/bundle.css`;
-
-	const reactRoot = document.createElement('div');
-
-	const shadowRoot = context.page.elements[context.page.elements.length - 1].element
-		.insertAdjacentElement(
+	const reactRoot = createReactShadowDom(
+		context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
 			'afterend',
 			document.createElement('div')
 		)
-		.attachShadow({
-			mode: 'open'
-		});
-
-	// react compatibility hack (https://github.com/facebook/react/issues/9242)
-	Object.defineProperty(reactRoot, 'ownerDocument', { value: shadowRoot });
-	(shadowRoot as any).createElement = (...args: any[]) => (document as any).createElement(...args);
-	(shadowRoot as any).createElementNS = (...args: any[]) => (document as any).createElementNS(...args);
-	(shadowRoot as any).createTextNode = (...args: any[]) => (document as any).createTextNode(...args);
-
-	shadowRoot.append(componentStyleLink);
-	shadowRoot.append(iconsElement);
-	shadowRoot.append(reactRoot);
+	);
 
 	let state: Pick<CommentsSectionProps, 'article' | 'comments' | 'user'> = {
 		article,
