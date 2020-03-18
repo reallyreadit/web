@@ -14,7 +14,7 @@ import CommentDeletionForm from '../../common/models/social/CommentDeletionForm'
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
 }
-export default class ContentScriptApi {
+export default class ReaderContentScriptApi {
 	constructor(handlers: {
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,

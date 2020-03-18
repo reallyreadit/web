@@ -1,10 +1,10 @@
 import drawBrowserActionIcon from './drawBrowserActionIcon';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import SetStore from '../../common/webStorage/SetStore';
-import ContentScriptTab from '../common/ContentScriptTab';
-import ContentScriptApi from './ContentScriptApi';
+import ReaderContentScriptTab from './ReaderContentScriptTab';
+import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
-import BrowserActionState from '../common/BrowserActionState';
+import BrowserActionState from './BrowserActionState';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
@@ -38,17 +38,16 @@ const serverApi = new ServerApi({
 });
 
 // tabs
-const tabs = new SetStore<number, ContentScriptTab>('tabs', t => t.id);
+const tabs = new SetStore<number, ReaderContentScriptTab>('tabs', t => t.id);
 
 // content script
-const contentScriptApi = new ContentScriptApi({
+const contentScriptApi = new ReaderContentScriptApi({
 	onRegisterPage: (tabId, data) => {
 		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
 		// update tabs
 		tabs.set({
 			articleId: null,
-			id: tabId,
-			isReaderModeActivated: false
+			id: tabId
 		});
 		// update icon
 		getState().then(updateIcon);
@@ -59,8 +58,7 @@ const contentScriptApi = new ContentScriptApi({
 				// update tabs
 				tabs.set({
 					articleId: result.userArticle.id,
-					id: tabId,
-					isReaderModeActivated: false
+					id: tabId
 				});
 				// update icon
 				getState().then(updateIcon);
@@ -101,7 +99,7 @@ const contentScriptApi = new ContentScriptApi({
 			// fall back to bundled script
 		}
 		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
-		chrome.tabs.executeScript(tabId, { file: './content-script/content-parser/bundle.js' });
+		chrome.tabs.executeScript(tabId, { file: './content-scripts/reader/content-parser/bundle.js' });
 	},
 	onGetComments: serverApi.getComments,
 	onPostArticle: form => {
@@ -222,7 +220,7 @@ function getState(): Promise<BrowserActionState> {
 				isAuthenticated = result[1],
 				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
 				user = serverApi.getUser();
-			let activeTab: ContentScriptTab;
+			let activeTab: ReaderContentScriptTab;
 			if (isAuthenticated && focusedChromeTab && (activeTab = tabs.get(focusedChromeTab.id))) {
 				return Promise.resolve({
 					activeTab,
@@ -455,7 +453,7 @@ chrome.runtime.onMessage.addListener(
 				chrome.tabs.executeScript(
 					sender.tab.id,
 					{
-						file: './content-script/bundle.js'
+						file: './content-scripts/reader/bundle.js'
 					}
 				);
 				return;

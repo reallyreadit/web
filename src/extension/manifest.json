@@ -36,8 +36,8 @@
     "notifications"
   ],
   "web_accessible_resources": [
-    "content-script/bundle.css",
     "content-scripts/alert/bundle.css",
+    "content-scripts/reader/bundle.css",
     "content-scripts/ui/fonts/cambria-bold.ttf",
     "content-scripts/ui/fonts/cambria-regular.ttf",
     "content-scripts/ui/fonts/museo-sans-100.ttf",

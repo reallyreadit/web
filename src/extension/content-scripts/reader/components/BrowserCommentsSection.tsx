@@ -1,28 +1,28 @@
 import * as React from 'react';
-import ShareChannel from '../../../common/sharing/ShareChannel';
-import ClipboardService from '../../../common/services/ClipboardService';
-import { createUrl } from '../../../common/HttpEndpoint';
-import ToasterService from '../../../common/services/ToasterService';
-import DialogService from '../../../common/services/DialogService';
-import UserArticle from '../../../common/models/UserArticle';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ClipboardService from '../../../../common/services/ClipboardService';
+import { createUrl } from '../../../../common/HttpEndpoint';
+import ToasterService from '../../../../common/services/ToasterService';
+import DialogService from '../../../../common/services/DialogService';
+import UserArticle from '../../../../common/models/UserArticle';
 import Logo from './Logo';
-import Fetchable from '../../../common/Fetchable';
-import CommentThread from '../../../common/models/CommentThread';
-import UserAccount from '../../../common/models/UserAccount';
-import PostDialog from '../../../common/components/PostDialog';
-import CommentsSection from '../../../common/components/comments/CommentsSection';
-import PostForm from '../../../common/models/social/PostForm';
-import Post from '../../../common/models/social/Post';
-import PostPrompt from '../../../common/components/PostPrompt';
-import { findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
-import routes from '../../../common/routing/routes';
-import ScreenKey from '../../../common/routing/ScreenKey';
-import CommentForm from '../../../common/models/social/CommentForm';
-import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
-import ContentBox from '../../../common/components/ContentBox';
-import SpinnerIcon from '../../../common/components/SpinnerIcon';
+import Fetchable from '../../../../common/Fetchable';
+import CommentThread from '../../../../common/models/CommentThread';
+import UserAccount from '../../../../common/models/UserAccount';
+import PostDialog from '../../../../common/components/PostDialog';
+import CommentsSection from '../../../../common/components/comments/CommentsSection';
+import PostForm from '../../../../common/models/social/PostForm';
+import Post from '../../../../common/models/social/Post';
+import PostPrompt from '../../../../common/components/PostPrompt';
+import { findRouteByKey, parseUrlForRoute } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import CommentForm from '../../../../common/models/social/CommentForm';
+import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
+import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
+import ContentBox from '../../../../common/components/ContentBox';
+import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 
 export interface Props {
 	article: UserArticle
@@ -87,7 +87,7 @@ export default class App extends React.Component<Props> {
 	}
 	public render() {
 		return (
-			<div className="browser-comments-section_hyo38z">
+			<div className="browser-comments-section_s3hacq">
 				<Logo />
 				<PostPrompt
 					article={this.props.article}

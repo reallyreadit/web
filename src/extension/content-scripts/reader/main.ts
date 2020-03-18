@@ -1,32 +1,32 @@
-import Page from '../../common/reading/Page';
+import Page from '../../../common/reading/Page';
 import EventPageApi from './EventPageApi';
-import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
-import ContentElement from '../../common/reading/ContentElement';
-import Reader from '../../common/reading/Reader';
-import createPageParseResult from '../../common/reading/createPageParseResult';
-import UserArticle from '../../common/models/UserArticle';
-import ArticleLookupResult from '../../common/models/ArticleLookupResult';
-import ParseResult from '../../common/contentParsing/ParseResult';
-import styleArticleDocument from '../../common/reading/styleArticleDocument';
+import parseDocumentMetadata from '../../../common/reading/parseDocumentMetadata';
+import ContentElement from '../../../common/reading/ContentElement';
+import Reader from '../../../common/reading/Reader';
+import createPageParseResult from '../../../common/reading/createPageParseResult';
+import UserArticle from '../../../common/models/UserArticle';
+import ArticleLookupResult from '../../../common/models/ArticleLookupResult';
+import ParseResult from '../../../common/contentParsing/ParseResult';
+import styleArticleDocument from '../../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { mergeComment, updateComment } from '../../common/comments';
-import CommentThread from '../../common/models/CommentThread';
+import { mergeComment, updateComment } from '../../../common/comments';
+import CommentThread from '../../../common/models/CommentThread';
 import BrowserCommentsSection, { Props as CommentsSectionProps } from './components/BrowserCommentsSection';
-import PostForm from '../../common/models/social/PostForm';
-import { createCommentThread } from '../../common/models/social/Post';
-import CommentForm from '../../common/models/social/CommentForm';
-import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
-import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
-import icons from '../../common/svg/icons';
-import ToasterService, { State as ToasterState } from '../../common/services/ToasterService';
-import ClipboardService from '../../common/services/ClipboardService';
-import DialogService, { State as DialogState } from '../../common/services/DialogService';
-import AsyncTracker from '../../common/AsyncTracker';
+import PostForm from '../../../common/models/social/PostForm';
+import { createCommentThread } from '../../../common/models/social/Post';
+import CommentForm from '../../../common/models/social/CommentForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import icons from '../../../common/svg/icons';
+import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
+import ClipboardService from '../../../common/services/ClipboardService';
+import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import AsyncTracker from '../../../common/AsyncTracker';
 import Global from './components/Global';
-import Dialog from '../../common/components/Dialog';
+import Dialog from '../../../common/components/Dialog';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -145,7 +145,7 @@ function insertGlobalUi() {
 
 	const componentStyleLink = document.createElement('link');
 	componentStyleLink.rel = 'stylesheet';
-	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/bundle.css`;
+	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/reader/bundle.css`;
 
 	const reactRoot = document.createElement('div');
 
@@ -326,7 +326,7 @@ function insertEmbed(article: UserArticle) {
 
 	const componentStyleLink = document.createElement('link');
 	componentStyleLink.rel = 'stylesheet';
-	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/bundle.css`;
+	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/reader/bundle.css`;
 
 	const reactRoot = document.createElement('div');
 

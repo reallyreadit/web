@@ -1,9 +1,9 @@
-import ContentScriptTab from './ContentScriptTab';
+import ReaderContentScriptTab from './ReaderContentScriptTab';
 import UserArticle from '../../common/models/UserArticle';
 import UserAccount from '../../common/models/UserAccount';
 
 export default interface BrowserActionState {
-	activeTab?: ContentScriptTab,
+	activeTab?: ReaderContentScriptTab,
 	article?: UserArticle,
 	debug: boolean,
 	isAuthenticated: boolean,

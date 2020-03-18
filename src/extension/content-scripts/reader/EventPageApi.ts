@@ -1,15 +1,15 @@
-import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
-import ParseResult from '../../common/reading/ParseResult';
-import ArticleLookupResult from '../../common/models/ArticleLookupResult';
-import UserArticle from '../../common/models/UserArticle';
-import CommentThread from '../../common/models/CommentThread';
-import CommentForm from '../../common/models/social/CommentForm';
-import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
-import PostForm from '../../common/models/social/PostForm';
-import Post from '../../common/models/social/Post';
-import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
-import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
+import ReadStateCommitData from '../../../common/reading/ReadStateCommitData';
+import ParseResult from '../../../common/reading/ParseResult';
+import ArticleLookupResult from '../../../common/models/ArticleLookupResult';
+import UserArticle from '../../../common/models/UserArticle';
+import CommentThread from '../../../common/models/CommentThread';
+import CommentForm from '../../../common/models/social/CommentForm';
+import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
+import PostForm from '../../../common/models/social/PostForm';
+import Post from '../../../common/models/social/Post';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.runtime.sendMessage({ to: 'eventPage', from: 'contentScript', type, data }, responseCallback);

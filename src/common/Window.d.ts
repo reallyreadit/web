@@ -4,13 +4,13 @@ import HttpEndpoint from './HttpEndpoint';
 declare global {
 	interface AppWindow { }
 	interface AlertContentScriptWindow { }
-	interface ContentScriptWindow { }
+	interface ReaderContentScriptWindow { }
 	interface ReaderWindow { }
 	interface Window {
 		reallyreadit: {
 			alertContentScript?: AlertContentScriptWindow,
 			app?: AppWindow,
-			readerContentScript?: ContentScriptWindow,
+			readerContentScript?: ReaderContentScriptWindow,
 			extension?: {
 				config?: {
 					api: HttpEndpoint,
