@@ -1,0 +1,11 @@
+/*
+	componentPath: src/extension/content-script/components/Global
+	cssComponentId: global_nzv9v1
+*/
+
+:host {
+	all: initial;
+	font-family: 'Museo Sans (300)';
+	font-size: 13pt;
+	color: #2A2326;
+}

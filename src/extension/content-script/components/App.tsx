@@ -1,19 +1,15 @@
 import * as React from 'react';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
-import Toaster from '../../../common/components/Toaster';
 import ClipboardService from '../../../common/services/ClipboardService';
 import { createUrl } from '../../../common/HttpEndpoint';
-import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
-import AsyncTracker from '../../../common/AsyncTracker';
+import ToasterService from '../../../common/services/ToasterService';
+import DialogService from '../../../common/services/DialogService';
 import UserArticle from '../../../common/models/UserArticle';
 import Logo from './Logo';
 import Fetchable from '../../../common/Fetchable';
 import CommentThread from '../../../common/models/CommentThread';
 import UserAccount from '../../../common/models/UserAccount';
 import PostDialog from '../../../common/components/PostDialog';
-import DialogManager from '../../../common/components/DialogManager';
 import CommentsSection from '../../../common/components/comments/CommentsSection';
 import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
@@ -30,39 +26,25 @@ import SpinnerIcon from '../../../common/components/SpinnerIcon';
 
 export interface Props {
 	article: UserArticle
+	clipboardService: ClipboardService,
 	comments: Fetchable<CommentThread[]>,
+	dialogService: DialogService,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+	toasterService: ToasterService,
 	user: UserAccount
 }
-export default class App extends React.Component<
-	Props,
-	ToasterState &
-	DialogState
-> {
-	// clipboard
-	private readonly _clipboard = new ClipboardService(
-		(content, intent) => {
-			this._toaster.addToast(content, intent);
-		}
-	);
-
-	// dialogs
-	private readonly _dialog = new DialogService({
-		setState: delegate => {
-			this.setState(delegate);
-		}
-	})
+export default class App extends React.Component<Props> {
 	protected readonly _openPostDialog = (article: UserArticle) => {
-		this._dialog.openDialog(
+		this.props.dialogService.openDialog(
 			<PostDialog
 				article={article}
-				onCloseDialog={this._dialog.closeDialog}
-				onOpenDialog={this._dialog.openDialog}
-				onShowToast={this._toaster.addToast}
+				onCloseDialog={this.props.dialogService.closeDialog}
+				onOpenDialog={this.props.dialogService.openDialog}
+				onShowToast={this.props.toasterService.addToast}
 				onSubmit={this.props.onPostArticle}
 			/>
 		);
@@ -100,20 +82,6 @@ export default class App extends React.Component<
 		];
 	};
 
-	// toasts
-	private readonly _toaster = new ToasterService({
-		asyncTracker: new AsyncTracker(),
-		setState: (state: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
-			this.setState(state);
-		}
-	});
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			dialogs: [],
-			toasts: []
-		};
-	}
 	private openInNewTab(url: string) {
 		window.open(url, '_blank');
 	}
@@ -135,12 +103,12 @@ export default class App extends React.Component<
 						comments={this.props.comments.value}
 						imagePath={`chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-scripts/ui/images/`}
 						noCommentsMessage="No comments on this article yet."
-						onCloseDialog={this._dialog.closeDialog}
-						onCopyTextToClipboard={this._clipboard.copyText}
+						onCloseDialog={this.props.dialogService.closeDialog}
+						onCopyTextToClipboard={this.props.clipboardService.copyText}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onDeleteComment={this.props.onDeleteComment}
 						onNavTo={this._navTo}
-						onOpenDialog={this._dialog.openDialog}
+						onOpenDialog={this.props.dialogService.openDialog}
 						onPostComment={this.props.onPostComment}
 						onPostCommentAddendum={this.props.onPostCommentAddendum}
 						onPostCommentRevision={this.props.onPostCommentRevision}
@@ -148,16 +116,6 @@ export default class App extends React.Component<
 						onViewProfile={this._viewProfile}
 						user={this.props.user}
 					/>}
-				<DialogManager
-					dialogs={this.state.dialogs}
-					onTransitionComplete={this._dialog.handleTransitionCompletion}
-					style="light"
-				/>
-				<Toaster
-					onRemoveToast={this._toaster.removeToast}
-					toasts={this.state.toasts}
-				/>
-				<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
 			</div>
 		);
 	}

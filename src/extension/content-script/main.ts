@@ -5,7 +5,6 @@ import ContentElement from '../../common/reading/ContentElement';
 import Reader from '../../common/reading/Reader';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import UserArticle from '../../common/models/UserArticle';
-import insertBookmarkPrompt from './insertBookmarkPrompt';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import ParseResult from '../../common/contentParsing/ParseResult';
 import styleArticleDocument from '../../common/reading/styleArticleDocument';
@@ -14,7 +13,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { mergeComment, updateComment } from '../../common/comments';
 import CommentThread from '../../common/models/CommentThread';
-import App, { Props } from './components/App';
+import App, { Props as AppProps } from './components/App';
 import PostForm from '../../common/models/social/PostForm';
 import { createCommentThread } from '../../common/models/social/Post';
 import CommentForm from '../../common/models/social/CommentForm';
@@ -22,6 +21,12 @@ import CommentAddendumForm from '../../common/models/social/CommentAddendumForm'
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import icons from '../../common/svg/icons';
+import ToasterService, { State as ToasterState } from '../../common/services/ToasterService';
+import ClipboardService from '../../common/services/ClipboardService';
+import DialogService, { State as DialogState } from '../../common/services/DialogService';
+import AsyncTracker from '../../common/AsyncTracker';
+import Global from './components/Global';
+import Dialog from '../../common/components/Dialog';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -33,10 +38,7 @@ window.reallyreadit = {
 	}
 };
 
-const { contentParser } = window.reallyreadit.readerContentScript;
-
 let
-	path = window.location.pathname,
 	context: {
 		contentParseResult: ParseResult,
 		lookupResult: ArticleLookupResult,
@@ -45,8 +47,6 @@ let
 	} | null;
 
 // event page interface
-let historyStateUpdatedTimeout: number;
-
 const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
 		if (context && context.lookupResult) {
@@ -62,8 +62,6 @@ const eventPageApi = new EventPageApi({
 	onCommentUpdated: comment => {
 		embed?.commentUpdated(comment);
 	},
-	onLoadPage: loadPage,
-	onUnloadPage: unloadPage,
 	onToggleContentIdentificationDisplay: () => {
 		if (context) {
 			let styles: {
@@ -113,20 +111,87 @@ const eventPageApi = new EventPageApi({
 		if (context) {
 			context.page.toggleReadStateDisplay();
 		}
-	},
-	onHistoryStateUpdated: url => {
-		// throttle updates
-		window.clearTimeout(historyStateUpdatedTimeout);
-		historyStateUpdatedTimeout = window.setTimeout(() => {
-			const newPath = new URL(url).pathname;
-			if (newPath !== path) {
-				// TODO: gotta come up with a more robust way to detect page changes
-				path = newPath;
-				setTimeout(loadPage, 2000);
-			}
-		}, 250);
 	}
 });
+
+// global ui
+let globalUi: {
+	clipboard: ClipboardService,
+	dialog: DialogService,
+	toaster: ToasterService
+};
+function insertGlobalUi() {
+	globalUi = {
+		clipboard: new ClipboardService(
+			(content, intent) => {
+				globalUi.toaster.addToast(content, intent);
+			}
+		),
+		dialog: new DialogService({
+			setState: delegate => {
+				setState(delegate(state));
+			}
+		}),
+		toaster: new ToasterService({
+			asyncTracker: new AsyncTracker(),
+			setState: (delegate: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
+				setState(delegate(state));
+			}
+		})
+	};
+
+	const iconsElement = document.createElement('div');
+	iconsElement.innerHTML = icons;
+
+	const componentStyleLink = document.createElement('link');
+	componentStyleLink.rel = 'stylesheet';
+	componentStyleLink.href = `chrome-extension://${window.reallyreadit.extension.config.extensionId}/content-script/bundle.css`;
+
+	const reactRoot = document.createElement('div');
+
+	const shadowRoot = document.body
+		.appendChild(
+			document.createElement('div')
+		)
+		.attachShadow({
+			mode: 'open'
+		});
+
+	// react compatibility hack (https://github.com/facebook/react/issues/9242)
+	Object.defineProperty(reactRoot, 'ownerDocument', { value: shadowRoot });
+	(shadowRoot as any).createElement = (...args: any[]) => (document as any).createElement(...args);
+	(shadowRoot as any).createElementNS = (...args: any[]) => (document as any).createElementNS(...args);
+	(shadowRoot as any).createTextNode = (...args: any[]) => (document as any).createTextNode(...args);
+
+	shadowRoot.append(componentStyleLink);
+	shadowRoot.append(iconsElement);
+	shadowRoot.append(reactRoot);
+
+	let state: ToasterState & DialogState = {
+		dialogs: [],
+		toasts: []
+	};
+
+	function setState(nextState: Partial<ToasterState & DialogState>) {
+		ReactDOM.render(
+			React.createElement(
+				Global,
+				{
+					clipboardService: globalUi.clipboard,
+					dialogService: globalUi.dialog,
+					toasterService: globalUi.toaster,
+					...(
+						state = {
+							...state,
+							...nextState
+						}
+					)
+				}
+			),
+			reactRoot
+		);
+	}
+}
 
 // embed
 let embed: {
@@ -137,27 +202,27 @@ let embed: {
 function insertEmbed(article: UserArticle) {
 	embed = {
 		commentPosted: comment => {
-			if (props.comments && !props.comments.isLoading) {
-				render({
+			if (state.comments && !state.comments.isLoading) {
+				setState({
 					comments: {
-						...props.comments,
-						value: mergeComment(comment, props.comments.value)
+						...state.comments,
+						value: mergeComment(comment, state.comments.value)
 					}
 				});
 			}
 		},
 		commentUpdated: comment => {
-			if (props.comments && !props.comments.isLoading) {
-				render({
+			if (state.comments && !state.comments.isLoading) {
+				setState({
 					comments: {
-						...props.comments,
-						value: updateComment(comment, props.comments.value)
+						...state.comments,
+						value: updateComment(comment, state.comments.value)
 					}
 				});
 			}
 		},
 		pushState: state => {
-			render({
+			setState({
 				...state
 			});
 		}
@@ -170,18 +235,18 @@ function insertEmbed(article: UserArticle) {
 				post => {
 					context.lookupResult.userArticle = post.article;
 					if (post.comment) {
-						render({
+						setState({
 							article: post.article,
 							comments: {
-								...props.comments,
+								...state.comments,
 								value: mergeComment(
 									createCommentThread(post),
-									props.comments.value
+									state.comments.value
 								)
 							}
 						});
 					} else {
-						render({
+						setState({
 							article: post.article
 						});
 					}
@@ -195,11 +260,11 @@ function insertEmbed(article: UserArticle) {
 			.postComment(form)
 			.then(result => {
 				context.lookupResult.userArticle = result.article;
-				render({
+				setState({
 					article: result.article,
 					comments: {
-						...props.comments,
-						value: mergeComment(result.comment, props.comments.value)
+						...state.comments,
+						value: mergeComment(result.comment, state.comments.value)
 					}
 				});
 			});
@@ -210,10 +275,10 @@ function insertEmbed(article: UserArticle) {
 			.postCommentAddendum(form)
 			.then(
 				comment => {
-					render({
+					setState({
 						comments: {
-							...props.comments,
-							value: updateComment(comment, props.comments.value)
+							...state.comments,
+							value: updateComment(comment, state.comments.value)
 						}
 					});
 					return comment;
@@ -226,10 +291,10 @@ function insertEmbed(article: UserArticle) {
 			.postCommentRevision(form)
 			.then(
 				comment => {
-					render({
+					setState({
 						comments: {
-							...props.comments,
-							value: updateComment(comment, props.comments.value)
+							...state.comments,
+							value: updateComment(comment, state.comments.value)
 						}
 					});
 					return comment;
@@ -242,10 +307,10 @@ function insertEmbed(article: UserArticle) {
 			.deleteComment(form)
 			.then(
 				comment => {
-					render({
+					setState({
 						comments: {
-							...props.comments,
-							value: updateComment(comment, props.comments.value)
+							...state.comments,
+							value: updateComment(comment, state.comments.value)
 						}
 					});
 					return comment;
@@ -281,29 +346,33 @@ function insertEmbed(article: UserArticle) {
 	shadowRoot.append(iconsElement);
 	shadowRoot.append(reactRoot);
 
-	let props: Props;
-
-	props = {
-		...props,
+	let state: Pick<AppProps, 'article' | 'comments' | 'user'> = {
 		article,
 		comments: {
 			isLoading: true
 		},
 		user: context.lookupResult.user,
-		onDeleteComment: deleteComment,
-		onPostArticle: postArticle,
-		onPostComment: postComment,
-		onPostCommentAddendum: postCommentAddendum,
-		onPostCommentRevision: postCommentRevision,
 	};
 
-	function render(nextProps: Partial<Props>) {
+	function setState(nextState: Partial<Pick<AppProps, 'article' | 'comments' | 'user'>>) {
 		ReactDOM.render(
 			React.createElement(
 				App,
-				props = {
-					...props,
-					...nextProps
+				{
+					clipboardService: globalUi.clipboard,
+					dialogService: globalUi.dialog,
+					onDeleteComment: deleteComment,
+					onPostArticle: postArticle,
+					onPostComment: postComment,
+					onPostCommentAddendum: postCommentAddendum,
+					onPostCommentRevision: postCommentRevision,
+					toasterService: globalUi.toaster,
+					...(
+						state = {
+							...state,
+							...nextState
+						}
+					)
 				}
 			),
 			reactRoot
@@ -314,7 +383,7 @@ function insertEmbed(article: UserArticle) {
 		.getComments(article.slug)
 		.then(
 			comments => {
-				render({
+				setState({
 					comments: {
 						isLoading: false,
 						value: comments
@@ -351,117 +420,155 @@ const reader = new Reader(
 	}
 )
 
-// page lifecycle
-function loadPage() {
-	unloadPage()
-		.then(
-			() => {
-				const metaParseResult = parseDocumentMetadata();
-				contentParser
-					.get()
-					.then(
-						parser => {
-							// parse content
-							const content = parser.parse();
+// begin fade out animation
+const transitionAnimationDuration = 700;
+document.body.style.transition = `opacity ${transitionAnimationDuration / 2}ms`;
+document.body.style.opacity = '0';
+document.body.classList.add('com_readup_activating_reader_mode');
+
+// parse metadata
+const metaParseResult = parseDocumentMetadata();
+
+// begin content parsing and article lookup while the animation is happening
+Promise
+	.all<
+		{
+			contentParser: {
+				prune: (parseResult: ParseResult) => void
+			},
+			contentParseResult: ParseResult,
+			lookupResult: Promise<ArticleLookupResult>
+		},
+		void
+	>([
+		window.reallyreadit.readerContentScript.contentParser
+			.get()
+			.then(
+				contentParser => {
+					const contentParseResult = contentParser.parse();
+					return {
+						contentParser,
+						contentParseResult,
+						lookupResult: eventPageApi.registerPage(
+							createPageParseResult(metaParseResult, contentParseResult)
+						)
+					};
+				}
+			),
+		new Promise<void>(
+			resolve => setTimeout(resolve, transitionAnimationDuration / 2)
+		)	
+	])
+	.then(
+		results => {
+			// prune and style
+			results[0].contentParser.prune(results[0].contentParseResult);
+			styleArticleDocument(
+				document,
+				metaParseResult.metadata.article.title,
+				metaParseResult.metadata.article.authors
+					.map(
+						author => author.name
+					)
+					.filter(
+						name => !!name
+					)
+					.join(', ')
+			);
+
+			// set up the user interface
+			insertGlobalUi();
+			
+			// begin fade in animation
+			document.body.style.opacity = '1';
+			document.body.classList.remove('com_readup_activating_reader_mode');
+			
+			// process the lookup result while the animation is happening
+			Promise
+				.all<
+					{
+						article: UserArticle,
+						page: Page
+					},
+					void
+				>([
+					results[0].lookupResult.then(
+						lookupResult => {
 							// create page
 							const page = new Page(
-								content.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
-							);
-							// prune and style
-							parser.prune(content);
-							styleArticleDocument(
-								document,
-								metaParseResult.metadata.article.title,
-								metaParseResult.metadata.article.authors
-									.map(
-										author => author.name
+								results[0].contentParseResult.primaryTextContainers.map(
+									container => new ContentElement(
+										container.containerElement as HTMLElement,
+										container.wordCount
 									)
-									.filter(
-										name => !!name
-									)
-									.join(', ')
+								)
 							);
-							// transition animation
-							document.body.style.opacity = '1';
-							document.body.classList.remove('com_readup_activating_reader_mode');
-							// get article
-							eventPageApi
-								.registerPage(createPageParseResult(metaParseResult, content))
-								.then(lookupResult => {
-									// set the context
-									context = {
-										contentParseResult: content,
-										lookupResult,
-										page,
-										isContentIdentificationDisplayEnabled: false
-									};
-									page.setReadState(lookupResult.userPage.readState);
-									reader.loadPage(page);
-									// load the user interface
-									insertEmbed(lookupResult.userArticle);
-									// bookmark prompt
-									if (
-										!lookupResult.userArticle.isRead &&
-										context.page.getBookmarkScrollTop() > window.innerHeight
-									) {
-										setTimeout(
-											() => {
-												insertBookmarkPrompt({
-													onConfirm: () => {
-														const bookmarkScrollTop = context.page.getBookmarkScrollTop();
-														if (bookmarkScrollTop > 0) {
-															window.scrollTo({
-																behavior: 'smooth',
-																top: bookmarkScrollTop
-															});
-														}
-													}
-												});
-											},
-											350
-										);
-									}
-								})
-								.catch(() => {
-									unloadPage();
-								});
-						}
-					);
-			}
-		);
-}
-function unloadPage() {
-	if (context) {
-		reader.unloadPage();
-		context.page.remove();
-		context = null;
-		return eventPageApi.unregisterPage();
-	}
-	return Promise.resolve();
-}
 
-// event handlers
+							// set the context
+							context = {
+								contentParseResult: results[0].contentParseResult,
+								lookupResult,
+								page,
+								isContentIdentificationDisplayEnabled: false
+							};
+							page.setReadState(lookupResult.userPage.readState);
+							reader.loadPage(page);
+
+							// load the user interface
+							insertEmbed(lookupResult.userArticle);
+
+							// return the article and page for the bookmark prompt
+							return {
+								article: lookupResult.userArticle,
+								page
+							};
+						}
+					),
+					new Promise<void>(
+						resolve => setTimeout(resolve, transitionAnimationDuration / 2)
+					)
+				])
+				.then(
+					results => {
+						// display the bookmark prompt if needed
+						if (
+							!results[0].article.isRead &&
+							results[0].page.getBookmarkScrollTop() > window.innerHeight
+						) {
+							globalUi.dialog.openDialog(
+								React.createElement(
+									Dialog,
+									{
+										children: 'Want to pick up where you left off?',
+										closeButtonText: 'No',
+										onClose: globalUi.dialog.closeDialog,
+										onSubmit: () => {
+											const bookmarkScrollTop = results[0].page.getBookmarkScrollTop();
+											if (bookmarkScrollTop > 0) {
+												window.scrollTo({
+													behavior: 'smooth',
+													top: bookmarkScrollTop
+												});
+											}
+											return Promise.resolve();
+										},
+										size: 'small',
+										submitButtonText: 'Yes',
+										textAlign: 'center',
+										title: 'Bookmark'
+									}
+								)
+							);
+						}
+					}
+				);
+		}
+	);
+
+	// unload
 window.addEventListener(
 	'unload',
 	() => {
-		eventPageApi.unregisterContentScript();
+		eventPageApi.unregisterPage();
 	}
 );
-
-// register content script
-eventPageApi
-	.registerContentScript(window.location)
-	.then(
-		() => {
-			// transition animation
-			document.body.style.transition = 'opacity 350ms';
-			document.body.style.opacity = '0';
-			document.body.classList.add('com_readup_activating_reader_mode');
-			setTimeout(
-				() => {
-					loadPage();
-				},
-				350
-			);
-		}
-	);

@@ -3,13 +3,6 @@
 	cssComponentId: app_5ii7ja
 */
 
-:host {
-	all: initial;
-	font-family: 'Museo Sans (300)';
-	font-size: 13pt;
-	color: #2A2326;
-}
-
 .app_5ii7ja {
 	opacity: 0;
 	animation: app_5ii7ja-fade-in 500ms 500ms forwards;

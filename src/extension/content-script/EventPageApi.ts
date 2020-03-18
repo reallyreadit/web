@@ -28,11 +28,8 @@ export default class EventPageApi {
 		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
 		onCommentPosted: (comment: CommentThread) => void,
 		onCommentUpdated: (comment: CommentThread) => void,
-		onLoadPage: () => void,
-		onUnloadPage: () => void,
 		onToggleContentIdentificationDisplay: () => void,
-		onToggleReadStateDisplay: () => void,
-		onHistoryStateUpdated: (url: string) => void
+		onToggleReadStateDisplay: () => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
@@ -45,26 +42,14 @@ export default class EventPageApi {
 				case 'commentUpdated':
 					handlers.onCommentUpdated(message.data);
 					break;
-				case 'loadPage':
-					handlers.onLoadPage();
-					break;
-				case 'unloadPage':
-					handlers.onUnloadPage();
-					break;
 				case 'toggleContentIdentificationDisplay':
 					handlers.onToggleContentIdentificationDisplay();
 					break;
 				case 'toggleReadStateDisplay':
 					handlers.onToggleReadStateDisplay();
 					break;
-				case 'updateHistoryState':
-					handlers.onHistoryStateUpdated(message.data);
-					break;
 			}
 		});
-	}
-	public registerContentScript(location: Location) {
-		return sendMessageAwaitingResponse<void>('registerContentScript', location.toString());
 	}
 	public registerPage(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>('registerPage', data);
@@ -74,9 +59,6 @@ export default class EventPageApi {
 	}
 	public unregisterPage() {
 		return sendMessageAwaitingResponse<void>('unregisterPage');
-	}
-	public unregisterContentScript() {
-		sendMessage('unregisterContentScript');
 	}
 	public loadContentParser() {
 		sendMessage('loadContentParser');

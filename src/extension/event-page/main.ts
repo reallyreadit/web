@@ -17,12 +17,6 @@ const serverApi = new ServerApi({
 		console.log('serverApi.onAuthenticationStatusChanged');
 		// update icon
 		getState().then(updateIcon);
-		// signal content scripts
-		if (isAuthenticated) {
-			tabs.getAll().forEach(tab => contentScriptApi.loadPage(tab.id));
-		} else {
-			tabs.getAll().forEach(tab => contentScriptApi.unloadPage(tab.id));
-		}
 	},
 	onArticleLookupRequestChanged: () => {
 		console.log('serverApi.onArticleLookupRequestChanged');
@@ -48,8 +42,8 @@ const tabs = new SetStore<number, ContentScriptTab>('tabs', t => t.id);
 
 // content script
 const contentScriptApi = new ContentScriptApi({
-	onRegisterContentScript: (tabId, url) => {
-		console.log(`contentScriptApi.onRegisterContentScript (tabId: ${tabId})`);
+	onRegisterPage: (tabId, data) => {
+		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
 		// update tabs
 		tabs.set({
 			articleId: null,
@@ -58,11 +52,6 @@ const contentScriptApi = new ContentScriptApi({
 		});
 		// update icon
 		getState().then(updateIcon);
-		// return
-		return Promise.resolve();
-	},
-	onRegisterPage: (tabId, data) => {
-		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
 		// get read state
 		return serverApi
 			.registerPage(tabId, data)
@@ -92,17 +81,6 @@ const contentScriptApi = new ContentScriptApi({
 			});
 	},
 	onUnregisterPage: tabId => {
-		console.log(`contentScriptApi.onUnregisterPage (tabId: ${tabId})`);
-		// update tabs
-		tabs.set({
-			articleId: null,
-			id: tabId,
-			isReaderModeActivated: false
-		});
-		// update icon
-		getState().then(updateIcon);
-	},
-	onUnregisterContentScript: tabId => {
 		console.log(`contentScriptApi.onUnregisterContentScript (tabId: ${tabId})`);
 		// update tabs
 		tabs.remove(tabId)

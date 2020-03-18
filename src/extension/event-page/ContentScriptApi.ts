@@ -16,11 +16,9 @@ function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback
 }
 export default class ContentScriptApi {
 	constructor(handlers: {
-		onRegisterContentScript: (tabId: number, url: string) => Promise<void>,
 		onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
 		onUnregisterPage: (tabId: number) => void,
-		onUnregisterContentScript: (tabId: number) => void,
 		onLoadContentParser: (tabId: number) => void,
 		onGetComments: (slug: string) => Promise<CommentThread[]>,
 		onPostArticle: (form: PostForm) => Promise<Post>,
@@ -33,11 +31,6 @@ export default class ContentScriptApi {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (message.to === 'eventPage' && message.from === 'contentScript') {
 				switch (message.type) {
-					case 'registerContentScript':
-						handlers
-							.onRegisterContentScript(sender.tab.id, message.data)
-							.then(sendResponse)
-						return true;
 					case 'registerPage':
 						handlers
 							.onRegisterPage(sender.tab.id, message.data)
@@ -51,9 +44,6 @@ export default class ContentScriptApi {
 					case 'unregisterPage':
 						handlers.onUnregisterPage(sender.tab.id);
 						return true;
-					case 'unregisterContentScript':
-						handlers.onUnregisterContentScript(sender.tab.id);
-						break;
 					case 'loadContentParser':
 						handlers.onLoadContentParser(sender.tab.id);
 						break;
@@ -101,19 +91,10 @@ export default class ContentScriptApi {
 	public commentUpdated(tabId: number, comment: CommentThread) {
 		sendMessage(tabId, 'commentUpdated', comment);
 	}
-	public loadPage(tabId: number) {
-		sendMessage(tabId, 'loadPage');
-	}
-	public unloadPage(tabId: number) {
-		sendMessage(tabId, 'unloadPage');
-	}
 	public toggleContentIdentificationDisplay(tabId: number) {
 		sendMessage(tabId, 'toggleContentIdentificationDisplay');
 	}
 	public toggleReadStateDisplay(tabId: number) {
 		sendMessage(tabId, 'toggleReadStateDisplay');
-	}
-	public updateHistoryState(tabId: number, url: string) {
-		sendMessage(tabId, 'updateHistoryState', url);
 	}
 }
