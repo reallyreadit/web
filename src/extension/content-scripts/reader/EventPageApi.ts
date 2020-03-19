@@ -10,18 +10,40 @@ import Post from '../../../common/models/social/Post';
 import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import { MessageResponse, isSuccessResponse } from '../../common/messaging';
 
-function sendMessage<T>(type: string, data?: {}, responseCallback?: (data: T) => void) {
-	chrome.runtime.sendMessage({ to: 'eventPage', from: 'contentScript', type, data }, responseCallback);
+
+function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: MessageResponse<T>) => void) {
+	chrome.runtime.sendMessage(
+		{
+			to: 'eventPage',
+			from: 'contentScript',
+			type,
+			data
+		},
+		responseCallback
+	);
 }
-function sendMessageAwaitingResponse<T>(type: string, data ?: {}) {
-	return new Promise<T>((resolve, reject) => {
-		try {
-			sendMessage(type, data, resolve);
-		} catch (ex) {
-			reject();
+function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
+	return new Promise<T>(
+		(resolve, reject) => {
+			try {
+				sendMessage<T>(
+					type,
+					data,
+					response => {
+						if (isSuccessResponse<T>(response)) {
+							resolve(response.value);
+						} else {
+							reject(response.error);
+						}
+					}
+				);
+			} catch (ex) {
+				reject('Failed to send message.');
+			}
 		}
-	});
+	);
 }
 export default class EventPageApi {
 	constructor(handlers: {
@@ -58,7 +80,7 @@ export default class EventPageApi {
 		return sendMessageAwaitingResponse<UserArticle>('commitReadState', { commitData, isCompletionCommit });
 	}
 	public unregisterPage() {
-		return sendMessageAwaitingResponse<void>('unregisterPage');
+		sendMessage('unregisterPage');
 	}
 	public loadContentParser() {
 		sendMessage('loadContentParser');

@@ -10,6 +10,7 @@ import Post from '../../common/models/social/Post';
 import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
+import { createMessageResponseHandler } from '../common/messaging';
 
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
@@ -32,54 +33,62 @@ export default class ReaderContentScriptApi {
 			if (message.to === 'eventPage' && message.from === 'contentScript') {
 				switch (message.type) {
 					case 'registerPage':
-						handlers
-							.onRegisterPage(sender.tab.id, message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onRegisterPage(sender.tab.id, message.data),
+							sendResponse
+						);
 						return true;
 					case 'commitReadState':
-						handlers
-							.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit),
+							sendResponse
+						);
 						return true;
 					case 'unregisterPage':
 						handlers.onUnregisterPage(sender.tab.id);
-						return true;
+						break;
 					case 'loadContentParser':
 						handlers.onLoadContentParser(sender.tab.id);
 						break;
 					case 'getComments':
-						handlers
-							.onGetComments(message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onGetComments(message.data),
+							sendResponse
+						);
 						return true;
 					case 'postArticle':
-						handlers
-							.onPostArticle(message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onPostArticle(message.data),
+							sendResponse
+						);
 						return true;
 					case 'postComment':
-						handlers
-							.onPostComment(message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onPostComment(message.data),
+							sendResponse
+						);
 						return true;
 					case 'postCommentAddendum':
-						handlers
-							.onPostCommentAddendum(message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onPostCommentAddendum(message.data),
+							sendResponse
+						);
 						return true;
 					case 'postCommentRevision':
-						handlers
-							.onPostCommentRevision(message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onPostCommentRevision(message.data),
+							sendResponse
+						);
 						return true;
 					case 'deleteComment':
-						handlers
-							.onDeleteComment(message.data)
-							.then(sendResponse);
+						createMessageResponseHandler(
+							handlers.onDeleteComment(message.data),
+							sendResponse
+						);
 						return true;
 				}
 			}
-			return undefined;
+			return false;
 		});
 	}
 	public articleUpdated(tabId: number, event: ArticleUpdatedEvent) {
