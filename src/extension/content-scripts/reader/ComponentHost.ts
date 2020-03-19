@@ -2,14 +2,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import icons from '../../../common/svg/icons';
 
-export type DomAttachmentDelegate = (shadowHost: Element) => void;
+export type DomAttachmentDelegate = (shadowHost: HTMLElement) => void;
 export default abstract class ComponentHost<Services, State> {
 	protected abstract readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	private readonly _domAttachmentDelegate: DomAttachmentDelegate;
 	private _isAttached = false;
-	private readonly _reactContainer: Element;
+	private readonly _reactContainer: HTMLElement;
 	protected abstract readonly _services: Services;
-	private readonly _shadowHost: Element;
+	private readonly _shadowHost: HTMLElement;
 	private readonly _shadowRoot: ShadowRoot;
 	protected abstract _state: State;
 	constructor(

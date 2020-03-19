@@ -13,6 +13,7 @@ import * as React from 'react';
 import Dialog from '../../../common/components/Dialog';
 import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
+import { GlobalError } from './components/Global';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -101,6 +102,15 @@ const eventPageApi = new EventPageApi({
 // global ui
 const globalUi = new GlobalComponentHost({
 	domAttachmentDelegate: shadowHost => {
+		shadowHost.style.position = 'fixed';
+		shadowHost.style.bottom = '0';
+		shadowHost.style.left = '0';
+		shadowHost.style.width = '0';
+		shadowHost.style.height = '0';
+		shadowHost.style.margin = '0';
+		shadowHost.style.padding = '0';
+		shadowHost.style.transform = 'none';
+		shadowHost.style.zIndex = '2147483647';
 		document.body.appendChild(shadowHost);
 	}
 });
@@ -318,11 +328,17 @@ Promise
 							);
 						}
 					}
+				)
+				.catch(
+					() => {
+						document.body.style.overflow = 'hidden';
+						globalUi.showError(GlobalError.ArticleLookupFailure);
+					}
 				);
 		}
 	);
 
-	// unload
+// unload
 window.addEventListener(
 	'unload',
 	() => {

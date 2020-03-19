@@ -5,17 +5,24 @@ import ClipboardTextInput from '../../../../common/components/ClipboardTextInput
 import DialogService, { Dialog } from '../../../../common/services/DialogService';
 import ToasterService from '../../../../common/services/ToasterService';
 import ClipboardService from '../../../../common/services/ClipboardService';
+import InfoBox from '../../../../common/components/InfoBox';
+import * as classNames from 'classnames';
 
+export enum GlobalError {
+	None,
+	ArticleLookupFailure
+}
 export default (
 	props: {
 		clipboardService: ClipboardService,
 		dialogs: Dialog[],
 		dialogService: DialogService,
+		error: GlobalError,
 		toasterService: ToasterService,
 		toasts: Toast[]
 	}
 ) => (
-	<>
+	<div className={classNames('global_x82v08', { 'error': props.error !== GlobalError.None })}>
 		<DialogManager
 			dialogs={props.dialogs}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}
@@ -26,5 +33,13 @@ export default (
 			toasts={props.toasts}
 		/>
 		<ClipboardTextInput onSetRef={props.clipboardService.setTextInputRef} />
-	</>
+		{props.error !== GlobalError.None ?
+			<InfoBox
+				position="absolute"
+				style="warning"
+			>
+				<p>An error occurred while processing this article.</p>
+			</InfoBox> :
+			null}
+	</div>
 );

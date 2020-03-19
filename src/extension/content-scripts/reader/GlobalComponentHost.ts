@@ -1,5 +1,5 @@
 import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
-import Global from './components/Global';
+import Global, { GlobalError } from './components/Global';
 import ClipboardService from '../../../common/services/ClipboardService';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
@@ -10,7 +10,9 @@ interface Services {
 	dialogService: DialogService,
 	toasterService: ToasterService
 }
-type State = DialogState & ToasterState;
+type State = DialogState & ToasterState & {
+	error: GlobalError
+};
 export default class GlobalComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	protected readonly _services: Services;
@@ -42,7 +44,13 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 		};
 		this.setState({
 			dialogs: [],
+			error: GlobalError.None,
 			toasts: []
+		});
+	}
+	public showError(error: GlobalError) {
+		this.setState({
+			error
 		});
 	}
 	public get clipboard() {
