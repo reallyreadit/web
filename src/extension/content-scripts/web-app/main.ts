@@ -20,7 +20,7 @@ if (!window.reallyreadit) {
 			try {
 				chrome.runtime.sendMessage({
 					to: 'eventPage',
-					from: 'webApp',
+					from: 'webAppContentScript',
 					type: message.type,
 					data: message.data
 				});

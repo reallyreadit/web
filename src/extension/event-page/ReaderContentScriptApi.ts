@@ -30,7 +30,7 @@ export default class ReaderContentScriptApi {
 	}) {
 		// message
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if (message.to === 'eventPage' && message.from === 'contentScript') {
+			if (message.to === 'eventPage' && message.from === 'readerContentScript') {
 				switch (message.type) {
 					case 'registerPage':
 						createMessageResponseHandler(

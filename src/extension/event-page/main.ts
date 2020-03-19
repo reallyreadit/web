@@ -40,8 +40,8 @@ const serverApi = new ServerApi({
 // tabs
 const tabs = new SetStore<number, ReaderContentScriptTab>('tabs', t => t.id);
 
-// content script
-const contentScriptApi = new ReaderContentScriptApi({
+// reader content script
+const readerContentScriptApi = new ReaderContentScriptApi({
 	onRegisterPage: (tabId, data) => {
 		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
 		// update tabs
@@ -173,7 +173,7 @@ const webAppApi = new WebAppApi({
 			.getAll()
 			.filter(tab => tab.articleId === event.article.id)
 			.forEach(tab => {
-				contentScriptApi.articleUpdated(tab.id, event);
+				readerContentScriptApi.articleUpdated(tab.id, event);
 			});
 	},
 	onCommentPosted: comment => {
@@ -182,7 +182,7 @@ const webAppApi = new WebAppApi({
 			.getAll()
 			.filter(tab => tab.articleId === comment.articleId)
 			.forEach(tab => {
-				contentScriptApi.commentPosted(tab.id, comment);
+				readerContentScriptApi.commentPosted(tab.id, comment);
 			});
 	},
 	onCommentUpdated: comment => {
@@ -191,7 +191,7 @@ const webAppApi = new WebAppApi({
 			.getAll()
 			.filter(tab => tab.articleId === comment.articleId)
 			.forEach(tab => {
-				contentScriptApi.commentUpdated(tab.id, comment);
+				readerContentScriptApi.commentUpdated(tab.id, comment);
 			});
 	},
 	onUserUpdated: user => {

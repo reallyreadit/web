@@ -17,7 +17,7 @@ function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: M
 	chrome.runtime.sendMessage(
 		{
 			to: 'eventPage',
-			from: 'contentScript',
+			from: 'readerContentScript',
 			type,
 			data
 		},

@@ -48,7 +48,7 @@ export default class WebAppApi {
 		// listen for messages from content script
 		chrome.runtime.onMessage.addListener(
 			(message, sender) => {
-				if (message.to === 'eventPage' && message.from === 'webApp') {
+				if (message.to === 'eventPage' && message.from === 'webAppContentScript') {
 					console.log(`[WebAppApi] received ${message.type} message from tab # ${sender.tab?.id}`);
 					switch (message.type) {
 						case 'articleUpdated':
