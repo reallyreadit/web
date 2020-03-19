@@ -25,7 +25,7 @@ import { formatCountable } from '../../../../common/format';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import PageSelector from '../controls/PageSelector';
-import InfoBox from '../controls/InfoBox';
+import InfoBox from '../../../../common/components/InfoBox';
 
 interface Props {
 	highlightedCommentId: string | null,

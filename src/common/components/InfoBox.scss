@@ -1,36 +1,36 @@
 /*
-	componentPath: src/app/common/components/controls/InfoBox
-	cssComponentId: info-box_whou0t
+	componentPath: src/common/components/InfoBox
+	cssComponentId: info-box_8xzdd8
 */
 
-.info-box_whou0t {
+.info-box_8xzdd8 {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-.info-box_whou0t.absolute {
+.info-box_8xzdd8.absolute {
 	position: absolute;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
 }
-.info-box_whou0t > .box {
+.info-box_8xzdd8 > .box {
 	display: flex;
 	padding: 20px;
 	border: 3px solid #e0e0e0;
 	background-color: white;
 	border-radius: 5px;
 }
-.info-box_whou0t.warning > .box {
+.info-box_8xzdd8.warning > .box {
 	background-color: lightpink;
 	border-color: darkred;
 }
-.info-box_whou0t.success > .box {
+.info-box_8xzdd8.success > .box {
 	background-color: greenyellow;
 	border-color: green;
 }
-.info-box_whou0t > .box > .icon-container {
+.info-box_8xzdd8 > .box > .icon-container {
 	flex: 0 0 auto;
 	width: 36px;
 	display: flex;
@@ -38,16 +38,16 @@
 	align-items: center;
 	margin-right: 10px;
 }
-.info-box_whou0t > .box > .icon-container > .icon_rour3d {
+.info-box_8xzdd8 > .box > .icon-container > .icon_rour3d {
 	font-size: 36px;
 }
-.info-box_whou0t.warning > .box > .icon-container > .icon_rour3d {
+.info-box_8xzdd8.warning > .box > .icon-container > .icon_rour3d {
 	color: darkred;
 }
-.info-box_whou0t.success > .box > .icon-container > .icon_rour3d {
+.info-box_8xzdd8.success > .box > .icon-container > .icon_rour3d {
 	color: green;
 }
-.info-box_whou0t > .box > .content {
+.info-box_8xzdd8 > .box > .content {
 	flex: 1 1 auto;
 	display: flex;
 	flex-flow: column;
@@ -55,9 +55,9 @@
 	align-items: center;
 	text-align: center;
 }
-.info-box_whou0t > .box > .content > p:not(:first-of-type) {
+.info-box_8xzdd8 > .box > .content > p:not(:first-of-type) {
 	margin-top: 10px;
 }
-.info-box_whou0t.warning > .box > .content > p > .action-link_ftamt8.disabled {
+.info-box_8xzdd8.warning > .box > .content > p > .action-link_ftamt8.disabled {
 	color: #666;
 }

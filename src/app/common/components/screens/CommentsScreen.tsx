@@ -17,7 +17,7 @@ import CommentForm from '../../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
 import CommentAddendumForm from '../../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
-import InfoBox from '../controls/InfoBox';
+import InfoBox from '../../../../common/components/InfoBox';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { variants as marketingVariants } from '../../marketingTesting';

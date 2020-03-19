@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
-import InfoBox from './controls/InfoBox';
+import InfoBox from '../../../common/components/InfoBox';
 import ActionLink from '../../../common/components/ActionLink';
 
 interface Props {

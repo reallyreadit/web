@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Icon, { IconName } from '../../../../common/components/Icon';
+import Icon, { IconName } from './Icon';
 import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 
@@ -12,7 +12,7 @@ export default (props: {
 }) => (
 	<div className={
 		classNames(
-			'info-box_whou0t',
+			'info-box_8xzdd8',
 			props.className,
 			{
 				'absolute': props.position === 'absolute',

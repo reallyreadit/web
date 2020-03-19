@@ -31,7 +31,7 @@ import FollowingListDialog from '../FollowingListDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
 import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadAppDialog';
 import PageSelector from '../controls/PageSelector';
-import InfoBox from '../controls/InfoBox';
+import InfoBox from '../../../../common/components/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 import Rating from '../../../../common/models/Rating';
