@@ -23,6 +23,7 @@ export default (props: {
 		title={props.starred ? 'Unstar Article' : 'Star Article'}
 	>
 		<Icon
+			badge={false}
 			name="article-details-star"
 			onClick={props.onClick}
 		/>
