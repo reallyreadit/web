@@ -1,29 +1,13 @@
 import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
 import BrowserCommentsSection, { Props as CommentsSectionProps } from './components/BrowserCommentsSection';
-import ClipboardService from '../../../common/services/ClipboardService';
-import DialogService from '../../../common/services/DialogService';
-import ToasterService from '../../../common/services/ToasterService';
 import CommentThread from '../../../common/models/CommentThread';
-import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import PostForm from '../../../common/models/social/PostForm';
-import Post, { createCommentThread } from '../../../common/models/social/Post';
+import { createCommentThread } from '../../../common/models/social/Post';
 import CommentForm from '../../../common/models/social/CommentForm';
-import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import { updateComment, mergeComment } from '../../../common/comments';
 import UserArticle from '../../../common/models/UserArticle';
 import UserAccount from '../../../common/models/UserAccount';
 
-interface Services {
-	clipboardService: ClipboardService,
-	dialogService: DialogService,
-	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
-	onPostArticle: (form: PostForm) => Promise<Post>,
-	onPostComment: (form: CommentForm) => Promise<void>,
-	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
-	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	toasterService: ToasterService
-}
+type Services = Pick<CommentsSectionProps, 'clipboardService' | 'dialogService' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onViewProfile' | 'toasterService'>;
 type State = Pick<CommentsSectionProps, 'article' | 'comments' | 'user'>;
 export default class CommentsSectionComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -43,8 +27,7 @@ export default class CommentsSectionComponentHost extends ComponentHost<Services
 		super(params);
 		this._component = BrowserCommentsSection;
 		this._services = {
-			clipboardService: params.services.clipboardService,
-			dialogService: params.services.dialogService,
+			...params.services,
 			onDeleteComment: form => params.services
 				.onDeleteComment(form)
 				.then(
@@ -120,8 +103,7 @@ export default class CommentsSectionComponentHost extends ComponentHost<Services
 						});
 						return comment;
 					}
-				),
-			toasterService: params.services.toasterService
+				)
 		};
 	}
 	public articleUpdated(article: UserArticle) {

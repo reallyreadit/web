@@ -14,6 +14,7 @@ import Dialog from '../../../common/components/Dialog';
 import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import { GlobalError } from './components/Global';
+import HeaderComponentHost from './HeaderComponentHost';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -39,6 +40,7 @@ const eventPageApi = new EventPageApi({
 		if (context && context.lookupResult) {
 			context.lookupResult.userArticle = event.article;
 		}
+		header.articleUpdated(event.article);
 		commentsSection.articleUpdated(event.article);
 	},
 	onCommentPosted: comment => {
@@ -115,6 +117,32 @@ const globalUi = new GlobalComponentHost({
 	}
 });
 
+// header ui
+const header = new HeaderComponentHost({
+	domAttachmentDelegate: shadowHost => {
+		shadowHost.style.marginBottom = '2em';
+		document
+			.getElementById('com_readup_article_content')
+			.prepend(shadowHost);
+	},
+	services: {
+		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
+		onSetStarred: isStarred => eventPageApi
+			.setStarred({
+				articleId: context.lookupResult.userArticle.id,
+				isStarred
+			})
+			.then(
+				article => {
+					context.lookupResult.userArticle = article;
+					return article;
+				}
+			),
+		onViewComments: globalUi.viewComments,
+		onViewProfile: globalUi.viewProfile
+	}
+});
+
 // comments ui
 const commentsSection = new CommentsSectionComponentHost({
 	domAttachmentDelegate: shadowHost => {
@@ -126,7 +154,9 @@ const commentsSection = new CommentsSectionComponentHost({
 	services: {
 		clipboardService: globalUi.clipboard,
 		dialogService: globalUi.dialogs,
+		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
 		onDeleteComment: form => eventPageApi.deleteComment(form),
+		onNavTo: globalUi.navTo,
 		onPostArticle: form => eventPageApi
 			.postArticle(form)
 			.then(
@@ -145,6 +175,8 @@ const commentsSection = new CommentsSectionComponentHost({
 			),
 		onPostCommentAddendum: form => eventPageApi.postCommentAddendum(form),
 		onPostCommentRevision: form => eventPageApi.postCommentRevision(form),
+		onShare: globalUi.handleShareRequest,
+		onViewProfile: globalUi.viewProfile,
 		toasterService: globalUi.toaster
 	}
 });
@@ -228,22 +260,38 @@ Promise
 		results => {
 			// prune and style
 			results[0].contentParser.prune(results[0].contentParseResult);
-			styleArticleDocument(
-				document,
-				metaParseResult.metadata.article.title,
-				metaParseResult.metadata.article.authors
-					.map(
-						author => author.name
-					)
-					.filter(
-						name => !!name
-					)
-					.join(', ')
-			);
+			styleArticleDocument(document);
 
 			// set up the user interface
 			globalUi.attach();
 			
+			// set up the header user interface
+			header
+				.initialize({
+					animationDuration: transitionAnimationDuration / 2,
+					authors: metaParseResult.metadata.article.authors
+						.reduce<string[]>(
+							(authors, author) => {
+								if (!!author.name) {
+									const authorName = author.name.trim();
+									if (
+										!authors.some(
+											existingAuthorName => existingAuthorName.toLowerCase() === authorName.toLowerCase()
+										)
+									) {
+										authors.push(authorName);
+									}
+								}
+								return authors;
+							},
+							[]
+						)
+						.sort(),
+					title: metaParseResult.metadata.article.title,
+					wordCount: results[0].contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
+				})
+				.attach();
+
 			// begin fade in animation
 			document.body.style.opacity = '1';
 			document.body.classList.remove('com_readup_activating_reader_mode');
@@ -278,6 +326,9 @@ Promise
 							};
 							page.setReadState(lookupResult.userPage.readState);
 							reader.loadPage(page);
+
+							// update the header user interface
+							header.articleUpdated(lookupResult.userArticle);
 
 							// load the embed user interface
 							if (lookupResult.userArticle.isRead) {
@@ -332,6 +383,7 @@ Promise
 				.catch(
 					() => {
 						document.body.style.overflow = 'hidden';
+						header.deinitialize();
 						globalUi.showError(GlobalError.ArticleLookupFailure);
 					}
 				);

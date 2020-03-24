@@ -1,0 +1,48 @@
+/*
+	componentPath: src/extension/content-scripts/reader/components/BrowserHeader
+	cssComponentId: browser-header_pg57qm
+*/
+
+.browser-header_pg57qm > .fetchable {
+	display: flex;
+	position: relative;
+	opacity: 0;
+}
+.browser-header_pg57qm > .fetchable.loaded {
+	animation: browser-header_pg57qm-fade-in 250ms forwards;
+}
+.browser-header_pg57qm > .fetchable > .aotd-rank_tqv709 {
+	position: absolute;
+	top: -7px;
+}
+.browser-header_pg57qm > .fetchable > .aotd-score_ndfcug {
+	margin-left: 38px;
+}
+.browser-header_pg57qm > .fetchable > .comments {
+	margin-left: 10px;
+}
+.browser-header_pg57qm > .title {
+	font-family: 'Cambria (bold)';
+	font-size: 26pt;
+	margin-top: 0.35em;
+}
+.browser-header_pg57qm > .title > .star {
+	float: right;
+	font-size: 22pt;
+	margin-left: 5px;
+}
+.browser-header_pg57qm > .byline,
+.browser-header_pg57qm > .length {
+	font-size: 16pt;
+	font-style: italic;
+	margin-top: 0.75em;
+}
+
+@keyframes browser-header_pg57qm-fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
