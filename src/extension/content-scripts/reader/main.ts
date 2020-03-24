@@ -120,10 +120,12 @@ const globalUi = new GlobalComponentHost({
 // header ui
 const header = new HeaderComponentHost({
 	domAttachmentDelegate: shadowHost => {
-		shadowHost.style.marginBottom = '2em';
+		const wrapper = document.createElement('div');
+		wrapper.style.marginBottom = '1.5em';
+		wrapper.append(shadowHost);
 		document
 			.getElementById('com_readup_article_content')
-			.prepend(shadowHost);
+			.prepend(wrapper);
 	},
 	services: {
 		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
@@ -146,9 +148,12 @@ const header = new HeaderComponentHost({
 // comments ui
 const commentsSection = new CommentsSectionComponentHost({
 	domAttachmentDelegate: shadowHost => {
+		const wrapper = document.createElement('div');
+		wrapper.style.marginTop = '2em';
+		wrapper.append(shadowHost);
 		context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
 			'afterend',
-			shadowHost
+			wrapper
 		)
 	},
 	services: {
