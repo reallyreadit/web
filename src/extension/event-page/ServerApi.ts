@@ -272,7 +272,18 @@ export default class ServerApi {
 		this._onCacheUpdated();
 	}
 	public registerPage(tabId: number, data: ParseResult) {
-		const request = this.logRequest<ArticleLookupResult>({ method: 'POST', path: '/Extension/GetUserArticle', data, id: tabId }, this._articleLookupRequests)
+		const request = this.logRequest<ArticleLookupResult>(
+				{
+					method: 'POST',
+					path: '/Extension/GetUserArticle',
+					data: {
+						...data,
+						star: true
+					},
+					id: tabId
+				},
+				this._articleLookupRequests
+			)
 			.then(result => {
 				this._onArticleLookupRequestChanged();
 				this.cacheArticle(result.userArticle);
