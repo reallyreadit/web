@@ -3,7 +3,6 @@ import ClipboardService from '../../../../common/services/ClipboardService';
 import ToasterService from '../../../../common/services/ToasterService';
 import DialogService from '../../../../common/services/DialogService';
 import UserArticle from '../../../../common/models/UserArticle';
-import Logo from './Logo';
 import Fetchable from '../../../../common/Fetchable';
 import CommentThread from '../../../../common/models/CommentThread';
 import UserAccount from '../../../../common/models/UserAccount';
@@ -53,7 +52,6 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 	public render() {
 		return (
 			<div className="browser-comments-section_s3hacq">
-				<Logo />
 				<PostPrompt
 					article={this.props.article}
 					onPost={this._openPostDialog}
