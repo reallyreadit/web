@@ -97,7 +97,7 @@ const styleContent = `
 }
 `;
 
-export default (document: Document, title: string | null, byline: string | null) => {
+export default (document: Document, title?: string, byline?: string) => {
 	// add viewport meta
 	if (!document.querySelectorAll('meta[name="viewport"]').length) {
 		const metaElement = document.createElement('meta');
