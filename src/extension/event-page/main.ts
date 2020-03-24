@@ -151,6 +151,17 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 				}
 			);
 	},
+	onSetStarred: form => serverApi
+		.setStarred(form.articleId, form.isStarred)
+		.then(
+			article => {
+				webAppApi.articleUpdated({
+					article,
+					isCompletionCommit: false
+				});
+				return article;
+			}
+		),
 	onDeleteComment: form => {
 		return serverApi
 			.deleteComment(form)

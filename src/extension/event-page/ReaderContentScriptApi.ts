@@ -11,6 +11,7 @@ import CommentAddendumForm from '../../common/models/social/CommentAddendumForm'
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import { createMessageResponseHandler } from '../common/messaging';
+import StarForm from '../../common/models/articles/StarForm';
 
 function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
 	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
@@ -26,6 +27,7 @@ export default class ReaderContentScriptApi {
 		onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
 		onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 		onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+		onSetStarred: (form: StarForm) => Promise<UserArticle>,
 		onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
 	}) {
 		// message
@@ -77,6 +79,12 @@ export default class ReaderContentScriptApi {
 					case 'postCommentRevision':
 						createMessageResponseHandler(
 							handlers.onPostCommentRevision(message.data),
+							sendResponse
+						);
+						return true;
+					case 'setStarred':
+						createMessageResponseHandler(
+							handlers.onSetStarred(message.data),
 							sendResponse
 						);
 						return true;
