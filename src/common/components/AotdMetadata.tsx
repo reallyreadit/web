@@ -1,73 +1,30 @@
 import * as React from 'react';
 import UserArticle from '../models/UserArticle';
-import UserAccount from '../models/UserAccount';
-import classNames from 'classnames';
-import ProfileLink from './ProfileLink';
-import { formatTimestamp } from '../format';
-import Icon from './Icon';
+import AotdRank from './AotdRank';
+import AotdScore from './AotdScore';
 
 export default (
 	props: {
-		article: UserArticle,
+		article: Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'firstPoster' | 'hotScore'>,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onViewProfile: (userName: string) => void,
 		pointsCallout?: React.ReactNode,
-		rankCallout?: React.ReactNode,
-		user: UserAccount | null
+		rankCallout?: React.ReactNode
 	}
 ) => {
-	const isRanked = (
-		props.article.aotdContenderRank > 0 &&
-		props.article.aotdContenderRank < 1000
-	);
+	
 	return (
 		<div className="aotd-metadata_j18sed">
-			<div className={
-				classNames(
-					'rank',
-					!props.article.aotdTimestamp ?
-						[
-							'contender',
-							isRanked ?
-								'length-' + props.article.aotdContenderRank.toString().length.toString() :
-								null
-						] :
-						null
-						
-				)
-			}>
-				{props.article.aotdTimestamp ?
-					<Icon
-						display="block"
-						name="trophy"
-					/> :
-					isRanked ?
-						<>
-							<small>#</small> {props.article.aotdContenderRank}
-						</> :
-						<span className="none">-</span>}
-				{props.rankCallout}
-			</div>
-			<div className="score">
-				<span className="points">
-					{props.article.aotdTimestamp ?
-						`AOTD on ${formatTimestamp(props.article.aotdTimestamp)}` :
-						`${props.article.hotScore} pts`}
-					{props.pointsCallout}
-				</span>
-				{props.article.firstPoster ?
-					<>
-						<span> - Scout: </span>
-						{!props.user || props.user.name !== props.article.firstPoster ?
-							<ProfileLink
-								onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
-								onViewProfile={props.onViewProfile}
-								userName={props.article.firstPoster}
-							/> :
-							<span>{props.article.firstPoster}</span>}
-					</> :
-					<span> - Be the first to post!</span>}
-			</div>
+			<AotdRank
+				article={props.article}
+				callout={props.rankCallout}
+			/>
+			<AotdScore
+				article={props.article}
+				callout={props.pointsCallout}
+				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
+				onViewProfile={props.onViewProfile}
+			/>
 		</div>
 	);
 };

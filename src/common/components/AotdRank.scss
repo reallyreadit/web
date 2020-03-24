@@ -1,0 +1,38 @@
+/*
+	componentPath: src/common/components/AotdRank
+	cssComponentId: aotd-rank_tqv709
+*/
+
+.aotd-rank_tqv709 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 30px;
+	height: 30px;
+	background-color: white;
+	border: 1px solid #2A2326;
+	border-radius: 15px;
+}
+.aotd-rank_tqv709.contender {
+	font-family: 'Museo Sans (500)';
+	font-size: 14pt;
+}
+.aotd-rank_tqv709.length-2 {
+	font-size: 12pt;
+}
+.aotd-rank_tqv709.length-3 {
+	font-size: 8pt;
+}
+.aotd-rank_tqv709.length-4 {
+	font-size: 6pt;
+}
+.aotd-rank_tqv709 > .icon_rour3d {
+	font-size: 20px;
+}
+.aotd-rank_tqv709 > small {
+	font-size: 8pt;
+	margin-right: 1px;
+}
+.aotd-rank_tqv709 > .none {
+	line-height: 0;
+}

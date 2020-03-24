@@ -40,7 +40,6 @@ export default class PostDetails extends React.Component<Props> {
 					article={this.props.post.article}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 					onViewProfile={this.props.onViewProfile}
-					user={this.props.user}
 				/>
 				<ContentBox
 					className={classNames('content', { 'alert': this.props.post.hasAlert })}

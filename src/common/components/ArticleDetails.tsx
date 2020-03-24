@@ -128,7 +128,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						onViewProfile={this.props.onViewProfile}
 						pointsCallout={this.props.pointsCallout}
 						rankCallout={this.props.rankCallout}
-						user={this.props.user}
 					/> :
 					null}
 				<ContentBox

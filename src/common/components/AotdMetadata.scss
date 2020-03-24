@@ -7,49 +7,13 @@
 	position: relative;
 	padding: 3px 0;
 }
-.aotd-metadata_j18sed > .rank {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+.aotd-metadata_j18sed > .aotd-rank_tqv709 {
 	position: absolute;
 	z-index: 1;
 	top: -2px;
 	left: -3px;
-	width: 30px;
-	height: 30px;
-	background-color: white;
-	border: 1px solid #2A2326;
-	border-radius: 15px;
 }
-.aotd-metadata_j18sed > .rank.contender {
-	font-family: 'Museo Sans (500)';
-	font-size: 14pt;
-}
-.aotd-metadata_j18sed > .rank.length-2 {
-	font-size: 12pt;
-}
-.aotd-metadata_j18sed > .rank.length-3 {
-	font-size: 8pt;
-}
-.aotd-metadata_j18sed > .rank.length-4 {
-	font-size: 6pt;
-}
-.aotd-metadata_j18sed > .rank > .icon_rour3d {
-	font-size: 20px;
-}
-.aotd-metadata_j18sed > .rank > small {
-	font-size: 8pt;
-	margin-right: 1px;
-}
-.aotd-metadata_j18sed > .rank > .none {
-	line-height: 0;
-}
-.aotd-metadata_j18sed > .score {
+.aotd-metadata_j18sed > .aotd-score_ndfcug {
 	font-size: 11pt;
-}
-.aotd-metadata_j18sed > .rank + .score {
 	margin-left: 34px;
-}
-.aotd-metadata_j18sed > .score > .points {
-	position: relative;
 }
