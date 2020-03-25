@@ -1,9 +1,9 @@
-import Store from './Store';
+import Store, { StorageType } from './Store';
 
-export default class <K, V> extends Store<V[]> {
+export default class SetStore<K, V> extends Store<V[]> {
 	private _getKey: (item: V) => K;
-	constructor(key: string, getKey: (item: V) => K) {
-		super(key, []);
+	constructor(key: string, getKey: (item: V) => K, storageType: StorageType = 'localStorage') {
+		super(key, [], storageType);
 		this._getKey = getKey;
 	}
 	private _getItemByKey(key: K, items: V[]) {

@@ -1,5 +1,7 @@
+export type StorageType = 'localStorage' | 'sessionStorage';
+
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-function storageAvailable(type: 'localStorage' | 'sessionStorage' = 'localStorage') {
+function storageAvailable(type: StorageType = 'localStorage') {
 	try {
 		var storage = window[type],
 			x = '__storage_test__';
@@ -23,7 +25,7 @@ function storageAvailable(type: 'localStorage' | 'sessionStorage' = 'localStorag
 	}
 }
 
-export default abstract class <T> {
+export default abstract class Store<T> {
 	private readonly _storage: {
 		read: () => T,
 		write: (value: T) => void
@@ -31,16 +33,25 @@ export default abstract class <T> {
 	private readonly _onStorage: (e: StorageEvent) => void;
 	private readonly _eventListeners: ((oldValue: T, newValue: T) => void)[] = [];
 	private readonly _defaultValue: T;
-	constructor(key: string, defaultValue: T) {
+	constructor(key: string, defaultValue: T, storageType: StorageType = 'localStorage') {
 		// set default value
 		this._defaultValue = defaultValue;
 		// check if storage is available
-		if (storageAvailable('localStorage')) {
-			// use localStorage
+		if (storageAvailable(storageType)) {
+			// use storage
+			let storage: Storage;
+			switch (storageType) {
+				case 'localStorage':
+					storage = localStorage;
+					break;
+				case 'sessionStorage':
+					storage = sessionStorage;
+					break;
+			}
 			this._storage = {
-				read: () => JSON.parse(window.localStorage.getItem(key)) as T,
+				read: () => JSON.parse(storage.getItem(key)) as T,
 				write: (value: T) => {
-					window.localStorage.setItem(key, JSON.stringify(value));
+					storage.setItem(key, JSON.stringify(value));
 				}
 			};
 			this._onStorage = (e: StorageEvent) => {
