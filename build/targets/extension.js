@@ -49,8 +49,8 @@ const
 					.readFileSync(fontCssFileName)
 					.toString()
 					.replace(
-						/\{EXTENSION_ID\}/g,
-						config.extensionId
+						/\{EXTENSION_URL\}/g,
+						config.extensionUrl
 					)
 			);
 			if (resolve) {
