@@ -73,7 +73,6 @@ export default class ServerApi {
 		getBlacklist: 'ServerApi.getBlacklist'
 	};
 	// cached local storage
-	private _articles = new SetStore<number, Cached<UserArticle>>('articles', a => a.value.id);
 	private _displayedNotifications = new SetStore<string, DisplayedNotification>(
 		'displayedNotifications',
 		notification => notification.id
@@ -84,23 +83,15 @@ export default class ServerApi {
 		expirationTimespan: 0
 	});
 	private _user = new ObjectStore<UserAccount>('user', null);
-	// ephemeral requests stores
-	private _articleLookupRequests: Request[] = [];
-	private _articleCacheRequets: Request[] = [];
 	// handlers
-	private _onArticleLookupRequestChanged: () => void;
-	private _onCacheUpdated: () => void;
 	private readonly _onUserUpdated: (user: UserAccount) => void;
 	constructor(handlers: {
 		onAuthenticationStatusChanged: (isAuthenticated: boolean) => void,
-		onArticleLookupRequestChanged: () => void,
-		onCacheUpdated: () => void,
 		onUserUpdated: (user: UserAccount) => void
 	}) {
 		// extension install
 		chrome.runtime.onInstalled.addListener(details => {
 			// clear entire cache
-			this._articles.clear();
 			this._displayedNotifications.clear();
 			this._blacklist.clear();
 			this._user.clear();
@@ -110,7 +101,6 @@ export default class ServerApi {
 			if (changeInfo.cookie.domain === '.' + window.reallyreadit.extension.config.cookieDomain && changeInfo.cookie.name === window.reallyreadit.extension.config.cookieName) {
 				const isAuthenticated = !changeInfo.removed;
 				// clear user specific cache
-				this._articles.clear();
 				this._displayedNotifications.clear();
 				this._user.clear();
 				// check source rules cache
@@ -152,8 +142,6 @@ export default class ServerApi {
 			}
 		);
 		// handlers
-		this._onArticleLookupRequestChanged = handlers.onArticleLookupRequestChanged;
-		this._onCacheUpdated = handlers.onCacheUpdated;
 		this._onUserUpdated = handlers.onUserUpdated;
 	}
 	private checkNotifications() {
@@ -252,59 +240,16 @@ export default class ServerApi {
 				.catch(() => {});
 		}
 	}
-	private logRequest<T>(request: Request, store: Request[]) {
-		const removeRequest = () => {
-			store.splice(store.indexOf(request), 1)
-		};
-		store.push(request);
-		return fetchJson<T>(request)
-			.then(res => {
-				removeRequest();
-				return res;
-			})
-			.catch(reason => {
-				removeRequest();
-				throw reason;
-			});
-	}
-	public cacheArticle(userArticle: UserArticle) {
-		this._articles.set(cache(userArticle, 60000));
-		this._onCacheUpdated();
-	}
 	public registerPage(tabId: number, data: ParseResult) {
-		const request = this.logRequest<ArticleLookupResult>(
-				{
-					method: 'POST',
-					path: '/Extension/GetUserArticle',
-					data: {
-						...data,
-						star: true
-					},
-					id: tabId
-				},
-				this._articleLookupRequests
-			)
-			.then(result => {
-				this._onArticleLookupRequestChanged();
-				this.cacheArticle(result.userArticle);
-				return result;
-			})
-			.catch(reason => {
-				this._onArticleLookupRequestChanged();
-				throw reason;
-			});
-		this._onArticleLookupRequestChanged();
-		return request;
-	}
-	public getUserArticle(id: number) {
-		const userArticle = this._articles.get(id);
-		if (userArticle && isExpired(userArticle) && !this._articleCacheRequets.some(r => r.id === id)) {
-			this
-				.logRequest<UserArticle>({ method: 'GET', path: '/Extension/UserArticle', data: { id }, id }, this._articleCacheRequets)
-				.then(userArticle => this.cacheArticle(userArticle))
-				.catch(() => {});
-		}
-		return userArticle && userArticle.value;
+		return fetchJson<ArticleLookupResult>({
+			method: 'POST',
+			path: '/Extension/GetUserArticle',
+			data: {
+				...data,
+				star: true
+			},
+			id: tabId
+		});
 	}
 	public getComments(slug: string) {
 		return fetchJson<CommentThread[]>({
@@ -315,28 +260,20 @@ export default class ServerApi {
 	}
 	public postArticle(form: PostForm) {
 		return fetchJson<Post>({
-				method: 'POST',
-				path: '/Social/Post',
-				data: form
-			})
-			.then(post => {
-				this.cacheArticle(post.article);
-				return post;
-			});
+			method: 'POST',
+			path: '/Social/Post',
+			data: form
+		});
 	}
 	public postComment(form: CommentForm) {
 		return fetchJson<{
-				article: UserArticle,
-				comment: CommentThread
-			}>({
-				method: 'POST',
-				path: '/Social/Comment',
-				data: form
-			})
-			.then(result => {
-				this.cacheArticle(result.article);
-				return result;
-			});
+			article: UserArticle,
+			comment: CommentThread
+		}>({
+			method: 'POST',
+			path: '/Social/Comment',
+			data: form
+		});
 	}
 	public postCommentAddendum(form: CommentAddendumForm) {
 		return fetchJson<CommentThread>({
@@ -360,14 +297,11 @@ export default class ServerApi {
 		});
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
-		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/CommitReadState', data })
-			.then(userArticle => {
-				this.cacheArticle(userArticle);
-				return userArticle;
-			});
-	}
-	public getArticleLookupRequests(tabId: number) {
-		return this._articleLookupRequests.filter(r => r.id === tabId);
+		return fetchJson<UserArticle>({
+			method: 'POST',
+			path: '/Extension/CommitReadState',
+			data
+		});
 	}
 	public getAuthStatus() {
 		return new Promise<boolean>(resolve => chrome.cookies.get({
@@ -383,18 +317,26 @@ export default class ServerApi {
 			);
 	}
 	public rateArticle(articleId: number, score: number) {
-		return fetchJson<{ article: UserArticle, rating: Rating }>({ method: 'POST', path: '/Articles/Rate', data: { articleId, score } })
-			.then(
-				result => {
-					this.cacheArticle(result.article);
-					return result;
-				}
-			);
+		return fetchJson<{
+			article: UserArticle,
+			rating: Rating
+		}>({
+			method: 'POST',
+			path: '/Articles/Rate',
+			data: {
+				articleId,
+				score
+			}
+		});
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
-		return fetchJson<UserArticle>({ method: 'POST', path: '/Extension/SetStarred', data: { articleId, isStarred } }).then(userArticle => {
-			this.cacheArticle(userArticle);
-			return userArticle;
+		return fetchJson<UserArticle>({
+			method: 'POST',
+			path: '/Extension/SetStarred',
+			data: {
+				articleId,
+				isStarred
+			}
 		});
 	}
 	public logExtensionInstallation(platformInfo: Pick<chrome.runtime.PlatformInfo, 'arch' | 'os'>) {

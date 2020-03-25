@@ -1,45 +1,92 @@
-import UserArticle from "../../common/models/UserArticle";
-import Fetchable from "../../common/Fetchable";
+import UserArticle from '../../common/models/UserArticle';
 
 enum Color {
 	Default = '#555555',
 	Read = 'LimeGreen',
 	Unread = 'DarkGray'
 }
-export default class BrowserActionBadgeApi {
-	private _frameIndex = 0;
-	private _frameCount = 5;
-	private _animationInterval: number;
-	public set(article?: Fetchable<UserArticle>) {
-		if (!article || !article.isLoading) {
-			if (this._animationInterval) {
-				window.clearInterval(this._animationInterval);
-				this._animationInterval = undefined;
-				this._frameIndex = 0;
-			}
-			if (article && article.value) {
-				chrome.browserAction.setBadgeBackgroundColor({
-					color: article.value.isRead ? Color.Read : Color.Unread
-				});
-				chrome.browserAction.setBadgeText({ text: Math.floor(article.value.percentComplete) + '%' });
-			} else {
-				chrome.browserAction.setBadgeBackgroundColor({ color: Color.Default });
-				chrome.browserAction.setBadgeText({ text: '' });
-			}
-		} else if (!this._animationInterval) {
-			this._animationInterval = window.setInterval(() => {
+interface LoadingAnimation {
+	interval: number,
+	tabId: number
+}
+function createLoadingAnimation(tabId: number) {
+	let frameIndex = 0;
+	let frameCount = 5;
+	chrome.browserAction.setBadgeBackgroundColor(
+		{
+			color: Color.Default,
+			tabId
+		}
+	);
+	return {
+		interval: window.setInterval(
+			() => {
 				let text = '';
-				for (let i = 0; i < this._frameCount - 1; i++) {
-					if (i === this._frameIndex) {
+				for (let i = 0; i < frameCount - 1; i++) {
+					if (i === frameIndex) {
 						text += '.';
 					} else {
 						text += ' ';
 					}
 				}
-				chrome.browserAction.setBadgeBackgroundColor({ color: Color.Default });
-				chrome.browserAction.setBadgeText({ text });
-				this._frameIndex = ++this._frameIndex % this._frameCount;
-			}, 150);
+				chrome.browserAction.setBadgeText({
+					tabId,
+					text
+				});
+				frameIndex = ++frameIndex % frameCount;
+			},
+			150
+		),
+		tabId
+	};
+}
+export default class BrowserActionBadgeApi {
+	private readonly _animations: LoadingAnimation[] = [];
+	private cancelAnimation(tabId: number) {
+		const animation = this.getAnimation(tabId);
+		if (animation) {
+			clearInterval(animation.interval);
+			this._animations.splice(
+				this._animations.indexOf(animation),
+				1
+			);
 		}
+	}
+	private getAnimation(tabId: number) {
+		return this._animations.find(
+			animation => animation.tabId === tabId
+		);			
+	}
+	public setDefault(tabId: number) {
+		this.cancelAnimation(tabId);
+		chrome.browserAction.setBadgeBackgroundColor({
+			color: Color.Default,
+			tabId
+		});
+		chrome.browserAction.setBadgeText({
+			tabId,
+			text: ''
+		});
+	}
+	public setLoading(tabId: number) {
+		if (this.getAnimation(tabId)) {
+			return;
+		}
+		this._animations.push(
+			createLoadingAnimation(tabId)
+		);
+	}
+	public setReading(tabId: number, article: Pick<UserArticle, 'isRead' | 'percentComplete'>) {
+		this.cancelAnimation(tabId);
+		chrome.browserAction.setBadgeBackgroundColor({
+			color: article.isRead ?
+				Color.Read :
+				Color.Unread,
+			tabId
+		});
+		chrome.browserAction.setBadgeText({
+			tabId,
+			text: Math.floor(article.percentComplete) + '%'
+		});
 	}
 }

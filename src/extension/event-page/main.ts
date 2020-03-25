@@ -20,12 +20,6 @@ const serverApi = new ServerApi({
 				'signedOut'
 		);
 	},
-	onArticleLookupRequestChanged: () => {
-		console.log('serverApi.onArticleLookupRequestChanged');
-	},
-	onCacheUpdated: () => {
-		console.log('serverApi.onCacheUpdated');
-	},
 	onUserUpdated: user => {
 		console.log('serverApi.onUserUpdated');
 		webAppApi.userUpdated(user);
@@ -44,30 +38,65 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 			articleId: null,
 			id: tabId
 		});
+		// update bai badges
+		browserActionBadgeApi.setLoading(tabId);
 		// get read state
 		return serverApi
 			.registerPage(tabId, data)
-			.then(result => {
-				// update tabs
-				tabs.set({
-					articleId: result.userArticle.id,
-					id: tabId
-				});
-				// return page init data
-				return result;
-			});
+			.then(
+				result => {
+					// update tabs
+					tabs.set({
+						articleId: result.userArticle.id,
+						id: tabId
+					});
+					// update bai badges
+					tabs
+						.getAll()
+						.forEach(
+							tab => {
+								if (tab.articleId === result.userArticle.id) {
+									browserActionBadgeApi.setReading(tab.id, result.userArticle);
+								}
+							}
+						);
+					// return result
+					return result;
+				}
+			)
+			.catch(
+				error => {
+					browserActionBadgeApi.setDefault(tabId);
+					throw error;
+				}
+			);
 	},
 	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
 		return serverApi
 			.commitReadState(tabId, commitData)
-			.then(article => {
-				if (article) {
-					webAppApi.articleUpdated({ article, isCompletionCommit });
+			.then(
+				article => {
+					// update bai badges
+					tabs
+						.getAll()
+						.forEach(
+							tab => {
+								if (tab.articleId === article.id) {
+									browserActionBadgeApi.setReading(tab.id, article);
+								}
+							}
+						);
+					// update web app
+					webAppApi.articleUpdated({
+						article,
+						isCompletionCommit
+					});
+					// return result
+					return article;
 				}
-				return article;
-			});
+			);
 	},
 	onUnregisterPage: tabId => {
 		console.log(`contentScriptApi.onUnregisterContentScript (tabId: ${tabId})`);
@@ -166,15 +195,19 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 // web app
 const webAppApi = new WebAppApi({
 	onArticleUpdated: event => {
-		// update browser action
-		serverApi.cacheArticle(event.article);
-		// update content script
 		tabs
 			.getAll()
-			.filter(tab => tab.articleId === event.article.id)
-			.forEach(tab => {
-				readerContentScriptApi.articleUpdated(tab.id, event);
-			});
+			.filter(
+				tab => tab.articleId === event.article.id
+			)
+			.forEach(
+				tab => {
+					// update bai badge
+					browserActionBadgeApi.setReading(tab.id, event.article);
+					// update content script
+					readerContentScriptApi.articleUpdated(tab.id, event);
+				}
+			);
 	},
 	onCommentPosted: comment => {
 		// update content script
@@ -210,6 +243,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('showOverlay');
 	localStorage.removeItem('newReplyNotification');
 	localStorage.removeItem('sourceRules');
+	localStorage.removeItem('articles');
 	localStorage.removeItem('tabs');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// update icon
