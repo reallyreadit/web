@@ -4,7 +4,6 @@ import SetStore from '../../common/webStorage/SetStore';
 import ReaderContentScriptTab from './ReaderContentScriptTab';
 import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
-import BrowserActionState from './BrowserActionState';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
@@ -15,23 +14,20 @@ const serverApi = new ServerApi({
 	onAuthenticationStatusChanged: isAuthenticated => {
 		console.log('serverApi.onAuthenticationStatusChanged');
 		// update icon
-		getState().then(updateIcon);
+		drawBrowserActionIcon(
+			isAuthenticated ?
+				'signedIn' :
+				'signedOut'
+		);
 	},
 	onArticleLookupRequestChanged: () => {
 		console.log('serverApi.onArticleLookupRequestChanged');
-		getState().then(updateIcon);
 	},
 	onCacheUpdated: () => {
 		console.log('serverApi.onCacheUpdated');
-		getState().then(state => {
-			updateIcon(state);
-		});
 	},
 	onUserUpdated: user => {
 		console.log('serverApi.onUserUpdated');
-		getState().then(state => {
-			updateIcon(state);
-		});
 		webAppApi.userUpdated(user);
 	}
 });
@@ -48,8 +44,6 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 			articleId: null,
 			id: tabId
 		});
-		// update icon
-		getState().then(updateIcon);
 		// get read state
 		return serverApi
 			.registerPage(tabId, data)
@@ -59,8 +53,6 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 					articleId: result.userArticle.id,
 					id: tabId
 				});
-				// update icon
-				getState().then(updateIcon);
 				// return page init data
 				return result;
 			});
@@ -80,9 +72,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	onUnregisterPage: tabId => {
 		console.log(`contentScriptApi.onUnregisterContentScript (tabId: ${tabId})`);
 		// update tabs
-		tabs.remove(tabId)
-		// update icon
-		getState().then(updateIcon);
+		tabs.remove(tabId);
 	},
 	onLoadContentParser: tabId => {
 		try {
@@ -206,76 +196,11 @@ const webAppApi = new WebAppApi({
 	},
 	onUserUpdated: user => {
 		serverApi.updateUser(user);
-		getState().then(state => {
-			updateIcon(state);
-		});
 	}
 });
 
-// query current state
-function getState(): Promise<BrowserActionState> {
-	return Promise.all<chrome.tabs.Tab, boolean>([
-			new Promise<chrome.tabs.Tab>(resolve => {
-				chrome.tabs.query({
-					active: true,
-					currentWindow: true
-				}, result => resolve(result[0]))
-			}),
-			serverApi.getAuthStatus()
-		])
-		.then(result => {
-			const
-				debug = JSON.parse(localStorage.getItem('debug')) as boolean,
-				focusedChromeTab = result[0],
-				isAuthenticated = result[1],
-				isOnHomePage = focusedChromeTab && focusedChromeTab.url && new URL(focusedChromeTab.url).hostname === window.reallyreadit.extension.config.web.host,
-				user = serverApi.getUser();
-			let activeTab: ReaderContentScriptTab;
-			if (isAuthenticated && focusedChromeTab && (activeTab = tabs.get(focusedChromeTab.id))) {
-				return Promise.resolve({
-					activeTab,
-					article: serverApi.getUserArticle(activeTab.articleId),
-					debug,
-					isAuthenticated,
-					isOnHomePage,
-					url: focusedChromeTab.url,
-					user
-				});
-			} else {
-				return Promise.resolve({
-					debug,
-					isAuthenticated,
-					isOnHomePage,
-					url: focusedChromeTab ? focusedChromeTab.url : null,
-					user
-				});
-			}
-		});
-}
-
 // icon interface
 const browserActionBadgeApi = new BrowserActionBadgeApi();
-function updateIcon(state: BrowserActionState) {
-	console.log('\tupdateIcon');
-	if (state.isAuthenticated) {
-		if (state.activeTab) {
-			// content script tab
-			drawBrowserActionIcon('signedIn');
-			browserActionBadgeApi.set({
-				isLoading: !!serverApi.getArticleLookupRequests(state.activeTab.id).length,
-				value: state.article
-			});
-		} else {
-			// not one of our tabs
-			drawBrowserActionIcon('signedIn');
-			browserActionBadgeApi.set();
-		}
-	} else {
-		// signed out
-		drawBrowserActionIcon('signedOut');
-		browserActionBadgeApi.set();
-	}
-}
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
@@ -288,7 +213,17 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('tabs');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// update icon
-	getState().then(updateIcon);
+	serverApi
+		.getAuthStatus()
+		.then(
+			isAuthenticated => {
+				drawBrowserActionIcon(
+					isAuthenticated ?
+						'signedIn' :
+						'signedOut'
+				)
+			}
+		);
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
@@ -358,23 +293,21 @@ chrome.runtime.onInstalled.addListener(details => {
 		sameSite: 'no_restriction'
 	});
 });
-chrome.runtime.onStartup.addListener(() => {
-	console.log('chrome.tabs.onStartup');
-	// update icon
-	getState().then(updateIcon);
-});
-chrome.tabs.onActivated.addListener(activeInfo => {
-	console.log('chrome.tabs.onActivated (tabId: ' + activeInfo.tabId + ')');
-	// update icon
-	getState().then(updateIcon);
-});
-chrome.windows.onFocusChanged.addListener(
-	windowId => {
-		if (windowId !== chrome.windows.WINDOW_ID_NONE) {
-			console.log('chrome.windows.onFocusChanged (windowId: ' + windowId + ')');
-			// update icon
-			getState().then(updateIcon);
-		}
+chrome.runtime.onStartup.addListener(
+	() => {
+		console.log('[EventPage] startup');
+		// update icon
+		serverApi
+			.getAuthStatus()
+			.then(
+				isAuthenticated => {
+					drawBrowserActionIcon(
+						isAuthenticated ?
+							'signedIn' :
+							'signedOut'
+					)
+				}
+			);
 	}
 );
 chrome.browserAction.onClicked.addListener(
