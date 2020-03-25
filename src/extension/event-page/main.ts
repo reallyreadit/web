@@ -38,7 +38,7 @@ const serverApi = new ServerApi({
 });
 
 // tabs
-const tabs = new SetStore<number, ReaderContentScriptTab>('tabs', t => t.id);
+const tabs = new SetStore<number, ReaderContentScriptTab>('tabs', t => t.id, 'sessionStorage');
 
 // reader content script
 const readerContentScriptApi = new ReaderContentScriptApi({
@@ -286,9 +286,8 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('showOverlay');
 	localStorage.removeItem('newReplyNotification');
 	localStorage.removeItem('sourceRules');
+	localStorage.removeItem('tabs');
 	localStorage.setItem('debug', JSON.stringify(false));
-	// clear storage
-	tabs.clear();
 	// update icon
 	getState().then(updateIcon);
 	// inject web app content script into open web app tabs
@@ -362,8 +361,6 @@ chrome.runtime.onInstalled.addListener(details => {
 });
 chrome.runtime.onStartup.addListener(() => {
 	console.log('chrome.tabs.onStartup');
-	// clear tabs
-	tabs.clear();
 	// update icon
 	getState().then(updateIcon);
 });
