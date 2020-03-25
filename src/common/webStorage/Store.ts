@@ -67,7 +67,9 @@ export default abstract class Store<T> {
 			// clear the storage in case it's uninitialized/corrupted
 			// JSON.parse can throw an exception
 			try {
-				this._read();
+				if (this._read() == null) {
+					this.clear();
+				}
 			} catch (ex) {
 				this.clear();
 			}
