@@ -5,10 +5,10 @@ import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
 
 export interface Params {
-	extensionId: string,
+	legacyChromeExtensionId: string,
 	isInstalled: boolean
 }
-export default abstract class extends EventEmitter<{
+export default abstract class ExtensionApi extends EventEmitter<{
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
 	'change': boolean,
@@ -16,11 +16,11 @@ export default abstract class extends EventEmitter<{
 	'commentUpdated': CommentThread,
 	'userUpdated': UserAccount
 }> {
-	protected readonly _extensionId: string;
+	protected readonly _legacyChromeExtensionId: string;
 	protected _isInstalled: boolean;
 	constructor(params: Params) {
 		super();
-		this._extensionId = params.extensionId;
+		this._legacyChromeExtensionId = params.legacyChromeExtensionId;
 		this._isInstalled = params.isInstalled;
 	}
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;

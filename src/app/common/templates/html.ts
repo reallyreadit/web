@@ -1,13 +1,15 @@
 import icons from '../../../common/svg/icons';
 import InitData from '../InitData';
 
-export default (model: {
-	content: string,
-	extensionId: string,
-	initData: InitData,
-	noIndex: boolean,
-	title: string
-}) => {
+export default (
+	model: {
+		chromeExtensionId: string,
+		content: string,
+		initData: InitData,
+		noIndex: boolean,
+		title: string
+	}
+) => {
 	let gtagConfig: {
 		send_page_view: boolean,
 		user_id?: string
@@ -29,7 +31,7 @@ export default (model: {
 			''}
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
-		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.extensionId}">
+		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.chromeExtensionId}">
 		<title>${model.title}</title>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		${model.initData.analyticsTrackingCode ?

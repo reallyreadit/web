@@ -59,7 +59,7 @@ export default class extends ExtensionApi {
             // try to ping the legacy extension
             try {
                 window.chrome.runtime.sendMessage(
-                    this._extensionId,
+                    this._legacyChromeExtensionId,
                     {
                         type: 'ping'
                     },

@@ -473,7 +473,7 @@ server = server.get('/*', (req, res) => {
 					browserApi,
 					deviceType,
 					extensionApi: new ExtensionApi({
-						extensionId: config.extensionId,
+						legacyChromeExtensionId: config.chromeExtensionId,
 						isInstalled: isExtensionInstalled
 					})
 				}
@@ -493,7 +493,7 @@ server = server.get('/*', (req, res) => {
 		// return the content and init data
 		res.send(renderHtml({
 			content,
-			extensionId: config.extensionId,
+			chromeExtensionId: config.chromeExtensionId,
 			initData: {
 				analyticsTrackingCode: (
 					config.analyticsTrackingCodes ?
@@ -510,7 +510,7 @@ server = server.get('/*', (req, res) => {
 				clientType: req.clientType,
 				deviceType,
 				exchanges: req.api.exchanges,
-				extensionId: config.extensionId,
+				chromeExtensionId: config.chromeExtensionId,
 				marketingVariant,
 				initialLocation: rootProps.initialLocation,
 				isExtensionInstalled,
