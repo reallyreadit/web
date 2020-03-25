@@ -9,7 +9,6 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
-import { hasAlert } from '../../common/models/UserAccount';
 
 // server
 const serverApi = new ServerApi({
@@ -261,19 +260,19 @@ function updateIcon(state: BrowserActionState) {
 	if (state.isAuthenticated) {
 		if (state.activeTab) {
 			// content script tab
-			drawBrowserActionIcon('signedIn', hasAlert(state.user));
+			drawBrowserActionIcon('signedIn');
 			browserActionBadgeApi.set({
 				isLoading: !!serverApi.getArticleLookupRequests(state.activeTab.id).length,
 				value: state.article
 			});
 		} else {
 			// not one of our tabs
-			drawBrowserActionIcon('signedIn', hasAlert(state.user));
+			drawBrowserActionIcon('signedIn');
 			browserActionBadgeApi.set();
 		}
 	} else {
 		// signed out
-		drawBrowserActionIcon('signedOut', false);
+		drawBrowserActionIcon('signedOut');
 		browserActionBadgeApi.set();
 	}
 }

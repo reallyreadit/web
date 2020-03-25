@@ -41,25 +41,8 @@ function drawWarning(ctx: CanvasRenderingContext2D) {
 	ctx.fill(warningTriangleExclamationPath as any);
 	ctx.restore();
 }
-function drawNewReplyIndicator(ctx: CanvasRenderingContext2D) {
-	const
-		width = ctx.canvas.width,
-		indicatorSize = width * 0.45;
-	ctx.save();
-	// draw indicator path
-	ctx.beginPath();
-	ctx.moveTo(width - indicatorSize, 0);
-	ctx.lineTo(width, 0);
-	ctx.lineTo(width, indicatorSize);
-	ctx.closePath();
-	// fill indicator path
-	ctx.fillStyle = 'red';
-	ctx.fill();
-	ctx.restore();
-}
 export default function (
-	accountStatus: 'signedIn' | 'signedOut',
-	showNewReplyIndicator: boolean
+	accountStatus: 'signedIn' | 'signedOut'
 ) {
 	sources.then(sources => {
 		chrome.browserAction.setIcon({
@@ -74,9 +57,6 @@ export default function (
 				if (accountStatus === 'signedOut') {
 					source.context.globalAlpha = 1;
 					drawWarning(source.context);
-				} else if (showNewReplyIndicator) {
-					// draw new reply indicator
-					drawNewReplyIndicator(source.context);
 				}
 				// get data
 				imageData[source.size] = source.context.getImageData(0, 0, source.context.canvas.width, source.context.canvas.height);
