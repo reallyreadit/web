@@ -3,6 +3,7 @@
 
   "name": "Readup",
   "description": "Find, read and share articles.",
+  "author": "reallyread.it, inc.",
 	
   "icons": {
     "16": "./icons/icon-16.png",
