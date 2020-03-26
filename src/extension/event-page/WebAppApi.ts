@@ -34,6 +34,8 @@ export default class WebAppApi {
 							this.addTab(sender.tab.id);
 							break;
 						case 'unregisterPage':
+							// sender.tab.id is undefined in Firefox
+							// tab won't be removed until a messaging error occurs
 							this.removeTab(sender.tab.id);
 							break;
 						case 'userUpdated':
