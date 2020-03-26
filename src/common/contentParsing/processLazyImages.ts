@@ -159,11 +159,12 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.NoscriptImgContent:
 			// iOS 11 WKWebView doesn't support s dotAll flag
+			// Firefox complains when using s dotAll flag in literal even within try/catch block
 			let noscriptImgContentRegex: RegExp;
 			try {
-				noscriptImgContentRegex = /^\s*<\s*img\s.+\s*>\s*$/is;
+				noscriptImgContentRegex = new RegExp(/^\s*<\s*img\s.+\s*>\s*$/, 'is');
 			} catch {
-				noscriptImgContentRegex = /^\s*<\s*img\s.+\s*>\s*$/i;
+				noscriptImgContentRegex = new RegExp(/^\s*<\s*img\s.+\s*>\s*$/, 'i');
 			}
 			createObserver(
 				Array
