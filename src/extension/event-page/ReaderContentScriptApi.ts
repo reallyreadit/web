@@ -114,4 +114,7 @@ export default class ReaderContentScriptApi {
 	public toggleReadStateDisplay(tabId: number) {
 		sendMessage(tabId, 'toggleReadStateDisplay');
 	}
+	public userSignedOut(tabId: number) {
+		sendMessage(tabId, 'userSignedOut');
+	}
 }

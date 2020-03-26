@@ -19,6 +19,20 @@ const serverApi = new ServerApi({
 				'signedIn' :
 				'signedOut'
 		);
+		// stop reading on sign out
+		if (!isAuthenticated) {
+			tabs
+				.getAll()
+				.forEach(
+					tab => {
+						// update bai badges
+						browserActionBadgeApi.setDefault(tab.id);
+						// message content script
+						readerContentScriptApi.userSignedOut(tab.id);
+					}
+				);
+			tabs.clear();
+		}
 	},
 	onUserUpdated: user => {
 		console.log('serverApi.onUserUpdated');

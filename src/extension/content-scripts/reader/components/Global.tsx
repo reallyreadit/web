@@ -10,7 +10,8 @@ import * as classNames from 'classnames';
 
 export enum GlobalError {
 	None,
-	ArticleLookupFailure
+	ArticleLookupFailure,
+	UserSignedOut
 }
 export default (
 	props: {
@@ -38,7 +39,9 @@ export default (
 				position="absolute"
 				style="warning"
 			>
-				<p>An error occurred while processing this article.</p>
+				{props.error === GlobalError.ArticleLookupFailure ?
+					<p>An error occurred while processing this article.</p> :
+					<p>You were signed out of your account in another tab.</p>}
 			</InfoBox> :
 			null}
 	</div>

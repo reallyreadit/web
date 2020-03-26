@@ -101,6 +101,10 @@ const eventPageApi = new EventPageApi({
 		if (page) {
 			page.toggleReadStateDisplay();
 		}
+	},
+	onUserSignedOut: () => {
+		reader.unloadPage();
+		showError(GlobalError.UserSignedOut);
 	}
 });
 
@@ -119,6 +123,11 @@ const globalUi = new GlobalComponentHost({
 		document.body.appendChild(shadowHost);
 	}
 });
+
+function showError(error: GlobalError) {
+	document.body.style.overflow = 'hidden';
+	globalUi.showError(error);
+}
 
 // header ui
 const header = new HeaderComponentHost({
@@ -388,9 +397,8 @@ Promise
 				)
 				.catch(
 					() => {
-						document.body.style.overflow = 'hidden';
 						header.deinitialize();
-						globalUi.showError(GlobalError.ArticleLookupFailure);
+						showError(GlobalError.ArticleLookupFailure);
 					}
 				);
 		}

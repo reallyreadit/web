@@ -52,7 +52,8 @@ export default class EventPageApi {
 		onCommentPosted: (comment: CommentThread) => void,
 		onCommentUpdated: (comment: CommentThread) => void,
 		onToggleContentIdentificationDisplay: () => void,
-		onToggleReadStateDisplay: () => void
+		onToggleReadStateDisplay: () => void,
+		onUserSignedOut: () => void
 	}) {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			switch (message.type) {
@@ -70,6 +71,9 @@ export default class EventPageApi {
 					break;
 				case 'toggleReadStateDisplay':
 					handlers.onToggleReadStateDisplay();
+					break;
+				case 'userSignedOut':
+					handlers.onUserSignedOut();
 					break;
 			}
 		});
