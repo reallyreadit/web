@@ -117,7 +117,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 			// fall back to bundled script
 		}
 		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
-		chrome.tabs.executeScript(tabId, { file: './content-scripts/reader/content-parser/bundle.js' });
+		chrome.tabs.executeScript(tabId, { file: '/content-scripts/reader/content-parser/bundle.js' });
 	},
 	onGetComments: serverApi.getComments,
 	onPostArticle: form => {
@@ -406,13 +406,13 @@ chrome.runtime.onMessage.addListener(
 				chrome.tabs.insertCSS(
 					sender.tab.id,
 					{
-						file: './content-scripts/ui/fonts.css'
+						file: '/content-scripts/ui/fonts.css'
 					}
 				);
 				chrome.tabs.executeScript(
 					sender.tab.id,
 					{
-						file: './content-scripts/alert/bundle.js'
+						file: '/content-scripts/alert/bundle.js'
 					}
 				);
 				return;
@@ -420,13 +420,13 @@ chrome.runtime.onMessage.addListener(
 				chrome.tabs.insertCSS(
 					sender.tab.id,
 					{
-						file: './content-scripts/ui/fonts.css'
+						file: '/content-scripts/ui/fonts.css'
 					}
 				);
 				chrome.tabs.executeScript(
 					sender.tab.id,
 					{
-						file: './content-scripts/reader/bundle.js'
+						file: '/content-scripts/reader/bundle.js'
 					}
 				);
 				return;
