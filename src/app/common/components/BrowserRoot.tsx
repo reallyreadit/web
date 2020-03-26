@@ -44,6 +44,7 @@ import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import * as Cookies from 'js-cookie';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -607,9 +608,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				this.onCommentUpdated(comment, EventSource.Remote);
 			})
 			.addListener(
-				'extensionUninstalled',
-				() => {
-					this.props.extensionApi.extensionUninstalled();
+				'extensionInstallationChanged',
+				event => {
+					this.props.extensionApi.extensionInstallationChanged(event);
 				}
 			)
 			.addListener('notificationPreferenceChanged', preference => {
@@ -880,6 +881,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserUpdated(user);
 	}
 	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
+		// double check extension installation status
+		// some browsers do not allow dynamic content script injection
+		// so the extension could have been added in another tab after this one loaded
+		// and we wouldn't know without checking the cookie
+		if (!this.props.extensionApi.isInstalled && Cookies.get('extensionVersion')) {
+			const installationEvent = {
+				type: 'installed' as 'installed'
+			};
+			this.props.extensionApi.extensionInstallationChanged(installationEvent);
+			this.props.browserApi.extensionInstallationChanged(installationEvent);
+		}
 		if (!this.state.user || !this.props.extensionApi.isInstalled) {
 			ev.preventDefault();
 			const [sourceSlug, articleSlug] = article.slug.split('_');
@@ -1047,7 +1059,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// for now for compatibility with the old extension
 		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
 		if (initialRoute.screenKey === ScreenKey.ExtensionRemoval) {
-			this.props.browserApi.extensionUninstalled();
+			this.props.browserApi.extensionInstallationChanged({
+				type: 'uninstalled'
+			});
 		}
 		// send the initial pageview
 		this.props.analytics.sendPageview(this.state.screens[0]);

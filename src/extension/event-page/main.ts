@@ -319,7 +319,6 @@ chrome.runtime.onInstalled.addListener(details => {
 		url: createUrl(window.reallyreadit.extension.config.web),
 		domain: '.' + window.reallyreadit.extension.config.web.host,
 		expirationDate: Date.now() + (365 * 24 * 60 * 60),
-		httpOnly: true,
 		name: 'extensionVersion',
 		secure: window.reallyreadit.extension.config.web.protocol === 'https',
 		value: window.reallyreadit.extension.config.version,

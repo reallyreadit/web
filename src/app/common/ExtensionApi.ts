@@ -3,6 +3,7 @@ import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
+import ExtensionInstallationEvent from './ExtensionInstallationEvent';
 
 export interface Params {
 	legacyChromeExtensionId: string,
@@ -26,7 +27,7 @@ export default abstract class ExtensionApi extends EventEmitter<{
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
-	public abstract extensionUninstalled(): void;
+	public abstract extensionInstallationChanged(event: ExtensionInstallationEvent): void;
 	public abstract userUpdated(user: UserAccount): void;
 	public get isInstalled() {
 		return this._isInstalled;

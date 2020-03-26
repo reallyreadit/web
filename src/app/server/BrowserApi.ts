@@ -5,6 +5,7 @@ import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
+import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 
 export default class extends BrowserApi {
 	private _title: string;
@@ -23,7 +24,7 @@ export default class extends BrowserApi {
 	public commentUpdated(comment: CommentThread) {
 		throw new Error('Operation not supported in server environment');
 	}
-	public extensionUninstalled() {
+	public extensionInstallationChanged(event: ExtensionInstallationEvent) {
 		throw new Error('Operation not supported in server environment');
 	}
 	public getTitle() {

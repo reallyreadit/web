@@ -326,7 +326,6 @@ server = server.get('/extension/uninstall', (req, res, next) => {
 		res.clearCookie(
 			'extensionVersion',
 			{
-				httpOnly: true,
 				domain: config.cookieDomain,
 				secure: config.secureCookie
 			}

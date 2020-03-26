@@ -5,6 +5,7 @@ import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
+import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 
 export default class extends BrowserApi {
 	private readonly _channel: BroadcastChannel | null;
@@ -41,8 +42,8 @@ export default class extends BrowserApi {
 	public commentUpdated(comment: CommentThread) {
 		this.broadcastUpdate('commentUpdated', comment);
 	}
-	public extensionUninstalled() {
-		this.broadcastUpdate('extensionUninstalled');
+	public extensionInstallationChanged(event: ExtensionInstallationEvent) {
+		this.broadcastUpdate('extensionInstallationChanged', event);
 	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);

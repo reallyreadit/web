@@ -4,6 +4,7 @@ import CommentThread from '../../common/models/CommentThread';
 import UserAccount from '../../common/models/UserAccount';
 import ContentScriptMessagingContext from '../../common/ContentScriptMessagingContext';
 import { Message } from '../../common/MessagingContext';
+import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
@@ -151,12 +152,16 @@ export default class extends ExtensionApi {
     public commentUpdated(comment: CommentThread) {
         this.sendMessage('commentUpdated', comment);
     }
-    public extensionUninstalled() {
-        if (this._isInstalled) {
+    public extensionInstallationChanged(event: ExtensionInstallationEvent) {
+        if (this._isInstalled && event.type === 'uninstalled') {
             // update install status
             this._isInstalled = false;
             this.emitEvent('change', false);
             this._hasEstablishedCommunication = false;
+        } else if (!this._isInstalled && event.type === 'installed') {
+            // update install status
+            this._isInstalled = true;
+            this.emitEvent('change', true);
         }
     }
     public userUpdated(user: UserAccount) {
