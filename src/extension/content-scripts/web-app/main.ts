@@ -10,8 +10,11 @@ if (!window.reallyreadit) {
 		remoteId: 'com.readup.web.app.client'
 	});
 
-	const handleMessageFromExtension = (message: Message) => {
+	const handleMessageFromExtension = (message: Message, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
 		webApp.sendMessage(message);
+		// always send a response because the sender must use a callback in order to
+		// check for runtime errors and an error will be triggered if the port is closed
+		sendResponse();
 	};
 
 	const sendMessageToExtension = (message: Message) => {
