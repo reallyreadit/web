@@ -26,31 +26,34 @@ window.reallyreadit = {
 	}
 };
 
+// globals
 let
-	context: {
-		contentParseResult: ParseResult,
-		lookupResult: ArticleLookupResult,
-		page: Page,
-		isContentIdentificationDisplayEnabled: boolean
-	} | null;
+	contentParseResult: ParseResult,
+	lookupResult: ArticleLookupResult,
+	page: Page;
 
 // event page interface
+let isContentIdentificationDisplayEnabled = false;
 const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
-		if (context && context.lookupResult) {
-			context.lookupResult.userArticle = event.article;
+		if (lookupResult) {
+			lookupResult.userArticle = event.article;
+			header.articleUpdated(event.article);
+			commentsSection.articleUpdated(event.article);
 		}
-		header.articleUpdated(event.article);
-		commentsSection.articleUpdated(event.article);
 	},
 	onCommentPosted: comment => {
-		commentsSection.commentPosted(comment);
+		if (lookupResult) {
+			commentsSection.commentPosted(comment);
+		}
 	},
 	onCommentUpdated: comment => {
-		commentsSection.commentUpdated(comment);
+		if (lookupResult) {
+			commentsSection.commentUpdated(comment);
+		}
 	},
 	onToggleContentIdentificationDisplay: () => {
-		if (context) {
+		if (contentParseResult) {
 			let styles: {
 				primaryTextRootNodeBackgroundColor?: string,
 				depthGroupWithMostWordsBackgroundColor?: string,
@@ -60,7 +63,7 @@ const eventPageApi = new EventPageApi({
 				imageCreditBackgroundColor?: string,
 				additionalTextBackgroundColor?: string
 			};
-			if (context.isContentIdentificationDisplayEnabled = !context.isContentIdentificationDisplayEnabled) {
+			if (isContentIdentificationDisplayEnabled = !isContentIdentificationDisplayEnabled) {
 				styles = {
 					primaryTextRootNodeBackgroundColor: 'green',
 					depthGroupWithMostWordsBackgroundColor: 'red',
@@ -71,23 +74,23 @@ const eventPageApi = new EventPageApi({
 			} else {
 				styles = { };
 			}
-			(context.contentParseResult.primaryTextRootNode as HTMLElement).style.backgroundColor = styles.primaryTextRootNodeBackgroundColor || '';
-			context.contentParseResult.depthGroupWithMostWords.members.forEach(
+			(contentParseResult.primaryTextRootNode as HTMLElement).style.backgroundColor = styles.primaryTextRootNodeBackgroundColor || '';
+			contentParseResult.depthGroupWithMostWords.members.forEach(
 				member => {
 					(member.containerElement as HTMLElement).style.backgroundColor = styles.depthGroupWithMostWordsBackgroundColor || ''
 				}
 			);
-			context.contentParseResult.primaryTextContainerSearchResults.forEach(
+			contentParseResult.primaryTextContainerSearchResults.forEach(
 				result => {
 					(result.textContainer.containerElement as HTMLElement).style.backgroundColor = styles.primaryTextContainerBackgroundColor || '';
 				}
 			);
-			context.contentParseResult.imageContainers.forEach(
+			contentParseResult.imageContainers.forEach(
 				image => {
 					(image.containerElement as HTMLElement).style.border = styles.imageBorder || '';
 				}
 			);
-			context.contentParseResult.additionalPrimaryTextContainers.forEach(
+			contentParseResult.additionalPrimaryTextContainers.forEach(
 				container => {
 					(container.containerElement as HTMLElement).style.backgroundColor = styles.additionalTextBackgroundColor || '';
 				}
@@ -95,8 +98,8 @@ const eventPageApi = new EventPageApi({
 		}
 	},
 	onToggleReadStateDisplay: () => {
-		if (context) {
-			context.page.toggleReadStateDisplay();
+		if (page) {
+			page.toggleReadStateDisplay();
 		}
 	}
 });
@@ -131,12 +134,12 @@ const header = new HeaderComponentHost({
 		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
 		onSetStarred: isStarred => eventPageApi
 			.setStarred({
-				articleId: context.lookupResult.userArticle.id,
+				articleId: lookupResult.userArticle.id,
 				isStarred
 			})
 			.then(
 				article => {
-					context.lookupResult.userArticle = article;
+					lookupResult.userArticle = article;
 					return article;
 				}
 			),
@@ -151,7 +154,7 @@ const commentsSection = new CommentsSectionComponentHost({
 		const wrapper = document.createElement('div');
 		wrapper.style.marginTop = '2em';
 		wrapper.append(shadowHost);
-		context.page.elements[context.page.elements.length - 1].element.insertAdjacentElement(
+		page.elements[page.elements.length - 1].element.insertAdjacentElement(
 			'afterend',
 			wrapper
 		)
@@ -166,7 +169,7 @@ const commentsSection = new CommentsSectionComponentHost({
 			.postArticle(form)
 			.then(
 				post => {
-					context.lookupResult.userArticle = post.article;
+					lookupResult.userArticle = post.article;
 					return post;
 				}
 			),
@@ -174,7 +177,7 @@ const commentsSection = new CommentsSectionComponentHost({
 			.postComment(form)
 			.then(
 				result => {
-					context.lookupResult.userArticle = result.article;
+					lookupResult.userArticle = result.article;
 					return result;
 				}
 			),
@@ -188,10 +191,10 @@ const commentsSection = new CommentsSectionComponentHost({
 
 function showComments() {
 	commentsSection
-		.initialize(context.lookupResult.userArticle, context.lookupResult.user)
+		.initialize(lookupResult.userArticle, lookupResult.user)
 		.attach();
 	eventPageApi
-		.getComments(context.lookupResult.userArticle.slug)
+		.getComments(lookupResult.userArticle.slug)
 		.then(
 			comments => {
 				commentsSection.commentsLoaded(comments);
@@ -206,13 +209,13 @@ const reader = new Reader(
 			.commitReadState(
 				{
 					readState: event.readStateArray,
-					userPageId: context.lookupResult.userPage.id
+					userPageId: lookupResult.userPage.id
 				},
 				event.isCompletionCommit
 			)
 			.then(
 				article => {
-					context.lookupResult.userArticle = article;
+					lookupResult.userArticle = article;
 					if (event.isCompletionCommit) {
 						showComments();
 					}
@@ -263,8 +266,11 @@ Promise
 	])
 	.then(
 		results => {
+			// store the parse result
+			contentParseResult = results[0].contentParseResult;
+
 			// prune and style
-			results[0].contentParser.prune(results[0].contentParseResult);
+			results[0].contentParser.prune(contentParseResult);
 			styleArticleDocument(document);
 
 			// set up the user interface
@@ -293,7 +299,7 @@ Promise
 						)
 						.sort(),
 					title: metaParseResult.metadata.article.title,
-					wordCount: results[0].contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
+					wordCount: contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
 				})
 				.attach();
 
@@ -311,38 +317,33 @@ Promise
 					void
 				>([
 					results[0].lookupResult.then(
-						lookupResult => {
+						result => {
+							// store the lookup result
+							lookupResult = result;
+
 							// create page
-							const page = new Page(
-								results[0].contentParseResult.primaryTextContainers.map(
+							page = new Page(
+								contentParseResult.primaryTextContainers.map(
 									container => new ContentElement(
 										container.containerElement as HTMLElement,
 										container.wordCount
 									)
 								)
 							);
-
-							// set the context
-							context = {
-								contentParseResult: results[0].contentParseResult,
-								lookupResult,
-								page,
-								isContentIdentificationDisplayEnabled: false
-							};
-							page.setReadState(lookupResult.userPage.readState);
+							page.setReadState(result.userPage.readState);
 							reader.loadPage(page);
 
 							// update the header user interface
-							header.articleUpdated(lookupResult.userArticle);
+							header.articleUpdated(result.userArticle);
 
 							// load the embed user interface
-							if (lookupResult.userArticle.isRead) {
+							if (result.userArticle.isRead) {
 								showComments();
 							}
 
 							// return the article and page for the bookmark prompt
 							return {
-								article: lookupResult.userArticle,
+								article: result.userArticle,
 								page
 							};
 						}
