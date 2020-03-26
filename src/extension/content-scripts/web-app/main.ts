@@ -14,16 +14,20 @@ if (!window.reallyreadit) {
 		webApp.sendMessage(message);
 	};
 
+	const sendMessageToExtension = (message: Message) => {
+		chrome.runtime.sendMessage({
+			to: 'eventPage',
+			from: 'webAppContentScript',
+			type: message.type,
+			data: message.data
+		});
+	};
+
 	webApp.addListener(
 		message => {
 			// sendMessage will throw if this extension context is invalidated
 			try {
-				chrome.runtime.sendMessage({
-					to: 'eventPage',
-					from: 'webAppContentScript',
-					type: message.type,
-					data: message.data
-				});
+				sendMessageToExtension(message);	
 			} catch {
 				chrome.runtime.onMessage.removeListener(handleMessageFromExtension);
 				webApp.destruct();
@@ -36,4 +40,17 @@ if (!window.reallyreadit) {
 	webApp.sendMessage({
 		type: 'initialize'
 	});
+
+	sendMessageToExtension({
+		type: 'registerPage'
+	});
+
+	window.addEventListener(
+		'unload',
+		() => {
+			sendMessageToExtension({
+				type: 'unregisterPage'
+			});
+		}
+	);
 }

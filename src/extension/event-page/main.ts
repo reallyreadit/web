@@ -27,7 +27,7 @@ const serverApi = new ServerApi({
 });
 
 // tabs
-const tabs = new SetStore<number, ReaderContentScriptTab>('tabs', t => t.id, 'sessionStorage');
+const tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'sessionStorage');
 
 // reader content script
 const readerContentScriptApi = new ReaderContentScriptApi({
