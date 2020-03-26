@@ -26,7 +26,8 @@ function createLoadingAnimation(tabId: number) {
 					if (i === frameIndex) {
 						text += '.';
 					} else {
-						text += ' ';
+						// use punctuation space (U+2008) since Firefox trims regular space
+						text += String.fromCharCode(0x2008);
 					}
 				}
 				chrome.browserAction.setBadgeText({
