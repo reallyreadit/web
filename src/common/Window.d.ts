@@ -7,6 +7,8 @@ declare global {
 	interface ReaderContentScriptWindow { }
 	interface ReaderWindow { }
 	interface Window {
+		// iOS keyboard scroll bug
+		isFocusedOnField: boolean,
 		reallyreadit: {
 			alertContentScript?: AlertContentScriptWindow,
 			app?: AppWindow,
