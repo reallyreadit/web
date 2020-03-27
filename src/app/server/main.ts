@@ -29,7 +29,7 @@ import { variants as marketingVariants } from '../common/marketingTesting';
 import UserAccount from '../../common/models/UserAccount';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
-import { getDeviceType } from '../common/DeviceType';
+import { getDeviceType } from '../../common/DeviceType';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {

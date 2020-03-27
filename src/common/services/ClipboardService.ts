@@ -1,5 +1,5 @@
 import { Intent } from "../components/Toaster";
-import { getDeviceType, DeviceType } from "../../app/common/DeviceType";
+import { getDeviceType, DeviceType } from "../DeviceType";
 
 export default class ClipboardService {
 	protected _clipboardTextInput: HTMLInputElement | undefined;

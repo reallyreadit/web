@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ActionLink from '../../../../common/components/ActionLink';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 function renderAppleAppStoreButton(onCopyAppReferrerTextToClipboard: () => void) {
 	return (

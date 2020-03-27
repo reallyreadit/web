@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Dialog from '../../../../../common/components/Dialog';
 import GetStartedButton from '../GetStartedButton';
-import { DeviceType } from '../../../DeviceType';
+import { DeviceType } from '../../../../../common/DeviceType';
 
 export default (
 	props: {

@@ -40,7 +40,7 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import StickyNote from '../../../../common/components/StickyNote';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
 	deviceType: DeviceType,

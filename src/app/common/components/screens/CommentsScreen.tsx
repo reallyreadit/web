@@ -23,7 +23,7 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);

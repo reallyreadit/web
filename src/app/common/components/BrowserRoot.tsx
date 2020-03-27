@@ -39,7 +39,7 @@ import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
-import { DeviceType } from '../DeviceType';
+import { DeviceType } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';

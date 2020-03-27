@@ -8,7 +8,7 @@ import Profile from '../../../../common/models/social/Profile';
 import Fetchable from '../../../../common/Fetchable';
 import produce from 'immer';
 import { formatFetchable } from '../../../../common/format';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,

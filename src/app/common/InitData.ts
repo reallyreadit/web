@@ -4,7 +4,7 @@ import RouteLocation from '../../common/routing/RouteLocation';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import Exchange from './serverApi/Exchange';
 import AppReferral from './AppReferral';
-import { DeviceType } from './DeviceType';
+import { DeviceType } from '../../common/DeviceType';
 
 export default interface InitData {
 	analyticsTrackingCode: string | null,

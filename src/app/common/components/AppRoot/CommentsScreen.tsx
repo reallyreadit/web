@@ -10,7 +10,7 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import { mergeComment, updateComment } from '../../../../common/comments';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import CommentForm from '../../../../common/models/social/CommentForm';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 function noop() { }
 interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'deviceType' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onPostComment'>> {

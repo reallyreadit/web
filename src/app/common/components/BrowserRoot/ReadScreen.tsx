@@ -15,7 +15,7 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AdFreeAnimation from './AdFreeAnimation';
 import ScreenContainer from '../ScreenContainer';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 import GetStartedButton from './GetStartedButton';
 
 interface Props {

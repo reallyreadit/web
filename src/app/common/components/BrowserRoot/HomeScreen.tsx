@@ -25,7 +25,7 @@ import Rating from '../../../../common/models/Rating';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import StickyNote from '../../../../common/components/StickyNote';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
 	deviceType: DeviceType,

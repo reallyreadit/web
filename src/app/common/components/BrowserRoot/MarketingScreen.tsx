@@ -25,7 +25,7 @@ import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
 import CountdownBanner from './CountdownBanner';
 import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
-import { DeviceType } from '../../DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
