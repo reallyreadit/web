@@ -15,6 +15,7 @@ import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import { GlobalError } from './components/Global';
 import HeaderComponentHost from './HeaderComponentHost';
+import insertFontStyleElement from '../ui/insertFontStyleElement';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -283,6 +284,7 @@ Promise
 			styleArticleDocument(document);
 
 			// set up the user interface
+			insertFontStyleElement();
 			globalUi.attach();
 			
 			// set up the header user interface

@@ -417,12 +417,6 @@ chrome.runtime.onMessage.addListener(
 		}
 		switch (message.type) {
 			case 'injectAlert':
-				chrome.tabs.insertCSS(
-					sender.tab.id,
-					{
-						file: '/content-scripts/ui/fonts.css'
-					}
-				);
 				chrome.tabs.executeScript(
 					sender.tab.id,
 					{
@@ -431,12 +425,6 @@ chrome.runtime.onMessage.addListener(
 				);
 				return;
 			case 'injectReader':
-				chrome.tabs.insertCSS(
-					sender.tab.id,
-					{
-						file: '/content-scripts/ui/fonts.css'
-					}
-				);
 				chrome.tabs.executeScript(
 					sender.tab.id,
 					{

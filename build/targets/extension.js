@@ -41,18 +41,6 @@ const
 				manifestFileName,
 				JSON.stringify(manifest, null, 3)
 			);
-			// update fonts.css
-			const fontCssFileName = path.posix.join(buildInfo.outPath, 'content-scripts/ui/fonts.css');
-			fs.writeFileSync(
-				fontCssFileName,
-				fs
-					.readFileSync(fontCssFileName)
-					.toString()
-					.replace(
-						/\{EXTENSION_URL\}/g,
-						config.extensionUrl
-					)
-			);
 			if (resolve) {
 				resolve();
 			}
@@ -61,7 +49,6 @@ const
 		staticAssets: [
 			`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
 			`${project.srcDir}/extension/content-scripts/ui/images/**`,
-			`${project.srcDir}/extension/content-scripts/ui/fonts.css`,
 			`${project.srcDir}/extension/icons/**`,
 			`${project.srcDir}/extension/manifest.json`
 		]

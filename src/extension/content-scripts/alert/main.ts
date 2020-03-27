@@ -1,3 +1,5 @@
+import insertFontStyleElement from '../ui/insertFontStyleElement';
+
 const globalContext = window.reallyreadit.alertContentScript;
 
 function createAlertComponent() {
@@ -36,6 +38,8 @@ function createAlertComponent() {
 	component.append(logo, promptText, buttonContainer);
 	return component;
 }
+
+insertFontStyleElement();
 
 const componentStyleLink = document.createElement('link');
 componentStyleLink.rel = 'stylesheet';
