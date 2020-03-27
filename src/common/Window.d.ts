@@ -2,13 +2,14 @@ import Page from './reading/Page';
 import HttpEndpoint from './HttpEndpoint';
 
 declare global {
-	interface AppWindow { }
+	interface AppWindow {
+		// iOS keyboard scroll bug
+		isFocusedOnField: boolean
+	}
 	interface AlertContentScriptWindow { }
 	interface ReaderContentScriptWindow { }
 	interface ReaderWindow { }
 	interface Window {
-		// iOS keyboard scroll bug
-		isFocusedOnField: boolean,
 		reallyreadit: {
 			alertContentScript?: AlertContentScriptWindow,
 			app?: AppWindow,
