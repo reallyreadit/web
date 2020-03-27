@@ -64,7 +64,7 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 					<CommentsSection
 						article={this.props.article}
 						comments={this.props.comments.value}
-						imagePath={window.reallyreadit.extension.config.extensionUrl + '/content-scripts/ui/images'}
+						imagePath={chrome.runtime.getURL('/content-scripts/ui/images')}
 						noCommentsMessage="No comments on this article yet."
 						onCloseDialog={this.props.dialogService.closeDialog}
 						onCopyTextToClipboard={this.props.clipboardService.copyText}

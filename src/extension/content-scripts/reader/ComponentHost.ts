@@ -70,7 +70,7 @@ export default abstract class ComponentHost<Services, State> {
 		// create the shadow dom style link
 		const styleLink = document.createElement('link');
 		styleLink.rel = 'stylesheet';
-		styleLink.href = window.reallyreadit.extension.config.extensionUrl + '/content-scripts/reader/bundle.css';
+		styleLink.href = chrome.runtime.getURL('/content-scripts/reader/bundle.css');
 
 		// create the svg icons
 		const iconsElement = document.createElement('div');

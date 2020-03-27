@@ -3,7 +3,7 @@ const globalContext = window.reallyreadit.alertContentScript;
 function createAlertComponent() {
 	const logo = document.createElement('img');
 	logo.alt = 'Readup logo';
-	logo.src = window.reallyreadit.extension.config.extensionUrl + '/content-scripts/ui/images/logo.svg';
+	logo.src = chrome.runtime.getURL('/content-scripts/ui/images/logo.svg');
 
 	const promptText = document.createElement('div');
 	promptText.classList.add('prompt-text');
@@ -39,7 +39,7 @@ function createAlertComponent() {
 
 const componentStyleLink = document.createElement('link');
 componentStyleLink.rel = 'stylesheet';
-componentStyleLink.href = window.reallyreadit.extension.config.extensionUrl + '/content-scripts/alert/bundle.css';
+componentStyleLink.href = chrome.runtime.getURL('/content-scripts/alert/bundle.css');
 
 const shadowHost = document.createElement('div');
 shadowHost.style.position = 'fixed';

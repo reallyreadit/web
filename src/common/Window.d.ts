@@ -19,7 +19,6 @@ declare global {
 					contentParserVersion: string,
 					cookieName: string,
 					cookieDomain: string,
-					extensionUrl: string,
 					static: HttpEndpoint,
 					web: HttpEndpoint,
 					version: string
