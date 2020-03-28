@@ -8,7 +8,7 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
-import { extensionVersionQueryStringKey } from '../../common/routing/queryString';
+import { extensionVersionCookieKey } from '../../common/cookies';
 
 // server
 const serverApi = new ServerApi({
@@ -334,7 +334,7 @@ chrome.runtime.onInstalled.addListener(details => {
 		url: createUrl(window.reallyreadit.extension.config.web),
 		domain: '.' + window.reallyreadit.extension.config.web.host,
 		expirationDate: Date.now() + (365 * 24 * 60 * 60),
-		name: extensionVersionQueryStringKey,
+		name: extensionVersionCookieKey,
 		secure: window.reallyreadit.extension.config.web.protocol === 'https',
 		value: window.reallyreadit.extension.config.version,
 		path: '/',

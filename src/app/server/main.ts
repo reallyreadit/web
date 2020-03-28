@@ -15,7 +15,8 @@ import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey, extensionVersionQueryStringKey } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
+import { extensionVersionCookieKey } from '../../common/cookies';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
@@ -324,13 +325,13 @@ server = server.get('/extension/uninstall', (req, res, next) => {
 			.catch(() => {});
 		// clear the cookie
 		res.clearCookie(
-			extensionVersionQueryStringKey,
+			extensionVersionCookieKey,
 			{
 				domain: config.cookieDomain,
 				secure: config.secureCookie
 			}
 		);
-		delete req.cookies[extensionVersionQueryStringKey];
+		delete req.cookies[extensionVersionCookieKey];
 	}
 	next();
 });
@@ -432,7 +433,7 @@ server = server.get('/*', (req, res) => {
 	}
 	// prepare props
 	const deviceType = getDeviceType(req.headers['user-agent']);
-	const isExtensionInstalled = extensionVersionQueryStringKey in req.cookies;
+	const isExtensionInstalled = extensionVersionCookieKey in req.cookies;
 	const browserApi = new BrowserApi();
 	const rootProps = {
 		analytics: new Analytics(),
