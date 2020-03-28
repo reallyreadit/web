@@ -9,7 +9,7 @@ import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
 import { extensionVersionCookieKey, extensionInstallationRedirectPathCookieKey } from '../../common/cookies';
-import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
+import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
 
 // server
 const serverApi = new ServerApi({
@@ -391,7 +391,13 @@ chrome.browserAction.onClicked.addListener(
 				isAuthenticated => {
 					if (!isAuthenticated) {
 						chrome.tabs.create({
-							url: createUrl(window.reallyreadit.extension.config.web, '/', { 'create-account': null })
+							url: createUrl(
+								window.reallyreadit.extension.config.web,
+								null,
+								{ 
+									[extensionAuthQueryStringKey]: null
+								}
+							)
 						});
 						return;
 					}
