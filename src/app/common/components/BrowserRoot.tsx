@@ -44,6 +44,8 @@ import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import * as Cookies from 'js-cookie';
+import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -1055,6 +1057,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 				type: 'installed'
 			});
 		}
+		// clear extension installation redirect cookie
+		Cookies.remove(
+			extensionInstallationRedirectPathCookieKey,
+			{
+				domain: '.' + this.props.webServerEndpoint.host,
+				path: '/'
+			}
+		);
 		// send the initial pageview
 		this.props.analytics.sendPageview(this.state.screens[0]);
 	}

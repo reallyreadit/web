@@ -8,7 +8,8 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
-import { extensionVersionCookieKey } from '../../common/cookies';
+import { extensionVersionCookieKey, extensionInstallationRedirectPathCookieKey } from '../../common/cookies';
+import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 
 // server
 const serverApi = new ServerApi({
@@ -329,17 +330,40 @@ chrome.runtime.onInstalled.addListener(details => {
 	);
 	// clean up old alarm
 	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
-	// set cookie
-	chrome.cookies.set({
-		url: createUrl(window.reallyreadit.extension.config.web),
-		domain: '.' + window.reallyreadit.extension.config.web.host,
-		expirationDate: Date.now() + (365 * 24 * 60 * 60),
-		name: extensionVersionCookieKey,
-		secure: window.reallyreadit.extension.config.web.protocol === 'https',
-		value: window.reallyreadit.extension.config.version,
-		path: '/',
-		sameSite: 'no_restriction'
-	});
+	// set cookie and open new tab on new install
+	chrome.cookies.set(
+		{
+			url: createUrl(window.reallyreadit.extension.config.web),
+			domain: '.' + window.reallyreadit.extension.config.web.host,
+			expirationDate: (Date.now() + (365 * 24 * 60 * 60 * 1000)) / 1000,
+			name: extensionVersionCookieKey,
+			secure: window.reallyreadit.extension.config.web.protocol === 'https',
+			value: window.reallyreadit.extension.config.version,
+			path: '/',
+			sameSite: 'no_restriction'
+		},
+		() => {
+			if (details.reason === 'install') {
+				chrome.cookies.get(
+					{
+						url: createUrl(window.reallyreadit.extension.config.web),
+						name: extensionInstallationRedirectPathCookieKey,
+					},
+					cookie => {
+						chrome.tabs.create({
+							url: createUrl(
+								window.reallyreadit.extension.config.web,
+								cookie?.value,
+								{
+									[extensionInstalledQueryStringKey]: null
+								}
+							)
+						});
+					}
+				);
+			}
+		}
+	);
 });
 chrome.runtime.onStartup.addListener(
 	() => {
