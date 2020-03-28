@@ -21,7 +21,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
@@ -576,12 +576,26 @@ export default class extends Root<Props, State, SharedState, Events> {
 							this.getSharedState()
 						)
 					)] :
-					locationState.dialog && (
-						route.dialogKey !== DialogKey.Followers ||
-						props.initialUser
+					// temporary workaround for new onboarding flow
+					(
+						(
+							extensionInstalledQueryStringKey in queryStringParams ||
+							extensionAuthQueryStringKey in queryStringParams
+						) &&
+						!this.props.initialUser
 					) ?
-						[this._dialog.createDialog(locationState.dialog)] :
-						[]
+						[this._dialog.createDialog(
+							this._dialogCreatorMap[DialogKey.CreateAccount](
+								props.initialLocation,
+								this.getSharedState()
+							)
+						)] :
+						locationState.dialog && (
+							route.dialogKey !== DialogKey.Followers ||
+							props.initialUser
+						) ?
+							[this._dialog.createDialog(locationState.dialog)] :
+							[]
 			),
 			isExtensionInstalled: props.extensionApi.isInstalled,
 			menuState: 'closed',
