@@ -16,7 +16,7 @@ import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
-import { extensionVersionCookieKey } from '../../common/cookies';
+import { extensionVersionCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApi from './BrowserApi';
 import AppApi from './AppApi';
@@ -362,7 +362,7 @@ server = server.use((req, res, next) => {
 // render the app
 server = server.get('/*', (req, res) => {
 	// session id
-	if (!req.cookies['sessionId']) {
+	if (!req.cookies[sessionIdCookieKey]) {
 		res.cookie(
 			'sessionId',
 			crypto
