@@ -319,6 +319,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCreateAccount={this._createAccount}
 					onCloseDialog={this._dialog.closeDialog}
 					onShowToast={this._toaster.addToast}
+					onSignIn={
+						() => {
+							this._openSignInDialog('ExtensionBAIPopup');
+						}
+					}
 					onSignInWithApple={this._signInWithApple}
 				/>
 			),
