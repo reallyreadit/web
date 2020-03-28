@@ -30,6 +30,7 @@ export default class extends ExtensionApi {
     };
     private readonly _sendLegacyMessage = <T>(type: string, data?: {}, responseCallback?: (data: T) => void) => {
         window.chrome.runtime.sendMessage(
+            this._legacyChromeExtensionId,
             {
                 type,
                 data
@@ -59,12 +60,10 @@ export default class extends ExtensionApi {
             window.addEventListener('message', this._legacyMessageListener);
             // try to ping the legacy extension
             try {
-                window.chrome.runtime.sendMessage(
-                    this._legacyChromeExtensionId,
-                    {
-                        type: 'ping'
-                    },
-                    (response: boolean) => {
+                this._sendLegacyMessage<boolean>(
+                    'ping',
+                    null,
+                    response => {
                         const isInstalled = !!response;
                         if (isInstalled) {
                             // update install status
