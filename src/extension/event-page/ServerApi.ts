@@ -46,14 +46,14 @@ function fetchJson<T>(request: Request) {
 						resolve();
 					}
 				} else {
-					reject(object || []);
+					reject(object || ['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
 				}
 			} else {
-				reject([]);
+				reject(['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
 			}
 		});
 		req.addEventListener('error', function () {
-			reject([]);
+			reject(['ServerApi XMLHttpRequest error event']);
 		});
 		if (request.method === 'POST') {
 			req.open(request.method, url);
