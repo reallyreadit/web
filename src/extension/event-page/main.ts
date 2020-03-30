@@ -8,7 +8,7 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
-import { extensionVersionCookieKey, extensionInstallationRedirectPathCookieKey } from '../../common/cookies';
+import { extensionVersionCookieKey, extensionInstallationRedirectPathCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
 
 // server
@@ -254,6 +254,33 @@ const browserActionBadgeApi = new BrowserActionBadgeApi();
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('[EventPage] installed, reason: ' + details.reason);
+	// ensure sameSite is set on sessionId and sessionKey cookies
+	[window.reallyreadit.extension.config.cookieName, sessionIdCookieKey].forEach(
+		cookieName => {
+			chrome.cookies.get(
+				{
+					url: createUrl(window.reallyreadit.extension.config.web),
+					name: cookieName
+				},
+				cookie => {
+					if (cookie?.sameSite === 'unspecified') {
+						chrome.cookies.set({
+							url: createUrl(window.reallyreadit.extension.config.web),
+							domain: cookie.domain,
+							expirationDate: cookie.expirationDate,
+							httpOnly: cookie.httpOnly,
+							name: cookie.name,
+							path: cookie.path,
+							sameSite: 'no_restriction',
+							secure: cookie.secure,
+							storeId: cookie.storeId,
+							value: cookie.value
+						});
+					}
+				}
+			);
+		}
+	);
 	// initialize settings
 	localStorage.removeItem('parseMode');
 	localStorage.removeItem('showOverlay');
