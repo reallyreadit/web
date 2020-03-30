@@ -13,7 +13,6 @@ import * as React from 'react';
 import Dialog from '../../../common/components/Dialog';
 import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
-import { GlobalError } from './components/Global';
 import HeaderComponentHost from './HeaderComponentHost';
 import insertFontStyleElement from '../ui/insertFontStyleElement';
 
@@ -105,7 +104,7 @@ const eventPageApi = new EventPageApi({
 	},
 	onUserSignedOut: () => {
 		reader.unloadPage();
-		showError(GlobalError.UserSignedOut);
+		showError('You were signed out in another tab.');
 	}
 });
 
@@ -125,7 +124,7 @@ const globalUi = new GlobalComponentHost({
 	}
 });
 
-function showError(error: GlobalError) {
+function showError(error: string) {
 	document.body.style.overflow = 'hidden';
 	globalUi.showError(error);
 }
@@ -398,9 +397,9 @@ Promise
 					}
 				)
 				.catch(
-					() => {
+					(error: string) => {
 						header.deinitialize();
-						showError(GlobalError.ArticleLookupFailure);
+						showError(error);
 					}
 				);
 		}

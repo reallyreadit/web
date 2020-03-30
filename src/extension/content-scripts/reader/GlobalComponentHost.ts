@@ -1,5 +1,5 @@
 import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
-import Global, { GlobalError } from './components/Global';
+import Global from './components/Global';
 import ClipboardService from '../../../common/services/ClipboardService';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
@@ -17,7 +17,7 @@ interface Services {
 	toasterService: ToasterService
 }
 type State = DialogState & ToasterState & {
-	error: GlobalError
+	error: string | null
 };
 export default class GlobalComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -50,7 +50,7 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 		};
 		this.setState({
 			dialogs: [],
-			error: GlobalError.None,
+			error: null,
 			toasts: []
 		});
 	}
@@ -76,7 +76,7 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 		}
 		return false;
 	}
-	public showError(error: GlobalError) {
+	public showError(error: string) {
 		this.setState({
 			error
 		});

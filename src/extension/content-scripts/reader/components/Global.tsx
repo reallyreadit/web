@@ -18,12 +18,12 @@ export default (
 		clipboardService: ClipboardService,
 		dialogs: Dialog[],
 		dialogService: DialogService,
-		error: GlobalError,
+		error: string | null,
 		toasterService: ToasterService,
 		toasts: Toast[]
 	}
 ) => (
-	<div className={classNames('global_x82v08', { 'error': props.error !== GlobalError.None })}>
+	<div className={classNames('global_x82v08', { 'error': !!props.error })}>
 		<DialogManager
 			dialogs={props.dialogs}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}
@@ -34,14 +34,13 @@ export default (
 			toasts={props.toasts}
 		/>
 		<ClipboardTextInput onSetRef={props.clipboardService.setTextInputRef} />
-		{props.error !== GlobalError.None ?
+		{props.error ?
 			<InfoBox
 				position="absolute"
 				style="warning"
 			>
-				{props.error === GlobalError.ArticleLookupFailure ?
-					<p>An error occurred while processing this article.</p> :
-					<p>You were signed out of your account in another tab.</p>}
+				<p>An error occurred while processing the article:</p>
+				<p>{props.error}</p>
 			</InfoBox> :
 			null}
 	</div>
