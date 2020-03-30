@@ -45,7 +45,8 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import * as Cookies from 'js-cookie';
-import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
+import { extensionInstallationRedirectPathCookieKey, extensionVersionCookieKey } from '../../../common/cookies';
+import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -909,6 +910,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 				method: 'replace',
 				urlParams: { sourceSlug, articleSlug }
 			});
+		} else if (
+			Cookies.get(extensionVersionCookieKey) &&
+			!localStorage.getItem('extensionReminderAcknowledged')
+		) {
+			ev.preventDefault();
+			this._dialog.openDialog(
+				<ExtensionReminderDialog
+					deviceType={this.props.deviceType}
+					onSubmit={
+						() => {
+							localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
+							location.href = article.url;
+							return new Promise(
+								resolve => { }
+							);
+						}
+					}
+				/>
+			);
 		}
 	}
 	protected reloadWindow() {
