@@ -6,7 +6,7 @@
     "version": {
       "app": "1.18.2",
       "extension": {
-        "package": "3.0.0",
+        "package": "3.0.1",
         "content-parser": "1.0.15"
       },
       "native-client": {
