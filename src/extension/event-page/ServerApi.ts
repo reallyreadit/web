@@ -138,7 +138,9 @@ export default class ServerApi {
 		// notifications
 		chrome.notifications.onClicked.addListener(
 			id => {
-				window.open(createUrl(window.reallyreadit.extension.config.api, '/Extension/Notification/' + id));
+				chrome.tabs.create({
+					url: createUrl(window.reallyreadit.extension.config.api, '/Extension/Notification/' + id)
+				});
 			}
 		);
 		// handlers
