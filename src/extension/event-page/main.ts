@@ -211,6 +211,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 // web app
 const webAppApi = new WebAppApi({
 	onArticleUpdated: event => {
+		// update content script
 		tabs
 			.getAll()
 			.filter(
@@ -218,9 +219,6 @@ const webAppApi = new WebAppApi({
 			)
 			.forEach(
 				tab => {
-					// update bai badge
-					browserActionBadgeApi.setReading(tab.id, event.article);
-					// update content script
 					readerContentScriptApi.articleUpdated(tab.id, event);
 				}
 			);
@@ -229,7 +227,9 @@ const webAppApi = new WebAppApi({
 		// update content script
 		tabs
 			.getAll()
-			.filter(tab => tab.articleId === comment.articleId)
+			.filter(
+				tab => tab.articleId === comment.articleId
+			)
 			.forEach(tab => {
 				readerContentScriptApi.commentPosted(tab.id, comment);
 			});
@@ -238,7 +238,9 @@ const webAppApi = new WebAppApi({
 		// update content script
 		tabs
 			.getAll()
-			.filter(tab => tab.articleId === comment.articleId)
+			.filter(
+				tab => tab.articleId === comment.articleId
+			)
 			.forEach(tab => {
 				readerContentScriptApi.commentUpdated(tab.id, comment);
 			});
