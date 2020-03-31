@@ -37,6 +37,23 @@
 	font-style: italic;
 	margin-top: 0.75em;
 }
+.browser-header_pg57qm > .length > .value {
+	position: relative;
+}
+.browser-header_pg57qm > .length > .value > .debug-left {
+	position: absolute;
+	top: 0;
+	right: 50%;
+	bottom: 0;
+	left: 0;
+}
+.browser-header_pg57qm > .length > .value > .debug-right {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 50%;
+}
 
 @keyframes browser-header_pg57qm-fade-in {
 	0% {

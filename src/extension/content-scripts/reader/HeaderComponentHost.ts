@@ -2,7 +2,7 @@ import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
 import BrowserHeader, { Props as BrowserHeaderProps } from './components/BrowserHeader';
 import UserArticle from '../../../common/models/UserArticle';
 
-type Services = Pick<BrowserHeaderProps, 'onCreateAbsoluteUrl' | 'onSetStarred' | 'onViewComments' | 'onViewProfile'>;
+type Services = Pick<BrowserHeaderProps, 'onCreateAbsoluteUrl' | 'onSetStarred' | 'onToggleDebugMode' | 'onViewComments' | 'onViewProfile'>;
 type State = Pick<BrowserHeaderProps, 'article' | 'authors' | 'isStarred' | 'isStarring' | 'title' | 'wordCount'>;
 export default class HeaderComponentHost extends ComponentHost<Services, State> {
 	private _animationTimeout: number | null;

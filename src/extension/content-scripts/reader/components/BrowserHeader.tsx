@@ -19,6 +19,7 @@ export interface Props {
 	isStarring: boolean,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onSetStarred: (isStarred: boolean) => Promise<void>,
+	onToggleDebugMode: () => void,
 	onViewComments: (article: Pick<UserArticle, 'slug'>) => void,
 	onViewProfile: (userName: string) => void,
 	title: string,
@@ -28,6 +29,36 @@ interface State {
 	isStarring: boolean
 }
 export default class BroserHeader extends React.PureComponent<Props, State> {
+	private _debugSequence: number[] = [];
+	private readonly _handleDebugClickLeft = () => {
+		const now = Date.now();
+		if (
+			this._debugSequence.length === 2 &&
+			now - this._debugSequence[1] <= 500
+		) {
+			// continue sequence
+			this._debugSequence.push(now);
+		} else {
+			// start sequence
+			this._debugSequence = [now];
+		}
+	};
+	private readonly _handleDebugClickRight = () => {
+		const now = Date.now();
+		if (
+			this._debugSequence.length % 2 === 1 &&
+			now - this._debugSequence[this._debugSequence.length - 1] <= 500
+		) {
+			if (this._debugSequence.length === 1) {
+				// continue sequence
+				this._debugSequence.push(now);
+			} else {
+				// end sequence
+				this._debugSequence = [];
+				this.props.onToggleDebugMode();
+			}
+		}
+	};
 	private readonly _toggleStar = () => {
 		if (this.state.isStarring) {
 			return;
@@ -112,7 +143,19 @@ export default class BroserHeader extends React.PureComponent<Props, State> {
 				{this.props.authors.length ?
 					<div className="byline">{formatList(this.props.authors)}</div> :
 					null}
-				<div className="length">{calculateEstimatedReadTime(this.props.wordCount)} min read.</div>
+				<div className="length">
+					<span className="value">
+						{calculateEstimatedReadTime(this.props.wordCount)} min read.
+						<div
+							className="debug-left"
+							onClick={this._handleDebugClickLeft}
+						></div>
+						<div
+							className="debug-right"
+							onClick={this._handleDebugClickRight}
+						></div>	
+					</span>
+				</div>
 			</div>
 		);
 	}
