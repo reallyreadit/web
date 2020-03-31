@@ -15,6 +15,7 @@ import StarForm from '../../common/models/articles/StarForm';
 import SetStore from '../../common/webStorage/SetStore';
 import { Message } from '../../common/MessagingContext';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
+import { calculateEstimatedReadTime } from '../../common/calculate';
 
 interface ReaderContentScriptTab {
 	articleId: number | null,
@@ -64,6 +65,10 @@ export default class ReaderContentScriptApi {
 													tab => {
 														if (tab.articleId === result.userArticle.id) {
 															this._badge.setReading(tab.id, result.userArticle);
+															chrome.browserAction.setTitle({
+																tabId: tab.id,
+																title: `${calculateEstimatedReadTime(result.userArticle.wordCount)} min. read`
+															});
 														}
 													}
 												);
