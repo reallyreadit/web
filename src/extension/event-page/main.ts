@@ -1,4 +1,3 @@
-import drawBrowserActionIcon from './drawBrowserActionIcon';
 import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
@@ -8,15 +7,35 @@ import { createCommentThread } from '../../common/models/social/Post';
 import { extensionVersionCookieKey, extensionInstallationRedirectPathCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
 
+// browser action icon
+function setIcon(state: 'authenticated' | 'unauthenticated') {
+	const placeholder = '{SIZE}';
+	let pathTemplate = '/icons/';
+	if (state === 'authenticated') {
+		pathTemplate += `icon-${placeholder}.png`;
+	} else {
+		pathTemplate += `icon-${placeholder}-warning.png`;
+	}
+	chrome.browserAction.setIcon({
+		path: [16, 24, 32, 40, 48].reduce<{ [key: string]: string }>(
+			(paths, size) => {
+				paths[size] = pathTemplate.replace(placeholder, size.toString());
+				return paths;
+			},
+			{ }
+		)
+	});
+}
+
 // server
 const serverApi = new ServerApi({
 	onAuthenticationStatusChanged: isAuthenticated => {
 		console.log('serverApi.onAuthenticationStatusChanged');
 		// update icon
-		drawBrowserActionIcon(
+		setIcon(
 			isAuthenticated ?
-				'signedIn' :
-				'signedOut'
+				'authenticated' :
+				'unauthenticated'
 		);
 		// stop reading on sign out
 		if (!isAuthenticated) {
@@ -211,11 +230,11 @@ chrome.runtime.onInstalled.addListener(details => {
 		.getAuthStatus()
 		.then(
 			isAuthenticated => {
-				drawBrowserActionIcon(
+				setIcon(
 					isAuthenticated ?
-						'signedIn' :
-						'signedOut'
-				)
+						'authenticated' :
+						'unauthenticated'
+				);
 			}
 		);
 	// inject web app content script into open web app tabs
@@ -319,11 +338,11 @@ chrome.runtime.onStartup.addListener(
 			.getAuthStatus()
 			.then(
 				isAuthenticated => {
-					drawBrowserActionIcon(
+					setIcon(
 						isAuthenticated ?
-							'signedIn' :
-							'signedOut'
-					)
+							'authenticated' :
+							'unauthenticated'
+					);
 				}
 			);
 		// initialize tabs
