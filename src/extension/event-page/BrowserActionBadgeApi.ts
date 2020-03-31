@@ -46,6 +46,7 @@ export default class BrowserActionBadgeApi {
 	private cancelAnimation(tabId: number) {
 		const animation = this.getAnimation(tabId);
 		if (animation) {
+			console.log(`[BrowserActionBadgeApi] cancelling loading animation for tab # ${tabId}`);
 			clearInterval(animation.interval);
 			this._animations.splice(
 				this._animations.indexOf(animation),
@@ -73,11 +74,13 @@ export default class BrowserActionBadgeApi {
 		if (this.getAnimation(tabId)) {
 			return;
 		}
+		console.log(`[BrowserActionBadgeApi] creating loading animation for tab # ${tabId}`);
 		this._animations.push(
 			createLoadingAnimation(tabId)
 		);
 	}
 	public setReading(tabId: number, article: Pick<UserArticle, 'isRead' | 'percentComplete'>) {
+		console.log(`[BrowserActionBadgeApi] setting progress at ${Math.floor(article.percentComplete)}% for tab # ${tabId}`);
 		this.cancelAnimation(tabId);
 		chrome.browserAction.setBadgeBackgroundColor({
 			color: article.isRead ?
