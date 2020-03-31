@@ -55,28 +55,33 @@ export default class EventPageApi {
 		onToggleReadStateDisplay: () => void,
 		onUserSignedOut: () => void
 	}) {
-		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			switch (message.type) {
-				case 'articleUpdated':
-					handlers.onArticleUpdated(message.data);
-					break;
-				case 'commentPosted':
-					handlers.onCommentPosted(message.data);
-					break;
-				case 'commentUpdated':
-					handlers.onCommentUpdated(message.data);
-					break;
-				case 'toggleContentIdentificationDisplay':
-					handlers.onToggleContentIdentificationDisplay();
-					break;
-				case 'toggleReadStateDisplay':
-					handlers.onToggleReadStateDisplay();
-					break;
-				case 'userSignedOut':
-					handlers.onUserSignedOut();
-					break;
+		chrome.runtime.onMessage.addListener(
+			(message, sender, sendResponse) => {
+				switch (message.type) {
+					case 'articleUpdated':
+						handlers.onArticleUpdated(message.data);
+						break;
+					case 'commentPosted':
+						handlers.onCommentPosted(message.data);
+						break;
+					case 'commentUpdated':
+						handlers.onCommentUpdated(message.data);
+						break;
+					case 'toggleContentIdentificationDisplay':
+						handlers.onToggleContentIdentificationDisplay();
+						break;
+					case 'toggleReadStateDisplay':
+						handlers.onToggleReadStateDisplay();
+						break;
+					case 'userSignedOut':
+						handlers.onUserSignedOut();
+						break;
+				}
+				// always send a response because the sender must use a callback in order to
+				// check for runtime errors and an error will be triggered if the port is closed
+				sendResponse();
 			}
-		});
+		);
 	}
 	public registerPage(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>('registerPage', data);

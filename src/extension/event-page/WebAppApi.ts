@@ -6,7 +6,7 @@ import ObjectStore from '../../common/webStorage/ObjectStore';
 import { Message } from '../../common/MessagingContext';
 
 export default class WebAppApi {
-	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'sessionStorage');
+	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
 	constructor(
 		handlers: {
 			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
@@ -65,7 +65,7 @@ export default class WebAppApi {
 						message,
 						() => {
 							if (chrome.runtime.lastError) {
-								console.log(`[WebAppApi] error sending message to tab # ${tabId}`);
+								console.log(`[WebAppApi] error sending message to tab # ${tabId}, message: ${chrome.runtime.lastError.message}`);
 								this.removeTab(tabId);
 							}
 						}
@@ -91,6 +91,9 @@ export default class WebAppApi {
 			type: 'articleUpdated',
 			data: event
 		});
+	}
+	public clearTabs() {
+		this._tabs.clear();
 	}
 	public commentPosted(comment: CommentThread) {
 		this.broadcastMessage({

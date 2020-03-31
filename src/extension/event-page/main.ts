@@ -1,7 +1,4 @@
 import drawBrowserActionIcon from './drawBrowserActionIcon';
-import BrowserActionBadgeApi from './BrowserActionBadgeApi';
-import SetStore from '../../common/webStorage/SetStore';
-import ReaderContentScriptTab from './ReaderContentScriptTab';
 import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
@@ -23,17 +20,7 @@ const serverApi = new ServerApi({
 		);
 		// stop reading on sign out
 		if (!isAuthenticated) {
-			tabs
-				.getAll()
-				.forEach(
-					tab => {
-						// update bai badges
-						browserActionBadgeApi.setDefault(tab.id);
-						// message content script
-						readerContentScriptApi.userSignedOut(tab.id);
-					}
-				);
-			tabs.clear();
+			readerContentScriptApi.userSignedOut();
 		}
 	},
 	onUserUpdated: user => {
@@ -42,51 +29,20 @@ const serverApi = new ServerApi({
 	}
 });
 
-// tabs
-const tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'sessionStorage');
-
 // reader content script
 const readerContentScriptApi = new ReaderContentScriptApi({
-	onRegisterPage: (tabId, data) => {
-		console.log(`contentScriptApi.onRegisterPage (tabId: ${tabId})`);
-		// update tabs
-		tabs.set({
-			articleId: null,
-			id: tabId
-		});
-		// update bai badges
-		browserActionBadgeApi.setLoading(tabId);
-		// get read state
-		return serverApi
-			.registerPage(tabId, data)
-			.then(
-				result => {
-					// update tabs
-					tabs.set({
-						articleId: result.userArticle.id,
-						id: tabId
-					});
-					// update bai badges
-					tabs
-						.getAll()
-						.forEach(
-							tab => {
-								if (tab.articleId === result.userArticle.id) {
-									browserActionBadgeApi.setReading(tab.id, result.userArticle);
-								}
-							}
-						);
-					// return result
-					return result;
-				}
-			)
-			.catch(
-				error => {
-					browserActionBadgeApi.setDefault(tabId);
-					throw error;
-				}
-			);
-	},
+	onRegisterPage: (tabId, data) => serverApi
+		.registerPage(tabId, data)
+		.then(
+			result => {
+				// update web app (article is automatically starred)
+				webAppApi.articleUpdated({
+					article: result.userArticle,
+					isCompletionCommit: false
+				});
+				return result;
+			}
+		),
 	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
@@ -94,16 +50,6 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 			.commitReadState(tabId, commitData)
 			.then(
 				article => {
-					// update bai badges
-					tabs
-						.getAll()
-						.forEach(
-							tab => {
-								if (tab.articleId === article.id) {
-									browserActionBadgeApi.setReading(tab.id, article);
-								}
-							}
-						);
 					// update web app
 					webAppApi.articleUpdated({
 						article,
@@ -113,11 +59,6 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 					return article;
 				}
 			);
-	},
-	onUnregisterPage: tabId => {
-		console.log(`contentScriptApi.onUnregisterContentScript (tabId: ${tabId})`);
-		// update tabs
-		tabs.remove(tabId);
 	},
 	onLoadContentParser: tabId => {
 		try {
@@ -135,7 +76,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
 		chrome.tabs.executeScript(tabId, { file: '/content-scripts/reader/content-parser/bundle.js' });
 	},
-	onGetComments: serverApi.getComments,
+	onGetComments: slug => serverApi.getComments(slug),
 	onPostArticle: form => {
 		return serverApi
 			.postArticle(form)
@@ -211,47 +152,21 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 // web app
 const webAppApi = new WebAppApi({
 	onArticleUpdated: event => {
-		// update content script
-		tabs
-			.getAll()
-			.filter(
-				tab => tab.articleId === event.article.id
-			)
-			.forEach(
-				tab => {
-					readerContentScriptApi.articleUpdated(tab.id, event);
-				}
-			);
+		// update readers
+		readerContentScriptApi.articleUpdated(event);
 	},
 	onCommentPosted: comment => {
-		// update content script
-		tabs
-			.getAll()
-			.filter(
-				tab => tab.articleId === comment.articleId
-			)
-			.forEach(tab => {
-				readerContentScriptApi.commentPosted(tab.id, comment);
-			});
+		// update readers
+		readerContentScriptApi.commentPosted(comment);
 	},
 	onCommentUpdated: comment => {
-		// update content script
-		tabs
-			.getAll()
-			.filter(
-				tab => tab.articleId === comment.articleId
-			)
-			.forEach(tab => {
-				readerContentScriptApi.commentUpdated(tab.id, comment);
-			});
+		// update readers
+		readerContentScriptApi.commentUpdated(comment);
 	},
 	onUserUpdated: user => {
 		serverApi.updateUser(user);
 	}
 });
-
-// icon interface
-const browserActionBadgeApi = new BrowserActionBadgeApi();
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
@@ -307,6 +222,8 @@ chrome.runtime.onInstalled.addListener(details => {
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
 	// on updates
+	readerContentScriptApi.clearTabs();
+	webAppApi.clearTabs();
 	webAppApi.injectContentScripts();
 	// log new installations or old unrecorded ones
 	if (
@@ -409,6 +326,10 @@ chrome.runtime.onStartup.addListener(
 					)
 				}
 			);
+		// initialize tabs
+		readerContentScriptApi.clearTabs();
+		webAppApi.clearTabs();
+		webAppApi.injectContentScripts();
 	}
 );
 chrome.browserAction.onClicked.addListener(

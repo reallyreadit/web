@@ -12,109 +12,216 @@ import CommentRevisionForm from '../../common/models/social/CommentRevisionForm'
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import { createMessageResponseHandler } from '../common/messaging';
 import StarForm from '../../common/models/articles/StarForm';
+import SetStore from '../../common/webStorage/SetStore';
+import { Message } from '../../common/MessagingContext';
+import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 
-function sendMessage<T>(tabId: number, type: string, data?: {}, responseCallback?: (data: T) => void) {
-	chrome.tabs.sendMessage(tabId, { type, data }, responseCallback);
+interface ReaderContentScriptTab {
+	articleId: number | null,
+	id: number
 }
 export default class ReaderContentScriptApi {
-	constructor(handlers: {
-		onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
-		onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
-		onUnregisterPage: (tabId: number) => void,
-		onLoadContentParser: (tabId: number) => void,
-		onGetComments: (slug: string) => Promise<CommentThread[]>,
-		onPostArticle: (form: PostForm) => Promise<Post>,
-		onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
-		onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
-		onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-		onSetStarred: (form: StarForm) => Promise<UserArticle>,
-		onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
-	}) {
-		// message
-		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if (message.to === 'eventPage' && message.from === 'readerContentScript') {
-				switch (message.type) {
-					case 'registerPage':
-						createMessageResponseHandler(
-							handlers.onRegisterPage(sender.tab.id, message.data),
-							sendResponse
-						);
-						return true;
-					case 'commitReadState':
-						createMessageResponseHandler(
-							handlers.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit),
-							sendResponse
-						);
-						return true;
-					case 'unregisterPage':
-						handlers.onUnregisterPage(sender.tab.id);
-						break;
-					case 'loadContentParser':
-						handlers.onLoadContentParser(sender.tab.id);
-						break;
-					case 'getComments':
-						createMessageResponseHandler(
-							handlers.onGetComments(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postArticle':
-						createMessageResponseHandler(
-							handlers.onPostArticle(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postComment':
-						createMessageResponseHandler(
-							handlers.onPostComment(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postCommentAddendum':
-						createMessageResponseHandler(
-							handlers.onPostCommentAddendum(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postCommentRevision':
-						createMessageResponseHandler(
-							handlers.onPostCommentRevision(message.data),
-							sendResponse
-						);
-						return true;
-					case 'setStarred':
-						createMessageResponseHandler(
-							handlers.onSetStarred(message.data),
-							sendResponse
-						);
-						return true;
-					case 'deleteComment':
-						createMessageResponseHandler(
-							handlers.onDeleteComment(message.data),
-							sendResponse
-						);
-						return true;
+	private readonly _badge = new BrowserActionBadgeApi();
+	private readonly _tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'localStorage');
+	constructor(
+		handlers: {
+			onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
+			onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
+			onLoadContentParser: (tabId: number) => void,
+			onGetComments: (slug: string) => Promise<CommentThread[]>,
+			onPostArticle: (form: PostForm) => Promise<Post>,
+			onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
+			onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
+			onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+			onSetStarred: (form: StarForm) => Promise<UserArticle>,
+			onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
+		}
+	) {
+		// listen for messages from content script
+		chrome.runtime.onMessage.addListener(
+			(message, sender, sendResponse) => {
+				if (message.to === 'eventPage' && message.from === 'readerContentScript') {
+					console.log(`[ReaderApi] received ${message.type} message from tab # ${sender.tab?.id}`);
+					switch (message.type) {
+						case 'registerPage':
+							this._tabs.set({
+								articleId: null,
+								id: sender.tab.id
+							});
+							this._badge.setLoading(sender.tab.id);
+							createMessageResponseHandler(
+								handlers
+									.onRegisterPage(sender.tab.id, message.data)
+									.then(
+										result => {
+											this._tabs.set({
+												articleId: result.userArticle.id,
+												id: sender.tab.id
+											});
+											this._tabs
+												.getAll()
+												.forEach(
+													tab => {
+														if (tab.articleId === result.userArticle.id) {
+															this._badge.setReading(tab.id, result.userArticle);
+														}
+													}
+												);
+											return result;
+										}
+									)
+									.catch(
+										error => {
+											this._tabs.remove(sender.tab.id);
+											this._badge.setDefault(sender.tab.id);
+											throw error;
+										}
+									),
+								sendResponse
+							);
+							return true;
+						case 'commitReadState':
+							createMessageResponseHandler(
+								handlers
+									.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit)
+									.then(
+										article => {
+											this._tabs
+												.getAll()
+												.forEach(
+													tab => {
+														if (tab.articleId === article.id) {
+															this._badge.setReading(tab.id, article);
+														}
+													}
+												);
+											return article;
+										}
+									),
+								sendResponse
+							);
+							return true;
+						case 'unregisterPage':
+							// sender.tab.id is undefined in Firefox
+							// tab won't be removed until a messaging error occurs
+							this._tabs.remove(sender.tab.id);
+							break;
+						case 'loadContentParser':
+							handlers.onLoadContentParser(sender.tab.id);
+							break;
+						case 'getComments':
+							createMessageResponseHandler(
+								handlers.onGetComments(message.data),
+								sendResponse
+							);
+							return true;
+						case 'postArticle':
+							createMessageResponseHandler(
+								handlers.onPostArticle(message.data),
+								sendResponse
+							);
+							return true;
+						case 'postComment':
+							createMessageResponseHandler(
+								handlers.onPostComment(message.data),
+								sendResponse
+							);
+							return true;
+						case 'postCommentAddendum':
+							createMessageResponseHandler(
+								handlers.onPostCommentAddendum(message.data),
+								sendResponse
+							);
+							return true;
+						case 'postCommentRevision':
+							createMessageResponseHandler(
+								handlers.onPostCommentRevision(message.data),
+								sendResponse
+							);
+							return true;
+						case 'setStarred':
+							createMessageResponseHandler(
+								handlers.onSetStarred(message.data),
+								sendResponse
+							);
+							return true;
+						case 'deleteComment':
+							createMessageResponseHandler(
+								handlers.onDeleteComment(message.data),
+								sendResponse
+							);
+							return true;
+					}
 				}
+				return false;
 			}
-			return false;
-		});
+		);
 	}
-	public articleUpdated(tabId: number, event: ArticleUpdatedEvent) {
-		sendMessage(tabId, 'articleUpdated', event);
+	private broadcastMessage<T>(articleId: number, message: Message) {
+		this._tabs
+			.getAll()
+			.forEach(
+				tab => {
+					if (articleId == null || tab.articleId === articleId) {
+						console.log(`[ReaderApi] sending ${message.type} message to tab # ${tab.id}`);
+						chrome.tabs.sendMessage(
+							tab.id,
+							message,
+							() => {
+								if (chrome.runtime.lastError) {
+									console.log(`[ReaderApi] error sending message to tab # ${tab.id}, message: ${chrome.runtime.lastError.message}`);
+									this._tabs.remove(tab.id);
+								}
+							}
+						);
+					}
+				}
+			);
 	}
-	public commentPosted(tabId: number, comment: CommentThread) {
-		sendMessage(tabId, 'commentPosted', comment);
+	public articleUpdated(event: ArticleUpdatedEvent) {
+		this.broadcastMessage(
+			event.article.id,
+			{
+				type: 'articleUpdated',
+				data: event
+			}
+		);
 	}
-	public commentUpdated(tabId: number, comment: CommentThread) {
-		sendMessage(tabId, 'commentUpdated', comment);
+	public clearTabs() {
+		this._tabs.clear();
 	}
-	public toggleContentIdentificationDisplay(tabId: number) {
-		sendMessage(tabId, 'toggleContentIdentificationDisplay');
+	public commentPosted(comment: CommentThread) {
+		this.broadcastMessage(
+			comment.articleId,
+			{
+				type: 'commentPosted',
+				data: comment
+			}
+		);
 	}
-	public toggleReadStateDisplay(tabId: number) {
-		sendMessage(tabId, 'toggleReadStateDisplay');
+	public commentUpdated(comment: CommentThread) {
+		this.broadcastMessage(
+			comment.articleId,
+			{
+				type: 'commentUpdated',
+				data: comment
+			}
+		);
 	}
-	public userSignedOut(tabId: number) {
-		sendMessage(tabId, 'userSignedOut');
+	public userSignedOut() {
+		this.broadcastMessage(
+			null,
+			{
+				type: 'userSignedOut'
+			}
+		);
+		this._tabs
+			.getAll()
+			.forEach(
+				tab => {
+					this._badge.setDefault(tab.id);
+				}
+			);
+		this._tabs.clear();
 	}
 }
