@@ -7,20 +7,21 @@
 	display: inline-block;
 	text-align: center;
 }
-.get-started-button_z950ea > .buttons > a {
-	display: inline-block;
-	margin: 0 10px 10px 10px;
-}
-.get-started-button_z950ea > .buttons > a > img {
+.get-started-button_z950ea > .ios > img {
 	display: block;
 	margin: 0 auto;
 	height: 65px;
 }
-.get-started-button_z950ea > span {
-	display: block;
-	color: #999;
-	font-size: 11pt;
+.get-started-button_z950ea > .android > .coming-soon {
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
 }
-.get-started-button_z950ea > span > a {
+.get-started-button_z950ea > .android > .button_ovrlmi {
+	margin: 15px 0;
+}
+.get-started-button_z950ea > .android > .platforms {
 	color: #999;
+}
+.get-started-button_z950ea > .android > .platforms > a {
+	color: inherit;
 }

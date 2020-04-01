@@ -22,6 +22,7 @@ interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
 	isExtensionInstalled: boolean,
+	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
@@ -30,9 +31,6 @@ interface Props {
 }
 class ReadScreen extends React.PureComponent<Props> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _copyAppReferrerTextToClipboard = () => {
-		this.props.onCopyAppReferrerTextToClipboard('ReadScreen');
-	};
 	constructor(props: Props) {
 		super(props);
 		this._asyncTracker.addCancellationDelegate(
@@ -96,8 +94,10 @@ class ReadScreen extends React.PureComponent<Props> {
 						</ul>
 						<div className="spacer"></div>
 						<GetStartedButton
+							analyticsAction="ReadScreen"
 							deviceType={this.props.deviceType}
-							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+							onBeginOnboarding={this.props.onBeginOnboarding}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 						{this.props.deviceType !== DeviceType.Ios && this.props.deviceType !== DeviceType.DesktopChrome ?

@@ -245,6 +245,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// user account
+	private readonly _beginOnboarding = (analyticsAction: string) => {
+
+	};
 	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
 		this.props.serverApi
 			.requestTwitterBrowserRequestToken({
@@ -376,6 +379,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				deviceType: this.props.deviceType,
 				marketingVariant: this.props.marketingVariant,
+				onBeginOnboarding: this._beginOnboarding,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -404,6 +408,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
 				marketingVariant: this.props.marketingVariant,
+				onBeginOnboarding: this._beginOnboarding,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -492,6 +497,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				deviceType: this.props.deviceType,
+				onBeginOnboarding: this._beginOnboarding,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -522,6 +528,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
+				onBeginOnboarding: this._beginOnboarding,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,

@@ -29,7 +29,6 @@ import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from '../FollowingListDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
-import DownloadIosAppDialog from '../BrowserRoot/ProfileScreen/DownloadAppDialog';
 import PageSelector from '../controls/PageSelector';
 import InfoBox from '../../../../common/components/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
@@ -46,6 +45,7 @@ interface Props {
 	deviceType: DeviceType,
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
+	onBeginOnboarding: (analyticsAction: string) => void,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -92,35 +92,16 @@ export class ProfileScreen extends React.Component<Props, State> {
 		});
 		this.fetchPosts(pageNumber);
 	};
-	private readonly _copyAppReferrerTextToClipboard = () => {
-		this.props.onCopyAppReferrerTextToClipboard('ProfileScreenCreateAccount');
-	};
 	private readonly _followUser = (form: UserNameForm) => {
-		if (this.props.userAccount) {
-			return this.props
-				.onFollowUser(form)
-				.then(
-					() => {
-						if (form.userName === this.props.userName) {
-							this.setIsFollowed();
-						}
-					}
-				);
-		}
-		this.props.onOpenDialog(
-			<DownloadIosAppDialog
-				deviceType={this.props.deviceType}
-				onCopyAppReferrerTextToClipboard={
-					() => {
-						this.props.onCopyAppReferrerTextToClipboard('ProfileScreenFollow');
+		return this.props
+			.onFollowUser(form)
+			.then(
+				() => {
+					if (form.userName === this.props.userName) {
+						this.setIsFollowed();
 					}
 				}
-				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-				onClose={this.props.onCloseDialog}
-				title={`Get the app to follow ${this.props.userName}`}
-			/>
-		);
-		return Promise.resolve();
+			);
 	};
 	private readonly _openGetFollowersDialog = () => {
 		this.props.onOpenDialog(
@@ -388,8 +369,10 @@ export class ProfileScreen extends React.Component<Props, State> {
 									<h1>Join Readup to read with {this.props.profile.value.userName}.</h1>
 									<h3>
 										<GetStartedButton
+											analyticsAction="ProfileScreenCreateAccount"
 											deviceType={this.props.deviceType}
-											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onBeginOnboarding={this.props.onBeginOnboarding}
+											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</h3>
@@ -407,31 +390,33 @@ export class ProfileScreen extends React.Component<Props, State> {
 										<>
 											{this.props.profile.value.followeeCount ?
 												<ActionLink
-													className="following-count followees"
+													className="following-count"
 													onClick={this._showFollowees}
 													text={followeesText}
 												/> :
-												<span className="following-count followees">{followeesText}</span>}
+												<span className="following-count">{followeesText}</span>}
 											<StickyNote>
 												<strong>Invite your friends.</strong>
 												<span onClick={this._openGetFollowersDialog}>Get followers.</span>
 											</StickyNote>
 										</> :
-										<FollowButton
-											following={this.props.profile.value}
-											isBusy={this.state.isFollowingButtonBusy}
-											onFollow={this._followUser}
-											onUnfollow={this._unfollowUser}
-											size="large"
-										/>}
+										this.props.userAccount ?
+											<FollowButton
+												following={this.props.profile.value}
+												isBusy={this.state.isFollowingButtonBusy}
+												onFollow={this._followUser}
+												onUnfollow={this._unfollowUser}
+												size="large"
+											/> :
+											null}
 									{this.props.profile.value.followerCount ?
 										<ActionLink
 											badge={isOwnProfile && this.props.userAccount.followerAlertCount}
-											className="following-count followers"
+											className="following-count"
 											onClick={this._showFollowers}
 											text={followersText}
 										/> :
-										<span className="following-count followers">{followersText}</span>}
+										<span className="following-count">{followersText}</span>}
 								</div>
 								{this.state.posts.value.items.length ?
 									<>

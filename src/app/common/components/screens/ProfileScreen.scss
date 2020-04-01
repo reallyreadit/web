@@ -36,7 +36,6 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin-bottom: 20px;
 }
 .profile-screen_1u1j1e > .main > .content > .profile > .user-name > .name {
 	font-family: 'Museo Sans (700)';
@@ -49,16 +48,17 @@
 .profile-screen_1u1j1e > .main > .content > .profile > .following-count {
 	font-family: 'Museo Sans (500)';
 	font-size: 15pt;
+	margin-top: 20px;
 }
-.profile-screen_1u1j1e > .main > .content > .profile > .following-count.followees {
-	margin-bottom: 20px;
-}
-.profile-screen_1u1j1e > .main > .content > .profile > .following-count.followers {
+.profile-screen_1u1j1e > .main > .content > .profile > .sticky-note_zcw6jg {
 	margin-top: 20px;
 }
 .profile-screen_1u1j1e > .main > .content > .profile > .sticky-note_zcw6jg > span {
 	text-decoration: underline;
 	cursor: pointer;
+}
+.profile-screen_1u1j1e > .main > .content > .profile > .button_ovrlmi {
+	margin-top: 20px;
 }
 .profile-screen_1u1j1e > .main > .content > .article-list_o9uw1n,
 .profile-screen_1u1j1e > .main > .content > .page-selector_a8tbpb {

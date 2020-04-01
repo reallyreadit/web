@@ -13,7 +13,7 @@ import CommentForm from '../../../../common/models/social/CommentForm';
 import { DeviceType } from '../../../../common/DeviceType';
 
 function noop() { }
-interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'deviceType' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onPostComment'>> {
+interface Props extends Pick<CommentScreenProps, Exclude<keyof CommentScreenProps, 'article' | 'comments' | 'deviceType' | 'onBeginOnboarding' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onPostComment'>> {
 	articleSlug: string,
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 	onGetComments: FetchFunctionWithParams<{ slug: string }, CommentThread[]>,
@@ -100,6 +100,7 @@ class AppCommentsScreen extends React.Component<
 						...this.props,
 						...this.state,
 						deviceType: DeviceType.Ios,
+						onBeginOnboarding: noop,
 						onCopyAppReferrerTextToClipboard: noop,
 						onOpenNewPlatformNotificationRequestDialog: noop,
 						onPostComment: this._postComment

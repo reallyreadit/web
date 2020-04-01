@@ -44,6 +44,7 @@ export interface Props {
 	deviceType: DeviceType,
 	highlightedCommentId: string | null,
 	marketingVariant: number,
+	onBeginOnboarding: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
@@ -64,9 +65,6 @@ export interface Props {
 	user: UserAccount | null
 }
 export default class CommentsScreen extends React.PureComponent<Props> {
-	private readonly _copyAppReferrerTextToClipboard = () => {
-		this.props.onCopyAppReferrerTextToClipboard('CommentsScreen');
-	};
 	private readonly _noop = () => { };
 	public render() {
 		const marketingVariant = marketingVariants[this.props.marketingVariant];
@@ -88,8 +86,10 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
 										<GetStartedButton
+											analyticsAction="CommentsScreen"
 											deviceType={this.props.deviceType}
-											onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+											onBeginOnboarding={this.props.onBeginOnboarding}
+											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</div>

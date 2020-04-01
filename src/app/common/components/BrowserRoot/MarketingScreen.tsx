@@ -30,6 +30,7 @@ interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	deviceType: DeviceType,
 	marketingVariant: number,
+	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -54,12 +55,6 @@ export default class MarketingScreen extends React.Component<
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _copyAppReferrerTextToClipboardFromFooter = () => {
-		this.props.onCopyAppReferrerTextToClipboard('HomeScreenFooter');
-	};
-	private readonly _copyAppReferrerTextToClipboardFromHeader = () => {
-		this.props.onCopyAppReferrerTextToClipboard('HomeScreenHeader');
-	};
 	private readonly _beginClosingMenu = () => {
 		this.setState({ menuState: MenuState.Closing });
 	};
@@ -115,8 +110,10 @@ export default class MarketingScreen extends React.Component<
 						data-nosnippet
 					>
 						<GetStartedButton
+							analyticsAction="HomeScreenHeader"
 							deviceType={this.props.deviceType}
-							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromHeader}
+							onBeginOnboarding={this.props.onBeginOnboarding}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>
@@ -192,8 +189,10 @@ export default class MarketingScreen extends React.Component<
 						data-nosnippet
 					>
 						<GetStartedButton
+							analyticsAction="HomeScreenFooter"
 							deviceType={this.props.deviceType}
-							onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboardFromFooter}
+							onBeginOnboarding={this.props.onBeginOnboarding}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>

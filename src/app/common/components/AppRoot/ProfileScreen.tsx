@@ -12,7 +12,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'deviceType' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
+	deps: Pick<Deps, Exclude<keyof Deps, 'deviceType' | 'onBeginOnboarding' | 'onCopyAppReferrerTextToClipboard' | 'onOpenNewPlatformNotificationRequestDialog' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
 		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
 	}
@@ -88,6 +88,7 @@ export default function createScreenFactory<TScreenKey>(
 						...deps,
 						...pathParams,
 						deviceType: DeviceType.Ios,
+						onBeginOnboarding: noop,
 						onCopyAppReferrerTextToClipboard: noop,
 						onOpenNewPlatformNotificationRequestDialog: noop,
 						onReloadProfile: reloadProfile,
