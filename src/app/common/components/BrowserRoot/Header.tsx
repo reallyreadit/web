@@ -11,7 +11,6 @@ import { DeviceType } from '../../../../common/DeviceType';
 interface Props {
 	deviceType: DeviceType,
 	onOpenMenu: () => void,
-	onOpenCreateAccountDialog: (analyticsAction: string) => void,
 	onOpenSignInDialog: (analyticsAction: string) => void,
 	onViewHome: () => void,
 	onViewInbox: () => void,
@@ -22,25 +21,22 @@ export default class extends React.PureComponent<Props> {
 		e.preventDefault();
 		this.props.onViewHome();
 	};
-	private readonly _openCreateAccountDialog = () => {
-		this.props.onOpenCreateAccountDialog('Header');
-	};
 	private readonly _openSignInDialog = () => {
 		this.props.onOpenSignInDialog('Header');
 	};
 	public render() {
 		const
-			showAuthButtons = (
+			showLoginButton = (
 				!this.props.user &&
 				this.props.deviceType !== DeviceType.Android &&
 				this.props.deviceType !== DeviceType.Ios
 			),
-			showMenu = this.props.user;
+			showMenu = !!this.props.user;
 		return (
 			<header className={
 				classNames(
 					'header_cvm3v7',
-					{ 'menu': showAuthButtons || showMenu }
+					{ 'menu': showLoginButton || showMenu }
 				)
 			}>
 				<a
@@ -50,7 +46,7 @@ export default class extends React.PureComponent<Props> {
 				>
 					<img src="/images/logo.svg" alt="logo" />
 				</a>
-				{showAuthButtons || showMenu ?
+				{showLoginButton || showMenu ?
 					<div className="menu-container">
 						{showMenu ?
 							<>
@@ -65,18 +61,12 @@ export default class extends React.PureComponent<Props> {
 								/>
 							</> :
 							null}
-						{showAuthButtons ?
+						{showLoginButton ?
 							<>
 								<Button
-									text="Login"
+									text="Log In"
 									size="large"
 									onClick={this._openSignInDialog}
-								/>
-								<Button
-									text="Sign Up"
-									size="large"
-									intent="loud"
-									onClick={this._openCreateAccountDialog}
 								/>
 							</> :
 							null}
