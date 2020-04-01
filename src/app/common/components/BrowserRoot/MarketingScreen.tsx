@@ -22,7 +22,6 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
-import CountdownBanner from './CountdownBanner';
 import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
@@ -108,9 +107,6 @@ export default class MarketingScreen extends React.Component<
 		const marketingVariant = marketingVariants[this.props.marketingVariant];
 		return (
 			<div className="marketing-screen_n5a6wc">
-				<CountdownBanner
-					onGetUserCount={this.props.onGetUserCount}
-				/>
 				<Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>
