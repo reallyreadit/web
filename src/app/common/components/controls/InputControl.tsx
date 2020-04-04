@@ -10,7 +10,7 @@ export interface Props {
 	error?: string,
 	validate?: boolean,
 	showError?: boolean,
-	onChange?: (value: string, error: string) => void,
+	onChange?: (value: string, error?: string) => void,
 	autoFocus?: boolean,
 	required?: boolean,
 	minLength?: number,
