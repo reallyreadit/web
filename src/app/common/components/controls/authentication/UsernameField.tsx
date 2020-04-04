@@ -5,14 +5,14 @@ export default (props: {
 	autoFocus?: boolean,
 	error: string,
 	labelPosition?: LabelPosition,
-	onChange: (value: string, error: string) => void,
+	onChange: (value: string, error?: string) => void,
 	showError: boolean,
 	value: string
 }) => (
 		<InputField
 			autoFocus={props.autoFocus}
 			error={props.error}
-			label="User name"
+			label="Username"
 			labelPosition={props.labelPosition}
 			minLength={3}
 			maxLength={30}
