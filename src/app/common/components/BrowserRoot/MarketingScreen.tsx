@@ -21,7 +21,6 @@ import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerAp
 import AsyncTracker from '../../../../common/AsyncTracker';
 import ArticleList from '../controls/articles/ArticleList';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
-import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
 import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
@@ -117,13 +116,6 @@ export default class MarketingScreen extends React.Component<
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>
-				</Panel>
-				<Panel
-					className="how-it-works"
-					noGoogleSnippet
-				>
-					<h2>How Readup works</h2>
-					<TrackingAnimation autoPlay />
 				</Panel>
 				<Panel
 					className="aotd"
