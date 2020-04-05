@@ -14,7 +14,7 @@ interface Props {
 	iconLeft?: IconName,
 	iconRight?: IconName,
 	intent?: 'normal' | 'default' | 'loud' | 'warning' | 'success',
-	onClick?: () => void,
+	onClick?: (event: React.MouseEvent) => void,
 	onMouseEnter?: () => void,
 	onMouseLeave?: () => void,
 	showIndicator?: boolean,
@@ -40,7 +40,7 @@ export default class Button extends React.PureComponent<Props> {
 				this.props.state === 'selected'
 			)
 		) {
-			this.props.onClick();
+			this.props.onClick(event);
 		}
 	};
 	public render() {
