@@ -6,6 +6,7 @@ import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import { ExitReason as OnboardingExitReason } from '../common/components/BrowserRoot/OnboardingFlow';
 
 export default class extends BrowserApi {
 	private _title: string;
@@ -31,6 +32,9 @@ export default class extends BrowserApi {
 		return this._title;
 	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
+		throw new Error('Operation not supported in server environment');
+	}
+	public onboardingEnded(reason: OnboardingExitReason) {
 		throw new Error('Operation not supported in server environment');
 	}
 	public updateAvailable(version: SemanticVersion) {

@@ -1,0 +1,45 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/OnboardingFlow/TrackingAnimationStep
+	cssComponentId: tracking-animation-step_dkomcd
+*/
+
+.tracking-animation-step_dkomcd {
+	text-align: center;
+}
+.tracking-animation-step_dkomcd > .tracking-animation_s8r7bq {
+	margin-bottom: 15px;
+	background-color: white;
+}
+.tracking-animation-step_dkomcd > .controls {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	height: 50px;
+}
+.tracking-animation-step_dkomcd > .controls > .skip {
+	color: #999;
+	font-size: 11pt;
+}
+.tracking-animation-step_dkomcd > .controls > .continue {
+	animation: tracking-animation-step_dkomcd-fade-in 250ms forwards;
+}
+.tracking-animation-step_dkomcd > .controls > .skip.hidden {
+	animation: tracking-animation-step_dkomcd-fade-out 250ms forwards;
+}
+
+@keyframes tracking-animation-step_dkomcd-fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes tracking-animation-step_dkomcd-fade-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

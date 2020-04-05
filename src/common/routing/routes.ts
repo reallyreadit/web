@@ -12,26 +12,10 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	},
 	{
 		analyticsName: 'Home',
-		createUrl: () => '/?create-account',
-		dialogKey: DialogKey.CreateAccount,
-		pathRegExp: /^\/$/,
-		queryStringKeys: ['create-account'],
-		screenKey: ScreenKey.Home
-	},
-	{
-		analyticsName: 'Home',
 		createUrl: params => `/?reset-password&email=${params['email']}&token=${params['token']}`,
 		dialogKey: DialogKey.ResetPassword,
 		pathRegExp: /^\/$/,
 		queryStringKeys: ['reset-password', 'email', 'token'],
-		screenKey: ScreenKey.Home
-	},
-	{
-		analyticsName: 'Home',
-		createUrl: () => '/?sign-in',
-		dialogKey: DialogKey.SignIn,
-		pathRegExp: /^\/$/,
-		queryStringKeys: ['sign-in'],
 		screenKey: ScreenKey.Home
 	},
 	{
@@ -188,61 +172,45 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/terms$/,
 		screenKey: ScreenKey.PrivacyPolicy
 	},
-	...(function () {
-		const
-			pathRegExp = /^\/@([^/]+)(?:\/(comment|post)\/([^/]+))?$/,
-			mainRoute = {
-				analyticsName: 'Profile',
-				createUrl: (params: { [key: string]: string }) => {
-					let url = `/@${params['userName']}`;
-					if (
-						params['highlightedType'] &&
-						(
-							params['highlightedType'] === 'comment' ||
-							params['highlightedType'] === 'post'
-						) &&
-						params['highlightedId']
-					) {
-						url += `/${params['highlightedType']}/${params['highlightedId']}`;
-					}
-					return url;
-				},
-				getPathParams: (path: string) => {
-					const
-						[, userName, highlightedType, highlightedId] = path.match(pathRegExp),
-						params: {
-							userName: string,
-							highlightedType?: 'comment' | 'post',
-							highlightedId?: string
-						} = {
-							userName
-						};
-					if (highlightedType === 'comment' || highlightedType === 'post') {
-						params.highlightedType = highlightedType;
-					}
-					if (highlightedId) {
-						params.highlightedId = highlightedId;
-					}
-					return params;
-				},
-				pathRegExp,
-				screenKey: ScreenKey.Profile
-			};
-		return [
-			mainRoute,
-			{
-				...mainRoute,
-				createUrl: params => mainRoute.createUrl(params) + '?followers',
-				dialogKey: DialogKey.Followers,
-				queryStringKeys: ['followers']
+	(function () {
+		const pathRegExp = /^\/@([^/]+)(?:\/(comment|post)\/([^/]+))?$/;
+		return {
+			analyticsName: 'Profile',
+			createUrl: (params: { [key: string]: string }) => {
+				let url = `/@${params['userName']}`;
+				if (
+					params['highlightedType'] &&
+					(
+						params['highlightedType'] === 'comment' ||
+						params['highlightedType'] === 'post'
+					) &&
+					params['highlightedId']
+				) {
+					url += `/${params['highlightedType']}/${params['highlightedId']}`;
+				}
+				return url;
 			},
-			{
-				...mainRoute,
-				createUrl: params => mainRoute.createUrl(params) + '?followers&user=' + params['user'],
-				dialogKey: DialogKey.Followers,
-				queryStringKeys: ['followers', 'user']
-			}
-		] as Route<DialogKey, ScreenKey>[];
+			getPathParams: (path: string) => {
+				const
+					[, userName, highlightedType, highlightedId] = path.match(pathRegExp),
+					params: {
+						userName: string,
+						highlightedType?: 'comment' | 'post',
+						highlightedId?: string
+					} = {
+						userName
+					};
+				if (highlightedType === 'comment' || highlightedType === 'post') {
+					params.highlightedType = highlightedType;
+				}
+				if (highlightedId) {
+					params.highlightedId = highlightedId;
+				}
+				return params;
+			},
+			pathRegExp,
+			screenKey: ScreenKey.Profile
+		} as Route<DialogKey, ScreenKey>;
 	})(),
 	(function () {
 		const pathRegExp = /^\/read\/([^/]+)\/([^/]+)$/;

@@ -4,15 +4,13 @@ import EmailAddressField from './controls/authentication/EmailAddressField';
 import PasswordField from './controls/authentication/PasswordField';
 import { Intent } from '../../../common/components/Toaster';
 import SignInForm from '../../../common/models/userAccounts/SignInForm';
-import AuthServiceDialogFooter from './AuthServiceDialogFooter';
 
 interface Props {
 	analyticsAction: string,
 	authServiceToken?: string,
 	autoFocus?: boolean,
 	onOpenPasswordResetDialog: (authServiceToken?: string) => void,
-	onSignIn: (form: Form) => Promise<void>,
-	onSignInWithApple?: (analyticsAction: string) => void
+	onSignIn: (form: Form) => Promise<void>
 }
 export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string };
 export default class SignInDialog extends FormDialog<void, Props, Partial<State> & {
@@ -28,9 +26,6 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 	private readonly _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
 	private readonly _openPasswordResetDialog = () => {
 		this.props.onOpenPasswordResetDialog(this.props.authServiceToken);
-	};
-	private readonly _signInWithApple = () => {
-		this.props.onSignInWithApple(this.props.analyticsAction);
 	};
 	constructor(props: Props & FormDialogProps) {
 		super(
@@ -71,16 +66,6 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 				</div>
 			</>
 		);
-	}
-	protected renderFooter() {
-		if (this.props.onSignInWithApple) {
-			return (
-				<AuthServiceDialogFooter
-					onSignInWithApple={this._signInWithApple}
-				/>
-			);
-		}
-		return null;
 	}
 	protected getClientErrors() {
 		return [{

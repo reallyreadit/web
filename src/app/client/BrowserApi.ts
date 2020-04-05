@@ -6,6 +6,7 @@ import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import { ExitReason as OnboardingExitReason } from '../common/components/BrowserRoot/OnboardingFlow';
 
 export default class extends BrowserApi {
 	private readonly _channel: BroadcastChannel | null;
@@ -47,6 +48,9 @@ export default class extends BrowserApi {
 	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);
+	}
+	public onboardingEnded(reason: OnboardingExitReason) {
+		this.broadcastUpdate('onboardingEnded', reason);
 	}
 	public setTitle(title: string) {
 		window.document.title = title;

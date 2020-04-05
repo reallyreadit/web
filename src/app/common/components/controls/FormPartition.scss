@@ -1,0 +1,28 @@
+/*
+	componentPath: src/app/common/components/controls/FormPartition
+	cssComponentId: form-partition_69q83q
+*/
+
+.form-partition_69q83q {
+	display: flex;
+	height: 20px;
+	margin: 0 auto;
+	align-items: center;
+	text-transform: uppercase;
+	font-family: 'Museo Sans (900)';
+	font-size: 10pt;
+}
+.form-partition_69q83q::before,
+.form-partition_69q83q::after {
+	content: "";
+	flex: 1 1 auto;
+	display: block;
+	height: 1px;
+	background-color: #2A2326;
+}
+.form-partition_69q83q::before {
+	margin-right: 10px;
+}
+.form-partition_69q83q::after {
+	margin-left: 10px;
+}

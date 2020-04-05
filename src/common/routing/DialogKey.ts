@@ -1,8 +1,4 @@
 enum DialogKey {
-	CreateAccount,
-	CreateAuthServiceAccount,
-	Followers,
-	ResetPassword,
-	SignIn
+	ResetPassword
 }
 export default DialogKey;

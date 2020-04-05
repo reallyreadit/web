@@ -11,7 +11,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 interface Props {
 	deviceType: DeviceType,
 	onOpenMenu: () => void,
-	onOpenSignInDialog: (analyticsAction: string) => void,
+	onOpenSignInPrompt: (analyticsAction: string) => void,
 	onViewHome: () => void,
 	onViewInbox: () => void,
 	user: UserAccount | null
@@ -21,8 +21,8 @@ export default class extends React.PureComponent<Props> {
 		e.preventDefault();
 		this.props.onViewHome();
 	};
-	private readonly _openSignInDialog = () => {
-		this.props.onOpenSignInDialog('Header');
+	private readonly _openSignInPrompt = () => {
+		this.props.onOpenSignInPrompt('Header');
 	};
 	public render() {
 		const
@@ -66,7 +66,7 @@ export default class extends React.PureComponent<Props> {
 								<Button
 									text="Log In"
 									size="large"
-									onClick={this._openSignInDialog}
+									onClick={this._openSignInPrompt}
 								/>
 							</> :
 							null}

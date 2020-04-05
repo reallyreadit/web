@@ -5,7 +5,6 @@ import PasswordField from './controls/authentication/PasswordField';
 import UsernameField from './controls/authentication/UsernameField';
 import Captcha from '../../server/Captcha';
 import { Intent } from '../../../common/components/Toaster';
-import AuthServiceDialogFooter from './AuthServiceDialogFooter';
 import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
 	captcha: Captcha,
 	onCreateAccount: (form: Form) => Promise<void>,
 	onSignIn?: () => void,
-	onSignInWithApple?: (analyticsAction: string) => void,
 	title?: string
 }
 export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
@@ -32,9 +30,6 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 	private readonly _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
 	private readonly _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private readonly _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
-	private readonly _signInWithApple = () => {
-		this.props.onSignInWithApple(this.props.analyticsAction);
-	};
 	constructor(props: Props & FormDialogProps) {
 		super(
 			{
@@ -76,16 +71,6 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 					null}
 			</>
 		);
-	}
-	protected renderFooter() {
-		if (this.props.onSignInWithApple) {
-			return (
-				<AuthServiceDialogFooter
-					onSignInWithApple={this._signInWithApple}
-				/>
-			);
-		}
-		return null;
 	}
 	protected getClientErrors() {
 		return [{

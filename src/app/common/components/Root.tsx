@@ -40,9 +40,6 @@ import Post, { createCommentThread } from '../../../common/models/social/Post';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import Alert from '../../../common/models/notifications/Alert';
-import FollowingListDialog from './FollowingListDialog';
-import Fetchable from '../../../common/Fetchable';
-import Following from '../../../common/models/social/Following';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import CommentForm from '../../../common/models/social/CommentForm';
@@ -128,7 +125,7 @@ export default abstract class Root<
 				return result.rating;
 			});
 	};
-	protected readonly _readArticle: (article: UserArticle, ev: React.MouseEvent) => void;
+	protected readonly _readArticle: (article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) => void;
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
 		return (
 			article.dateStarred ?
@@ -211,23 +208,6 @@ export default abstract class Root<
 		}
 	});
 	protected _dialogCreatorMap: Partial<{ [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode }> = {
-		[DialogKey.Followers]: (location, sharedState) => (
-			<FollowingListDialog
-				clearFollowersAlerts
-				highlightedUser={parseQueryString(location.queryString)['user']}
-				onClearAlerts={this._clearAlerts}
-				onCloseDialog={this._dialog.closeDialog}
-				onCreateAbsoluteUrl={this._createAbsoluteUrl}
-				onFollowUser={this._followUser}
-				onGetFollowings={
-					(callback: (value: Fetchable<Following[]>) => void) => this.props.serverApi.getFollowers({ userName: sharedState.user.name }, callback)
-				}
-				onUnfollowUser={this._unfollowUser}
-				onViewProfile={this._viewProfile}
-				title="Followers"
-				userAccount={sharedState.user}
-			/>
-		),
 		[DialogKey.ResetPassword]: location => {
 			const kvps = parseQueryString(location.queryString);
 			return (
@@ -700,7 +680,7 @@ export default abstract class Root<
 	protected onUserUpdated(user: UserAccount) {
 		this.setState({ user });
 	}
-	protected abstract readArticle(article: UserArticle, ev: React.MouseEvent): void;
+	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
 	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string): void;

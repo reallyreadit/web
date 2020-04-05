@@ -801,8 +801,8 @@ export default class extends Root<
 			}
 		);
 	}
-	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
-		ev.preventDefault();
+	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
+		ev?.preventDefault();
 		this.props.appApi.readArticle(article);
 	}
 	protected reloadWindow() {

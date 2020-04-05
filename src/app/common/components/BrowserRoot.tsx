@@ -6,7 +6,6 @@ import Root, { Props as RootProps, State as RootState, SharedState as RootShared
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import DialogKey from '../../../common/routing/DialogKey';
 import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
@@ -32,14 +31,11 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
-import CreateAccountDialog from './CreateAccountDialog';
-import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
-import SignInDialog from './SignInDialog';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
-import { DeviceType } from '../../../common/DeviceType';
+import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
@@ -47,15 +43,18 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey, extensionVersionCookieKey } from '../../../common/cookies';
 import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
+import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep, ExitReason as OnboardingExitReason } from './BrowserRoot/OnboardingFlow';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
 	deviceType: DeviceType,
 	extensionApi: ExtensionApi
 }
+type OnboardingState = Pick<OnboardingProps, 'analyticsAction' | 'authServiceToken' | 'initialAuthenticationStep' | 'passwordResetEmail' | 'passwordResetToken'>;
 interface State extends RootState {
 	isExtensionInstalled: boolean,
 	menuState: MenuState,
+	onboarding: OnboardingState | null,
 	welcomeMessage: WelcomeMessage | null
 }
 type MenuState = 'opened' | 'closing' | 'closed';
@@ -113,23 +112,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onSubmitRequest={this.props.serverApi.logNewPlatformNotificationRequest}
 			/>
 		);
-	};
-	private readonly _openSignInDialog = (analyticsAction: string) => {
-		this._dialog.openDialog(
-			<SignInDialog
-				analyticsAction={analyticsAction}
-				onCloseDialog={this._dialog.closeDialog}
-				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
-				onShowToast={this._toaster.addToast}
-				onSignIn={this._signIn}
-				onSignInWithApple={this._signInWithApple}
-			/>
-		);
-	};
-
-	// events
-	private readonly _registerExtensionChangeEventHandler = (handler: (isInstalled: boolean) => void) => {
-		return this._eventManager.addListener('extensionInstallationStatusChanged', handler);
 	};
 
 	// menu
@@ -246,7 +228,26 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// user account
 	private readonly _beginOnboarding = (analyticsAction: string) => {
-
+		this.setState({
+			onboarding: {
+				analyticsAction,
+				initialAuthenticationStep: OnboardingStep.CreateAccount
+			}
+		});
+	};
+	private readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
+		this.setState({
+			onboarding: {
+				analyticsAction,
+				initialAuthenticationStep: OnboardingStep.SignIn
+			}
+		});
+	};
+	private readonly _endOnboarding = (reason: OnboardingExitReason) => {
+		this.setState({
+			onboarding: null
+		});
+		this.props.browserApi.onboardingEnded(reason);
 	};
 	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
 		this.props.serverApi
@@ -300,45 +301,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	constructor(props: Props) {
 		super('browser-root_6tjc3j', true, props);
-
-		// dialogs
-		this._dialogCreatorMap = {
-			...this._dialogCreatorMap,
-			[DialogKey.CreateAccount]: () => (
-				<CreateAccountDialog
-					analyticsAction="ExtensionBAIPopup"
-					captcha={this.props.captcha}
-					onCreateAccount={this._createAccount}
-					onCloseDialog={this._dialog.closeDialog}
-					onShowToast={this._toaster.addToast}
-					onSignIn={
-						() => {
-							this._openSignInDialog('ExtensionBAIPopup');
-						}
-					}
-					onSignInWithApple={this._signInWithApple}
-				/>
-			),
-			[DialogKey.CreateAuthServiceAccount]: (location) => (
-				<CreateAuthServiceAccountDialog
-					onCloseDialog={this._dialog.closeDialog}
-					onCreateAuthServiceAccount={this._createAuthServiceAccount}
-					onLinkExistingAccount={this._openLinkAuthServiceAccountDialog}
-					onShowToast={this._toaster.addToast}
-					token={parseQueryString(location.queryString)[authServiceTokenQueryStringKey]}
-				/>
-			),
-			[DialogKey.SignIn]: () => (
-				<SignInDialog
-					analyticsAction="ExtensionBAIPopup"
-					onCloseDialog={this._dialog.closeDialog}
-					onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
-					onShowToast={this._toaster.addToast}
-					onSignIn={this._signIn}
-					onSignInWithApple={this._signInWithApple}
-				/>
-			)
-		};
 
 		// screens
 		this._screenFactoryMap = {
@@ -532,8 +494,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onGetArticle: this.props.serverApi.getArticle,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				onRegisterExtensionChangeHandler: this._registerExtensionChangeEventHandler,
-				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
+				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
 			[ScreenKey.Settings]: createSettingsScreenFactory(
@@ -567,39 +528,40 @@ export default class extends Root<Props, State, SharedState, Events> {
 			queryStringParams = parseQueryString(props.initialLocation.queryString),
 			welcomeMessage = queryStringParams[messageQueryStringKey] as WelcomeMessage;
 		
+		// onboarding state
+		let onboardingState: OnboardingState;
+		if (authServiceTokenQueryStringKey in queryStringParams) {
+			onboardingState = {
+				authServiceToken: queryStringParams[authServiceTokenQueryStringKey]
+			};
+		} else if ('reset-password' in queryStringParams) {
+			onboardingState = {
+				passwordResetEmail: queryStringParams['email'],
+				passwordResetToken: queryStringParams['token']
+			};
+		} else if (extensionAuthQueryStringKey in queryStringParams) {
+			onboardingState = {
+				initialAuthenticationStep: OnboardingStep.CreateAccount
+			};
+		} else if (
+			extensionInstalledQueryStringKey in queryStringParams ||
+			(
+				props.initialUser &&
+				!props.extensionApi.isInstalled &&
+				isCompatibleBrowser(props.deviceType) &&
+				route.screenKey !== ScreenKey.EmailSubscriptions &&
+				route.screenKey !== ScreenKey.ExtensionRemoval
+			)
+		) {
+			onboardingState = { };
+		}
+
 		this.state = {
 			...this.state,
-			dialogs: (
-				authServiceTokenQueryStringKey in queryStringParams ?
-					[this._dialog.createDialog(
-						this._dialogCreatorMap[DialogKey.CreateAuthServiceAccount](
-							props.initialLocation,
-							this.getSharedState()
-						)
-					)] :
-					// temporary workaround for new onboarding flow
-					(
-						(
-							extensionInstalledQueryStringKey in queryStringParams ||
-							extensionAuthQueryStringKey in queryStringParams
-						) &&
-						!this.props.initialUser
-					) ?
-						[this._dialog.createDialog(
-							this._dialogCreatorMap[DialogKey.CreateAccount](
-								props.initialLocation,
-								this.getSharedState()
-							)
-						)] :
-						locationState.dialog && (
-							route.dialogKey !== DialogKey.Followers ||
-							props.initialUser
-						) ?
-							[this._dialog.createDialog(locationState.dialog)] :
-							[]
-			),
+			dialogs: [],
 			isExtensionInstalled: props.extensionApi.isInstalled,
 			menuState: 'closed',
+			onboarding: onboardingState,
 			screens: [locationState.screen],
 			welcomeMessage: (
 				welcomeMessage in welcomeMessages ?
@@ -632,6 +594,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
+			.addListener(
+				'onboardingEnded',
+				reason => {
+					if (reason !== OnboardingExitReason.Aborted && this.state.onboarding) {
+						this.setState({
+							onboarding: null
+						});
+					}
+				}
+			)
 			.addListener('updateAvailable', version => {
 				if (!this._isUpdateAvailable && version.compareTo(this.props.version) > 0) {
 					this.setUpdateAvailable();
@@ -867,6 +839,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 				method: 'replace'
 			});
 		}
+		// if we're signed in from another tab and onboarding is not null
+		// it means that some authentication step is displayed and should be cleared
+		if (eventSource === EventSource.Remote && this.state.onboarding) {
+			supplementaryState = {
+				...supplementaryState,
+				onboarding: null
+			};
+		}
 		return super.onUserSignedIn(user, eventType, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
@@ -896,9 +876,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onUserUpdated(user);
 	}
-	protected readArticle(article: UserArticle, ev: React.MouseEvent) {
+	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		if (!this.state.user || !this.props.extensionApi.isInstalled) {
-			ev.preventDefault();
+			ev?.preventDefault();
 			const [sourceSlug, articleSlug] = article.slug.split('_');
 			this.setScreenState({
 				key: ScreenKey.Read,
@@ -909,7 +889,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			Cookies.get(extensionVersionCookieKey) &&
 			!localStorage.getItem('extensionReminderAcknowledged')
 		) {
-			ev.preventDefault();
+			ev?.preventDefault();
 			this._dialog.openDialog(
 				<ExtensionReminderDialog
 					deviceType={this.props.deviceType}
@@ -924,6 +904,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					}
 				/>
 			);
+		} else if (!ev) {
+			location.href = article.url;
 		}
 	}
 	protected reloadWindow() {
@@ -952,7 +934,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					<Header
 						deviceType={this.props.deviceType}
 						onOpenMenu={this._openMenu}
-						onOpenSignInDialog={this._openSignInDialog}
+						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
 						onViewInbox={this._viewInbox}
 						user={this.state.user}
@@ -1020,6 +1002,29 @@ export default class extends Root<Props, State, SharedState, Events> {
 					dialogs={this.state.dialogs}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
 				/>
+				{this.state.onboarding ?
+					<OnboardingFlow
+						analyticsAction={this.state.onboarding.analyticsAction}
+						authServiceToken={this.state.onboarding.authServiceToken}
+						captcha={this.props.captcha}
+						deviceType={this.props.deviceType}
+						initialAuthenticationStep={this.state.onboarding.initialAuthenticationStep}
+						isExtensionInstalled={this.state.isExtensionInstalled}
+						onClose={this._endOnboarding}
+						onCopyTextToClipboard={this._clipboard.copyText}
+						onCreateAbsoluteUrl={this._createAbsoluteUrl}
+						onCreateAccount={this._createAccount}
+						onCreateAuthServiceAccount={this._createAuthServiceAccount}
+						onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+						onResetPassword={this._resetPassword}
+						onShare={this._handleShareRequest}
+						onSignIn={this._signIn}
+						onSignInWithApple={this._signInWithApple}
+						passwordResetEmail={this.state.onboarding.passwordResetEmail}
+						passwordResetToken={this.state.onboarding.passwordResetToken}
+						user={this.state.user}
+					/> :
+					null}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
@@ -1091,13 +1096,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			});
 		}
 		// clear extension installation redirect cookie
-		Cookies.remove(
-			extensionInstallationRedirectPathCookieKey,
-			{
-				domain: '.' + this.props.webServerEndpoint.host,
-				path: '/'
-			}
-		);
+		Cookies.remove(extensionInstallationRedirectPathCookieKey);
 		// send the initial pageview
 		this.props.analytics.sendPageview(this.state.screens[0]);
 	}

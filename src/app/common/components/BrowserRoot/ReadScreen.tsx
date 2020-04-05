@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
-import AsyncTracker from '../../../../common/AsyncTracker';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import RouteLocation from '../../../../common/routing/RouteLocation';
@@ -15,8 +14,9 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AdFreeAnimation from './AdFreeAnimation';
 import ScreenContainer from '../ScreenContainer';
-import { DeviceType } from '../../../../common/DeviceType';
+import { DeviceType, isMobileDevice, isCompatibleDevice } from '../../../../common/DeviceType';
 import GetStartedButton from './GetStartedButton';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -25,39 +25,21 @@ interface Props {
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onRegisterExtensionChangeHandler: (handler: (isInstalled: boolean) => void) => Function,
-	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
+	onReadArticle: (article: UserArticle) => void,
 	user: UserAccount | null
 }
 class ReadScreen extends React.PureComponent<Props> {
-	private readonly _asyncTracker = new AsyncTracker();
-	constructor(props: Props) {
-		super(props);
-		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterExtensionChangeHandler((isInstalled: boolean) => {
-				if (isInstalled && this.props.user) {
-					this.navigateToArticle();
-				}
-			}),
-			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
-				if (user && this.props.isExtensionInstalled) {
-					this.navigateToArticle();
-				}
-			})
-		);
-	}
-	private navigateToArticle() {
-		if (this.props.article.value) {
+	private readonly _readArticle = () => {
+		this.props.onReadArticle(this.props.article.value);
+	};
+	public componentDidMount() {
+		if (
+			this.props.user &&
+			this.props.isExtensionInstalled &&
+			localStorage.getItem('extensionReminderAcknowledged')
+		) {
 			window.location.href = this.props.article.value.url;
 		}
-	}
-	public componentDidMount() {
-		if (this.props.user && this.props.isExtensionInstalled) {
-			this.navigateToArticle();
-		}
-	}
-	public componentWillUnmount() {
-		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (
@@ -86,21 +68,34 @@ class ReadScreen extends React.PureComponent<Props> {
 							<div className="title">{this.props.article.value.title}</div>
 						</div>
 						<div className="spacer"></div>
-						<AdFreeAnimation />
+						<AdFreeAnimation
+							orientation={
+								isMobileDevice(this.props.deviceType) ?
+									'portrait' :
+									'landscape'
+							}
+						/>
 						<div className="spacer"></div>
 						<ul className="animation-caption">
 							<li>Leave the noise behind.</li>
 							<li>Read it on Readup.</li>
 						</ul>
 						<div className="spacer"></div>
-						<GetStartedButton
-							analyticsAction="ReadScreen"
-							deviceType={this.props.deviceType}
-							onBeginOnboarding={this.props.onBeginOnboarding}
-							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-						/>
-						{this.props.deviceType !== DeviceType.Ios && this.props.deviceType !== DeviceType.DesktopChrome ?
+						{!this.props.user || !this.props.isExtensionInstalled ?
+							<GetStartedButton
+								analyticsAction="ReadScreen"
+								deviceType={this.props.deviceType}
+								onBeginOnboarding={this.props.onBeginOnboarding}
+								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+								onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+							/> :
+							<Button
+								intent="loud"
+								onClick={this._readArticle}
+								size="large"
+								text="Read Article"
+							/>}
+						{!isCompatibleDevice(this.props.deviceType) ?
 							<div className="bypass">
 								<a href={this.props.article.value.url}>Continue to publisher's site</a>
 							</div> :
