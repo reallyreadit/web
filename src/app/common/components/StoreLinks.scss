@@ -1,0 +1,24 @@
+/*
+	componentPath: src/app/common/components/StoreLinks
+	cssComponentId: store-links_gbmsih
+*/
+
+.store-links_gbmsih {
+	text-align: center;
+}
+.store-links_gbmsih > .title {
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 10px;
+}
+.store-links_gbmsih > .images {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.store-links_gbmsih > .images > a + a {
+	margin-left: 10px;
+}
+.store-links_gbmsih > .images > a > img {
+	display: block;
+	height: 48px;
+}
