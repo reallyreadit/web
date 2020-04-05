@@ -1,12 +1,14 @@
 export enum DeviceType {
-	Unknown,
-	Ios,
-	Android,
-	DesktopChrome,
-	DesktopFirefox,
-	DesktopSafari,
-	DesktopEdge
+	Unknown = 'Unknown',
+	Ios = 'iOS',
+	Android = 'Android',
+	DesktopChrome = 'Chrome',
+	DesktopFirefox = 'Firefox',
+	DesktopSafari = 'Safari',
+	DesktopEdge = 'Edge'
 }
+type CompatibleBrowser = DeviceType.DesktopChrome | DeviceType.DesktopFirefox;
+type CompatibleDevice = CompatibleBrowser | DeviceType.Ios;
 export function getDeviceType(userAgent: string) {
 	// test for mobile os first since browsers don't matter there
 	if (/(iphone|ipad|ipod)/i.test(userAgent)) {
@@ -28,4 +30,31 @@ export function getDeviceType(userAgent: string) {
 		return DeviceType.DesktopSafari;
 	}
 	return DeviceType.Unknown;
+}
+export function getExtensionName(deviceType: CompatibleBrowser) {
+	switch (deviceType) {
+		case DeviceType.DesktopChrome:
+			return 'extension';
+		case DeviceType.DesktopFirefox:
+			return 'add-on';
+	}
+}
+export function getStoreUrl(deviceType: CompatibleDevice) {
+	switch (deviceType) {
+		case DeviceType.DesktopChrome:
+			return 'https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi';
+		case DeviceType.DesktopFirefox:
+			return 'https://addons.mozilla.org/en-US/firefox/addon/readup/';
+		case DeviceType.Ios:
+			return 'https://apps.apple.com/us/app/readup-app/id1441825432';
+	}
+}
+export function isCompatibleBrowser(deviceType: DeviceType): deviceType is CompatibleBrowser {
+	return deviceType === DeviceType.DesktopChrome || deviceType === DeviceType.DesktopFirefox;
+}
+export function isCompatibleDevice(deviceType: DeviceType): deviceType is CompatibleDevice {
+	return isCompatibleBrowser(deviceType) || deviceType === DeviceType.Ios;
+}
+export function isMobileDevice(deviceType: DeviceType) {
+	return deviceType === DeviceType.Android || deviceType === DeviceType.Ios;
 }
