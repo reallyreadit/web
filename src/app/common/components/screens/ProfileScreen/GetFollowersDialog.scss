@@ -3,6 +3,9 @@
 	cssComponentId: get-followers-dialog_woa1zs
 */
 
+.get-followers-dialog_woa1zs.dialog_1wfm87 > .children {
+	overflow-y: visible; /* hack to allow popover to overflow */
+}
 .get-followers-dialog_woa1zs > .children > .url {
 	margin-top: 10px;
 	text-align: center;
