@@ -1,7 +1,19 @@
 import * as React from 'react';
+import * as classNames from 'classnames';
 
-export default () => (
-	<div className="ad-free-animation_lv6n94">
+export default (
+	props: {
+		orientation?: 'landscape' | 'portrait'
+	}
+) => (
+	<div
+		className={
+			classNames(
+				'ad-free-animation_lv6n94',
+				props.orientation || 'portrait'
+			)
+		}
+	>
 		<div className="screen">
 			<div className="banner">
 				<div className="video"></div>

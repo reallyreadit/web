@@ -5,11 +5,17 @@
 
 .ad-free-animation_lv6n94 {
 	position: relative;
-	width: 6em;
-	height: 10em;
 	border: 1px solid #555;
 	border-radius: 0.5em;
 	background-color: #333;
+}
+.ad-free-animation_lv6n94.portrait {
+	width: 6em;
+	height: 10em;
+}
+.ad-free-animation_lv6n94.landscape {
+	width: 10em;
+	height: 6em;
 }
 .ad-free-animation_lv6n94 .screen {
 	position: absolute;
@@ -20,8 +26,11 @@
 	background-color: white;
 	overflow: hidden;
 }
-.ad-free-animation_lv6n94 article {
+.ad-free-animation_lv6n94.portrait article {
 	padding: 0.25em;
+}
+.ad-free-animation_lv6n94.landscape article {
+	padding: 0.25em 2em;
 }
 .ad-free-animation_lv6n94 h1 {
 	height: 0.25em;
