@@ -22,7 +22,7 @@ interface Props {
 	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
-	onViewProfile: () => void,
+	onViewProfile: (userName?: string) => void,
 	selectedScreen: Screen,
 	user: UserAccount
 }
@@ -34,6 +34,9 @@ export default class NavBar extends React.PureComponent<Props> {
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
+	};
+	private readonly _viewProfile = () => {
+		this.props.onViewProfile();
 	};
 	public render() {
 		return (
@@ -78,7 +81,7 @@ export default class NavBar extends React.PureComponent<Props> {
 						<Button
 							badge={this.props.user.followerAlertCount}
 							href={profileRoute.createUrl({ userName: this.props.user.name })}
-							onClick={this.props.onViewProfile}
+							onClick={this._viewProfile}
 							state={
 								(
 									this.props.selectedScreen.key === ScreenKey.Profile &&
