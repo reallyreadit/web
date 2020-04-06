@@ -22,24 +22,26 @@
 	border-radius: 3px;
 	padding: 10px;
 }
-.article-length-filter_2dglet > .menu > .controls > input {
+.article-length-filter_2dglet > .menu > .controls > .inputs {
+	background-image: linear-gradient(#999, #999);
+	background-size: 100% 2px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.article-length-filter_2dglet > .menu > .controls > .inputs > input {
 	display: block;
 	width: 188px;
 	box-sizing: border-box;
 	-webkit-appearance: none;
 	-moz-appearance: none;
+	appearance: none;
 	outline: none;
-	background-image: linear-gradient(#999, #999);
-	background-size: 100% 2px;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-color: transparent;
+	background: transparent;
 	pointer-events: none;
 }
-.article-length-filter_2dglet > .menu > .controls > input::-webkit-slider-thumb,
-.article-length-filter_2dglet > .menu > .controls > input::-moz-range-thumb {
+.article-length-filter_2dglet > .menu > .controls > .inputs > input::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	-moz-appearance: none;
+	appearance: none;
 	position: relative;
 	z-index: 1;
 	width: 20px;
@@ -49,7 +51,19 @@
 	border: 1px solid #999;
 	pointer-events: auto;
 }
-.article-length-filter_2dglet > .menu > .controls > input:first-child {
+.article-length-filter_2dglet > .menu > .controls > .inputs > input::-moz-range-thumb {
+	-moz-appearance: none;
+	appearance: none;
+	position: relative;
+	z-index: 1;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background-color: #e0e0e0;
+	border: 1px solid #999;
+	pointer-events: auto;
+}
+.article-length-filter_2dglet > .menu > .controls > .inputs > input:first-child {
 	position: absolute;
 }
 .article-length-filter_2dglet > .menu > .controls > .scale {

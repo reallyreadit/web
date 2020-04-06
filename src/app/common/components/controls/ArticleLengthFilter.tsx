@@ -78,20 +78,22 @@ export default class ArticleLengthFilter extends React.PureComponent<
 					className="article-length-filter_2dglet"
 					menuChildren={
 						<div className="controls">
-							<input
-								max={ceil}
-								min={floor}
-								onChange={this._changeMinLength}
-								type="range"
-								value={this.state.min}
-							/>
-							<input
-								max={ceil}
-								min={floor}
-								onChange={this._changeMaxLength}
-								type="range"
-								value={this.state.max}
-							/>
+							<div className="inputs">
+								<input
+									max={ceil}
+									min={floor}
+									onChange={this._changeMinLength}
+									type="range"
+									value={this.state.min}
+								/>
+								<input
+									max={ceil}
+									min={floor}
+									onChange={this._changeMaxLength}
+									type="range"
+									value={this.state.max}
+								/>
+							</div>
 							<div className="scale">
 								<span className="number">{floor}</span>
 								<span>minutes</span>
