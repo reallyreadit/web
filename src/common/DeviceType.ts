@@ -17,7 +17,11 @@ export function getDeviceType(userAgent: string) {
 	if (/(android)/i.test(userAgent)) {
 		return DeviceType.Android;
 	}
-	// test edge first since it also includes 'chrome' and 'safari'
+	// no other major browsers claim to be firefox
+	if (/(firefox)/i.test(userAgent)) {
+		return DeviceType.DesktopFirefox;
+	}
+	// test edge before chrome and safari since it also includes 'chrome' and 'safari'
 	if (/(edge)/i.test(userAgent)) {
 		return DeviceType.DesktopEdge;
 	}
