@@ -11,6 +11,7 @@ export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> &
 interface Props {
 	analyticsAction: string,
 	authServiceToken?: string,
+	onCreateAccount?: () => void,
 	onRequestPasswordReset: (authServiceToken?: string) => void,
 	onSignIn: (form: Form) => Promise<void>,
 	onSignInWithApple?: (analyticsAction: string) => void
@@ -186,6 +187,20 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 					}
 					text="Forgot your password?"
 				/>
+				{this.props.onCreateAccount ?
+					<>
+						<br />
+						<ActionLink
+							onClick={this.props.onCreateAccount}
+							state={
+								this.state.isSubmitting ?
+									'disabled' :
+									'normal'
+							}
+							text="Create an Account"
+						/>
+					</> :
+					null}
 			</div>
 		);
 	}

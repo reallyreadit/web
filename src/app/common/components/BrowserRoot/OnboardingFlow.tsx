@@ -85,6 +85,9 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			.onCreateAuthServiceAccount(form)
 			.then(this._handleAccountCreation);
 	};
+	private readonly _goToCreateAccountStep = () => {
+		this.goToStep(Step.CreateAccount);
+	};
 	private readonly _goToButtonTutorialStep = () => {
 		this.goToStep(Step.ButtonTutorial);
 	};
@@ -158,6 +161,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 		[Step.SignIn]: (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
+				onCreateAccount={this._goToCreateAccountStep}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onSignIn={this._signIn}
 				onSignInWithApple={this.props.onSignInWithApple}
