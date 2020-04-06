@@ -146,7 +146,7 @@ export default class MarketingScreen extends React.Component<
 					noGoogleSnippet
 				>
 					<h2>About</h2>
-					<p>Readup is a social reading platform - the best way to find, read, and share articles and stories online. It's powered by a global community of readers and free-thinkers <em>who vote with their attention</em>. No interference. No distractions.</p>
+					<p>Readup is a social reading platform - the best way to find, read, and share articles and stories online. It's powered by a global community of readers and free-thinkers who <em>vote with their attention</em>. Articles are ranked by number of completed reads, instead of likes or upvotes. And there are absolutely no ads or distractions anywhere.</p>
 					<p className="bios">
 						Readup was invented by two friends, <a href="https://billloundy.com">Bill</a> and <a href="https://jeffcamera.com">Jeff</a>. (We're in the&#32;
 						<Popover

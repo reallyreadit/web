@@ -4,8 +4,8 @@ export const variants: {
 		subtext: string
 	}
 } = {
-	7: {
-		headline: 'Social media powered by reading.',
-		subtext: 'The best way to find, read and share articles online.'
+	8: {
+		headline: 'Did you even read the article?',
+		subtext: 'Readup tracks your reading progress. In our community, you can’t comment on articles you haven’t really read.'
 	}
 };
