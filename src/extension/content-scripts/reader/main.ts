@@ -297,7 +297,6 @@ Promise
 			// set up the header user interface
 			header
 				.initialize({
-					animationDuration: transitionAnimationDuration / 2,
 					authors: metaParseResult.metadata.article.authors
 						.reduce<string[]>(
 							(authors, author) => {
@@ -406,7 +405,6 @@ Promise
 				)
 				.catch(
 					(error: string) => {
-						header.deinitialize();
 						showError(error);
 					}
 				);

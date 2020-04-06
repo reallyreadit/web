@@ -30,6 +30,10 @@
 	float: right;
 	font-size: 22pt;
 	margin-left: 5px;
+	opacity: 0;
+}
+.browser-header_pg57qm > .title > .star.loaded {
+	animation: browser-header_pg57qm-fade-in 250ms forwards;
 }
 .browser-header_pg57qm > .byline,
 .browser-header_pg57qm > .length {

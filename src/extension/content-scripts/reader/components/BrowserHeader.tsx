@@ -11,12 +11,10 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import AotdRank from '../../../../common/components/AotdRank';
 import AotdScore from '../../../../common/components/AotdScore';
 
-type ServerArticle = Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'firstPoster' | 'hotScore' | 'slug'>;
+type ServerArticle = Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'dateStarred' | 'firstPoster' | 'hotScore' | 'slug'>;
 export interface Props {
 	article: Fetchable<ServerArticle>,
 	authors: string[],
-	isStarred: boolean,
-	isStarring: boolean,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onSetStarred: (isStarred: boolean) => Promise<void>,
 	onToggleDebugMode: () => void,
@@ -60,14 +58,14 @@ export default class BroserHeader extends React.PureComponent<Props, State> {
 		}
 	};
 	private readonly _toggleStar = () => {
-		if (this.state.isStarring) {
+		if (!this.props.article.value || this.state.isStarring) {
 			return;
 		}
 		this.setState({
 			isStarring: true
 		});
 		this.props
-			.onSetStarred(!this.props.isStarred)
+			.onSetStarred(!this.props.article.value.dateStarred)
 			.then(
 				() => {
 					this.setState({
@@ -88,13 +86,14 @@ export default class BroserHeader extends React.PureComponent<Props, State> {
 	}
 	public render() {
 		let
-			article: Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'firstPoster' | 'hotScore'>,
+			article: Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'dateStarred' | 'firstPoster' | 'hotScore'>,
 			commentsLinkHref: string;
 		if (this.props.article.isLoading) {
 			article = {
 				aotdContenderRank: 0,
 				aotdTimestamp: null,
 				commentCount: 0,
+				dateStarred: null,
 				firstPoster: null,
 				hotScore: 0
 			};
@@ -133,10 +132,10 @@ export default class BroserHeader extends React.PureComponent<Props, State> {
 				</div>
 				<div className="title">
 					<Star
-						busy={this.props.isStarring || this.state.isStarring}
-						className="star"
+						busy={this.state.isStarring}
+						className={classNames('star', { 'loaded': !this.props.article.isLoading })}
 						onClick={this._toggleStar}
-						starred={this.props.isStarred}
+						starred={!!this.props.article.value?.dateStarred}
 					/>
 					{this.props.title}
 				</div>

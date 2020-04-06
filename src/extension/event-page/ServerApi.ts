@@ -246,10 +246,7 @@ export default class ServerApi {
 		return fetchJson<ArticleLookupResult>({
 			method: 'POST',
 			path: '/Extension/GetUserArticle',
-			data: {
-				...data,
-				star: true
-			},
+			data,
 			id: tabId
 		});
 	}
