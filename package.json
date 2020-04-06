@@ -4,9 +4,9 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.18.2",
+      "app": "1.19.0",
       "extension": {
-        "package": "3.0.4",
+        "package": "3.0.5",
         "content-parser": "1.0.15"
       },
       "native-client": {
