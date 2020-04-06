@@ -6,12 +6,18 @@
 .sign-in-step_ffly8u {
 	text-align: center;
 }
-.sign-in-step_ffly8u > .global-error {
-	margin-bottom: 15px;
-	color: darkred;
+.sign-in-step_ffly8u > h1 {
+	font-size: 20pt;
+	font-weight: normal;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 25px;
 }
 .sign-in-step_ffly8u > .form-field_8ey399 + .form-field_8ey399 {
 	margin-top: 15px;
+}
+.sign-in-step_ffly8u > .global-error {
+	margin-top: 15px;
+	color: darkred;
 }
 .sign-in-step_ffly8u > .button_ovrlmi {
 	margin-top: 20px;

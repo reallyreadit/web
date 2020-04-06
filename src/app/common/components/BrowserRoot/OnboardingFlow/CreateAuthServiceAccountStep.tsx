@@ -88,15 +88,10 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 		};
 	}
 	public render() {
-		let globalError: React.ReactNode;
+		let globalError: string;
 		switch (this.state.globalError) {
 			case GlobalError.AuthenticationExpired:
-				globalError = (
-					<>
-						Authentication expired.<br />
-						Please sign in again.
-					</>
-				);
+				globalError = 'Authentication expired. Please sign in again.';
 				break;
 			case GlobalError.DuplicateEmail:
 				globalError = 'Email address already in use.';
@@ -105,19 +100,12 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 				globalError = 'Invalid session id.';
 				break;
 			case GlobalError.Unknown:
-				globalError = (
-					<>
-						An unknown error occurred.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'An unknown error occurred. Please try again.';
 				break;
 		}
 		return (
 			<div className="create-auth-service-account-step_tnixn3">
-				{globalError ?
-					<div className="global-error">{globalError}</div> :
-					null}
+				<h1>Choose a Username</h1>
 				<UsernameField
 					autoFocus
 					error={this.state.nameError}
@@ -126,6 +114,9 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 					showError={this.state.showErrors}
 					value={this.state.name}
 				/>
+				{globalError ?
+					<div className="global-error">{globalError}</div> :
+					null}
 				<Button
 					align="center"
 					display="block"

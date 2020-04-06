@@ -96,34 +96,19 @@ export default class ResetPasswordStep extends React.PureComponent<Props, State>
 		};
 	}
 	public render() {
-		let globalError: React.ReactNode;
+		let globalError: string;
 		switch (this.state.globalError) {
 			case GlobalError.PasswordMismatch:
 				globalError = 'Passwords do not match.';
 				break;
 			case GlobalError.RequestNotFound:
-				globalError = (
-					<>
-						This password reset request is invalid.<br />
-						Please generate a new request.
-					</>
-				);
+				globalError = 'This password reset request is invalid. Please generate a new request.';
 				break;
 			case GlobalError.RequestExpired:
-				globalError = (
-					<>
-						This password reset request has expired.<br />
-						Please generate a new request.
-					</>
-				);
+				globalError = 'This password reset request has expired. Please generate a new request.';
 				break;
 			case GlobalError.Unknown:
-				globalError = (
-					<>
-						An unknown error occurred.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'An unknown error occurred. Please try again.';
 				break;
 		}
 		const passwordProps = {
@@ -135,9 +120,7 @@ export default class ResetPasswordStep extends React.PureComponent<Props, State>
 		};
 		return (
 			<div className="reset-password-step_oygm48">
-				{globalError ?
-					<div className="global-error">{globalError}</div> :
-					null}
+				<h1>Set Password</h1>
 				<InputField
 					{...passwordProps}
 					key="password1"
@@ -154,6 +137,9 @@ export default class ResetPasswordStep extends React.PureComponent<Props, State>
 					error={this.state.password2Error}
 					onChange={this._changePassword2}
 				/>
+				{globalError ?
+					<div className="global-error">{globalError}</div> :
+					null}
 				<Button
 					align="center"
 					display="block"

@@ -114,33 +114,25 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 		};
 	}
 	public render() {
-		let globalError: React.ReactNode;
+		let globalError: string;
 		switch (this.state.globalError) {
 			case GlobalError.AuthenticationExpired:
-				globalError = (
-					<>
-						Authentication expired.<br />
-						Please sign in again.
-					</>
-				);
+				globalError = 'Authentication expired. Please sign in again.';
 				break;
 			case GlobalError.InvalidSessionId:
 				globalError = 'Invalid session id.';
 				break;
 			case GlobalError.Unknown:
-				globalError = (
-					<>
-						An unknown error occurred.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'An unknown error occurred. Please try again.';
 				break;
 		}
 		return (
 			<div className="sign-in-step_ffly8u">
-				{globalError ?
-					<div className="global-error">{globalError}</div> :
-					null}
+				<h1>
+					{this.props.authServiceToken ?
+						'Link Existing Account' :
+						'Log In'}
+				</h1>
 				<EmailAddressField
 					autoFocus
 					error={this.state.emailError}
@@ -154,6 +146,9 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
+				{globalError ?
+					<div className="global-error">{globalError}</div> :
+					null}
 				<Button
 					align="center"
 					display="block"

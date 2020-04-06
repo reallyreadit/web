@@ -3,6 +3,7 @@ import EmailAddressField from '../../controls/authentication/EmailAddressField';
 import Button from '../../../../../common/components/Button';
 import PasswordResetRequestForm from '../../../../../common/models/userAccounts/PasswordResetRequestForm';
 import Captcha from '../../../Captcha';
+import * as classNames from 'classnames';
 
 interface Props {
 	authServiceToken?: string,
@@ -106,44 +107,36 @@ export default class RequestPasswordResetStep extends React.PureComponent<Props,
 		this.props.captcha.hideBadge();
 	}
 	public render() {
-		let globalError: React.ReactNode;
+		let globalError: string;
 		switch (this.state.globalError) {
 			case GlobalError.InvalidCaptcha:
-				globalError = (
-					<>
-						Invalid Captcha.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'Invalid Captcha. Please try again.';
 				break;
 			case GlobalError.LimitExceeded:
-				globalError = (
-					<>
-						Password reset rate limit exceeded.<br />
-						Please try again later.
-					</>
-				);
+				globalError = 'Password reset rate limit exceeded. Please try again later.';
 				break;
 			case GlobalError.Unknown:
-				globalError = (
-					<>
-						An unknown error occurred.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'An unknown error occurred. Please try again.';
 				break;
 		}
 		return (
-			<div className="request-password-reset-step_em0y1x">
+			<div
+				className={
+					classNames(
+						'request-password-reset-step_em0y1x',
+						{
+							'submitted': this.state.formState === FormState.Submitted
+						}
+					)
+				}
+			>
 				{this.state.formState === FormState.Submitted ?
 					<>
 						<h1>Password reset email sent.</h1>
 						<h2>Check your spam folder if you don't see it in your inbox.</h2>
 					</> :
 					<>
-						{globalError ?
-							<div className="global-error">{globalError}</div> :
-							null}
+						<h1>Request Password Reset</h1>
 						<EmailAddressField
 							autoFocus
 							error={this.state.emailError}
@@ -151,6 +144,9 @@ export default class RequestPasswordResetStep extends React.PureComponent<Props,
 							showError={this.state.showErrors}
 							value={this.state.email}
 						/>
+						{globalError ?
+							<div className="global-error">{globalError}</div> :
+							null}
 						<Button
 							align="center"
 							display="block"

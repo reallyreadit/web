@@ -130,30 +130,18 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 		this.props.captcha.hideBadge();
 	}
 	public render() {
-		let globalError: React.ReactNode;
+		let globalError: string;
 		switch (this.state.globalError) {
 			case GlobalError.InvalidCaptcha:
-				globalError = (
-					<>
-						Invalid captcha.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'Invalid captcha. Please try again.';
 				break;
 			case GlobalError.Unknown:
-				globalError = (
-					<>
-						An unknown error occurred.<br />
-						Please try again.
-					</>
-				);
+				globalError = 'An unknown error occurred. Please try again.';
 				break;
 		}
 		return (
 			<div className="create-account-step_3cn5rp">
-				{globalError ?
-					<div className="global-error">{globalError}</div> :
-					null}
+				<h1>Create Account</h1>
 				<UsernameField
 					autoFocus
 					error={this.state.nameError}
@@ -173,6 +161,9 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
+				{globalError ?
+					<div className="global-error">{globalError}</div> :
+					null}
 				<Button
 					align="center"
 					display="block"
