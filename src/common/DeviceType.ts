@@ -1,5 +1,5 @@
 export enum DeviceType {
-	Unknown = 'Unknown',
+	Unknown = 'Unknown Browser',
 	Ios = 'iOS',
 	Android = 'Android',
 	DesktopChrome = 'Chrome',
