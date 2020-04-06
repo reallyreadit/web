@@ -933,6 +933,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				 ) ?
 					<Header
 						deviceType={this.props.deviceType}
+						onBeginOnboarding={this._beginOnboarding}
 						onOpenMenu={this._openMenu}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}

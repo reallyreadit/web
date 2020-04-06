@@ -6,10 +6,11 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
-import { DeviceType } from '../../../../common/DeviceType';
+import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
 
 interface Props {
 	deviceType: DeviceType,
+	onBeginOnboarding: (analyticsAction: string) => void,
 	onOpenMenu: () => void,
 	onOpenSignInPrompt: (analyticsAction: string) => void,
 	onViewHome: () => void,
@@ -17,6 +18,9 @@ interface Props {
 	user: UserAccount | null
 }
 export default class extends React.PureComponent<Props> {
+	private readonly _beginOnboarding = () => {
+		this.props.onBeginOnboarding('Header');
+	};
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		e.preventDefault();
 		this.props.onViewHome();
@@ -26,17 +30,16 @@ export default class extends React.PureComponent<Props> {
 	};
 	public render() {
 		const
-			showLoginButton = (
+			showLoginButtons = (
 				!this.props.user &&
-				this.props.deviceType !== DeviceType.Android &&
-				this.props.deviceType !== DeviceType.Ios
+				!isMobileDevice(this.props.deviceType)
 			),
 			showMenu = !!this.props.user;
 		return (
 			<header className={
 				classNames(
 					'header_cvm3v7',
-					{ 'menu': showLoginButton || showMenu }
+					{ 'menu': showLoginButtons || showMenu }
 				)
 			}>
 				<a
@@ -46,7 +49,7 @@ export default class extends React.PureComponent<Props> {
 				>
 					<img src="/images/logo.svg" alt="logo" />
 				</a>
-				{showLoginButton || showMenu ?
+				{showLoginButtons || showMenu ?
 					<div className="menu-container">
 						{showMenu ?
 							<>
@@ -61,12 +64,18 @@ export default class extends React.PureComponent<Props> {
 								/>
 							</> :
 							null}
-						{showLoginButton ?
+						{showLoginButtons ?
 							<>
 								<Button
 									text="Log In"
 									size="large"
 									onClick={this._openSignInPrompt}
+								/>
+								<Button
+									intent="loud"
+									text="Get Started"
+									size="large"
+									onClick={this._beginOnboarding}
 								/>
 							</> :
 							null}
