@@ -6,6 +6,7 @@ export default (props: {
 	error: string,
 	labelPosition?: LabelPosition,
 	onChange: (value: string, error: string) => void,
+	onEnterKeyPressed?: () => void,
 	showError: boolean,
 	value: string
 }) => (
@@ -16,6 +17,7 @@ export default (props: {
 		labelPosition={props.labelPosition}
 		maxLength={256}
 		onChange={props.onChange}
+		onEnterKeyPressed={props.onEnterKeyPressed}
 		required
 		showError={props.showError}
 		type="email"

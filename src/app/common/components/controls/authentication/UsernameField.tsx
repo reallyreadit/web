@@ -6,6 +6,7 @@ export default (props: {
 	error: string,
 	labelPosition?: LabelPosition,
 	onChange: (value: string, error?: string) => void,
+	onEnterKeyPressed?: () => void,
 	showError: boolean,
 	value: string
 }) => (
@@ -17,6 +18,7 @@ export default (props: {
 			minLength={3}
 			maxLength={30}
 			onChange={props.onChange}
+			onEnterKeyPressed={props.onEnterKeyPressed}
 			required
 			showError={props.showError}
 			type="username"

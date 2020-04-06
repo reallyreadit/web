@@ -46,6 +46,9 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 		this.props.onRequestPasswordReset(this.props.authServiceToken);
 	};
 	private readonly _signIn = () => {
+		if (this.state.isSubmitting) {
+			return;
+		}
 		this.setState({
 			showErrors: true
 		});
@@ -137,12 +140,14 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 					autoFocus
 					error={this.state.emailError}
 					onChange={this._changeEmail}
+					onEnterKeyPressed={this._signIn}
 					showError={this.state.showErrors}
 					value={this.state.email}
 				/>
 				<PasswordField
 					error={this.state.passwordError}
 					onChange={this._changePassword}
+					onEnterKeyPressed={this._signIn}
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>

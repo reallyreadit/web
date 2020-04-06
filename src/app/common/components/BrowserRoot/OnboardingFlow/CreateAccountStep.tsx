@@ -52,6 +52,9 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 		});
 	};
 	private readonly _createAccount = () => {
+		if (this.state.isSubmitting) {
+			return;
+		}
 		this.setState({
 			showErrors: true
 		});
@@ -146,18 +149,21 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 					autoFocus
 					error={this.state.nameError}
 					onChange={this._changeName}
+					onEnterKeyPressed={this._createAccount}
 					showError={this.state.showErrors}
 					value={this.state.name}
 				/>
 				<EmailAddressField
 					error={this.state.emailError}
 					onChange={this._changeEmail}
+					onEnterKeyPressed={this._createAccount}
 					showError={this.state.showErrors}
 					value={this.state.email}
 				/>
 				<PasswordField
 					error={this.state.passwordError}
 					onChange={this._changePassword}
+					onEnterKeyPressed={this._createAccount}
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>

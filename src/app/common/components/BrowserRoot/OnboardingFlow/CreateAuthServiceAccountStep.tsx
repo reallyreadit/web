@@ -31,6 +31,9 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 		});
 	};
 	private readonly _createAccount = () => {
+		if (this.state.isSubmitting) {
+			return;
+		}
 		this.setState({
 			showErrors: true
 		});
@@ -111,6 +114,7 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 					error={this.state.nameError}
 					key="username"
 					onChange={this._changeName}
+					onEnterKeyPressed={this._createAccount}
 					showError={this.state.showErrors}
 					value={this.state.name}
 				/>

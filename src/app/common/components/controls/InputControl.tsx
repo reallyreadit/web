@@ -11,6 +11,7 @@ export interface Props {
 	validate?: boolean,
 	showError?: boolean,
 	onChange?: (value: string, error?: string) => void,
+	onEnterKeyPressed?: () => void,
 	autoFocus?: boolean,
 	required?: boolean,
 	minLength?: number,
@@ -46,6 +47,14 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 	private _handleChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		this.setState({ isEditing: true });
 		this.props.onChange(e.currentTarget.value, this._validate(e.currentTarget.value));
+	};
+	private readonly _handleKeyPress = (event: React.KeyboardEvent) => {
+		if (event.which === 13 && this.props.onEnterKeyPressed) {
+			this.setState({
+				isEditing: false
+			});
+			this.props.onEnterKeyPressed();
+		}
 	};
 	constructor(props: Props) {
 		super(props);
@@ -99,7 +108,7 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 			<div className="input-control_dua9vb">
 				{this.props.type === 'multiline' ?
 					<textarea {...controlProps}></textarea> :
-					<input {...{ ...controlProps, type: this.props.type }} />}
+					<input {...{ ...controlProps, type: this.props.type, onKeyPress: this._handleKeyPress }} />}
 				{inErrorState ?
 					<div className="error">{this.props.error}</div> :
 					null}

@@ -36,6 +36,9 @@ export default class ResetPasswordStep extends React.PureComponent<Props, State>
 		});
 	};
 	private readonly _resetPassword = () => {
+		if (this.state.isSubmitting) {
+			return;
+		}
 		this.setState({
 			showErrors: true
 		});
@@ -128,6 +131,7 @@ export default class ResetPasswordStep extends React.PureComponent<Props, State>
 					value={this.state.password1}
 					error={this.state.password1Error}
 					onChange={this._changePassword1}
+					onEnterKeyPressed={this._resetPassword}
 				/>
 				<InputField
 					{...passwordProps}
@@ -136,6 +140,7 @@ export default class ResetPasswordStep extends React.PureComponent<Props, State>
 					value={this.state.password2}
 					error={this.state.password2Error}
 					onChange={this._changePassword2}
+					onEnterKeyPressed={this._resetPassword}
 				/>
 				{globalError ?
 					<div className="global-error">{globalError}</div> :

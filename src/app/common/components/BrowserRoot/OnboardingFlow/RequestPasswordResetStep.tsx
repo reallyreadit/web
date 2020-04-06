@@ -35,6 +35,9 @@ export default class RequestPasswordResetStep extends React.PureComponent<Props,
 		});
 	};
 	private readonly _request = () => {
+		if (this.state.formState === FormState.Submitting) {
+			return;
+		}
 		this.setState({
 			showErrors: true
 		});
@@ -141,6 +144,7 @@ export default class RequestPasswordResetStep extends React.PureComponent<Props,
 							autoFocus
 							error={this.state.emailError}
 							onChange={this._changeEmail}
+							onEnterKeyPressed={this._request}
 							showError={this.state.showErrors}
 							value={this.state.email}
 						/>
