@@ -27,6 +27,7 @@
 	width: 188px;
 	box-sizing: border-box;
 	-webkit-appearance: none;
+	-moz-appearance: none;
 	outline: none;
 	background-image: linear-gradient(#999, #999);
 	background-size: 100% 2px;
@@ -35,8 +36,10 @@
 	background-color: transparent;
 	pointer-events: none;
 }
-.article-length-filter_2dglet > .menu > .controls > input::-webkit-slider-thumb {
+.article-length-filter_2dglet > .menu > .controls > input::-webkit-slider-thumb,
+.article-length-filter_2dglet > .menu > .controls > input::-moz-range-thumb {
 	-webkit-appearance: none;
+	-moz-appearance: none;
 	position: relative;
 	z-index: 1;
 	width: 20px;
