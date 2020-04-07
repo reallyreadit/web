@@ -20,7 +20,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
@@ -270,20 +270,20 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 	private readonly _signInWithApple = (action: string) => {
-		const url = new URL('https://appleid.apple.com/auth/authorize');
-		url.searchParams.set('client_id', 'com.readup.webapp');
-		url.searchParams.set('redirect_uri', 'https://api.readup.com/Auth/AppleWeb');
-		url.searchParams.set('response_type', 'code id_token');
-		url.searchParams.set('scope', 'email');
-		url.searchParams.set('response_mode', 'form_post');
-		url.searchParams.set(
-			'state',
-			JSON.stringify({
+		// can't use URLSearchParams here because apple requires spaces be
+		// encoded as %20 (which encodeURIComponent does) instead of +
+		const queryString = createQueryString({
+			'client_id': 'com.readup.webapp',
+			'redirect_uri': 'https://api.readup.com/Auth/AppleWeb',
+			'response_type': 'code id_token',
+			'scope': 'email',
+			'response_mode': 'form_post',
+			'state': JSON.stringify({
 				client: this.props.serverApi.getClientHeaderValue(),
 				...(this.getSignUpAnalyticsForm(action))
 			})
-		);
-		window.location.href = url.href;
+		});
+		window.location.href = 'https://appleid.apple.com/auth/authorize' + queryString;
 	};
 
 	// window
