@@ -132,7 +132,7 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 									checked={this.props.extension}
 									onChange={this._toggleExtension}
 								/>
-								<span>Chrome</span>
+								<span>Desktop</span>
 							</label>
 						</li>
 						<li>
