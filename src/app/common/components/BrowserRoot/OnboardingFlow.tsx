@@ -4,7 +4,6 @@ import CreateAccountStep, { Form as CreateAccountForm } from './OnboardingFlow/C
 import Captcha from '../../Captcha';
 import SignInStep, { Form as SignInForm } from './OnboardingFlow/SignInStep';
 import * as classNames from 'classnames';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
 import Icon from '../../../../common/components/Icon';
 import PasswordResetRequestForm from '../../../../common/models/userAccounts/PasswordResetRequestForm';
 import RequestPasswordResetStep from './OnboardingFlow/RequestPasswordResetStep';
@@ -17,6 +16,8 @@ import ExtensionInstalledStep from './OnboardingFlow/ExtensionInstalledStep';
 import ButtonTutorialStep from './OnboardingFlow/ButtonTutorialStep';
 import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
 import ShareStep from './OnboardingFlow/ShareStep';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
+import ShareData from '../../../../common/sharing/ShareData';
 
 export enum Step {
 	CreateAccount,
@@ -50,7 +51,7 @@ export interface Props {
 	onCreateAuthServiceAccount: (form: AuthServiceAccountForm) => Promise<void>,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
-	onShare: () => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onSignIn: (form: SignInForm) => Promise<void>,
 	onSignInWithApple: (analyticsAction: string) => void,
 	passwordResetEmail?: string,

@@ -10,7 +10,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import Rating from '../../../../common/models/Rating';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import CommentForm from '../../../../common/models/social/CommentForm';
@@ -59,7 +59,7 @@ export interface Props {
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null

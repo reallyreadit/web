@@ -3,7 +3,7 @@ import Post, { createCommentThread } from '../models/social/Post';
 import ArticleDetails from './ArticleDetails';
 import UserArticle from '../models/UserArticle';
 import ShareData from '../sharing/ShareData';
-import ShareChannel from '../sharing/ShareChannel';
+import ShareResponse from '../sharing/ShareResponse';
 import CommentDetails from './comments/CommentDetails';
 import UserAccount from '../models/UserAccount';
 import ContentBox from './ContentBox';
@@ -24,7 +24,7 @@ interface Props {
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

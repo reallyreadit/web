@@ -174,7 +174,9 @@ export default class extends Root<
 	// sharing
 	private readonly _handleShareRequest = (data: ShareData) => {
 		this.props.appApi.share(data);
-		return [] as ShareChannel[];
+		return {
+			channels: [] as ShareChannel[]
+		};
 	};
 	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
 		return this.props.appApi.share(data);

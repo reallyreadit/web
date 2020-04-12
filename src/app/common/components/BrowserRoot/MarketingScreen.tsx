@@ -8,7 +8,7 @@ import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
 import UserAccount from '../../../../common/models/UserAccount';
 import ShareData from '../../../../common/sharing/ShareData';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Rating from '../../../../common/models/Rating';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import CommunityReads from '../../../../common/models/CommunityReads';
@@ -39,7 +39,7 @@ interface Props {
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,

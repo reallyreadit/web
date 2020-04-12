@@ -59,11 +59,13 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 	}
 	public readonly createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
 	public readonly handleShareRequest = () => {
-		return [
-			ShareChannel.Clipboard,
-			ShareChannel.Email,
-			ShareChannel.Twitter
-		];
+		return {
+			channels: [
+				ShareChannel.Clipboard,
+				ShareChannel.Email,
+				ShareChannel.Twitter
+			]
+		};
 	};
 	public readonly navTo = (url: string) => {
 		const result = parseUrlForRoute(url);

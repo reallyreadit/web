@@ -2,7 +2,7 @@ import * as React from 'react';
 import UserAccount from '../../models/UserAccount';
 import UserArticle from '../../models/UserArticle';
 import CommentThread from '../../models/CommentThread';
-import ShareChannel from '../../sharing/ShareChannel';
+import ShareResponse from '../../sharing/ShareResponse';
 import ShareData from '../../sharing/ShareData';
 import CommentDetails from './CommentDetails';
 import ContentBox from '../ContentBox';
@@ -26,7 +26,7 @@ export default (props: {
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }) => {

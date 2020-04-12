@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { findRouteByKey } from '../../routing/Route';
 import routes from '../../routing/routes';
 import ScreenKey from '../../routing/ScreenKey';
-import ShareChannel from '../../sharing/ShareChannel';
+import ShareResponse from '../../sharing/ShareResponse';
 import ShareData from '../../sharing/ShareData';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
@@ -41,7 +41,7 @@ interface Props {
 	onPostComment?: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum?: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision?: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,

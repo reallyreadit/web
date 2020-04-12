@@ -11,7 +11,7 @@ import { Screen } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import { SharedState } from '../BrowserRoot';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
@@ -44,7 +44,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,

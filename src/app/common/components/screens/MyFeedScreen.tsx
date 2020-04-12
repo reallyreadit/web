@@ -6,7 +6,7 @@ import Post from '../../../../common/models/social/Post';
 import PageResult from '../../../../common/models/PageResult';
 import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import Rating from '../../../../common/models/Rating';
 import CommentThread from '../../../../common/models/CommentThread';
@@ -39,7 +39,7 @@ interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

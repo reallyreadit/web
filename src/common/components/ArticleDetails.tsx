@@ -8,7 +8,7 @@ import { findRouteByKey } from '../routing/Route';
 import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ShareData from '../sharing/ShareData';
-import ShareChannel from '../sharing/ShareChannel';
+import ShareResponse from '../sharing/ShareResponse';
 import { calculateEstimatedReadTime } from '../calculate';
 import getShareData from '../sharing/getShareData';
 import ContentBox from './ContentBox';
@@ -27,7 +27,7 @@ interface Props {
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

@@ -6,6 +6,7 @@ import ShareChannel from '../sharing/ShareChannel';
 import { truncateText } from '../format';
 import Popover, { MenuPosition, MenuState } from './Popover';
 import ShareForm from '../models/analytics/ShareForm';
+import ShareResponse from '../sharing/ShareResponse';
 
 export { MenuPosition } from './Popover';
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 	onComplete?: (form: ShareForm) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetData: () => ShareData,
-	onShare: (data: ShareData) => ShareChannel[]
+	onShare: (data: ShareData) => ShareResponse
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
@@ -23,10 +24,11 @@ export default class ShareControl extends React.PureComponent<
 		menuState: MenuState,
 		shareChannels: ShareChannel[]
 	}
-	> {
+> {
 	private readonly _beginClosingMenu = () => {
 		this.setState({ menuState: MenuState.Closing });
 	};
+	private _shareResponseCompletionHandler: (form: ShareForm) => void | null;
 	private readonly _copyLink = () => {
 		this.props.onCopyTextToClipboard(
 			this.props.onGetData().url,
@@ -42,6 +44,7 @@ export default class ShareControl extends React.PureComponent<
 			menuState: MenuState.Closed,
 			shareChannels: []
 		});
+		this._shareResponseCompletionHandler = null;
 	};
 	private readonly _handleEmailLinkClick = () => {
 		this.completeWithActivityType('Email');
@@ -49,13 +52,16 @@ export default class ShareControl extends React.PureComponent<
 	private readonly _openMenu = () => {
 		const
 			data = this.props.onGetData(),
-			shareChannels = this.props.onShare(data);
-		if (shareChannels.length) {
+			response = this.props.onShare(data);
+		if (response.channels.length) {
 			this.setState({
 				data,
 				menuState: MenuState.Opened,
-				shareChannels
+				shareChannels: response.channels
 			});
+			if (response.completionHandler) {
+				this._shareResponseCompletionHandler = response.completionHandler;
+			}
 		}
 	};
 	private readonly _openTweetComposer = () => {
@@ -81,14 +87,20 @@ export default class ShareControl extends React.PureComponent<
 		};
 	}
 	private completeWithActivityType(activityType: string) {
-		if (this.props.onComplete) {
-			this.props.onComplete({
+		if (this.props.onComplete || this._shareResponseCompletionHandler) {
+			const form: ShareForm = {
 				id: null,
 				action: this.state.data.action,
 				activityType,
 				completed: null,
 				error: null
-			});
+			};
+			if (this.props.onComplete) {
+				this.props.onComplete(form);
+			}
+			if (this._shareResponseCompletionHandler) {
+				this._shareResponseCompletionHandler(form);
+			}
 		}
 	}
 	public render() {

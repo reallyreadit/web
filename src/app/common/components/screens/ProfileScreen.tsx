@@ -13,7 +13,7 @@ import LeaderboardBadges from '../../../../common/components/LeaderboardBadges';
 import { formatCountable } from '../../../../common/format';
 import ArticleList from '../controls/articles/ArticleList';
 import UserArticle from '../../../../common/models/UserArticle';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { findRouteByKey } from '../../../../common/routing/Route';
@@ -67,7 +67,7 @@ interface Props {
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
 	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,

@@ -5,7 +5,7 @@ import Fetchable from '../../../../../common/Fetchable';
 import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
 import LoadingOverlay from '../LoadingOverlay';
-import ShareChannel from '../../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../../common/sharing/ShareData';
 import ArticleLengthFilter from '../ArticleLengthFilter';
 import Post from '../../../../../common/models/social/Post';
@@ -68,7 +68,7 @@ export default class extends React.PureComponent<{
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,

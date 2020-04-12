@@ -1,7 +1,7 @@
 import * as React from 'react';
 import LeaderboardBadge from '../models/LeaderboardBadge';
 import ShareData from '../sharing/ShareData';
-import ShareChannel from '../sharing/ShareChannel';
+import ShareResponse from '../sharing/ShareResponse';
 import LeaderboardBadges from './LeaderboardBadges';
 import { format } from 'timeago.js';
 import ShareControl, { MenuPosition } from './ShareControl';
@@ -17,7 +17,7 @@ export default (
 		onCopyTextToClipboard?: (text: string, successMessage: string) => void,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onGetShareData?: () => ShareData,
-		onShare?: (data: ShareData) => ShareChannel[],
+		onShare?: (data: ShareData) => ShareResponse,
 		onViewProfile: (userName: string) => void,
 		user?: UserAccount
 	}

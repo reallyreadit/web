@@ -3,7 +3,7 @@ import Dialog from '../../../../../common/components/Dialog';
 import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
 import Icon from '../../../../../common/components/Icon';
 import ShareData from '../../../../../common/sharing/ShareData';
-import ShareChannel from '../../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import { findRouteByKey } from '../../../../../common/routing/Route';
 import routes from '../../../../../common/routing/routes';
 import ScreenKey from '../../../../../common/routing/ScreenKey';
@@ -12,7 +12,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (userName: string) => string,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	userName: string
 }> {
 	private readonly _getShareData = () => {

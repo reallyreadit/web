@@ -3,7 +3,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ShareData from '../../../../common/sharing/ShareData';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
 import ScreenContainer from '../ScreenContainer';
@@ -47,7 +47,7 @@ interface Props {
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function,
 	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

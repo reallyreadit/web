@@ -99,7 +99,9 @@ export default class App extends React.Component<
 	// sharing
 	private readonly _handleShareRequest = (data: ShareData) => {
 		this.props.onShare(data);
-		return [] as ShareChannel[];
+		return {
+			channels: [] as ShareChannel[]
+		};
 	};
 
 	// toasts

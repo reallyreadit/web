@@ -3,7 +3,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ShareData from '../../../../common/sharing/ShareData';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -27,7 +27,7 @@ export interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

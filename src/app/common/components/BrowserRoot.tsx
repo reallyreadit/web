@@ -44,6 +44,7 @@ import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey, extensionVersionCookieKey } from '../../../common/cookies';
 import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
 import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep, ExitReason as OnboardingExitReason } from './BrowserRoot/OnboardingFlow';
+import ShareForm from '../../../common/models/analytics/ShareForm';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -219,11 +220,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// sharing
 	private readonly _handleShareRequest = () => {
-		return [
-			ShareChannel.Clipboard,
-			ShareChannel.Email,
-			ShareChannel.Twitter
-		];
+		return {
+			channels: [
+				ShareChannel.Clipboard,
+				ShareChannel.Email,
+				ShareChannel.Twitter
+			],
+			completionHandler: this._logShareCompletion
+		};
+	};
+	private readonly _logShareCompletion = (form: ShareForm) => {
+		this.props.serverApi.logShareAnalytics(form);
 	};
 
 	// user account

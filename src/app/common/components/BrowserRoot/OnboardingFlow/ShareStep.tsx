@@ -4,7 +4,7 @@ import Button from '../../../../../common/components/Button';
 import ActionLink from '../../../../../common/components/ActionLink';
 import * as classNames from 'classnames';
 import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
-import ShareChannel from '../../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../../common/sharing/ShareData';
 import UserAccount from '../../../../../common/models/UserAccount';
 import { findRouteByKey } from '../../../../../common/routing/Route';
@@ -15,7 +15,7 @@ interface Props {
 	onContinue: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onShare: (data: ShareData) => ShareChannel[],
+	onShare: (data: ShareData) => ShareResponse,
 	user: UserAccount
 }
 enum ControlState {

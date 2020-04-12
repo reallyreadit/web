@@ -18,7 +18,7 @@ import CommentRevisionForm from '../../../../common/models/social/CommentRevisio
 import ContentBox from '../../../../common/components/ContentBox';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import ShareData from '../../../../common/sharing/ShareData';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import ShareResponse from '../../../../common/sharing/ShareResponse';
 
 export interface Props {
 	article: UserArticle
@@ -32,7 +32,7 @@ export interface Props {
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (shareData: ShareData) => ShareChannel[],
+	onShare: (shareData: ShareData) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	toasterService: ToasterService,
 	user: UserAccount
