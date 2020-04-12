@@ -14,10 +14,10 @@ import UserAccountStats from '../../../common/models/UserAccountStats';
 import Leaderboards from '../../../common/models/Leaderboards';
 import Rating from '../../../common/models/Rating';
 import ClientType from '../ClientType';
-import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
+import DailyTotalsReportRow from '../../../common/models/analytics/DailyTotalsReportRow';
 import ReadingTimeTotalsTimeWindow from '../../../common/models/ReadingTimeTotalsTimeWindow';
 import ReadingTimeStats from '../../../common/models/ReadingTimeStats';
-import UserAccountCreation from '../../../common/models/UserAccountCreation';
+import SignupsReportRow from '../../../common/models/analytics/SignupsReportRow';
 import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
@@ -55,6 +55,8 @@ import TwitterCredentialAuthForm from '../../../common/models/auth/TwitterCreden
 import TwitterBrowserRequestForm from '../../../common/models/auth/TwitterBrowserRequestForm';
 import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
 import TwitterCredentialLinkForm from '../../../common/models/auth/TwitterCredentialLinkForm';
+import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
+import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -132,8 +134,9 @@ export default abstract class {
 	};
 
 	// Analytics
-	public readonly getKeyMetrics = this.createFetchFunctionWithParams<{ startDate: string, endDate: string }, KeyMetricsReportRow[]>('/Analytics/KeyMetrics');
-	public readonly getUserAccountCreations = this.createFetchFunctionWithParams<{ startDate: string, endDate: string }, UserAccountCreation[]>('/Analytics/UserAccountCreations');
+	public readonly getConversionAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>('/Analytics/Conversions');
+	public readonly getDailyTotalAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>('/Analytics/DailyTotals');
+	public readonly getSignupAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>('/Analytics/Signups');
 	public readonly logExtensionRemoval = (installationId: string) => this.post({ path: '/Extension/Uninstall', data: { installationId } });
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
 	public readonly logShareAnalytics = (data: ShareForm) => this.post({ path: '/Analytics/Share', data });

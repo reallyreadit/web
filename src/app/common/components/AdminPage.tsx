@@ -10,17 +10,20 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import { Screen, SharedState } from './Root';
 import ScreenContainer from './ScreenContainer';
 import { FetchFunctionWithParams } from '../serverApi/ServerApi';
-import KeyMetricsReportRow from '../../../common/models/KeyMetricsReportRow';
+import DailyTotalsReportRow from '../../../common/models/analytics/DailyTotalsReportRow';
 import { DateTime } from 'luxon';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import UserAccountCreation from '../../../common/models/UserAccountCreation';
+import SignupsReportRow from '../../../common/models/analytics/SignupsReportRow';
+import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
+import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
 
 interface Props {
 	onCloseDialog: () => void,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
-	onGetKeyMetrics: FetchFunctionWithParams<{ startDate: string, endDate: string }, KeyMetricsReportRow[]>,
-	onGetUserAccountCreations: FetchFunctionWithParams<{ startDate: string, endDate: string }, UserAccountCreation[]>,
+	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
+	onGetDailyTotals: FetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>,
+	onGetSignups: FetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>,
 	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
@@ -31,15 +34,20 @@ interface Props {
 class AdminPage extends React.Component<
 	Props,
 	{
-		keyMetrics: {
+		conversions: {
 			startDate: string,
 			endDate: string,
-			data: Fetchable<KeyMetricsReportRow[]>
+			data: Fetchable<ConversionsReportRow[]>
 		},
-		userAccountCreations: {
+		dailyTotals: {
 			startDate: string,
 			endDate: string,
-			data: Fetchable<UserAccountCreation[]>
+			data: Fetchable<DailyTotalsReportRow[]>
+		},
+		signups: {
+			startDate: string,
+			endDate: string,
+			data: Fetchable<SignupsReportRow[]>
 		},
 		userStats: Fetchable<UserAccountStats>,
 		mailings: Fetchable<BulkMailing[]>
@@ -65,51 +73,75 @@ class AdminPage extends React.Component<
 			/>
 		);
 	};
-	private readonly _setKeyMetricsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _setConversionsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			keyMetrics: {
-				...this.state.keyMetrics,
+			conversions: {
+				...this.state.conversions,
 				startDate: event.target.value
 			}
 		});
 	};
-	private readonly _setKeyMetricsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _setConversionsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			keyMetrics: {
-				...this.state.keyMetrics,
+			conversions: {
+				...this.state.conversions,
 				endDate: event.target.value
 			}
 		});
 	};
-	private readonly _setUserAccountCreationsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _setDailyTotalsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			userAccountCreations: {
-				...this.state.userAccountCreations,
+			dailyTotals: {
+				...this.state.dailyTotals,
 				startDate: event.target.value
 			}
 		});
 	};
-	private readonly _setUserAccountCreationsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _setDailyTotalsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			userAccountCreations: {
-				...this.state.userAccountCreations,
+			dailyTotals: {
+				...this.state.dailyTotals,
 				endDate: event.target.value
 			}
 		});
 	};
-	private readonly _fetchKeyMetrics = () => {
+	private readonly _setSignupsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			keyMetrics: {
-				...this.state.keyMetrics,
-				data: this.fetchKeyMetrics(this.state.keyMetrics.startDate, this.state.keyMetrics.endDate)
+			signups: {
+				...this.state.signups,
+				startDate: event.target.value
 			}
 		});
 	};
-	private readonly _fetchUserAccountCreations = () => {
+	private readonly _setSignupsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			userAccountCreations: {
-				...this.state.userAccountCreations,
-				data: this.fetchUserAccountCreations(this.state.userAccountCreations.startDate, this.state.userAccountCreations.endDate)
+			signups: {
+				...this.state.signups,
+				endDate: event.target.value
+			}
+		});
+	};
+	private readonly _fetchConversions = () => {
+		this.setState({
+			conversions: {
+				...this.state.conversions,
+				data: this.fetchConversions(this.state.conversions.startDate, this.state.conversions.endDate)
+			}
+		});
+	};
+	private readonly _fetchDailyTotals = () => {
+		this.setState({
+			dailyTotals: {
+				...this.state.dailyTotals,
+				data: this.fetchDailyTotals(this.state.dailyTotals.startDate, this.state.dailyTotals.endDate)
+			}
+		});
+	};
+	private readonly _fetchSignups = () => {
+		this.setState({
+			signups: {
+				...this.state.signups,
+				data: this.fetchSignups(this.state.signups.startDate, this.state.signups.endDate)
 			}
 		});
 	};
@@ -117,35 +149,55 @@ class AdminPage extends React.Component<
 		super(props);
 		const
 			localNow = DateTime.local(),
-			utcNowDate = DateTime
+			localNowDate = DateTime
 				.fromObject({
 					year: localNow.year,
 					month: localNow.month,
 					day: localNow.day,
 					zone: 'utc'
-				})
-				.minus({ minutes: localNow.offset }),
-			startDate = utcNowDate
-				.minus({ days: 30 })
+				}),
+			dailyTotalsStartDate = localNowDate
+				.minus({ days: 14 })
 				.toISO()
 				.replace(/Z$/, ''),
-			keyMetricsEndDate = utcNowDate
+			dailyTotalsEndDate = localNowDate
 				.toISO()
 				.replace(/Z$/, ''),
-			userAccountCreationsEndDate = utcNowDate
+			signupsStartDate = localNowDate
+				.minus({ days: 14 })
+				.toISO()
+				.replace(/Z$/, ''),
+			signupsEndDate = localNowDate
 				.plus({ days: 1 })
+				.toISO()
+				.replace(/Z$/, ''),
+			conversionsStartDate = localNowDate
+				.minus({
+					days: (localNowDate.weekday % 7) + (7 * 11)
+				})
+				.toISO()
+				.replace(/Z$/, ''),
+			conversionsEndDate = localNowDate
+				.minus({
+					days: localNowDate.weekday % 7
+				})
 				.toISO()
 				.replace(/Z$/, '');
 		this.state = {
-			keyMetrics: {
-				startDate,
-				endDate: keyMetricsEndDate,
-				data: this.fetchKeyMetrics(startDate, keyMetricsEndDate)
+			conversions: {
+				startDate: conversionsStartDate,
+				endDate: conversionsEndDate,
+				data: this.fetchConversions(conversionsStartDate, conversionsEndDate)
 			},
-			userAccountCreations: {
-				startDate,
-				endDate: userAccountCreationsEndDate,
-				data: this.fetchUserAccountCreations(startDate, userAccountCreationsEndDate)
+			dailyTotals: {
+				startDate: dailyTotalsStartDate,
+				endDate: dailyTotalsEndDate,
+				data: this.fetchDailyTotals(dailyTotalsStartDate, dailyTotalsEndDate)
+			},
+			signups: {
+				startDate: signupsStartDate,
+				endDate: signupsEndDate,
+				data: this.fetchSignups(signupsStartDate, signupsEndDate)
 			},
 			userStats: props.onGetUserStats(
 				this._asyncTracker.addCallback(userStats => { this.setState({ userStats }); })
@@ -155,22 +207,65 @@ class AdminPage extends React.Component<
 			)
 		};
 	}
-	private fetchKeyMetrics(startDate: string, endDate: string) {
-		return this.props.onGetKeyMetrics(
+	private fetchConversions(startDate: string, endDate: string) {
+		return this.props.onGetConversions(
 			{ startDate, endDate },
-			this._asyncTracker.addCallback(keyMetrics => { this.setState({ keyMetrics: { ...this.state.keyMetrics, data: keyMetrics } }); })
+			this._asyncTracker.addCallback(rows => { this.setState({ conversions: { ...this.state.conversions, data: rows } }); })
 		);
 	}
-	private fetchUserAccountCreations(startDate: string, endDate: string) {
-		return this.props.onGetUserAccountCreations(
+	private fetchDailyTotals(startDate: string, endDate: string) {
+		return this.props.onGetDailyTotals(
 			{ startDate, endDate },
-			this._asyncTracker.addCallback(userAccountCreations => { this.setState({ userAccountCreations: { ...this.state.userAccountCreations, data: userAccountCreations } }); })
+			this._asyncTracker.addCallback(rows => { this.setState({ dailyTotals: { ...this.state.dailyTotals, data: rows } }); })
+		);
+	}
+	private fetchSignups(startDate: string, endDate: string) {
+		return this.props.onGetSignups(
+			{ startDate, endDate },
+			this._asyncTracker.addCallback(rows => { this.setState({ signups: { ...this.state.signups, data: rows } }); })
 		);
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		// only show daily totals 'unknown' columns if present
+		let
+			hasUnknownDailyTotalSignups = false,
+			hasUnknownDailyTotalReads = false,
+			hasUnknownDailyTotalPosts = false,
+			hasUnknownDailyTotalReplies = false,
+			dailyTotalColumnCount = 13;
+		if (this.state.dailyTotals.data.value) {
+			if (
+				hasUnknownDailyTotalSignups = this.state.dailyTotals.data.value.some(
+					day => day.signupUnknownCount
+				)
+			) {
+				dailyTotalColumnCount++;
+			}
+			if (
+				hasUnknownDailyTotalReads = this.state.dailyTotals.data.value.some(
+					day => day.readUnknownCount
+				)
+			) {
+				dailyTotalColumnCount++;
+			}
+			if (
+				hasUnknownDailyTotalPosts = this.state.dailyTotals.data.value.some(
+					day => day.postUnknownCount
+				)
+			) {
+				dailyTotalColumnCount++;
+			}
+			if (
+				hasUnknownDailyTotalReplies = this.state.dailyTotals.data.value.some(
+					day => day.replyUnknownCount
+				)
+			) {
+				dailyTotalColumnCount++;
+			}
+		}
 		return (
 			<ScreenContainer>
 				<div className="admin-page_czkowo">
@@ -204,88 +299,116 @@ class AdminPage extends React.Component<
 					<table>
 						<caption>
 							<div className="content">
-								<strong>Key Metrics</strong>
+								<strong>Daily Totals</strong>
 								<div>
 									<input
 										type="text"
-										value={this.state.keyMetrics.startDate}
-										onChange={this._setKeyMetricsStartDate}
+										value={this.state.dailyTotals.startDate}
+										onChange={this._setDailyTotalsStartDate}
 									/>
 									<input
 										type="text"
-										value={this.state.keyMetrics.endDate}
-										onChange={this._setKeyMetricsEndDate}
+										value={this.state.dailyTotals.endDate}
+										onChange={this._setDailyTotalsEndDate}
 									/>
-									<button onClick={this._fetchKeyMetrics}>Run Report</button>
+									<button onClick={this._fetchDailyTotals}>Run Report</button>
 								</div>
 							</div>
 						</caption>
 						<thead>
 							<tr>
 								<th></th>
-								<th colSpan={3}>Accounts Created</th>
-								<th colSpan={3}>Articles Read</th>
-								<th colSpan={3}>Comments Created</th>
+								<th colSpan={hasUnknownDailyTotalSignups ? 3 : 2}>Signups</th>
+								<th colSpan={hasUnknownDailyTotalReads ? 3 : 2}>Reads</th>
+								<th colSpan={hasUnknownDailyTotalPosts ? 3 : 2}>Posts</th>
+								<th colSpan={hasUnknownDailyTotalReplies ? 3 : 2}>Replies</th>
+								<th colSpan={2}>Post Tweets</th>
 								<th colSpan={2}>Extensions</th>
 							</tr>
 							<tr>
 								<th>Date</th>
 								<th>App</th>
 								<th>Browser</th>
-								<th>Unknown</th>
+								{hasUnknownDailyTotalSignups ?
+									<th>N/A</th> :
+									null}
 								<th>App</th>
 								<th>Browser</th>
-								<th>Unknown</th>
+								{hasUnknownDailyTotalReads ?
+									<th>N/A</th> :
+									null}
 								<th>App</th>
 								<th>Browser</th>
-								<th>Unknown</th>
+								{hasUnknownDailyTotalPosts ?
+									<th>N/A</th> :
+									null}
+								<th>App</th>
+								<th>Browser</th>
+								{hasUnknownDailyTotalReplies ?
+									<th>N/A</th> :
+									null}
+								<th>App</th>
+								<th>Browser</th>
 								<th>Installed</th>
 								<th>Uninstalled</th>
 							</tr>
 						</thead>
 						<tbody>
-							{!this.state.keyMetrics.data.isLoading ?
-								this.state.keyMetrics.data.value ?
-									this.state.keyMetrics.data.value.map(row => (
+							{!this.state.dailyTotals.data.isLoading ?
+								this.state.dailyTotals.data.value ?
+									this.state.dailyTotals.data.value.map(row => (
 										<tr key={row.day}>
 											<td>{row.day}</td>
-											<td>{row.userAccountAppCount}</td>
-											<td>{row.userAccountBrowserCount}</td>
-											<td>{row.userAccountUnknownCount}</td>
+											<td>{row.signupAppCount}</td>
+											<td>{row.signupBrowserCount}</td>
+											{hasUnknownDailyTotalSignups ?
+												<td>{row.signupUnknownCount}</td> :
+												null}
 											<td>{row.readAppCount}</td>
 											<td>{row.readBrowserCount}</td>
-											<td>{row.readUnknownCount}</td>
-											<td>{row.commentAppCount}</td>
-											<td>{row.commentBrowserCount}</td>
-											<td>{row.commentUnknownCount}</td>
+											{hasUnknownDailyTotalReads ?
+												<td>{row.readUnknownCount}</td> :
+												null}
+											<td>{row.postAppCount}</td>
+											<td>{row.postBrowserCount}</td>
+											{hasUnknownDailyTotalPosts ?
+												<td>{row.postUnknownCount}</td> :
+												null}
+											<td>{row.replyAppCount}</td>
+											<td>{row.replyBrowserCount}</td>
+											{hasUnknownDailyTotalReplies ?
+												<td>{row.replyUnknownCount}</td> :
+												null}
+											<td>{row.postTweetAppCount}</td>
+											<td>{row.postTweetBrowserCount}</td>
 											<td>{row.extensionInstallationCount}</td>
 											<td>{row.extensionRemovalCount}</td>
 										</tr>
 									)) :
 									<tr>
-										<td colSpan={12}>Error loading key metrics.</td>
+										<td colSpan={dailyTotalColumnCount}>Error loading daily totals.</td>
 									</tr> :
 								<tr>
-									<td colSpan={12}>Loading...</td>
+									<td colSpan={dailyTotalColumnCount}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>
 					<table>
 						<caption>
 							<div className="content">
-								<strong>User Account Creations</strong>
+								<strong>Signups</strong>
 								<div>
 									<input
 										type="text"
-										value={this.state.userAccountCreations.startDate}
-										onChange={this._setUserAccountCreationsStartDate}
+										value={this.state.signups.startDate}
+										onChange={this._setSignupsStartDate}
 									/>
 									<input
 										type="text"
-										value={this.state.userAccountCreations.endDate}
-										onChange={this._setUserAccountCreationsEndDate}
+										value={this.state.signups.endDate}
+										onChange={this._setSignupsEndDate}
 									/>
-									<button onClick={this._fetchUserAccountCreations}>Run Report</button>
+									<button onClick={this._fetchSignups}>Run Report</button>
 								</div>
 							</div>
 						</caption>
@@ -294,6 +417,7 @@ class AdminPage extends React.Component<
 								<th>Date Created</th>
 								<th>Id</th>
 								<th>Name</th>
+								<th>Email</th>
 								<th>Time Zone Name</th>
 								<th>Client Mode</th>
 								<th>Marketing Variant</th>
@@ -301,16 +425,21 @@ class AdminPage extends React.Component<
 								<th>Initial Path</th>
 								<th>Current Path</th>
 								<th>Action</th>
+								<th>Orientation Shares</th>
+								<th>Article Views</th>
+								<th>Article Reads</th>
+								<th>Post Tweets</th>
 							</tr>
 						</thead>
 						<tbody>
-							{!this.state.userAccountCreations.data.isLoading ?
-								this.state.userAccountCreations.data.value ?
-									this.state.userAccountCreations.data.value.map(row => (
+							{!this.state.signups.data.isLoading ?
+								this.state.signups.data.value ?
+									this.state.signups.data.value.map(row => (
 										<tr key={row.id}>
 											<td>{row.dateCreated}</td>
 											<td>{row.id}</td>
 											<td>{row.name}</td>
+											<td>{row.email}</td>
 											<td>{row.timeZoneName}</td>
 											<td>{row.clientMode}</td>
 											<td>{row.marketingVariant}</td>
@@ -318,13 +447,79 @@ class AdminPage extends React.Component<
 											<td>{row.initialPath}</td>
 											<td>{row.currentPath}</td>
 											<td>{row.action}</td>
+											<td>{row.orientationShareCount}</td>
+											<td>{row.articleViewCount}</td>
+											<td>{row.articleReadCount}</td>
+											<td>{row.postTweetCount}</td>
 										</tr>
 									)) :
 									<tr>
-										<td colSpan={8}>Error loading user account creations.</td>
+										<td colSpan={15}>Error loading signups.</td>
 									</tr> :
 								<tr>
-									<td colSpan={8}>Loading...</td>
+									<td colSpan={15}>Loading...</td>
+								</tr>}
+						</tbody>
+					</table>
+					<table>
+						<caption>
+							<div className="content">
+								<strong>Conversions</strong>
+								<div>
+									<input
+										type="text"
+										value={this.state.conversions.startDate}
+										onChange={this._setConversionsStartDate}
+									/>
+									<input
+										type="text"
+										value={this.state.conversions.endDate}
+										onChange={this._setConversionsEndDate}
+									/>
+									<button onClick={this._fetchConversions}>Run Report</button>
+								</div>
+							</div>
+						</caption>
+						<thead>
+							<tr>
+								<th>Week</th>
+								<th>Visits</th>
+								<th>Signups</th>
+								<th>Signup Conversion</th>
+								<th>Shares</th>
+								<th>Share Conversion</th>
+								<th>Article Views</th>
+								<th>Article View Conversion</th>
+								<th>Article Reads</th>
+								<th>Article Read Conversion</th>
+								<th>Post Tweets</th>
+								<th>Post Tweet Conversion</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!this.state.conversions.data.isLoading ?
+								this.state.conversions.data.value ?
+									this.state.conversions.data.value.map(row => (
+										<tr key={row.week}>
+											<td>{row.week}</td>
+											<td>{row.visitCount}</td>
+											<td>{row.signupCount}</td>
+											<td>{row.signupConversion.toFixed(2)}</td>
+											<td>{row.shareCount}</td>
+											<td>{row.shareConversion.toFixed(2)}</td>
+											<td>{row.articleViewCount}</td>
+											<td>{row.articleViewConversion.toFixed(2)}</td>
+											<td>{row.articleReadCount}</td>
+											<td>{row.articleReadConversion.toFixed(2)}</td>
+											<td>{row.postTweetCount}</td>
+											<td>{row.postTweetConversion.toFixed(2)}</td>
+										</tr>
+									)) :
+									<tr>
+										<td colSpan={12}>Error loading converions.</td>
+									</tr> :
+								<tr>
+									<td colSpan={12}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>
@@ -384,8 +579,9 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onCloseDialog={deps.onCloseDialog}
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}
-					onGetKeyMetrics={deps.onGetKeyMetrics}
-					onGetUserAccountCreations={deps.onGetUserAccountCreations}
+					onGetConversions={deps.onGetConversions}
+					onGetDailyTotals={deps.onGetDailyTotals}
+					onGetSignups={deps.onGetSignups}
 					onGetUserStats={deps.onGetUserStats}
 					onOpenDialog={deps.onOpenDialog}
 					onSendBulkMailing={deps.onSendBulkMailing}
