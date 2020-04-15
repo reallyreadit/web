@@ -7,10 +7,16 @@ import CreateAccountDialog, { Form as CreateAccountDialogForm } from '../CreateA
 import SignInDialog, { Form as SignInDialogForm } from '../SignInDialog';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import classNames from 'classnames';
-import { AppleIdAuthState } from '../AppRoot';
+import { AuthStatus, AuthStep } from '../AppRoot';
+import TwitterAuthButton from '../../../../common/components/TwitterAuthButton';
+import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 
+const authProviderNames = {
+	[AuthServiceProvider.Apple]: 'Apple ID',
+	[AuthServiceProvider.Twitter]: 'Twitter'
+};
 interface Props {
-	appleIdAuthState: AppleIdAuthState,
+	authStatus: AuthStatus,
 	captcha: Captcha,
 	onCloseDialog: () => void,
 	onCreateAccount: (form: CreateAccountDialogForm) => Promise<void>,
@@ -18,7 +24,8 @@ interface Props {
 	onOpenRequestPasswordResetDialog: () => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: SignInDialogForm) => Promise<void>,
-	onSignInWithApple: () => void
+	onSignInWithApple: () => void,
+	onSignInWithTwitter: () => Promise<{}>
 }
 export default class extends React.PureComponent<Props> {
 	private readonly _openCreateAccountDialog = () => {
@@ -55,17 +62,22 @@ export default class extends React.PureComponent<Props> {
 					/>
 					<div className={
 						classNames(
-							'apple-id-auth',
-							{ 'hidden': this.props.appleIdAuthState === AppleIdAuthState.None }
+							'status',
+							{
+								'hidden': !this.props.authStatus
+							}
 						)
 					}>
-						{this.props.appleIdAuthState === AppleIdAuthState.Authenticating ?
-							<>
-								<SpinnerIcon /> Signing in with Apple ID
-							</> :
-							'Error signing in with Apple ID'}
+						{this.props.authStatus ?
+							this.props.authStatus.step === AuthStep.Authenticating ?
+								<>
+									<SpinnerIcon /> Signing in with ${authProviderNames[this.props.authStatus.provider]}
+								</> :
+								`Error signing in with ${authProviderNames[this.props.authStatus.provider]}` :
+							null}
 					</div>
 					<AppleIdButton onClick={this.props.onSignInWithApple} />
+					<TwitterAuthButton onClick={this.props.onSignInWithTwitter} />
 					<div className="email-button" onClick={this._openCreateAccountDialog}>
 						<Icon name="at-sign" /> Sign in with Email
 					</div>

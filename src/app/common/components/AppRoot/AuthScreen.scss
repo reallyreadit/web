@@ -16,21 +16,25 @@
 	height: 60px;
 	margin: 0 auto;
 }
-.auth-screen_gnq77a > .content > .apple-id-auth {
+.auth-screen_gnq77a > .content > .status {
 	margin: 50px auto 50px auto;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-.auth-screen_gnq77a > .content > .apple-id-auth.hidden {
+.auth-screen_gnq77a > .content > .status.hidden {
 	visibility: hidden;
 }
-.auth-screen_gnq77a > .content > .apple-id-auth > .spinner-icon_6s5uk2 {
+.auth-screen_gnq77a > .content > .status > .spinner-icon_6s5uk2 {
 	margin-right: 5px;
 }
 .auth-screen_gnq77a > .content > .apple-id-button_mrmms4 {
 	width: 210px;
 	margin: 0 auto;
+}
+.auth-screen_gnq77a > .content > .twitter-auth-button_h10z4a {
+	width: 210px;
+	margin: 20px auto 0;
 }
 .auth-screen_gnq77a > .content > .email-button {
 	width: 210px;
@@ -45,6 +49,6 @@
 	align-items: center;
 }
 .auth-screen_gnq77a > .content > .email-button > .icon_rour3d {
-	font-size: 12pt;
-	margin-right: 5px;
+	font-size: 0.9em;
+	margin-right: 0.25em;
 }

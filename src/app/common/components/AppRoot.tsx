@@ -41,19 +41,23 @@ import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
+import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 
 interface Props extends RootProps {
 	appApi: AppApi,
 	appReferral: AppReferral
 }
-export enum AppleIdAuthState {
-	None,
+export enum AuthStep {
 	Authenticating,
 	Error
 }
+export interface AuthStatus {
+	provider: AuthServiceProvider,
+	step: AuthStep
+}
 type MenuState = 'opened' | 'closing' | 'closed';
 interface State extends RootState {
-	appleIdAuthState: AppleIdAuthState,
+	authStatus: AuthStatus | null,
 	isInOrientation: boolean,
 	isPoppingScreen: boolean,
 	menuState: MenuState,
@@ -183,6 +187,24 @@ export default class extends Root<
 	};
 	
 	// user account
+	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
+		if (response.authServiceToken) {
+			this._dialog.openDialog(
+				<CreateAuthServiceAccountDialog
+					onCloseDialog={this._dialog.closeDialog}
+					onCreateAuthServiceAccount={this._createAuthServiceAccount}
+					onLinkExistingAccount={this._openLinkAuthServiceAccountDialog}
+					onShowToast={this._toaster.addToast}
+					token={response.authServiceToken}
+				/>
+			);
+		} else {
+			this.onUserSignedIn(response.user, SignInEventType.ExistingUser);
+		}
+		this.setState({
+			authStatus: null
+		});
+	};
 	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
 		return this.props.appApi
 			.getDeviceInfo()
@@ -240,6 +262,82 @@ export default class extends Root<
 					}
 				}
 			);
+	};
+	private readonly _signInWithTwitter = () => {
+		return new Promise(
+			resolve => {
+				this.props.appApi
+					.getDeviceInfo()
+					.then(
+						deviceInfo => {
+							if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
+								this.openAppUpdateRequiredDialog('5.7');
+								throw new Error('Unsupported');
+							}
+						}
+					)
+					.then(this.props.serverApi.requestTwitterWebViewRequestToken)
+					.then(
+						token => {
+							this.setState(
+								{
+									authStatus: {
+										provider: AuthServiceProvider.Twitter,
+										step: AuthStep.Authenticating
+									}
+								},
+								resolve
+							);
+							const url = new URL('https://api.twitter.com/oauth/authorize');
+							url.searchParams.set('oauth_token', token.value);
+							return this.props.appApi.requestWebAuthentication({
+								authUrl: url.href,
+								callbackScheme: 'readup'
+							});
+						}
+					)
+					.then(
+						webAuthResponse => {
+							if (!webAuthResponse.callbackURL) {
+								if (webAuthResponse.error === 'Unsupported') {
+									this.openIosUpdateRequiredDialog('13');
+								}
+								throw (webAuthResponse.error ?? 'Unknown');
+							}
+							const url = new URL(webAuthResponse.callbackURL);
+							if (url.searchParams.has('denied')) {
+								throw 'Cancelled';
+							}
+							return this.props.serverApi
+								.authenticateTwitterCredential({
+									integrations: AuthServiceIntegration.Post,
+									oauthToken: url.searchParams.get('oauth_token'),
+									oauthVerifier: url.searchParams.get('oauth_verifier'),
+									analytics: this.getSignUpAnalyticsForm(null),
+									pushDevice: this.getPushDeviceForm()
+								})
+								.then(this._handleAuthServiceCredentialAuthResponse);
+						}
+					)
+					.catch(
+						error => {
+							let authStatus: AuthStatus | null;
+							if (error !== 'Unsupported' && error !== 'Cancelled') {
+								authStatus = {
+									provider: AuthServiceProvider.Twitter,
+									step: AuthStep.Error
+								};
+							}
+							this.setState(
+								{
+									authStatus
+								},
+								resolve
+							);
+						}
+					);
+			}
+		);
 	};
 
 	// window
@@ -459,7 +557,7 @@ export default class extends Root<
 					[this._dialog.createDialog(dialog)] :
 					[]
 			),
-			appleIdAuthState: AppleIdAuthState.None,
+			authStatus: null,
 			isInOrientation: false,
 			isPoppingScreen: false,
 			menuState: 'closed',
@@ -509,34 +607,27 @@ export default class extends Root<
 			.addListener(
 				'authenticateAppleIdCredential',
 				credential => {
-					this.setState({ appleIdAuthState: AppleIdAuthState.Authenticating });
+					this.setState({
+						authStatus: {
+							provider: AuthServiceProvider.Apple,
+							step: AuthStep.Authenticating
+						}
+					});
 					this.props.serverApi
 						.authenticateAppleIdCredential({
 							...credential,
 							analytics: this.getSignUpAnalyticsForm(null),
 							pushDevice: this.getPushDeviceForm()
 						})
-						.then(
-							res => {
-								if (res.authServiceToken) {
-									this._dialog.openDialog(
-										<CreateAuthServiceAccountDialog
-											onCloseDialog={this._dialog.closeDialog}
-											onCreateAuthServiceAccount={this._createAuthServiceAccount}
-											onLinkExistingAccount={this._openLinkAuthServiceAccountDialog}
-											onShowToast={this._toaster.addToast}
-											token={res.authServiceToken}
-										/>
-									);
-								} else {
-									this.onUserSignedIn(res.user, SignInEventType.ExistingUser);
-								}
-								this.setState({ appleIdAuthState: AppleIdAuthState.None });
-							}
-						)
+						.then(this._handleAuthServiceCredentialAuthResponse)
 						.catch(
 							() => {
-								this.setState({ appleIdAuthState: AppleIdAuthState.Error });
+								this.setState({
+									authStatus: {
+										provider: AuthServiceProvider.Apple,
+										step: AuthStep.Error
+									}	
+								});
 							}
 						);
 				}
@@ -880,7 +971,7 @@ export default class extends Root<
 							null}
 					</> :
 					<AuthScreen
-						appleIdAuthState={this.state.appleIdAuthState}
+						authStatus={this.state.authStatus}
 						captcha={this.props.captcha}
 						onCloseDialog={this._dialog.closeDialog}
 						onCreateAccount={this._createAccount}
@@ -889,6 +980,7 @@ export default class extends Root<
 						onShowToast={this._toaster.addToast}
 						onSignIn={this._signIn}
 						onSignInWithApple={this._signInWithApple}
+						onSignInWithTwitter={this._signInWithTwitter}
 					/>}
 				<DialogManager
 					dialogs={this.state.dialogs}
