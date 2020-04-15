@@ -54,6 +54,7 @@ export interface Props {
 	onShare: (data: ShareData) => ShareResponse,
 	onSignIn: (form: SignInForm) => Promise<void>,
 	onSignInWithApple: (analyticsAction: string) => void,
+	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>,
 	passwordResetEmail?: string,
 	passwordResetToken?: string,
 	user: UserAccount | null
@@ -157,6 +158,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 				onCreateAccount={this._createAccount}
 				onSignIn={this._goToSignInStep}
 				onSignInWithApple={this.props.onSignInWithApple}
+				onSignInWithTwitter={this.props.onSignInWithTwitter}
 			/>
 		),
 		[Step.SignIn]: (
@@ -166,6 +168,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onSignIn={this._signIn}
 				onSignInWithApple={this.props.onSignInWithApple}
+				onSignInWithTwitter={this.props.onSignInWithTwitter}
 			/>
 		),
 		[Step.CreateAuthServiceAccount]: (

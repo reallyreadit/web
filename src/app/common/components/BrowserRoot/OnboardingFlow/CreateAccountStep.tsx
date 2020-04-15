@@ -8,6 +8,7 @@ import AppleIdButton from '../../../../../common/components/AppleIdButton';
 import Button from '../../../../../common/components/Button';
 import ActionLink from '../../../../../common/components/ActionLink';
 import FormPartition from '../../controls/FormPartition';
+import TwitterAuthButton from '../../../../../common/components/TwitterAuthButton';
 
 export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 	onCreateAccount: (form: Form) => Promise<void>,
 	onSignIn: () => void,
 	onSignInWithApple: (analyticsAction: string) => void,
+	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>
 }
 enum GlobalError {
 	Unknown,
@@ -112,6 +114,9 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 	private readonly _signInWithApple = () => {
 		this.props.onSignInWithApple(this.props.analyticsAction);
 	};
+	private readonly _signInWithTwitter = () => {
+		return this.props.onSignInWithTwitter(this.props.analyticsAction);
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -185,6 +190,7 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 				/>
 				<FormPartition />
 				<AppleIdButton onClick={this._signInWithApple} />
+				<TwitterAuthButton onClick={this._signInWithTwitter} />
 				<ActionLink
 					onClick={this.props.onSignIn}
 					state={

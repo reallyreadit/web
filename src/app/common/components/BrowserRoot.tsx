@@ -292,6 +292,32 @@ export default class extends Root<Props, State, SharedState, Events> {
 		});
 		window.location.href = 'https://appleid.apple.com/auth/authorize' + queryString;
 	};
+	private readonly _signInWithTwitter = (action: string) => {
+		return new Promise(
+			resolve => {
+				this.props.serverApi
+					.requestTwitterBrowserRequestToken({
+						integrations: AuthServiceIntegration.Post,
+						redirectPath: window.location.pathname,
+						signUpAnalytics: this.getSignUpAnalyticsForm(action)
+					})
+					.then(
+						token => {
+							const url = new URL('https://api.twitter.com/oauth/authorize');
+							url.searchParams.set('oauth_token', token.value);
+							window.location.href = url.href;
+						}
+					)
+					.catch(
+						() => {
+							resolve();
+							this._toaster.addToast('Error requesting token.', Intent.Danger);
+						}
+					);
+				// leave the promise unresolved as the browser navigates
+			}
+		);
+	};
 
 	// window
 	private readonly _handleHistoryPopState = () => {
@@ -1028,6 +1054,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onShare={this._handleShareRequest}
 						onSignIn={this._signIn}
 						onSignInWithApple={this._signInWithApple}
+						onSignInWithTwitter={this._signInWithTwitter}
 						passwordResetEmail={this.state.onboarding.passwordResetEmail}
 						passwordResetToken={this.state.onboarding.passwordResetToken}
 						user={this.state.user}

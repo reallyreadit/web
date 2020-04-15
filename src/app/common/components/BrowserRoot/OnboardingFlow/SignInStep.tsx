@@ -6,6 +6,7 @@ import Button from '../../../../../common/components/Button';
 import ActionLink from '../../../../../common/components/ActionLink';
 import SignInForm from '../../../../../common/models/userAccounts/SignInForm';
 import FormPartition from '../../controls/FormPartition';
+import TwitterAuthButton from '../../../../../common/components/TwitterAuthButton';
 
 export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string };
 interface Props {
@@ -14,7 +15,8 @@ interface Props {
 	onCreateAccount?: () => void,
 	onRequestPasswordReset: (authServiceToken?: string) => void,
 	onSignIn: (form: Form) => Promise<void>,
-	onSignInWithApple?: (analyticsAction: string) => void
+	onSignInWithApple?: (analyticsAction: string) => void,
+	onSignInWithTwitter?: (analyticsAction: string) => Promise<{}>
 }
 enum GlobalError {
 	Unknown,
@@ -105,6 +107,9 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 	private readonly _signInWithApple = () => {
 		this.props.onSignInWithApple(this.props.analyticsAction);
 	};
+	private readonly _signInWithTwitter = () => {
+		return this.props.onSignInWithTwitter(this.props.analyticsAction);
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -172,11 +177,14 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 							'Log In'
 					}
 				/>
+				{this.props.onSignInWithApple || this.props.onSignInWithTwitter ?
+					<FormPartition /> :
+					null}
 				{this.props.onSignInWithApple ?
-					<>
-						<FormPartition />
-						<AppleIdButton onClick={this._signInWithApple} />
-					</> :
+					<AppleIdButton onClick={this._signInWithApple} /> :
+					null}
+				{this.props.onSignInWithTwitter ?
+					<TwitterAuthButton onClick={this._signInWithTwitter} /> :
 					null}
 				<ActionLink
 					onClick={this._requestPasswordReset}
