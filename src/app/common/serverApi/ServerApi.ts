@@ -49,7 +49,6 @@ import ShareForm from '../../../common/models/analytics/ShareForm';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import CommunityReadsQuery from '../../../common/models/articles/CommunityReadsQuery';
 import NewPlatformNotificationRequest from '../../../common/models/analytics/NewPlatformNotificationRequest';
-import AuthServiceIntegrationPreferenceForm from '../../../common/models/userAccounts/AuthServiceIntegrationPreferenceForm';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import TwitterCredentialAuthForm from '../../../common/models/auth/TwitterCredentialAuthForm';
 import TwitterBrowserRequestForm from '../../../common/models/auth/TwitterBrowserRequestForm';
@@ -187,7 +186,6 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// UserAccounts
-	public readonly changeAuthServiceIntegrationPreference = (data: AuthServiceIntegrationPreferenceForm) => this.post<AuthServiceAccountAssociation>({ path: '/UserAccounts/AuthServiceIntegrationPreference', data });
 	public readonly changeNotificationPreference = (data: NotificationPreference) => this.post<NotificationPreference>({ path: '/UserAccounts/NotificationPreference', data });
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });
 	public readonly createAuthServiceAccount = (data: AuthServiceAccountForm) => this.post<UserAccount>({ path: '/UserAccounts/AuthServiceAccount', data });

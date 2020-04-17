@@ -23,21 +23,17 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import SetPasswordDialog from './SettingsPage/SetPasswordDialog';
 import { DateTime } from 'luxon';
 import { formatIsoDateAsUtc } from '../../../common/format';
-import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 import LinkAccountDialog from './SettingsPage/LinkAccountDialog';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
-import AuthServiceIntegrationPreferenceForm from '../../../common/models/userAccounts/AuthServiceIntegrationPreferenceForm';
 import ContentBox from '../../../common/components/ContentBox';
-import ToggleSwitchInput from '../../../common/components/ToggleSwitchInput';
 
 interface Props {
 	onCloseDialog: () => void,
 	onChangeEmailAddress: (email: string) => Promise<void>,
-	onChangeAuthServiceIntegrationPreference: (data: AuthServiceIntegrationPreferenceForm) => Promise<AuthServiceAccountAssociation>,
 	onChangeNotificationPreference: (data: NotificationPreference) => Promise<NotificationPreference>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
-	onLinkAuthServiceAccount: (provider: AuthServiceProvider, integration: AuthServiceIntegration) => Promise<AuthServiceAccountAssociation>,
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -55,29 +51,6 @@ class SettingsPage extends React.PureComponent<
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeAuthServiceIntegrationPreference = (identityIdString: string, isEnabled: boolean) => {
-		const
-			identityId = parseInt(identityIdString),
-			integration = (
-				isEnabled ?
-					AuthServiceIntegration.Post :
-					AuthServiceIntegration.None
-			);
-		this._mergeAuthServiceAccount({
-			...(
-				this.state.settings.value.authServiceAccounts.find(
-					account => account.identityId === identityId
-				)
-			),
-			integrations: integration
-		});
-		return this.props
-			.onChangeAuthServiceIntegrationPreference({
-				identityId,
-				integration
-			})
-			.then(this._mergeAuthServiceAccount);
-	};
 	private readonly _changeTimeZone = (id: number, timeZoneDisplayName: string) => {
 		return this.props
 			.onChangeTimeZone({ id })
@@ -95,9 +68,9 @@ class SettingsPage extends React.PureComponent<
 				}
 			);
 	};
-	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
+	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
 		return this.props
-			.onLinkAuthServiceAccount(provider, integration)
+			.onLinkAuthServiceAccount(provider)
 			.catch(
 				(error?: string) => {
 					if (error !== 'Unsupported') {
@@ -315,18 +288,15 @@ class SettingsPage extends React.PureComponent<
 										account => {
 											let
 												identity: string,
-												provider: string,
-												supportsIntegrations: boolean;
+												provider: string;
 											switch (account.provider) {
 												case AuthServiceProvider.Apple:
 													provider = 'Apple';
 													identity = account.emailAddress;
-													supportsIntegrations = false;
 													break;
 												case AuthServiceProvider.Twitter:
 													provider = 'Twitter';
 													identity = '@' + account.handle;
-													supportsIntegrations = true;
 													break;
 											}
 											return (
@@ -338,16 +308,6 @@ class SettingsPage extends React.PureComponent<
 													<div className="provider">{provider}</div>
 													<div className="date">Added on {DateTime.fromISO(formatIsoDateAsUtc(account.dateAssociated)).toLocaleString(DateTime.DATE_MED)}</div>
 													<div className="identity">{identity}</div>
-													{supportsIntegrations ?
-														<div className="integrations">
-															<ToggleSwitchInput
-																isEnabled={account.integrations === AuthServiceIntegration.Post}
-																onChangeAsync={this._changeAuthServiceIntegrationPreference}
-																title="Tweet my Readup posts"
-																value={account.identityId.toString()}
-															/>
-														</div> :
-														null}
 												</ContentBox>
 											);
 										}
@@ -367,7 +327,6 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
-				onChangeAuthServiceIntegrationPreference={deps.onChangeAuthServiceIntegrationPreference}
 				onChangeNotificationPreference={deps.onChangeNotificationPreference}
 				onChangePassword={deps.onChangePassword}
 				onChangeTimeZone={deps.onChangeTimeZone}

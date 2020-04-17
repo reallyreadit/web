@@ -38,7 +38,6 @@ import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotif
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
-import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey, extensionVersionCookieKey } from '../../../common/cookies';
@@ -256,10 +255,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		});
 		this.props.browserApi.onboardingEnded(reason);
 	};
-	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
+	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
 		this.props.serverApi
 			.requestTwitterBrowserRequestToken({
-				integrations: integration,
 				redirectPath: window.location.pathname,
 				signUpAnalytics: null
 			})
@@ -297,7 +295,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			resolve => {
 				this.props.serverApi
 					.requestTwitterBrowserRequestToken({
-						integrations: AuthServiceIntegration.Post,
 						redirectPath: window.location.pathname,
 						signUpAnalytics: this.getSignUpAnalyticsForm(action)
 					})
@@ -534,7 +531,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Settings,
 				{
 					onCloseDialog: this._dialog.closeDialog,
-					onChangeAuthServiceIntegrationPreference: this._changeAuthServiceIntegrationPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,

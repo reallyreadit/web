@@ -51,7 +51,6 @@ import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceA
 import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
 import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalyticsForm';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import AuthServiceIntegrationPreferenceForm from '../../../common/models/userAccounts/AuthServiceIntegrationPreferenceForm';
 
 export interface Props {
 	analytics: Analytics,
@@ -242,6 +241,7 @@ export default abstract class Root<
 				onOpenDialog={this._dialog.openDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this._postArticle}
+				user={this.state.user}
 			/>
 		);
 	};
@@ -402,9 +402,6 @@ export default abstract class Root<
 			.then(user => {
 				this.onUserUpdated(user);
 			});
-	};
-	protected readonly _changeAuthServiceIntegrationPreference = (data: AuthServiceIntegrationPreferenceForm) => {
-		return this.props.serverApi.changeAuthServiceIntegrationPreference(data);
 	};
 	protected readonly _changeNotificationPreference = (data: NotificationPreference) => {
 		return this.props.serverApi

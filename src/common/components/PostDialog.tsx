@@ -7,21 +7,23 @@ import { Intent } from './Toaster';
 import UserArticle from '../models/UserArticle';
 import ActionLink from './ActionLink';
 import MarkdownDialog from './MarkdownDialog';
+import ToggleSwitchInput from './ToggleSwitchInput';
+import UserAccount from '../models/UserAccount';
 
 interface Props {
 	article: UserArticle,
 	onCloseDialog?: () => void,
 	onOpenDialog: (dialog: React.ReactNode, method: 'push' | 'replace') => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSubmit: (form: PostForm) => Promise<Post>
+	onSubmit: (form: PostForm) => Promise<Post>,
+	user: UserAccount
 }
-export default class PostDialog extends React.PureComponent<
-	Props,
-	{
-		commentText: string,
-		ratingScore?: number
-	}
-> {
+interface State {
+	commentText: string,
+	ratingScore?: number,
+	tweet: boolean
+}
+export default class PostDialog extends React.PureComponent<Props, State> {
 	private readonly _changeCommentText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		this.setState({
 			commentText: event.currentTarget.value
@@ -29,6 +31,11 @@ export default class PostDialog extends React.PureComponent<
 	};
 	private readonly _changeRatingScore = (ratingScore?: number) => {
 		this.setState({ ratingScore });
+	};
+	private readonly _changeTweet = (value: string, isEnabled: boolean) => {
+		this.setState({
+			tweet: isEnabled
+		});
 	};
 	private readonly _openMarkdownDialog = () => {
 		this.props.onOpenDialog(
@@ -43,7 +50,8 @@ export default class PostDialog extends React.PureComponent<
 			.onSubmit({
 				articleId: this.props.article.id,
 				ratingScore: this.state.ratingScore,
-				commentText: this.state.commentText
+				commentText: this.state.commentText,
+				tweet: this.state.tweet
 			})
 			.then(
 				() => {
@@ -55,7 +63,8 @@ export default class PostDialog extends React.PureComponent<
 		super(props);
 		this.state = {
 			commentText: '',
-			ratingScore: props.article.ratingScore
+			ratingScore: props.article.ratingScore,
+			tweet: props.user.hasLinkedTwitterAccount
 		};
 	}
 	public render() {
@@ -85,6 +94,11 @@ export default class PostDialog extends React.PureComponent<
 					iconLeft="question-circle"
 					onClick={this._openMarkdownDialog}
 					text="Formatting Guide"
+				/>
+				<ToggleSwitchInput
+					isEnabled={this.state.tweet}
+					onChange={this._changeTweet}
+					title="Tweet this post"
 				/>
 			</Dialog>
 		);

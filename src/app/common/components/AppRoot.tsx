@@ -40,7 +40,6 @@ import NotificationAuthorizationStatus from '../../../common/models/app/Notifica
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
-import AuthServiceIntegration from '../../../common/models/auth/AuthServiceIntegration';
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 
 interface Props extends RootProps {
@@ -205,7 +204,7 @@ export default class extends Root<
 			authStatus: null
 		});
 	};
-	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider, integration: AuthServiceIntegration) => {
+	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
 		return this.props.appApi
 			.getDeviceInfo()
 			.then(
@@ -243,10 +242,20 @@ export default class extends Root<
 						throw 'Cancelled';
 					}
 					return this.props.serverApi.linkTwitterAccount({
-						integrations: integration,
 						oauthToken: url.searchParams.get('oauth_token'),
 						oauthVerifier: url.searchParams.get('oauth_verifier')
 					});
+				}
+			)
+			.then(
+				association => {
+					this.setState({
+						user: {
+							...this.state.user,
+							hasLinkedTwitterAccount: true
+						}
+					});
+					return association;
 				}
 			);
 	};
@@ -310,7 +319,6 @@ export default class extends Root<
 							}
 							return this.props.serverApi
 								.authenticateTwitterCredential({
-									integrations: AuthServiceIntegration.Post,
 									oauthToken: url.searchParams.get('oauth_token'),
 									oauthVerifier: url.searchParams.get('oauth_verifier'),
 									analytics: this.getSignUpAnalyticsForm(null),
@@ -531,7 +539,6 @@ export default class extends Root<
 				ScreenKey.Settings,
 				{
 					onCloseDialog: this._dialog.closeDialog,
-					onChangeAuthServiceIntegrationPreference: this._changeAuthServiceIntegrationPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,

@@ -2,34 +2,21 @@ import * as React from 'react';
 import Dialog from '../../../../common/components/Dialog';
 import FormField from '../../../common/components/controls/FormField';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
-import AuthServiceIntegration from '../../../../common/models/auth/AuthServiceIntegration';
-import ToggleSwitchInput from '../../../../common/components/ToggleSwitchInput';
 
 interface Props {
 	onCloseDialog: () => void,
-	onLinkAuthServiceAccount: (provider: AuthServiceProvider, integration: AuthServiceIntegration) => Promise<void>
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<void>
 }
 interface State {
-	integration: AuthServiceIntegration,
 	provider: AuthServiceProvider
 }
 export default class LinkAccountDialog extends React.PureComponent<Props, State> {
 	private readonly _submit = () => {
-		return this.props.onLinkAuthServiceAccount(this.state.provider, this.state.integration);
-	};
-	private readonly _toggleIntegration = (value: string, isEnabled: boolean) => {
-		this.setState({
-			integration: (
-				isEnabled ?
-					AuthServiceIntegration.Post :
-					AuthServiceIntegration.None
-			)
-		});
+		return this.props.onLinkAuthServiceAccount(this.state.provider);
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			integration: AuthServiceIntegration.Post,
 			provider: AuthServiceProvider.Twitter
 		};
 	}
@@ -49,12 +36,6 @@ export default class LinkAccountDialog extends React.PureComponent<Props, State>
 						<option>Twitter</option>
 					</select>
 				</FormField>
-				<ToggleSwitchInput
-					className="integrations"
-					isEnabled={this.state.integration === AuthServiceIntegration.Post}
-					onChange={this._toggleIntegration}
-					title="Tweet my Readup posts"
-				/>
 			</Dialog>
 		);
 	}

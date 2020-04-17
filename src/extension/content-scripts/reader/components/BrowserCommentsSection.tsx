@@ -46,6 +46,7 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 				onOpenDialog={this.props.dialogService.openDialog}
 				onShowToast={this.props.toasterService.addToast}
 				onSubmit={this.props.onPostArticle}
+				user={this.props.user}
 			/>
 		);
 	};

@@ -12,7 +12,7 @@ interface Props {
 	onCloseDialog: () => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostComment: (form: CommentForm) => Promise<void>,
-	parentCommentId?: string
+	parentCommentId: string
 }
 export default class CommentComposer extends React.PureComponent<Props, {
 	commentText: string,

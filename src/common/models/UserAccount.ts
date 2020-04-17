@@ -14,7 +14,8 @@ export default interface UserAccount {
 	loopbackAlertCount: number,
 	postAlertCount: number,
 	followerAlertCount: number,
-	isPasswordSet: boolean
+	isPasswordSet: boolean,
+	hasLinkedTwitterAccount: boolean
 }
 export function areEqual(a: UserAccount, b: UserAccount) {
 	if (!a || !b) {
@@ -33,7 +34,8 @@ export function areEqual(a: UserAccount, b: UserAccount) {
 		a.loopbackAlertCount === b.loopbackAlertCount &&
 		a.postAlertCount === b.postAlertCount &&
 		a.followerAlertCount === b.followerAlertCount &&
-		a.isPasswordSet === b.isPasswordSet
+		a.isPasswordSet === b.isPasswordSet &&
+		a.hasLinkedTwitterAccount === b.hasLinkedTwitterAccount
 	);
 }
 export function hasAlert(user: UserAccount, alert?: Alert) {

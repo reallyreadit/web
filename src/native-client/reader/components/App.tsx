@@ -64,6 +64,7 @@ export default class App extends React.Component<
 				onOpenDialog={this._dialog.openDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this.props.onPostArticle}
+				user={this.props.user}
 			/>
 		);
 	};
