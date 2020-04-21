@@ -4,13 +4,13 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.20.0",
+      "app": "1.21.0",
       "extension": {
-        "package": "3.0.5",
+        "package": "3.1.0",
         "content-parser": "1.0.15"
       },
       "native-client": {
-        "reader": "7.0.7",
+        "reader": "8.0.0",
         "share-extension": "3.0.14"
       }
     }
