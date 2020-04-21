@@ -4,6 +4,7 @@ import { ClassValue } from 'classnames/types';
 import Button from './Button';
 
 interface Props {
+	buttonsDisabled?: boolean,
 	children: React.ReactNode,
 	className?: ClassValue,
 	closeButtonText?: string,
@@ -75,14 +76,24 @@ export default class Dialog extends React.PureComponent<
 					{this.props.onClose ?
 						<Button
 							onClick={this._close}
-							state={this.state.isSubmitting ? 'disabled' : 'normal'}
+							state={
+								this.props.buttonsDisabled || this.state.isSubmitting ?
+									'disabled' :
+									'normal'
+							}
 							text={this.props.closeButtonText || 'Close'}
 						/> :
 						null}
 					{this.props.onSubmit ?
 						<Button
 							onClick={this._submit}
-							state={this.state.isSubmitting ? 'busy' : 'normal'}
+							state={
+								this.state.isSubmitting ?
+									'busy' :
+									this.props.buttonsDisabled ?
+										'disabled' :
+										'normal'
+							}
 							style="preferred"
 							text={this.props.submitButtonText || 'Submit'}
 						/> :

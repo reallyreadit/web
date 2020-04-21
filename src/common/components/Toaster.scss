@@ -21,10 +21,13 @@
 	font-family: 'Museo Sans (500)';
 	box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
 	border-radius: 3px;
-	animation: toaster_2zbeib-pop-in 250ms;
+	animation: toaster_2zbeib-pop-in 250ms forwards;
 }
 .toaster_2zbeib > .toasts > .toast.remove {
-	animation: toaster_2zbeib-pop-out 250ms;
+	animation: toaster_2zbeib-pop-out 250ms forwards;
+}
+.toaster_2zbeib > .toasts > .toast.neutral {
+	background-color: #F7F6F5;
 }
 .toaster_2zbeib > .toasts > .toast.success {
 	color: white;
@@ -38,7 +41,7 @@
 	margin-top: 10px;
 }
 .toaster_2zbeib > .toasts > .toast > p > .action-link_ftamt8.disabled {
-	color: #666;
+	color: #999;
 }
 
 @keyframes toaster_2zbeib-pop-in {

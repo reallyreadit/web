@@ -16,6 +16,10 @@ import SetStore from '../../common/webStorage/SetStore';
 import { Message } from '../../common/MessagingContext';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { calculateEstimatedReadTime } from '../../common/calculate';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
+import UserAccount from '../../common/models/UserAccount';
+import WindowOpenRequest from '../common/WindowOpenRequest';
 
 interface ReaderContentScriptTab {
 	articleId: number | null,
@@ -34,6 +38,7 @@ export default class ReaderContentScriptApi {
 			onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
 			onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 			onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+			onRequestTwitterBrowserLinkRequestToken: () => Promise<TwitterRequestToken>,
 			onSetStarred: (form: StarForm) => Promise<UserArticle>,
 			onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
 		}
@@ -114,9 +119,64 @@ export default class ReaderContentScriptApi {
 						case 'loadContentParser':
 							handlers.onLoadContentParser(sender.tab.id);
 							break;
+						case 'closeWindow':
+							chrome.windows.remove(
+								(message.data as number),
+								() => {
+									if (chrome.runtime.lastError) {
+										console.log(`[ReaderApi] error closing window, message: ${chrome.runtime.lastError.message}`);
+									}
+								}
+							);
+							break;
 						case 'getComments':
 							createMessageResponseHandler(
 								handlers.onGetComments(message.data),
+								sendResponse
+							);
+							return true;
+						case 'hasWindowClosed':
+							createMessageResponseHandler(
+								new Promise<boolean>(
+									(resolve, reject) => {
+										chrome.windows.get(
+											(message.data as number),
+											chromeWindow => {
+												if (chrome.runtime.lastError) {
+													console.log(`[ReaderApi] error getting window, message: ${chrome.runtime.lastError.message}`);
+												}
+												resolve(!chromeWindow);
+											}
+										);
+									}
+								),
+								sendResponse
+							);
+							return true;
+						case 'openWindow':
+							const request = (message.data as WindowOpenRequest);
+							createMessageResponseHandler(
+								new Promise<number>(
+									(resolve, reject) => {
+										chrome.windows.create(
+											{
+												type: 'popup',
+												url: request.url,
+												width: request.width,
+												height: request.height,
+												focused: true,
+											},
+											chromeWindow => {
+												if (chrome.runtime.lastError) {
+													console.log(`[ReaderApi] error opening window, message: ${chrome.runtime.lastError.message}`);
+													reject(chrome.runtime.lastError);
+													return;
+												}
+												resolve(chromeWindow.id);
+											}
+										);
+									}
+								),
 								sendResponse
 							);
 							return true;
@@ -141,6 +201,12 @@ export default class ReaderContentScriptApi {
 						case 'postCommentRevision':
 							createMessageResponseHandler(
 								handlers.onPostCommentRevision(message.data),
+								sendResponse
+							);
+							return true;
+						case 'requestTwitterBrowserLinkRequestToken':
+							createMessageResponseHandler(
+								handlers.onRequestTwitterBrowserLinkRequestToken(),
 								sendResponse
 							);
 							return true;
@@ -192,6 +258,15 @@ export default class ReaderContentScriptApi {
 			}
 		);
 	}
+	public authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse) {
+		this.broadcastMessage(
+			null,
+			{
+				type: 'authServiceLinkCompleted',
+				data: response
+			}
+		);
+	}
 	public clearTabs() {
 		this._tabs.clear();
 	}
@@ -228,5 +303,14 @@ export default class ReaderContentScriptApi {
 				}
 			);
 		this._tabs.clear();
+	}
+	public userUpdated(user: UserAccount) {
+		this.broadcastMessage(
+			null,
+			{
+				type: 'userUpdated',
+				data: user
+			}
+		);
 	}
 }

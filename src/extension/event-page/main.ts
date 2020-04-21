@@ -145,6 +145,9 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 				}
 			);
 	},
+	onRequestTwitterBrowserLinkRequestToken: () => {
+		return serverApi.requestTwitterBrowserLinkRequestToken();
+	},
 	onSetStarred: form => serverApi
 		.setStarred(form.articleId, form.isStarred)
 		.then(
@@ -174,6 +177,10 @@ const webAppApi = new WebAppApi({
 		// update readers
 		readerContentScriptApi.articleUpdated(event);
 	},
+	onAuthServiceLinkCompleted: response => {
+		// update readers
+		readerContentScriptApi.authServiceLinkCompleted(response);
+	},
 	onCommentPosted: comment => {
 		// update readers
 		readerContentScriptApi.commentPosted(comment);
@@ -183,7 +190,10 @@ const webAppApi = new WebAppApi({
 		readerContentScriptApi.commentUpdated(comment);
 	},
 	onUserUpdated: user => {
+		// update server cache
 		serverApi.updateUser(user);
+		// update readers
+		readerContentScriptApi.userUpdated(user);
 	}
 });
 

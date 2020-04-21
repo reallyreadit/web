@@ -8,8 +8,7 @@ import * as classNames from 'classnames';
 interface Props {
 	className?: ClassValue,
 	isEnabled: boolean,
-	onChange?: (value: string, isEnabled: boolean) => void,
-	onChangeAsync?: (value: string, isEnabled: boolean) => Promise<any>,
+	onChange: (value: string, isEnabled: boolean) => Promise<any> | void,
 	subtitle?: string,
 	title: string,
 	value?: string
@@ -19,24 +18,36 @@ interface State {
 }
 export default class ToggleSwitchInput extends React.PureComponent<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private _isSaving = false;
 	private readonly _toggleEnabled = (isEnabled: boolean) => {
-		if (this.props.onChangeAsync) {
+		if (this._isSaving) {
+			return;
+		}
+		const changePromise = this.props.onChange(this.props.value, isEnabled);
+		if (changePromise) {
+			this._isSaving = true;
 			this.setState({
 				indicator: SaveIndicatorState.Saving
 			});
 			this._asyncTracker.addPromise(
-				this.props
-					.onChangeAsync(this.props.value, isEnabled)
+				changePromise
 					.then(
 						() => {
+							this._isSaving = false;
 							this.setState({
 								indicator: SaveIndicatorState.Saved
 							});
 						}
 					)
+					.catch(
+						() => {
+							this._isSaving = false;
+							this.setState({
+								indicator: SaveIndicatorState.None
+							});
+						}
+					)
 			);
-		} else {
-			this.props.onChange(this.props.value, isEnabled);
 		}
 	};
 	constructor(props: Props) {

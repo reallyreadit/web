@@ -3,9 +3,12 @@
 	cssComponentId: link-account-dialog_q2jc4k
 */
 
-.link-account-dialog_q2jc4k > .children > .provider > .field-container > label  {
+.link-account-dialog_q2jc4k > .children > .provider > .field-container > select  {
+	height: 28px;
 	line-height: 28px;
 }
-.link-account-dialog_q2jc4k > .children > .integrations {
+.link-account-dialog_q2jc4k > .children > .notice {
+	font-size: 11pt;
+	color: #999;
 	margin-top: 10px;
 }

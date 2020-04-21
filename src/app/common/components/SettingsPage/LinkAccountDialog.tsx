@@ -2,17 +2,45 @@ import * as React from 'react';
 import Dialog from '../../../../common/components/Dialog';
 import FormField from '../../../common/components/controls/FormField';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
+import { Intent } from '../../../../common/components/Toaster';
+import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthServiceAccountAssociation';
 
 interface Props {
 	onCloseDialog: () => void,
-	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<void>
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void
 }
 interface State {
 	provider: AuthServiceProvider
 }
 export default class LinkAccountDialog extends React.PureComponent<Props, State> {
 	private readonly _submit = () => {
-		return this.props.onLinkAuthServiceAccount(this.state.provider);
+		return this.props
+			.onLinkAuthServiceAccount(this.state.provider)
+			.then(
+				() => {
+					this.props.onShowToast('Account Linked', Intent.Success);
+				}
+			)
+			.catch(
+				error => {
+					const errorMessage = (error as Error)?.message;
+					if (errorMessage !== 'Unsupported') {
+						let
+							toastText: string,
+							toastIntent: Intent;
+						if (errorMessage === 'Cancelled') {
+							toastText = 'Authentication Cancelled';
+							toastIntent = Intent.Neutral;
+						} else {
+							toastText = 'Error: ' + (errorMessage ?? 'Unknown error') + '.';
+							toastIntent = Intent.Danger;
+						}
+						this.props.onShowToast(toastText, toastIntent);
+					}
+					throw error;
+				}
+			);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -36,6 +64,7 @@ export default class LinkAccountDialog extends React.PureComponent<Props, State>
 						<option>Twitter</option>
 					</select>
 				</FormField>
+				<div className="notice">We'll never post without your permission.</div>
 			</Dialog>
 		);
 	}

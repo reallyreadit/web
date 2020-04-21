@@ -19,6 +19,8 @@ import ContentBox from '../../../../common/components/ContentBox';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import ShareData from '../../../../common/sharing/ShareData';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
+import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
+import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthServiceAccountAssociation';
 
 export interface Props {
 	article: UserArticle
@@ -27,6 +29,7 @@ export interface Props {
 	dialogService: DialogService,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>
 	onNavTo: (url: string) => boolean,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
@@ -43,6 +46,7 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 			<PostDialog
 				article={article}
 				onCloseDialog={this.props.dialogService.closeDialog}
+				onLinkAuthServiceAccount={this.props.onLinkAuthServiceAccount}
 				onOpenDialog={this.props.dialogService.openDialog}
 				onShowToast={this.props.toasterService.addToast}
 				onSubmit={this.props.onPostArticle}

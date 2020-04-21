@@ -4,12 +4,14 @@ import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import { Message } from '../../common/MessagingContext';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 
 export default class WebAppApi {
 	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
 	constructor(
 		handlers: {
 			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
+			onAuthServiceLinkCompleted: (response: AuthServiceBrowserLinkResponse) => void,
 			onCommentPosted: (comment: CommentThread) => void,
 			onCommentUpdated: (comment: CommentThread) => void,
 			onUserUpdated: (user: UserAccount) => void
@@ -23,6 +25,9 @@ export default class WebAppApi {
 					switch (message.type) {
 						case 'articleUpdated':
 							handlers.onArticleUpdated(message.data);
+							break;
+						case 'authServiceLinkCompleted':
+							handlers.onAuthServiceLinkCompleted(message.data);
 							break;
 						case 'commentPosted':
 							handlers.onCommentPosted(message.data);

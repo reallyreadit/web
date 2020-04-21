@@ -3,11 +3,13 @@ import classNames from 'classnames';
 
 export enum Intent {
 	Success,
-	Danger
+	Danger,
+	Neutral
 }
 const intentClassMap = {
 	[Intent.Success]: 'success',
-	[Intent.Danger]: 'danger'
+	[Intent.Danger]: 'danger',
+	[Intent.Neutral]: 'neutral'
 };
 export interface ToastEvent {
 	content: React.ReactNode,

@@ -71,21 +71,12 @@ class SettingsPage extends React.PureComponent<
 	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
 		return this.props
 			.onLinkAuthServiceAccount(provider)
-			.catch(
-				(error?: string) => {
-					if (error !== 'Unsupported') {
-						let errorMessage: string;
-						if (error === 'Cancelled') {
-							errorMessage = 'Authentication cancelled.';
-						} else {
-							errorMessage = 'Error: ' + (error ?? 'Unknown error') + '.';
-						}
-						this.props.onShowToast(errorMessage, Intent.Danger);
-					}
-					throw error;
+			.then(
+				association => {
+					this._mergeAuthServiceAccount(association);
+					return association;
 				}
-			)
-			.then(this._mergeAuthServiceAccount);
+			);
 	};
 	private readonly _mergeAuthServiceAccount = (account: AuthServiceAccountAssociation) => {
 		const
@@ -148,6 +139,7 @@ class SettingsPage extends React.PureComponent<
 			<LinkAccountDialog
 				onCloseDialog={this.props.onCloseDialog}
 				onLinkAuthServiceAccount={this._linkAuthServiceAccount}
+				onShowToast={this.props.onShowToast}
 			/>
 		);
 	};

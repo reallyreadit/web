@@ -1,4 +1,5 @@
 import { isReadupElement } from '../contentParsing/utils';
+import { formatList } from '../format';
 
 const styleContent = `
 #com_readup_article {
@@ -97,6 +98,39 @@ const styleContent = `
 }
 `;
 
+export function createByline(authors: string[] | { name?: string }[]) {
+	if (!authors.length) {
+		return '';
+	}
+	let authorNames: string[];
+	if (typeof authors[0] === 'string') {
+		authorNames = authors as string[];
+	} else {
+		authorNames = (authors as { name?: string }[]).map(
+			author => author.name
+		);
+	}
+	return formatList(
+		authorNames
+			.reduce<string[]>(
+				(names, name) => {
+					if (!!name) {
+						const trimmedName = name.trim();
+						if (
+							!names.some(
+								existingAuthorName => existingAuthorName.toLowerCase() === trimmedName.toLowerCase()
+							)
+						) {
+							names.push(trimmedName);
+						}
+					}
+					return names;
+				},
+				[]
+			)
+			.sort()
+	);
+}
 export default (document: Document, title?: string, byline?: string) => {
 	// add viewport meta
 	if (!document.querySelectorAll('meta[name="viewport"]').length) {

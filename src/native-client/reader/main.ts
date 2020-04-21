@@ -11,9 +11,8 @@ import UserArticle from '../../common/models/UserArticle';
 import ShareData from '../../common/sharing/ShareData';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment, updateComment } from '../../common/comments';
-import BookmarkPrompt from './components/BookmarkPrompt';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
-import styleArticleDocument from '../../common/reading/styleArticleDocument';
+import styleArticleDocument, { createByline } from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
 import procesLazyImages from '../../common/contentParsing/processLazyImages';
 import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
@@ -24,6 +23,15 @@ import Post, { createCommentThread } from '../../common/models/social/Post';
 import CommentForm from '../../common/models/social/CommentForm';
 import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
+import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
+import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
+import WebAuthResponse from '../../common/models/app/WebAuthResponse';
+import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
+import DialogService from '../../common/services/DialogService';
+import UpdateRequiredDialog from '../../common/components/UpdateRequiredDialog';
+import BookmarkDialog from '../../common/components/BookmarkDialog';
+import UserPage from '../../common/models/UserPage';
+import UserAccount from '../../common/models/UserAccount';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -33,7 +41,10 @@ window.reallyreadit = {
 	}
 };
 
-let lookupResult: ArticleLookupResult;
+let
+	article: UserArticle,
+	userPage: UserPage,
+	user: UserAccount;
 
 const
 	metadataParseResult = parseDocumentMetadata(),
@@ -46,10 +57,7 @@ pruneDocument(contentParseResult);
 styleArticleDocument(
 	window.document,
 	metadataParseResult.metadata.article.title,
-	metadataParseResult.metadata.article.authors
-		.map(author => author.name)
-		.filter(name => name ? !!name.trim() : false)
-		.join(', ')
+	createByline(metadataParseResult.metadata.article.authors)
 );
 
 const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
@@ -63,87 +71,36 @@ const reader = new Reader(
 				data: {
 					commitData: {
 						readState: event.readStateArray,
-						userPageId: lookupResult.userPage.id
+						userPageId: userPage.id
 					},
 					isCompletionCommit: event.isCompletionCommit
 				}
 			},
-			(article: UserArticle) => {
-				// migrate deprecated article property if required due to an outdated app
-				if (!article.datesPosted) {
-					article.datesPosted = [];
-					if ((article as any).datePosted) {
-						article.datesPosted.push((article as any).datePosted);
-					}
-				}
-				if (article.isRead) {
-					if (embedRootElement) {
-						render({ article });
-					} else {
-						insertEmbed();
-					}
+			(updatedArticle: UserArticle) => {
+				article = updatedArticle;
+				if (article.isRead && !embedProps.comments) {
+					loadComments();
+				} else {
+					render();
 				}
 			}
 		)
 	}
 );
 
-// bookmark prompt
-function insertBookmarkPrompt() {
-	// create root element
-	const rootElement = window.document.createElement('div');
-	rootElement.addEventListener(
-		'animationend',
-		event => {
-			if (event.animationName === 'bookmark-prompt_3dkh9o-pop-out') {
-				rootElement.remove();
-			}
-		}
-	);
-	window.document.body.append(rootElement);
-	// props helper
-	function beginClosingPrompt() {
-		ReactDOM.render(
-			React.createElement(
-				BookmarkPrompt,
-				props = {
-					...props,
-					isClosing: true
-				}
-			),
-			rootElement
-		);
+// user interface
+const dialogService = new DialogService({
+	setState: delegate => {
+		render(delegate(embedProps));
 	}
-	// initial render
-	let props = {
-		isClosing: false,
-		onCancel: beginClosingPrompt,
-		onConfirm: () => {
-			const scrollTop = page.getBookmarkScrollTop();
-			if (scrollTop > window.innerHeight) {
-				const content = document.getElementById('com_readup_article_content');
-				content.style.opacity = '0';
-				setTimeout(
-					() => {
-						window.scrollTo(0, scrollTop);
-						content.style.opacity = '1';
-					},
-					350
-				);
-			}
-			beginClosingPrompt();
-		}
-	};
-	ReactDOM.render(
-		React.createElement(BookmarkPrompt, props),
-		rootElement
-	);
-}
-
-// embed
+});	
 let
-	embedProps: Partial<EmbedProps> = {
+	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>> = {
+		comments: null,
+		dialogs: [],
+		dialogService,
 		onDeleteComment: deleteComment,
+		onLinkAuthServiceAccount: linkAuthServiceAccount,
 		onNavTo: navTo,
 		onOpenExternalUrl: openExternalUrl,
 		onPostArticle: postArticle,
@@ -160,10 +117,119 @@ function insertEmbed() {
 	embedRootElement.id = 'com_readup_embed';
 	window.document.body.append(embedRootElement);
 	// initial render
+	render();
+}
+function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>) {
+	ReactDOM.render(
+		React.createElement(
+			App,
+			{
+				...(
+					embedProps = {
+						...embedProps,
+						...props
+					}
+				),
+				article,
+				user
+			}
+		),
+		embedRootElement
+	);
+}
+
+function linkAuthServiceAccount(provider: AuthServiceProvider) {
+	return new Promise<TwitterRequestToken>(
+			resolve => {
+				messagingContext.sendMessage(
+					{
+						type: 'requestTwitterWebViewRequestToken'
+					},
+					resolve
+				);
+			}
+		)
+		.then(
+			token => new Promise<WebAuthResponse>(
+				resolve => {
+					const url = new URL('https://api.twitter.com/oauth/authorize');
+					url.searchParams.set('oauth_token', token.value);
+					messagingContext.sendMessage(
+						{
+							type: 'requestWebAuthentication',
+							data: {
+								authUrl: url.href,
+								callbackScheme: 'readup'
+							}
+						},
+						resolve
+					);
+				}
+			)
+		)
+		.then(
+			webAuthResponse => new Promise<AuthServiceAccountAssociation>(
+				(resolve, reject) => {
+					if (!webAuthResponse.callbackURL) {
+						if (webAuthResponse.error === 'Unsupported') {
+							dialogService.openDialog(
+								React.createElement(
+									UpdateRequiredDialog,
+									{
+										message: 'You can link your Twitter account on the Readup website instead.',
+										onClose: dialogService.closeDialog,
+										updateType: 'ios',
+										versionRequired: '13'
+									}
+								),
+								'push'
+							);
+						}
+						reject(new Error(webAuthResponse.error ?? 'Unknown'));
+						return;
+					}
+					const url = new URL(webAuthResponse.callbackURL);
+					if (url.searchParams.has('denied')) {
+						reject(new Error('Cancelled'));
+						return;
+					}
+					messagingContext.sendMessage(
+						{
+							type: 'linkTwitterAccount',
+							data: {
+								oauthToken: url.searchParams.get('oauth_token'),
+								oauthVerifier: url.searchParams.get('oauth_verifier')
+							}
+						},
+						resolve
+					);
+				}
+			)
+			.then(
+				association => {
+					if (!user.hasLinkedTwitterAccount) {
+						user = {
+							...user,
+							hasLinkedTwitterAccount: true
+						};
+						render();
+					}
+					return association;
+				}
+			)
+		);
+}
+
+function loadComments() {
+	render({
+		comments: {
+			isLoading: true
+		}
+	});
 	messagingContext.sendMessage(
 		{
 			type: 'getComments',
-			data: lookupResult.userArticle.slug
+			data: article.slug
 		},
 		(comments: CommentThread[]) => {
 			render({
@@ -173,23 +239,6 @@ function insertEmbed() {
 				}
 			});
 		}
-	);
-	render({
-		article: lookupResult.userArticle,
-		comments: { isLoading: true },
-		user: lookupResult.user
-	});
-}
-function render(props: Partial<EmbedProps>) {
-	ReactDOM.render(
-		React.createElement(
-			App,
-			embedProps = {
-				...embedProps,
-				...props
-			} as EmbedProps
-		),
-		embedRootElement
 	);
 }
 
@@ -216,16 +265,9 @@ function postArticle(form: PostForm) {
 					data: form
 				},
 				(post: Post) => {
-					// migrate deprecated article property if required due to an outdated app
-					if (!post.article.datesPosted) {
-						post.article.datesPosted = [];
-						if ((post.article as any).datePosted) {
-							post.article.datesPosted.push((post.article as any).datePosted);
-						}
-					}
+					article = post.article;
 					if (post.comment) {
 						render({
-							article: post.article,
 							comments: {
 								...embedProps.comments,
 								value: mergeComment(
@@ -235,7 +277,7 @@ function postArticle(form: PostForm) {
 							}
 						});
 					} else {
-						render({ article: post.article });
+						render();
 					}
 					resolve(post);
 				}
@@ -253,8 +295,8 @@ function postComment(form: CommentForm) {
 			},
 			(result: { article: UserArticle, comment: CommentThread }) => {
 				resolve();
+				article = result.article;
 				render({
-					article: result.article,
 					comments: {
 						...embedProps.comments,
 						value: mergeComment(result.comment, embedProps.comments.value)
@@ -351,20 +393,42 @@ messagingContext.sendMessage(
 		data: createPageParseResult(metadataParseResult, contentParseResult)
 	},
 	(result: ArticleLookupResult) => {
-		// migrate deprecated article property if required due to an outdated app
-		if (!result.userArticle.datesPosted) {
-			result.userArticle.datesPosted = [];
-			if ((result.userArticle as any).datePosted) {
-				result.userArticle.datesPosted.push((result.userArticle as any).datePosted);
-			}
-		}
-		lookupResult = result;
+		// set globals
+		article = result.userArticle;
+		userPage = result.userPage;
+		user = result.user;
+		// set up the reader
 		page.setReadState(result.userPage.readState);
 		reader.loadPage(page);
+		// set up the ui
+		insertEmbed();
+		// load comments or check for bookmark
 		if (result.userArticle.isRead) {
-			insertEmbed();
+			loadComments();
 		} else if (page.getBookmarkScrollTop() > window.innerHeight) {
-			insertBookmarkPrompt();
+			dialogService.openDialog(
+				React.createElement(
+					BookmarkDialog,
+					{
+						onClose: dialogService.closeDialog,
+						onSubmit: () => {
+							const scrollTop = page.getBookmarkScrollTop();
+							if (scrollTop > window.innerHeight) {
+								const content = document.getElementById('com_readup_article_content');
+								content.style.opacity = '0';
+								setTimeout(
+									() => {
+										window.scrollTo(0, scrollTop);
+										content.style.opacity = '1';
+									},
+									350
+								);
+							}
+							return Promise.resolve();
+						}
+					}
+				)
+			);
 		}
 	}
 );

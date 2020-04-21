@@ -38,6 +38,9 @@ export default class extends AppApi {
 				case 'authenticateAppleIdCredential':
 					this.emitEvent('authenticateAppleIdCredential', message.data);
 					break;
+				case 'authServiceAccountLinked':
+					this.emitEvent('authServiceAccountLinked', message.data);
+					break;
 				case 'commentPosted':
 					this.emitEvent('commentPosted', message.data);
 					break;

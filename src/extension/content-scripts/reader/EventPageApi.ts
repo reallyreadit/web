@@ -12,6 +12,10 @@ import CommentRevisionForm from '../../../common/models/social/CommentRevisionFo
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 import { MessageResponse, isSuccessResponse } from '../../common/messaging';
 import StarForm from '../../../common/models/articles/StarForm';
+import { AuthServiceBrowserLinkResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
+import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
+import UserAccount from '../../../common/models/UserAccount';
+import WindowOpenRequest from '../../common/WindowOpenRequest';
 
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: MessageResponse<T>) => void) {
@@ -49,17 +53,22 @@ function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
 export default class EventPageApi {
 	constructor(handlers: {
 		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
+		onAuthServiceLinkCompleted: (response: AuthServiceBrowserLinkResponse) => void,
 		onCommentPosted: (comment: CommentThread) => void,
 		onCommentUpdated: (comment: CommentThread) => void,
 		onToggleContentIdentificationDisplay: () => void,
 		onToggleReadStateDisplay: () => void,
-		onUserSignedOut: () => void
+		onUserSignedOut: () => void,
+		onUserUpdated: (user: UserAccount) => void
 	}) {
 		chrome.runtime.onMessage.addListener(
 			(message, sender, sendResponse) => {
 				switch (message.type) {
 					case 'articleUpdated':
 						handlers.onArticleUpdated(message.data);
+						break;
+					case 'authServiceLinkCompleted':
+						handlers.onAuthServiceLinkCompleted(message.data);
 						break;
 					case 'commentPosted':
 						handlers.onCommentPosted(message.data);
@@ -75,6 +84,9 @@ export default class EventPageApi {
 						break;
 					case 'userSignedOut':
 						handlers.onUserSignedOut();
+						break;
+					case 'userUpdated':
+						handlers.onUserUpdated(message.data);
 						break;
 				}
 				// always send a response because the sender must use a callback in order to
@@ -95,8 +107,17 @@ export default class EventPageApi {
 	public loadContentParser() {
 		sendMessage('loadContentParser');
 	}
+	public closeWindow(id: number) {
+		sendMessage('closeWindow', id);
+	}
 	public getComments(slug: string) {
 		return sendMessageAwaitingResponse<CommentThread[]>('getComments', slug);
+	}
+	public hasWindowClosed(id: number) {
+		return sendMessageAwaitingResponse<boolean>('hasWindowClosed', id);
+	}
+	public openWindow(request: WindowOpenRequest) {
+		return sendMessageAwaitingResponse<number>('openWindow', request);
 	}
 	public postArticle(form: PostForm) {
 		return sendMessageAwaitingResponse<Post>('postArticle', form);
@@ -109,6 +130,9 @@ export default class EventPageApi {
 	}
 	public postCommentRevision(form: CommentRevisionForm) {
 		return sendMessageAwaitingResponse<CommentThread>('postCommentRevision', form);
+	}
+	public requestTwitterBrowserLinkRequestToken() {
+		return sendMessageAwaitingResponse<TwitterRequestToken>('requestTwitterBrowserLinkRequestToken');
 	}
 	public setStarred(form: StarForm) {
 		return sendMessageAwaitingResponse<UserArticle>('setStarred', form);

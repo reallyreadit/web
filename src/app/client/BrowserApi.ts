@@ -7,6 +7,7 @@ import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 import { ExitReason as OnboardingExitReason } from '../common/components/BrowserRoot/OnboardingFlow';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 
 export default class extends BrowserApi {
 	private readonly _channel: BroadcastChannel | null;
@@ -36,6 +37,9 @@ export default class extends BrowserApi {
 	}
 	public articlePosted(post: Post) {
 		this.broadcastUpdate('articlePosted', post);
+	}
+	public authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse) {
+		this.broadcastUpdate('authServiceLinkCompleted', response);
 	}
 	public commentPosted(comment: CommentThread) {
 		this.broadcastUpdate('commentPosted', comment);

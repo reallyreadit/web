@@ -19,6 +19,7 @@ import Rating from '../../common/models/Rating';
 import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
+import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -326,6 +327,12 @@ export default class ServerApi {
 				articleId,
 				score
 			}
+		});
+	}
+	public requestTwitterBrowserLinkRequestToken() {
+		return fetchJson<TwitterRequestToken>({
+			method: 'POST',
+			path: '/Auth/TwitterBrowserLinkRequest'
 		});
 	}
 	public setStarred(articleId: number, isStarred: boolean) {

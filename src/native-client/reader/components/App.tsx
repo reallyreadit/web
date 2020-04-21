@@ -25,11 +25,15 @@ import SpinnerIcon from '../../../common/components/SpinnerIcon';
 import { findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
+import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 
-export interface Props {
-	article: UserArticle
-	comments: Fetchable<CommentThread[]>,
+export interface Props extends DialogState {
+	article: UserArticle,
+	comments: Fetchable<CommentThread[]> | null,
+	dialogService: DialogService,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onNavTo: (url: string) => void,
 	onOpenExternalUrl: (url: string) => void,
 	onPostArticle: (form: PostForm) => Promise<Post>,
@@ -42,8 +46,7 @@ export interface Props {
 }
 export default class App extends React.Component<
 	Props,
-	ToasterState &
-	DialogState
+	ToasterState
 > {
 	// clipboard
 	private readonly _copyTextToClipboard = () => {
@@ -51,17 +54,13 @@ export default class App extends React.Component<
 	};
 
 	// dialogs
-	private readonly _dialog = new DialogService({
-		setState: delegate => {
-			this.setState(delegate);
-		}
-	})
 	protected readonly _openPostDialog = (article: UserArticle) => {
-		this._dialog.openDialog(
+		this.props.dialogService.openDialog(
 			<PostDialog
 				article={article}
-				onCloseDialog={this._dialog.closeDialog}
-				onOpenDialog={this._dialog.openDialog}
+				onCloseDialog={this.props.dialogService.closeDialog}
+				onLinkAuthServiceAccount={this.props.onLinkAuthServiceAccount}
+				onOpenDialog={this.props.dialogService.openDialog}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this.props.onPostArticle}
 				user={this.props.user}
@@ -115,43 +114,46 @@ export default class App extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			dialogs: [],
 			toasts: []
 		};
 	}
 	public render() {
 		return (
 			<div className="app_n0jlkg">
-				<PostPrompt
-					article={this.props.article}
-					onPost={this._openPostDialog}
-					promptMessage="Post this article."
-				/>
-				{this.props.comments.isLoading ?
-					<ContentBox className="loading-comments">
-						<SpinnerIcon /> Loading comments...
-					</ContentBox> :
-					<CommentsSection
+				{this.props.article.isRead ?
+					<PostPrompt
 						article={this.props.article}
-						comments={this.props.comments.value}
-						imagePath="./images"
-						noCommentsMessage="No comments on this article yet."
-						onCloseDialog={this._dialog.closeDialog}
-						onCopyTextToClipboard={this._copyTextToClipboard}
-						onCreateAbsoluteUrl={this._createAbsoluteUrl}
-						onDeleteComment={this.props.onDeleteComment}
-						onNavTo={this._navTo}
-						onOpenDialog={this._dialog.openDialog}
-						onPostComment={this.props.onPostComment}
-						onPostCommentAddendum={this.props.onPostCommentAddendum}
-						onPostCommentRevision={this.props.onPostCommentRevision}
-						onShare={this._handleShareRequest}
-						onViewProfile={this._viewProfile}
-						user={this.props.user}
-					/>}
+						onPost={this._openPostDialog}
+						promptMessage="Post this article."
+					/> :
+					null}
+				{this.props.comments ?
+					this.props.comments.isLoading ?
+						<ContentBox className="loading-comments">
+							<SpinnerIcon /> Loading comments...
+						</ContentBox> :
+						<CommentsSection
+							article={this.props.article}
+							comments={this.props.comments.value}
+							imagePath="./images"
+							noCommentsMessage="No comments on this article yet."
+							onCloseDialog={this.props.dialogService.closeDialog}
+							onCopyTextToClipboard={this._copyTextToClipboard}
+							onCreateAbsoluteUrl={this._createAbsoluteUrl}
+							onDeleteComment={this.props.onDeleteComment}
+							onNavTo={this._navTo}
+							onOpenDialog={this.props.dialogService.openDialog}
+							onPostComment={this.props.onPostComment}
+							onPostCommentAddendum={this.props.onPostCommentAddendum}
+							onPostCommentRevision={this.props.onPostCommentRevision}
+							onShare={this._handleShareRequest}
+							onViewProfile={this._viewProfile}
+							user={this.props.user}
+						/> :
+					null}
 				<DialogManager
-					dialogs={this.state.dialogs}
-					onTransitionComplete={this._dialog.handleTransitionCompletion}
+					dialogs={this.props.dialogs}
+					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}
 				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Star from '../../../../common/components/Star';
-import { formatList, formatCountable } from '../../../../common/format';
+import { formatCountable } from '../../../../common/format';
 import { calculateEstimatedReadTime } from '../../../../common/calculate';
 import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
@@ -10,6 +10,7 @@ import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import AotdRank from '../../../../common/components/AotdRank';
 import AotdScore from '../../../../common/components/AotdScore';
+import { createByline } from '../../../../common/reading/styleArticleDocument';
 
 type ServerArticle = Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'dateStarred' | 'firstPoster' | 'hotScore' | 'slug'>;
 export interface Props {
@@ -140,7 +141,7 @@ export default class BroserHeader extends React.PureComponent<Props, State> {
 					{this.props.title}
 				</div>
 				{this.props.authors.length ?
-					<div className="byline">{formatList(this.props.authors)}</div> :
+					<div className="byline">{createByline(this.props.authors)}</div> :
 					null}
 				<div className="length">
 					<span className="value">

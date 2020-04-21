@@ -44,6 +44,8 @@ import { extensionInstallationRedirectPathCookieKey, extensionVersionCookieKey }
 import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
 import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep, ExitReason as OnboardingExitReason } from './BrowserRoot/OnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
+import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
+import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -63,22 +65,18 @@ type Events = SharedEvents & {
 	'extensionInstallationStatusChanged': boolean
 };
 enum WelcomeMessage {
-	AppleIdInvalidJwt = 'AppleIdInvalidJwt',
-	AppleIdInvalidSession = 'AppleIdInvalidSession',
-	AppleIdUnknownError = 'AppleIdUnknownError',
+	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
+	AppleIdInvalidSession = 'AppleInvalidSessionId',
 	Rebrand = 'rebrand',
 	TwitterEmailAddressRequired = 'TwitterEmailAddressRequired',
-	TwitterVerificationFailed = 'TwitterVerificationFailed',
-	TwitterUnknownError = 'TwitterUnknownError'
+	TwitterVerificationFailed = 'TwitterInvalidAuthToken'
 }
 const welcomeMessages = {
 	[WelcomeMessage.AppleIdInvalidJwt]: 'We were unable to validate the ID token.',
 	[WelcomeMessage.AppleIdInvalidSession]: 'We were unable to validate your session ID.',
-	[WelcomeMessage.AppleIdUnknownError]: 'An unknown Apple authentication error occurred.',
 	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!',
 	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
-	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.',
-	[WelcomeMessage.TwitterUnknownError]: 'An unknown Twitter authentication error occurred.'
+	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.'
 };
 export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
@@ -237,7 +235,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setState({
 			onboarding: {
 				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.CreateAccount
+				initialAuthenticationStep: OnboardingStep.Twitter
 			}
 		});
 	};
@@ -255,22 +253,66 @@ export default class extends Root<Props, State, SharedState, Events> {
 		});
 		this.props.browserApi.onboardingEnded(reason);
 	};
-	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
-		this.props.serverApi
-			.requestTwitterBrowserRequestToken({
-				redirectPath: window.location.pathname,
-				signUpAnalytics: null
-			})
-			.then(
-				token => {
-					const url = new URL('https://api.twitter.com/oauth/authorize');
-					url.searchParams.set('oauth_token', token.value);
-					window.location.href = url.href;
-				}
-			);
+	protected readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
+		// open window synchronously to avoid being blocked by popup blockers
+		const popup = window.open(
+			'',
+			'_blank',
+			'height=300,location=0,menubar=0,toolbar=0,width=400'
+		);
 		return new Promise<AuthServiceAccountAssociation>(
-			resolve => {
-				// leave the promise unresolved as the browser navigates
+			(resolve, reject) => {
+				this.props.serverApi
+					.requestTwitterBrowserLinkRequestToken()
+					.catch(
+						error => {
+							popup.close();
+							this._toaster.addToast('Error Requesting Token', Intent.Danger);
+							reject(error);
+						}
+					)
+					.then(
+						token => {
+							if (!token) {
+								return;
+							}
+							const url = new URL('https://api.twitter.com/oauth/authorize');
+							url.searchParams.set('oauth_token', token.value);
+							popup.location.href = url.href;
+							const completionHandler = (response: AuthServiceBrowserLinkResponse) => {
+								if (response.requestToken === token.value) {
+									cleanupEventHandlers();
+									popup.close();
+									if (isAuthServiceBrowserLinkSuccessResponse(response)) {
+										resolve(response.association);
+									} else {
+										let errorMessage: string;
+										switch (response.error) {
+											case AuthenticationError.Cancelled:
+												errorMessage = 'Cancelled';
+												break;
+										}
+										reject(new Error(errorMessage));
+									}	
+								}
+							};
+							this.props.browserApi.addListener('authServiceLinkCompleted', completionHandler);
+							const popupClosePollingInterval = window.setInterval(
+								() => {
+									if (popup.closed) {
+										cleanupEventHandlers();
+										reject(new Error('Cancelled'));
+									}
+								},
+								1000
+							);
+							const cleanupEventHandlers = () => {
+								this.props.browserApi.removeListener('authServiceLinkCompleted', completionHandler);
+								window.clearInterval(popupClosePollingInterval);
+							};
+						}
+					)
+					.catch(reject);
 			}
 		);
 	};
@@ -294,7 +336,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return new Promise(
 			resolve => {
 				this.props.serverApi
-					.requestTwitterBrowserRequestToken({
+					.requestTwitterBrowserAuthRequestToken({
 						redirectPath: window.location.pathname,
 						signUpAnalytics: this.getSignUpAnalyticsForm(action)
 					})
@@ -308,7 +350,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					.catch(
 						() => {
 							resolve();
-							this._toaster.addToast('Error requesting token.', Intent.Danger);
+							this._toaster.addToast('Error Requesting Token', Intent.Danger);
 						}
 					);
 				// leave the promise unresolved as the browser navigates
@@ -570,7 +612,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			};
 		} else if (extensionAuthQueryStringKey in queryStringParams) {
 			onboardingState = {
-				initialAuthenticationStep: OnboardingStep.CreateAccount
+				initialAuthenticationStep: OnboardingStep.Twitter
 			};
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams ||
@@ -605,6 +647,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('articleUpdated', event => {
 				this.onArticleUpdated(event, EventSource.Remote);
 			})
+			.addListener(
+				'authServiceLinkCompleted',
+				response => {
+					if (
+						isAuthServiceBrowserLinkSuccessResponse(response) &&
+						response.association.provider === AuthServiceProvider.Twitter &&
+						!this.state.user.hasLinkedTwitterAccount
+					) {
+						this.onUserUpdated(
+							{
+								...this.state.user,
+								hasLinkedTwitterAccount: true
+							},
+							EventSource.Remote
+						);
+					}
+				}
+			)
 			.addListener('articlePosted', post => {
 				this.onArticlePosted(post, EventSource.Remote);
 			})

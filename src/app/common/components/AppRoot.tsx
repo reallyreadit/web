@@ -31,7 +31,6 @@ import RouteLocation from '../../../common/routing/RouteLocation';
 import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
 import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
-import Dialog from '../../../common/components/Dialog';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import OrientationWizard from './AppRoot/OrientationWizard';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
@@ -41,6 +40,7 @@ import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
+import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialog';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -204,7 +204,7 @@ export default class extends Root<
 			authStatus: null
 		});
 	};
-	private readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
+	protected readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
 		return this.props.appApi
 			.getDeviceInfo()
 			.then(
@@ -235,11 +235,11 @@ export default class extends Root<
 								'You can link your Twitter account on the Readup website instead.'
 							);
 						}
-						throw (webAuthResponse.error ?? 'Unknown');
+						throw new Error(webAuthResponse.error ?? 'Unknown');
 					}
 					const url = new URL(webAuthResponse.callbackURL);
 					if (url.searchParams.has('denied')) {
-						throw 'Cancelled';
+						throw new Error('Cancelled');
 					}
 					return this.props.serverApi.linkTwitterAccount({
 						oauthToken: url.searchParams.get('oauth_token'),
@@ -249,12 +249,12 @@ export default class extends Root<
 			)
 			.then(
 				association => {
-					this.setState({
-						user: {
+					if (!this.state.user.hasLinkedTwitterAccount) {
+						this.onUserUpdated({
 							...this.state.user,
 							hasLinkedTwitterAccount: true
-						}
-					});
+						});
+					}
 					return association;
 				}
 			);
@@ -281,7 +281,7 @@ export default class extends Root<
 						deviceInfo => {
 							if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
 								this.openAppUpdateRequiredDialog('5.7');
-								throw new Error('Unsupported');
+								throw 'Unsupported';
 							}
 						}
 					)
@@ -639,6 +639,22 @@ export default class extends Root<
 						);
 				}
 			)
+			.addListener(
+				'authServiceAccountLinked',
+				association => {
+					if (
+						association.provider === AuthServiceProvider.Twitter &&
+						!this.state.user.hasLinkedTwitterAccount
+					) {
+						this.onUserUpdated(
+							{
+								...this.state.user,
+								hasLinkedTwitterAccount: true
+							}
+						);
+					}
+				}
+			)
 			.addListener('commentPosted', comment => {
 				// create addenda array if required due to an outdated app
 				if (!comment.addenda) {
@@ -712,38 +728,26 @@ export default class extends Root<
 			);
 	}
 	private openAppUpdateRequiredDialog(versionRequired: string) {
-		this.openUpdateRequiredDialog(
-			'App Update Required',
-			[
-				`Readup must be updated in the App Store to version ${versionRequired} or greater to use this feature.`
-			]
+		this._dialog.openDialog(
+			(
+				<UpdateRequiredDialog
+					onClose={this._dialog.closeDialog}
+					updateType="app"
+					versionRequired={versionRequired}
+				/>
+			),
+			'push'
 		);
 	}
 	private openIosUpdateRequiredDialog(versionRequired: string, message: string = null) {
-		const messages = [
-			`iOS ${versionRequired} or greater is required to use this feature.`
-		];
-		if (message) {
-			messages.push(message);
-		}
-		this.openUpdateRequiredDialog('iOS Update Required', messages);
-	}
-	private openUpdateRequiredDialog(title: string, messages: string[]) {
 		this._dialog.openDialog(
 			(
-				<Dialog
-					closeButtonText="Dismiss"
+				<UpdateRequiredDialog
+					message={message}
 					onClose={this._dialog.closeDialog}
-					size="small"
-					textAlign="center"
-					title={title}
-				>
-					{messages.map(
-						(message, index) => (
-							<p key={index}>{message}</p>
-						)
-					)}
-				</Dialog>
+					updateType="ios"
+					versionRequired={versionRequired}
+				/>
 			),
 			'push'
 		);

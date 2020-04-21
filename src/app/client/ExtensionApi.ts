@@ -5,6 +5,7 @@ import UserAccount from '../../common/models/UserAccount';
 import ContentScriptMessagingContext from '../../common/ContentScriptMessagingContext';
 import { Message } from '../../common/MessagingContext';
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
@@ -144,6 +145,9 @@ export default class extends ExtensionApi {
     }
     public articleUpdated(event: ArticleUpdatedEvent) {
         this.sendMessage('articleUpdated', event);
+    }
+    public authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse) {
+        this.sendMessage('authServiceLinkCompleted', response);
     }
     public commentPosted(comment: CommentThread) {
         this.sendMessage('commentPosted', comment);

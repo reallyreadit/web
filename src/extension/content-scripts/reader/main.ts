@@ -10,11 +10,15 @@ import ParseResult from '../../../common/contentParsing/ParseResult';
 import styleArticleDocument from '../../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 import * as React from 'react';
-import Dialog from '../../../common/components/Dialog';
 import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import HeaderComponentHost from './HeaderComponentHost';
 import insertFontStyleElement from '../ui/insertFontStyleElement';
+import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
+import AuthenticationError from '../../../common/models/auth/AuthenticationError';
+import BookmarkDialog from '../../../common/components/BookmarkDialog';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -30,7 +34,8 @@ window.reallyreadit = {
 let
 	contentParseResult: ParseResult,
 	lookupResult: ArticleLookupResult,
-	page: Page;
+	page: Page,
+	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void;
 
 // event page interface
 const eventPageApi = new EventPageApi({
@@ -39,6 +44,24 @@ const eventPageApi = new EventPageApi({
 			lookupResult.userArticle = event.article;
 			header.articleUpdated(event.article);
 			commentsSection.articleUpdated(event.article);
+		}
+	},
+	onAuthServiceLinkCompleted: response => {
+		if (
+			lookupResult &&
+			isAuthServiceBrowserLinkSuccessResponse(response) &&
+			response.association.provider === AuthServiceProvider.Twitter &&
+			!lookupResult.user.hasLinkedTwitterAccount
+		) {
+			commentsSection.userUpdated(
+				lookupResult.user = {
+					...lookupResult.user,
+					hasLinkedTwitterAccount: true
+				}
+			);
+		}
+		if (authServiceLinkCompletionHandler) {
+			authServiceLinkCompletionHandler(response);
 		}
 	},
 	onCommentPosted: comment => {
@@ -62,6 +85,11 @@ const eventPageApi = new EventPageApi({
 	onUserSignedOut: () => {
 		reader.unloadPage();
 		showError('You were signed out in another tab.');
+	},
+	onUserUpdated: user => {
+		if (lookupResult) {
+			commentsSection.userUpdated(user);
+		}
 	}
 });
 
@@ -181,6 +209,69 @@ const commentsSection = new CommentsSectionComponentHost({
 		dialogService: globalUi.dialogs,
 		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
 		onDeleteComment: form => eventPageApi.deleteComment(form),
+		onLinkAuthServiceAccount: provider => new Promise<AuthServiceAccountAssociation>(
+			(resolve, reject) => {
+				eventPageApi
+					.requestTwitterBrowserLinkRequestToken()
+					.then(
+						token => {
+							const url = new URL('https://api.twitter.com/oauth/authorize');
+							url.searchParams.set('oauth_token', token.value);
+							eventPageApi
+								.openWindow({
+									url: url.href,
+									width: 400,
+									height: 300
+								})
+								.then(
+									windowId => {
+										authServiceLinkCompletionHandler = response => {
+											if (response.requestToken === token.value) {
+												cleanupEventHandlers();
+												eventPageApi.closeWindow(windowId);
+												if (isAuthServiceBrowserLinkSuccessResponse(response)) {
+													resolve(response.association);
+												} else {
+													let errorMessage: string;
+													switch (response.error) {
+														case AuthenticationError.Cancelled:
+															errorMessage = 'Cancelled';
+															break;
+													}
+													reject(new Error(errorMessage));
+												}
+											}
+										};
+										const popupClosePollingInterval = window.setInterval(
+											() => {
+												eventPageApi
+													.hasWindowClosed(windowId)
+													.then(
+														closed => {
+															if (closed) {
+																cleanupEventHandlers();
+																reject(new Error('Cancelled'));
+															}
+														}
+													)
+													.catch(
+														() => { }
+													);
+											},
+											1000
+										);
+										const cleanupEventHandlers = () => {
+											authServiceLinkCompletionHandler = null;
+											window.clearInterval(popupClosePollingInterval);
+										};
+									}
+								)
+								.catch(reject);
+						}
+					)
+					.catch(reject);
+			}
+		),
 		onNavTo: globalUi.navTo,
 		onPostArticle: form => eventPageApi
 			.postArticle(form)
@@ -297,24 +388,7 @@ Promise
 			// set up the header user interface
 			header
 				.initialize({
-					authors: metaParseResult.metadata.article.authors
-						.reduce<string[]>(
-							(authors, author) => {
-								if (!!author.name) {
-									const authorName = author.name.trim();
-									if (
-										!authors.some(
-											existingAuthorName => existingAuthorName.toLowerCase() === authorName.toLowerCase()
-										)
-									) {
-										authors.push(authorName);
-									}
-								}
-								return authors;
-							},
-							[]
-						)
-						.sort(),
+					authors: metaParseResult.metadata.article.authors.map(author => author.name),
 					title: metaParseResult.metadata.article.title,
 					wordCount: contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
 				})
@@ -378,10 +452,8 @@ Promise
 						) {
 							globalUi.dialogs.openDialog(
 								React.createElement(
-									Dialog,
+									BookmarkDialog,
 									{
-										children: 'Want to pick up where you left off?',
-										closeButtonText: 'No',
 										onClose: globalUi.dialogs.closeDialog,
 										onSubmit: () => {
 											const bookmarkScrollTop = results[0].page.getBookmarkScrollTop();
@@ -392,11 +464,7 @@ Promise
 												});
 											}
 											return Promise.resolve();
-										},
-										size: 'small',
-										submitButtonText: 'Yes',
-										textAlign: 'center',
-										title: 'Bookmark'
+										}
 									}
 								)
 							);

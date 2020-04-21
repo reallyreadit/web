@@ -1,9 +1,11 @@
 const path = require('path');
 
-const project = require('../project'),
-	  createBuild = require('../createBuild');
+const
+	project = require('../project'),
+	createBuild = require('../createBuild'),
+	authServiceLinkHandler = require('./client/authServiceLinkHandler');
 
-const build = createBuild({
+const app = createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'app/client/main.ts')
 	},
@@ -13,11 +15,26 @@ const build = createBuild({
 	],
 	staticAssets: [
 		`${project.srcDir}/app/client/.well-known/**/*`,
-		`${project.srcDir}/app/client/assets/**/*`,
 		`${project.srcDir}/app/client/fonts/**/*`,
 		`${project.srcDir}/app/client/images/**/*`
 	],
 	path: 'app/client'
 });
 
-module.exports = build;
+function clean(env) {
+	return del(project.getOutPath('app/client', env) + '/*');
+}
+function build(env) {
+	return Promise.all([
+		app.build(env),
+		authServiceLinkHandler.build(env)
+	]);
+}
+function watch() {
+	app.watch();
+	authServiceLinkHandler.watch();
+}
+
+module.exports = {
+	clean, build, watch
+}

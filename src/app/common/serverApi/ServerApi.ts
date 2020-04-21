@@ -51,7 +51,7 @@ import CommunityReadsQuery from '../../../common/models/articles/CommunityReadsQ
 import NewPlatformNotificationRequest from '../../../common/models/analytics/NewPlatformNotificationRequest';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import TwitterCredentialAuthForm from '../../../common/models/auth/TwitterCredentialAuthForm';
-import TwitterBrowserRequestForm from '../../../common/models/auth/TwitterBrowserRequestForm';
+import TwitterBrowserAuthRequestTokenRequest from '../../../common/models/auth/TwitterBrowserAuthRequestTokenRequest';
 import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
 import TwitterCredentialLinkForm from '../../../common/models/auth/TwitterCredentialLinkForm';
 import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
@@ -154,7 +154,8 @@ export default abstract class {
 	// Auth
 	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
 	public readonly authenticateTwitterCredential = (data: TwitterCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/TwitterAuthentication', data });
-	public readonly requestTwitterBrowserRequestToken = (data: TwitterBrowserRequestForm) => this.post<TwitterRequestToken>({ path: '/Auth/TwitterBrowserRequest', data });
+	public readonly requestTwitterBrowserAuthRequestToken = (data: TwitterBrowserAuthRequestTokenRequest) => this.post<TwitterRequestToken>({ path: '/Auth/TwitterBrowserAuthRequest', data });
+	public readonly requestTwitterBrowserLinkRequestToken = () => this.post<TwitterRequestToken>({ path: '/Auth/TwitterBrowserLinkRequest' });
 	public readonly requestTwitterWebViewRequestToken = () => this.post<TwitterRequestToken>({ path: '/Auth/TwitterWebViewRequest' });
 	public readonly linkTwitterAccount = (data: TwitterCredentialLinkForm) => this.post<AuthServiceAccountAssociation>({ path: '/Auth/TwitterLink', data });
 

@@ -71,13 +71,14 @@ export default class extends React.PureComponent<Props> {
 						{this.props.authStatus ?
 							this.props.authStatus.step === AuthStep.Authenticating ?
 								<>
-									<SpinnerIcon /> Signing in with ${authProviderNames[this.props.authStatus.provider]}
+									<SpinnerIcon /> Signing in with {authProviderNames[this.props.authStatus.provider]}
 								</> :
 								`Error signing in with ${authProviderNames[this.props.authStatus.provider]}` :
 							null}
 					</div>
-					<AppleIdButton onClick={this.props.onSignInWithApple} />
 					<TwitterAuthButton onClick={this.props.onSignInWithTwitter} />
+					<div className="twitter-notice">Recommended. We'll never tweet without your permission.</div>
+					<AppleIdButton onClick={this.props.onSignInWithApple} />
 					<div className="email-button" onClick={this._openCreateAccountDialog}>
 						<Icon name="at-sign" /> Sign in with Email
 					</div>

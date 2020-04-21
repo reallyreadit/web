@@ -7,10 +7,12 @@ import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 import ExtensionInstallationEvent from './ExtensionInstallationEvent';
 import { ExitReason as OnboardingExitReason } from './components/BrowserRoot/OnboardingFlow';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 
 export default abstract class extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
+	'authServiceLinkCompleted': AuthServiceBrowserLinkResponse,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
 	'extensionInstallationChanged': ExtensionInstallationEvent,
@@ -23,6 +25,7 @@ export default abstract class extends EventEmitter<{
 }> {
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
 	public abstract articlePosted(post: Post): void;
+	public abstract authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
 	public abstract extensionInstallationChanged(event: ExtensionInstallationEvent): void;

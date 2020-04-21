@@ -4,6 +4,7 @@ import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
 import ExtensionInstallationEvent from './ExtensionInstallationEvent';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 
 export interface Params {
 	legacyChromeExtensionId: string,
@@ -25,6 +26,7 @@ export default abstract class ExtensionApi extends EventEmitter<{
 		this._isInstalled = params.isInstalled;
 	}
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
+	public abstract authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
 	public abstract extensionInstallationChanged(event: ExtensionInstallationEvent): void;

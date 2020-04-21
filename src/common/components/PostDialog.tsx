@@ -9,10 +9,13 @@ import ActionLink from './ActionLink';
 import MarkdownDialog from './MarkdownDialog';
 import ToggleSwitchInput from './ToggleSwitchInput';
 import UserAccount from '../models/UserAccount';
+import AuthServiceProvider from '../models/auth/AuthServiceProvider';
+import AuthServiceAccountAssociation from '../models/auth/AuthServiceAccountAssociation';
 
 interface Props {
 	article: UserArticle,
 	onCloseDialog?: () => void,
+	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onOpenDialog: (dialog: React.ReactNode, method: 'push' | 'replace') => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSubmit: (form: PostForm) => Promise<Post>,
@@ -20,23 +23,83 @@ interface Props {
 }
 interface State {
 	commentText: string,
+	isLinkingTwitterAccount: boolean,
 	ratingScore?: number,
 	tweet: boolean
 }
 export default class PostDialog extends React.PureComponent<Props, State> {
 	private readonly _changeCommentText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		if (this._isLinkingTwitterAccount) {
+			return;
+		}
 		this.setState({
 			commentText: event.currentTarget.value
 		});
 	};
 	private readonly _changeRatingScore = (ratingScore?: number) => {
-		this.setState({ ratingScore });
+		if (this._isLinkingTwitterAccount) {
+			return;
+		}
+		this.setState({
+			ratingScore
+		});
 	};
 	private readonly _changeTweet = (value: string, isEnabled: boolean) => {
 		this.setState({
 			tweet: isEnabled
 		});
+		if (
+			isEnabled &&
+			!this.props.user.hasLinkedTwitterAccount &&
+			!this._hasLinkedTwitterAccount
+		) {
+			this._isLinkingTwitterAccount = true;
+			this.setState({
+				isLinkingTwitterAccount: true
+			});
+			return this.props
+				.onLinkAuthServiceAccount(AuthServiceProvider.Twitter)
+				.then(
+					() => {
+						this._isLinkingTwitterAccount = false;
+						this._hasLinkedTwitterAccount = true;
+						this.setState({
+							isLinkingTwitterAccount: false
+						});
+						this.props.onShowToast('Account Linked', Intent.Success);
+					}
+				)
+				.catch(
+					error => {
+						this._isLinkingTwitterAccount = false;
+						this.setState({
+							isLinkingTwitterAccount: false,
+							tweet: false
+						});
+						const errorMessage = (error as Error)?.message;
+						if (errorMessage !== 'Unsupported') {
+							let
+								toastText: string,
+								toastIntent: Intent;
+							if (errorMessage === 'Cancelled') {
+								toastText = 'Authentication Cancelled';
+								toastIntent = Intent.Neutral;
+							} else {
+								toastText = 'Error: ' + (errorMessage ?? 'Unknown error') + '.';
+								toastIntent = Intent.Danger;
+							}
+							this.props.onShowToast(toastText, toastIntent);
+						}
+						throw error;
+					}
+				);
+		}
+		return undefined;
 	};
+	// ugly hack required because the user prop doesn't update
+	// from the global context set state due to the messy dialog system
+	private _hasLinkedTwitterAccount = false;
+	private _isLinkingTwitterAccount = false;
 	private readonly _openMarkdownDialog = () => {
 		this.props.onOpenDialog(
 			<MarkdownDialog
@@ -63,6 +126,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 		super(props);
 		this.state = {
 			commentText: '',
+			isLinkingTwitterAccount: false,
 			ratingScore: props.article.ratingScore,
 			tweet: props.user.hasLinkedTwitterAccount
 		};
@@ -70,6 +134,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 	public render() {
 		return (
 			<Dialog
+				buttonsDisabled={this.state.isLinkingTwitterAccount}
 				className="post-dialog_to9nib"
 				closeButtonText="Cancel"
 				onClose={this.props.onCloseDialog}
@@ -93,6 +158,11 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 				<ActionLink
 					iconLeft="question-circle"
 					onClick={this._openMarkdownDialog}
+					state={
+						this.state.isLinkingTwitterAccount ?
+							'disabled' :
+							'normal'
+					}
 					text="Formatting Guide"
 				/>
 				<ToggleSwitchInput

@@ -73,7 +73,7 @@ export default class ShareControl extends React.PureComponent<
 		});
 		window.open(
 			`https://twitter.com/intent/tweet${queryString}`,
-			'',
+			'_blank',
 			'height=300,location=0,menubar=0,toolbar=0,width=500'
 		);
 		this.completeWithActivityType('Twitter');

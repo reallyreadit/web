@@ -14,6 +14,7 @@ import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
+import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -21,6 +22,7 @@ export default abstract class extends EventEmitter<{
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
 	'authenticateAppleIdCredential': AppleIdCredential,
+	'authServiceAccountLinked': AuthServiceAccountAssociation,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
 	'didBecomeActive': AppActivationEvent,

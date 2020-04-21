@@ -7,7 +7,7 @@ import { updateComment, mergeComment } from '../../../common/comments';
 import UserArticle from '../../../common/models/UserArticle';
 import UserAccount from '../../../common/models/UserAccount';
 
-type Services = Pick<CommentsSectionProps, 'clipboardService' | 'dialogService' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onViewProfile' | 'toasterService'>;
+type Services = Pick<CommentsSectionProps, 'clipboardService' | 'dialogService' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onLinkAuthServiceAccount' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onViewProfile' | 'toasterService'>;
 type State = Pick<CommentsSectionProps, 'article' | 'comments' | 'user'>;
 export default class CommentsSectionComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -150,5 +150,10 @@ export default class CommentsSectionComponentHost extends ComponentHost<Services
 			user
 		});
 		return this;
+	}
+	public userUpdated(user: UserAccount) {
+		this.setState({
+			user
+		});
 	}
 }

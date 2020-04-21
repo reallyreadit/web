@@ -51,6 +51,8 @@ import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceA
 import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
 import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalyticsForm';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
+import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 
 export interface Props {
 	analytics: Analytics,
@@ -239,6 +241,7 @@ export default abstract class Root<
 				article={article}
 				onCloseDialog={this._dialog.closeDialog}
 				onOpenDialog={this._dialog.openDialog}
+				onLinkAuthServiceAccount={this._linkAuthServiceAccount}
 				onShowToast={this._toaster.addToast}
 				onSubmit={this._postArticle}
 				user={this.state.user}
@@ -455,6 +458,7 @@ export default abstract class Root<
 				}
 			);
 	};
+	protected abstract readonly _linkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>;
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
 			.resetPassword({
