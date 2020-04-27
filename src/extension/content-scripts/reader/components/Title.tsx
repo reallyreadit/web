@@ -27,7 +27,7 @@ export interface Props {
 interface State {
 	isStarring: boolean
 }
-export default class BroserHeader extends React.PureComponent<Props, State> {
+export default class Title extends React.PureComponent<Props, State> {
 	private _debugSequence: number[] = [];
 	private readonly _handleDebugClickLeft = () => {
 		const now = Date.now();
@@ -113,7 +113,7 @@ export default class BroserHeader extends React.PureComponent<Props, State> {
 			);
 		}
 		return (
-			<div className="browser-header_pg57qm">
+			<div className="title_35dbqk">
 				<div className={classNames('fetchable', { 'loaded': !this.props.article.isLoading })}>
 					<AotdRank
 						article={article}

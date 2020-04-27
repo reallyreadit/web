@@ -1,10 +1,10 @@
 import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
-import BrowserHeader, { Props as BrowserHeaderProps } from './components/BrowserHeader';
+import Title, { Props as TitleProps } from './components/Title';
 import UserArticle from '../../../common/models/UserArticle';
 
-type Services = Pick<BrowserHeaderProps, 'onCreateAbsoluteUrl' | 'onSetStarred' | 'onToggleDebugMode' | 'onViewComments' | 'onViewProfile'>;
-type State = Pick<BrowserHeaderProps, 'article' | 'authors' | 'title' | 'wordCount'>;
-export default class HeaderComponentHost extends ComponentHost<Services, State> {
+type Services = Pick<TitleProps, 'onCreateAbsoluteUrl' | 'onSetStarred' | 'onToggleDebugMode' | 'onViewComments' | 'onViewProfile'>;
+type State = Pick<TitleProps, 'article' | 'authors' | 'title' | 'wordCount'>;
+export default class TitleComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	protected readonly _services: Services;
 	protected _state: State;
@@ -17,7 +17,7 @@ export default class HeaderComponentHost extends ComponentHost<Services, State> 
 		}
 	) {
 		super(params);
-		this._component = BrowserHeader;
+		this._component = Title;
 		this._services = {
 			...params.services,
 			onSetStarred: isStarred => params.services

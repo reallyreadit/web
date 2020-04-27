@@ -12,7 +12,7 @@ import LazyScript from './LazyScript';
 import * as React from 'react';
 import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
-import HeaderComponentHost from './HeaderComponentHost';
+import TitleComponentHost from './TitleComponentHost';
 import insertFontStyleElement from '../ui/insertFontStyleElement';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
@@ -42,7 +42,7 @@ const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
 		if (lookupResult) {
 			lookupResult.userArticle = event.article;
-			header.articleUpdated(event.article);
+			title.articleUpdated(event.article);
 			commentsSection.articleUpdated(event.article);
 		}
 	},
@@ -161,8 +161,8 @@ function toggleContentIdentificationDisplay() {
 	}
 }
 
-// header ui
-const header = new HeaderComponentHost({
+// title ui
+const title = new TitleComponentHost({
 	domAttachmentDelegate: shadowHost => {
 		const wrapper = document.createElement('div');
 		wrapper.style.marginBottom = '1.5em';
@@ -385,8 +385,8 @@ Promise
 			insertFontStyleElement();
 			globalUi.attach();
 			
-			// set up the header user interface
-			header
+			// set up the title user interface
+			title
 				.initialize({
 					authors: metaParseResult.metadata.article.authors.map(author => author.name),
 					title: metaParseResult.metadata.article.title,
@@ -424,8 +424,8 @@ Promise
 							page.setReadState(result.userPage.readState);
 							reader.loadPage(page);
 
-							// update the header user interface
-							header.articleUpdated(result.userArticle);
+							// update the title user interface
+							title.articleUpdated(result.userArticle);
 
 							// load the embed user interface
 							if (result.userArticle.isRead) {
