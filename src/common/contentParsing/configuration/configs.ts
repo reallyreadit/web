@@ -61,6 +61,10 @@ export default {
 			}
 		},
 		{
+			hostname: 'aljazeera.com',
+			contentSearchRootElementSelector: 'div.main-article-body'
+		},
+		{
 			hostname: 'bostonglobe.com',
 			transpositions: [
 				{
@@ -103,6 +107,10 @@ export default {
 			imageStrategy: LazyImageStrategy.GoverningImgSrcCorrection
 		},
 		{
+			hostname: 'hackaday.com',
+			contentSearchRootElementSelector: 'div[itemprop="articleBody"]'
+		},
+		{
 			hostname: 'huffpost.com',
 			transpositions: [
 				{
@@ -130,6 +138,10 @@ export default {
 			}
 		},
 		{
+			hostname: 'junkyardofthemind.com',
+			contentSearchRootElementSelector: 'div[data-layout-label="Post Body"]'
+		},
+		{
 			hostname: 'medium.com',
 			textContainerFilter: {
 				attributeFullWordWhitelist: ['ad']
@@ -139,6 +151,10 @@ export default {
 		{
 			hostname: 'devblogs.microsoft.com',
 			contentSearchRootElementSelector: 'article'
+		},
+		{
+			hostname: 'nationalreview.com',
+			contentSearchRootElementSelector: 'div.article-content'
 		},
 		{
 			hostname: 'nymag.com',
@@ -350,6 +366,20 @@ export default {
 			imageContainerSearch: {
 				selectorBlacklist: ['.inset']
 			}
+		},
+		{
+			hostname: 'finance.yahoo.com',
+			contentSearchRootElementSelector: 'article[itemprop="articleBody"]',
+			transpositions: [
+				{
+					elementSelectors: ['div[class*="readmore"] p'],
+					parentElementSelector: 'article[itemprop="articleBody"] div[class~="canvas-body"]'
+				}
+			]
+		},
+		{
+			hostname: 'gsd.harvard.edu',
+			contentSearchRootElementSelector: 'div[class~="article-body"]'
 		},
 		{
 			hostname: 'news.harvard.edu',
