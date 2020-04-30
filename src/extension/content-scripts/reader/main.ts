@@ -88,7 +88,9 @@ const eventPageApi = new EventPageApi({
 	},
 	onUserUpdated: user => {
 		if (lookupResult) {
-			commentsSection.userUpdated(user);
+			commentsSection.userUpdated(
+				lookupResult.user = user
+			);
 		}
 	}
 });
