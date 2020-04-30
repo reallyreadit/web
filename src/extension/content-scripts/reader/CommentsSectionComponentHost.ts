@@ -152,8 +152,10 @@ export default class CommentsSectionComponentHost extends ComponentHost<Services
 		return this;
 	}
 	public userUpdated(user: UserAccount) {
-		this.setState({
-			user
-		});
+		if (this._state) {
+			this.setState({
+				user
+			});
+		}
 	}
 }
