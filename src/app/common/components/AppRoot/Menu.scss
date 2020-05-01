@@ -20,6 +20,8 @@
 .menu_fk9ujy > .drawer {
 	display: flex;
 	flex-flow: column;
+	padding-top: env(safe-area-inset-top);
+	padding-bottom: env(safe-area-inset-bottom);
 	background-color: white;
 	border-left: 1px solid #ccc;
 	font-size: 14px;

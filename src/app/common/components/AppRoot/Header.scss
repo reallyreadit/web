@@ -9,6 +9,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	border-top: env(safe-area-inset-top) solid #eaeaea;
 	border-bottom: 1px solid #ccc;
 	background-color: #eaeaea;
 	color: #666;

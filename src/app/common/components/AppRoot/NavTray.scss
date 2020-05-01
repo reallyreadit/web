@@ -8,6 +8,7 @@
 	display: flex;
 	align-items: center;
 	border-top: 1px solid #ccc;
+	border-bottom: env(safe-area-inset-bottom) solid #eaeaea;
 	background-color: #eaeaea;
 }
 .nav-tray_2tc8 > li {
