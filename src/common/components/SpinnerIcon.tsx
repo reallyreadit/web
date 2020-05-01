@@ -9,6 +9,7 @@ export default (
 	}
 ) => (
 	<Icon
+		badge={false}
 		className={classNames('spinner-icon_6s5uk2', props.className)} 
 		name="spinner"
 	/>
