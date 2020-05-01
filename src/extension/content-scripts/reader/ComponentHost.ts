@@ -25,6 +25,7 @@ export default abstract class ComponentHost<Services, State> {
 		// create the react container and shadow host
 		this._reactContainer = document.createElement('div');
 		this._shadowHost = document.createElement('div');
+		this._shadowHost.style.visibility = 'hidden';
 
 		// create shadow root by attaching to host
 		this._shadowRoot = this._shadowHost.attachShadow({

@@ -1,5 +1,6 @@
 :host {
 	all: initial;
+	visibility: visible !important;
 	font-family: 'Museo Sans (300)';
 	font-size: 13pt;
 	color: #2A2326;
