@@ -8,11 +8,10 @@ const styleContent = `
 	line-height: 1.35em;
 	color: #222;
 	margin: 0 auto;
-	padding: 5vh 10px 350px 10px;
+	padding: 120px 10px 350px 10px;
 	max-width: 600px;
 }
 #com_readup_article #com_readup_article_content {
-	padding-top: env(safe-area-inset-top);
 	transition: opacity 350ms;
 }
 #com_readup_article #com_readup_article_content * {

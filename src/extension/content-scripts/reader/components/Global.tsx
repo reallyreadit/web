@@ -7,6 +7,7 @@ import ToasterService from '../../../../common/services/ToasterService';
 import ClipboardService from '../../../../common/services/ClipboardService';
 import InfoBox from '../../../../common/components/InfoBox';
 import * as classNames from 'classnames';
+import ReaderHeader, { Props as HeaderProps } from '../../../../common/components/ReaderHeader';
 
 export enum GlobalError {
 	None,
@@ -19,11 +20,15 @@ export default (
 		dialogs: Dialog[],
 		dialogService: DialogService,
 		error: string | null,
+		header: HeaderProps,
 		toasterService: ToasterService,
 		toasts: Toast[]
 	}
 ) => (
 	<div className={classNames('global_x82v08', { 'error': !!props.error })}>
+		<ReaderHeader
+			{...props.header}
+		/>
 		<DialogManager
 			dialogs={props.dialogs}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}

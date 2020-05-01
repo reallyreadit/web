@@ -10,6 +10,8 @@ import { createUrl } from '../../../common/HttpEndpoint';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import UserArticle from '../../../common/models/UserArticle';
+import { Props as HeaderProps } from '../../../common/components/ReaderHeader';
+import ScrollService from '../../../common/services/ScrollService';
 
 interface Services {
 	clipboardService: ClipboardService,
@@ -17,7 +19,8 @@ interface Services {
 	toasterService: ToasterService
 }
 type State = DialogState & ToasterState & {
-	error: string | null
+	error: string | null,
+	header: HeaderProps
 };
 export default class GlobalComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -48,14 +51,44 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 				}
 			})
 		};
-		this.setState({
-			dialogs: [],
-			error: null,
-			toasts: []
+		new ScrollService({
+			setBarVisibility: isVisible => {
+				if (!this._state || this._state.header.isHidden !== isVisible) {
+					return;
+				}
+				this.setState({
+					header: {
+						...this._state.header,
+						isHidden: !isVisible
+					}
+				});
+			}
 		});
 	}
 	private openInNewTab(url: string) {
 		window.open(url, '_blank');
+	}
+	public articleUpdated(article: UserArticle) {
+		this.setState({
+			header: {
+				...this._state.header,
+				article: {
+					isLoading: false,
+					value: article
+				}
+			}
+		});
+	}
+	public initialize(
+		{ header }: Pick<State, 'header'>
+	) {
+		this.setState({
+			dialogs: [],
+			error: null,
+			header,
+			toasts: []
+		});
+		return this;
 	}
 	public readonly createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
 	public readonly handleShareRequest = () => {

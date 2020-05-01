@@ -42,6 +42,7 @@ const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
 		if (lookupResult) {
 			lookupResult.userArticle = event.article;
+			globalUi.articleUpdated(event.article);
 			title.articleUpdated(event.article);
 			commentsSection.articleUpdated(event.article);
 		}
@@ -329,6 +330,7 @@ const reader = new Reader(
 					if (event.isCompletionCommit) {
 						showComments();
 					}
+					globalUi.articleUpdated(article);
 					commentsSection.articleUpdated(article);
 				}
 			);
@@ -383,9 +385,18 @@ Promise
 			results[0].contentParser.prune(contentParseResult);
 			styleArticleDocument(document);
 
-			// set up the user interface
+			// set up the global user interface
 			insertFontStyleElement();
-			globalUi.attach();
+			globalUi
+				.initialize({
+					header: {
+						article: {
+							isLoading: true
+						},
+						isHidden: false
+					}
+				})
+				.attach();
 			
 			// set up the title user interface
 			title
@@ -425,6 +436,9 @@ Promise
 							);
 							page.setReadState(result.userPage.readState);
 							reader.loadPage(page);
+							
+							// update the global user interface
+							globalUi.articleUpdated(result.userArticle);
 
 							// update the title user interface
 							title.articleUpdated(result.userArticle);

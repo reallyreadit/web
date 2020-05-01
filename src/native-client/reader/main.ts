@@ -32,6 +32,7 @@ import UpdateRequiredDialog from '../../common/components/UpdateRequiredDialog';
 import BookmarkDialog from '../../common/components/BookmarkDialog';
 import UserPage from '../../common/models/UserPage';
 import UserAccount from '../../common/models/UserAccount';
+import ScrollService from '../../common/services/ScrollService';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -93,14 +94,16 @@ const dialogService = new DialogService({
 	setState: delegate => {
 		render(delegate(embedProps));
 	}
-});	
+});
 let
 	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>> = {
 		comments: null,
 		dialogs: [],
 		dialogService,
+		isHeaderHidden: false,
 		onDeleteComment: deleteComment,
 		onLinkAuthServiceAccount: linkAuthServiceAccount,
+		onNavBack: navBack,
 		onNavTo: navTo,
 		onOpenExternalUrl: openExternalUrl,
 		onPostArticle: postArticle,
@@ -118,6 +121,31 @@ function insertEmbed() {
 	window.document.body.append(embedRootElement);
 	// initial render
 	render();
+	// create scroll service
+	const scrollService = new ScrollService({
+		setBarVisibility: isVisible => {
+			if (isVisible === embedProps.isHeaderHidden) {
+				setStatusBarVisibility(isVisible);
+				render({
+					isHeaderHidden: !isVisible
+				});
+			}
+		}
+	});
+	// add click listener to toggle header
+	document
+		.getElementById('com_readup_article_content')
+		.addEventListener(
+			'click',
+			() => {
+				const isHeaderHidden = !embedProps.isHeaderHidden;
+				scrollService.setBarVisibility(!isHeaderHidden);
+				setStatusBarVisibility(!isHeaderHidden);
+				render({
+					isHeaderHidden
+				});
+			}
+		);
 }
 function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>) {
 	ReactDOM.render(
@@ -130,7 +158,10 @@ function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'arti
 						...props
 					}
 				),
-				article,
+				article: {
+					isLoading: !article,
+					value: article
+				},
 				user
 			}
 		),
@@ -240,6 +271,12 @@ function loadComments() {
 			});
 		}
 	);
+}
+
+function navBack() {
+	messagingContext.sendMessage({
+		type: 'navBack'
+	});
 }
 
 function navTo(url: string) {
@@ -380,12 +417,22 @@ function readArticle(slug: string) {
 	});
 }
 
+function setStatusBarVisibility(isVisible: boolean) {
+	messagingContext.sendMessage({
+		type: 'setStatusBarVisibility',
+		data: isVisible
+	});
+}
+
+
 function share(data: ShareData) {
 	messagingContext.sendMessage({
 		type: 'share',
 		data
 	});
 }
+
+insertEmbed();
 
 messagingContext.sendMessage(
 	{
@@ -400,8 +447,8 @@ messagingContext.sendMessage(
 		// set up the reader
 		page.setReadState(result.userPage.readState);
 		reader.loadPage(page);
-		// set up the ui
-		insertEmbed();
+		// re-render ui
+		render();
 		// load comments or check for bookmark
 		if (result.userArticle.isRead) {
 			loadComments();

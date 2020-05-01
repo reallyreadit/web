@@ -27,13 +27,16 @@ import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import ReaderHeader from '../../../common/components/ReaderHeader';
 
 export interface Props extends DialogState {
-	article: UserArticle,
+	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
 	dialogService: DialogService,
+	isHeaderHidden: boolean,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
+	onNavBack: () => void,
 	onNavTo: (url: string) => void,
 	onOpenExternalUrl: (url: string) => void,
 	onPostArticle: (form: PostForm) => Promise<Post>,
@@ -42,7 +45,7 @@ export interface Props extends DialogState {
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReadArticle: (slug: string) => void,
 	onShare: (data: ShareData) => void,
-	user: UserAccount
+	user: UserAccount | null
 }
 export default class App extends React.Component<
 	Props,
@@ -120,20 +123,25 @@ export default class App extends React.Component<
 	public render() {
 		return (
 			<div className="app_n0jlkg">
-				{this.props.article.isRead ?
+				<ReaderHeader
+					article={this.props.article}
+					isHidden={this.props.isHeaderHidden}
+					onNavBack={this.props.onNavBack}
+				/>
+				{this.props.article.value?.isRead ?
 					<PostPrompt
-						article={this.props.article}
+						article={this.props.article.value}
 						onPost={this._openPostDialog}
 						promptMessage="Post this article."
 					/> :
 					null}
-				{this.props.comments ?
+				{this.props.article.value && this.props.comments && this.props.user ?
 					this.props.comments.isLoading ?
 						<ContentBox className="loading-comments">
 							<SpinnerIcon /> Loading comments...
 						</ContentBox> :
 						<CommentsSection
-							article={this.props.article}
+							article={this.props.article.value}
 							comments={this.props.comments.value}
 							imagePath="./images"
 							noCommentsMessage="No comments on this article yet."
