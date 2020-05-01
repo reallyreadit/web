@@ -6,6 +6,7 @@
 .toaster_2zbeib {
 	position: fixed;
 	top: 0;
+	margin-top: env(safe-area-inset-top);
 	z-index: 200;
 	display: flex;
 	justify-content: center;
