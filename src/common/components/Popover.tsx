@@ -32,24 +32,20 @@ interface Props {
 	onClose: () => void,
 	onOpen: () => void
 }
-export default class Popover extends React.PureComponent<
-	Props,
-	{
-		childElementWillReceiveFocus: boolean
-	}
-> {
+export default class Popover extends React.PureComponent<Props> {
+	private _childElementWillReceiveFocus = false;
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
 		if (event.animationName.startsWith('menu_qla37i-pop-out')) {
 			this.props.onClose();
 		}
 	};
 	private readonly _handleBlur = () => {
-		if (!this.state.childElementWillReceiveFocus) {
+		if (!this._childElementWillReceiveFocus) {
 			if (this.props.menuState === MenuState.Opened) {
 				this.props.onBeginClosing();
 			}
 		} else {
-			this.setState({ childElementWillReceiveFocus: false });
+			this._childElementWillReceiveFocus = false;
 		}
 	};
 	private readonly _handleChildrenClick = () => {
@@ -60,14 +56,8 @@ export default class Popover extends React.PureComponent<
 		}
 	};
 	private readonly _registerImpendingChildFocusTransition = () => {
-		this.setState({ childElementWillReceiveFocus: true });
+		this._childElementWillReceiveFocus = true;
 	};
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			childElementWillReceiveFocus: false
-		};
-	}
 	public render() {
 		return (
 			<span
