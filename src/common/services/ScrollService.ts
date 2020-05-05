@@ -1,7 +1,9 @@
 function getBoundedScrollY() {
 	return Math.max(Math.min(window.scrollY, document.body.scrollHeight - window.innerHeight), 0);
 }
-const threshold = 15;
+const
+	thresholdDown = 15,
+	thresholdUp = 45;
 export default class ScrollService {
 	private _isBarVisible = true;
 	private _lastDirection = 0;
@@ -38,10 +40,10 @@ export default class ScrollService {
 				let changeVisibility = false;
 				switch (direction) {
 					case -1:
-						changeVisibility = !this._isBarVisible && this._lastDirectionChangeScrollY - scrollY > threshold;
+						changeVisibility = !this._isBarVisible && this._lastDirectionChangeScrollY - scrollY > thresholdUp;
 						break;
 					case 1:
-						changeVisibility = this._isBarVisible && scrollY - this._lastDirectionChangeScrollY > threshold;
+						changeVisibility = this._isBarVisible && scrollY - this._lastDirectionChangeScrollY > thresholdDown;
 						break;
 				}
 				if (changeVisibility) {
