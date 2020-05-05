@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../../../common/Fetchable';
@@ -16,9 +17,11 @@ import RouteLocation from '../../../common/routing/RouteLocation';
 import SignupsReportRow from '../../../common/models/analytics/SignupsReportRow';
 import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
 import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
+import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssuesReportRow';
 
 interface Props {
 	onCloseDialog: () => void,
+	onGetArticleIssueReports: FetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
@@ -34,6 +37,11 @@ interface Props {
 class AdminPage extends React.Component<
 	Props,
 	{
+		articleIssueReports: {
+			startDate: string,
+			endDate: string,
+			data: Fetchable<ArticleIssuesReportRow[]>
+		},
 		conversions: {
 			startDate: string,
 			endDate: string,
@@ -72,6 +80,22 @@ class AdminPage extends React.Component<
 				onShowToast={this.props.onShowToast}
 			/>
 		);
+	};
+	private readonly _setArticleIssueReportsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			articleIssueReports: {
+				...this.state.articleIssueReports,
+				startDate: event.target.value
+			}
+		});
+	};
+	private readonly _setArticleIssueReportsEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			articleIssueReports: {
+				...this.state.articleIssueReports,
+				endDate: event.target.value
+			}
+		});
 	};
 	private readonly _setConversionsStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
@@ -121,6 +145,14 @@ class AdminPage extends React.Component<
 			}
 		});
 	};
+	private readonly _fetchArticleIssueReports = () => {
+		this.setState({
+			articleIssueReports: {
+				...this.state.articleIssueReports,
+				data: this.fetchArticleIssueReports(this.state.articleIssueReports.startDate, this.state.articleIssueReports.endDate)
+			}
+		});
+	};
 	private readonly _fetchConversions = () => {
 		this.setState({
 			conversions: {
@@ -156,6 +188,14 @@ class AdminPage extends React.Component<
 					day: localNow.day,
 					zone: 'utc'
 				}),
+			articleIssueReportsStartDate = localNowDate
+				.minus({ days: 14 })
+				.toISO()
+				.replace(/Z$/, ''),
+			articleIssueReportsEndDate = localNowDate
+				.plus({ days: 1 })
+				.toISO()
+				.replace(/Z$/, ''),
 			dailyTotalsStartDate = localNowDate
 				.minus({ days: 14 })
 				.toISO()
@@ -184,6 +224,11 @@ class AdminPage extends React.Component<
 				.toISO()
 				.replace(/Z$/, '');
 		this.state = {
+			articleIssueReports: {
+				startDate: articleIssueReportsStartDate,
+				endDate: articleIssueReportsEndDate,
+				data: this.fetchArticleIssueReports(articleIssueReportsStartDate, articleIssueReportsEndDate)
+			},
 			conversions: {
 				startDate: conversionsStartDate,
 				endDate: conversionsEndDate,
@@ -206,6 +251,12 @@ class AdminPage extends React.Component<
 				this._asyncTracker.addCallback(mailings => { this.setState({ mailings }); })
 			)
 		};
+	}
+	private fetchArticleIssueReports(startDate: string, endDate: string) {
+		return this.props.onGetArticleIssueReports(
+			{ startDate, endDate },
+			this._asyncTracker.addCallback(rows => { this.setState({ articleIssueReports: { ...this.state.articleIssueReports, data: rows } }); })
+		);
 	}
 	private fetchConversions(startDate: string, endDate: string) {
 		return this.props.onGetConversions(
@@ -526,6 +577,58 @@ class AdminPage extends React.Component<
 					<table>
 						<caption>
 							<div className="content">
+								<strong>Article Issue Reports</strong>
+								<div>
+									<input
+										type="text"
+										value={this.state.articleIssueReports.startDate}
+										onChange={this._setArticleIssueReportsStartDate}
+									/>
+									<input
+										type="text"
+										value={this.state.articleIssueReports.endDate}
+										onChange={this._setArticleIssueReportsEndDate}
+									/>
+									<button onClick={this._fetchArticleIssueReports}>Run Report</button>
+								</div>
+							</div>
+						</caption>
+						<thead>
+							<tr>
+								<th>User</th>
+								<th>Date Created</th>
+								<th>Client Type</th>
+								<th>Issue</th>
+								<th>URL</th>
+								<th>AOTD Rank</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!this.state.articleIssueReports.data.isLoading ?
+								this.state.articleIssueReports.data.value ?
+									this.state.articleIssueReports.data.value.map(row => (
+										<tr key={row.dateCreated}>
+											<td>{row.userName}</td>
+											<td>{row.dateCreated}</td>
+											<td>{row.clientType}</td>
+											<td>{row.issue}</td>
+											<td>
+												<a href={row.articleUrl}>{row.articleUrl}</a>
+											</td>
+											<td>{row.articleAotdContenderRank}</td>
+										</tr>
+									)) :
+									<tr>
+										<td colSpan={6}>Error loading article issue reports.</td>
+									</tr> :
+								<tr>
+									<td colSpan={6}>Loading...</td>
+								</tr>}
+						</tbody>
+					</table>
+					<table>
+						<caption>
+							<div className="content">
 								<strong>Bulk Mailings</strong>
 								<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
 							</div>
@@ -577,6 +680,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 			return (
 				<AdminPage
 					onCloseDialog={deps.onCloseDialog}
+					onGetArticleIssueReports={deps.onGetArticleIssueReports}
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}
 					onGetConversions={deps.onGetConversions}

@@ -56,6 +56,7 @@ import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken
 import TwitterCredentialLinkForm from '../../../common/models/auth/TwitterCredentialLinkForm';
 import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
 import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
+import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssuesReportRow';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -133,6 +134,7 @@ export default abstract class {
 	};
 
 	// Analytics
+	public readonly getArticleIssueReportAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>('/Analytics/ArticleIssueReports');
 	public readonly getConversionAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>('/Analytics/Conversions');
 	public readonly getDailyTotalAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>('/Analytics/DailyTotals');
 	public readonly getSignupAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>('/Analytics/Signups');
