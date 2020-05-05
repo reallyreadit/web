@@ -33,6 +33,7 @@ import BookmarkDialog from '../../common/components/BookmarkDialog';
 import UserPage from '../../common/models/UserPage';
 import UserAccount from '../../common/models/UserAccount';
 import ScrollService from '../../common/services/ScrollService';
+import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -111,6 +112,7 @@ let
 		onPostCommentAddendum: postCommentAddendum,
 		onPostCommentRevision: postCommentRevision,
 		onReadArticle: readArticle,
+		onReportArticleIssue: reportArticleIssue,
 		onShare: share
 	},
 	embedRootElement: HTMLDivElement;
@@ -386,6 +388,13 @@ function postCommentRevision(form: CommentRevisionForm) {
 			);
 		}
 	);
+}
+
+function reportArticleIssue(request: ArticleIssueReportRequest) {
+	messagingContext.sendMessage({
+		type: 'reportArticleIssue',
+		data: request
+	});
 }
 
 function deleteComment(form: CommentRevisionForm) {

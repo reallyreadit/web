@@ -148,6 +148,9 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	onRequestTwitterBrowserLinkRequestToken: () => {
 		return serverApi.requestTwitterBrowserLinkRequestToken();
 	},
+	onReportArticleIssue: request => {
+		return serverApi.reportArticleIssue(request);
+	},
 	onSetStarred: form => serverApi
 		.setStarred(form.articleId, form.isStarred)
 		.then(

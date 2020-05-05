@@ -16,6 +16,7 @@ import { AuthServiceBrowserLinkResponse } from '../../../common/models/auth/Auth
 import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
 import UserAccount from '../../../common/models/UserAccount';
 import WindowOpenRequest from '../../common/WindowOpenRequest';
+import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: MessageResponse<T>) => void) {
@@ -130,6 +131,9 @@ export default class EventPageApi {
 	}
 	public postCommentRevision(form: CommentRevisionForm) {
 		return sendMessageAwaitingResponse<CommentThread>('postCommentRevision', form);
+	}
+	public reportArticleIssue(request: ArticleIssueReportRequest) {
+		return sendMessageAwaitingResponse('reportArticleIssue', request);
 	}
 	public requestTwitterBrowserLinkRequestToken() {
 		return sendMessageAwaitingResponse<TwitterRequestToken>('requestTwitterBrowserLinkRequestToken');

@@ -20,6 +20,7 @@ import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthSer
 import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import UserAccount from '../../common/models/UserAccount';
 import WindowOpenRequest from '../common/WindowOpenRequest';
+import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 
 interface ReaderContentScriptTab {
 	articleId: number | null,
@@ -38,6 +39,7 @@ export default class ReaderContentScriptApi {
 			onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
 			onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 			onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+			onReportArticleIssue: (request: ArticleIssueReportRequest) => Promise<void>,
 			onRequestTwitterBrowserLinkRequestToken: () => Promise<TwitterRequestToken>,
 			onSetStarred: (form: StarForm) => Promise<UserArticle>,
 			onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
@@ -201,6 +203,12 @@ export default class ReaderContentScriptApi {
 						case 'postCommentRevision':
 							createMessageResponseHandler(
 								handlers.onPostCommentRevision(message.data),
+								sendResponse
+							);
+							return true;
+						case 'reportArticleIssue':
+							createMessageResponseHandler(
+								handlers.onReportArticleIssue(message.data),
 								sendResponse
 							);
 							return true;

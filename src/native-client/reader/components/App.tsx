@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import Toaster from '../../../common/components/Toaster';
+import Toaster, { Intent } from '../../../common/components/Toaster';
 import { createUrl } from '../../../common/HttpEndpoint';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
@@ -28,6 +28,7 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import ReaderHeader from '../../../common/components/ReaderHeader';
+import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 
 export interface Props extends DialogState {
 	article: Fetchable<UserArticle>,
@@ -44,6 +45,7 @@ export interface Props extends DialogState {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReadArticle: (slug: string) => void,
+	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	onShare: (data: ShareData) => void,
 	user: UserAccount | null
 }
@@ -51,6 +53,12 @@ export default class App extends React.Component<
 	Props,
 	ToasterState
 > {
+	// article issue reports
+	private readonly _reportArticleIssue = (request: ArticleIssueReportRequest) => {
+		this.props.onReportArticleIssue(request);
+		this._toaster.addToast('Issue Reported', Intent.Success);
+	};
+
 	// clipboard
 	private readonly _copyTextToClipboard = () => {
 		// we don't need this since we're using native sharing
@@ -123,11 +131,6 @@ export default class App extends React.Component<
 	public render() {
 		return (
 			<div className="app_n0jlkg">
-				<ReaderHeader
-					article={this.props.article}
-					isHidden={this.props.isHeaderHidden}
-					onNavBack={this.props.onNavBack}
-				/>
 				{this.props.article.value?.isRead ?
 					<PostPrompt
 						article={this.props.article.value}
@@ -159,6 +162,12 @@ export default class App extends React.Component<
 							user={this.props.user}
 						/> :
 					null}
+				<ReaderHeader
+					article={this.props.article}
+					isHidden={this.props.isHeaderHidden}
+					onNavBack={this.props.onNavBack}
+					onReportArticleIssue={this._reportArticleIssue}
+				/>
 				<DialogManager
 					dialogs={this.props.dialogs}
 					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}

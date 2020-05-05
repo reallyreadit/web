@@ -1,0 +1,31 @@
+/*
+	componentPath: src/common/components/RadioButtons
+	cssComponentId: radio-buttons_sdytcf
+*/
+
+.radio-buttons_sdytcf {
+	display: inline-block;
+	background: white;
+	border: 1px solid #999;
+	border-radius: 3px;
+	font-size: 12pt;
+}
+.radio-buttons_sdytcf > label {
+	display: inline-block;
+}
+.radio-buttons_sdytcf > label > input {
+	display: none;
+}
+.radio-buttons_sdytcf > label > span {
+	display: inline-block;
+	line-height: 25px;
+	padding: 0 10px;
+	border-right: 1px solid #999;
+}
+.radio-buttons_sdytcf > label:last-child > span {
+	border-right: none;
+}
+.radio-buttons_sdytcf > label > input:checked + span {
+	color: white;
+	background-color: #999;
+}

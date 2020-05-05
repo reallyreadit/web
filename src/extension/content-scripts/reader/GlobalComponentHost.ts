@@ -12,15 +12,17 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import UserArticle from '../../../common/models/UserArticle';
 import { Props as HeaderProps } from '../../../common/components/ReaderHeader';
 import ScrollService from '../../../common/services/ScrollService';
+import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 
 interface Services {
 	clipboardService: ClipboardService,
 	dialogService: DialogService,
+	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	toasterService: ToasterService
 }
 type State = DialogState & ToasterState & {
 	error: string | null,
-	header: HeaderProps
+	header: Pick<HeaderProps, 'article' | 'isHidden'>
 };
 export default class GlobalComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -28,7 +30,8 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 	protected _state: State;
 	constructor(
 		params: {
-			domAttachmentDelegate: DomAttachmentDelegate
+			domAttachmentDelegate: DomAttachmentDelegate,
+			services: Pick<Services, 'onReportArticleIssue'>
 		}
 	) {
 		super(params);
@@ -44,6 +47,7 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 					this.setState(delegate(this._state));
 				}
 			}),
+			onReportArticleIssue: params.services.onReportArticleIssue,
 			toasterService: new ToasterService({
 				asyncTracker: new AsyncTracker(),
 				setState: (delegate: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {

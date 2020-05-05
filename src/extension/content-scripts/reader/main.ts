@@ -19,6 +19,7 @@ import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import BookmarkDialog from '../../../common/components/BookmarkDialog';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
+import { Intent } from '../../../common/components/Toaster';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -109,6 +110,12 @@ const globalUi = new GlobalComponentHost({
 		shadowHost.style.transform = 'none';
 		shadowHost.style.zIndex = '2147483647';
 		document.body.appendChild(shadowHost);
+	},
+	services: {
+		onReportArticleIssue: request => {
+			eventPageApi.reportArticleIssue(request);
+			globalUi.toaster.addToast('Issue Reported', Intent.Success);
+		}
 	}
 });
 

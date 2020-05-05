@@ -10,7 +10,7 @@
 	left: 0;
 	padding: 10px 20px;
 	display: flex;
-	justify-content: space-between;
+	color: #666;
 	background-color: #F7F6F5;
 	border-top: env(safe-area-inset-top) solid #F7F6F5;
 	border-bottom: 1px solid #e0e0e0;
@@ -19,16 +19,42 @@
 .reader-header_h3o6tn.hidden {
 	transform: translateY(-100%);
 }
-.reader-header_h3o6tn > .item {
+.reader-header_h3o6tn > .separator {
+	flex: 1 1 auto;
+}
+.reader-header_h3o6tn > .spacer {
+	flex: 1 1 auto;
+	max-width: 16px;
+}
+.reader-header_h3o6tn > .widget {
+	flex: 0 0 auto;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 40px;
-	height: 40px;
+	width: 32px;
+	height: 32px;
 }
-.reader-header_h3o6tn > .back > .icon_rour3d {
-	font-size: 32px;
+.reader-header_h3o6tn > .widget > .icon_rour3d {
+	font-size: 22px;
 	cursor: pointer;
+}
+.reader-header_h3o6tn > .widget > .popover_r7v81v > .children > .icon_rour3d {
+	font-size: 22px;
+	cursor: pointer;
+}
+.reader-header_h3o6tn > .widget > .popover_r7v81v > .children > .icon_rour3d.disabled {
+	color: #999;
+}
+.reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content {
+	position: relative;
+	padding: 10px 5px;
+	background: white;
+}
+.reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content > label {
+	display: block;
+	padding: 5px 10px;
+	white-space: nowrap;
+	text-align: center;
 }
 .reader-header_h3o6tn > .progress > .progress-bar {
 	position: relative;
@@ -42,6 +68,7 @@
 	border: 1px solid #e0e0e0;
 	border-radius: 3px;
 	box-sizing: border-box;
+	cursor: default;
 }
 .reader-header_h3o6tn > .progress > .progress-bar > .fill {
 	position: absolute;
