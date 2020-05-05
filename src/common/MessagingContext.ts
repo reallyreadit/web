@@ -17,6 +17,7 @@ interface ResponseCallback {
 	function: (data: any) => void
 }
 export default abstract class MessagingContext {
+	private _callbackId = 1;
 	private readonly _onMessageListeners: OnMessageListener[] = [];
 	private readonly _responseCallbacks: ResponseCallback[] = [];
 	private isResponseEnvelope(envelope: Envelope): envelope is ResponseEnvelope {
@@ -55,9 +56,7 @@ export default abstract class MessagingContext {
 		let callbackId: number | null = null;
 		if (responseCallback) {
 			this._responseCallbacks.push({
-				id: callbackId = this._responseCallbacks.length ?
-					Math.max(...this._responseCallbacks.map(callback => callback.id)) + 1 :
-					0,
+				id: callbackId = this._callbackId++,
 				function: responseCallback
 			});
 		}
