@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import AlertBadge from './AlertBadge';
 
-export type IconName = 'article-details-star' | 'at-sign' | 'backward' | 'bell' | 'binoculars' | 'bookmark' | 'box' | 'cancel' | 'checkmark' | 'chevron-left' | 'chevron-right' | 'clock' | 'comments' | 'email' | 'exclamation' | 'fire' | 'forbid' | 'graduation' | 'group-circle' | 'link' | 'locked' | 'medal' | 'megaphone' | 'menu2' | 'paper-plane' | 'plus' | 'podium' | 'power' | 'question-circle' | 'quill' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'trophy' | 'twitter' | 'user' | 'warning' | 'write';
+export type IconName = 'article-details-star' | 'at-sign' | 'backward' | 'bell' | 'binoculars' | 'bookmark' | 'box' | 'cancel' | 'checkmark' | 'chevron-left' | 'chevron-right' | 'clock' | 'comments' | 'email' | 'exclamation' | 'fire' | 'flag' | 'forbid' | 'gear' | 'graduation' | 'group-circle' | 'link' | 'locked' | 'medal' | 'megaphone' | 'menu2' | 'paper-plane' | 'plus' | 'podium' | 'power' | 'question-circle' | 'quill' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'trophy' | 'twitter' | 'user' | 'warning' | 'write';
 export default (props: {
 	badge?: number | false,
 	display?: 'inline' | 'block',
