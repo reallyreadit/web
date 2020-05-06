@@ -20,7 +20,7 @@ export default class ReaderHeader extends React.PureComponent<Props> {
 	};
 	public render() {
 		return (
-			<div className={classNames('reader-header_h3o6tn', { 'hidden': this.props.isHidden })}>
+			<div className="reader-header_h3o6tn">
 				<div className="widget back">
 					{this.props.onNavBack ?
 						<Icon

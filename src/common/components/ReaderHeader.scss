@@ -4,20 +4,11 @@
 */
 
 .reader-header_h3o6tn {
-	position: fixed;
-	top: 0;
-	right: 0;
-	left: 0;
 	padding: 10px 20px;
 	display: flex;
 	color: #666;
 	background-color: #F7F6F5;
-	border-top: env(safe-area-inset-top) solid #F7F6F5;
 	border-bottom: 1px solid #e0e0e0;
-	transition: transform 250ms;
-}
-.reader-header_h3o6tn.hidden {
-	transform: translateY(-100%);
 }
 .reader-header_h3o6tn > .separator {
 	flex: 1 1 auto;
