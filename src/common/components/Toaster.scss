@@ -6,11 +6,12 @@
 .toaster_2zbeib {
 	position: fixed;
 	top: 0;
+	left: 0;
+	right: 0;
 	margin-top: env(safe-area-inset-top);
 	z-index: 200;
 	display: flex;
 	justify-content: center;
-	width: 100%;
 	height: 0;
 	padding: 0 10px;
 	box-sizing: border-box;
