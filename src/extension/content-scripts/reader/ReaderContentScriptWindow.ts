@@ -5,7 +5,10 @@ declare global {
 	interface ReaderContentScriptWindow {
 		contentParser: LazyScript<{
 			parse: () => ParseResult,
-			prune: (parseResult: ParseResult) => void
+			prune: (parseResult: ParseResult) => {
+				contentRoot: HTMLElement,
+				scrollRoot: HTMLElement
+			}
 		}>
 	}
 }

@@ -7,6 +7,6 @@ window.reallyreadit.readerContentScript.contentParser.set({
 		return parseDocumentContent();
 	},
 	prune: (parseResult: ParseResult) => {
-		pruneDocument(parseResult);
+		return pruneDocument(parseResult);
 	}
 });

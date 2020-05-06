@@ -2,16 +2,35 @@ import { isReadupElement } from '../contentParsing/utils';
 import { formatList } from '../format';
 
 const styleContent = `
+#com_readup_document {
+	height: 100vh;
+}
 #com_readup_article {
 	font-family: serif;
 	font-size: 16pt;
 	line-height: 1.35em;
 	color: #222;
-	margin: 0 auto;
-	padding: 120px 10px 350px 10px;
-	max-width: 600px;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	overflow: hidden;
+}
+#com_readup_article #com_readup_scroll_container {
+	position: relative;
+	height: 100%;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	z-index: 1;
+}
+#com_readup_article #com_readup_scroll_container::after {
+	content: "";
+	display: block;
+	height: 300px;
 }
 #com_readup_article #com_readup_article_content {
+	max-width: 640px;
+	padding: 0 10px;
+	margin: 0 auto;
 	transition: opacity 350ms;
 }
 #com_readup_article #com_readup_article_content * {
@@ -20,6 +39,7 @@ const styleContent = `
 #com_readup_article #com_readup_article_content #com_readup_article_title {
 	font-family: sans-serif;
 	font-size: 20pt;
+	margin-top: 120px;
 }
 #com_readup_article #com_readup_article_content #com_readup_article_byline {
 	font-size: 18pt;
@@ -180,6 +200,7 @@ export default (document: Document, title?: string, byline?: string) => {
 			a.removeAttribute('href');
 		});
 	// add custom classes
+	document.documentElement.id = 'com_readup_document';
 	document.body.id = 'com_readup_article';
 	// add styles
 	const styleElement = document.createElement('style');

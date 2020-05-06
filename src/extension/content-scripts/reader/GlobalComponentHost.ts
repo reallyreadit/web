@@ -10,19 +10,14 @@ import { createUrl } from '../../../common/HttpEndpoint';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import UserArticle from '../../../common/models/UserArticle';
-import { Props as HeaderProps } from '../../../common/components/ReaderHeader';
-import ScrollService from '../../../common/services/ScrollService';
-import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 
 interface Services {
 	clipboardService: ClipboardService,
 	dialogService: DialogService,
-	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	toasterService: ToasterService
 }
 type State = DialogState & ToasterState & {
-	error: string | null,
-	header: Pick<HeaderProps, 'article' | 'isHidden'>
+	error: string | null
 };
 export default class GlobalComponentHost extends ComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -30,8 +25,7 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 	protected _state: State;
 	constructor(
 		params: {
-			domAttachmentDelegate: DomAttachmentDelegate,
-			services: Pick<Services, 'onReportArticleIssue'>
+			domAttachmentDelegate: DomAttachmentDelegate
 		}
 	) {
 		super(params);
@@ -47,7 +41,6 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 					this.setState(delegate(this._state));
 				}
 			}),
-			onReportArticleIssue: params.services.onReportArticleIssue,
 			toasterService: new ToasterService({
 				asyncTracker: new AsyncTracker(),
 				setState: (delegate: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
@@ -55,41 +48,14 @@ export default class GlobalComponentHost extends ComponentHost<Services, State> 
 				}
 			})
 		};
-		new ScrollService({
-			setBarVisibility: isVisible => {
-				if (!this._state || this._state.header.isHidden !== isVisible) {
-					return;
-				}
-				this.setState({
-					header: {
-						...this._state.header,
-						isHidden: !isVisible
-					}
-				});
-			}
-		});
 	}
 	private openInNewTab(url: string) {
 		window.open(url, '_blank');
 	}
-	public articleUpdated(article: UserArticle) {
-		this.setState({
-			header: {
-				...this._state.header,
-				article: {
-					isLoading: false,
-					value: article
-				}
-			}
-		});
-	}
-	public initialize(
-		{ header }: Pick<State, 'header'>
-	) {
+	public initialize() {
 		this.setState({
 			dialogs: [],
 			error: null,
-			header,
 			toasts: []
 		});
 		return this;

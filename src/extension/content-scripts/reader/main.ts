@@ -20,6 +20,8 @@ import AuthenticationError from '../../../common/models/auth/AuthenticationError
 import BookmarkDialog from '../../../common/components/BookmarkDialog';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import { Intent } from '../../../common/components/Toaster';
+import ScrollService from '../../../common/services/ScrollService';
+import HeaderComponentHost from './HeaderComponentHost';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -34,6 +36,8 @@ window.reallyreadit = {
 // globals
 let
 	contentParseResult: ParseResult,
+	contentRoot: HTMLElement,
+	scrollRoot: HTMLElement,
 	lookupResult: ArticleLookupResult,
 	page: Page,
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void;
@@ -43,7 +47,7 @@ const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
 		if (lookupResult) {
 			lookupResult.userArticle = event.article;
-			globalUi.articleUpdated(event.article);
+			header.articleUpdated(event.article);
 			title.articleUpdated(event.article);
 			commentsSection.articleUpdated(event.article);
 		}
@@ -110,17 +114,11 @@ const globalUi = new GlobalComponentHost({
 		shadowHost.style.transform = 'none';
 		shadowHost.style.zIndex = '2147483647';
 		document.body.appendChild(shadowHost);
-	},
-	services: {
-		onReportArticleIssue: request => {
-			eventPageApi.reportArticleIssue(request);
-			globalUi.toaster.addToast('Issue Reported', Intent.Success);
-		}
 	}
 });
 
 function showError(error: string) {
-	document.body.style.overflow = 'hidden';
+	(scrollRoot || document.body).style.overflow = 'hidden';
 	globalUi.showError(error);
 }
 
@@ -171,15 +169,33 @@ function toggleContentIdentificationDisplay() {
 	}
 }
 
+// header ui
+const headerContainer = document.createElement('div');
+headerContainer.style.position = 'sticky';
+headerContainer.style.top = '0';
+headerContainer.style.zIndex = '1';
+headerContainer.style.transition = 'transform 250ms';
+
+const header = new HeaderComponentHost({
+	domAttachmentDelegate: shadowHost => {
+		headerContainer.append(shadowHost);
+		scrollRoot.prepend(headerContainer);
+	},
+	services: {
+		onReportArticleIssue: request => {
+			eventPageApi.reportArticleIssue(request);
+			globalUi.toaster.addToast('Issue Reported', Intent.Success);
+		}
+	}
+});
+
 // title ui
 const title = new TitleComponentHost({
 	domAttachmentDelegate: shadowHost => {
 		const wrapper = document.createElement('div');
-		wrapper.style.marginBottom = '1.5em';
+		wrapper.style.margin = '2.5em 0 1.5em 0';
 		wrapper.append(shadowHost);
-		document
-			.getElementById('com_readup_article_content')
-			.prepend(wrapper);
+		contentRoot.prepend(wrapper);
 	},
 	services: {
 		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
@@ -207,7 +223,7 @@ const title = new TitleComponentHost({
 const commentsSection = new CommentsSectionComponentHost({
 	domAttachmentDelegate: shadowHost => {
 		const wrapper = document.createElement('div');
-		wrapper.style.marginTop = '2em';
+		wrapper.style.margin = '2em 0 0 0';
 		wrapper.append(shadowHost);
 		page.elements[page.elements.length - 1].element.insertAdjacentElement(
 			'afterend',
@@ -337,7 +353,7 @@ const reader = new Reader(
 					if (event.isCompletionCommit) {
 						showComments();
 					}
-					globalUi.articleUpdated(article);
+					header.articleUpdated(article);
 					commentsSection.articleUpdated(article);
 				}
 			);
@@ -358,7 +374,10 @@ Promise
 	.all<
 		{
 			contentParser: {
-				prune: (parseResult: ParseResult) => void
+				prune: (parseResult: ParseResult) => {
+					contentRoot: HTMLElement,
+					scrollRoot: HTMLElement
+				}
 			},
 			contentParseResult: ParseResult,
 			lookupResult: Promise<ArticleLookupResult>
@@ -389,21 +408,35 @@ Promise
 			contentParseResult = results[0].contentParseResult;
 
 			// prune and style
-			results[0].contentParser.prune(contentParseResult);
+			const rootElements = results[0].contentParser.prune(contentParseResult);
+			contentRoot = rootElements.contentRoot;
+			scrollRoot = rootElements.scrollRoot;
 			styleArticleDocument(document);
 
 			// set up the global user interface
 			insertFontStyleElement();
 			globalUi
-				.initialize({
-					header: {
-						article: {
-							isLoading: true
-						},
-						isHidden: false
-					}
-				})
+				.initialize()
 				.attach();
+
+			// set up the header user interface
+			header
+				.initialize()
+				.attach();
+
+			new ScrollService({
+				scrollElement: scrollRoot,
+				setBarVisibility: isVisible => {
+					if (isVisible) {
+						headerContainer.style.transform = '';
+						headerContainer.style.pointerEvents = 'auto';
+					} else {
+						headerContainer.style.transform = 'translateY(-100%)';
+						headerContainer.style.pointerEvents = 'none';
+					}
+					header.setVisibility(isVisible);
+				}
+			});
 			
 			// set up the title user interface
 			title
@@ -444,8 +477,8 @@ Promise
 							page.setReadState(result.userPage.readState);
 							reader.loadPage(page);
 							
-							// update the global user interface
-							globalUi.articleUpdated(result.userArticle);
+							// update the header user interface
+							header.articleUpdated(result.userArticle);
 
 							// update the title user interface
 							title.articleUpdated(result.userArticle);
@@ -481,7 +514,7 @@ Promise
 										onSubmit: () => {
 											const bookmarkScrollTop = results[0].page.getBookmarkScrollTop();
 											if (bookmarkScrollTop > 0) {
-												window.scrollTo({
+												scrollRoot.scrollTo({
 													behavior: 'smooth',
 													top: bookmarkScrollTop
 												});

@@ -7,8 +7,6 @@ import ToasterService from '../../../../common/services/ToasterService';
 import ClipboardService from '../../../../common/services/ClipboardService';
 import InfoBox from '../../../../common/components/InfoBox';
 import * as classNames from 'classnames';
-import ReaderHeader, { Props as HeaderProps } from '../../../../common/components/ReaderHeader';
-import ArticleIssueReportRequest from '../../../../common/models/analytics/ArticleIssueReportRequest';
 
 export enum GlobalError {
 	None,
@@ -21,23 +19,14 @@ export default (
 		dialogs: Dialog[],
 		dialogService: DialogService,
 		error: string | null,
-		header: Pick<HeaderProps, 'article' | 'isHidden'>,
-		onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 		toasterService: ToasterService,
 		toasts: Toast[]
 	}
 ) => (
 	<div className={classNames('global_x82v08', { 'error': !!props.error })}>
-		<ReaderHeader
-			article={props.header.article}
-			isHidden={props.header.isHidden}
-			onReportArticleIssue={props.onReportArticleIssue}
-			showProgressBar={false}
-		/>
 		<DialogManager
 			dialogs={props.dialogs}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}
-			style="light"
 		/>
 		<Toaster
 			onRemoveToast={props.toasterService.removeToast}

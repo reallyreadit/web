@@ -55,7 +55,7 @@ const
 		contentParseResult.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
 	);
 
-pruneDocument(contentParseResult);
+const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 styleArticleDocument(
 	window.document,
 	metadataParseResult.metadata.article.title,
@@ -120,11 +120,12 @@ function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
 	embedRootElement.id = 'com_readup_embed';
-	window.document.body.append(embedRootElement);
+	scrollRoot.append(embedRootElement);
 	// initial render
 	render();
 	// create scroll service
 	const scrollService = new ScrollService({
+		scrollElement: scrollRoot,
 		setBarVisibility: isVisible => {
 			if (isVisible === embedProps.isHeaderHidden) {
 				setStatusBarVisibility(isVisible);
@@ -135,19 +136,17 @@ function insertEmbed() {
 		}
 	});
 	// add click listener to toggle header
-	document
-		.getElementById('com_readup_article_content')
-		.addEventListener(
-			'click',
-			() => {
-				const isHeaderHidden = !embedProps.isHeaderHidden;
-				scrollService.setBarVisibility(!isHeaderHidden);
-				setStatusBarVisibility(!isHeaderHidden);
-				render({
-					isHeaderHidden
-				});
-			}
-		);
+	contentRoot.addEventListener(
+		'click',
+		() => {
+			const isHeaderHidden = !embedProps.isHeaderHidden;
+			scrollService.setBarVisibility(!isHeaderHidden);
+			setStatusBarVisibility(!isHeaderHidden);
+			render({
+				isHeaderHidden
+			});
+		}
+	);
 }
 function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>) {
 	ReactDOM.render(
@@ -470,12 +469,11 @@ messagingContext.sendMessage(
 						onSubmit: () => {
 							const scrollTop = page.getBookmarkScrollTop();
 							if (scrollTop > window.innerHeight) {
-								const content = document.getElementById('com_readup_article_content');
-								content.style.opacity = '0';
+								contentRoot.style.opacity = '0';
 								setTimeout(
 									() => {
-										window.scrollTo(0, scrollTop);
-										content.style.opacity = '1';
+										scrollRoot.scrollTo(0, scrollTop);
+										contentRoot.style.opacity = '1';
 									},
 									350
 								);

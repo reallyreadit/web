@@ -146,5 +146,13 @@ export default function pruneDocument(parseResult: ParseResult) {
 				child => !isReadupElement(child)
 			)
 	);
-	document.body.prepend(contentRoot);
+	// wrap the content in a scroll container to prevent infinite scroll scripts
+	const scrollRoot = document.createElement('div');
+	scrollRoot.id = 'com_readup_scroll_container';
+	scrollRoot.append(contentRoot);
+	document.body.prepend(scrollRoot);
+	return {
+		contentRoot,
+		scrollRoot
+	};
 }

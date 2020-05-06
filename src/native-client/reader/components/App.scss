@@ -22,6 +22,18 @@
 	opacity: 0;
 	animation: app_n0jlkg-fade-in 500ms forwards;
 }
+.app_n0jlkg > .header-container {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	border-top: env(safe-area-inset-top) solid #F7F6F5;
+	transition: transform 250ms;
+}
+.app_n0jlkg > .header-container.hidden {
+	transform: translateY(-100%);
+	pointer-events: none;
+}
 
 @keyframes app_n0jlkg-fade-in {
 	from {

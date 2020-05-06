@@ -1,6 +1,3 @@
-function getBoundedScrollY() {
-	return Math.max(Math.min(window.scrollY, document.body.scrollHeight - window.innerHeight), 0);
-}
 const
 	thresholdDown = 15,
 	thresholdUp = 45;
@@ -8,22 +5,27 @@ export default class ScrollService {
 	private _isBarVisible = true;
 	private _lastDirection = 0;
 	private _lastDirectionChangeScrollY = 0;
-	private _lastScrollY = getBoundedScrollY();
+	private _lastScrollY: number;
+	private readonly _scrollElement: HTMLElement;
 	private readonly _setBarVisibility: (isVisible: boolean) => void;
 	constructor(
 		{
+			scrollElement,
 			setBarVisibility
 		} :
 		{
+			scrollElement: HTMLElement,
 			setBarVisibility: (isVisible: boolean) => void
 		}
 	) {
+		this._scrollElement = scrollElement;
 		this._setBarVisibility = setBarVisibility;
-		window.addEventListener(
+		this._lastScrollY = this.getBoundedScrollY();
+		scrollElement.addEventListener(
 			'scroll',
 			() => {
 				// get current bounded scroll y
-				const scrollY = getBoundedScrollY();
+				const scrollY = this.getBoundedScrollY();
 				// check change since last scroll event
 				const delta = scrollY - this._lastScrollY;
 				if (!delta) {
@@ -51,6 +53,9 @@ export default class ScrollService {
 				}
 			}
 		);
+	}
+	private getBoundedScrollY() {
+		return Math.max(Math.min(this._scrollElement.scrollTop, this._scrollElement.scrollHeight - window.innerHeight), 0);
 	}
 	public setBarVisibility(isVisible: boolean) {
 		this._isBarVisible = isVisible;

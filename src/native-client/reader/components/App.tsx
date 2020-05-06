@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as classNames from 'classnames';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import { createUrl } from '../../../common/HttpEndpoint';
@@ -162,12 +163,14 @@ export default class App extends React.Component<
 							user={this.props.user}
 						/> :
 					null}
-				<ReaderHeader
-					article={this.props.article}
-					isHidden={this.props.isHeaderHidden}
-					onNavBack={this.props.onNavBack}
-					onReportArticleIssue={this._reportArticleIssue}
-				/>
+				<div className={classNames('header-container', { 'hidden': this.props.isHeaderHidden })}>
+					<ReaderHeader
+						article={this.props.article}
+						isHidden={this.props.isHeaderHidden}
+						onNavBack={this.props.onNavBack}
+						onReportArticleIssue={this._reportArticleIssue}
+					/>
+				</div>
 				<DialogManager
 					dialogs={this.props.dialogs}
 					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}
