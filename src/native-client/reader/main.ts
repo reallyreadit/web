@@ -56,11 +56,11 @@ const
 	);
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
-styleArticleDocument(
-	window.document,
-	metadataParseResult.metadata.article.title,
-	createByline(metadataParseResult.metadata.article.authors)
-);
+styleArticleDocument({
+	document: window.document,
+	title: metadataParseResult.metadata.article.title,
+	byline: createByline(metadataParseResult.metadata.article.authors)
+});
 
 const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
 procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
@@ -125,7 +125,7 @@ function insertEmbed() {
 	render();
 	// create scroll service
 	const scrollService = new ScrollService({
-		scrollElement: scrollRoot,
+		scrollContainer: window,
 		setBarVisibility: isVisible => {
 			if (isVisible === embedProps.isHeaderHidden) {
 				setStatusBarVisibility(isVisible);
@@ -472,7 +472,7 @@ messagingContext.sendMessage(
 								contentRoot.style.opacity = '0';
 								setTimeout(
 									() => {
-										scrollRoot.scrollTo(0, scrollTop);
+										window.scrollTo(0, scrollTop);
 										contentRoot.style.opacity = '1';
 									},
 									350

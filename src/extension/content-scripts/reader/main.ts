@@ -411,7 +411,10 @@ Promise
 			const rootElements = results[0].contentParser.prune(contentParseResult);
 			contentRoot = rootElements.contentRoot;
 			scrollRoot = rootElements.scrollRoot;
-			styleArticleDocument(document);
+			styleArticleDocument({
+				document,
+				useScrollContainer: true
+			});
 
 			// set up the global user interface
 			insertFontStyleElement();
@@ -425,7 +428,7 @@ Promise
 				.attach();
 
 			new ScrollService({
-				scrollElement: scrollRoot,
+				scrollContainer: scrollRoot,
 				setBarVisibility: isVisible => {
 					if (isVisible) {
 						headerContainer.style.transform = '';

@@ -2,7 +2,7 @@ import { isReadupElement } from '../contentParsing/utils';
 import { formatList } from '../format';
 
 const styleContent = `
-#com_readup_document {
+#com_readup_document.com_readup_scroll_capture {
 	height: 100vh;
 }
 #com_readup_article {
@@ -12,10 +12,12 @@ const styleContent = `
 	color: #222;
 	margin: 0;
 	padding: 0;
+}
+#com_readup_document.com_readup_scroll_capture #com_readup_article {
 	height: 100%;
 	overflow: hidden;
 }
-#com_readup_article #com_readup_scroll_container {
+#com_readup_document.com_readup_scroll_capture #com_readup_scroll_container {
 	position: relative;
 	height: 100%;
 	overflow: auto;
@@ -150,7 +152,20 @@ export function createByline(authors: string[] | { name?: string }[]) {
 			.sort()
 	);
 }
-export default (document: Document, title?: string, byline?: string) => {
+export default (
+	{
+		document,
+		title,
+		byline,
+		useScrollContainer
+	}:
+	{
+		document: Document,
+		title?: string,
+		byline?: string,
+		useScrollContainer?: boolean
+	}
+) => {
 	// add viewport meta
 	if (!document.querySelectorAll('meta[name="viewport"]').length) {
 		const metaElement = document.createElement('meta');
@@ -201,6 +216,9 @@ export default (document: Document, title?: string, byline?: string) => {
 		});
 	// add custom classes
 	document.documentElement.id = 'com_readup_document';
+	if (useScrollContainer) {
+		document.documentElement.classList.add('com_readup_scroll_capture');
+	}
 	document.body.id = 'com_readup_article';
 	// add styles
 	const styleElement = document.createElement('style');
