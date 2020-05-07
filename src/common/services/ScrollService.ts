@@ -6,22 +6,29 @@ export default class ScrollService {
 	private _lastDirection = 0;
 	private _lastDirectionChangeScrollY = 0;
 	private _lastScrollY: number;
-	private readonly _scrollElement: HTMLElement;
+	private readonly _getScrollTop: () => number;
+	private readonly _getScrollHeight: () => number;
 	private readonly _setBarVisibility: (isVisible: boolean) => void;
 	constructor(
 		{
-			scrollElement,
+			scrollContainer,
 			setBarVisibility
 		} :
 		{
-			scrollElement: HTMLElement,
+			scrollContainer: HTMLElement | Window,
 			setBarVisibility: (isVisible: boolean) => void
 		}
 	) {
-		this._scrollElement = scrollElement;
+		if (scrollContainer instanceof Window) {
+			this._getScrollTop = () => scrollContainer.scrollY;
+			this._getScrollHeight = () => scrollContainer.document.body.scrollHeight;
+		} else {
+			this._getScrollTop = () => scrollContainer.scrollTop;
+			this._getScrollHeight = () => scrollContainer.scrollHeight;
+		}
 		this._setBarVisibility = setBarVisibility;
 		this._lastScrollY = this.getBoundedScrollY();
-		scrollElement.addEventListener(
+		scrollContainer.addEventListener(
 			'scroll',
 			() => {
 				// get current bounded scroll y
@@ -55,7 +62,7 @@ export default class ScrollService {
 		);
 	}
 	private getBoundedScrollY() {
-		return Math.max(Math.min(this._scrollElement.scrollTop, this._scrollElement.scrollHeight - window.innerHeight), 0);
+		return Math.max(Math.min(this._getScrollTop(), this._getScrollHeight() - window.innerHeight), 0);
 	}
 	public setBarVisibility(isVisible: boolean) {
 		this._isBarVisible = isVisible;
