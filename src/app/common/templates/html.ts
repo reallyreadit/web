@@ -1,12 +1,14 @@
 import icons from '../../../common/svg/icons';
 import InitData from '../InitData';
+import { Route } from '../../../common/routing/Route';
+import ScreenKey from '../../../common/routing/ScreenKey';
 
 export default (
 	model: {
 		chromeExtensionId: string,
 		content: string,
 		initData: InitData,
-		noIndex: boolean,
+		route: Route<any, any>,
 		title: string
 	}
 ) => {
@@ -26,8 +28,14 @@ export default (
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
 		<meta name="google-site-verification" content="9getaJHrSnp0LPyHlFeOT5cJ7fPK-EchoUkPRcAo8S0" />
-		${model.noIndex ?
+		${model.route.authLevel != null || model.route.noIndex ?
 			'<meta name="robots" content="noindex" />' :
+			''}
+		${model.route.screenKey === ScreenKey.Home ?
+			`<meta name="twitter:card" content="app" />
+			<meta name="twitter:site" content="@ReadupDotCom" />
+			<meta name="twitter:app:id:iphone" content="1441825432" />
+			<meta name="twitter:app:id:ipad" content="1441825432" />` :
 			''}
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />

@@ -518,7 +518,7 @@ server = server.get('/*', (req, res) => {
 				version: version.app,
 				webServerEndpoint: config.webServer
 			},
-			noIndex: req.matchedRoute.authLevel != null || req.matchedRoute.noIndex,
+			route: req.matchedRoute,
 			title: browserApi.getTitle()
 		}));
 	});
