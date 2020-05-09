@@ -11,23 +11,12 @@ export default class TitleComponentHost extends ComponentHost<Services, State> {
 	constructor(
 		params: {
 			domAttachmentDelegate: DomAttachmentDelegate,
-			services: Pick<Services, Exclude<keyof Services, 'onSetStarred'>> & {
-				onSetStarred: (isStarred: boolean) => Promise<UserArticle>
-			}
+			services: Services
 		}
 	) {
 		super(params);
 		this._component = Title;
-		this._services = {
-			...params.services,
-			onSetStarred: isStarred => params.services
-				.onSetStarred(isStarred)
-				.then(
-					article => {
-						this.articleUpdated(article);
-					}
-				)
-		};
+		this._services = params.services;
 	}
 	public articleUpdated(article: UserArticle) {
 		this.setState({

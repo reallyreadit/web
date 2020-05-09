@@ -22,6 +22,9 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import { Intent } from '../../../common/components/Toaster';
 import ScrollService from '../../../common/services/ScrollService';
 import HeaderComponentHost from './HeaderComponentHost';
+import UserAccount from '../../../common/models/UserAccount';
+import { createCommentThread } from '../../../common/models/social/Post';
+import CommentThread from '../../../common/models/CommentThread';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -42,15 +45,49 @@ let
 	page: Page,
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void;
 
+function updateArticle(article: UserArticle) {
+	if (!lookupResult) {
+		return;
+	}
+	lookupResult.userArticle = article;
+	header.articleUpdated(article);
+	title.articleUpdated(article);
+	if (commentsSection.isInitialized) {
+		commentsSection.articleUpdated(article);
+	} else if (article.isRead) {
+		commentsSection
+			.initialize(article, lookupResult.user)
+			.attach();
+		eventPageApi
+			.getComments(article.slug)
+			.then(
+				comments => {
+					commentsSection.commentsLoaded(comments);
+				}
+			);
+	}
+}
+
+function updateUser(user: UserAccount) {
+	if (!lookupResult) {
+		return;
+	}
+	lookupResult.user = user;
+	commentsSection.userUpdated(user);
+}
+
+function addComment(comment: CommentThread) {
+	commentsSection.commentPosted(comment);
+}
+
+function updateComment(comment: CommentThread) {
+	commentsSection.commentUpdated(comment);
+}
+
 // event page interface
 const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
-		if (lookupResult) {
-			lookupResult.userArticle = event.article;
-			header.articleUpdated(event.article);
-			title.articleUpdated(event.article);
-			commentsSection.articleUpdated(event.article);
-		}
+		updateArticle(event.article);
 	},
 	onAuthServiceLinkCompleted: response => {
 		if (
@@ -59,45 +96,33 @@ const eventPageApi = new EventPageApi({
 			response.association.provider === AuthServiceProvider.Twitter &&
 			!lookupResult.user.hasLinkedTwitterAccount
 		) {
-			commentsSection.userUpdated(
-				lookupResult.user = {
-					...lookupResult.user,
-					hasLinkedTwitterAccount: true
-				}
-			);
+			updateUser({
+				...lookupResult.user,
+				hasLinkedTwitterAccount: true
+			});
 		}
 		if (authServiceLinkCompletionHandler) {
 			authServiceLinkCompletionHandler(response);
 		}
 	},
 	onCommentPosted: comment => {
-		if (lookupResult) {
-			commentsSection.commentPosted(comment);
-		}
+		addComment(comment);
 	},
 	onCommentUpdated: comment => {
-		if (lookupResult) {
-			commentsSection.commentUpdated(comment);
-		}
+		updateComment(comment);
 	},
 	onToggleContentIdentificationDisplay: () => {
 		toggleContentIdentificationDisplay();
 	},
 	onToggleReadStateDisplay: () => {
-		if (page) {
-			page.toggleReadStateDisplay();
-		}
+		page?.toggleReadStateDisplay();
 	},
 	onUserSignedOut: () => {
 		reader.unloadPage();
 		showError('You were signed out in another tab.');
 	},
 	onUserUpdated: user => {
-		if (lookupResult) {
-			commentsSection.userUpdated(
-				lookupResult.user = user
-			);
-		}
+		updateUser(user);
 	}
 });
 
@@ -206,8 +231,7 @@ const title = new TitleComponentHost({
 			})
 			.then(
 				article => {
-					lookupResult.userArticle = article;
-					return article;
+					updateArticle(article);
 				}
 			),
 		onToggleDebugMode: () => {
@@ -234,7 +258,14 @@ const commentsSection = new CommentsSectionComponentHost({
 		clipboardService: globalUi.clipboard,
 		dialogService: globalUi.dialogs,
 		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
-		onDeleteComment: form => eventPageApi.deleteComment(form),
+		onDeleteComment: form => eventPageApi
+			.deleteComment(form)
+			.then(
+				comment => {
+					updateComment(comment);
+					return comment;
+				}
+			),
 		onLinkAuthServiceAccount: provider => new Promise<AuthServiceAccountAssociation>(
 			(resolve, reject) => {
 				eventPageApi
@@ -303,7 +334,12 @@ const commentsSection = new CommentsSectionComponentHost({
 			.postArticle(form)
 			.then(
 				post => {
-					lookupResult.userArticle = post.article;
+					updateArticle(post.article);
+					if (post.comment) {
+						addComment(
+							createCommentThread(post)
+						);
+					}
 					return post;
 				}
 			),
@@ -311,30 +347,31 @@ const commentsSection = new CommentsSectionComponentHost({
 			.postComment(form)
 			.then(
 				result => {
-					lookupResult.userArticle = result.article;
-					return result;
+					updateArticle(result.article);
+					addComment(result.comment);
 				}
 			),
-		onPostCommentAddendum: form => eventPageApi.postCommentAddendum(form),
-		onPostCommentRevision: form => eventPageApi.postCommentRevision(form),
+		onPostCommentAddendum: form => eventPageApi
+			.postCommentAddendum(form)
+			.then(
+				comment => {
+					updateComment(comment);
+					return comment;
+				}
+			),
+		onPostCommentRevision: form => eventPageApi
+			.postCommentRevision(form)
+			.then(
+				comment => {
+					updateComment(comment);
+					return comment;
+				}
+			),
 		onShare: globalUi.handleShareRequest,
 		onViewProfile: globalUi.viewProfile,
 		toasterService: globalUi.toaster
 	}
 });
-
-function showComments() {
-	commentsSection
-		.initialize(lookupResult.userArticle, lookupResult.user)
-		.attach();
-	eventPageApi
-		.getComments(lookupResult.userArticle.slug)
-		.then(
-			comments => {
-				commentsSection.commentsLoaded(comments);
-			}
-		);
-}
 
 // reader
 const reader = new Reader(
@@ -349,12 +386,7 @@ const reader = new Reader(
 			)
 			.then(
 				article => {
-					lookupResult.userArticle = article;
-					if (event.isCompletionCommit) {
-						showComments();
-					}
-					header.articleUpdated(article);
-					commentsSection.articleUpdated(article);
+					updateArticle(article);
 				}
 			);
 	}
@@ -480,16 +512,9 @@ Promise
 							page.setReadState(result.userPage.readState);
 							reader.loadPage(page);
 							
-							// update the header user interface
-							header.articleUpdated(result.userArticle);
-
-							// update the title user interface
-							title.articleUpdated(result.userArticle);
-
-							// load the embed user interface
-							if (result.userArticle.isRead) {
-								showComments();
-							}
+							// trigger an update
+							updateArticle(lookupResult.userArticle);
+							updateUser(lookupResult.user);
 
 							// return the article and page for the bookmark prompt
 							return {
