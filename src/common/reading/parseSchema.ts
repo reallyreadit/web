@@ -15,6 +15,7 @@ function parseSchema(topLevelTypes: any[]): ParseResult {
 			(type['@type'].endsWith('Article') || type['@type'] === 'BlogPosting')
 	);
 	if (data) {
+		const firstImage = first(data.image);
 		return {
 			url: first(data.url),
 			article: {
@@ -32,7 +33,14 @@ function parseSchema(topLevelTypes: any[]): ParseResult {
 				section: first(data.articleSection) || first(data.printSection),
 				description: first(data.description),
 				tags: data.keywords ? data.keywords instanceof Array ? data.keywords : data.keywords.split(',') : [],
-				pageLinks: []
+				pageLinks: [],
+				imageUrl: firstImage ?
+					typeof firstImage === 'string' || typeof firstImage === 'object' ?
+						typeof firstImage === 'string' ?
+							firstImage :
+							firstImage.contentUrl || firstImage.url :
+						null :
+					null
 			}
 		}
 	}

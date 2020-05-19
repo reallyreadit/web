@@ -33,7 +33,8 @@ export default function parseMiscMetadata(): ParseResult {
 			description: getElementAttribute<HTMLMetaElement>(document.querySelector('meta[name="description"]'), e => e.content),
 			authors: (Array.from(document.querySelectorAll('meta[name="author"]')) as HTMLMetaElement[]).map(e => ({ name: e.content })),
 			tags: [],
-			pageLinks: []
+			pageLinks: [],
+			imageUrl: getElementAttribute<HTMLMetaElement>(document.querySelector('meta[name="twitter:image"i]'), e => e.content),
 		}
 	};
 }

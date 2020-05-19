@@ -59,7 +59,8 @@ function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): 
 			section: first(x => x.article.section, orderedResults),
 			description: first(x => x.article.description, orderedResults),
 			tags: most(x => x.article.tags, orderedResults),
-			pageLinks: most(x => x.article.pageLinks, orderedResults)
+			pageLinks: most(x => x.article.pageLinks, orderedResults),
+			imageUrl: first(x => x.article.imageUrl, [misc, openGraph, schema])
 		}
 	};
 }

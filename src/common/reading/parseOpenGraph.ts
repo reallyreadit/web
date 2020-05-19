@@ -30,7 +30,8 @@ function parseOpenGraph(): ParseResult {
 				tags: elements
 					.filter(e => e.getAttribute('property') === 'article:tag')
 					.map(e => e.content),
-				pageLinks: []
+				pageLinks: [],
+				imageUrl: findMetaElementContent('og:image', elements)
 			}
 		};
 	}

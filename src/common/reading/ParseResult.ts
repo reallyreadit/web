@@ -21,7 +21,8 @@ interface ParseResult {
 		pageLinks: {
 			number: number,
 			url: string
-		}[]
+		}[],
+		imageUrl?: string
 	}
 }
 export default ParseResult;
