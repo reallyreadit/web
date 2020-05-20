@@ -31,6 +31,9 @@ import UserAccount from '../../common/models/UserAccount';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
 import { getDeviceType } from '../../common/DeviceType';
+import TwitterCardMetadata from '../../common/models/articles/TwitterCardMetadata';
+import TwitterCardMetadataRequest from '../../common/models/articles/TwitterCardMetadataRequest';
+import { TwitterCard, TwitterCardType } from './TwitterCard';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -485,7 +488,8 @@ server = server.get('/*', (req, res) => {
 	}
 	// call renderToString first to capture all the api requests
 	ReactDOMServer.renderToString(rootElement);
-	req.api.processRequests().then(() => {
+	// create response delegate
+	const sendResponse = (twitterCard?: TwitterCard) => {
 		// call renderToString again to render with api request results
 		const content = ReactDOMServer.renderToString(rootElement);
 		// set the cache header
@@ -518,10 +522,68 @@ server = server.get('/*', (req, res) => {
 				version: version.app,
 				webServerEndpoint: config.webServer
 			},
-			route: req.matchedRoute,
-			title: browserApi.getTitle()
+			noIndex: (
+				req.matchedRoute.authLevel != null ||
+				(req.matchedRoute.noIndex && req.matchedRoute.noIndex(req.path))
+			),
+			title: browserApi.getTitle(),
+			twitterCard
 		}));
-	});
+	};
+	// check if we need to render a twitter card
+	switch (req.matchedRoute.screenKey) {
+		case ScreenKey.Home:
+			req.api
+				.processRequests()
+				.then(
+					() => {
+						sendResponse({
+							type: TwitterCardType.App
+						});
+					}
+				);	
+			break;
+		case ScreenKey.Comments:
+			const pathParams = req.matchedRoute.getPathParams(req.path);
+			Promise
+				.all([
+					req.api.fetchJson<TwitterCardMetadata>(
+						'GET',
+						{
+							path: '/Articles/TwitterCardMetadata',
+							data: {
+								postId: pathParams['commentId'],
+								slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+							} as TwitterCardMetadataRequest
+						}
+					),
+					req.api.processRequests()
+				])
+				.then(
+					results => {
+						sendResponse({
+							type: TwitterCardType.Summary,
+							title: results[0].title,
+							description: results[0].description,
+							imageUrl: results[0].imageUrl
+						});
+					}
+				)
+				.catch(
+					() => {
+						sendResponse();
+					}
+				);
+			break;
+		default:
+			req.api
+				.processRequests()
+				.then(
+					() => {
+						sendResponse();
+					}
+				);
+	}
 });
 // start the server
 server.listen(config.port, () => {

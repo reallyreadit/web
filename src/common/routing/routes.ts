@@ -34,22 +34,14 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	{
 		analyticsName: 'Blog',
 		createUrl: () => '/blog',
-		noIndex: true,
+		noIndex: () => true,
 		pathRegExp: /^\/blog$/,
 		screenKey: ScreenKey.Blog
 	},
 	(function () {
-		const pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/;
-		return {
-			analyticsName: 'Comments',
-			createUrl: params => {
-				let url = `/comments/${params['sourceSlug']}/${params['articleSlug']}`;
-				if (params['commentId']) {
-					url += `/${params['commentId']}`;
-				}
-				return url;
-			},
-			getPathParams: path => {
+		const
+			pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/,
+			getPathParams = (path: string) => {
 				const [, sourceSlug, articleSlug, commentId] = path.match(pathRegExp);
 				let result = { articleSlug, sourceSlug } as {
 					articleSlug: string,
@@ -60,7 +52,18 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 					result.commentId = commentId;
 				}
 				return result;
+			};
+		return {
+			analyticsName: 'Comments',
+			createUrl: params => {
+				let url = `/comments/${params['sourceSlug']}/${params['articleSlug']}`;
+				if (params['commentId']) {
+					url += `/${params['commentId']}`;
+				}
+				return url;
 			},
+			getPathParams,
+			noIndex: path => 'commentId' in getPathParams(path),
 			pathRegExp,
 			screenKey: ScreenKey.Comments
 		} as Route<DialogKey, ScreenKey>;
@@ -68,14 +71,14 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	{
 		analyticsName: 'EmailConfirmation',
 		createUrl: params => `/email/confirm/${params['result']}`,
-		noIndex: true,
+		noIndex: () => true,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,
 		screenKey: ScreenKey.EmailConfirmation
 	},
 	{
 		analyticsName: 'EmailSubscriptions',
 		createUrl: params => `/email/subscriptions?token=${params['token']}`,
-		noIndex: true,
+		noIndex: () => true,
 		pathRegExp: /^\/email\/subscriptions$/,
 		queryStringKeys: ['token'],
 		screenKey: ScreenKey.EmailSubscriptions
@@ -83,14 +86,14 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	{
 		analyticsName: 'ExtensionRemoval',
 		createUrl: () => `/extension/uninstall`,
-		noIndex: true,
+		noIndex: () => true,
 		pathRegExp: /^\/extension\/uninstall$/,
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
 		analyticsName: 'ExtensionRemoval',
 		createUrl: params => `/extension/uninstall?installationId=${params['installationId']}`,
-		noIndex: true,
+		noIndex: () => true,
 		pathRegExp: /^\/extension\/uninstall$/,
 		queryStringKeys: ['installationId'],
 		screenKey: ScreenKey.ExtensionRemoval
@@ -162,7 +165,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	{
 		analyticsName: 'PasswordReset',
 		createUrl: params => `/password/${params['action']}/${params['result']}`,
-		noIndex: true,
+		noIndex: () => true,
 		pathRegExp: /^\/password\/([^/]+)\/([^/]+)$/,
 		screenKey: ScreenKey.Password
 	},
@@ -221,7 +224,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 				const [, sourceSlug, articleSlug] = path.match(pathRegExp);
 				return { articleSlug, sourceSlug };
 			},
-			noIndex: true,
+			noIndex: () => true,
 			pathRegExp,
 			screenKey: ScreenKey.Read
 		} as Route<DialogKey, ScreenKey>;

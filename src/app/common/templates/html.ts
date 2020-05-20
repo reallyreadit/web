@@ -1,15 +1,25 @@
 import icons from '../../../common/svg/icons';
 import InitData from '../InitData';
-import { Route } from '../../../common/routing/Route';
-import ScreenKey from '../../../common/routing/ScreenKey';
+import { TwitterCard, TwitterCardType } from '../../server/TwitterCard';
 
+function escapeQuotes(value: string) {
+	return value.replace(/"/g, '&quot;');
+}
 export default (
-	model: {
+	{
+		chromeExtensionId,
+		content,
+		initData,
+		noIndex,
+		title,
+		twitterCard
+	}: {
 		chromeExtensionId: string,
 		content: string,
 		initData: InitData,
-		route: Route<any, any>,
-		title: string
+		noIndex: boolean,
+		title: string,
+		twitterCard: TwitterCard | null
 	}
 ) => {
 	let gtagConfig: {
@@ -18,8 +28,37 @@ export default (
 	} = {
 		send_page_view: false
 	};
-	if (model.initData.userAccount) {
-		gtagConfig.user_id = model.initData.userAccount.id.toString();
+	if (initData.userAccount) {
+		gtagConfig.user_id = initData.userAccount.id.toString();
+	}
+	let twitterCardMarkup: string;
+	switch (twitterCard?.type) {
+		case TwitterCardType.App:
+			twitterCardMarkup = (
+		`<meta name="twitter:card" content="app" />
+		<meta name="twitter:site" content="@ReadupDotCom" />
+		<meta name="twitter:app:id:iphone" content="1441825432" />
+		<meta name="twitter:app:id:ipad" content="1441825432" />`			
+			);
+			break;
+		case TwitterCardType.Summary:
+			if (twitterCard.imageUrl) {
+				twitterCardMarkup = (
+		`<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:site" content="@ReadupDotCom" />
+		<meta name="twitter:title" content="${escapeQuotes(twitterCard.title)}" />
+		<meta name="twitter:description" content="${escapeQuotes(twitterCard.description)}" />
+		<meta name="twitter:image" content="${escapeQuotes(twitterCard.imageUrl)}" />`
+				);
+			} else {
+				twitterCardMarkup = (
+		`<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@ReadupDotCom" />
+		<meta name="twitter:title" content="${escapeQuotes(twitterCard.title)}" />
+		<meta name="twitter:description" content="${escapeQuotes(twitterCard.description)}" />`
+				);
+			}
+			break;
 	}
 	return (
 `<!DOCTYPE html>
@@ -28,22 +67,17 @@ export default (
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
 		<meta name="google-site-verification" content="9getaJHrSnp0LPyHlFeOT5cJ7fPK-EchoUkPRcAo8S0" />
-		${model.route.authLevel != null || model.route.noIndex ?
+		${noIndex ?
 			'<meta name="robots" content="noindex" />' :
 			''}
-		${model.route.screenKey === ScreenKey.Home ?
-			`<meta name="twitter:card" content="app" />
-			<meta name="twitter:site" content="@ReadupDotCom" />
-			<meta name="twitter:app:id:iphone" content="1441825432" />
-			<meta name="twitter:app:id:ipad" content="1441825432" />` :
-			''}
+		${twitterCardMarkup || ''}
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
-		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${model.chromeExtensionId}">
-		<title>${model.title}</title>
+		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${chromeExtensionId}">
+		<title>${title}</title>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		${model.initData.analyticsTrackingCode ?
-			`<script async src="https://www.googletagmanager.com/gtag/js?id=${model.initData.analyticsTrackingCode}"></script>` :
+		${initData.analyticsTrackingCode ?
+			`<script async src="https://www.googletagmanager.com/gtag/js?id=${initData.analyticsTrackingCode}"></script>` :
 			'<!-- analytics disabled in dev mode -->'}
 		<script>
 			window.dataLayer = window.dataLayer || [];
@@ -52,26 +86,26 @@ export default (
 
 			gtag(
 				'config',
-				'${model.initData.analyticsTrackingCode}',
+				'${initData.analyticsTrackingCode}',
 				${JSON.stringify(gtagConfig)}
 			);
 		</script>
 	</head>
 	<body>
 		${icons}
-		<div id="root">${model.content}</div>
+		<div id="root">${content}</div>
 		<script type="text/javascript">
 			//<!--
 			window.reallyreadit = {
 				app: {
-					initData: ${JSON.stringify(model.initData)}
+					initData: ${JSON.stringify(initData)}
 				}
 			};
 			//-->
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
-		${model.initData.captchaSiteKey ?
-			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=${model.initData.captchaSiteKey}'></script>` :
+		${initData.captchaSiteKey ?
+			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=${initData.captchaSiteKey}'></script>` :
 			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`
