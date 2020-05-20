@@ -63,7 +63,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 				return url;
 			},
 			getPathParams,
-			noIndex: path => 'commentId' in getPathParams(path),
 			pathRegExp,
 			screenKey: ScreenKey.Comments
 		} as Route<DialogKey, ScreenKey>;
