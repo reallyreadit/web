@@ -69,8 +69,12 @@ switch (initData.clientType) {
 				browserApi: new BrowserApi(),
 				deviceType: initData.deviceType,
 				extensionApi: new ExtensionApi({
-					legacyChromeExtensionId: initData.chromeExtensionId,
-					isInstalled: initData.isExtensionInstalled
+					installedVersion: (
+						initData.extensionVersion ?
+							new SemanticVersion(initData.extensionVersion) :
+							null
+					),
+					webServerEndpoint: initData.webServerEndpoint
 				})
 			}
 		);

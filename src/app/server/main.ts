@@ -436,7 +436,7 @@ server = server.get('/*', (req, res) => {
 	}
 	// prepare props
 	const deviceType = getDeviceType(req.headers['user-agent']);
-	const isExtensionInstalled = extensionVersionCookieKey in req.cookies;
+	const extensionVersionString = req.cookies[extensionVersionCookieKey];
 	const browserApi = new BrowserApi();
 	const rootProps = {
 		analytics: new Analytics(),
@@ -476,8 +476,12 @@ server = server.get('/*', (req, res) => {
 					browserApi,
 					deviceType,
 					extensionApi: new ExtensionApi({
-						legacyChromeExtensionId: config.chromeExtensionId,
-						isInstalled: isExtensionInstalled
+						installedVersion: (
+							extensionVersionString ?
+								new SemanticVersion(extensionVersionString) :
+								null
+						),
+						webServerEndpoint: config.webServer
 					})
 				}
 			);
@@ -514,10 +518,9 @@ server = server.get('/*', (req, res) => {
 				clientType: req.clientType,
 				deviceType,
 				exchanges: req.api.exchanges,
-				chromeExtensionId: config.chromeExtensionId,
+				extensionVersion: extensionVersionString,
 				marketingVariant,
 				initialLocation: rootProps.initialLocation,
-				isExtensionInstalled,
 				userAccount: req.user,
 				version: version.app,
 				webServerEndpoint: config.webServer

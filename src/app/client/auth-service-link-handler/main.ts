@@ -6,8 +6,5 @@ import { AuthServiceBrowserLinkResponse } from '../../../common/models/auth/Auth
 const response = JSON.parse(parseQueryString(window.location.search)['body']) as AuthServiceBrowserLinkResponse;
 new BrowserApi()
 	.authServiceLinkCompleted(response);
-new ExtensionApi({
-		legacyChromeExtensionId: '',
-		isInstalled: true
-	})
+new ExtensionApi()
 	.authServiceLinkCompleted(response);

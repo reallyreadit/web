@@ -18,7 +18,7 @@ export default class extends ExtensionApi {
     public commentUpdated(comment: CommentThread) {
         throw new Error('Operation not supported in server environment');
     }
-    public extensionInstallationChanged(event: ExtensionInstallationEvent) {
+    public extensionInstallationEventReceived(event: ExtensionInstallationEvent) {
         throw new Error('Operation not supported in server environment');
     }
     public userUpdated(user: UserAccount) {

@@ -40,7 +40,7 @@ import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import * as Cookies from 'js-cookie';
-import { extensionInstallationRedirectPathCookieKey, extensionVersionCookieKey } from '../../../common/cookies';
+import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
 import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
 import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep, ExitReason as OnboardingExitReason } from './BrowserRoot/OnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
@@ -61,9 +61,6 @@ interface State extends RootState {
 }
 type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
-type Events = SharedEvents & {
-	'extensionInstallationStatusChanged': boolean
-};
 enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
 	AppleIdInvalidSession = 'AppleInvalidSessionId',
@@ -78,7 +75,7 @@ const welcomeMessages = {
 	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
 	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.'
 };
-export default class extends Root<Props, State, SharedState, Events> {
+export default class extends Root<Props, State, SharedState, SharedEvents> {
 	private _hasBroadcastInitialUser = false;
 	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
@@ -677,7 +674,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener(
 				'extensionInstallationChanged',
 				event => {
-					this.props.extensionApi.extensionInstallationChanged(event);
+					this.props.extensionApi.extensionInstallationEventReceived(event);
 				}
 			)
 			.addListener('notificationPreferenceChanged', preference => {
@@ -718,13 +715,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('articleUpdated', event => {
 				this.onArticleUpdated(event, EventSource.Remote);
 			})
-			.addListener('change', isExtensionInstalled => {
-				this.setState(
-					{ isExtensionInstalled },
-					() => {
-						this._eventManager.triggerEvent('extensionInstallationStatusChanged', isExtensionInstalled);
-					}
-				);
+			.addListener('installationStatusChanged', installedVersion => {
+				this.setState({
+					isExtensionInstalled: !!installedVersion
+				});
 			})
 			.addListener('commentPosted', comment => {
 				this.onCommentPosted(comment, EventSource.Remote);
@@ -975,7 +969,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				urlParams: { sourceSlug, articleSlug }
 			});
 		} else if (
-			Cookies.get(extensionVersionCookieKey) &&
+			this.props.extensionApi.isInstalled &&
 			!localStorage.getItem('extensionReminderAcknowledged')
 		) {
 			ev?.preventDefault();
@@ -1180,10 +1174,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 				type: 'uninstalled'
 			});
 		} else if (
-			extensionInstalledQueryStringKey in parseQueryString(this.props.initialLocation.queryString)
+			extensionInstalledQueryStringKey in parseQueryString(this.props.initialLocation.queryString) &&
+			this.props.extensionApi.isInstalled
 		) {
 			this.props.browserApi.extensionInstallationChanged({
-				type: 'installed'
+				type: 'installed',
+				version: this.props.extensionApi.installedVersion
 			});
 		}
 		// clear extension installation redirect cookie

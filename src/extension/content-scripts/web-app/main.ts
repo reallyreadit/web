@@ -41,7 +41,10 @@ if (!window.reallyreadit) {
 	chrome.runtime.onMessage.addListener(handleMessageFromExtension);
 
 	webApp.sendMessage({
-		type: 'initialize'
+		type: 'initialize',
+		data: {
+			version: chrome.runtime.getManifest().version
+		}
 	});
 
 	sendMessageToExtension({

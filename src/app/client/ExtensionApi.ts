@@ -6,43 +6,17 @@ import ContentScriptMessagingContext from '../../common/ContentScriptMessagingCo
 import { Message } from '../../common/MessagingContext';
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import SemanticVersion from '../../common/SemanticVersion';
+import * as Cookies  from 'js-cookie';
+import { extensionVersionCookieKey } from '../../common/cookies';
 
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
     private _hasEstablishedCommunication = false;
-    private readonly _legacyMessageListener = (e: MessageEvent) => {
-        if (e.source === window) {
-            try {
-                this.handleIncomingMessage(JSON.parse(e.data) as Message);
-            } catch {
-                // ignore
-            }
-        }
-    };
     private readonly _messageQueue: Message[] = [];
-    private readonly _sendContentScriptMessage = <T>(type: string, data?: {}, responseCallback?: (data: T) => void) => {
-        this._contentScriptMessagingContext.sendMessage(
-            {
-                type,
-                data
-            },
-            responseCallback
-        );
-    };
-    private readonly _sendLegacyMessage = <T>(type: string, data?: {}, responseCallback?: (data: T) => void) => {
-        window.chrome.runtime.sendMessage(
-            this._legacyChromeExtensionId,
-            {
-                type,
-                data
-            },
-            responseCallback
-        );
-    };
-    private _sendMessage: <T>(type: string, data?: {}, responseCallback?: (data: T) => void) => void;
-    constructor(params: Params) {
+    constructor(params?: Params) {
         super(params);
-        // set up new content script messaging listeners regardless of isInstalled
+        // set up new content script messaging listeners regardless of installation
         // status so that we'll be ready when the script is injected
         this._contentScriptMessagingContext = new ContentScriptMessagingContext({
             localId: 'com.readup.web.app.client',
@@ -50,97 +24,81 @@ export default class extends ExtensionApi {
         });
         this._contentScriptMessagingContext.addListener(
             (message, sendResponse) => {
-                this.handleIncomingMessage(message);
+                switch (message.type) {
+                    case 'articlePosted':
+                        this.emitEvent('articlePosted', message.data);
+                        break;
+                    case 'articleUpdated':
+                        this.emitEvent('articleUpdated', message.data);
+                        break;
+                    case 'commentPosted':
+                        this.emitEvent('commentPosted', message.data);
+                        break;
+                    case 'commentUpdated':
+                        this.emitEvent('commentUpdated', message.data);
+                        break;
+                    case 'initialize':
+                        // set communication established
+                        this._hasEstablishedCommunication = true;
+                        // check installation status
+                        if (!this.isInstalled) {
+                            // update install status
+                            this.changeInstallationStatus(new SemanticVersion(message.data?.version || '3.3.0'));
+                        }
+                        // flush queue
+                        while (this._messageQueue.length) {
+                            const message = this._messageQueue.shift();
+                            this.sendMessage(message.type, message.data);
+                        }
+                        break;
+                    case 'userUpdated':
+                        this.emitEvent('userUpdated', message.data);
+                        break;
+                }
             }
         );
-        this._sendMessage = this._sendContentScriptMessage;
-        // isInstalled will be true if extension version >= 3.0.0 is installed
-        // if not check for legacy extension
-        if (!params.isInstalled) {
-            // add legacy listener
-            window.addEventListener('message', this._legacyMessageListener);
-            // try to ping the legacy extension
-            try {
-                this._sendLegacyMessage<boolean>(
-                    'ping',
-                    null,
-                    response => {
-                        const isInstalled = !!response;
-                        if (isInstalled) {
-                            // update install status
-                            this._isInstalled = isInstalled;
-                            this.emitEvent('change', isInstalled);
-                            this._hasEstablishedCommunication = true;
-                            // fall back to legacy send message
-                            this._sendMessage = this._sendLegacyMessage;
-                        }
+    }
+    private changeInstallationStatus(installedVersion: SemanticVersion | null) {
+        // set the local variable
+        this._installedVersion = installedVersion;
+        // make sure cookie is set properly
+        if (this._extensionVersionCookieAttributes) {
+            const extensionVersionCookie = Cookies.get(extensionVersionCookieKey);
+            if (installedVersion && !extensionVersionCookie) {
+                Cookies.set(
+                    extensionVersionCookieKey,
+                    installedVersion.toString(),
+                    {
+                        ...this._extensionVersionCookieAttributes,
+                        expires: 365
                     }
                 );
-            } catch {
-                // ignore. wait for extension to be installed
+            } else if (!installedVersion && extensionVersionCookie) {
+                Cookies.remove(
+                    extensionVersionCookieKey,
+                    this._extensionVersionCookieAttributes
+                );
             }
         }
-    }
-    private handleIncomingMessage(message: Message) {
-        switch (message.type) {
-            // legacy extension message
-            case 'extensionInstalled':
-                if (!this._isInstalled) {
-                    // update install status
-                    this._isInstalled = true;
-                    this.emitEvent('change', true);
-                    this._hasEstablishedCommunication = true;
-                    // fall back to legacy send message
-                    this._sendMessage = this._sendLegacyMessage;
-                }
-                break;
-            case 'articlePosted':
-                this.emitEvent('articlePosted', message.data);
-                break;
-            case 'articleUpdated':
-                this.emitEvent('articleUpdated', message.data);
-                break;
-            case 'commentPosted':
-                this.emitEvent('commentPosted', message.data);
-                break;
-            case 'commentUpdated':
-                this.emitEvent('commentUpdated', message.data);
-                break;
-            case 'initialize':
-                // check install status
-                if (this._isInstalled) {
-                    // flush queue
-                    while (this._messageQueue.length) {
-                        const message = this._messageQueue.shift();
-                        this._sendMessage(message.type, message.data);
-                    }
-                } else {
-                    // update install status
-                    this._isInstalled = true;
-                    this.emitEvent('change', true);
-                }
-                // set communication established
-                this._hasEstablishedCommunication = true;
-                // remove legacy listener and assign content script sender
-                window.removeEventListener('message', this._legacyMessageListener);
-                this._sendMessage = this._sendContentScriptMessage;
-                break;
-            case 'userUpdated':
-                this.emitEvent('userUpdated', message.data);
-                break;
-        }
+        // emit event
+        this.emitEvent('installationStatusChanged', installedVersion);
     }
     private sendMessage(type: string, data?: { }) {
-        if (this._isInstalled && !this._hasEstablishedCommunication) {
-            // queue message for content script initialization
+        if (!this.isInstalled) {
+            return;
+        }
+        if (this._hasEstablishedCommunication) {
+            this._contentScriptMessagingContext.sendMessage(
+                {
+                    type,
+                    data
+                }
+            );
+        } else {
             this._messageQueue.push({
                 type,
                 data
             });
-        } else {
-            // just send it. communication has already been established
-            // or we're broadcasting using legacy runtime messaging
-            this._sendMessage(type, data);
         }
     }
     public articleUpdated(event: ArticleUpdatedEvent) {
@@ -155,16 +113,15 @@ export default class extends ExtensionApi {
     public commentUpdated(comment: CommentThread) {
         this.sendMessage('commentUpdated', comment);
     }
-    public extensionInstallationChanged(event: ExtensionInstallationEvent) {
-        if (this._isInstalled && event.type === 'uninstalled') {
-            // update install status
-            this._isInstalled = false;
-            this.emitEvent('change', false);
+    public extensionInstallationEventReceived(event: ExtensionInstallationEvent) {
+        if (this.isInstalled && event.type === 'uninstalled') {
+            // set communication not established
             this._hasEstablishedCommunication = false;
-        } else if (!this._isInstalled && event.type === 'installed') {
             // update install status
-            this._isInstalled = true;
-            this.emitEvent('change', true);
+            this.changeInstallationStatus(null);
+        } else if (!this.isInstalled && event.type === 'installed') {
+            // update install status
+            this.changeInstallationStatus(event.version);
         }
     }
     public userUpdated(user: UserAccount) {

@@ -5,10 +5,16 @@ import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
-import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from '../common/ExtensionInstallationEvent';
 import { ExitReason as OnboardingExitReason } from '../common/components/BrowserRoot/OnboardingFlow';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 
+type SerializedExtensionInstallationEvent = (
+	Pick<ExtensionInstalledEvent, 'type'> & {
+		version: string
+	} |
+	ExtensionUninstalledEvent
+);
 export default class extends BrowserApi {
 	private readonly _channel: BroadcastChannel | null;
 	constructor() {
@@ -17,6 +23,22 @@ export default class extends BrowserApi {
 			this._channel = new BroadcastChannel('BrowserApi');
 			this._channel.addEventListener('message', ev => {
 				switch (ev.data.type) {
+					case 'extensionInstallationChanged':
+						const serializedEvent = ev.data.data as SerializedExtensionInstallationEvent;
+						let data: ExtensionInstallationEvent;
+						switch (serializedEvent.type) {
+							case 'installed':
+								data = {
+									...serializedEvent,
+									version: new SemanticVersion(serializedEvent.version)
+								};
+								break;
+							case 'uninstalled':
+								data = serializedEvent;
+								break;
+						}
+						this.emitEvent(ev.data.type, data);
+						break;
 					case 'updateAvailable':
 						this.emitEvent(ev.data.type, new SemanticVersion(ev.data.data));
 						break;
@@ -48,7 +70,19 @@ export default class extends BrowserApi {
 		this.broadcastUpdate('commentUpdated', comment);
 	}
 	public extensionInstallationChanged(event: ExtensionInstallationEvent) {
-		this.broadcastUpdate('extensionInstallationChanged', event);
+		let data: SerializedExtensionInstallationEvent;
+		switch (event.type) {
+			case 'installed':
+				data = {
+					...event,
+					version: event.version.toString()
+				};
+				break;
+			case 'uninstalled':
+				data = event;
+				break;
+		}
+		this.broadcastUpdate('extensionInstallationChanged', data);
 	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);
