@@ -267,6 +267,15 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			goingToStep: step
 		});
 	}
+	public componentDidUpdate(prevProps: Props) {
+		if (
+			this.state.step === Step.InstallExtension &&
+			this.props.isExtensionInstalled &&
+			!prevProps.isExtensionInstalled
+		) {
+			this._abort();
+		}
+	}
 	public render() {
 		return (
 			<div
