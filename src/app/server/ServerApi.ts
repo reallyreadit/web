@@ -109,8 +109,8 @@ export default class extends ServerApi {
 			.then(
 				() => {
 					this._isInitialized = true;
-				})
-			;
+				}
+			);
 	}
 	public hasAuthCookie() {
 		return !!this._authCookie.value;
