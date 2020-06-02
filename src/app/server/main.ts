@@ -550,26 +550,36 @@ server = server.get('/*', (req, res) => {
 			const pathParams = req.matchedRoute.getPathParams(req.path);
 			Promise
 				.all([
-					req.api.fetchJson<TwitterCardMetadata>(
-						'GET',
-						{
-							path: '/Articles/TwitterCardMetadata',
-							data: {
-								postId: pathParams['commentId'],
-								slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
-							} as TwitterCardMetadataRequest
-						}
-					),
+					req.api
+						.fetchJson<TwitterCardMetadata>(
+							'GET',
+							{
+								path: '/Articles/TwitterCardMetadata',
+								data: {
+									postId: pathParams['commentId'],
+									slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+								} as TwitterCardMetadataRequest
+							}
+						)
+						.catch(
+							() => {
+								return null as TwitterCardMetadata;
+							}
+						),
 					req.api.processRequests()
 				])
 				.then(
 					results => {
-						sendResponse({
-							type: TwitterCardType.Summary,
-							title: results[0].title,
-							description: results[0].description,
-							imageUrl: results[0].imageUrl
-						});
+						if (results[0]) {
+							sendResponse({
+								type: TwitterCardType.Summary,
+								title: results[0].title,
+								description: results[0].description,
+								imageUrl: results[0].imageUrl
+							});
+						} else {
+							sendResponse();
+						}
 					}
 				)
 				.catch(
