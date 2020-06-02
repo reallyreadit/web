@@ -77,7 +77,9 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 							position="absolute"
 							style="normal"
 						>
-							<p>Error loading comments.</p>
+							{!this.props.article.value ?
+								<p>Article not found.</p> :
+								<p>Error loading comments.</p>}
 						</InfoBox> :
 						<>
 							{!this.props.user ?
