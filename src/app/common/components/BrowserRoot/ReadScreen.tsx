@@ -17,6 +17,7 @@ import ScreenContainer from '../ScreenContainer';
 import { DeviceType, isMobileDevice, isCompatibleDevice } from '../../../../common/DeviceType';
 import GetStartedButton from './GetStartedButton';
 import Button from '../../../../common/components/Button';
+import InfoBox from '../../../../common/components/InfoBox';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -36,6 +37,7 @@ class ReadScreen extends React.PureComponent<Props> {
 		if (
 			this.props.user &&
 			this.props.isExtensionInstalled &&
+			this.props.article.value &&
 			localStorage.getItem('extensionReminderAcknowledged')
 		) {
 			window.location.href = this.props.article.value.url;
@@ -46,61 +48,68 @@ class ReadScreen extends React.PureComponent<Props> {
 			<ScreenContainer className="read-screen_ikr26q">
 				{this.props.article.isLoading ?
 					<LoadingOverlay position="absolute" /> :
-					<>
-						<div className="article">
-							{this.props.article.value.source || this.props.article.value.authors.length ?
-								<div className="meta">
-									{this.props.article.value.authors.length ?
-										<span className="authors">
-											{formatList(this.props.article.value.authors)}
-										</span> :
-										null}
-									{this.props.article.value.authors.length && this.props.article.value.source ?
-										<span> in </span> :
-										null}
-									{this.props.article.value.source ?
-										<span className="source">
-											{this.props.article.value.source}
-										</span> :
-										null}
+					!this.props.article.value ?
+						<InfoBox
+							position="absolute"
+							style="normal"
+						>
+							<p>Article not found.</p>
+						</InfoBox> :
+						<>
+							<div className="article">
+								{this.props.article.value.source || this.props.article.value.authors.length ?
+									<div className="meta">
+										{this.props.article.value.authors.length ?
+											<span className="authors">
+												{formatList(this.props.article.value.authors)}
+											</span> :
+											null}
+										{this.props.article.value.authors.length && this.props.article.value.source ?
+											<span> in </span> :
+											null}
+										{this.props.article.value.source ?
+											<span className="source">
+												{this.props.article.value.source}
+											</span> :
+											null}
+									</div> :
+									null}
+								<div className="title">{this.props.article.value.title}</div>
+							</div>
+							<div className="spacer"></div>
+							<AdFreeAnimation
+								orientation={
+									isMobileDevice(this.props.deviceType) ?
+										'portrait' :
+										'landscape'
+								}
+							/>
+							<div className="spacer"></div>
+							<ul className="animation-caption">
+								<li>Leave the noise behind.</li>
+								<li>Read it on Readup.</li>
+							</ul>
+							<div className="spacer"></div>
+							{!this.props.user || !this.props.isExtensionInstalled ?
+								<GetStartedButton
+									analyticsAction="ReadScreen"
+									deviceType={this.props.deviceType}
+									onBeginOnboarding={this.props.onBeginOnboarding}
+									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+								/> :
+								<Button
+									intent="loud"
+									onClick={this._readArticle}
+									size="large"
+									text="Read Article"
+								/>}
+							{!isCompatibleDevice(this.props.deviceType) ?
+								<div className="bypass">
+									<a href={this.props.article.value.url}>Continue to publisher's site</a>
 								</div> :
 								null}
-							<div className="title">{this.props.article.value.title}</div>
-						</div>
-						<div className="spacer"></div>
-						<AdFreeAnimation
-							orientation={
-								isMobileDevice(this.props.deviceType) ?
-									'portrait' :
-									'landscape'
-							}
-						/>
-						<div className="spacer"></div>
-						<ul className="animation-caption">
-							<li>Leave the noise behind.</li>
-							<li>Read it on Readup.</li>
-						</ul>
-						<div className="spacer"></div>
-						{!this.props.user || !this.props.isExtensionInstalled ?
-							<GetStartedButton
-								analyticsAction="ReadScreen"
-								deviceType={this.props.deviceType}
-								onBeginOnboarding={this.props.onBeginOnboarding}
-								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-								onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-							/> :
-							<Button
-								intent="loud"
-								onClick={this._readArticle}
-								size="large"
-								text="Read Article"
-							/>}
-						{!isCompatibleDevice(this.props.deviceType) ?
-							<div className="bypass">
-								<a href={this.props.article.value.url}>Continue to publisher's site</a>
-							</div> :
-							null}
-					</>}
+						</>}
 			</ScreenContainer>
 		);
 	}
