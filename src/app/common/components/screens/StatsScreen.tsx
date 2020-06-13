@@ -2,7 +2,7 @@ import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ScreenContainer from '../ScreenContainer';
-import ReadingTimeTotalsTimeWindow from '../../../../common/models/ReadingTimeTotalsTimeWindow';
+import ReadingTimeTotalsTimeWindow from '../../../../common/models/stats/ReadingTimeTotalsTimeWindow';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';

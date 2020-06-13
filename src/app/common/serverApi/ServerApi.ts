@@ -15,7 +15,7 @@ import Leaderboards from '../../../common/models/Leaderboards';
 import Rating from '../../../common/models/Rating';
 import ClientType from '../ClientType';
 import DailyTotalsReportRow from '../../../common/models/analytics/DailyTotalsReportRow';
-import ReadingTimeTotalsTimeWindow from '../../../common/models/ReadingTimeTotalsTimeWindow';
+import ReadingTimeTotalsTimeWindow from '../../../common/models/stats/ReadingTimeTotalsTimeWindow';
 import ReadingTimeStats from '../../../common/models/ReadingTimeStats';
 import SignupsReportRow from '../../../common/models/analytics/SignupsReportRow';
 import UserNameForm from '../../../common/models/social/UserNameForm';
