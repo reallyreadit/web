@@ -10,7 +10,7 @@ import Menu from './BrowserRoot/Menu';
 import UserArticle from '../../../common/models/UserArticle';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
-import createLeaderboardsScreenFactory from './BrowserRoot/LeaderboardsScreen';
+import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApi from '../BrowserApi';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
@@ -500,14 +500,17 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					onViewThread: this._viewThread
 				}
 			),
-			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onCloseDialog: this._dialog.closeDialog,
-				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onOpenDialog: this._dialog.openDialog,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onViewProfile: this._viewProfile
-			}),
+			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(
+				ScreenKey.Leaderboards,
+				{
+					onCloseDialog: this._dialog.closeDialog,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetLeaderboards: this.props.serverApi.getLeaderboards,
+					onOpenDialog: this._dialog.openDialog,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewProfile: this._viewProfile
+				}
+			),
 			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
 				ScreenKey.MyFeed,
 				{

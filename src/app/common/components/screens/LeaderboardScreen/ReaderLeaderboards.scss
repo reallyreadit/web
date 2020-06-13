@@ -1,0 +1,35 @@
+/*
+	componentPath: src/app/common/components/screens/LeaderboardScreen/ReaderLeaderboards
+	cssComponentId: reader-leaderboards_8eclav
+*/
+
+.reader-leaderboards_8eclav > .leaderboards {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: flex-start;
+}
+.reader-leaderboards_8eclav > .leaderboards > .leaderboard_w540wu,
+.reader-leaderboards_8eclav > .leaderboards > .placeholder {
+	flex: 1 1 0;
+	box-sizing: border-box;
+	min-width: 320px;
+	margin: 0 5px 10px 5px;
+}
+.reader-leaderboards_8eclav > .leaderboards > .placeholder {
+	padding: 10px 15px;
+}
+.reader-leaderboards_8eclav > .leaderboards > .leaderboard_w540wu > .footer > .streak-status {
+	text-align: center;
+	padding: 10px 0 5px 0;
+	border-top: 1px solid #ccc;
+	margin-top: 5px;
+	font-family: 'Museo Sans (700)';
+	font-size: 12pt;
+}
+
+@media (max-width: 659px) {
+	.reader-leaderboards_8eclav > .leaderboards > .leaderboard_w540wu {
+		min-width: 300px;
+	}
+}

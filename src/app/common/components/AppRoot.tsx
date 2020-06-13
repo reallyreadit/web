@@ -10,7 +10,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
-import createLeaderboardsScreenFactory from './AppRoot/LeaderboardsScreen';
+import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
@@ -482,13 +482,17 @@ export default class extends Root<
 					onViewThread: this._viewThread
 				}
 			),
-			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(ScreenKey.Leaderboards, {
-				onCloseDialog: this._dialog.closeDialog,
-				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetLeaderboards: this.props.serverApi.getLeaderboards,
-				onOpenDialog: this._dialog.openDialog,
-				onViewProfile: this._viewProfile
-			}),
+			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(
+				ScreenKey.Leaderboards,
+				{
+					onCloseDialog: this._dialog.closeDialog,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetLeaderboards: this.props.serverApi.getLeaderboards,
+					onOpenDialog: this._dialog.openDialog,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewProfile: this._viewProfile
+				}
+			),
 			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
 				ScreenKey.MyFeed,
 				{
