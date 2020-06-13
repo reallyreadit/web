@@ -60,6 +60,8 @@ import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssu
 import AuthorArticleQuery from '../../../common/models/articles/AuthorArticleQuery';
 import AuthorProfileRequest from '../../../common/models/authors/AuthorProfileRequest';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
+import AuthorLeaderboardsRequest from '../../../common/models/stats/AuthorLeaderboardsRequest';
+import AuthorRanking from '../../../common/models/AuthorRanking';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -191,6 +193,7 @@ export default abstract class {
 	public readonly unfollowUser = (data: UserNameForm) => this.post({ path: '/Social/Unfollow', data });
 
 	// Stats
+	public readonly getAuthorLeaderboards = this.createFetchFunctionWithParams<AuthorLeaderboardsRequest, AuthorRanking[]>('/Stats/AuthorLeaderboards');
 	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeStats>('/Stats/ReadingTime');
 	public readonly getLeaderboards = this.createFetchFunction<Leaderboards>('/Stats/Leaderboards');
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');

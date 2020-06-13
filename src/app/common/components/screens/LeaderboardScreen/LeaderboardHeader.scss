@@ -1,0 +1,25 @@
+/*
+	componentPath: src/app/common/components/screens/LeaderboardScreen/LeaderboardHeader
+	cssComponentId: leaderboard-header_ruu55d
+*/
+
+.leaderboard-header_ruu55d {
+	padding: 5px 0 10px 0;
+	text-align: center;
+}
+.leaderboard-header_ruu55d > .icon {
+	display: inline-block;
+	vertical-align: middle;
+}
+.leaderboard-header_ruu55d > .icon:first-child {
+	margin-right: 10px;
+}
+.leaderboard-header_ruu55d > .icon:last-child {
+	margin-left: 10px;
+	cursor: pointer;
+	color: #999;
+}
+.leaderboard-header_ruu55d > .text {
+	font-weight: bold;
+	vertical-align: middle;
+}

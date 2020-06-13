@@ -2,26 +2,18 @@ import * as React from 'react';
 import Fetchable from '../../../../../common/Fetchable';
 import Leaderboards from '../../../../../common/models/Leaderboards';
 import LoadingOverlay from '../../controls/LoadingOverlay';
-import Leaderboard from './Leaderboard';
+import ReaderLeaderboard from './ReaderLeaderboard';
 import UserAccount from '../../../../../common/models/UserAccount';
 import StreakTimer from './StreakTimer';
-import { FetchFunction } from '../../../serverApi/ServerApi';
-import ArticleUpdatedEvent from '../../../../../common/models/ArticleUpdatedEvent';
-import AsyncTracker from '../../../../../common/AsyncTracker';
 
 interface Props {
+	leaderboards: Fetchable<Leaderboards>,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onGetLeaderboards: FetchFunction<Leaderboards>,
 	onOpenExplainer: (title: string, content: React.ReactNode) => void,
-	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount
 }
-interface State {
-	leaderboards: Fetchable<Leaderboards>
-}
-export default class extends React.Component<Props, State> {
-	private readonly _asyncTracker = new AsyncTracker();
+export default class ReaderLeaderboards extends React.Component<Props> {
 	private readonly _openScoutExplainer = () => {
 		this.props.onOpenExplainer(
 			'What\'s a scout?',
@@ -41,78 +33,44 @@ export default class extends React.Component<Props, State> {
 			)
 		);
 	};
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			leaderboards: props.onGetLeaderboards(
-				this._asyncTracker.addCallback(
-					leaderboards => {
-						this.setState({
-							leaderboards
-						});
-					}
-				)
-			)
-		};
-		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(
-				event => {
-					if (event.isCompletionCommit) {
-						props.onGetLeaderboards(
-							this._asyncTracker.addCallback(
-								leaderboards => {
-									this.setState({
-										leaderboards
-									});
-								}
-							)
-						);
-					}
-				}
-			)
-		);
-	}
-	public componentWillUnmount() {
-		this._asyncTracker.cancelAll();
-	}
 	public render() {
 		const streak = (
-			this.state.leaderboards.value ?
-				this.state.leaderboards.value.userRankings.streak :
+			this.props.leaderboards.value ?
+				this.props.leaderboards.value.userRankings.streak :
 				null
 		);
 		return (
 			<div className="reader-leaderboards_8eclav">
-				{this.state.leaderboards.isLoading ?
+				{this.props.leaderboards.isLoading ?
 					<LoadingOverlay /> :
 					<div className="leaderboards">
-						<Leaderboard
+						<ReaderLeaderboard
 							title="Top readers this week"
 							iconName="power"
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="read"
-							rankings={this.state.leaderboards.value.weeklyReadCount}
-							userRanking={this.state.leaderboards.value.userRankings.weeklyReadCount}
+							rankings={this.props.leaderboards.value.weeklyReadCount}
+							userRanking={this.props.leaderboards.value.userRankings.weeklyReadCount}
 							userName={this.props.user.name}
 						/>
-						<Leaderboard
+						<ReaderLeaderboard
 							title="Top readers of all time"
 							iconName="medal"
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="read"
-							rankings={this.state.leaderboards.value.readCount}
-							userRanking={this.state.leaderboards.value.userRankings.readCount}
+							rankings={this.props.leaderboards.value.readCount}
+							userRanking={this.props.leaderboards.value.userRankings.readCount}
 							userName={this.props.user.name}
 						/>
-						<Leaderboard
+						<ReaderLeaderboard
 							title="Reading streaks"
 							iconName="fire"
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="day"
-							rankings={this.state.leaderboards.value.streak}
+							rankings={this.props.leaderboards.value.streak}
 							userRanking={{
 								score: streak.dayCount,
 								rank: streak.rank
@@ -129,7 +87,7 @@ export default class extends React.Component<Props, State> {
 										{!streak.includesToday ?
 											<div className="timer">
 												<StreakTimer
-													timeZoneName={this.state.leaderboards.value.timeZoneName}
+													timeZoneName={this.props.leaderboards.value.timeZoneName}
 												/>
 											</div> :
 											null}
@@ -137,26 +95,26 @@ export default class extends React.Component<Props, State> {
 									null
 							}
 						/>
-						<Leaderboard
+						<ReaderLeaderboard
 							title="Scouts"
 							iconName="binoculars"
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="AOTD"
-							rankings={this.state.leaderboards.value.scout}
-							userRanking={this.state.leaderboards.value.userRankings.scoutCount}
+							rankings={this.props.leaderboards.value.scout}
+							userRanking={this.props.leaderboards.value.userRankings.scoutCount}
 							userName={this.props.user.name}
 							onOpenExplainer={this._openScoutExplainer}
 						/>
-						<Leaderboard
+						<ReaderLeaderboard
 							title="Scribes"
 							iconName="quill"
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="reply"
-							pluralScoreUnit="replies"
-							rankings={this.state.leaderboards.value.scribe}
-							userRanking={this.state.leaderboards.value.userRankings.scribeCount}
+							scoreUnitPlural="replies"
+							rankings={this.props.leaderboards.value.scribe}
+							userRanking={this.props.leaderboards.value.userRankings.scribeCount}
 							userName={this.props.user.name}
 							onOpenExplainer={this._openScribeExplainer}
 						/>

@@ -1,0 +1,62 @@
+/*
+	componentPath: src/app/common/components/screens/LeaderboardScreen/LeaderboardTable
+	cssComponentId: leaderboard-table_2664hr
+*/
+
+.leaderboard-table_2664hr.fixed-height {
+	height: 150px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.leaderboard-table_2664hr.fixed-height.overflowing {
+	height: 165px;
+}
+.leaderboard-table_2664hr.fixed-height.overflowing::after {
+	content: "";
+	display: block;
+	position: -webkit-sticky;
+	position: sticky;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 12px;
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+	background-size: cover;
+	pointer-events: none;
+}
+.leaderboard-table_2664hr > table {
+	width: 100%;
+}
+.leaderboard-table_2664hr > table > tbody > tr > td {
+	height: 30px;
+}
+.leaderboard-table_2664hr > table > tbody > tr > td:nth-child(1) {
+	text-align: center;
+	width: 35px;
+}
+.leaderboard-table_2664hr > table > tbody > tr > td:nth-child(2) {
+	text-align: left;
+	padding: 0 5px 0 3%;
+}
+.leaderboard-table_2664hr > table > tbody > tr > td:nth-child(3) {
+	text-align: center;
+	width: 100px;
+}
+.leaderboard-table_2664hr > table > tbody > tr > td > .cell-liner {
+	display: block;
+	position: relative;
+}
+.leaderboard-table_2664hr > table > tbody > tr > td > .cell-liner > .overflow-container {
+	position: absolute;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	transform: translateY(-50%);
+}
+.leaderboard-table_2664hr > table > tbody > tr > td > .cell-liner > .overflow-container > .link {
+	display: inline-block;
+	text-decoration: none;
+	border-bottom: 1px solid #ccc;
+	line-height: 1.025em;
+}

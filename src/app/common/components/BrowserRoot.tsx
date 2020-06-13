@@ -146,6 +146,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 	}
 
 	// screens
+	private readonly _createAuthorScreenTitle = (name: string) => `${name} • Readup`;
 	private readonly _viewAdminPage = () => {
 		this.setScreenState({
 			key: ScreenKey.Admin,
@@ -156,6 +157,18 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
 			method: 'push'
+		});
+	};
+	private readonly _viewAuthor = (slug: string, name?: string) => {
+		this.setScreenState({
+			key: ScreenKey.Author,
+			method: 'push',
+			urlParams: {
+				slug
+			},
+			title: name ?
+				this._createAuthorScreenTitle(name) :
+				null
 		});
 	};
 	private readonly _viewBlog = () => {
@@ -397,7 +410,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				{
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateTitle: profile => `${profile.name} • Readup`,
+					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
 					onPostArticle: this._openPostDialog,
@@ -505,9 +518,11 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				{
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetLeaderboards: this.props.serverApi.getLeaderboards,
+					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
+					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
 					onOpenDialog: this._dialog.openDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
 				}
 			),

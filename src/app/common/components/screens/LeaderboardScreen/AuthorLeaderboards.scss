@@ -1,0 +1,14 @@
+/*
+	componentPath: src/app/common/components/screens/LeaderboardScreen/AuthorLeaderboards
+	cssComponentId: author-leaderboards_4rtwc1
+*/
+
+.author-leaderboards_4rtwc1 > .leaderboard {
+	max-width: 450px;
+	margin: 0 auto;
+}
+.author-leaderboards_4rtwc1 > .leaderboard > .controls {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 10px;
+}

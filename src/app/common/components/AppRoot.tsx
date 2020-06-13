@@ -128,6 +128,7 @@ export default class extends Root<
 		});
 		this.props.serverApi.logOrientationAnalytics(analytics);
 	};
+	private readonly _createAuthorScreenTitle = (name: string) => name;
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -149,6 +150,17 @@ export default class extends Root<
 	};
 	private readonly _viewAotdHistory = () => {
 		this.pushScreen(ScreenKey.AotdHistory);
+	};
+	private readonly _viewAuthor = (slug: string, name?: string) => {
+		this.pushScreen(
+			ScreenKey.Author,
+			{
+				slug
+			},
+			name ?
+				this._createAuthorScreenTitle(name) :
+				null
+		);
 	};
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
@@ -393,7 +405,7 @@ export default class extends Root<
 				{
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateTitle: profile => profile.name,
+					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
 					onPostArticle: this._openPostDialog,
@@ -487,9 +499,11 @@ export default class extends Root<
 				{
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetLeaderboards: this.props.serverApi.getLeaderboards,
+					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
+					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
 					onOpenDialog: this._dialog.openDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
 				}
 			),
