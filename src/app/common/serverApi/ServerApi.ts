@@ -57,6 +57,9 @@ import TwitterCredentialLinkForm from '../../../common/models/auth/TwitterCreden
 import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
 import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
 import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssuesReportRow';
+import AuthorArticleQuery from '../../../common/models/articles/AuthorArticleQuery';
+import AuthorProfileRequest from '../../../common/models/authors/AuthorProfileRequest';
+import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -147,6 +150,7 @@ export default abstract class {
 	// Articles
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
+	public readonly getAuthorArticles = this.createFetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>('/Articles/Author');
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<CommunityReadsQuery, CommunityReads>('/Articles/CommunityReads');
 	public readonly getPublisherArticles = this.createFetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>('/Articles/Publisher');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListStarred');
@@ -160,6 +164,9 @@ export default abstract class {
 	public readonly requestTwitterBrowserLinkRequestToken = () => this.post<TwitterRequestToken>({ path: '/Auth/TwitterBrowserLinkRequest' });
 	public readonly requestTwitterWebViewRequestToken = () => this.post<TwitterRequestToken>({ path: '/Auth/TwitterWebViewRequest' });
 	public readonly linkTwitterAccount = (data: TwitterCredentialLinkForm) => this.post<AuthServiceAccountAssociation>({ path: '/Auth/TwitterLink', data });
+
+	// Authors
+	public readonly getAuthorProfile = this.createFetchFunctionWithParams<AuthorProfileRequest, AuthorProfile>('/Authors/Profile');
 
 	// Extension
 	public readonly sendExtensionInstructions = () => this.post({ path: '/Extension/SendInstructions' });

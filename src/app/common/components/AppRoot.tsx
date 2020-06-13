@@ -41,6 +41,7 @@ import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialog';
+import createAuthorScreenFactory from './screens/AuthorScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -381,6 +382,25 @@ export default class extends Root<
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.Author]: createAuthorScreenFactory(
+				ScreenKey.Author,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateTitle: profile => profile.name,
+					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
+					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSetScreenState: this._setScreenState,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,

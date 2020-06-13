@@ -241,6 +241,18 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/stats',
 		pathRegExp: /^\/stats$/,
 		screenKey: ScreenKey.Stats
-	}
+	},
+	(function () {
+		const pathRegExp = /^\/writers\/([^/]+)$/;
+		return {
+			analyticsName: 'Author',
+			createUrl: params => `/writers/${params['slug']}`,
+			getPathParams: path => ({
+				slug: path.match(pathRegExp)[1]
+			}),
+			pathRegExp,
+			screenKey: ScreenKey.Author
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 ];
 export default routes;

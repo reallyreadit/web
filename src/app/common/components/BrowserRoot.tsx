@@ -46,6 +46,7 @@ import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep, ExitR
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
+import createAuthorScreenFactory from './screens/AuthorScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -385,6 +386,25 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.Author]: createAuthorScreenFactory(
+				ScreenKey.Author,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateTitle: profile => `${profile.name} • Readup`,
+					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
+					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSetScreenState: this._setScreenState,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
