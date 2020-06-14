@@ -248,7 +248,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			analyticsName: 'Author',
 			createUrl: params => `/writers/${params['slug']}`,
 			getPathParams: path => ({
-				slug: path.match(pathRegExp)[1]
+				slug: decodeURIComponent(path.match(pathRegExp)[1])
 			}),
 			pathRegExp,
 			screenKey: ScreenKey.Author
