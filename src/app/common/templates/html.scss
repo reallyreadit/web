@@ -36,8 +36,14 @@ html {
 	color: #2A2326;
 	background-color: #F7F6F5;
 }
-html, body, #root {
+html[data-client-type="App"] {
 	height: 100vh;
+}
+html[data-client-type="Browser"] {
+	height: 100%;
+}
+body, #root {
+	height: 100%;
 }
 body {
 	overflow: hidden;
