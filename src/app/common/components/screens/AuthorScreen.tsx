@@ -239,7 +239,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 					profile,
 					profile => deps.onCreateTitle(profile),
 					'Loading...',
-					'Profile not found'
+					'Author not found'
 				)
 			};
 		},
