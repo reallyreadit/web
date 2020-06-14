@@ -6,7 +6,11 @@ import ProfileLink from '../../../../../common/components/ProfileLink';
 import ContentBox from '../../../../../common/components/ContentBox';
 import LeaderboardHeader from './LeaderboardHeader';
 import LeaderboardTable from './LeaderboardTable';
+import { formatCountable } from '../../../../../common/format';
 
+function formatScore(score: number, scoreUnit: string, scoreUnitPlural?: string) {
+	return `${score} ${formatCountable(score, scoreUnit, scoreUnitPlural)}`;
+}
 export default (
 	props: {
 		footer?: React.ReactNode,
@@ -45,12 +49,10 @@ export default (
 								/> :
 								ranking.userName
 						),
-						score: ranking.score
+						score: formatScore(ranking.score, props.scoreUnit, props.scoreUnitPlural)
 					})
 				)
 			}
-			scoreUnit={props.scoreUnit}
-			scoreUnitPlural={props.scoreUnitPlural}
 		/>
 		<hr className="break" />
 		<LeaderboardTable
@@ -58,10 +60,8 @@ export default (
 				key: props.userName,
 				rank: props.userRanking.rank,
 				name: props.userName,
-				score: props.userRanking.score
+				score: formatScore(props.userRanking.score, props.scoreUnit, props.scoreUnitPlural)
 			}]}
-			scoreUnit={props.scoreUnit}
-			scoreUnitPlural={props.scoreUnitPlural}
 		/>
 		<div className="footer">
 			{props.footer}

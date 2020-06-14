@@ -53,7 +53,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 						/>
 					</div>
 					<div className="caption">
-						Writers are ranked by the amount of time that Readup readers spend reading articles <em>to completion</em>.
+						Writers are ranked by the amount of time that readers spend reading articles <em>to completion</em>.
 					</div>
 					{this.props.rankings.isLoading ?
 						<LoadingOverlay
@@ -74,11 +74,10 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 												slug={ranking.slug}
 											/>
 										),
-										score: ranking.score
+										score: `${ranking.score} min`
 									})
 								)
 							}
-							scoreUnit="pt"
 						/>}
 				</ContentBox>
 			</div>

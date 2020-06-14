@@ -1,19 +1,16 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { formatCountable } from '../../../../../common/format';
 
 interface Row {
 	key: string | number,
 	rank: number,
 	name: React.ReactNode,
-	score: number
+	score: string
 }
 export default (
 	props: {
 		overflowLimit?: number,
-		rows: Row[],
-		scoreUnit: string,
-		scoreUnitPlural?: string
+		rows: Row[]
 	}
 ) => (
 	<div
@@ -38,7 +35,7 @@ export default (
 									<span className="overflow-container">{row.name}</span>
 								</span>
 							</td>
-							<td>{row.score} {formatCountable(row.score, props.scoreUnit, props.scoreUnitPlural)}</td>
+							<td>{row.score}</td>
 						</tr>
 					)
 				)}
