@@ -7,8 +7,17 @@
 	max-width: 450px;
 	margin: 0 auto;
 }
-.author-leaderboards_4rtwc1 > .leaderboard > .controls {
+.author-leaderboards_4rtwc1 > .leaderboard > .header {
 	display: flex;
-	justify-content: flex-end;
-	margin-bottom: 10px;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px 0 10px 0;
+}
+.author-leaderboards_4rtwc1 > .leaderboard > .header > .title {
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+}
+.author-leaderboards_4rtwc1 > .leaderboard > .caption {
+	padding: 10px 0 15px 0;
+	text-align: center;
 }

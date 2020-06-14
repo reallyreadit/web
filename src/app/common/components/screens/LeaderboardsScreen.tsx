@@ -203,7 +203,6 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 							<AuthorLeaderboards
 								onChangeTimeWindow={this._changeAuthorLeaderboardsTimeWindow}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onOpenExplainer={this._openExplainer}
 								onViewAuthor={this.props.onViewAuthor}
 								rankings={this.state.authorLeaderboards}
 								timeWindow={this.state.authorLeaderboardsTimeWindow}
