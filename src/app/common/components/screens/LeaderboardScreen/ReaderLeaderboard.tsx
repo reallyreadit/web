@@ -22,8 +22,8 @@ export default (
 		scoreUnitPlural?: string,
 		rankings: LeaderboardRanking[],
 		title: string,
-		userRanking: Ranking,
-		userName: string
+		userRanking: Ranking | null,
+		userName: string | null
 	}
 ) => (
 	<ContentBox className="reader-leaderboard_ky3yfu">
@@ -54,15 +54,19 @@ export default (
 				)
 			}
 		/>
-		<hr className="break" />
-		<LeaderboardTable
-			rows={[{
-				key: props.userName,
-				rank: props.userRanking.rank,
-				name: props.userName,
-				score: formatScore(props.userRanking.score, props.scoreUnit, props.scoreUnitPlural)
-			}]}
-		/>
+		{props.userRanking && props.userName ?
+			<>
+				<hr className="break" />
+				<LeaderboardTable
+					rows={[{
+						key: props.userName,
+						rank: props.userRanking.rank,
+						name: props.userName,
+						score: formatScore(props.userRanking.score, props.scoreUnit, props.scoreUnitPlural)
+					}]}
+				/>
+			</> :
+			null}
 		<div className="footer">
 			{props.footer}
 		</div>

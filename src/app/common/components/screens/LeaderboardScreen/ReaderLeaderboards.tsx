@@ -11,7 +11,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onOpenExplainer: (title: string, content: React.ReactNode) => void,
 	onViewProfile: (userName: string) => void,
-	user: UserAccount
+	user: UserAccount | null
 }
 export default class ReaderLeaderboards extends React.Component<Props> {
 	private readonly _openScoutExplainer = () => {
@@ -36,7 +36,7 @@ export default class ReaderLeaderboards extends React.Component<Props> {
 	public render() {
 		const streak = (
 			this.props.leaderboards.value ?
-				this.props.leaderboards.value.userRankings.streak :
+				this.props.leaderboards.value.userRankings?.streak :
 				null
 		);
 		return (
@@ -51,8 +51,8 @@ export default class ReaderLeaderboards extends React.Component<Props> {
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="read"
 							rankings={this.props.leaderboards.value.weeklyReadCount}
-							userRanking={this.props.leaderboards.value.userRankings.weeklyReadCount}
-							userName={this.props.user.name}
+							userRanking={this.props.leaderboards.value.userRankings?.weeklyReadCount}
+							userName={this.props.user?.name}
 						/>
 						<ReaderLeaderboard
 							title="Top readers of all time"
@@ -61,8 +61,8 @@ export default class ReaderLeaderboards extends React.Component<Props> {
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="read"
 							rankings={this.props.leaderboards.value.readCount}
-							userRanking={this.props.leaderboards.value.userRankings.readCount}
-							userName={this.props.user.name}
+							userRanking={this.props.leaderboards.value.userRankings?.readCount}
+							userName={this.props.user?.name}
 						/>
 						<ReaderLeaderboard
 							title="Reading streaks"
@@ -71,13 +71,17 @@ export default class ReaderLeaderboards extends React.Component<Props> {
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="day"
 							rankings={this.props.leaderboards.value.streak}
-							userRanking={{
-								score: streak.dayCount,
-								rank: streak.rank
-							}}
-							userName={this.props.user.name}
+							userRanking={
+								streak ?
+									{
+										score: streak.dayCount,
+										rank: streak.rank
+									} :
+									null
+							}
+							userName={this.props.user?.name}
 							footer={
-								streak.dayCount ?
+								streak?.dayCount ?
 									<div className="streak-status">
 										<div className="text">
 											{streak.includesToday ?
@@ -102,8 +106,8 @@ export default class ReaderLeaderboards extends React.Component<Props> {
 							onViewProfile={this.props.onViewProfile}
 							scoreUnit="AOTD"
 							rankings={this.props.leaderboards.value.scout}
-							userRanking={this.props.leaderboards.value.userRankings.scoutCount}
-							userName={this.props.user.name}
+							userRanking={this.props.leaderboards.value.userRankings?.scoutCount}
+							userName={this.props.user?.name}
 							onOpenExplainer={this._openScoutExplainer}
 						/>
 						<ReaderLeaderboard
@@ -114,8 +118,8 @@ export default class ReaderLeaderboards extends React.Component<Props> {
 							scoreUnit="reply"
 							scoreUnitPlural="replies"
 							rankings={this.props.leaderboards.value.scribe}
-							userRanking={this.props.leaderboards.value.userRankings.scribeCount}
-							userName={this.props.user.name}
+							userRanking={this.props.leaderboards.value.userRankings?.scribeCount}
+							userName={this.props.user?.name}
 							onOpenExplainer={this._openScribeExplainer}
 						/>
 						<div className="placeholder"></div>

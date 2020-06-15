@@ -7,11 +7,21 @@
 	display: flex;
 	flex-flow: column;
 }
-.leaderboards-screen_wuzsob > .loading-overlay_zfgtd1,
-.leaderboards-screen_wuzsob > .reader-leaderboards_8eclav {
+.leaderboards-screen_wuzsob > .loading-overlay_zfgtd1 {
 	flex: 1 1 auto;
+}
+.leaderboards-screen_wuzsob > h1 {
+	flex: 0 0 auto;
+	font-weight: normal;
+	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+	margin-bottom: 20px;
 }
 .leaderboards-screen_wuzsob > .header-selector_9li9z5 {
 	flex: 0 0 auto;
 	margin-bottom: 20px;
+}
+.leaderboards-screen_wuzsob > .author-leaderboards_4rtwc1,
+.leaderboards-screen_wuzsob > .reader-leaderboards_8eclav {
+	flex: 0 0 auto;
 }

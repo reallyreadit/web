@@ -181,6 +181,26 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 			)
 		);
 	}
+	public componentDidUpdate(prevProps: Props) {
+		if (
+			(
+				!this.props.user !== !prevProps.user
+			) &&
+			this.state.view === View.Readers
+		) {
+			this.setState({
+				readerLeaderboards: this.props.onGetReaderLeaderboards(
+					this._asyncTracker.addCallback(
+						readerLeaderboards => {
+							this.setState({
+								readerLeaderboards
+							});
+						}
+					)
+				)
+			});
+		}
+	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
@@ -190,6 +210,9 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 				{this.state.isScreenLoading ?
 					<LoadingOverlay /> :
 					<>
+						{!this.props.user ?
+							<h1>Leaderboards</h1> :
+							null}
 						<HeaderSelector
 							disabled={
 								this.state.authorLeaderboards?.isLoading ||

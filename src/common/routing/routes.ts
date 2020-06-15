@@ -106,7 +106,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	},
 	{
 		analyticsName: 'Leaderboards',
-		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/leaderboards',
 		pathRegExp: /^\/leaderboards$/,
 		screenKey: ScreenKey.Leaderboards

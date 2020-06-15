@@ -7,7 +7,7 @@ export default interface Leaderboards {
 	scout: LeaderboardRanking[],
 	scribe: LeaderboardRanking[],
 	streak: LeaderboardRanking[],
-	userRankings: UserLeaderboardRankings,
+	userRankings: UserLeaderboardRankings | null,
 	weeklyReadCount: LeaderboardRanking[],
-	timeZoneName: string
+	timeZoneName: string | null
 }
