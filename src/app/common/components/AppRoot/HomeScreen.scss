@@ -11,11 +11,13 @@
 	flex: 0 0 auto;
 	margin: 0 auto 10px auto;
 }
-.home-screen_an7vm5 > .loading-overlay_zfgtd1,
-.home-screen_an7vm5 > .community-reads-list_g4cy3n {
+.home-screen_an7vm5 > .loading-overlay_zfgtd1 {
 	flex: 1 1 auto;
+}
+.home-screen_an7vm5 > .community-reads-list_g4cy3n {
+	flex: 0 0 auto;
 }
 .home-screen_an7vm5 > .show-more {
 	text-align: center;
-	margin: 5px 0 10px 0;
+	margin: 20px 0;
 }

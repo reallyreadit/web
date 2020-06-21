@@ -3,20 +3,8 @@
 	cssComponentId: community-reads-list_g4cy3n
 */
 
-.community-reads-list_g4cy3n {
-	position: relative;
-	display: flex;
-	flex-flow: column;
-}
 .community-reads-list_g4cy3n > .controls {
-	flex: 0 0 auto;
 	display: flex;
 	justify-content: flex-end;
 	margin-bottom: 20px;
-}
-.community-reads-list_g4cy3n > .loading-overlay_zfgtd1 {
-	flex: 1 1 auto;
-}
-.community-reads-list_g4cy3n > .article-list_o9uw1n {
-	flex: 0 0 auto;
 }

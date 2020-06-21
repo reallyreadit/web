@@ -15,7 +15,6 @@ import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
 import PageResult from '../../../../common/models/PageResult';
@@ -26,6 +25,7 @@ import PublisherArticleQuery from '../../../../common/models/articles/PublisherA
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
+import { Sort } from '../controls/articles/AotdView';
 
 interface Props {
 	deviceType: DeviceType,
@@ -57,7 +57,8 @@ interface State {
 	isLoadingNewItems: boolean,
 	maxLength?: number,
 	minLength?: number,
-	newAotd: boolean
+	newAotd: boolean,
+	sort: Sort
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -67,7 +68,7 @@ class HomeScreen extends React.Component<Props, State> {
 			isLoadingNewItems: false,
 			newAotd: false
 		});
-		this.fetchItems(this.state.minLength, this.state.maxLength, pageNumber);
+		this.fetchItems(this.state.minLength, this.state.maxLength, pageNumber, this.state.sort);
 	};
 	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
 		this.setState({
@@ -76,17 +77,26 @@ class HomeScreen extends React.Component<Props, State> {
 			minLength,
 			newAotd: false
 		});
-		this.fetchItems(minLength, maxLength, 1);
+		this.fetchItems(minLength, maxLength, 1, this.state.sort);
+	};
+	private readonly _changeSort = (sort: Sort) => {
+		this.setState({
+			isLoading: true,
+			newAotd: false,
+			sort
+		});
+		this.fetchItems(this.state.minLength, this.state.maxLength, 1, sort);
 	};
 	private readonly _loadNewItems = () => {
 		this.setState({
 			isLoadingNewItems: true
 		});
-		this.fetchItems(null, null, 1);
+		this.fetchItems(null, null, 1, this.state.sort);
 	};
 	private _hasClearedAlert = false;
 	constructor(props: Props) {
 		super(props);
+		const sort = CommunityReadSort.Hot;
 		if (props.user) {
 			this.state = {
 				communityReads: props.onGetCommunityReads(
@@ -95,7 +105,7 @@ class HomeScreen extends React.Component<Props, State> {
 						minLength: null,
 						pageNumber: 1,
 						pageSize: 40,
-						sort: CommunityReadSort.Hot
+						sort
 					},
 					this._asyncTracker.addCallback(
 						communityReads => {
@@ -108,7 +118,8 @@ class HomeScreen extends React.Component<Props, State> {
 				),
 				isLoading: false,
 				isLoadingNewItems: false,
-				newAotd: false
+				newAotd: false,
+				sort
 			};
 		} else {
 			this.state = {
@@ -118,7 +129,7 @@ class HomeScreen extends React.Component<Props, State> {
 						minLength: null,
 						pageNumber: 1,
 						pageSize: 5,
-						sort: CommunityReadSort.Hot
+						sort
 					},
 					this._asyncTracker.addCallback(
 						communityReads => {
@@ -131,7 +142,8 @@ class HomeScreen extends React.Component<Props, State> {
 				),
 				isLoading: false,
 				isLoadingNewItems: false,
-				newAotd: false
+				newAotd: false,
+				sort
 			};
 		}
 		this._asyncTracker.addCancellationDelegate(
@@ -195,15 +207,14 @@ class HomeScreen extends React.Component<Props, State> {
 			this._hasClearedAlert = true;
 		}
 	}
-	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number) {
+	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number, sort: Sort) {
 		this.props.onGetCommunityReads(
 			{
 				maxLength,
 				minLength,
 				pageNumber,
 				pageSize: 40,
-				sort: CommunityReadSort.Hot,
-				timeWindow: CommunityReadTimeWindow.AllTime
+				sort
 			},
 			this._asyncTracker.addCallback(
 				communityReads => {
@@ -264,10 +275,10 @@ class HomeScreen extends React.Component<Props, State> {
 								aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
 								articles={this.state.communityReads && this.state.communityReads.value.articles}
 								isLoading={this.state.isLoading}
-								isPaginated
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
 								onChangeLengthRange={this._changeLengthRange}
+								onChangeSort={this._changeSort}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 								onPostArticle={this.props.onPostArticle}
@@ -278,6 +289,7 @@ class HomeScreen extends React.Component<Props, State> {
 								onViewAotdHistory={this.props.onViewAotdHistory}
 								onViewComments={this.props.onViewComments}
 								onViewProfile={this.props.onViewProfile}
+								sort={this.state.sort}
 								user={this.props.user}
 							/>
 							{!this.state.isLoading ?

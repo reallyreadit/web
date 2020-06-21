@@ -24,6 +24,7 @@ import ArticleDetails from '../../../../common/components/ArticleDetails';
 import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
+import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -127,7 +128,7 @@ export default class MarketingScreen extends React.Component<
 						<AotdView
 							aotd={this.props.communityReads.value.aotd}
 							articles={this.props.communityReads.value.articles}
-							isPaginated={false}
+							isLoading={false}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onPostArticle={this.props.onPostArticle}
@@ -139,6 +140,7 @@ export default class MarketingScreen extends React.Component<
 							onViewComments={this.props.onViewComments}
 							onViewProfile={this.props.onViewProfile}
 							user={this.props.user}
+							sort={CommunityReadSort.Hot}
 						/>}
 				</Panel>
 				<Panel

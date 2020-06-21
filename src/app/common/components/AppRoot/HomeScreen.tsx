@@ -13,7 +13,6 @@ import produce from 'immer';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
-import CommunityReadTimeWindow from '../../../../common/models/CommunityReadTimeWindow';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
@@ -22,6 +21,7 @@ import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import StickyNote from '../../../../common/components/StickyNote';
+import { Sort } from '../controls/articles/AotdView';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
@@ -45,7 +45,8 @@ interface State {
 	isLoadingNewItems: boolean,
 	maxLength?: number,
 	minLength?: number,
-	newAotd: boolean
+	newAotd: boolean,
+	sort: Sort
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -56,7 +57,15 @@ class HomeScreen extends React.Component<Props, State> {
 			minLength,
 			newAotd: false
 		});
-		this.fetchItems(minLength, maxLength, 1);
+		this.fetchItems(minLength, maxLength, 1, this.state.sort);
+	};
+	private readonly _changeSort = (sort: Sort) => {
+		this.setState({
+			isLoading: true,
+			newAotd: false,
+			sort
+		});
+		this.fetchItems(this.state.minLength, this.state.maxLength, 1, sort);
 	};
 	private _hasClearedAlert = false;
 	private readonly _loadMore = () => {
@@ -71,8 +80,7 @@ class HomeScreen extends React.Component<Props, State> {
 						{
 							pageNumber: this.state.communityReads.value.articles.pageNumber + 1,
 							pageSize: 10,
-							sort: CommunityReadSort.Hot,
-							timeWindow: CommunityReadTimeWindow.AllTime,
+							sort: this.state.sort,
 							minLength: this.state.minLength,
 							maxLength: this.state.maxLength
 						},
@@ -102,10 +110,11 @@ class HomeScreen extends React.Component<Props, State> {
 		this.setState({
 			isLoadingNewItems: true
 		});
-		this.fetchItems(null, null, 1);
+		this.fetchItems(null, null, 1, this.state.sort);
 	};
 	constructor(props: Props) {
 		super(props);
+		const sort = CommunityReadSort.Hot;
 		this.state = {
 			communityReads: props.onGetCommunityReads(
 				{
@@ -113,7 +122,7 @@ class HomeScreen extends React.Component<Props, State> {
 					minLength: null,
 					pageNumber: 1,
 					pageSize: 10,
-					sort: CommunityReadSort.Hot
+					sort
 				},
 				this._asyncTracker.addCallback(
 					communityReads => {
@@ -126,7 +135,8 @@ class HomeScreen extends React.Component<Props, State> {
 			),
 			isLoading: false,
 			isLoadingNewItems: false,
-			newAotd: false
+			newAotd: false,
+			sort
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
@@ -140,15 +150,14 @@ class HomeScreen extends React.Component<Props, State> {
 			this._hasClearedAlert = true;
 		}
 	}
-	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number) {
+	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number, sort: Sort) {
 		this.props.onGetCommunityReads(
 			{
 				maxLength,
 				minLength,
 				pageNumber,
 				pageSize: 10,
-				sort: CommunityReadSort.Hot,
-				timeWindow: CommunityReadTimeWindow.AllTime
+				sort
 			},
 			this._asyncTracker.addCallback(
 				communityReads => {
@@ -208,10 +217,10 @@ class HomeScreen extends React.Component<Props, State> {
 							aotdHasAlert={this.state.communityReads.value.aotdHasAlert}
 							articles={this.state.communityReads.value.articles}
 							isLoading={this.state.isLoading}
-							isPaginated={false}
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}
 							onChangeLengthRange={this._changeLengthRange}
+							onChangeSort={this._changeSort}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onRateArticle={this.props.onRateArticle}
@@ -222,6 +231,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onViewAotdHistory={this.props.onViewAotdHistory}
 							onViewComments={this.props.onViewComments}
 							onViewProfile={this.props.onViewProfile}
+							sort={this.state.sort}
 							user={this.props.user}
 						/>
 						{!this.state.isLoading ?

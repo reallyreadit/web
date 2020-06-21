@@ -4,22 +4,24 @@
 */
 
 .aotd-view_hgax0h > .section-header {
-	flex: 0 0 auto;
-	font-size: 17pt;
-	font-family: 'Museo Sans (500)';
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	margin-bottom: 10px;
 }
-.aotd-view_hgax0h > .aotd {
-	flex: 0 0 auto;
+.aotd-view_hgax0h > .section-header > label {
+	font-size: 17pt;
+	font-family: 'Museo Sans (500)';
 }
-.aotd-view_hgax0h > .aotd > .button_ovrlmi {
-	width: max-content;
-	white-space: nowrap;
-	margin: 20px auto 0;
+.aotd-view_hgax0h > .aotd > .controls {
+	margin-top: 20px;
+	text-align: center;
 }
 .aotd-view_hgax0h > .separator {
-	flex: 0 0 auto;
 	width: 80%;
 	margin: 20px auto;
 	border-bottom: 1px solid #ccc;
+}
+.aotd-view_hgax0h > .loading-overlay_zfgtd1 {
+	margin: 20px 0;
 }

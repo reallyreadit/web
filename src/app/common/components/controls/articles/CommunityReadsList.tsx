@@ -4,14 +4,13 @@ import PageResult from '../../../../../common/models/PageResult';
 import Fetchable from '../../../../../common/Fetchable';
 import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
-import LoadingOverlay from '../LoadingOverlay';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../../common/sharing/ShareData';
 import ArticleLengthFilter from '../ArticleLengthFilter';
 import Post from '../../../../../common/models/social/Post';
 import UserAccount from '../../../../../common/models/UserAccount';
 import Rating from '../../../../../common/models/Rating';
-import AotdView from './AotdView';
+import AotdView, { Sort } from './AotdView';
 
 interface State {
 	communityReads: Fetchable<CommunityReads>,
@@ -59,10 +58,10 @@ export default class extends React.PureComponent<{
 	aotdHasAlert: boolean,
 	articles: PageResult<UserArticle>,
 	isLoading: boolean,
-	isPaginated: boolean,
 	maxLength: number | null,
 	minLength: number | null,
 	onChangeLengthRange: (min: number | null, max: number | null) => void,
+	onChangeSort: (sort: Sort) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPostArticle: (article: UserArticle) => void,
@@ -73,6 +72,7 @@ export default class extends React.PureComponent<{
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
+	sort: Sort,
 	user: UserAccount
 }> {
 	public render() {
@@ -85,25 +85,25 @@ export default class extends React.PureComponent<{
 						onChange={this.props.onChangeLengthRange}
 					/>
 				</div>
-				{this.props.isLoading ?
-					<LoadingOverlay position="static" /> :
-					<AotdView
-						aotd={this.props.aotd}
-						aotdHasAlert={this.props.aotdHasAlert}
-						articles={this.props.articles}
-						isPaginated={this.props.isPaginated}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onPostArticle={this.props.onPostArticle}
-						onRateArticle={this.props.onRateArticle}
-						onReadArticle={this.props.onReadArticle}
-						onShare={this.props.onShare}
-						onToggleArticleStar={this.props.onToggleArticleStar}
-						onViewAotdHistory={this.props.onViewAotdHistory}
-						onViewComments={this.props.onViewComments}
-						onViewProfile={this.props.onViewProfile}
-						user={this.props.user}
-					/>}
+				<AotdView
+					aotd={this.props.aotd}
+					aotdHasAlert={this.props.aotdHasAlert}
+					articles={this.props.articles}
+					isLoading={this.props.isLoading}
+					onChangeSort={this.props.onChangeSort}
+					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onPostArticle={this.props.onPostArticle}
+					onRateArticle={this.props.onRateArticle}
+					onReadArticle={this.props.onReadArticle}
+					onShare={this.props.onShare}
+					onToggleArticleStar={this.props.onToggleArticleStar}
+					onViewAotdHistory={this.props.onViewAotdHistory}
+					onViewComments={this.props.onViewComments}
+					onViewProfile={this.props.onViewProfile}
+					sort={this.props.sort}
+					user={this.props.user}
+				/>
 			</div>
 		);
 	}
