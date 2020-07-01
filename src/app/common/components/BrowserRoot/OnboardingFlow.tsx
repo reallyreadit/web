@@ -287,7 +287,8 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 						<div className="icon-right">
 							{(
 								!this.props.user ||
-								!isCompatibleBrowser(this.props.deviceType)
+								!isCompatibleBrowser(this.props.deviceType) ||
+								this.state.step === Step.InstallExtension
 							 ) ?
 								<Icon
 									display="block"
