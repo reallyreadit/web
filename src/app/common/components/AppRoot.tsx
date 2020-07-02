@@ -42,6 +42,7 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialog';
 import createAuthorScreenFactory from './screens/AuthorScreen';
+import { DeviceType } from '../../../common/DeviceType';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -76,6 +77,9 @@ export default class extends Root<
 > {
 	private _isUpdateAvailable: boolean = false;
 	private _signInLocation: RouteLocation | null;
+	private readonly _noop = () => {
+		// no-op
+	};
 
 	// events
 	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
@@ -403,9 +407,14 @@ export default class extends Root<
 			[ScreenKey.Author]: createAuthorScreenFactory(
 				ScreenKey.Author,
 				{
+					deviceType: DeviceType.Ios,
+					marketingVariant: this.props.marketingVariant,
+					onBeginOnboarding: this._noop,
+					onCopyAppReferrerTextToClipboard: this._noop,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
+					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
 					onPostArticle: this._openPostDialog,
@@ -497,8 +506,13 @@ export default class extends Root<
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(
 				ScreenKey.Leaderboards,
 				{
+					deviceType: DeviceType.Ios,
+					marketingVariant: this.props.marketingVariant,
+					onBeginOnboarding: this._noop,
+					onCopyAppReferrerTextToClipboard: this._noop,
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
 					onOpenDialog: this._dialog.openDialog,

@@ -4,24 +4,18 @@
 */
 
 .leaderboards-screen_wuzsob {
-	display: flex;
-	flex-flow: column;
+	min-height: 100%;
 }
-.leaderboards-screen_wuzsob > .loading-overlay_zfgtd1 {
-	flex: 1 1 auto;
+.leaderboards-screen_wuzsob > .header {
+	text-align: center;
+	background-color: #efefef;
 }
-.leaderboards-screen_wuzsob > h1 {
-	flex: 0 0 auto;
+.leaderboards-screen_wuzsob > .main > .content > h1 {
 	font-weight: normal;
 	font-family: 'Museo Sans (700)';
 	font-size: 20pt;
 	margin-bottom: 20px;
 }
-.leaderboards-screen_wuzsob > .header-selector_9li9z5 {
-	flex: 0 0 auto;
+.leaderboards-screen_wuzsob > .main > .content > .header-selector_9li9z5 {
 	margin-bottom: 20px;
-}
-.leaderboards-screen_wuzsob > .author-leaderboards_4rtwc1,
-.leaderboards-screen_wuzsob > .reader-leaderboards_8eclav {
-	flex: 0 0 auto;
 }

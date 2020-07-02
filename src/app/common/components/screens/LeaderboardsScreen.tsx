@@ -1,6 +1,5 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
-import ScreenContainer from '../ScreenContainer';
 import Dialog from '../../../../common/components/Dialog';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import Leaderboards from '../../../../common/models/Leaderboards';
@@ -16,17 +15,26 @@ import AuthorLeaderboardsTimeWindow from '../../../../common/models/stats/Author
 import LoadingOverlay from '../controls/LoadingOverlay';
 import HeaderSelector from '../HeaderSelector';
 import AuthorLeaderboards from './LeaderboardScreen/AuthorLeaderboards';
+import { DeviceType } from '../../../../common/DeviceType';
+import { variants as marketingVariants } from '../../marketingTesting';
+import Panel from '../BrowserRoot/Panel';
+import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 interface Props {
+	deviceType: DeviceType,
+	marketingVariant: number,
+	onBeginOnboarding: (analyticsAction: string) => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAuthorLeaderboards: FetchFunctionWithParams<AuthorLeaderboardsRequest, AuthorRanking[]>,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onGetReaderLeaderboards: FetchFunction<Leaderboards>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewAuthor: (slug: string, name: string) => void,
 	onViewProfile: (userName: string) => void,
-	user: UserAccount
+	user: UserAccount | null
 }
 enum View {
 	Authors = 'Writers',
@@ -205,40 +213,58 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		const marketingVariant = marketingVariants[this.props.marketingVariant];
 		return (
-			<ScreenContainer className="leaderboards-screen_wuzsob">
+			<div className="leaderboards-screen_wuzsob">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay /> :
+					<LoadingOverlay position="absolute" /> :
 					<>
 						{!this.props.user ?
-							<h1>Leaderboards</h1> :
+							<Panel className="header">
+								<h1>{marketingVariant.headline}</h1>
+								<h3>{marketingVariant.subtext}</h3>
+								<div className="buttons">
+									<GetStartedButton
+										analyticsAction="LeaderboardsScreen"
+										deviceType={this.props.deviceType}
+										onBeginOnboarding={this.props.onBeginOnboarding}
+										onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+										onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+									/>
+								</div>
+							</Panel> :
 							null}
-						<HeaderSelector
-							disabled={
-								this.state.authorLeaderboards?.isLoading ||
-								this.state.readerLeaderboards?.isLoading
-							}
-							items={this._headerSelectorItems}
-							onChange={this._changeView}
-							value={this.state.view}
-						/>
-						{this.state.view === View.Authors ?
-							<AuthorLeaderboards
-								onChangeTimeWindow={this._changeAuthorLeaderboardsTimeWindow}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onViewAuthor={this.props.onViewAuthor}
-								rankings={this.state.authorLeaderboards}
-								timeWindow={this.state.authorLeaderboardsTimeWindow}
-							/> :
-							<ReaderLeaderboards
-								leaderboards={this.state.readerLeaderboards}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onOpenExplainer={this._openExplainer}
-								onViewProfile={this.props.onViewProfile}
-								user={this.props.user}
-							/>}
+						<Panel className="main">
+							{!this.props.user ?
+								<h1>Leaderboards</h1> :
+								null}
+							<HeaderSelector
+								disabled={
+									this.state.authorLeaderboards?.isLoading ||
+									this.state.readerLeaderboards?.isLoading
+								}
+								items={this._headerSelectorItems}
+								onChange={this._changeView}
+								value={this.state.view}
+							/>
+							{this.state.view === View.Authors ?
+								<AuthorLeaderboards
+									onChangeTimeWindow={this._changeAuthorLeaderboardsTimeWindow}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onViewAuthor={this.props.onViewAuthor}
+									rankings={this.state.authorLeaderboards}
+									timeWindow={this.state.authorLeaderboardsTimeWindow}
+								/> :
+								<ReaderLeaderboards
+									leaderboards={this.state.readerLeaderboards}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onOpenExplainer={this._openExplainer}
+									onViewProfile={this.props.onViewProfile}
+									user={this.props.user}
+								/>}
+						</Panel>
 					</>}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }
@@ -255,8 +281,13 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<LeaderboardsScreen
+				deviceType={services.deviceType}
+				marketingVariant={services.marketingVariant}
+				onBeginOnboarding={services.onBeginOnboarding}
+				onCopyAppReferrerTextToClipboard={services.onCopyAppReferrerTextToClipboard}
 				onCloseDialog={services.onCloseDialog}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
+				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
 				onGetAuthorLeaderboards={services.onGetAuthorLeaderboards}
 				onGetReaderLeaderboards={services.onGetReaderLeaderboards}
 				onOpenDialog={services.onOpenDialog}

@@ -408,9 +408,14 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			[ScreenKey.Author]: createAuthorScreenFactory(
 				ScreenKey.Author,
 				{
+					deviceType: this.props.deviceType,
+					marketingVariant: this.props.marketingVariant,
+					onBeginOnboarding: this._beginOnboarding,
+					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
+					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
 					onPostArticle: this._openPostDialog,
@@ -516,8 +521,13 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(
 				ScreenKey.Leaderboards,
 				{
+					deviceType: this.props.deviceType,
+					marketingVariant: this.props.marketingVariant,
+					onBeginOnboarding: this._beginOnboarding,
+					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
 					onOpenDialog: this._dialog.openDialog,

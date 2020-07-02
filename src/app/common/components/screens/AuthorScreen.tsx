@@ -13,7 +13,6 @@ import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
-import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import AuthorArticleQuery from '../../../../common/models/articles/AuthorArticleQuery';
 import AuthorProfile from '../../../../common/models/authors/AuthorProfile';
@@ -27,12 +26,21 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { formatFetchable } from '../../../../common/format';
+import Panel from '../BrowserRoot/Panel';
+import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import { DeviceType } from '../../../../common/DeviceType';
+import { variants as marketingVariants } from '../../marketingTesting';
 
 interface Props {
 	authorSlug: string,
+	deviceType: DeviceType,
+	marketingVariant: number,
+	onBeginOnboarding: (analyticsAction: string) => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -126,75 +134,93 @@ class AuthorScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		const marketingVariant = marketingVariants[this.props.marketingVariant];
 		return (
-			<ScreenContainer className="author-screen_2cri7v">
+			<div className="author-screen_2cri7v">
 				{this.state.isScreenLoading ?
-					<LoadingOverlay position="static" /> :
+					<LoadingOverlay position="absolute" /> :
 					!this.props.profile.value ?
 						<InfoBox
-							position="static"
+							position="absolute"
 							style="normal"
 						>
 							<p>Author not found.</p>
 						</InfoBox> :
 						<>
-							<div className="profile">
-								<h1>{this.props.profile.value.name}</h1>
-							</div>
-							{this.state.articles.isLoading ?
-								<LoadingOverlay position="static" /> :
-								!this.state.articles.value ?
-									<InfoBox
-										position="static"
-										style="normal"
-									>
-										<p>Error loading articles.</p>
-									</InfoBox> :
-									!this.state.articles.value.items.length ?
+							{!this.props.user ?
+								<Panel className="header">
+									<h1>{marketingVariant.headline}</h1>
+									<h3>{marketingVariant.subtext}</h3>
+									<div className="buttons">
+										<GetStartedButton
+											analyticsAction="AuthorScreen"
+											deviceType={this.props.deviceType}
+											onBeginOnboarding={this.props.onBeginOnboarding}
+											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+										/>
+									</div>
+								</Panel> :
+								null}
+							<Panel className="main">
+								<div className="profile">
+									<h1>{this.props.profile.value.name}</h1>
+								</div>
+								{this.state.articles.isLoading ?
+									<LoadingOverlay position="static" /> :
+									!this.state.articles.value ?
 										<InfoBox
 											position="static"
 											style="normal"
 										>
-											<p>No articles found.</p>
+											<p>Error loading articles.</p>
 										</InfoBox> :
-										<>
-											<ArticleList>
-												{this.state.articles.value.items.map(
-													article => (
-														<li key={article.id}>
-															<ArticleDetails
-																article={article}
-																onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-																onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-																onPost={this.props.onPostArticle}
-																onRateArticle={this.props.onRateArticle}
-																onRead={this.props.onReadArticle}
-																onShare={this.props.onShare}
-																onToggleStar={this.props.onToggleArticleStar}
-																onViewComments={this.props.onViewComments}
-																onViewProfile={this.props.onViewProfile}
-																user={this.props.user}
-															/>
-														</li>
-													)
-												)}
-											</ArticleList>
-											<PageSelector
-												pageNumber={this.state.articles.value.pageNumber}
-												pageCount={this.state.articles.value.pageCount}
-												onChange={this._changePageNumber}
-											/>
-										</>}
-							<JsonLd<ProfilePage>
-								item={{
-									"@context": "https://schema.org",
-									"@type": "ProfilePage",
-									"description": `Articles written by ${this.props.profile.value.name}`,
-									"name": this.props.profile.value.name
-								}}
-							/>
+										!this.state.articles.value.items.length ?
+											<InfoBox
+												position="static"
+												style="normal"
+											>
+												<p>No articles found.</p>
+											</InfoBox> :
+											<>
+												<ArticleList>
+													{this.state.articles.value.items.map(
+														article => (
+															<li key={article.id}>
+																<ArticleDetails
+																	article={article}
+																	onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+																	onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+																	onPost={this.props.onPostArticle}
+																	onRateArticle={this.props.onRateArticle}
+																	onRead={this.props.onReadArticle}
+																	onShare={this.props.onShare}
+																	onToggleStar={this.props.onToggleArticleStar}
+																	onViewComments={this.props.onViewComments}
+																	onViewProfile={this.props.onViewProfile}
+																	user={this.props.user}
+																/>
+															</li>
+														)
+													)}
+												</ArticleList>
+												<PageSelector
+													pageNumber={this.state.articles.value.pageNumber}
+													pageCount={this.state.articles.value.pageCount}
+													onChange={this._changePageNumber}
+												/>
+											</>}
+								<JsonLd<ProfilePage>
+									item={{
+										"@context": "https://schema.org",
+										"@type": "ProfilePage",
+										"description": `Articles written by ${this.props.profile.value.name}`,
+										"name": this.props.profile.value.name
+									}}
+								/>
+							</Panel>
 						</>}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }
@@ -246,9 +272,14 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 		render: (state: Screen<Fetchable<AuthorProfile>>, sharedState: SharedState) => (
 			<AuthorScreen
 				authorSlug={getSlug(state.location)}
+				deviceType={deps.deviceType}
+				marketingVariant={deps.marketingVariant}
+				onBeginOnboarding={deps.onBeginOnboarding}
+				onCopyAppReferrerTextToClipboard={deps.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={deps.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
 				onGetAuthorArticles={deps.onGetAuthorArticles}
+				onOpenNewPlatformNotificationRequestDialog={deps.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={deps.onPostArticle}
 				onRateArticle={deps.onRateArticle}
 				onReadArticle={deps.onReadArticle}
