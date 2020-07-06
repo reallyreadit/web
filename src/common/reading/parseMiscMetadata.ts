@@ -4,15 +4,7 @@ import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 export default function parseMiscMetadata(): ParseResult {
 	const articleTitleElements = document.querySelectorAll('article h1');
 	return {
-		url: (
-			matchGetAbsoluteUrl(
-				getElementAttribute<HTMLLinkElement>(
-					document.querySelector('link[rel="canonical"]'),
-					e => e.href
-				)	
-			) ||
-			window.location.href.split(/\?|#/)[0]
-		),
+		url: window.location.href.split(/\?|#/)[0],
 		article: {
 			title: (
 				articleTitleElements.length === 1 ?

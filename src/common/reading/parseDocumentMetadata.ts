@@ -3,7 +3,6 @@ import parseElementMicrodata from './parseElementMicrodata';
 import parseSchema from './parseSchema';
 import parseMiscMetadata from './parseMiscMetadata';
 import parseOpenGraph from './parseOpenGraph';
-import { matchGetAbsoluteUrl } from './utils';
 
 export interface MetadataParseResult {
 	isArticle: boolean,
@@ -49,7 +48,7 @@ function most<T>(propSelector: (result: ParseResult) => T[], filterOrResults: ((
 function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): ParseResult {
 	const orderedResults = [schema, openGraph, misc];
 	return {
-		url: first(x => matchGetAbsoluteUrl(x.url), orderedResults),
+		url: misc.url,
 		article: {
 			title: first(x => x.article.title, orderedResults),
 			source: first(x => x.article.source, x => !!x.name, orderedResults),
