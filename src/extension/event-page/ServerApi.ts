@@ -227,7 +227,10 @@ export default class ServerApi {
 							const currentUser = this._user.get();
 							if (!areEqual(currentUser, result.user)) {
 								this._user.set(result.user);
-								this._onUserUpdated(result.user);
+								// don't broadcast on sign in order to avoid sending stale data
+								if (currentUser) {
+									this._onUserUpdated(result.user);
+								}
 							}
 						}
 					)
