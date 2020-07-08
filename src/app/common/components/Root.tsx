@@ -1,5 +1,5 @@
 import * as React from 'react';
-import UserAccount, { hasAlert } from '../../../common/models/UserAccount';
+import UserAccount, { hasAnyAlerts } from '../../../common/models/UserAccount';
 import Captcha from '../Captcha';
 import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
@@ -286,39 +286,32 @@ export default abstract class Root<
 	};
 
 	// notifications
-	protected readonly _clearAlerts = (alert: Alert) => {
-		const user = this.state.user as UserAccount;
-		let newUser: UserAccount;
-		switch (alert) {
-			case Alert.Aotd:
-				if (hasAlert(user, alert)) {
-					newUser = { ...user, aotdAlert: false };
-				}
-				break;
-			case Alert.Followers:
-				if (hasAlert(user, alert)) {
-					newUser = { ...user, followerAlertCount: 0 };
-				}
-				break;
-			case Alert.Following:
-				if (hasAlert(user, alert)) {
-					newUser = { ...user, postAlertCount: 0 };
-				}
-				break;
-			case Alert.Inbox:
-				if (hasAlert(user, alert)) {
-					newUser = {
-						...user,
-						replyAlertCount: 0,
-						loopbackAlertCount: 0
-					};
-				}
-				break;
+	protected readonly _clearAlerts = (alerts: Alert) => {
+		if (!hasAnyAlerts(this.state.user, alerts)) {
+			return;
 		}
-		if (newUser) {
-			this.props.serverApi.clearAlerts({ alert });
-			this.onUserUpdated(newUser);
+		let newUser = {
+			...this.state.user
+		};
+		if (alerts & Alert.Aotd) {
+			newUser.aotdAlert = false;
 		}
+		if (alerts & Alert.Reply) {
+			newUser.replyAlertCount = 0;
+		}
+		if (alerts & Alert.Loopback) {
+			newUser.loopbackAlertCount = 0;
+		}
+		if (alerts & Alert.Post) {
+			newUser.postAlertCount = 0;
+		}
+		if (alerts & Alert.Follower) {
+			newUser.followerAlertCount = 0;
+		}
+		this.props.serverApi.clearAlerts({
+			alerts
+		});
+		this.onUserUpdated(newUser);
 	};
 
 	// routing

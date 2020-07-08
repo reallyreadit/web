@@ -38,26 +38,27 @@ export function areEqual(a: UserAccount, b: UserAccount) {
 		a.hasLinkedTwitterAccount === b.hasLinkedTwitterAccount
 	);
 }
-export function hasAlert(user: UserAccount, alert?: Alert) {
+export function hasAnyAlerts(user: UserAccount, alerts?: Alert) {
 	if (!user) {
 		return false;
 	}
-	if (alert != null) {
-		switch (alert) {
-			case Alert.Aotd:
-				return user.aotdAlert;
-			case Alert.Followers:
-				return !!user.followerAlertCount;
-			case Alert.Following:
-				return !!user.postAlertCount;
-			case Alert.Inbox:
-				return !!(
-					user.replyAlertCount ||
-					user.loopbackAlertCount
-				);
-			default:
-				throw new Error('Unexpected value for alert');
+	if (alerts != null) {
+		if (alerts & Alert.Aotd && user.aotdAlert) {
+			return true;
 		}
+		if (alerts & Alert.Reply && user.replyAlertCount) {
+			return true;
+		}
+		if (alerts & Alert.Loopback && user.loopbackAlertCount) {
+			return true;
+		}
+		if (alerts & Alert.Post && user.postAlertCount) {
+			return true;
+		}
+		if (alerts & Alert.Follower && user.followerAlertCount) {
+			return true;
+		}
+		return false;
 	}
 	return !!(
 		user.aotdAlert ||

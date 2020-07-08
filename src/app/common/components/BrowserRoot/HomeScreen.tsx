@@ -1,7 +1,7 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
-import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
+import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -202,7 +202,7 @@ class HomeScreen extends React.Component<Props, State> {
 		);
 	}
 	private clearAlertIfNeeded() {
-		if (!this._hasClearedAlert && hasAlert(this.props.user, Alert.Aotd)) {
+		if (!this._hasClearedAlert && hasAnyAlerts(this.props.user, Alert.Aotd)) {
 			this.props.onClearAlerts(Alert.Aotd);
 			this._hasClearedAlert = true;
 		}

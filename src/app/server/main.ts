@@ -230,14 +230,14 @@ server = server.get('/inbox', (req, res) => {
 	redirect(
 		req,
 		res,
-		findRouteByKey(routes, ScreenKey.Inbox).createUrl()
+		findRouteByKey(routes, ScreenKey.Notifications).createUrl()
 	);
 });
 server = server.get('/following', (req, res) => {
 	redirect(
 		req,
 		res,
-		findRouteByKey(routes, ScreenKey.MyFeed).createUrl()
+		findRouteByKey(routes, ScreenKey.Notifications).createUrl()
 	);
 });
 server = server.get('/privacy-policy', (req, res) => {

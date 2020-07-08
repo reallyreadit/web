@@ -7,7 +7,7 @@ export default (props: {
 	isTransitioningBack: boolean,
 	onBack: () => void,
 	onOpenMenu: () => void,
-	onViewInbox: () => void,
+	onViewNotifications: () => void,
 	titles: (React.ReactNode | null)[],
 	user: UserAccount
 }) => {
@@ -23,8 +23,8 @@ export default (props: {
 		};
 	} else {
 		leftButton = {
-			action: props.onViewInbox,
-			badge: props.user.replyAlertCount + props.user.loopbackAlertCount,
+			action: props.onViewNotifications,
+			badge: props.user.replyAlertCount + props.user.postAlertCount + props.user.loopbackAlertCount,
 			iconName: 'bell'
 		};
 	}
@@ -40,7 +40,7 @@ export default (props: {
 						name={leftButton.iconName}
 					/> :
 					// force new dom element to avoid animating badge
-					<div className="inbox-icon-wrapper">
+					<div className="notification-icon-wrapper">
 						<Icon
 							badge={leftButton.badge}
 							name={leftButton.iconName}

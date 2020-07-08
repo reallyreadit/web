@@ -2,7 +2,7 @@ import * as React from 'react';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
-import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
+import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
 import { Screen } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
@@ -10,7 +10,6 @@ import Separator from '../../../../common/components/Separator';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
-	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl(),
 	profileRoute = findRouteByKey(routes, ScreenKey.Profile),
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
@@ -19,7 +18,6 @@ interface Props {
 	onViewBlog: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
-	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewProfile: (userName?: string) => void,
@@ -44,24 +42,12 @@ export default class NavBar extends React.PureComponent<Props> {
 				<ol>
 					<li>
 						<Button
-							badge={hasAlert(this.props.user, Alert.Aotd) ? 1 : 0}
+							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							href={homeUrl}
 							onClick={this.props.onViewHome}
 							state={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
 							iconLeft="trophy"
 							text="AOTD"
-							size="x-large"
-							display="block"
-						/>
-					</li>
-					<li>
-						<Button
-							badge={this.props.user.postAlertCount}
-							href={myFeedUrl}
-							onClick={this.props.onViewMyFeed}
-							state={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}
-							iconLeft="group-circle"
-							text="My Feed"
 							size="x-large"
 							display="block"
 						/>

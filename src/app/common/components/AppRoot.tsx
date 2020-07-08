@@ -4,7 +4,7 @@ import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
 import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
-import UserAccount, { hasAlert, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
+import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -24,7 +24,6 @@ import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
-import createInboxScreenFactory from './screens/InboxScreen';
 import DialogKey from '../../../common/routing/DialogKey';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
@@ -36,13 +35,13 @@ import OrientationWizard from './AppRoot/OrientationWizard';
 import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
-import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialog';
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import { DeviceType } from '../../../common/DeviceType';
+import createNotificationsScreenFactory from './screens/NotificationsScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -169,14 +168,11 @@ export default class extends Root<
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
 	};
-	private readonly _viewInbox = () => {
-		this.replaceScreen(ScreenKey.Inbox);
+	private readonly _viewNotifications = () => {
+		this.replaceScreen(ScreenKey.Notifications);
 	};
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
-	};
-	private readonly _viewMyFeed = () => {
-		this.replaceScreen(ScreenKey.MyFeed);
 	};
 	private readonly _viewMyReads = () => {
 		this.replaceScreen(ScreenKey.MyReads);
@@ -482,14 +478,15 @@ export default class extends Root<
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
 			}),
-			[ScreenKey.Inbox]: createInboxScreenFactory(
-				ScreenKey.Inbox,
+			[ScreenKey.Notifications]: createNotificationsScreenFactory(
+				ScreenKey.Notifications,
 				{
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
+					onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
+					onGetReplyPosts: this.props.serverApi.getReplyPosts,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
 					onPostArticle: this._openPostDialog,
@@ -519,27 +516,6 @@ export default class extends Root<
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
-				}
-			),
-			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
-				ScreenKey.MyFeed,
-				{
-					onClearAlerts: this._clearAlerts,
-					onCloseDialog: this._dialog.closeDialog,
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetPosts: this.props.serverApi.getPostsFromFollowees,
-					onNavTo: this._navTo,
-					onOpenDialog: this._dialog.openDialog,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
@@ -728,7 +704,7 @@ export default class extends Root<
 					return (event: AppActivationEvent) => {
 						const now = Date.now();
 						if (
-							(event.badgeCount || hasAlert(this.state.user)) &&
+							(event.badgeCount || hasAnyAlerts(this.state.user)) &&
 							now - lastUserCheck > 60 * 1000
 						) {
 							props.serverApi.getUserAccount(
@@ -981,7 +957,7 @@ export default class extends Root<
 							isTransitioningBack={this.state.isPoppingScreen}
 							onBack={this._popScreen}
 							onOpenMenu={this._openMenu}
-							onViewInbox={this._viewInbox}
+							onViewNotifications={this._viewNotifications}
 							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
 							user={this.state.user}
 						/>
@@ -1003,7 +979,6 @@ export default class extends Root<
 						<NavTray
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
-							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
 							onViewProfile={this._viewProfile}
 							selectedScreen={this.state.screens[0]}

@@ -28,12 +28,10 @@ import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
 import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
-import createInboxScreenFactory from './screens/InboxScreen';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
@@ -47,6 +45,7 @@ import ShareForm from '../../../common/models/analytics/ShareForm';
 import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import createAuthorScreenFactory from './screens/AuthorScreen';
+import createNotificationsScreenFactory from './screens/NotificationsScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -183,21 +182,15 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			method: 'replace'
 		});
 	};
-	private readonly _viewInbox = () => {
+	private readonly _viewNotifications = () => {
 		this.setScreenState({
-			key: ScreenKey.Inbox,
+			key: ScreenKey.Notifications,
 			method: 'replace'
 		});
 	};
 	private readonly _viewLeaderboards = () => {
 		this.setScreenState({
 			key: ScreenKey.Leaderboards,
-			method: 'replace'
-		});
-	};
-	private readonly _viewMyFeed = () => {
-		this.setScreenState({
-			key: ScreenKey.MyFeed,
 			method: 'replace'
 		});
 	};
@@ -497,14 +490,15 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
 			}),
-			[ScreenKey.Inbox]: createInboxScreenFactory(
-				ScreenKey.Inbox,
+			[ScreenKey.Notifications]: createNotificationsScreenFactory(
+				ScreenKey.Notifications,
 				{
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetInboxPosts: this.props.serverApi.getPostsFromInbox,
+					onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
+					onGetReplyPosts: this.props.serverApi.getReplyPosts,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
 					onPostArticle: this._openPostDialog,
@@ -534,27 +528,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
-				}
-			),
-			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
-				ScreenKey.MyFeed,
-				{
-					onClearAlerts: this._clearAlerts,
-					onCloseDialog: this._dialog.closeDialog,
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetPosts: this.props.serverApi.getPostsFromFollowees,
-					onNavTo: this._navTo,
-					onOpenDialog: this._dialog.openDialog,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
@@ -1068,7 +1041,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						onOpenMenu={this._openMenu}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
-						onViewInbox={this._viewInbox}
+						onViewNotifications={this._viewNotifications}
 						user={this.state.user}
 					/> :
 					null}
@@ -1084,7 +1057,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 							onViewBlog={this._viewBlog}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
-							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							onViewProfile={this._viewProfile}

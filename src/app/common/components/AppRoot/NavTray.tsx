@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import UserAccount, { hasAlert } from '../../../../common/models/UserAccount';
+import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import { Screen } from '../Root';
@@ -11,7 +11,6 @@ const profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 interface Props {
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
-	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	onViewProfile: () => void,
 	selectedScreen: Screen,
@@ -31,22 +30,10 @@ export default class NavTray extends React.PureComponent<Props>{
 						onClick={this.props.onViewHome}
 					>
 						<Icon
-							badge={hasAlert(this.props.user, Alert.Aotd) ? 1 : 0}
+							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							name="trophy"
 						/>
 						<label>AOTD</label>
-					</button>
-				</li>
-				<li>
-					<button
-						className={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : null}
-						onClick={this.props.onViewMyFeed}
-					>
-						<Icon
-							badge={this.props.user.postAlertCount}
-							name="group-circle"
-						/>
-						<label>My Feed</label>
 					</button>
 				</li>
 				<li>

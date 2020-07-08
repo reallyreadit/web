@@ -14,7 +14,7 @@ interface Props {
 	onOpenMenu: () => void,
 	onOpenSignInPrompt: (analyticsAction: string) => void,
 	onViewHome: () => void,
-	onViewInbox: () => void,
+	onViewNotifications: () => void,
 	user: UserAccount | null
 }
 export default class extends React.PureComponent<Props> {
@@ -54,9 +54,9 @@ export default class extends React.PureComponent<Props> {
 						{showMenu ?
 							<>
 								<Icon
-									badge={this.props.user.replyAlertCount + this.props.user.loopbackAlertCount}
+									badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
 									name="bell"
-									onClick={this.props.onViewInbox}
+									onClick={this.props.onViewNotifications}
 								/>
 								<Icon
 									name="menu2"

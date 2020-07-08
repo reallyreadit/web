@@ -98,41 +98,18 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
-		analyticsName: 'MyFeed',
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/feed',
-		pathRegExp: /^\/feed$/,
-		screenKey: ScreenKey.MyFeed
-	},
-	{
 		analyticsName: 'Leaderboards',
 		createUrl: () => '/leaderboards',
 		pathRegExp: /^\/leaderboards$/,
 		screenKey: ScreenKey.Leaderboards
 	},
-	(function () {
-		const pathRegExp = /^\/notifications(?:\/([^/]+))?$/;
-		return {
-			analyticsName: 'Inbox',
-			authLevel: UserAccountRole.Regular,
-			createUrl: params => {
-				let url = '/notifications';
-				if (params && params['commentId']) {
-					url += `/${params['commentId']}`;
-				}
-				return url;
-			},
-			getPathParams: path => {
-				const [, commentId] = path.match(pathRegExp);
-				if (commentId) {
-					return { commentId };
-				}
-				return { };
-			},
-			pathRegExp,
-			screenKey: ScreenKey.Inbox
-		} as Route<DialogKey, ScreenKey>;
-	})(),
+	{
+		analyticsName: 'Notifications',
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/notifications',
+		pathRegExp: /^\/notifications$/,
+		screenKey: ScreenKey.Notifications
+	},
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;
 		return {

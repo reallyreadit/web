@@ -1,0 +1,21 @@
+/*
+	componentPath: src/app/common/components/screens/NotificationsScreen
+	cssComponentId: notifications-screen_qjaly4
+*/
+
+.notifications-screen_qjaly4 {
+	display: flex;
+	flex-flow: column;
+}
+.notifications-screen_qjaly4 > .loading-overlay_zfgtd1,
+.notifications-screen_qjaly4 > .centering-container_e32hih {
+	flex: 1 1 auto;
+}
+.notifications-screen_qjaly4 > .header-selector_9li9z5 {
+	flex: 0 0 auto;
+	margin-bottom: 20px;
+}
+.notifications-screen_qjaly4 > .article-list_o9uw1n,
+.notifications-screen_qjaly4 > .page-selector_a8tbpb {
+	flex: 0 0 auto;
+}

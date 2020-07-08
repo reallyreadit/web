@@ -7,7 +7,7 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import LoadingOverlay from './controls/LoadingOverlay';
 import UserNameForm from '../../../common/models/social/UserNameForm';
 import FollowButton from '../../../common/components/FollowButton';
-import UserAccount, { hasAlert } from '../../../common/models/UserAccount';
+import UserAccount, { hasAnyAlerts } from '../../../common/models/UserAccount';
 import ProfileLink from '../../../common/components/ProfileLink';
 import Alert from '../../../common/models/notifications/Alert';
 import Highlighter from '../../../common/components/Highlighter';
@@ -105,9 +105,9 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 		if (
 			this.props.clearFollowersAlerts &&
 			!this._hasClearedAlerts &&
-			hasAlert(this.props.userAccount, Alert.Followers)
+			hasAnyAlerts(this.props.userAccount, Alert.Follower)
 		) {
-			this.props.onClearAlerts(Alert.Followers);
+			this.props.onClearAlerts(Alert.Follower);
 			this._hasClearedAlerts = true;
 		}
 	}
