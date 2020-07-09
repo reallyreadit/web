@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import Icon, { IconName } from './Icon';
 import SpinnerIcon from './SpinnerIcon';
+import AlertBadge from './AlertBadge';
 
 export type ButtonSize = 'normal' | 'large' | 'x-large';
 interface Props {
@@ -68,6 +69,13 @@ export default class Button extends React.PureComponent<Props> {
 						null}
 					<span className="text">
 						{this.props.text}
+						{
+							this.props.badge &&
+							!this.props.iconLeft &&
+							!this.props.iconRight ?
+								<AlertBadge count={this.props.badge} /> :
+								null
+						}
 					</span>
 					{this.props.iconRight ?
 						<Icon

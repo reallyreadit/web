@@ -20,6 +20,12 @@
 .button_ovrlmi > .text + .icon_rour3d {
 	margin-left: 0.5em;
 }
+.button_ovrlmi > .text {
+	position: relative;
+}
+.button_ovrlmi > .text > .alert-badge_ejzklr {
+	right: -16px;
+}
 /* display */
 .button_ovrlmi.inline {
 	display: inline-flex;
