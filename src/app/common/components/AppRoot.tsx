@@ -149,7 +149,7 @@ export default class extends Root<
 		this.setState({ isPoppingScreen: true });
 	};
 	private readonly _viewAdminPage = () => {
-		this.pushScreen(ScreenKey.Admin);
+		this.replaceScreen(ScreenKey.Admin);
 	};
 	private readonly _viewAotdHistory = () => {
 		this.pushScreen(ScreenKey.AotdHistory);
@@ -181,7 +181,7 @@ export default class extends Root<
 		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
 	private readonly _viewSettings = () => {
-		this.pushScreen(ScreenKey.Settings);
+		this.replaceScreen(ScreenKey.Settings);
 	};
 	private readonly _viewStats = () => {
 		this.replaceScreen(ScreenKey.Stats);
@@ -958,6 +958,7 @@ export default class extends Root<
 							onBack={this._popScreen}
 							onOpenMenu={this._openMenu}
 							onViewNotifications={this._viewNotifications}
+							selectedScreenKey={this.state.screens[0].key}
 							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
 							user={this.state.user}
 						/>
@@ -980,7 +981,6 @@ export default class extends Root<
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewMyReads={this._viewMyReads}
-							onViewProfile={this._viewProfile}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 						/>
@@ -992,9 +992,10 @@ export default class extends Root<
 								onSignOut={this._signOut}
 								onViewAdminPage={this._viewAdminPage}
 								onViewPrivacyPolicy={this._viewPrivacyPolicy}
+								onViewProfile={this._viewProfile}
 								onViewSettings={this._viewSettings}
 								onViewStats={this._viewStats}
-								selectedScreenKey={this.state.screens[0].key}
+								selectedScreen={this.state.screens[0]}
 								userAccount={this.state.user}
 							/> :
 							null}

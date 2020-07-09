@@ -3,8 +3,11 @@ import UserAccount from '../../../../common/models/UserAccount';
 import Icon from '../../../../common/components/Icon';
 import UserAccountRole from '../../../../common/models/UserAccountRole';
 import classNames from 'classnames';
-import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import Button from '../../../../common/components/Button';
+import { Screen } from '../Root';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
 
 interface Props {
 	isClosing: boolean,
@@ -13,9 +16,10 @@ interface Props {
 	onSignOut: () => void,
 	onViewAdminPage: () => void,
 	onViewPrivacyPolicy: () => void,
+	onViewProfile: () => void,
 	onViewSettings: () => void,
 	onViewStats: () => void,
-	selectedScreenKey: ScreenKey,
+	selectedScreen: Screen,
 	userAccount: UserAccount | null
 }
 export default class extends React.PureComponent<Props, { isSigningOut: boolean }> {
@@ -34,6 +38,9 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
+	};
+	private readonly _viewProfile = () => {
+		this.props.onViewProfile();
 	};
 	private _cachedUser: UserAccount | undefined;
 	constructor(props: Props) {
@@ -72,37 +79,58 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					<ol>
 						{user.role === UserAccountRole.Admin ?
 							<li>
-								<button
-									className={this.props.selectedScreenKey === ScreenKey.Admin ? 'selected' : null}
+								<Button
+									state={this.props.selectedScreen.key === ScreenKey.Admin ? 'selected' : 'normal'}
 									onClick={this.props.onViewAdminPage}
-								>
-									Admin
-								</button>
+									text="Admin"
+									size="large"
+									display="block"
+								/>
 							</li> :
 							null}
 						<li>
-							<button
-								className={this.props.selectedScreenKey === ScreenKey.Stats ? 'selected' : null}
+							<Button
+								badge={this.props.userAccount.followerAlertCount}
+								state={
+									(
+										this.props.selectedScreen.key === ScreenKey.Profile &&
+										findRouteByKey(routes, ScreenKey.Profile).getPathParams(this.props.selectedScreen.location.path)['userName'].toLowerCase() === this.props.userAccount.name.toLowerCase()
+									) ?
+										'selected' :
+										'normal'
+								}
+								onClick={this._viewProfile}
+								text="Profile"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
 								onClick={this.props.onViewStats}
-							>
-								Stats
-							</button>
+								text="Stats"
+								size="large"
+								display="block"
+							/>
 						</li>
 						<li>
-							<button
-								className={this.props.selectedScreenKey === ScreenKey.Settings ? 'selected' : null}
+							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Settings ? 'selected' : 'normal'}
 								onClick={this.props.onViewSettings}
-							>
-								Settings
-							</button>
+								text="Settings"
+								size="large"
+								display="block"
+							/>
 						</li>
 						<li>
-							<button onClick={this._signOut}>
-								<label>Log Out</label>
-								{this.state.isSigningOut ?
-									<SpinnerIcon /> :
-									null}
-							</button>
+							<Button
+								state={this.state.isSigningOut ? 'busy' : 'normal'}
+								onClick={this._signOut}
+								text="Log Out"
+								size="large"
+								display="block"
+							/>
 						</li>
 					</ol>
 					<div className="footer">

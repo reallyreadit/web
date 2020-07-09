@@ -59,7 +59,8 @@ export default class extends React.PureComponent<Props> {
 									onClick={this.props.onViewNotifications}
 								/>
 								<Icon
-									name="menu2"
+									badge={this.props.user.followerAlertCount}
+									name="user"
 									onClick={this.props.onOpenMenu}
 								/>
 							</> :

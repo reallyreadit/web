@@ -11,7 +11,6 @@ import Separator from '../../../../common/components/Separator';
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl(),
-	profileRoute = findRouteByKey(routes, ScreenKey.Profile),
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
 
 interface Props {
@@ -20,7 +19,6 @@ interface Props {
 	onViewLeaderboards: () => void,
 	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
-	onViewProfile: (userName?: string) => void,
 	selectedScreen: Screen,
 	user: UserAccount
 }
@@ -32,9 +30,6 @@ export default class NavBar extends React.PureComponent<Props> {
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
-	};
-	private readonly _viewProfile = () => {
-		this.props.onViewProfile();
 	};
 	public render() {
 		return (
@@ -59,25 +54,6 @@ export default class NavBar extends React.PureComponent<Props> {
 							state={this.props.selectedScreen.key === ScreenKey.MyReads ? 'selected' : 'normal'}
 							iconLeft="star"
 							text="My Reads"
-							size="x-large"
-							display="block"
-						/>
-					</li>
-					<li>
-						<Button
-							badge={this.props.user.followerAlertCount}
-							href={profileRoute.createUrl({ userName: this.props.user.name })}
-							onClick={this._viewProfile}
-							state={
-								(
-									this.props.selectedScreen.key === ScreenKey.Profile &&
-									profileRoute.getPathParams(this.props.selectedScreen.location.path)['userName'].toLowerCase() === this.props.user.name.toLowerCase()
-								) ?
-									'selected' :
-									'normal'
-							}
-							iconLeft="user"
-							text="Profile"
 							size="x-large"
 							display="block"
 						/>

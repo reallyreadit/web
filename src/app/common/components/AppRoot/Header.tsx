@@ -1,6 +1,8 @@
 import * as React from 'react';
 import Icon, { IconName } from '../../../../common/components/Icon';
 import UserAccount from '../../../../common/models/UserAccount';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import * as classNames from 'classnames';
 
 export default (props: {
 	content?: React.ReactNode,
@@ -8,6 +10,7 @@ export default (props: {
 	onBack: () => void,
 	onOpenMenu: () => void,
 	onViewNotifications: () => void,
+	selectedScreenKey: ScreenKey,
 	titles: (React.ReactNode | null)[],
 	user: UserAccount
 }) => {
@@ -40,7 +43,16 @@ export default (props: {
 						name={leftButton.iconName}
 					/> :
 					// force new dom element to avoid animating badge
-					<div className="notification-icon-wrapper">
+					<div
+						className={
+							classNames(
+								'notification-icon-wrapper',
+								{
+									'selected': props.selectedScreenKey === ScreenKey.Notifications
+								}
+							)
+						}
+					>
 						<Icon
 							badge={leftButton.badge}
 							name={leftButton.iconName}
@@ -54,7 +66,10 @@ export default (props: {
 					className="menu-button"
 					onClick={props.onOpenMenu}
 				>
-					<Icon name="menu2" />
+					<Icon
+						badge={props.user.followerAlertCount}
+						name="user"
+					/>
 				</div>
 			</div>
 		</div>

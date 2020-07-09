@@ -1059,7 +1059,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewMyReads={this._viewMyReads}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
-							onViewProfile={this._viewProfile}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 						/> :
@@ -1096,9 +1095,10 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						onClosed={this._hideMenu}
 						onSignOut={this._signOut}
 						onViewAdminPage={this._viewAdminPage}
+						onViewProfile={this._viewProfile}
 						onViewSettings={this._viewSettings}
 						onViewStats={this._viewStats}
-						selectedScreenKey={this.state.screens[0].key}
+						selectedScreen={this.state.screens[0]}
 						userAccount={this.state.user}
 					/> :
 					null}

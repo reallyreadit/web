@@ -24,7 +24,6 @@
 	padding-bottom: env(safe-area-inset-bottom);
 	background-color: white;
 	border-left: 1px solid #ccc;
-	font-size: 14px;
 	animation: menu_fk9ujy-drawer-open 250ms forwards;
 }
 .menu_fk9ujy.closing > .drawer {
@@ -61,27 +60,11 @@
 	display: flex;
 	flex-flow: column;
 }
-.menu_fk9ujy > .drawer > ol > li > button {
-	display: flex;
-	align-items: center;
-	background: none;
-	border: none;
-	outline: none;
-	padding: 20px;
-	width: 100%;
-	text-align: left;
-}
-.menu_fk9ujy > .drawer > ol > li > button.selected {
-	color: white;
-	background-color: black;
-}
-.menu_fk9ujy > .drawer > ol > li > button > .icon_rour3d {
-	margin-left: 5px;
-}
 .menu_fk9ujy > .drawer > .footer {
 	flex: 0 0 auto;
 	text-align: center;
-	padding: 16px;
+	padding: 15px;
+	font-size: 11pt;
 }
 .menu_fk9ujy > .drawer > .footer > a:last-child {
 	display: block;
