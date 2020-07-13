@@ -68,6 +68,13 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
+		analyticsName: 'Discover',
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/discover',
+		pathRegExp: /^\/discover$/,
+		screenKey: ScreenKey.Discover
+	},
+	{
 		analyticsName: 'EmailConfirmation',
 		createUrl: params => `/email/confirm/${params['result']}`,
 		noIndex: () => true,

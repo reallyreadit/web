@@ -10,11 +10,13 @@ import Separator from '../../../../common/components/Separator';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
+	discoverUrl = findRouteByKey(routes, ScreenKey.Discover).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl(),
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
 
 interface Props {
 	onViewBlog: () => void,
+	onViewDiscover: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
 	onViewMyReads: () => void,
@@ -43,6 +45,17 @@ export default class NavBar extends React.PureComponent<Props> {
 							state={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
 							iconLeft="trophy"
 							text="AOTD"
+							size="x-large"
+							display="block"
+						/>
+					</li>
+					<li>
+						<Button
+							href={discoverUrl}
+							onClick={this.props.onViewDiscover}
+							state={this.props.selectedScreen.key === ScreenKey.Discover ? 'selected' : 'normal'}
+							iconLeft="earth"
+							text="Discover"
 							size="x-large"
 							display="block"
 						/>

@@ -42,6 +42,7 @@ import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialo
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import { DeviceType } from '../../../common/DeviceType';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
+import createDiscoverScreenFactory from './screens/DiscoverScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -164,6 +165,9 @@ export default class extends Root<
 				this._createAuthorScreenTitle(name) :
 				null
 		);
+	};
+	private readonly _viewDiscover = () => {
+		this.replaceScreen(ScreenKey.Discover);
 	};
 	private readonly _viewHome = () => {
 		this.replaceScreen(ScreenKey.Home);
@@ -463,6 +467,23 @@ export default class extends Root<
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
+			[ScreenKey.Discover]: createDiscoverScreenFactory(
+				ScreenKey.Discover,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onNavTo: this._navTo,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -978,6 +999,7 @@ export default class extends Root<
 							</ol>
 						</div>
 						<NavTray
+							onViewDiscover={this._viewDiscover}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewMyReads={this._viewMyReads}

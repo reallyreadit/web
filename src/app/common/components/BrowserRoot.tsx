@@ -46,6 +46,7 @@ import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
+import createDiscoverScreenFactory from './screens/DiscoverScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -174,6 +175,12 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setScreenState({
 			key: ScreenKey.Blog,
 			method: 'push'
+		});
+	};
+	private readonly _viewDiscover = () => {
+		this.setScreenState({
+			key: ScreenKey.Discover,
+			method: 'replace'
 		});
 	};
 	private readonly _viewHome = () => {
@@ -467,6 +474,23 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
+			[ScreenKey.Discover]: createDiscoverScreenFactory(
+				ScreenKey.Discover,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onNavTo: this._navTo,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
 				marketingVariant: this.props.marketingVariant,
@@ -1055,6 +1079,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					) ?
 						<NavBar
 							onViewBlog={this._viewBlog}
+							onViewDiscover={this._viewDiscover}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
 							onViewMyReads={this._viewMyReads}

@@ -6,6 +6,7 @@ import { Screen } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
 
 interface Props {
+	onViewDiscover: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
 	onViewMyReads: () => void,
@@ -26,6 +27,15 @@ export default class NavTray extends React.PureComponent<Props>{
 							name="trophy"
 						/>
 						<label>AOTD</label>
+					</button>
+				</li>
+				<li>
+					<button
+						className={this.props.selectedScreen.key === ScreenKey.Discover ? 'selected' : null}
+						onClick={this.props.onViewDiscover}
+					>
+						<Icon name="earth" />
+						<label>Discover</label>
 					</button>
 				</li>
 				<li>
