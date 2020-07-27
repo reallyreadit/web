@@ -6,7 +6,6 @@ import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../../common/sharing/ShareData';
-import ArticleLengthFilter from '../ArticleLengthFilter';
 import Post from '../../../../../common/models/social/Post';
 import UserAccount from '../../../../../common/models/UserAccount';
 import Rating from '../../../../../common/models/Rating';
@@ -60,7 +59,6 @@ export default class extends React.PureComponent<{
 	isLoading: boolean,
 	maxLength: number | null,
 	minLength: number | null,
-	onChangeLengthRange: (min: number | null, max: number | null) => void,
 	onChangeSort: (sort: Sort) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -78,13 +76,6 @@ export default class extends React.PureComponent<{
 	public render() {
 		return (
 			<div className="community-reads-list_g4cy3n">
-				<div className="controls">
-					<ArticleLengthFilter
-						max={this.props.maxLength}
-						min={this.props.minLength}
-						onChange={this.props.onChangeLengthRange}
-					/>
-				</div>
 				<AotdView
 					aotd={this.props.aotd}
 					aotdHasAlert={this.props.aotdHasAlert}

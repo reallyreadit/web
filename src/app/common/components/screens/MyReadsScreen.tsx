@@ -11,7 +11,6 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleLengthFilter from '../controls/ArticleLengthFilter';
 import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
@@ -68,14 +67,6 @@ const headerSelectorItems = [
 ];
 class MyReadsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
-		this.setState({
-			articles: { isLoading: true },
-			minLength,
-			maxLength
-		});
-		this.fetchArticles(this.props.list, 1, minLength, maxLength);
-	};
 	private readonly _changeList = (value: string) => {
 		const list = value as List;
 		if (list !== this.props.list) {
@@ -236,21 +227,6 @@ class MyReadsScreen extends React.Component<Props, State> {
 								onChange={this._changeList}
 								value={this.props.list}
 							/>
-							{(
-								this.state.articles.isLoading ?
-									!this.state.isChangingList :
-									(
-										this.state.articles.value.items.length ||
-										this.state.minLength != null ||
-										this.state.maxLength != null
-									)
-							) ?
-								<ArticleLengthFilter
-									max={this.state.maxLength}
-									min={this.state.minLength}
-									onChange={this._changeLengthRange}
-								/> :
-								null}
 						</div>
 						{this.state.articles.isLoading ?
 							<LoadingOverlay position="static" /> :

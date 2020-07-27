@@ -9,7 +9,6 @@ import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleLengthFilter from '../controls/ArticleLengthFilter';
 import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
@@ -42,14 +41,6 @@ interface State {
 }
 export default class BlogScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
-		this.setState({
-			articles: { isLoading: true },
-			minLength,
-			maxLength
-		});
-		this.fetchArticles(1, minLength, maxLength);
-	};
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
 			articles: { isLoading: true }
@@ -139,11 +130,6 @@ export default class BlogScreen extends React.Component<Props, State> {
 					<>
 						<div className="controls">
 							<h1 className={classNames({ 'has-title': !!this.props.title })}>{this.props.title}</h1>
-							<ArticleLengthFilter
-								max={this.state.maxLength}
-								min={this.state.minLength}
-								onChange={this._changeLengthRange}
-							/>
 						</div>
 						{this.state.articles.isLoading ?
 							<LoadingOverlay position="static" /> :

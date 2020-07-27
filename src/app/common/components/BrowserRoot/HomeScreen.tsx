@@ -70,15 +70,6 @@ class HomeScreen extends React.Component<Props, State> {
 		});
 		this.fetchItems(this.state.minLength, this.state.maxLength, pageNumber, this.state.sort);
 	};
-	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
-		this.setState({
-			isLoading: true,
-			maxLength,
-			minLength,
-			newAotd: false
-		});
-		this.fetchItems(minLength, maxLength, 1, this.state.sort);
-	};
 	private readonly _changeSort = (sort: Sort) => {
 		this.setState({
 			isLoading: true,
@@ -277,7 +268,6 @@ class HomeScreen extends React.Component<Props, State> {
 								isLoading={this.state.isLoading}
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
-								onChangeLengthRange={this._changeLengthRange}
 								onChangeSort={this._changeSort}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}

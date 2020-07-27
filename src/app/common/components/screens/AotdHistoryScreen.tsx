@@ -9,7 +9,6 @@ import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleLengthFilter from '../controls/ArticleLengthFilter';
 import ArticleList from '../controls/articles/ArticleList';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
@@ -51,16 +50,6 @@ interface State {
 }
 export default class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeLengthRange = (minLength: number | null, maxLength: number | null) => {
-		this.setState({
-			articles: {
-				isLoading: true
-			},
-			minLength,
-			maxLength
-		});
-		this.fetchArticles(this.state.list, 1, minLength, maxLength);
-	};
 	private readonly _changeList = (value: string) => {
 		const list = value as List;
 		if (list !== this.state.list) {
@@ -194,11 +183,6 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 								items={this._headerSelectorItems}
 								onChange={this._changeList}
 								value={this.state.list}
-							/>
-							<ArticleLengthFilter
-								max={this.state.maxLength}
-								min={this.state.minLength}
-								onChange={this._changeLengthRange}
 							/>
 						</div>
 						{this.state.articles.isLoading ?
