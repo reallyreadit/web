@@ -18,6 +18,9 @@ export function formatFetchable<T, U>(
 	return formatter(fetchable.value);
 }
 export function formatList<T>(list: T[]) {
+	if (!list || list.length === 0) {
+		return '';
+	}
 	if (list.length === 1) {
 		return list[0];
 	}
