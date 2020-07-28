@@ -1,0 +1,64 @@
+/*
+	componentPath: src/app/common/components/screens/DiscoverScreen/ArticleLengthFilter
+	cssComponentId: article-length-filter_hnsrky
+*/
+
+.article-length-filter_hnsrky > .content {
+	max-width: 400px;
+}
+.article-length-filter_hnsrky > .content > .inputs {
+	position: relative;
+	background-image: linear-gradient(#999, #999);
+	background-size: 100% 2px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.article-length-filter_hnsrky > .content > .inputs > input {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	outline: none;
+	background: transparent;
+	pointer-events: none;
+}
+.article-length-filter_hnsrky > .content > .inputs > input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	position: relative;
+	z-index: 1;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background-color: #e0e0e0;
+	border: 1px solid #999;
+	pointer-events: auto;
+}
+.article-length-filter_hnsrky > .content > .inputs > input::-moz-range-thumb {
+	-moz-appearance: none;
+	appearance: none;
+	position: relative;
+	z-index: 1;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background-color: #e0e0e0;
+	border: 1px solid #999;
+	pointer-events: auto;
+}
+.article-length-filter_hnsrky > .content > .inputs > input:first-child {
+	position: absolute;
+}
+.article-length-filter_hnsrky > .content > .scale {
+	display: flex;
+	justify-content: space-between;
+	font-size: 10pt;
+	align-items: center;
+	margin-top: 5px;
+	pointer-events: none;
+}
+.article-length-filter_hnsrky > .content > .scale > .number {
+	font-family: 'Museo Sans (700)';
+}

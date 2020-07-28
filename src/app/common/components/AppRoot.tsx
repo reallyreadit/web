@@ -472,11 +472,13 @@ export default class extends Root<
 				{
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
 					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSearchArticles: this.props.serverApi.searchArticles,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,

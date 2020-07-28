@@ -1,0 +1,20 @@
+/*
+	componentPath: src/app/common/components/screens/DiscoverScreen/MultiSelectFilter
+	cssComponentId: multi-select-filter_xw30j8
+*/
+
+.multi-select-filter_xw30j8 > .content > .option {
+	padding: 5px;
+	margin: 0 5px 5px 0;
+	border-radius: 3px;
+	background-color: white;
+	border: 1px solid #ccc;
+	outline: none;
+}
+.multi-select-filter_xw30j8 > .content > .option.show-more {
+	border-color: transparent;
+}
+.multi-select-filter_xw30j8 > .content > .option.selected {
+	color: white;
+	background-color: #2A2326;
+}

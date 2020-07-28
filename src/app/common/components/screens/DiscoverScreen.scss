@@ -2,3 +2,10 @@
 	componentPath: src/app/common/components/screens/DiscoverScreen
 	cssComponentId: discover-screen_esmkvy
 */
+
+.discover-screen_esmkvy > .filters {
+	margin-bottom: 30px;
+}
+.discover-screen_esmkvy > .no-results {
+	text-align: center;
+}

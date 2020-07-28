@@ -1,0 +1,41 @@
+/*
+	componentPath: src/app/common/components/screens/DiscoverScreen/Filter
+	cssComponentId: filter_45a9os
+*/
+
+.filter_45a9os {
+	position: relative;
+}
+.filter_45a9os > .header {
+	padding: 5px 0 10px 0;
+}
+.filter_45a9os > .header > .title {
+	display: flex;
+	align-items: center;
+	cursor: default;
+}
+.filter_45a9os > .header > .title > .text {
+	flex: 1 1 auto;
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+}
+.filter_45a9os > .header > .title > .icon_rour3d {
+	flex: 0 0 auto;
+}
+.filter_45a9os > .header > .subtitle {
+	margin-top: 3px;
+	font-size: 11pt;
+}
+.filter_45a9os > .header > .subtitle.hidden {
+	display: none;
+}
+.filter_45a9os > .content {
+	height: 0;
+	overflow: hidden;
+	transition: height 250ms;
+}
+.filter_45a9os > .content.measuring {
+	position: absolute;
+	height: auto;
+	visibility: hidden;
+}

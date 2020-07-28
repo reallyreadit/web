@@ -62,6 +62,8 @@ import AuthorProfileRequest from '../../../common/models/authors/AuthorProfileRe
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import AuthorLeaderboardsRequest from '../../../common/models/stats/AuthorLeaderboardsRequest';
 import AuthorRanking from '../../../common/models/AuthorRanking';
+import SearchOptions from '../../../common/models/articles/SearchOptions';
+import SearchQuery from '../../../common/models/articles/SearchQuery';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -152,12 +154,14 @@ export default abstract class {
 	// Articles
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
+	public readonly getArticleSearchOptions = this.createFetchFunction<SearchOptions>('/Articles/SearchOptions');
 	public readonly getAuthorArticles = this.createFetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>('/Articles/Author');
 	public readonly getCommunityReads = this.createFetchFunctionWithParams<CommunityReadsQuery, CommunityReads>('/Articles/CommunityReads');
 	public readonly getPublisherArticles = this.createFetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>('/Articles/Publisher');
 	public readonly getStarredArticles = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListStarred');
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });
+	public readonly searchArticles = (query: SearchQuery) => this.post<PageResult<UserArticle>>({ path: '/Articles/Search', data: query });
 
 	// Auth
 	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
