@@ -344,6 +344,53 @@ const findImageContainers = (function () {
 	};
 }());
 
+// preformatted text processing
+const findPreformattedTextContainers = (
+	function () {
+		function createTextNodeLineages(element: Element, elementLineage: Element[], lineages: Node[][] = []) {
+			for (let child of element.childNodes) {
+				if (isElement(child)) {
+					createTextNodeLineages(
+						child,
+						elementLineage.concat(child),
+						lineages
+					);
+				} else if (child.nodeType === Node.TEXT_NODE) {
+					lineages.push(
+						(elementLineage as Node[]).concat(child)
+					);
+				}
+			}
+			return lineages;
+		}
+		return function (node: Node, lineage: Element[], edge: GraphEdge, searchArea: Node[][], containers: TextContainer[] = []) {
+			if (
+				isElement(node)
+			) {
+				const childLineage = lineage.concat(node);
+				findChildren(node, lineage.length, edge, searchArea)
+					.forEach(
+						result => {
+							if (result.node.nodeName === 'PRE') {
+								const containerLineage = childLineage.concat(result.node as Element);
+								containers.push(
+									new TextContainer(
+										containerLineage,
+										createTextNodeLineages(result.node as Element, containerLineage),
+										getWordCount(result.node)
+									)
+								);
+							} else {
+								findPreformattedTextContainers(result.node, childLineage, result.edge, searchArea, containers);
+							}
+						}
+					);
+			}
+			return containers;
+		};
+	}
+)();
+
 // missing text container processing
 function findAdditionalPrimaryTextContainers(
 	node: Node,
@@ -582,6 +629,13 @@ export default function parseDocumentContent(): ParseResult {
 			)
 		);
 
+	const preformattedTextContainers = findPreformattedTextContainers(
+		primaryTextRootNode,
+		[],
+		GraphEdge.Left | GraphEdge.Right,
+		searchArea
+	);
+
 	const additionalPrimaryTextContainers = findAdditionalPrimaryTextContainers(
 			primaryTextRootNode,
 			[],
@@ -615,6 +669,7 @@ export default function parseDocumentContent(): ParseResult {
 		primaryTextContainers: primaryTextContainerSearchResults
 			.map(result => result.textContainer)
 			.concat(additionalPrimaryTextContainers),
-		imageContainers
+		imageContainers,
+		preformattedTextContainers
 	};
 }

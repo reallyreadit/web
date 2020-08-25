@@ -9,7 +9,7 @@ export default {
 			additionalContentMaxDepthDecrease: 1,
 			additionalContentMaxDepthIncrease: 1,
 			descendantNodeNameBlacklist: ['FORM'],
-			nodeNameBlacklist: ['BUTTON', 'FIGURE', 'FORM', 'HEAD', 'IFRAME', 'NAV', 'NOSCRIPT', 'PICTURE', 'SCRIPT', 'STYLE'],
+			nodeNameBlacklist: ['BUTTON', 'FIGURE', 'FORM', 'HEAD', 'IFRAME', 'NAV', 'NOSCRIPT', 'PICTURE', 'PRE', 'SCRIPT', 'STYLE'],
 			selectorBlacklist: ['[itemprop="author"], [itemprop="datePublished"]']
 		},
 		textContainerFilter: {

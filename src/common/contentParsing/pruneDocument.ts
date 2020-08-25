@@ -5,6 +5,7 @@ import ImageContainer from './ImageContainer';
 import { isValidContent, createMetadataElements } from './figureContent';
 import ImageContainerContentConfig from './configuration/ImageContainerContentConfig';
 import configs from './configuration/configs';
+import TextContainer from './TextContainer';
 
 const whitelistedScriptTypes = [
 	'application/json',
@@ -42,27 +43,55 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 			});
 	}
 }
-export default function pruneDocument(parseResult: ParseResult) {
-	// extend image container lineages if the search started at a lower depth
-	let imageContainers = parseResult.imageContainers;
-	if (parseResult.primaryTextRootNode !== parseResult.contentSearchRootElement) {
-		const lineage = buildLineage({
-			descendant: parseResult.primaryTextRootNode.parentElement,
-			ancestor: parseResult.contentSearchRootElement
-		});
-		imageContainers = imageContainers.map(
-			container => new ImageContainer(
-				lineage.concat(container.containerLineage),
-				container.contentLineages.map(contentLineage => lineage.concat(contentLineage)),
-				container.caption,
-				container.credit
-			)
-		);
+function extendLineagesToContentSearchRootElement<T extends ContentContainer>(
+	containers: T[],
+	primaryTextRootNode: Element,
+	contentSearchRootElement: Element,
+	newContainer: (container: T, extendedLineage: Node[]) => T
+) {
+	if (primaryTextRootNode === contentSearchRootElement) {
+		return containers;
 	}
-	// zip text and image content lineages
+	const lineage = buildLineage({
+		descendant: primaryTextRootNode.parentElement,
+		ancestor: contentSearchRootElement
+	});
+	return containers.map(
+		container => newContainer(container, lineage)
+	);
+}
+export default function pruneDocument(parseResult: ParseResult) {
+	// extend image and preformatted text container lineages if the search started at a lower depth
+	const imageContainers = extendLineagesToContentSearchRootElement(
+		parseResult.imageContainers,
+		parseResult.primaryTextRootNode,
+		parseResult.contentSearchRootElement,
+		(container, extendedLineage) => new ImageContainer(
+			extendedLineage.concat(container.containerLineage),
+			container.contentLineages.map(
+				contentLineage => extendedLineage.concat(contentLineage)
+			),
+			container.caption,
+			container.credit
+		)
+	);
+	const preformattedTextContainers = extendLineagesToContentSearchRootElement(
+		parseResult.preformattedTextContainers,
+		parseResult.primaryTextRootNode,
+		parseResult.contentSearchRootElement,
+		(container, extendedLineage) => new TextContainer(
+			extendedLineage.concat(container.containerLineage),
+			container.contentLineages.map(
+				contentLineage => extendedLineage.concat(contentLineage)
+			),
+			container.wordCount
+		)
+	);
+	// zip text, image and preformatted text content lineages
 	let content = zipContentLineages(
 		(parseResult.primaryTextContainers as ContentContainer[])
 			.concat(imageContainers)
+			.concat(preformattedTextContainers)
 	);
 	if (parseResult.contentSearchRootElement !== document.body) {
 		// extend the content lineages up to the body element

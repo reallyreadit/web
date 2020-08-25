@@ -10,5 +10,6 @@ export default interface ParseResult {
 	additionalPrimaryTextContainers: TextContainer[],
 	primaryTextRootNode: Element,
 	primaryTextContainers: TextContainer[],
-	imageContainers: ImageContainer[]
+	imageContainers: ImageContainer[],
+	preformattedTextContainers: TextContainer[]
 }
