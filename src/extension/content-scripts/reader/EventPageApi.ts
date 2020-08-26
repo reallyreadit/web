@@ -57,8 +57,6 @@ export default class EventPageApi {
 		onAuthServiceLinkCompleted: (response: AuthServiceBrowserLinkResponse) => void,
 		onCommentPosted: (comment: CommentThread) => void,
 		onCommentUpdated: (comment: CommentThread) => void,
-		onToggleContentIdentificationDisplay: () => void,
-		onToggleReadStateDisplay: () => void,
 		onUserSignedOut: () => void,
 		onUserUpdated: (user: UserAccount) => void
 	}) {
@@ -76,12 +74,6 @@ export default class EventPageApi {
 						break;
 					case 'commentUpdated':
 						handlers.onCommentUpdated(message.data);
-						break;
-					case 'toggleContentIdentificationDisplay':
-						handlers.onToggleContentIdentificationDisplay();
-						break;
-					case 'toggleReadStateDisplay':
-						handlers.onToggleReadStateDisplay();
 						break;
 					case 'userSignedOut':
 						handlers.onUserSignedOut();

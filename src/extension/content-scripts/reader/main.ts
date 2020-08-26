@@ -111,12 +111,6 @@ const eventPageApi = new EventPageApi({
 	onCommentUpdated: comment => {
 		updateComment(comment);
 	},
-	onToggleContentIdentificationDisplay: () => {
-		toggleContentIdentificationDisplay();
-	},
-	onToggleReadStateDisplay: () => {
-		page?.toggleReadStateDisplay();
-	},
 	onUserSignedOut: () => {
 		reader.unloadPage();
 		showError('You were signed out in another tab.');
@@ -145,53 +139,6 @@ const globalUi = new GlobalComponentHost({
 function showError(error: string) {
 	(scrollRoot || document.body).style.overflow = 'hidden';
 	globalUi.showError(error);
-}
-
-let isContentIdentificationDisplayEnabled = false;
-function toggleContentIdentificationDisplay() {
-	if (contentParseResult) {
-		let styles: {
-			primaryTextRootNodeBackgroundColor?: string,
-			depthGroupWithMostWordsBackgroundColor?: string,
-			primaryTextContainerBackgroundColor?: string,
-			imageBorder?: string,
-			imageCaptionBackgroundColor?: string,
-			imageCreditBackgroundColor?: string,
-			additionalTextBackgroundColor?: string
-		};
-		if (isContentIdentificationDisplayEnabled = !isContentIdentificationDisplayEnabled) {
-			styles = {
-				primaryTextRootNodeBackgroundColor: 'green',
-				depthGroupWithMostWordsBackgroundColor: 'red',
-				primaryTextContainerBackgroundColor: 'lime',
-				imageBorder: '3px solid magenta',
-				additionalTextBackgroundColor: 'yellow'
-			};
-		} else {
-			styles = {};
-		}
-		(contentParseResult.primaryTextRootNode as HTMLElement).style.backgroundColor = styles.primaryTextRootNodeBackgroundColor || '';
-		contentParseResult.depthGroupWithMostWords.members.forEach(
-			member => {
-				(member.containerElement as HTMLElement).style.backgroundColor = styles.depthGroupWithMostWordsBackgroundColor || ''
-			}
-		);
-		contentParseResult.primaryTextContainerSearchResults.forEach(
-			result => {
-				(result.textContainer.containerElement as HTMLElement).style.backgroundColor = styles.primaryTextContainerBackgroundColor || '';
-			}
-		);
-		contentParseResult.imageContainers.forEach(
-			image => {
-				(image.containerElement as HTMLElement).style.border = styles.imageBorder || '';
-			}
-		);
-		contentParseResult.additionalPrimaryTextContainers.forEach(
-			container => {
-				(container.containerElement as HTMLElement).style.backgroundColor = styles.additionalTextBackgroundColor || '';
-			}
-		);
-	}
 }
 
 // header ui
@@ -235,7 +182,6 @@ const title = new TitleComponentHost({
 				}
 			),
 		onToggleDebugMode: () => {
-			toggleContentIdentificationDisplay();
 			page.toggleReadStateDisplay();
 		},
 		onViewComments: globalUi.viewComments,
