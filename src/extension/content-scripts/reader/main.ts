@@ -1,7 +1,6 @@
 import Page from '../../../common/reading/Page';
 import EventPageApi from './EventPageApi';
 import parseDocumentMetadata from '../../../common/reading/parseDocumentMetadata';
-import ContentElement from '../../../common/reading/ContentElement';
 import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
@@ -182,7 +181,7 @@ const title = new TitleComponentHost({
 				}
 			),
 		onToggleDebugMode: () => {
-			page.toggleReadStateDisplay();
+			page.toggleVisualDebugging();
 		},
 		onViewComments: globalUi.viewComments,
 		onViewProfile: globalUi.viewProfile
@@ -447,14 +446,7 @@ Promise
 							lookupResult = result;
 
 							// create page
-							page = new Page(
-								contentParseResult.primaryTextContainers.map(
-									container => new ContentElement(
-										container.containerElement as HTMLElement,
-										container.wordCount
-									)
-								)
-							);
+							page = new Page(contentParseResult.primaryTextContainers);
 							page.setReadState(result.userPage.readState);
 							reader.loadPage(page);
 							

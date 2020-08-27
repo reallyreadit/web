@@ -18,7 +18,8 @@ export default class ContentElement {
         width: number,
         height: number
     };
-    private _showOverlay = false;
+    private _isDebugging = false;
+    private _debugElements: HTMLElement[] = [];
     constructor(element: HTMLElement, wordCount: number) {
         // assign the element before executing any other methods
         this._element = element;
@@ -30,6 +31,18 @@ export default class ContentElement {
         this._wordCount = wordCount;
         // set the lines
         this._setLines(new ReadState([-this._wordCount]));
+    }
+    private _createListItemOrSpanElement() {
+        let nodeName: 'li' | 'span';
+        if (
+            this._element.nodeName === 'OL' ||
+            this._element.nodeName === 'UL'
+        ) {
+            nodeName = 'li';
+        } else {
+            nodeName = 'span';
+        }
+        return document.createElement(nodeName);
     }
     private isLineReadable(line: Line) {
         return this._contentRect.top + line.top >= window.pageYOffset &&
@@ -50,13 +63,20 @@ export default class ContentElement {
             ));
             wordCount += lineWordCount;
         }
+        this._syncDebugDisplay();
     }
     private _getLineHeight() {
-        const blankText = document.createElement('span');
-        blankText.innerHTML = '&nbsp;';
-        this._element.appendChild(blankText);
-        const lineHeight = blankText.getBoundingClientRect().height;
-        blankText.remove();
+        const testElement = this._createListItemOrSpanElement();
+        if (testElement.nodeName === 'LI') {
+            testElement.style.display = 'inline';
+        }
+        testElement.style.whiteSpace = 'pre';
+        testElement.innerHTML = '&nbsp;\n&nbsp';
+        this._element.appendChild(testElement);
+        const
+            clientRects = testElement.getClientRects(),
+            lineHeight = clientRects[clientRects.length - 1].top - clientRects[0].top;
+        testElement.remove();
         return lineHeight;
     }
     private _getContentOffset() {
@@ -89,9 +109,49 @@ export default class ContentElement {
             height: rect.height - (this._contentOffset.top + this._contentOffset.bottom)
         };
     }
-    private _setBackgroundProgress() {
-        const percentComplete = this.getReadState().getPercentComplete();
-        this._element.style.backgroundImage = `linear-gradient(to right, pink ${percentComplete}%, transparent ${percentComplete}%)`;
+    private _syncDebugDisplay() {
+        // check debug state
+        if (!this._isDebugging) {
+            return;
+        }
+        // sync the number of debug elements with the number of lines
+        const
+            lineCount = this._lines.length,
+            debugElementCount = this._debugElements.length;
+        if (lineCount > debugElementCount) {
+            for (let i = 0; i < lineCount - debugElementCount; i++) {
+                const newDebugElement = this._createListItemOrSpanElement();
+                if (newDebugElement.nodeName === 'LI') {
+                    newDebugElement.style.listStyle = 'none';
+                }
+                newDebugElement.style.position = 'absolute';
+                newDebugElement.style.left = '0';
+                newDebugElement.style.right = '0';
+                newDebugElement.style.height = this._lineHeight + 'px';
+                newDebugElement.style.boxShadow = 'inset 0 0 0 2px lime';
+                this._element.appendChild(newDebugElement);
+                this._debugElements.push(newDebugElement);
+            }
+        } else if (lineCount < debugElementCount) {
+            const deleteCount = debugElementCount - lineCount;
+            this._debugElements
+                .splice(this._lines.length - deleteCount, deleteCount)
+                .forEach(
+                    deletedDebugElement => {
+                        deletedDebugElement.remove();
+                    }
+                );
+        }
+        // set the backgrounds
+        this._lines.forEach(
+            (line, index) => {
+                const
+                    debugElement = this._debugElements[index],
+                    percentComplete = line.readState.getPercentComplete();
+                debugElement.style.top = line.top + 'px';
+                debugElement.style.backgroundImage = `linear-gradient(to right, rgba(0, 255, 0, 0.5) ${percentComplete}%, transparent ${percentComplete}%)`;
+            }
+        );
     }
     public updateOffset() {
         const contentRect = this._getContentRect();
@@ -103,18 +163,23 @@ export default class ContentElement {
                 this._setLines(this.getReadState());
         }		
     }
-    public toggleReadStateDisplay() {
-        if (this._showOverlay = !this._showOverlay) {
-            this._element.style.boxShadow = 'inset 0 0 0 3px red';
-            this._setBackgroundProgress();
+    public toggleVisualDebugging() {
+        if (this._isDebugging = !this._isDebugging) {
+            this._element.style.position = 'relative';
+            this._element.style.boxShadow = '0 0 0 2px green';
+            this._debugElements.forEach(
+                element => {
+                    element.style.display = 'block';
+                }
+            );
+            this._syncDebugDisplay();
         } else {
             this._element.style.boxShadow = '';
-            this._element.style.backgroundImage = '';
-        }
-    }
-    public disableReadStateDisplay() {
-        if (this._showOverlay) {
-            this.toggleReadStateDisplay();
+            this._debugElements.forEach(
+                element => {
+                    element.style.display = 'none';
+                }
+            );
         }
     }
     public isReadable() {
@@ -124,8 +189,8 @@ export default class ContentElement {
         const line = this._lines.find(line => this.isLineReadable(line));
         if (line) {
             const wordRead = line.readWord();
-            if (this._showOverlay && wordRead) {
-                this._setBackgroundProgress();
+            if (wordRead) {
+                this._syncDebugDisplay();
             }
             return wordRead;
         }
@@ -138,9 +203,6 @@ export default class ContentElement {
     }
     public setReadState(readState: ReadState) {
         this._setLines(readState);
-        if (this._showOverlay) {
-            this._setBackgroundProgress();
-        }
     }
     public isRead() {
         return !this._lines.some(function (line) {

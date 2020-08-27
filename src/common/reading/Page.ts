@@ -1,12 +1,48 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
 import Line from './Line';
+import { getWordCount } from '../contentParsing/utils';
+import TextContainer from '../contentParsing/TextContainer';
 
+function findContentElements(element: Element, contentElements: ContentElement[] = []) {
+	let isContentElement = false;
+	for (let child of element.childNodes) {
+		if (
+			child.nodeType === Node.TEXT_NODE &&
+			child.textContent.trim().length
+		) {
+			isContentElement = true;
+			break;
+		}
+	}
+	if (isContentElement) {
+		contentElements.push(
+			new ContentElement(
+				element as HTMLElement,
+				getWordCount(element)
+			)
+		);
+	} else {
+		for (let child of element.children) {
+			findContentElements(child, contentElements);
+		}
+	}
+	return contentElements;
+}
 export default class Page {
 	private _contentEls: ContentElement[];
-	constructor(contentEls: ContentElement[]) {
+	constructor(primaryTextContainers: TextContainer[]) {
 		// set up the content elements
-		this._contentEls = contentEls.sort((a, b) => a.offsetTop - b.offsetTop);
+		this._contentEls = primaryTextContainers
+			.reduce<ContentElement[]>(
+				(contentElements, textContainer) => contentElements.concat(
+					findContentElements(textContainer.containerElement)
+				),
+				[]
+			)
+			.sort(
+				(a, b) => a.offsetTop - b.offsetTop
+			);
 	}
 	public setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
@@ -78,11 +114,8 @@ export default class Page {
 		}
 		return 0;
 	}
-	public toggleReadStateDisplay() {
-		this._contentEls.forEach(block => block.toggleReadStateDisplay());
-	}
-	public remove() {
-		this._contentEls.forEach(block => block.disableReadStateDisplay());
+	public toggleVisualDebugging() {
+		this._contentEls.forEach(block => block.toggleVisualDebugging());
 	}
 	public get elements() {
 		return this._contentEls;

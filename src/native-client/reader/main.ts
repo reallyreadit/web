@@ -1,7 +1,6 @@
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import parseDocumentMetadata from '../../common/reading/parseDocumentMetadata';
 import Page from '../../common/reading/Page';
-import ContentElement from '../../common/reading/ContentElement';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import Reader from '../../common/reading/Reader';
 import * as ReactDOM from 'react-dom';
@@ -51,9 +50,7 @@ let
 const
 	metadataParseResult = parseDocumentMetadata(),
 	contentParseResult = parseDocumentContent(),
-	page = new Page(
-		contentParseResult.primaryTextContainers.map(container => new ContentElement(container.containerElement as HTMLElement, container.wordCount))
-	);
+	page = new Page(contentParseResult.primaryTextContainers);
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 styleArticleDocument({
