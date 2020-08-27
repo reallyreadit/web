@@ -21,6 +21,10 @@ export function findWordsInAttributes(element: Element) {
 		)
 		.map(word => word.toLowerCase());
 };
+const wordRegex = /\S+/g;
+export function getWordCount(node: Node) {
+	return (node.textContent.match(wordRegex) || []).length;
+};
 export function isElement(node: Node): node is Element {
 	return node.nodeType === Node.ELEMENT_NODE;
 }

@@ -5,7 +5,7 @@ import ImageContainer from './ImageContainer';
 import GraphEdge from './GraphEdge';
 import TextContainer from './TextContainer';
 import ChildNodeSearchResult from './ChildNodeSearchResult';
-import { zipContentLineages, buildLineage, isElement, isImageContainerElement, findWordsInAttributes, isValidImgElement } from './utils';
+import { zipContentLineages, buildLineage, isElement, isImageContainerElement, findWordsInAttributes, isValidImgElement, getWordCount } from './utils';
 import ParseResult from './ParseResult';
 import { isValidContent as isValidFigureContent } from './figureContent';
 import Config from './configuration/Config';
@@ -21,7 +21,6 @@ import ContainerFilterConfig from './configuration/ContainerFilterConfig';
 import TextContainerFilterConfig from './configuration/TextContainerFilterConfig';
 
 // regular expressions
-const wordRegex = /\S+/g;
 const singleSentenceRegex = /^[^.!?]+[.!?'"]*$/;
 const recircRegex = /^[^:]+:.+$/
 
@@ -31,9 +30,6 @@ function findDescendantsMatchingQuerySelectors(element: Element, selectors: stri
 		.map(selector => element.querySelectorAll(selector))
 		.reduce<Element[]>((elements, element) => elements.concat(Array.from(element)), []);
 }
-function getWordCount(node: Node) {
-	return (node.textContent.match(wordRegex) || []).length;
-};
 function searchUpLineage(lineage: Node[], test: (node: Node, index: number) => boolean) {
 	for (let i = lineage.length - 1; i >= 0; i--) {
 		const ancestor = lineage[i];
