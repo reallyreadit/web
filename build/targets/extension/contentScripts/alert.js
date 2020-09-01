@@ -6,7 +6,7 @@ const project = require('../../../project'),
 const build = createBuild({
 	path: 'extension/content-scripts/alert',
 	scss: [
-		`${project.srcDir}/common/templates/global.css`,
+		`${project.srcDir}/common/styles/reset.css`,
 		`${project.srcDir}/extension/content-scripts/alert/main.css`,
 		`${project.srcDir}/extension/content-scripts/ui/shadow-host.css`
 	],

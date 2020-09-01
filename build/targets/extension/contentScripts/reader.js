@@ -17,8 +17,8 @@ const
 		],
 		staticAssets: [
 			{
-				src: `${project.srcDir}/common/templates/global.css`,
-				base: `${project.srcDir}/common/templates`
+				src: `${project.srcDir}/common/styles/reset.css`,
+				base: `${project.srcDir}/common/styles`
 			}
 		],
 		webpack: {

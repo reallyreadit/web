@@ -409,10 +409,10 @@ Promise
 			});
 
 			// set up the global user interface
-			const globalStyleLink = document.createElement('link');
-			globalStyleLink.rel = 'stylesheet';
-			globalStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/global.css');
-			document.head.appendChild(globalStyleLink);
+			const resetStyleLink = document.createElement('link');
+			resetStyleLink.rel = 'stylesheet';
+			resetStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/reset.css');
+			document.head.appendChild(resetStyleLink);
 			insertFontStyleElement();
 			globalUi
 				.initialize()
