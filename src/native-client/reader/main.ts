@@ -49,15 +49,17 @@ let
 
 const
 	metadataParseResult = parseDocumentMetadata(),
-	contentParseResult = parseDocumentContent(),
-	page = new Page(contentParseResult.primaryTextContainers);
+	contentParseResult = parseDocumentContent();
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
+
 styleArticleDocument({
 	document: window.document,
 	title: metadataParseResult.metadata.article.title,
 	byline: createByline(metadataParseResult.metadata.article.authors)
 });
+
+const page = new Page(contentParseResult.primaryTextContainers);
 
 const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
 procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
