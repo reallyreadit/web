@@ -15,6 +15,12 @@ const
 			`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`,
 			`${project.srcDir}/extension/content-scripts/ui/shadow-host.css`
 		],
+		staticAssets: [
+			{
+				src: `${project.srcDir}/common/templates/global.css`,
+				base: `${project.srcDir}/common/templates`
+			}
+		],
 		webpack: {
 			appConfig: {
 				path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),

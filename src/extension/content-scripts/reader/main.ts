@@ -409,6 +409,10 @@ Promise
 			});
 
 			// set up the global user interface
+			const globalStyleLink = document.createElement('link');
+			globalStyleLink.rel = 'stylesheet';
+			globalStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/global.css');
+			document.head.appendChild(globalStyleLink);
 			insertFontStyleElement();
 			globalUi
 				.initialize()
