@@ -87,6 +87,31 @@ const reader = new Reader(
 	}
 );
 
+// document messaging interface
+if (window.location.hostname.endsWith('readup.com')) {
+	const postScript = document.querySelector('#com_readup_blog_post_script script');
+	if (postScript) {
+		// the browser won't execute the script if we just alter the type attribute.
+		// we have to create a new script element.
+		const replacementScript = document.createElement('script');
+		replacementScript.textContent = postScript.textContent;
+		postScript.replaceWith(replacementScript);
+	}
+}
+window.addEventListener(
+	'message',
+	event => {
+		if (!event.origin.endsWith('readup.com')) {
+			return;
+		}
+		switch (event.data?.type as String || null) {
+			case 'toggleVisualDebugging':
+				page.toggleVisualDebugging();
+				break;
+		}
+	}
+);
+
 // user interface
 const dialogService = new DialogService({
 	setState: delegate => {

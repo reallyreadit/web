@@ -119,6 +119,21 @@ const eventPageApi = new EventPageApi({
 	}
 });
 
+// document messaging interface
+window.addEventListener(
+	'message',
+	event => {
+		if (!event.origin.endsWith('readup.com')) {
+			return;
+		}
+		switch (event.data?.type as String || null) {
+			case 'toggleVisualDebugging':
+				page?.toggleVisualDebugging();
+				break;
+		}
+	}
+);
+
 // global ui
 const globalUi = new GlobalComponentHost({
 	domAttachmentDelegate: shadowHost => {
