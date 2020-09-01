@@ -8,9 +8,7 @@ const styleContent = `
 #com_readup_article {
 	font-family: serif;
 	font-size: 16pt;
-	line-height: 1.35em;
-	margin: 0;
-	padding: 0;
+	line-height: 1.35;
 }
 #com_readup_document.com_readup_scroll_capture #com_readup_article {
 	height: 100%;
@@ -37,34 +35,6 @@ const styleContent = `
 #com_readup_article_content * {
 	max-width: 100%;
 }
-#com_readup_article_title {
-	font-family: sans-serif;
-	font-size: 20pt;
-	line-height: normal;
-	margin-top: 120px;
-}
-#com_readup_article_byline {
-	font-size: 18pt;
-	line-height: normal;
-	font-style: italic;
-	font-weight: normal;
-}
-.com_readup_article_image_container:not(img) {
-	margin: 1em;
-}
-.com_readup_article_image_caption {
-	text-align: center;
-	font-size: 14pt;
-	margin: 1em;
-	line-height: normal;
-}
-.com_readup_article_image_credit {
-	text-align: center;
-	font-size: 12pt;
-	font-style: italic;
-	margin: 1em;
-	line-height: normal;
-}
 #com_readup_article_content h1,
 #com_readup_article_content h2,
 #com_readup_article_content h3,
@@ -72,7 +42,26 @@ const styleContent = `
 #com_readup_article_content h5,
 #com_readup_article_content h6 {
 	margin: 1em 0;
-	line-height: normal;
+	line-height: 1.15;
+	font-weight: bold;
+}
+#com_readup_article_content h1 {
+	font-size: 1.3em;
+}
+#com_readup_article_content h2 {
+	font-size: 1.25em;
+}
+#com_readup_article_content h3 {
+	font-size: 1.2em;
+}
+#com_readup_article_content h4 {
+	font-size: 1.15em;
+}
+#com_readup_article_content h5 {
+	font-size: 1.1em;
+}
+#com_readup_article_content h6 {
+	font-size: 1.05em;
 }
 #com_readup_article_content p,
 #com_readup_article_content div[class*="para"] {
@@ -89,11 +78,19 @@ const styleContent = `
 	overflow: hidden;
 	border-radius: 0.5em;
 }
+#com_readup_article_content ol {
+	padding-left: 1.5em;
+	list-style: decimal;
+}
+#com_readup_article_content ul {
+	padding-left: 1.5em;
+	list-style: disc;
+}
 #com_readup_article_content code,
 #com_readup_article_content pre {
 	font-family: "Menlo", "Inconsolata", "Consolas", "Roboto Mono", "Ubuntu Mono", "Liberation Mono", "Courier New", monospace;
 	font-size: 11pt;
-	line-height: 1.45em;
+	line-height: 1.45;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 0.25em;
@@ -112,6 +109,9 @@ const styleContent = `
 	border: none;
 	margin: 0;
 }
+#com_readup_article_content strong {
+	font-weight: bold;
+}
 #com_readup_article_content mark {
 	background-color: inherit;
 	color: inherit;
@@ -120,6 +120,31 @@ const styleContent = `
 	display: block;
 	height: auto !important;
 	margin: 1em auto;
+}
+#com_readup_article_content #com_readup_article_title {
+	font-family: sans-serif;
+	font-size: 1.5em;
+	margin-top: 120px;
+}
+#com_readup_article_content #com_readup_article_byline {
+	font-size: 18pt;
+	font-style: italic;
+}
+#com_readup_article_content .com_readup_article_image_container:not(img) {
+	margin: 1em;
+}
+#com_readup_article_content .com_readup_article_image_caption {
+	text-align: center;
+	font-size: 14pt;
+	margin: 1em;
+	line-height: 1.15;
+}
+#com_readup_article_content .com_readup_article_image_credit {
+	text-align: center;
+	font-size: 12pt;
+	font-style: italic;
+	margin: 1em;
+	line-height: 1.15;
 }
 
 #com_readup_document {
@@ -151,7 +176,7 @@ const styleContent = `
 	}
 	#com_readup_article_content blockquote {
 		border-left-color: #404040;
-		background-color: #fafafa;
+		background-color: #303030;
 	}
 	#com_readup_article_content code,
 	#com_readup_article_content pre {
