@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/AppRoot/Header
 	cssComponentId: header_q3p9go
 */
+@import '../../../../common/styles/colors';
 
 .header_q3p9go {
 	flex: 0 0 auto;
@@ -9,10 +10,10 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-top: env(safe-area-inset-top) solid #eaeaea;
-	border-bottom: 1px solid #ccc;
-	background-color: #eaeaea;
-	color: #666;
+	border-top-width: env(safe-area-inset-top);
+	border-top-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 }
 .header_q3p9go > .left-content,
 .header_q3p9go > .right-content {
@@ -29,9 +30,6 @@
 .header_q3p9go > .left-content > .icon_rour3d,
 .header_q3p9go > .left-content > .notification-icon-wrapper > .icon_rour3d {
 	font-size: 20px;
-}
-.header_q3p9go > .left-content > .notification-icon-wrapper.selected > .icon_rour3d {
-	color: black;
 }
 .header_q3p9go > .right-content {
 	margin-right: 10px;
@@ -52,4 +50,26 @@
 	text-overflow: ellipsis;
 	text-align: center;
 	font-weight: bold;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .header_q3p9go {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $nav-background-color,
+				"border-bottom-color": $nav-border-color,
+				"background-color": $nav-background-color,
+				"color": $text-muted-color
+			)
+		);
+	}
+	#{$root} .header_q3p9go > .left-content > .notification-icon-wrapper.selected > .icon_rour3d {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-color
+			)
+		);
+	}
 }

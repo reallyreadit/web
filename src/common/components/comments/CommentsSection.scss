@@ -10,10 +10,9 @@
 	text-align: center;
 	font-family: 'Museo Sans (700)';
 }
-.comments-section_mqmgnd > .post > .locked > img {
-	display: block;
+.comments-section_mqmgnd > .post > .locked > .padlock {
 	margin: 0 auto 10px auto;
-	width: 48px;
+	font-size: 48px;
 }
 .comments-section_mqmgnd > .comments > li + li {
 	margin-top: 15px;

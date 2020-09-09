@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/screens/LeaderboardScreen/LeaderboardHeader
 	cssComponentId: leaderboard-header_ruu55d
 */
+@import '../../../../../common/styles/colors';
 
 .leaderboard-header_ruu55d {
 	padding: 5px 0 10px 0;
@@ -17,10 +18,20 @@
 .leaderboard-header_ruu55d > .icon:last-child {
 	margin-left: 10px;
 	cursor: pointer;
-	color: #999;
 }
 .leaderboard-header_ruu55d > .text {
 	font-family: 'Museo Sans (700)';
 	font-size: 15pt;
 	vertical-align: middle;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .leaderboard-header_ruu55d > .icon:last-child {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-neutral-color
+			)
+		);
+	}
 }

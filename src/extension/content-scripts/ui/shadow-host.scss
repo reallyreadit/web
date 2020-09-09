@@ -1,0 +1,22 @@
+@import '../../../common/styles/colors';
+
+:host {
+	all: initial;
+	visibility: visible !important;
+	font-family: 'Museo Sans (300)';
+	font-size: 13pt;
+}
+a {
+	color: inherit;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-color
+			)
+		);
+	}
+}

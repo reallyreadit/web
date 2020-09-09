@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/Animations/Tracking/TrackingAnimation
 	cssComponentId: tracking-animation_s8r7bq
 */
+@import '../../../../../common/styles/colors';
 
 .tracking-animation_s8r7bq > .viewport {
 	position: relative;
@@ -22,15 +23,6 @@
 }
 .tracking-animation_s8r7bq.finished > .viewport > .articles-frame {
 	transform: translateX(0);
-}
-.tracking-animation_s8r7bq > .viewport > .articles-frame::after {
-	content: "";
-	position: absolute;
-	width: 100%;
-	bottom: 0;
-	height: 0.3em;
-	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
-	background-size: cover;
 }
 .tracking-animation_s8r7bq > .viewport > .articles-frame > .title {
 	display: flex;
@@ -55,7 +47,6 @@
 	margin: 0.5em auto;
 	width: 70%;
 	height: 1px;
-	background: #ccc;
 }
 .tracking-animation_s8r7bq > .viewport > .articles-frame > .clock_sgh5id {
 	position: absolute;
@@ -108,7 +99,8 @@
 	position: absolute;
 	width: 22px;
 	height: 20px;
-	border: 5px solid palegreen;
+	border-width: 5px;
+	border-style: solid;
 	border-radius: 5px;
 	opacity: 0;
 }
@@ -176,21 +168,19 @@
 	width: 50%;
 	height: 50%;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.75);
 	transform: translate(-50%, -50%);
 }
 .tracking-animation_s8r7bq > .viewport > .play-button::after {
 	border-width: 1.75em 0 1.75em 3em;
 	border-style: solid;
-	border-color: transparent transparent transparent #ccc;
+	border-top-color: transparent;
+	border-right-color: transparent;
+	border-bottom-color: transparent;
 	transform: translate(-40%, -50%);
 }
 .tracking-animation_s8r7bq.auto-play.initial > .viewport > .play-button,
 .tracking-animation_s8r7bq.playing > .viewport > .play-button {
 	display: none;
-}
-.tracking-animation_s8r7bq.unstarted > .viewport > .play-button::after {
-	border-left-color: palegreen;
 }
 
 .tracking-animation_s8r7bq > .captions {
@@ -507,5 +497,48 @@
 	}
 	100% {
 		transform: translateX(100%);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .tracking-animation_s8r7bq > .viewport > .articles-frame > .articles > .separator {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-divider-color
+			)
+		);
+	}
+	#{$root} .tracking-animation_s8r7bq > .viewport > .highlighters > .highlighter {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $progress-complete-color
+			)
+		);
+	}
+	#{$root} .tracking-animation_s8r7bq > .viewport > .play-button::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $overlay-color
+			)
+		);
+	}
+	#{$root} .tracking-animation_s8r7bq > .viewport > .play-button::after {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-left-color": $intent-neutral-color
+			)
+		);
+	}
+	#{$root} .tracking-animation_s8r7bq.unstarted > .viewport > .play-button::after {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-left-color": $intent-success-color
+			)
+		);
 	}
 }

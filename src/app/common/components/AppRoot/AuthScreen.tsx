@@ -56,10 +56,7 @@ export default class extends React.PureComponent<Props> {
 		return (
 			<div className="auth-screen_gnq77a">
 				<div className="content">
-					<img
-						alt="logo"
-						src="/images/logo.svg"
-					/>
+					<div className="logo"></div>
 					<div className={
 						classNames(
 							'status',

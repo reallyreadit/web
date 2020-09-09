@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/AppRoot/Menu
 	cssComponentId: menu_fk9ujy
 */
+@import '../../../../common/styles/colors';
 
 .menu_fk9ujy {
 	position: absolute;
@@ -12,18 +13,20 @@
 	z-index: 100;
 	display: flex;
 	flex-flow: row-reverse;
-	animation: menu_fk9ujy-overlay-fade-in 250ms forwards;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards;
 }
 .menu_fk9ujy.closing {
-	animation: menu_fk9ujy-overlay-fade-in 250ms reverse backwards;
+	animation-direction: reverse;
+	animation-fill-mode: backwards;
 }
 .menu_fk9ujy > .drawer {
 	display: flex;
 	flex-flow: column;
 	padding-top: env(safe-area-inset-top);
 	padding-bottom: env(safe-area-inset-bottom);
-	background-color: white;
-	border-left: 1px solid #ccc;
+	border-left-width: 1px;
+	border-left-style: solid;
 	animation: menu_fk9ujy-drawer-open 250ms forwards;
 }
 .menu_fk9ujy.closing > .drawer {
@@ -71,14 +74,24 @@
 	margin-top: 10px;
 }
 
-@keyframes menu_fk9ujy-overlay-fade-in {
+@keyframes menu_fk9ujy-overlay-fade-in-light {
 	from {
-		background-color: rgba(0, 0, 0, 0);
-		border-top-color: rgba(204, 204, 204, 0);
+		background-color: transparent;
+		border-top-color: transparent;
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0.3);
-		border-top-color: rgba(204, 204, 204, 1);
+		background-color: map-get($light-theme, $overlay-color);
+		border-top-color: map-get($light-theme, $nav-border-color);
+	}
+}
+@keyframes menu_fk9ujy-overlay-fade-in-dark {
+	from {
+		background-color: transparent;
+		border-top-color: transparent;
+	}
+	to {
+		background-color: map-get($dark-theme, $overlay-color);
+		border-top-color: map-get($dark-theme, $nav-border-color);
 	}
 }
 @keyframes menu_fk9ujy-drawer-open {
@@ -95,5 +108,25 @@
 	}
 	to {
 		transform: translateX(100%);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .menu_fk9ujy {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "menu_fk9ujy-overlay-fade-in"
+			)
+		);
+	}
+	#{$root} .menu_fk9ujy > .drawer {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color,
+				"border-left-color": $nav-border-color
+			)
+		);
 	}
 }

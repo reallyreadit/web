@@ -1,3 +1,5 @@
+@import '../styles/colors';
+
 .article-details_d2vnmv > .content > .title > .star_n3lkaj {
 	float: right;
 	margin-left: 2px;
@@ -10,7 +12,6 @@
 .article-details_d2vnmv > .content > .title > .bookmark > .percent-complete {
 	font-family: 'Museo Sans (500)';
 	font-size: 8pt;
-	color: white;
 	position: absolute;
 	top: 12px;
 	transform: translateX(-50%);
@@ -21,7 +22,6 @@
 	display: block;
 	width: 42px;
 	height: 42px;
-	color: #999;
 }
 .article-details_d2vnmv > .content > .title > .title-link {
 	font-family: 'Cambria (bold)';
@@ -66,7 +66,6 @@
 }
 .article-details_d2vnmv > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
 	font-size: 16px;
-	color: #999;
 }
 .article-details_d2vnmv > .content > .columns > .small-stats-article {
 	display: none;
@@ -147,6 +146,26 @@
 	}
 	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
 		font-size: 16px;
-		color: #999;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .article-details_d2vnmv > .content > .title > .bookmark > .percent-complete {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-text-color
+			)
+		);
+	}
+	#{$root} .article-details_d2vnmv > .content > .title > .bookmark > .icon_rour3d,
+	#{$root} .article-details_d2vnmv > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d,
+	#{$root} .article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-neutral-color
+			)
+		);
 	}
 }

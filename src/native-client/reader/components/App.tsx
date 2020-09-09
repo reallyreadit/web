@@ -147,7 +147,6 @@ export default class App extends React.Component<
 						<CommentsSection
 							article={this.props.article.value}
 							comments={this.props.comments.value}
-							imagePath="./images"
 							noCommentsMessage="No comments on this article yet."
 							onCloseDialog={this.props.dialogService.closeDialog}
 							onCopyTextToClipboard={this._copyTextToClipboard}

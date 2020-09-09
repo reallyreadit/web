@@ -2,6 +2,7 @@
 	componentPath: src/common/components/DialogManager
 	cssComponentId: dialog-manager_b1yvhp
 */
+@import '../styles/colors';
 
 .dialog-manager_b1yvhp {
 	position: fixed;
@@ -22,30 +23,8 @@
 	align-items: center;
 	justify-content: flex-start;
 	z-index: 1;
-}
-.dialog-manager_b1yvhp.light > .overlay:not(.animated) {
-	background-color: rgba(255, 255, 255, 0.3);
-}
-.dialog-manager_b1yvhp.dark > .overlay:not(.animated) {
-	background-color: rgba(0, 0, 0, 0.3);
-}
-.dialog-manager_b1yvhp.light > .overlay.animated {
-	animation: dialog-manager_b1yvhp-overlay-fade-in-light 250ms forwards;
-}
-.dialog-manager_b1yvhp.dark > .overlay.animated {
-	animation: dialog-manager_b1yvhp-overlay-fade-in-dark 250ms forwards;
-}
-.dialog-manager_b1yvhp.light > .overlay.animated.obscured {
-	animation: dialog-manager_b1yvhp-overlay-obscured-light 250ms forwards;
-}
-.dialog-manager_b1yvhp.dark > .overlay.animated.obscured {
-	animation: dialog-manager_b1yvhp-overlay-obscured-dark 250ms forwards;
-}
-.dialog-manager_b1yvhp.light > .overlay.animated.closing {
-	animation: dialog-manager_b1yvhp-overlay-fade-out-light 250ms forwards;
-}
-.dialog-manager_b1yvhp.dark > .overlay.animated.closing {
-	animation: dialog-manager_b1yvhp-overlay-fade-out-dark 250ms forwards;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards;
 }
 .dialog-manager_b1yvhp > .overlay::before {
 	content: "";
@@ -71,50 +50,50 @@
 
 @keyframes dialog-manager_b1yvhp-overlay-fade-in-light {
 	from {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 	to {
-		background-color: rgba(255, 255, 255, 0.3);
+		background-color: map-get($light-theme, $overlay-color);
 	}
 }
 @keyframes dialog-manager_b1yvhp-overlay-fade-out-light {
 	from {
-		background-color: rgba(255, 255, 255, 0.3);
+		background-color: map-get($light-theme, $overlay-color);
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 }
 @keyframes dialog-manager_b1yvhp-overlay-obscured-light {
 	from {
-		background-color: rgba(255, 255, 255, 0.3);
+		background-color: map-get($light-theme, $overlay-color);
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 }
 @keyframes dialog-manager_b1yvhp-overlay-fade-in-dark {
 	from {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: map-get($dark-theme, $overlay-color);
 	}
 }
 @keyframes dialog-manager_b1yvhp-overlay-fade-out-dark {
 	from {
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: map-get($dark-theme, $overlay-color);
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 }
 @keyframes dialog-manager_b1yvhp-overlay-obscured-dark {
 	from {
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: map-get($dark-theme, $overlay-color);
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 }
 
@@ -136,5 +115,40 @@
 	to {
 		transform: translateY(20%);
 		opacity: 0;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .dialog-manager_b1yvhp > .overlay:not(.animated) {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $overlay-color
+			)
+		);
+	}
+	#{$root} .dialog-manager_b1yvhp > .overlay.animated {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "dialog-manager_b1yvhp-overlay-fade-in"
+			)
+		);
+	}
+	#{$root} .dialog-manager_b1yvhp > .overlay.animated.obscured {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "dialog-manager_b1yvhp-overlay-obscured"
+			)
+		);
+	}
+	#{$root} .dialog-manager_b1yvhp > .overlay.animated.closing {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "dialog-manager_b1yvhp-overlay-fade-out"
+			)
+		);
 	}
 }

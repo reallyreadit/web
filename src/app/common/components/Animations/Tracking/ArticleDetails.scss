@@ -2,12 +2,13 @@
 	componentPath: src/app/common/components/Animations/Tracking/ArticleDetails
 	cssComponentId: article-details_brocy1
 */
+@import '../../../../../common/styles/colors';
 
 .article-details_brocy1 {
 	position: relative;
 	display: flex;
-	background: white;
-	border: 1px solid #ccc;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
 	padding: 0.35em 0.4em;
 }
@@ -16,7 +17,8 @@
 	width: 0.9em;
 	height: 0.9em;
 	background: inherit;
-	border: 1px solid #ccc;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 50%;
 	display: flex;
 	justify-content: center;
@@ -41,21 +43,17 @@
 	flex: 1 1 auto;
 }
 .article-details_brocy1 > .lines > .line:nth-child(1) {
-	background: #999;
 	height: 0.25em;
 }
 .article-details_brocy1 > .lines > .line:nth-child(2) {
-	background: #999;
 	height: 0.15em;
 	margin: 0.2em 0;
 }
 .article-details_brocy1 > .lines > .line:nth-child(3) {
-	background: #999;
 	height: 0.15em;
 }
 .article-details_brocy1 > .star {
 	font-size: 0.6em;
-	color: #999;
 }
 .article-details_brocy1 > .children {
 	position: absolute;
@@ -325,5 +323,43 @@
 	}
 	100% {
 		transform: rotate(0) scale(1);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .article-details_brocy1 {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color,
+				"border-color": $content-border-color
+			)
+		);
+	}
+	#{$root} .article-details_brocy1 > .rank {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $content-border-color
+			)
+		);
+	}
+	#{$root} .article-details_brocy1 > .lines > .line:nth-child(1),
+	#{$root} .article-details_brocy1 > .lines > .line:nth-child(2),
+	#{$root} .article-details_brocy1 > .lines > .line:nth-child(3) {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .article-details_brocy1 > .star {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $control-border-color
+			)
+		);
 	}
 }

@@ -2,13 +2,12 @@
 	componentPath: src/common/components/PostHeader
 	cssComponentId: post-header_f4a846
 */
+@import '../styles/colors';
 
 .post-header_f4a846 {
 	padding: 5px 10px;
 	display: flex;
 	align-items: center;
-	background-color: #999;
-	color: white;
 	font-size: 12pt;
 }
 .post-header_f4a846 > .user-name {
@@ -33,5 +32,17 @@
 @media (max-width: 449px) {
 	.post-header_f4a846 {
 		font-size: 11pt;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .post-header_f4a846 {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color,
+				"color": $intent-text-color
+			)
+		);
 	}
 }

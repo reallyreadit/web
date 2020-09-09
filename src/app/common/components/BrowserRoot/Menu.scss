@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/BrowserRoot/Menu
 	cssComponentId: menu_v25ec5
 */
+@import '../../../../common/styles/colors';
 
 .menu_v25ec5 {
 	position: fixed;
@@ -12,17 +13,19 @@
 	z-index: 100;
 	display: flex;
 	flex-flow: row-reverse;
-	animation: menu_v25ec5-overlay-fade-in 250ms forwards;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards;
 }
 .menu_v25ec5.closing {
-	animation: menu_v25ec5-overlay-fade-in 250ms reverse backwards;
+	animation-direction: reverse;
+	animation-fill-mode: backwards;
 }
 .menu_v25ec5 > .drawer {
 	display: flex;
 	flex-flow: column;
 	width: 250px;
-	background-color: white;
-	border-left: 1px solid #ccc;
+	border-left-width: 1px;
+	border-left-style: solid;
 	font-size: 16px;
 	animation: menu_v25ec5-drawer-open 250ms forwards;
 }
@@ -55,12 +58,20 @@
 	margin: 20px 0;
 }
 
-@keyframes menu_v25ec5-overlay-fade-in {
+@keyframes menu_v25ec5-overlay-fade-in-light {
 	from {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: map-get($light-theme, $overlay-color);
+	}
+}
+@keyframes menu_v25ec5-overlay-fade-in-dark {
+	from {
+		background-color: transparent;
+	}
+	to {
+		background-color: map-get($dark-theme, $overlay-color);
 	}
 }
 @keyframes menu_v25ec5-drawer-open {
@@ -77,5 +88,25 @@
 	}
 	to {
 		transform: translateX(100%);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .menu_v25ec5 {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "menu_v25ec5-overlay-fade-in"
+			)
+		);
+	}
+	#{$root} .menu_v25ec5 > .drawer {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color,
+				"border-left-color": $nav-border-color
+			)
+		);
 	}
 }

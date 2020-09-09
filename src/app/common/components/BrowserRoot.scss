@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/BrowserRoot
 	cssComponentId: browser-root_6tjc3j
 */
+@import '../../../common/styles/colors';
 
 .browser-root_6tjc3j {
 	height: 100%;
@@ -10,8 +11,6 @@
 }
 .browser-root_6tjc3j > .welcome-message {
 	flex: 0 0 auto;
-	background-color: #2A2326;
-	color: white;
 	font-family: 'Cambria (Regular)';
 	font-size: 18pt;
 	height: 80px;
@@ -43,6 +42,25 @@
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 	box-sizing: border-box;
-	background-color: #F7F6F5;
 	z-index: 1;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .browser-root_6tjc3j > .welcome-message {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $loud-background-color,
+				"color": $loud-text-color
+			)
+		);
+	}
+	#{$root} .browser-root_6tjc3j > main > .screens > .screen {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-color
+			)
+		);
+	}
 }

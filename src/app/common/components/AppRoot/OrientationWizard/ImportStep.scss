@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/AppRoot/OrientationWizard/ImportStep
 	cssComponentId: import-step_jg2xdw
 */
+@import '../../../../../common/styles/colors';
 
 .import-step_jg2xdw {
 	display: flex;
@@ -24,8 +25,20 @@
 .import-step_jg2xdw > img {
 	width: 80%;
 	max-width: 320px;
-	border: 1px solid #e0e0e0;
+	border-width: 1px;
+	border-style: solid;
 }
 .import-step_jg2xdw > .button_ovrlmi {
 	margin: 30px 0 0 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .import-step_jg2xdw > img {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $content-border-color
+			)
+		);
+	}
 }

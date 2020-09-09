@@ -2,6 +2,7 @@
 	componentPath: src/common/components/comments/MarkdownContent
 	cssComponentId: markdown-content_cculki
 */
+@import '../../styles/colors';
 
 .markdown-content_cculki blockquote,
 .markdown-content_cculki h1,
@@ -21,18 +22,18 @@
 	text-decoration: underline;
 }
 .markdown-content_cculki blockquote {
-	border-left: 0.15em solid #ddd;
+	border-left-width: 0.15em;
+	border-left-style: solid;
 	padding-left: 0.5em;
 	padding-right: 0.5em;
-	background-color: #fafafa;
 	overflow: hidden;
 	border-radius: 0.25em;
 }
 .markdown-content_cculki code {
-	border: 1px solid #ddd;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 0.25em;
 	padding: 0 0.25em;
-	background-color: #fafafa;
 	font-family: monospace;
 	font-size: 11pt;
 }
@@ -58,7 +59,8 @@
 	width: 75%;
 	margin: 15px auto;
 	border-top: none;
-	border-bottom: 1px solid #ccc;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 }
 .markdown-content_cculki img {
 	display: block;
@@ -70,10 +72,8 @@
 	list-style-type: decimal;
 }
 .markdown-content_cculki pre {
-	border: 1px solid #ddd;
 	border-radius: 0.25em;
 	padding: 0.5em;
-	background-color: #fafafa;
 	overflow: auto;
 	font-family: monospace;
 	font-size: 11pt;
@@ -90,4 +90,34 @@
 .markdown-content_cculki ul {
 	padding-left: 1.5em;
 	list-style-type: disc;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .markdown-content_cculki blockquote {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-left-color": $markdown-block-border-color,
+				"background-color": $markdown-block-background-color
+			)
+		);
+	}
+	#{$root} .markdown-content_cculki code,
+	#{$root} .markdown-content_cculki pre {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $markdown-block-border-color,
+				"background-color": $markdown-block-background-color
+			)
+		);
+	}
+	#{$root} .markdown-content_cculki hr {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $markdown-block-border-color
+			)
+		);
+	}
 }

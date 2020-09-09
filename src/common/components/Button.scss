@@ -2,6 +2,7 @@
 	componentPath: src/common/components/Button
 	cssComponentId: button_ovrlmi
 */
+@import '../styles/colors';
 
 .button_ovrlmi {
 	align-items: center;
@@ -36,7 +37,8 @@
 }
 /* interaction */
 .button_ovrlmi:focus {
-	outline: 1px auto #73A3D9;
+	outline-width: 1px;
+	outline-style: solid;
 }
 /* align */
 .button_ovrlmi.left {
@@ -51,31 +53,6 @@
 /* style */
 .button_ovrlmi.preferred {
 	font-family: 'Museo Sans (700)';
-}
-/* intent */
-.button_ovrlmi.default {
-	background-color: #eee;
-}
-.button_ovrlmi.loud {
-	background-color: #2A2326;
-	color: white;
-}
-.button_ovrlmi.warning {
-	background-color: darkred;
-	color: white;
-}
-.button_ovrlmi.success {
-	background-color: limegreen;
-	color: white;
-}
-/* state */
-.button_ovrlmi.busy,
-.button_ovrlmi.disabled {
-	color: silver;
-}
-.button_ovrlmi.selected {
-	background-color: #555;
-	color: white;
 }
 /* size */
 .button_ovrlmi.large {
@@ -98,7 +75,8 @@
 	right: 0;
 	border-width: 5px;
 	border-style: solid;
-	border-color: red red transparent transparent;
+	border-bottom-color: transparent;
+	border-left-color: transparent;
 }
 /* overlay */
 .button_ovrlmi.overlay > .text,
@@ -115,4 +93,78 @@
 	justify-content: center;
 	align-items: center;
 	background-color: inherit;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .button_ovrlmi:focus {
+		@include theme-colors(
+			$scheme,
+			(
+				"outline-color": $intent-primary-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.default {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color,
+				"color": $intent-text-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.loud {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $loud-background-color,
+				"color": $loud-text-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.warning {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-danger-color,
+				"color": $intent-text-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.success {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-success-color,
+				"color": $intent-text-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.busy,
+	#{$root} .button_ovrlmi.disabled {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $control-disabled-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.selected {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $button-selected-background-color,
+				"color": $button-selected-text-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi.indicator::after {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $intent-alert-color,
+				"border-right-color": $intent-alert-color
+			)
+		);
+	}
 }

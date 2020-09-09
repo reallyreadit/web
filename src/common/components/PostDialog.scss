@@ -2,6 +2,7 @@
 	componentPath: src/common/components/PostDialog
 	cssComponentId: post-dialog_to9nib
 */
+@import '../styles/colors';
 
 .post-dialog_to9nib > .children > textarea {
 	display: block;
@@ -10,14 +11,14 @@
 	height: 100px;
 	padding: 5px;
 	margin: 15px 0 10px 0;
-	border: 1px solid #999;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
 	outline: none;
 }
 .post-dialog_to9nib > .children > textarea::placeholder {
 	position: relative;
 	top: 0.25em;
-	color: silver;
 	font-style: italic;
 }
 .post-dialog_to9nib > .children > textarea:focus::placeholder {
@@ -25,4 +26,24 @@
 }
 .post-dialog_to9nib > .children > .toggle-switch-input_hnmxln {
 	margin-top: 15px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .post-dialog_to9nib > .children > textarea {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .post-dialog_to9nib > .children > textarea::placeholder {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
 }

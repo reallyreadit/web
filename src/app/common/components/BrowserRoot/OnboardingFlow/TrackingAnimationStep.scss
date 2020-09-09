@@ -2,13 +2,13 @@
 	componentPath: src/app/common/components/BrowserRoot/OnboardingFlow/TrackingAnimationStep
 	cssComponentId: tracking-animation-step_dkomcd
 */
+@import '../../../../../common/styles/colors';
 
 .tracking-animation-step_dkomcd {
 	text-align: center;
 }
 .tracking-animation-step_dkomcd > .tracking-animation_s8r7bq {
 	margin-bottom: 15px;
-	background-color: white;
 }
 .tracking-animation-step_dkomcd > .controls {
 	display: flex;
@@ -17,7 +17,6 @@
 	height: 50px;
 }
 .tracking-animation-step_dkomcd > .controls > .skip {
-	color: #999;
 	font-size: 11pt;
 }
 .tracking-animation-step_dkomcd > .controls > .continue {
@@ -41,5 +40,16 @@
 	}
 	100% {
 		opacity: 0;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .tracking-animation-step_dkomcd > .controls > .skip {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
 	}
 }

@@ -1,13 +1,14 @@
+@import '../../../common/styles/colors';
+
 .alert {
 	position: fixed;
 	top: 20px;
 	right: 20px;
 	text-align: center;
 	padding: 10px;
-	background-color: white;
-	border: 1px solid #e0e0e0;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
-	box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
 	animation: alert-pop-in 250ms forwards;
 }
 .alert.popping-out {
@@ -42,8 +43,10 @@
 	justify-content: flex-start;
 }
 .alert > .button-container > button:focus {
-	outline: 1px auto #73A3D9;
+	outline-width: 1px;
+	outline-style: solid;
 }
+
 @keyframes alert-pop-in {
 	0% {
 		transform: translateY(-20%);
@@ -62,5 +65,40 @@
 	100% {
 		transform: translateY(-20%);
 		opacity: 0;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .alert {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color,
+				"box-shadow": 0px 1px 3px 1px
+			)
+		);
+	}
+	#{$root} .alert > .logo-light {
+		@if $scheme == light {
+			display: block;
+		} @else {
+			display: none;
+		}
+	}
+	#{$root} .alert > .logo-dark {
+		@if $scheme == dark {
+			display: block;
+		} @else {
+			display: none;
+		}
+	}
+	#{$root} .alert > .button-container > button:focus {
+		@include theme-colors(
+			$scheme,
+			(
+				"outline-color": $intent-primary-color
+			)
+		);
 	}
 }

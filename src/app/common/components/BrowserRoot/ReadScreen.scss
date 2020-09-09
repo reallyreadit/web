@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/BrowserRoot/ReadScreen
 	cssComponentId: read-screen_ikr26q
 */
+@import '../../../../common/styles/colors';
 
 .read-screen_ikr26q {
 	display: flex;
@@ -58,7 +59,6 @@
 	margin-top: 10px;
 }
 .read-screen_ikr26q > .bypass > a {
-	color: #999;
 	font-size: 11pt;
 	text-decoration: underline;
 	cursor: pointer;
@@ -90,5 +90,16 @@
 	}
 	100% {
 		opacity: 1;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .read-screen_ikr26q > .bypass > a {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
 	}
 }

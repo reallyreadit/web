@@ -1,3 +1,5 @@
+@import '../../../common/styles/colors';
+
 @font-face {
 	font-family: 'Cambria (bold)';
 	src: url('/fonts/cambria-bold.ttf');
@@ -33,8 +35,6 @@
 html {
 	font-family: 'Museo Sans (300)';
 	font-size: 13pt;
-	color: #2A2326;
-	background-color: #F7F6F5;
 }
 html[data-client-type="App"] {
 	height: 100vh;
@@ -48,14 +48,11 @@ body, #root {
 body {
 	overflow: hidden;
 }
-#root {
-	background-color: #F7F6F5;
-}
 a, button, div, span, svg {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 a {
-	color: #2A2326;
+	color: inherit;
 }
 html > body > div:not(#root) {
 	position: absolute;
@@ -89,5 +86,17 @@ html > body.hide-captcha > div:not(#root) {
 	to {
 		transform: translateX(75px);
 		z-index: -1;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-color,
+				"color": $text-color,
+			)
+		);
 	}
 }

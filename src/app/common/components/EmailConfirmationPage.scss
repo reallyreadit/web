@@ -2,10 +2,19 @@
 	componentPath: src/app/common/components/EmailConfirmationPage
 	cssComponentId: email-confirmation-page_9gvf3g
 */
+@import '../../../common/styles/colors';
 
 .email-confirmation-page_9gvf3g {
 	text-align: center;
 }
-.email-confirmation-page_9gvf3g > .success {
-	color: green;
+
+@include theme using ($root, $scheme) {
+	#{$root} .email-confirmation-page_9gvf3g > .success {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-success-color
+			)
+		);
+	}
 }

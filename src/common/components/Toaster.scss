@@ -2,6 +2,7 @@
 	componentPath: src/common/components/toaster
 	cssComponentId: toaster_2zbeib_2zbeib
 */
+@import '../styles/colors';
 
 .toaster_2zbeib {
 	position: fixed;
@@ -21,29 +22,14 @@
 	margin-top: 10px;
 	text-align: center;
 	font-family: 'Museo Sans (500)';
-	box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
 	border-radius: 3px;
 	animation: toaster_2zbeib-pop-in 250ms forwards;
 }
 .toaster_2zbeib > .toasts > .toast.remove {
 	animation: toaster_2zbeib-pop-out 250ms forwards;
 }
-.toaster_2zbeib > .toasts > .toast.neutral {
-	background-color: #F7F6F5;
-}
-.toaster_2zbeib > .toasts > .toast.success {
-	color: white;
-	background-color: limegreen;
-}
-.toaster_2zbeib > .toasts > .toast.danger {
-	color: white;
-	background-color: darkred;
-}
 .toaster_2zbeib > .toasts > .toast > p:not(:first-of-type) {
 	margin-top: 10px;
-}
-.toaster_2zbeib > .toasts > .toast > p > .action-link_ftamt8.disabled {
-	color: #999;
 }
 
 @keyframes toaster_2zbeib-pop-in {
@@ -54,4 +40,42 @@
 @keyframes toaster_2zbeib-pop-out {
 	0% { transform: scale(1, 1); }
 	100% { transform: scale(0, 0); }
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .toaster_2zbeib > .toasts > .toast {
+		@include theme-colors(
+			$scheme,
+			(
+				"box-shadow": 0px 1px 3px 1px
+			)
+		);
+	}
+	#{$root} .toaster_2zbeib > .toasts > .toast.neutral {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-text-color,
+				"background-color": $intent-neutral-color
+			)
+		);		
+	}
+	#{$root} .toaster_2zbeib > .toasts > .toast.success {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-text-color,
+				"background-color": $intent-success-color
+			)
+		);		
+	}
+	#{$root} .toaster_2zbeib > .toasts > .toast.danger {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-text-color,
+				"background-color": $intent-danger-color
+			)
+		);		
+	}
 }

@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/controls/NotificationPreferencesControl/AlertSelector
 	cssComponentId: alert-selector_esabj4
 */
+@import '../../../../../common/styles/colors';
 
 .alert-selector_esabj4 > .controls > .children > ol {
 	margin-top: 5px;
@@ -20,4 +21,17 @@
 	box-sizing: border-box;
 	vertical-align: middle;
 	margin-left: 5px;
+	border-radius: 3px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .alert-selector_esabj4 > .controls > .children > ol > li > select {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
 }

@@ -2,13 +2,13 @@
 	componentPath: src/app/common/components/screens/DiscoverScreen/ArticleLengthFilter
 	cssComponentId: article-length-filter_hnsrky
 */
+@import '../../../../../common/styles/colors';
 
 .article-length-filter_hnsrky > .content {
 	max-width: 400px;
 }
 .article-length-filter_hnsrky > .content > .inputs {
 	position: relative;
-	background-image: linear-gradient(#999, #999);
 	background-size: 100% 2px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -24,7 +24,9 @@
 	background: transparent;
 	pointer-events: none;
 }
+.article-length-filter_hnsrky > .content > .inputs > input::-moz-range-thumb,
 .article-length-filter_hnsrky > .content > .inputs > input::-webkit-slider-thumb {
+	-moz-appearance: none;
 	-webkit-appearance: none;
 	appearance: none;
 	position: relative;
@@ -32,20 +34,8 @@
 	width: 20px;
 	height: 20px;
 	border-radius: 10px;
-	background-color: #e0e0e0;
-	border: 1px solid #999;
-	pointer-events: auto;
-}
-.article-length-filter_hnsrky > .content > .inputs > input::-moz-range-thumb {
-	-moz-appearance: none;
-	appearance: none;
-	position: relative;
-	z-index: 1;
-	width: 20px;
-	height: 20px;
-	border-radius: 10px;
-	background-color: #e0e0e0;
-	border: 1px solid #999;
+	border-width: 1px;
+	border-style: solid;
 	pointer-events: auto;
 }
 .article-length-filter_hnsrky > .content > .inputs > input:first-child {
@@ -61,4 +51,24 @@
 }
 .article-length-filter_hnsrky > .content > .scale > .number {
 	font-family: 'Museo Sans (700)';
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .article-length-filter_hnsrky > .content > .inputs {
+		@if $scheme == light {
+			background-image: linear-gradient(map-get($light-theme, $control-border-color), map-get($light-theme, $control-border-color));
+		} @else {
+			background-image: linear-gradient(map-get($dark-theme, $control-border-color), map-get($dark-theme, $control-border-color));
+		}
+	}
+	#{$root} .article-length-filter_hnsrky > .content > .inputs > input::-moz-range-thumb,
+	#{$root} .article-length-filter_hnsrky > .content > .inputs > input::-webkit-slider-thumb {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
 }

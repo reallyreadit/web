@@ -2,6 +2,7 @@
 	componentPath: src/common/components/RatingSelector
 	cssComponentId: rating-selector_epcgq9
 */
+@import '../styles/colors';
 
 .rating-selector_epcgq9 {
 	text-align: center;
@@ -39,8 +40,6 @@
 	height: 25px;
 	border-width: 1px 0 1px 1px;
 	border-style: solid;
-	border-color: #999;
-	background-color: white;
 	cursor: pointer;
 	font-family: 'Museo Sans (700)';
 	outline: none;
@@ -52,7 +51,24 @@
 	border-right-width: 1px;
 	border-radius: 0 3px 3px 0;
 }
-.rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button.selected {
-	color: white;
-	background-color: #999;
+
+@include theme using ($root, $scheme) {
+	#{$root} .rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $control-border-color,
+				"background-color": $control-background-color
+			)
+		);
+	}
+	#{$root} .rating-selector_epcgq9 > .rating-bar > .buttons > .rating-button.selected {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $button-selected-text-color,
+				"background-color": $button-selected-background-color
+			)
+		);
+	}
 }

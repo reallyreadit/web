@@ -2,6 +2,7 @@
 	componentPath: src/common/components/Star
 	cssComponentId: star_n3lkaj
 */
+@import '../styles/colors';
 
 .star_n3lkaj {
 	font-size: 20px;
@@ -11,13 +12,7 @@
 	cursor: pointer;
 }
 .star_n3lkaj > .icon_rour3d > .icon {
-	fill: transparent;
-	stroke: #999;
 	stroke-width: 1px;
-}
-.star_n3lkaj.starred > .icon_rour3d > .icon {
-	fill: gold;
-	stroke: darkgoldenrod;
 }
 .star_n3lkaj.busy > .icon_rour3d {
 	animation: star_n3lkaj-spinner 1000ms linear infinite;
@@ -26,4 +21,25 @@
 @keyframes star_n3lkaj-spinner {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .star_n3lkaj > .icon_rour3d > .icon {
+		@include theme-colors(
+			$scheme,
+			(
+				"fill": $control-background-color,
+				"stroke": $control-border-color
+			)
+		);
+	}
+	#{$root} .star_n3lkaj.starred > .icon_rour3d > .icon {
+		@include theme-colors(
+			$scheme,
+			(
+				"fill": $star-starred-background-color,
+				"stroke": $star-starred-border-color
+			)
+		);
+	}
 }

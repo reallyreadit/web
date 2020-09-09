@@ -2,6 +2,7 @@
 	componentPath: src/common/components/UpdateBanner
 	cssComponentId: update-banner_7zu7hd
 */
+@import '../styles/colors';
 
 .update-banner_7zu7hd {
 	position: absolute;
@@ -16,7 +17,17 @@
 	width: max-content;
 	max-width: 90%;
 	box-sizing: border-box;
-	box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
-	background-color: #73A3D9;
-	color: white;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .update-banner_7zu7hd {
+		@include theme-colors(
+			$scheme,
+			(
+				"box-shadow": 0px 1px 3px 1px,
+				"background-color": $intent-primary-color,
+				"color": $intent-text-color
+			)
+		);
+	}
 }

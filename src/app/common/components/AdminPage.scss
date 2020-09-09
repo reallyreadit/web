@@ -2,22 +2,18 @@
 	componentPath: src/app/common/components/AdminPage
 	cssComponentId: admin-page_czkowo
 */
+@import '../../../common/styles/colors';
 
 .admin-page_czkowo > table {
 	width: 100%;
 	margin-top: 10px;
-	background-color: white;
 }
 .admin-page_czkowo > table:first-child {
 	margin-top: 0;
 }
-.admin-page_czkowo > table > caption {
-	background-color: white;
-}
 .admin-page_czkowo > table > caption > div {
 	border-width: 1px 1px 0 1px;
 	border-style: solid;
-	border-color: gray;
 }
 .admin-page_czkowo > table > caption > .content {
 	display: flex;
@@ -28,11 +24,35 @@
 .admin-page_czkowo > table > tbody > tr > th,
 .admin-page_czkowo > table > tbody > tr > td {
 	padding: 5px;
-	border: 1px solid gray;
+	border-width: 1px;
+	border-style: solid;
 }
 .admin-page_czkowo > table > tbody > tr > th {
 	text-align: left;
 }
 .admin-page_czkowo > table > tbody > tr > td[colspan] {
 	text-align: center;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .admin-page_czkowo > table,
+	#{$root} .admin-page_czkowo > table > caption {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color
+			)
+		);
+	}
+	#{$root} .admin-page_czkowo > table > caption > div,
+	#{$root} .admin-page_czkowo > table > thead > tr > th,
+	#{$root} .admin-page_czkowo > table > tbody > tr > th,
+	#{$root} .admin-page_czkowo > table > tbody > tr > td {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $content-divider-color
+			)
+		);
+	}
 }

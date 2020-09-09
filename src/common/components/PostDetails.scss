@@ -2,10 +2,11 @@
 	componentPath: src/common/components/PostDetails
 	cssComponentId: post-details_8qx033
 */
+@import '../styles/colors';
 
 .post-details_8qx033 > .content.alert {
-	background-color: #FFF599;
-	animation: post-details_8qx033-alert 2500ms forwards;
+	animation-duration: 2500ms;
+	animation-fill-mode: forwards;
 	animation-delay: 500ms;
 }
 .post-details_8qx033 > .content > .post-header_f4a846,
@@ -16,11 +17,31 @@
 	border-radius: 3px;
 }
 
-@keyframes post-details_8qx033-alert {
+@keyframes post-details_8qx033-alert-light {
 	from {
-		background-color: #FFF599;
+		background-color: map-get($light-theme, $content-highlight-color);
 	}
 	to {
-		background-color: white;
+		background-color: map-get($light-theme, $content-background-color);
+	}
+}
+@keyframes post-details_8qx033-alert-dark {
+	from {
+		background-color: map-get($dark-theme, $content-highlight-color);
+	}
+	to {
+		background-color: map-get($dark-theme, $content-background-color);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .post-details_8qx033 > .content.alert {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "post-details_8qx033-alert",
+				"background-color": $content-highlight-color
+			)
+		);
 	}
 }

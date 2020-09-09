@@ -2,6 +2,7 @@
 	componentPath: src/common/components/ToggleSwitch
 	cssComponentId: toggle-switch_t7od1q
 */
+@import '../styles/colors';
 
 .toggle-switch_t7od1q {
 	display: inline-block;
@@ -20,7 +21,6 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: #ccc;
 	border-radius: 11px;
 	transition: 350ms;
 	cursor: default;
@@ -32,13 +32,36 @@
 	left: 2px;
 	height: 18px;
 	width: 18px;
-	background-color: white;
 	transition: 350ms;
 	border-radius: 50%;
 }
-.toggle-switch_t7od1q > input:checked + .switch {
-	background-color: #2A2326;
-}
 .toggle-switch_t7od1q > input:checked + .switch::before {
 	left: calc(100% - 20px);
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .toggle-switch_t7od1q > .switch {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-disabled-color
+			)
+		);
+	}
+	#{$root} .toggle-switch_t7od1q > .switch::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color
+			)
+		);
+	}
+	#{$root} .toggle-switch_t7od1q > input:checked + .switch {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $text-color
+			)
+		);
+	}
 }

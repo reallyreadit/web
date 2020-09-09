@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/BrowserRoot/OnboardingFlow/CreateAccountStep
 	cssComponentId: create-account-step_3cn5rp
 */
+@import '../../../../../common/styles/colors';
 
 .create-account-step_3cn5rp {
 	text-align: center;
@@ -16,7 +17,6 @@
 }
 .create-account-step_3cn5rp > .global-error {
 	margin-top: 15px;
-	color: darkred;
 }
 .create-account-step_3cn5rp > .button_ovrlmi {
 	margin-top: 20px;
@@ -31,6 +31,24 @@
 .create-account-step_3cn5rp > .action-link_ftamt8 {
 	display: inline-block;
 	margin-top: 25px;
-	color: #999;
 	font-size: 11pt;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .create-account-step_3cn5rp > .global-error {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-danger-color
+			)
+		);
+	}
+	#{$root} .create-account-step_3cn5rp > .action-link_ftamt8 {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
 }

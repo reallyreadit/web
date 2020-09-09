@@ -2,6 +2,7 @@
 	componentPath: src/common/components/AotdRank
 	cssComponentId: aotd-rank_tqv709
 */
+@import '../styles/colors';
 
 .aotd-rank_tqv709 {
 	display: flex;
@@ -9,8 +10,8 @@
 	align-items: center;
 	width: 30px;
 	height: 30px;
-	background-color: white;
-	border: 1px solid #2A2326;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 15px;
 }
 .aotd-rank_tqv709.contender {
@@ -35,4 +36,16 @@
 }
 .aotd-rank_tqv709 > .none {
 	line-height: 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .aotd-rank_tqv709 {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color,
+				"border-color": $text-color
+			)
+		);
+	}
 }

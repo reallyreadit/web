@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/Animations/Tracking/Reader
 	cssComponentId: reader_s9p6xn
 */
+@import '../../../../../common/styles/colors';
 
 .reader_s9p6xn {
 	position: relative;
@@ -13,9 +14,9 @@
 	right: 0;
 	width: 6em;
 	height: 10em;
-	border: 1px solid #555;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 0.5em;
-	background-color: #666;
 	box-sizing: border-box;
 }
 .reader_s9p6xn > .device > .screen {
@@ -26,13 +27,11 @@
 	left: 0.3em;
 	display: flex;
 	flex-flow: column;
-	background-color: white;
 }
 .reader_s9p6xn > .device > .screen > nav {
 	flex: 0 0 auto;
 	position: relative;
 	height: 1em;
-	background: #eee;
 }
 .reader_s9p6xn > .device > .screen > nav > .progress {
 	position: absolute;
@@ -43,88 +42,124 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: white;
-	border: 1px solid #ccc;
+	border-width: 1px;
+	border-style: solid;
 	overflow: hidden;
 	border-radius: 10%;
 	z-index: 1;
 }
 .reader_s9p6xn > .device > .screen > nav > .progress > .icon_rour3d {
-	position: relative;
 	font-size: 0.5em;
-	color: white;
-	z-index: 2;
+	opacity: 0;
 }
-.reader_s9p6xn.n-1 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-2 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-3 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-4 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-6 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-7 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-8 > .device.device > .screen > nav > .progress,
-.reader_s9p6xn.n-9 > .device.device > .screen > nav > .progress {
-	box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .25);
+.reader_s9p6xn.n-1 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-2 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-3 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-4 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-6 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-7 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-8 > .device > .screen > nav > .progress,
+.reader_s9p6xn.n-9 > .device > .screen > nav > .progress {
 	transform: scale(2.75);
 }
-.reader_s9p6xn.playing.n-5 > .device.device > .screen > nav > .progress {
-	animation: reader_s9p6xn-progress-scale 0.5s forwards 3s;
+.reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress {
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	animation-delay: 3s;
 }
-.reader_s9p6xn.finished.n-5 > .device.device > .screen > nav > .progress {
+.reader_s9p6xn.finished.n-5 > .device > .screen > nav > .progress {
 	transform: scale(2.75);
 }
-.reader_s9p6xn > .device > .screen > nav > .progress::after {
+.reader_s9p6xn > .device > .screen > nav > .progress::before {
 	content: "";
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	transform: translateY(100%);
-	z-index: 3;
 }
-.reader_s9p6xn.playing.n-1 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 7s;
+.reader_s9p6xn.playing.n-1 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 7s;
 }
-.reader_s9p6xn.playing.n-2 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 6s;
+.reader_s9p6xn.playing.n-1 > .device > .screen > nav > .progress > .icon_rour3d {
+	animation: reader_s9p6xn-progress-icon-display 6.5s forwards linear 7s;
 }
-.reader_s9p6xn.playing.n-3 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-66 6.5s forwards linear 9s;
+.reader_s9p6xn.playing.n-2 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 6s;
 }
-.reader_s9p6xn.playing.n-4 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-33 6.5s forwards linear 9s;
+.reader_s9p6xn.playing.n-2 > .device > .screen > nav > .progress > .icon_rour3d {
+	animation: reader_s9p6xn-progress-icon-display 6.5s forwards linear 6s;
 }
-.reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 0s;
+.reader_s9p6xn.playing.n-3 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 9s;
 }
-.reader_s9p6xn.playing.n-6 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 4s;
+.reader_s9p6xn.playing.n-4 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 9s;
 }
-.reader_s9p6xn.playing.n-7 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-100 6.5s forwards linear 5s;
+.reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 0s;
 }
-.reader_s9p6xn.playing.n-8 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-66 6.5s forwards linear 7s;
+.reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress > .icon_rour3d {
+	animation: reader_s9p6xn-progress-icon-display 6.5s forwards linear 0s;
 }
-.reader_s9p6xn.playing.n-9 > .device > .screen > nav > .progress::after {
-	animation: reader_s9p6xn-progress-fill-33 6.5s forwards linear 8s;
+.reader_s9p6xn.playing.n-6 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 4s;
 }
-.reader_s9p6xn.finished.n-4 > .device > .screen > nav > .progress::after,
-.reader_s9p6xn.finished.n-9 > .device > .screen > nav > .progress::after {
+.reader_s9p6xn.playing.n-6 > .device > .screen > nav > .progress > .icon_rour3d {
+	animation: reader_s9p6xn-progress-icon-display 6.5s forwards linear 4s;
+}
+.reader_s9p6xn.playing.n-7 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 5s;
+}
+.reader_s9p6xn.playing.n-7 > .device > .screen > nav > .progress > .icon_rour3d {
+	animation: reader_s9p6xn-progress-icon-display 6.5s forwards linear 5s;
+}
+.reader_s9p6xn.playing.n-8 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 7s;
+}
+.reader_s9p6xn.playing.n-9 > .device > .screen > nav > .progress::before {
+	animation-duration: 6.5s;
+	animation-fill-mode: forwards;
+	animation-timing-function: linear;
+	animation-delay: 8s;
+}
+.reader_s9p6xn.finished.n-4 > .device > .screen > nav > .progress::before,
+.reader_s9p6xn.finished.n-9 > .device > .screen > nav > .progress::before {
 	transform: translateY(66%);
-	background-color: pink;
 }
-.reader_s9p6xn.finished.n-3 > .device > .screen > nav > .progress::after,
-.reader_s9p6xn.finished.n-8 > .device > .screen > nav > .progress::after {
+.reader_s9p6xn.finished.n-3 > .device > .screen > nav > .progress::before,
+.reader_s9p6xn.finished.n-8 > .device > .screen > nav > .progress::before {
 	transform: translateY(33%);
-	background-color: pink;
 }
-.reader_s9p6xn.finished.n-1 > .device > .screen > nav > .progress::after,
-.reader_s9p6xn.finished.n-2 > .device > .screen > nav > .progress::after,
-.reader_s9p6xn.finished.n-5 > .device > .screen > nav > .progress::after,
-.reader_s9p6xn.finished.n-6 > .device > .screen > nav > .progress::after,
-.reader_s9p6xn.finished.n-7 > .device > .screen > nav > .progress::after {
+.reader_s9p6xn.finished.n-1 > .device > .screen > nav > .progress::before,
+.reader_s9p6xn.finished.n-2 > .device > .screen > nav > .progress::before,
+.reader_s9p6xn.finished.n-5 > .device > .screen > nav > .progress::before,
+.reader_s9p6xn.finished.n-6 > .device > .screen > nav > .progress::before,
+.reader_s9p6xn.finished.n-7 > .device > .screen > nav > .progress::before {
 	transform: translateY(0);
-	background-color: palegreen;
-	z-index: 1;
 }
 .reader_s9p6xn > .device > .screen > main {
 	flex: 1 1 auto;
@@ -188,10 +223,10 @@
 	font-size: 5em;
 }
 
-@keyframes reader_s9p6xn-progress-fill-33 {
+@keyframes reader_s9p6xn-progress-fill-33-light {
 	0% {
 		transform: translateY(100%);
-		background-color: pink;
+		background-color: map-get($light-theme, $progress-incomplete-color);
 	}
 	10% {
 		transform: translateY(100%);
@@ -201,13 +236,29 @@
 	}
 	100% {
 		transform: translateY(66%);
-		background-color: pink;
+		background-color: map-get($light-theme, $progress-incomplete-color);
 	}
 }
-@keyframes reader_s9p6xn-progress-fill-66 {
+@keyframes reader_s9p6xn-progress-fill-33-dark {
 	0% {
 		transform: translateY(100%);
-		background-color: pink;
+		background-color: map-get($dark-theme, $progress-incomplete-color);
+	}
+	10% {
+		transform: translateY(100%);
+	}
+	33% {
+		transform: translateY(66%);
+	}
+	100% {
+		transform: translateY(66%);
+		background-color: map-get($dark-theme, $progress-incomplete-color);
+	}
+}
+@keyframes reader_s9p6xn-progress-fill-66-light {
+	0% {
+		transform: translateY(100%);
+		background-color: map-get($light-theme, $progress-incomplete-color);
 	}
 	10% {
 		transform: translateY(100%);
@@ -217,34 +268,87 @@
 	}
 	100% {
 		transform: translateY(33%);
-		background-color: pink;
+		background-color: map-get($light-theme, $progress-incomplete-color);
 	}
 }
-@keyframes reader_s9p6xn-progress-fill-100 {
+@keyframes reader_s9p6xn-progress-fill-66-dark {
 	0% {
 		transform: translateY(100%);
-		background-color: pink;
+		background-color: map-get($dark-theme, $progress-incomplete-color);
+	}
+	10% {
+		transform: translateY(100%);
+	}
+	66% {
+		transform: translateY(33%);
+	}
+	100% {
+		transform: translateY(33%);
+		background-color: map-get($dark-theme, $progress-incomplete-color);
+	}
+}
+@keyframes reader_s9p6xn-progress-fill-100-light {
+	0% {
+		transform: translateY(100%);
+		background-color: map-get($light-theme, $progress-incomplete-color);
 	}
 	10% {
 		transform: translateY(100%);
 	}
 	99% {
-		background-color: pink;
-		z-index: 3;
+		background-color: map-get($light-theme, $progress-incomplete-color);
 	}
 	100% {
 		transform: translateY(0);
-		background-color: palegreen;
-		z-index: 1;
+		background-color: map-get($light-theme, $progress-complete-color);
 	}
 }
-@keyframes reader_s9p6xn-progress-scale {
+@keyframes reader_s9p6xn-progress-fill-100-dark {
+	0% {
+		transform: translateY(100%);
+		background-color: map-get($dark-theme, $progress-incomplete-color);
+	}
+	10% {
+		transform: translateY(100%);
+	}
+	99% {
+		background-color: map-get($dark-theme, $progress-incomplete-color);
+	}
+	100% {
+		transform: translateY(0);
+		background-color: map-get($dark-theme, $progress-complete-color);
+	}
+}
+@keyframes reader_s9p6xn-progress-icon-display {
+	0% {
+		opacity: 0;
+	}
+	99% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes reader_s9p6xn-progress-scale-light {
 	0% {
 		transform: scale(1);
 	}
 	75% {
 		transform: scale(3);
-		box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .25);
+		box-shadow: 0px 1px 1px 0px map-get($light-theme, $box-shadow-color);
+	}
+	100% {
+		transform: scale(2.75);
+	}
+}
+@keyframes reader_s9p6xn-progress-scale-dark {
+	0% {
+		transform: scale(1);
+	}
+	75% {
+		transform: scale(3);
+		box-shadow: 0px 1px 1px 0px map-get($dark-theme, $box-shadow-color);
 	}
 	100% {
 		transform: scale(2.75);
@@ -358,5 +462,126 @@
 	100% {
 		top: 50%;
 		transform: translateY(-100%);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .reader_s9p6xn > .device {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $control-border-color,
+				"background-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn > .device > .screen {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn > .device > .screen > nav {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn > .device > .screen > nav > .progress {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.n-1 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-2 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-3 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-4 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-6 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-7 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-8 > .device > .screen > nav > .progress,
+	#{$root} .reader_s9p6xn.n-9 > .device > .screen > nav > .progress {
+		@include theme-colors(
+			$scheme,
+			(
+				"box-shadow": 0px 1px 1px 0px
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn > .device > .screen > nav > .progress > .icon_rour3d {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-text-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.finished.n-4 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-9 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-3 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-8 > .device > .screen > nav > .progress::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $progress-incomplete-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.finished.n-1 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-2 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-5 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-6 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.finished.n-7 > .device > .screen > nav > .progress::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $progress-complete-color
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "reader_s9p6xn-progress-scale"
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.playing.n-4 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.playing.n-9 > .device > .screen > nav > .progress::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "reader_s9p6xn-progress-fill-33"
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.playing.n-3 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.playing.n-8 > .device > .screen > nav > .progress::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "reader_s9p6xn-progress-fill-66"
+			)
+		);
+	}
+	#{$root} .reader_s9p6xn.playing.n-1 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.playing.n-2 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.playing.n-5 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.playing.n-6 > .device > .screen > nav > .progress::before,
+	#{$root} .reader_s9p6xn.playing.n-7 > .device > .screen > nav > .progress::before {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "reader_s9p6xn-progress-fill-100"
+			)
+		);
 	}
 }

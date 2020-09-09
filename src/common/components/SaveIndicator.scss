@@ -2,12 +2,12 @@
 	componentPath: src/common/components/SaveIndicator
 	cssComponentId: save-indicator_5lgdsz
 */
+@import '../styles/colors';
 
 .save-indicator_5lgdsz.none {
 	visibility: hidden;
 }
 .save-indicator_5lgdsz.saved {
-	color: green;
 	animation: save-indicator_5lgdsz-fade-out 1500ms forwards;
 }
 
@@ -17,5 +17,16 @@
 	}
 	to {
 		opacity: 0
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .save-indicator_5lgdsz.saved {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-success-color
+			)
+		);
 	}
 }

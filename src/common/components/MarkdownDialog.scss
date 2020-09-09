@@ -2,11 +2,13 @@
 	componentPath: src/common/components/MarkdownDialog
 	cssComponentId: markdown-dialog_1fmodc
 */
+@import '../../common/styles/colors';
 
 .markdown-dialog_1fmodc > .children > table > thead > tr > th {
 	text-align: left;
 	padding: 3px 0;
-	border-bottom: 1px solid #ccc;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 }
 .markdown-dialog_1fmodc > .children > table > tbody > tr > td {
 	padding: 3px 0;
@@ -28,13 +30,33 @@
 	cursor: pointer;
 }
 .markdown-dialog_1fmodc > .children > table > tbody > tr > td > blockquote {
-	border-left: 0.15em solid #ddd;
+	border-left-width: 0.15em;
+	border-left-style: solid;
 	padding: 2px 0.5em;
-	background-color: #fafafa;
 	overflow: hidden;
 	border-radius: 0.25em;
 }
 .markdown-dialog_1fmodc > .children > table > tbody > tr > td > ul {
 	padding-left: 1.5em;
 	list-style-type: disc;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .markdown-dialog_1fmodc > .children > table > thead > tr > th {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $content-divider-color
+			)
+		);
+	}
+	#{$root} .markdown-dialog_1fmodc > .children > table > tbody > tr > td > blockquote {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-left-color": $markdown-block-border-color,
+				"background-color": $markdown-block-background-color
+			)
+		);
+	}
 }

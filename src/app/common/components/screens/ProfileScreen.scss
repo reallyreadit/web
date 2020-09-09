@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/screens/ProfileScreen
 	cssComponentId: profile-screen_1u1j1e
 */
+@import '../../../../common/styles/colors';
 
 .profile-screen_1u1j1e {
 	min-height: 100%;
@@ -11,7 +12,6 @@
 .profile-screen_1u1j1e > .header {
 	flex: 0 0 auto;
 	text-align: center;
-	background-color: #efefef;
 }
 .profile-screen_1u1j1e > .main {
 	flex: 1 1 auto;
@@ -63,4 +63,15 @@
 .profile-screen_1u1j1e > .main > .content > .article-list_o9uw1n,
 .profile-screen_1u1j1e > .main > .content > .page-selector_a8tbpb {
 	flex: 0 0 auto;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .profile-screen_1u1j1e > .header {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-alt-color
+			)
+		);
+	}
 }

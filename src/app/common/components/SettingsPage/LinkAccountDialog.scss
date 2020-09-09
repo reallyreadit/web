@@ -2,13 +2,34 @@
 	componentPath: src/app/common/components/SettingsPage/LinkAccountDialog
 	cssComponentId: link-account-dialog_q2jc4k
 */
+@import '../../../../common/styles/colors';
 
 .link-account-dialog_q2jc4k > .children > .provider > .field-container > select  {
 	height: 28px;
 	line-height: 28px;
+	border-radius: 3px;
 }
 .link-account-dialog_q2jc4k > .children > .notice {
 	font-size: 11pt;
-	color: #999;
 	margin-top: 10px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .link-account-dialog_q2jc4k > .children > .provider > .field-container > select {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .link-account-dialog_q2jc4k > .children > .notice {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
 }

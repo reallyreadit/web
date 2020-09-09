@@ -2,13 +2,15 @@
 	componentPath: src/common/components/comments/CommentRevisionComposer
 	cssComponentId: comment-revision-composer_dnzrxr
 */
+@import '../../styles/colors';
 
 .comment-revision-composer_dnzrxr > textarea {
 	box-sizing: border-box;
 	width: 100%;
 	padding: 5px;
 	margin-bottom: 5px;
-	border: 1px solid silver;
+	border-width: 1px;
+	border-style: solid;
 	outline: none;
 }
 .comment-revision-composer_dnzrxr > .controls {
@@ -31,5 +33,17 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-top: 5px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .comment-revision-composer_dnzrxr > textarea {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
 	}
 }

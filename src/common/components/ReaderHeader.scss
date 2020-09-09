@@ -2,13 +2,13 @@
 	componentPath: src/common/components/ReaderHeader
 	cssComponentId: reader-header_h3o6tn
 */
+@import '../styles/colors';
 
 .reader-header_h3o6tn {
 	padding: 10px 20px;
 	display: flex;
-	color: #666;
-	background-color: #F7F6F5;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 }
 .reader-header_h3o6tn > .separator {
 	flex: 1 1 auto;
@@ -33,13 +33,9 @@
 	font-size: 22px;
 	cursor: pointer;
 }
-.reader-header_h3o6tn > .widget > .popover_r7v81v > .children > .icon_rour3d.disabled {
-	color: #999;
-}
 .reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content {
 	position: relative;
 	padding: 10px 5px;
-	background: white;
 }
 .reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content > label {
 	display: block;
@@ -55,8 +51,8 @@
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	background-color: white;
-	border: 1px solid #e0e0e0;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
 	box-sizing: border-box;
 	cursor: default;
@@ -67,13 +63,63 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background-color: pink;
-}
-.reader-header_h3o6tn > .progress > .progress-bar > .fill.complete {
-	background-color: palegreen;
 }
 .reader-header_h3o6tn > .progress > .progress-bar > .text {
 	position: relative;
 	font-size: 8pt;
 	font-family: 'Museo Sans (700)';
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .reader-header_h3o6tn {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $reader-header-text-color,
+				"background-color": $reader-header-background-color,
+				"border-bottom-color": $reader-header-border-color
+			)
+		);
+	}
+	#{$root} .reader-header_h3o6tn > .widget > .popover_r7v81v > .children > .icon_rour3d.disabled {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $control-disabled-color
+			)
+		);
+	}
+	#{$root} .reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content {
+		@include theme-colors(
+			$scheme,
+			(
+				"background": $content-background-color
+			)
+		);
+	}
+	#{$root} .reader-header_h3o6tn > .progress > .progress-bar {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .reader-header_h3o6tn > .progress > .progress-bar > .fill {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $progress-incomplete-color
+			)
+		);
+	}
+	#{$root} .reader-header_h3o6tn > .progress > .progress-bar > .fill.complete {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $progress-complete-color
+			)
+		);
+	}
 }

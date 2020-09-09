@@ -2,15 +2,31 @@
 	componentPath: src/common/components/StickyNote
 	cssComponentId: sticky-note_zcw6jg
 */
+@import '../styles/colors';
 
 .sticky-note_zcw6jg {
 	padding: 10px;
-	box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2);
-	background: linear-gradient(135deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
 	transform: rotate(-3deg);
 	transform-origin: 0 0;
 }
 .sticky-note_zcw6jg > strong {
 	display: block;
 	font-family: 'Museo Sans (700)';
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .sticky-note_zcw6jg {
+		@include theme-colors(
+			$scheme,
+			(
+				"box-shadow": 0px 3px 4px,
+				"color": $sticky-note-text-color
+			)
+		);
+		@if $scheme == light {
+			background: linear-gradient(135deg, map-get($light-theme, $sticky-note-gradient-start-color) 81%, map-get($light-theme, $sticky-note-gradient-start-color) 82%, map-get($light-theme, $sticky-note-gradient-start-color) 82%, map-get($light-theme, $sticky-note-gradient-stop-color) 100%);
+		} @else {
+			background: linear-gradient(135deg, map-get($dark-theme, $sticky-note-gradient-start-color) 81%, map-get($dark-theme, $sticky-note-gradient-start-color) 82%, map-get($dark-theme, $sticky-note-gradient-start-color) 82%, map-get($dark-theme, $sticky-note-gradient-stop-color) 100%);
+		}
+	}
 }

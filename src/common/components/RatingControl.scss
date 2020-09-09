@@ -2,6 +2,7 @@
 	componentPath: src/common/components/RatingControl
 	cssComponentId: rating-control_pyy0je
 */
+@import '../styles/colors';
 
 .rating-control_pyy0je > .children > .seal {
 	display: flex;
@@ -14,13 +15,11 @@
 	cursor: pointer;
 }
 .rating-control_pyy0je > .children > .seal > span {
-	color: white;
 	font-family: 'Museo Sans (500)';
 	font-size: 8pt;
 }
 .rating-control_pyy0je > .menu > .content {
 	position: relative;
-	background-color: white;
 	padding: 10px;
 	font-size: 11pt;
 	white-space: nowrap;
@@ -35,4 +34,23 @@
 }
 .rating-control_pyy0je > .menu > .content > .rating-selector_epcgq9 {
 	width: 210px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .rating-control_pyy0je > .children > .seal > span {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $rating-seal-text-color
+			)
+		);
+	}
+	#{$root} .rating-control_pyy0je > .menu > .content {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color
+			)
+		);
+	}
 }

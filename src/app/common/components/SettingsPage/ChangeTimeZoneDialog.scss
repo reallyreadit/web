@@ -2,10 +2,24 @@
 	componentPath: src/app/common/components/SettingsPage/ChangeTimeZoneDialog
 	cssComponentId: change-time-zone-dialog_gparpx
 */
+@import '../../../../common/styles/colors';
 
 .change-time-zone-dialog_gparpx > select {
 	max-width: 100%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	border-radius: 3px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .change-time-zone-dialog_gparpx > select {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
 }

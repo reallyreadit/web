@@ -2,14 +2,25 @@
 	componentPath: src/app/common/components/screens/CommentsScreen
 	cssComponentId: comments-screen_udh2l6
 */
+@import '../../../../common/styles/colors';
 
 .comments-screen_udh2l6 {
 	min-height: 100%;
 }
 .comments-screen_udh2l6 > .header {
 	text-align: center;
-	background-color: #efefef;
 }
 .comments-screen_udh2l6 > .main > .content > .article-details_d2vnmv {
 	margin-bottom: 15px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .comments-screen_udh2l6 > .header {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-alt-color
+			)
+		);
+	}
 }

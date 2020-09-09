@@ -2,11 +2,12 @@
 	componentPath: src/common/components/RadioButtons
 	cssComponentId: radio-buttons_sdytcf
 */
+@import '../styles/colors';
 
 .radio-buttons_sdytcf {
 	display: inline-block;
-	background: white;
-	border: 1px solid #999;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
 	font-size: 12pt;
 }
@@ -20,12 +21,38 @@
 	display: inline-block;
 	line-height: 25px;
 	padding: 0 10px;
-	border-right: 1px solid #999;
+	border-right-width: 1px;
+	border-right-style: solid;
 }
 .radio-buttons_sdytcf > label:last-child > span {
 	border-right: none;
 }
-.radio-buttons_sdytcf > label > input:checked + span {
-	color: white;
-	background-color: #999;
+
+@include theme using ($root, $scheme) {
+	#{$root} .radio-buttons_sdytcf {
+		@include theme-colors(
+			$scheme,
+			(
+				"background": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .radio-buttons_sdytcf > label > span {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-right-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .radio-buttons_sdytcf > label > input:checked + span {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-text-color,
+				"background-color": $intent-neutral-color
+			)
+		);
+	}
 }

@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/StoreLinks
 	cssComponentId: store-links_gbmsih
 */
+@import '../../../common/styles/colors';
 
 .store-links_gbmsih {
 	text-align: center;
@@ -15,10 +16,31 @@
 	justify-content: center;
 	align-items: center;
 }
+.store-links_gbmsih > .images > a {
+	height: 40px;
+	background-size: contain;
+}
 .store-links_gbmsih > .images > a + a {
 	margin-left: 10px;
 }
-.store-links_gbmsih > .images > a > img {
-	display: block;
-	height: 40px;
+.store-links_gbmsih > .images > a.apple {
+	width: 34px;
+}
+.store-links_gbmsih > .images > a.chrome {
+	background-image: url(/images/chrome.svg);
+	width: 40px;
+}
+.store-links_gbmsih > .images > a.firefox {
+	background-image: url(/images/firefox.svg);
+	width: 40px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .store-links_gbmsih > .images > a.apple {
+		@if $scheme == light {
+			background-image: url(/images/apple.svg);
+		} @else {
+			background-image: url(/images/apple-white.svg);
+		}
+	}
 }

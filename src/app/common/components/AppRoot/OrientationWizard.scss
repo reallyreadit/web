@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/AppRoot/OrientationWizard
 	cssComponentId: orientation-wizard_3wn522
 */
+@import '../../../../common/styles/colors';
 
 .orientation-wizard_3wn522 {
 	position: fixed;
@@ -13,7 +14,6 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: #fff;
 }
 .orientation-wizard_3wn522.closing {
 	animation: orientation-wizard_3wn522-fade-out 1s forwards;
@@ -27,6 +27,18 @@
 .orientation-wizard_3wn522 > .container.initial {
 	animation: orientation-wizard_3wn522-fade-in 1s forwards;
 }
+
+@include theme using ($root, $scheme) {
+	#{$root} .orientation-wizard_3wn522 {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-color
+			)
+		);
+	}
+}
+
 @keyframes orientation-wizard_3wn522-fade-in {
 	0% {
 		opacity: 0;

@@ -2,14 +2,16 @@
 	componentPath: src/app/common/components/AppRoot/NavTray
 	cssComponentId: nav-tray_2tc8
 */
+@import '../../../../common/styles/colors';
 
 .nav-tray_2tc8 {
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
-	border-top: 1px solid #ccc;
-	border-bottom: env(safe-area-inset-bottom) solid #eaeaea;
-	background-color: #eaeaea;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-bottom-width: env(safe-area-inset-bottom);
+	border-bottom-style: solid;
 }
 .nav-tray_2tc8 > li {
 	width: 25%;
@@ -21,10 +23,8 @@
 	background: none;
 	border: none;
 	outline: none;
-	color: #666;
 }
 .nav-tray_2tc8 > li > button.selected {
-	color: black;
 	font-weight: bold;
 }
 .nav-tray_2tc8 > li > button > .icon_rour3d {
@@ -38,4 +38,33 @@
 	margin-top: 1px;
 	font-family: 'Museo Sans (100)';
 	font-size: 9pt;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .nav-tray_2tc8 {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $nav-border-color,
+				"border-bottom-color": $nav-background-color,
+				"background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .nav-tray_2tc8 > li > button {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+	#{$root} .nav-tray_2tc8 > li > button.selected {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-color
+			)
+		);
+	}
 }

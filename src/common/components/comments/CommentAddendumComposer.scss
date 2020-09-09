@@ -2,6 +2,7 @@
 	componentPath: src/common/components/comments/CommentAddendumComposer
 	cssComponentId: comment-addendum-composer_z77dhy
 */
+@import '../../styles/colors';
 
 .comment-addendum-composer_z77dhy {
 	max-width: 600px;
@@ -12,7 +13,8 @@
 	height: 130px;
 	padding: 5px;
 	margin: 5px 0;
-	border: 1px solid silver;
+	border-width: 1px;
+	border-style: solid;
 	outline: none;
 }
 .comment-addendum-composer_z77dhy > .controls {
@@ -28,5 +30,17 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-top: 5px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .comment-addendum-composer_z77dhy > textarea {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
 	}
 }

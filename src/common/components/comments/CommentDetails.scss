@@ -2,6 +2,7 @@
 	componentPath: src/common/components/comments/CommentDetails
 	cssComponentId: comment-details_qker1u
 */
+@import '../../styles/colors';
 
 .comment-details_qker1u > .post-header_f4a846 {
 	border-radius: 3px;
@@ -9,9 +10,6 @@
 .comment-details_qker1u > .text-wrapper > .text {
 	margin: 10px 0;
 	overflow-wrap: break-word;
-}
-.comment-details_qker1u > .text-wrapper > .text.deleted {
-	color: #999;
 }
 .comment-details_qker1u > .addenda {
 	margin-top: 10px;
@@ -41,13 +39,15 @@
 .comment-details_qker1u > .replies {
 	margin-top: 10px;
 	padding-left: 20px;
-	border-left: 1px dotted darkgray;
+	border-left-width: 1px;
+	border-left-style: dotted;
 }
 .comment-details_qker1u > .replies > li {
 	margin-top: 5px;
 }
 .comment-details_qker1u.post-embed {
-	border: 1px solid #999;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
 	border-top-width: 0;
 }
@@ -70,5 +70,32 @@
 	}
 	.comment-details_qker1u > .replies {
 		padding-left: 10px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .comment-details_qker1u > .text-wrapper > .text.deleted {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+	#{$root} .comment-details_qker1u > .replies {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-left-color": $content-divider-color
+			)
+		);
+	}
+	#{$root} .comment-details_qker1u.post-embed {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $intent-neutral-color
+			)
+		);
 	}
 }

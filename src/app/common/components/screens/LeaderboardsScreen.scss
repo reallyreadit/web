@@ -2,13 +2,13 @@
 	componentPath: src/app/common/components/screens/LeaderboardsScreen
 	cssComponentId: leaderboards-screen_wuzsob
 */
+@import '../../../../common/styles/colors';
 
 .leaderboards-screen_wuzsob {
 	min-height: 100%;
 }
 .leaderboards-screen_wuzsob > .header {
 	text-align: center;
-	background-color: #efefef;
 }
 .leaderboards-screen_wuzsob > .main > .content > h1 {
 	font-family: 'Museo Sans (700)';
@@ -17,4 +17,15 @@
 }
 .leaderboards-screen_wuzsob > .main > .content > .header-selector_9li9z5 {
 	margin-bottom: 20px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .leaderboards-screen_wuzsob > .header {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-alt-color
+			)
+		);
+	}
 }

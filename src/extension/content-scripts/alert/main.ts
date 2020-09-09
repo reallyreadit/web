@@ -3,9 +3,15 @@ import insertFontStyleElement from '../ui/insertFontStyleElement';
 const globalContext = window.reallyreadit.alertContentScript;
 
 function createAlertComponent() {
-	const logo = document.createElement('img');
-	logo.alt = 'Readup logo';
-	logo.src = chrome.runtime.getURL('/content-scripts/ui/images/logo.svg');
+	const logoLight = document.createElement('img');
+	logoLight.alt = 'Readup Logo';
+	logoLight.className = 'logo-light';
+	logoLight.src = chrome.runtime.getURL('/content-scripts/ui/images/logo.svg');
+
+	const logoDark = document.createElement('img');
+	logoDark.alt = 'Readup Logo';
+	logoDark.className = 'logo-dark';
+	logoDark.src = chrome.runtime.getURL('/content-scripts/ui/images/logo-white.svg');
 
 	const promptText = document.createElement('div');
 	promptText.classList.add('prompt-text');
@@ -35,7 +41,7 @@ function createAlertComponent() {
 			}
 		}
 	);
-	component.append(logo, promptText, buttonContainer);
+	component.append(logoLight, logoDark, promptText, buttonContainer);
 	return component;
 }
 

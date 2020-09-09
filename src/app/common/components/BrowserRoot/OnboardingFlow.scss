@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/BrowserRoot/OnboardingFlow
 	cssComponentId: onboarding-flow_uzsr66
 */
+@import '../../../../common/styles/colors';
 
 .onboarding-flow_uzsr66 {
 	position: fixed;
@@ -14,7 +15,8 @@
 	flex-flow: column;
 	align-items: center;
 	justify-content: flex-start;
-	animation: onboarding-flow_uzsr66-overlay-fade-in-dark 250ms forwards;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards;
 }
 .onboarding-flow_uzsr66::before {
 	content: "";
@@ -27,15 +29,14 @@
 	flex: 3 1 auto;
 }
 .onboarding-flow_uzsr66.closing {
-	animation: onboarding-flow_uzsr66-overlay-fade-out-dark 250ms forwards;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards;
 }
 .onboarding-flow_uzsr66 > .steps {
 	display: flex;
 	flex-flow: column;
 	min-height: 0;
-	background: #F7F6F5;
 	border-radius: 5px;
-	box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
 	animation: onboarding-flow_uzsr66-steps-slide-in 250ms forwards;
 }
 .onboarding-flow_uzsr66.closing > .steps {
@@ -63,7 +64,6 @@
 .onboarding-flow_uzsr66 > .steps > .titlebar > .icon-right > .icon_rour3d {
 	font-size: 16px;
 	cursor: pointer;
-	color: #999;
 }
 .onboarding-flow_uzsr66 > .steps > .content {
 	flex: 1 1 auto;
@@ -84,20 +84,36 @@
 	animation: onboarding-flow_uzsr66-container-fade-in 250ms forwards;
 }
 
-@keyframes onboarding-flow_uzsr66-overlay-fade-in-dark {
+@keyframes onboarding-flow_uzsr66-overlay-fade-in-light {
 	from {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: map-get($light-theme, $overlay-color);
+	}
+}
+@keyframes onboarding-flow_uzsr66-overlay-fade-out-light {
+	from {
+		background-color: map-get($light-theme, $overlay-color);
+	}
+	to {
+		background-color: transparent;
+	}
+}
+@keyframes onboarding-flow_uzsr66-overlay-fade-in-dark {
+	from {
+		background-color: transparent;
+	}
+	to {
+		background-color: map-get($dark-theme, $overlay-color);
 	}
 }
 @keyframes onboarding-flow_uzsr66-overlay-fade-out-dark {
 	from {
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: map-get($dark-theme, $overlay-color);
 	}
 	to {
-		background-color: rgba(0, 0, 0, 0);
+		background-color: transparent;
 	}
 }
 @keyframes onboarding-flow_uzsr66-steps-slide-in {
@@ -134,5 +150,41 @@
 	}
 	100% {
 		opacity: 0;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .onboarding-flow_uzsr66 {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "onboarding-flow_uzsr66-overlay-fade-in"
+			)
+		);
+	}
+	#{$root} .onboarding-flow_uzsr66.closing {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "onboarding-flow_uzsr66-overlay-fade-out"
+			)
+		);
+	}
+	#{$root} .onboarding-flow_uzsr66 > .steps {
+		@include theme-colors(
+			$scheme,
+			(
+				"background": $app-background-color,
+				"box-shadow": 0px 1px 3px 1px
+			)
+		);
+	}
+	#{$root} .onboarding-flow_uzsr66 > .steps > .titlebar > .icon-right > .icon_rour3d {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
 	}
 }

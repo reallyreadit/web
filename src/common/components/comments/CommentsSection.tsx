@@ -10,12 +10,12 @@ import CommentForm from '../../models/social/CommentForm';
 import CommentDeletionForm from '../../models/social/CommentDeletionForm';
 import CommentRevisionForm from '../../models/social/CommentRevisionForm';
 import CommentAddendumForm from '../../models/social/CommentAddendumForm';
+import Icon from '../Icon';
 
 export default (props: {
 	article: UserArticle,
 	comments: CommentThread[],
 	highlightedCommentId?: string | null,
-	imagePath: string,
 	noCommentsMessage: string,
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
@@ -36,9 +36,10 @@ export default (props: {
 			{!isAllowedToPost ?
 				<ContentBox className="post">
 					<div className="locked">
-						<img
-							alt="Padlock"
-							src={props.imagePath + '/padlock.svg'}
+						<Icon
+							className="padlock"
+							display="block"
+							name="padlock"
 						/>
 						You must read the article before you can post or reply.
 					</div>

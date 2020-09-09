@@ -115,7 +115,6 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									article={this.props.article.value}
 									comments={this.props.comments.value}
 									highlightedCommentId={this.props.highlightedCommentId}
-									imagePath="/images"
 									noCommentsMessage="Be the first to post a comment on this article."
 									onCloseDialog={this.props.onCloseDialog}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}

@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/AppRoot/AuthScreen
 	cssComponentId: auth-screen_gnq77a
 */
+@import '../../../../common/styles/colors';
 
 .auth-screen_gnq77a {
 	flex: 1 1 auto;
@@ -11,10 +12,12 @@
 	align-items: center;
 	padding: 0 10px;
 }
-.auth-screen_gnq77a > .content > img {
-	display: block;
+.auth-screen_gnq77a > .content > .logo {
 	height: 60px;
 	margin: 0 auto;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
 }
 .auth-screen_gnq77a > .content > .status {
 	margin: 50px auto 50px auto;
@@ -45,8 +48,6 @@
 	width: 210px;
 	height: 40px;
 	margin: 20px auto 0;
-	background-color: #999;
-	color: white;
 	border-radius: 5px;
 	font-family: 'Museo Sans (500)';
 	display: flex;
@@ -56,4 +57,23 @@
 .auth-screen_gnq77a > .content > .email-button > .icon_rour3d {
 	font-size: 0.9em;
 	margin-right: 0.25em;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .auth-screen_gnq77a > .content > .logo {
+		@if $scheme == light {
+			background-image: url(/images/logo.svg);
+		} @else {
+			background-image: url(/images/logo-white.svg);
+		}
+	}
+	#{$root} .auth-screen_gnq77a > .content > .email-button {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color,
+				"color": $intent-text-color
+			)
+		);
+	}
 }

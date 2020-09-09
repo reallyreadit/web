@@ -2,6 +2,7 @@
 	componentPath: src/native-client/reader/components/App
 	cssComponentId: app_n0jlkg
 */
+@import '../../../common/styles/colors';
 
 .app_n0jlkg > .post-prompt_de6v6u {
 	margin-bottom: 15px;
@@ -27,7 +28,8 @@
 	top: 0;
 	right: 0;
 	left: 0;
-	border-top: env(safe-area-inset-top) solid #F7F6F5;
+	border-top-width: env(safe-area-inset-top);
+	border-top-style: solid;
 	transition: transform 250ms;
 }
 .app_n0jlkg > .header-container.hidden {
@@ -41,5 +43,16 @@
 	}
 	to {
 		opacity: 1;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .app_n0jlkg > .header-container {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $reader-header-background-color
+			)
+		);
 	}
 }

@@ -2,6 +2,10 @@
 	componentPath: src/app/common/components/BrowserRoot/AdFreeAnimation
 	cssComponentId: ad-free-animation_lv6n94
 */
+@import '../../../../common/styles/colors';
+
+$publisher-background-color: #ffffff;
+$publisher-text-color: #999999;
 
 .ad-free-animation_lv6n94 {
 	position: relative;
@@ -23,8 +27,12 @@
 	right: 0.3em;
 	bottom: 0.3em;
 	left: 0.3em;
-	background-color: white;
+	background-color: $publisher-background-color;
 	overflow: hidden;
+	animation-duration: 6s;
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
 }
 .ad-free-animation_lv6n94.portrait article {
 	padding: 0.25em;
@@ -35,13 +43,7 @@
 .ad-free-animation_lv6n94 h1 {
 	height: 0.25em;
 	width: 80%;
-	background-color: #999;
-	margin: 0.25em 0;
-}
-.ad-free-animation_lv6n94 h2 {
-	height: 0.2em;
-	width: 30%;
-	background-color: #999;
+	background-color: $publisher-text-color;
 	margin: 0.25em 0;
 }
 .ad-free-animation_lv6n94 p {
@@ -53,7 +55,7 @@
 	display: block;
 	height: 0.15em;
 	width: 100%;
-	background-color: #999;
+	background-color: $publisher-text-color;
 }
 .ad-free-animation_lv6n94 span + span {
 	margin-top: 0.15em;
@@ -73,13 +75,6 @@
 	height: 1em;
 	background-color: #ccc;
 	margin: 0 auto;
-}
-.ad-free-animation_lv6n94 figcaption {
-	display: block;
-	height: 0.15em;
-	width: 25%;
-	background-color: #999;
-	margin: 0.25em auto 0 auto;
 }
 
 .ad-free-animation_lv6n94 p:nth-of-type(1) > span:nth-child(1) > a {
@@ -319,59 +314,39 @@
 	}
 }
 
-// @keyframes ad-free-animation_lv6n94-links {
-// 	0% {
-// 		opacity: 1;
-// 	}
-// 	66% {
-// 		opacity: 1;
-// 	}
-// 	83% {
-// 		opacity: 0;
-// 	}
-// 	100% {
-// 		opacity: 0;
-// 	}
-// }
-// @keyframes ad-free-animation_lv6n94-banner {
-// 	0% {
-// 		margin-top: 0;
-// 	}
-// 	50% {
-// 		margin-top: 0;
-// 	}
-// 	66% {
-// 		margin-top: -2.5em;
-// 	}
-// 	100% {
-// 		margin-top: -2.5em;
-// 	}
-// }
-// @keyframes ad-free-animation_lv6n94-popup {
-// 	0% {
-// 		transform: translateX(0);
-// 	}
-// 	16% {
-// 		transform: translateX(0);
-// 	}
-// 	33% {
-// 		transform: translateX(100%);
-// 	}
-// 	100% {
-// 		transform: translateX(100%);
-// 	}
-// }
-// @keyframes ad-free-animation_lv6n94-prompt {
-// 	0% {
-// 		transform: translateX(0);
-// 	}
-// 	33% {
-// 		transform: translateX(0);
-// 	}
-// 	50% {
-// 		transform: translateX(-100%);
-// 	}
-// 	100% {
-// 		transform: translateX(-100%);
-// 	}
-// }
+@keyframes ad-free-animation_lv6n94-screen-dark {
+	0% {
+		background-color: $publisher-background-color;
+	}
+	50% {
+		background-color: $publisher-background-color;
+	}
+	100% {
+		background-color: #181818;
+	}
+}
+@keyframes ad-free-animation_lv6n94-text-dark {
+	0% {
+		color: $publisher-text-color;
+	}
+	50% {
+		color: $publisher-text-color;
+	}
+	100% {
+		color: #bbbbbb;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .ad-free-animation_lv6n94 .screen {
+		@if $scheme == dark {
+			animation-name: ad-free-animation_lv6n94-screen-dark;
+		}
+	}
+	#{$root} .ad-free-animation_lv6n94 h1,
+	#{$root} .ad-free-animation_lv6n94 span {
+		@if $scheme == dark {
+			animation-name: ad-free-animation_lv6n94-text-dark;
+		}
+	}
+}

@@ -2,18 +2,17 @@
 	componentPath: src/app/common/components/controls/Dialog
 	cssComponentId: dialog_1wfm87
 */
+@import '../styles/colors';
 
 .dialog_1wfm87 {
 	display: flex;
 	flex-flow: column;
 	margin: 0 10px;
 	z-index: 100;
-	background: #F7F6F5;
 	max-width: calc(100vw - 20px);
 	max-height: calc(100vh - 20px);
 	box-sizing: border-box;
 	border-radius: 5px;
-   box-shadow: 0px 1px 3px 1px rgba(160, 160, 160, 0.5);
 }
 .dialog_1wfm87.small {
 	max-width: 400px;
@@ -30,10 +29,8 @@
 	padding: 15px;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
-	background-color: white;
 	border-width: 1px 0 1px 0;
 	border-style: solid;
-	border-color: #e0e0e0;
 }
 .dialog_1wfm87 > .children.center {
 	text-align: center;
@@ -54,4 +51,25 @@
 }
 .dialog_1wfm87 > .buttons.double {
 	justify-content: space-between;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .dialog_1wfm87 {
+		@include theme-colors(
+			$scheme,
+			(
+				"background": $app-background-color,
+				"box-shadow": 0px 1px 3px 1px
+			)
+		);
+	}
+	#{$root} .dialog_1wfm87 > .children {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color,
+				"border-color": $content-border-color
+			)
+		);
+	}
 }

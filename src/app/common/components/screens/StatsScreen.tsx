@@ -11,6 +11,7 @@ import SelectList from '../../../../common/components/SelectList';
 import ReadingTimeStats from '../../../../common/models/ReadingTimeStats';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import RouteLocation from '../../../../common/routing/RouteLocation';
+import Icon from '../../../../common/components/Icon';
 
 interface ReadingTimeStatsData {
 	dataset: {
@@ -227,9 +228,10 @@ class StatsScreen extends React.Component<Props, State> {
 								<div className="y-label">{this.state.stats.value.yLabel}</div>
 								{this.state.stats.value.isNewUser ?
 									<div className="placeholder">
-										<img
-											alt="Padlock"
-											src={'/images/padlock.svg'}
+										<Icon
+											className="padlock"
+											display="block"
+											name="padlock"
 										/>
 										Read at least one full article to unlock stats.
 									</div> :

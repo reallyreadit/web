@@ -2,15 +2,15 @@
 	componentPath: src/app/common/components/Animations/Tracking/PointsCounter
 	cssComponentId: points-counter_bsm3lr
 */
+@import '../../../../../common/styles/colors';
 
 .points-counter_bsm3lr {
 	display: flex;
 	align-items: center;
-	background: white;
-	border: 1px solid #ccc;
+	border-width: 1px;
+	border-style: solid;
 	padding: 0.1em 0.5em;
 	border-radius: 5px;
-	box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
 	font-size: 15pt;
 	font-family: 'Museo Sans (700)';
 	transform: scale(0);
@@ -113,5 +113,18 @@
 	}
 	100% {
 		top: -10em;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .points-counter_bsm3lr {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color,
+				"box-shadow": 0px 1px 1px 0px
+			)
+		);
 	}
 }

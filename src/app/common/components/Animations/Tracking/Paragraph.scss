@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/Animations/Tracking/Paragraph
 	cssComponentId: paragraph_wznl0z
 */
+@import '../../../../../common/styles/colors';
 
 .paragraph_wznl0z {
 	position: relative;
@@ -12,8 +13,18 @@
 	display: block;
 	height: 0.15em;
 	width: 100%;
-	background-color: #999;
 }
 .paragraph_wznl0z > span + span {
 	margin-top: 0.15em;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .paragraph_wznl0z > span {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-border-color
+			)
+		);
+	}
 }

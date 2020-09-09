@@ -2,25 +2,23 @@
 	componentPath: src/app/common/components/BrowserRoot/Header
 	cssComponentId: header_cvm3v7
 */
+@import '../../../../common/styles/colors';
 
 .header_cvm3v7 {
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: space-between;
 	padding: 20px 30px;
-	border-bottom: 1px solid #ccc;
-	background-color: #eaeaea;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 }
 .header_cvm3v7:not(.menu) {
 	justify-content: center;
 }
-.header_cvm3v7 > .logo-container {
-	display: flex;
-	align-items: center;
-}
-.header_cvm3v7 > .logo-container > img {
-	display: block;
+.header_cvm3v7 > .logo {
+	width: 114px;
 	height: 60px;
+	background-size: contain;
 }
 .header_cvm3v7 > .menu-container {
 	display: flex;
@@ -47,5 +45,24 @@
 	}
 	.header_cvm3v7 > .logo-container > img {
 		height: 40px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .header_cvm3v7 {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $nav-border-color,
+				"background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .header_cvm3v7 > .logo {
+		@if $scheme == light {
+			background-image: url(/images/logo.svg);
+		} @else {
+			background-image: url(/images/logo-white.svg);
+		}
 	}
 }

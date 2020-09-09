@@ -2,6 +2,7 @@
   componentPath: src/app/common/components/AppRoot
   cssComponentId: app-root_vc3j5h_vc3j5h
 */
+@import '../../../common/styles/colors';
 
 .app-root_vc3j5h {
 	position: relative;
@@ -27,7 +28,6 @@
 	overflow: scroll;
 	-webkit-overflow-scrolling: touch;
 	box-sizing: border-box;
-	background-color: #F7F6F5;
 	z-index: 1;
 }
 .app-root_vc3j5h > .content > .screens > .screen + .screen {
@@ -51,5 +51,16 @@
 	}
 	to {
 		transform: translateX(100%);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .app-root_vc3j5h > .content > .screens > .screen  {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-color
+			)
+		);
 	}
 }

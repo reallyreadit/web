@@ -2,20 +2,46 @@
 	componentPath: src/common/components/Highlighter
 	cssComponentId: highlighter_trojkf
 */
+@import '../styles/colors';
 
-.highlighter_trojkf.highlight {
-	background-color: #FFF599;
-}
 .highlighter_trojkf.fade-highlight {
-	animation: highlighter_trojkf-fade-highlight 2500ms forwards;
+	animation-duration: 2500ms;
+	animation-fill-mode: forwards;
 	animation-delay: 500ms;
 }
 
-@keyframes highlighter_trojkf-fade-highlight {
+@keyframes highlighter_trojkf-fade-highlight-light {
 	from {
-		background-color: #FFF599;
+		background-color: map-get($light-theme, $content-highlight-color);
 	}
 	to {
-		background-color: white;
+		background-color: map-get($light-theme, $content-background-color);
+	}
+}
+@keyframes highlighter_trojkf-fade-highlight-dark {
+	from {
+		background-color: map-get($dark-theme, $content-highlight-color);
+	}
+	to {
+		background-color: map-get($dark-theme, $content-background-color);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .highlighter_trojkf.highlight {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-highlight-color
+			)
+		);
+	}
+	#{$root} .highlighter_trojkf.fade-highlight {
+		@include theme-colors(
+			$scheme,
+			(
+				"animation-name": "highlighter_trojkf-fade-highlight"
+			)
+		);
 	}
 }

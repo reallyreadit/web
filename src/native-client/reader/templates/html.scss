@@ -1,3 +1,5 @@
+@import '../../../common/styles/colors';
+
 @font-face {
 	font-family: 'Cambria (Bold)';
 	src: url('/fonts/cambria-bold.ttf');
@@ -34,7 +36,6 @@
 	font-family: 'Museo Sans (300)';
 	font-size: 13pt;
 	line-height: 1.15;
-	color: #2A2326;
 	overflow: hidden;
 }
 #com_readup_embed a,
@@ -46,4 +47,15 @@
 }
 #com_readup_embed a {
 	color: inherit;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} #com_readup_embed {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-color
+			)
+		);
+	}
 }

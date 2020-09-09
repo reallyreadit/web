@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/SettingsPage
 	cssComponentId: settings-page_ejwkk
 */
+@import '../../../common/styles/colors';
 
 .settings-page_ejwkk > .setting + .setting {
 	padding-top: 15px;
@@ -29,28 +30,8 @@
 	display: flex;
 	align-items: center;
 }
-.settings-page_ejwkk > .setting > .section > .indicators > .status.on {
-	color: green;
-}
-.settings-page_ejwkk > .setting > .section > .indicators > .status.off {
-	color: gray;
-}
-.settings-page_ejwkk > .setting > .section > .indicators > .status.warn {
-	color: orange;
-}
 .settings-page_ejwkk > .setting > .section > .indicators > .status > .icon_rour3d {
 	margin-right: 3px;
-}
-.settings-page_ejwkk > .setting > .section > .indicators > .status > .notice {
-	margin-left: 15px;
-	color: orange;
-}
-.settings-page_ejwkk > .setting > .section > .indicators > .status > .notice > .icon_rour3d {
-	margin-right: 3px;
-}
-.settings-page_ejwkk > .setting > .section > .indicators > .status > .notice > a {
-	cursor: pointer;
-	text-decoration: underline;
 }
 .settings-page_ejwkk > .accounts > .section > .account {
 	max-width: 300px;
@@ -68,4 +49,23 @@
 }
 .settings-page_ejwkk > .accounts > .section > .account > .integrations {
 	margin-top: 10px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .settings-page_ejwkk > .setting > .section > .indicators > .status.on {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-success-color
+			)
+		);
+	}
+	#{$root} .settings-page_ejwkk > .setting > .section > .indicators > .status.warn {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-warning-color
+			)
+		);
+	}
 }

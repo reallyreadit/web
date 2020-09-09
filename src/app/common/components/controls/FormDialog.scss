@@ -2,11 +2,11 @@
 	componentPath: src/app/common/components/controls/FormDialog
 	cssComponentId: form-dialog_bdppnq
 */
+@import '../../../../common/styles/colors';
 
 .form-dialog_bdppnq > .children > .error-message {
 	padding-bottom: 10px;
 	text-align: center;
-	color: crimson;
 }
 .form-dialog_bdppnq > .children > .form-field_8ey399 + .form-field_8ey399 {
 	margin-top: 10px;
@@ -18,10 +18,29 @@
 }
 .form-dialog_bdppnq > .children > .link > span,
 .form-dialog_bdppnq > .children > .note > span {
-	color: #999;
 	font-size: 11pt;
 }
 .form-dialog_bdppnq > .children > .link > span {
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .form-dialog_bdppnq > .children > .error-message {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-danger-color
+			)
+		);
+	}
+	#{$root} .form-dialog_bdppnq > .children > .link > span,
+	#{$root} .form-dialog_bdppnq > .children > .note > span {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
 }

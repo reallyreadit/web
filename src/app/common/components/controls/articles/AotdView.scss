@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/controls/articles/AotdView
 	cssComponentId: aotd-view_hgax0h
 */
+@import '../../../../../common/styles/colors';
 
 .aotd-view_hgax0h > .section-header {
 	display: flex;
@@ -20,8 +21,20 @@
 .aotd-view_hgax0h > .separator {
 	width: 80%;
 	margin: 20px auto;
-	border-bottom: 1px solid #ccc;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
 }
 .aotd-view_hgax0h > .loading-overlay_zfgtd1 {
 	margin: 20px 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .aotd-view_hgax0h > .separator {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $content-border-color
+			)
+		);
+	}
 }

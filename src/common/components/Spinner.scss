@@ -2,6 +2,7 @@
 	componentPath: src/common/components/Spinner
 	cssComponentId: spinner_4hkqd5
 */
+@import '../styles/colors';
 
 .spinner_4hkqd5 {
 	display: inline-block;
@@ -22,7 +23,6 @@
 	width: 4px;
 	height: 11px;
 	border-radius: 25%;
-	background: #999;
 }
 .spinner_4hkqd5 > div:nth-child(1) {
 	transform: rotate(0deg);
@@ -79,5 +79,16 @@
 	}
 	100% {
 		opacity: 0;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .spinner_4hkqd5 > div:after {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color
+			)
+		);
 	}
 }

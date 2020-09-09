@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/controls/FormPartition
 	cssComponentId: form-partition_69q83q
 */
+@import '../../../../common/styles/colors';
 
 .form-partition_69q83q {
 	display: flex;
@@ -18,11 +19,22 @@
 	flex: 1 1 auto;
 	display: block;
 	height: 1px;
-	background-color: #2A2326;
 }
 .form-partition_69q83q::before {
 	margin-right: 10px;
 }
 .form-partition_69q83q::after {
 	margin-left: 10px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .form-partition_69q83q::before,
+	#{$root} .form-partition_69q83q::after {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $text-color
+			)
+		);
+	}
 }

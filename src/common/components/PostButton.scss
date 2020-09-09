@@ -2,11 +2,11 @@
 	componentPath: src/common/components/PostButton
 	cssComponentId: post-button_euo01q
 */
+@import '../styles/colors';
 
 .post-button_euo01q > .menu > .content {
 	position: relative;
 	padding: 5px;
-	background-color: white;
 	text-align: center;
 }
 .post-button_euo01q > .menu > .content > ol {
@@ -16,4 +16,15 @@
 }
 .post-button_euo01q > .menu > .content > ol > li + li {
 	margin-top: 5px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .post-button_euo01q > .menu > .content {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color
+			)
+		);
+	}
 }

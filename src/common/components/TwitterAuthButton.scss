@@ -2,11 +2,10 @@
 	componentPath: src/common/components/TwitterAuthButton
 	cssComponentId: twitter-auth-button_h10z4a
 */
+@import '../styles/colors';
 
 .twitter-auth-button_h10z4a {
 	height: 40px;
-	color: white;
-	background-color: #1da1f2ff;
 	border-radius: 5px;
 	font-family: 'Museo Sans (500)';
 	display: flex;
@@ -20,4 +19,16 @@
 }
 .twitter-auth-button_h10z4a > .icon_rour3d {
 	width: 0.9em;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .twitter-auth-button_h10z4a {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $twitter-button-text-color,
+				"background-color": $twitter-button-background-color
+			)
+		);
+	}
 }

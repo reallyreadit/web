@@ -2,13 +2,26 @@
 	componentPath: src/app/common/components/BrowserRoot/Footer
 	cssComponentId: footer_ink40x
 */
+@import '../../../../common/styles/colors';
 
 .footer_ink40x {
 	text-align: center;
 	padding: 20px;
-	border-top: 1px solid #ccc;
-	background-color: #eaeaea;
+	border-top-width: 1px;
+	border-top-style: solid;
 }
 .footer_ink40x > .store-links_gbmsih {
 	margin: 15px 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .footer_ink40x {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $nav-border-color,
+				"background-color": $nav-background-color
+			)
+		);
+	}
 }

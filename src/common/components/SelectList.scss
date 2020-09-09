@@ -2,19 +2,36 @@
 	componentPath: src/common/components/SelectList
 	cssComponentId: select-list_guiajx
 */
+@import '../styles/colors';
 
 .select-list_guiajx {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	background-color: white;
-	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLjU0NCA2LjA0NGwtOS41NDQgOS41NDEtOS41NDQtOS41NDEtMS40MTYgMS40MTYgMTAuMjUgMTAuMjVjMC4xOTQgMC4xOTQgMC40NSAwLjI5NCAwLjcwNiAwLjI5NHMwLjUxMy0wLjA5NyAwLjcwNi0wLjI5NGwxMC4yNS0xMC4yNS0xLjQwOS0xLjQxNnoiPjwvcGF0aD48L3N2Zz4=);
 	background-repeat: no-repeat;
 	background-size: 15px;
 	background-position: right 5px center;
-	border: 1px solid #999;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 3px;
 	outline: none;
 	padding: 5px 23px 5px 5px;
 	font-size: 12pt;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .select-list_guiajx {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+		@if $scheme == light {
+			background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3R5bGU9ImZpbGw6IzJhMjMyNjtzdHJva2U6IzJhMjMyNjsiPjxwYXRoIGQ9Ik0yMS41NDQgNi4wNDRsLTkuNTQ0IDkuNTQxLTkuNTQ0LTkuNTQxLTEuNDE2IDEuNDE2IDEwLjI1IDEwLjI1YzAuMTk0IDAuMTk0IDAuNDUgMC4yOTQgMC43MDYgMC4yOTRzMC41MTMtMC4wOTcgMC43MDYtMC4yOTRsMTAuMjUtMTAuMjUtMS40MDktMS40MTZ6Ij48L3BhdGg+PC9zdmc+);
+		} @else {
+			background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3R5bGU9ImZpbGw6I2M3YzZjNTtzdHJva2U6I2M3YzZjNTsiPjxwYXRoIGQ9Ik0yMS41NDQgNi4wNDRsLTkuNTQ0IDkuNTQxLTkuNTQ0LTkuNTQxLTEuNDE2IDEuNDE2IDEwLjI1IDEwLjI1YzAuMTk0IDAuMTk0IDAuNDUgMC4yOTQgMC43MDYgMC4yOTRzMC41MTMtMC4wOTcgMC43MDYtMC4yOTRsMTAuMjUtMTAuMjUtMS40MDktMS40MTZ6Ij48L3BhdGg+PC9zdmc+);
+		}
+	}
 }

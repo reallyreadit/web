@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/screens/LeaderboardScreen/ReaderLeaderboards
 	cssComponentId: reader-leaderboards_8eclav
 */
+@import '../../../../../common/styles/colors';
 
 .reader-leaderboards_8eclav > .leaderboards {
 	display: flex;
@@ -22,7 +23,8 @@
 .reader-leaderboards_8eclav > .leaderboards > .reader-leaderboard_ky3yfu > .footer > .streak-status {
 	text-align: center;
 	padding: 10px 0 5px 0;
-	border-top: 1px solid #ccc;
+	border-top-width: 1px;
+	border-top-style: solid;
 	margin-top: 5px;
 	font-family: 'Museo Sans (700)';
 	font-size: 12pt;
@@ -31,5 +33,16 @@
 @media (max-width: 659px) {
 	.reader-leaderboards_8eclav > .leaderboards > .reader-leaderboard_ky3yfu {
 		min-width: 300px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .reader-leaderboards_8eclav > .leaderboards > .reader-leaderboard_ky3yfu > .footer > .streak-status {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $content-divider-color
+			)
+		);
 	}
 }

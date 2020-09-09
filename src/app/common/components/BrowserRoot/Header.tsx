@@ -43,11 +43,10 @@ export default class extends React.PureComponent<Props> {
 				)
 			}>
 				<a
-					className="logo-container"
+					className="logo"
 					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
 					onClick={this._handleLogoClick}
 				>
-					<img src="/images/logo.svg" alt="logo" />
 				</a>
 				{showLoginButtons || showMenu ?
 					<div className="menu-container">

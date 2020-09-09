@@ -2,6 +2,7 @@
 	componentPath: src/common/components/comments/CommentComposer
 	cssComponentId: comment-composer_fgo1ny
 */
+@import '../../styles/colors';
 
 .comment-composer_fgo1ny {
 	text-align: right;
@@ -13,7 +14,8 @@
 	height: 64px;
 	padding: 5px;
 	margin-bottom: 5px;
-	border: 1px solid silver;
+	border-width: 1px;
+	border-style: solid;
 	outline: none;
 	transition: width 250ms, height 250ms;
 }
@@ -26,7 +28,6 @@
 .comment-composer_fgo1ny > textarea::placeholder {
 	position: relative;
 	top: 0.25em;
-	color: #999;
 	font-style: italic;
 	text-indent: 0.25em;
 }
@@ -47,5 +48,25 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-top: 5px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .comment-composer_fgo1ny > textarea {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+	#{$root} .comment-composer_fgo1ny > textarea::placeholder {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
 	}
 }

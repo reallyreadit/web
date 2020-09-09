@@ -2,13 +2,13 @@
 	componentPath: src/app/common/components/screens/AuthorScreen
 	cssComponentId: author-screen_2cri7v
 */
+@import '../../../../common/styles/colors';
 
 .author-screen_2cri7v {
 	min-height: 100%;
 }
 .author-screen_2cri7v > .header {
 	text-align: center;
-	background-color: #efefef;
 }
 .author-screen_2cri7v > .main > .content > .profile {
 	margin-bottom: 20px;
@@ -17,4 +17,15 @@
 	font-family: "Museo Sans (700)";
 	font-size: 22pt;
 	text-align: center;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .author-screen_2cri7v > .header {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-alt-color
+			)
+		);
+	}
 }

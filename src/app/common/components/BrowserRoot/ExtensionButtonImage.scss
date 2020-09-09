@@ -2,7 +2,20 @@
 	componentPath: src/app/common/components/BrowserRoot/ExtensionButtonImage
 	cssComponentId: extension-button-image_dr3we4
 */
+@import '../../../../common/styles/colors';
 
 .extension-button-image_dr3we4 {
-	border: 1px solid #ddd;
+	border-width: 1px;
+	border-style: solid;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .extension-button-image_dr3we4 {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-color": $content-border-color
+			)
+		);
+	}
 }

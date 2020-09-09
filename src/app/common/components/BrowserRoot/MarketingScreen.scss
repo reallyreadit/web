@@ -2,10 +2,8 @@
 	componentPath: src/app/common/components/BrowserRoot/MarketingScreen
 	cssComponentId: marketing-screen_n5a6wc
 */
+@import '../../../../common/styles/colors';
 
-.marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(even) {
-	background-color: #efefef;
-}
 .marketing-screen_n5a6wc > .header {
 	text-align: center;
 }
@@ -19,7 +17,6 @@
 .marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links {
 	display: block;
 	position: relative;
-	background-color: white;
 	padding: 5px;
 	font-size: 13pt;
 }
@@ -31,4 +28,23 @@
 }
 .marketing-screen_n5a6wc > .blog > .content > h2 {
 	margin-bottom: 20px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(even) {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-alt-color
+			)
+		);
+	}
+	#{$root} .marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color
+			)
+		);
+	}
 }

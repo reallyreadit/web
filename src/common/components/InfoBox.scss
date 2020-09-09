@@ -2,6 +2,7 @@
 	componentPath: src/common/components/InfoBox
 	cssComponentId: info-box_8xzdd8
 */
+@import '../styles/colors';
 
 .info-box_8xzdd8 {
 	display: flex;
@@ -17,18 +18,8 @@
 }
 .info-box_8xzdd8 > .box {
 	display: flex;
-	padding: 20px;
-	border: 3px solid #e0e0e0;
-	background-color: white;
+	padding: 25px;
 	border-radius: 5px;
-}
-.info-box_8xzdd8.warning > .box {
-	background-color: lightpink;
-	border-color: darkred;
-}
-.info-box_8xzdd8.success > .box {
-	background-color: greenyellow;
-	border-color: green;
 }
 .info-box_8xzdd8 > .box > .icon-container {
 	flex: 0 0 auto;
@@ -41,12 +32,6 @@
 .info-box_8xzdd8 > .box > .icon-container > .icon_rour3d {
 	font-size: 36px;
 }
-.info-box_8xzdd8.warning > .box > .icon-container > .icon_rour3d {
-	color: darkred;
-}
-.info-box_8xzdd8.success > .box > .icon-container > .icon_rour3d {
-	color: green;
-}
 .info-box_8xzdd8 > .box > .content {
 	flex: 1 1 auto;
 	display: flex;
@@ -58,6 +43,23 @@
 .info-box_8xzdd8 > .box > .content > p:not(:first-of-type) {
 	margin-top: 10px;
 }
-.info-box_8xzdd8.warning > .box > .content > p > .action-link_ftamt8.disabled {
-	color: #666;
+
+@include theme using ($root, $scheme) {
+	#{$root} .info-box_8xzdd8 > .box {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color,
+				"color": $intent-text-color
+			)
+		);
+	}
+	#{$root} .info-box_8xzdd8.warning > .box {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-danger-color
+			)
+		);
+	}
 }
