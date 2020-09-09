@@ -5,6 +5,8 @@ const
 	sass = require('gulp-sass'),
 	clean = require('gulp-clean-css');
 
+sass.compiler = require('sass');
+
 const mapSourceRoot = require('./mapSourceRoot'),
 	project = require('./project');
 
