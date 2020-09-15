@@ -551,7 +551,7 @@ export default abstract class Root<
 
 		// state
 		this.state = {
-			displayTheme: props.initialUserProfile?.displayPreference.theme,
+			displayTheme: props.initialUserProfile?.displayPreference?.theme,
 			toasts: [],
 			user: props.initialUserProfile?.userAccount
 		} as S;
