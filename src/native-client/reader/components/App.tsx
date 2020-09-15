@@ -30,12 +30,15 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import ReaderHeader from '../../../common/components/ReaderHeader';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
+import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
 
 export interface Props extends DialogState {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
 	dialogService: DialogService,
+	displayPreference: DisplayPreference | null,
 	isHeaderHidden: boolean,
+	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onNavBack: () => void,
@@ -123,6 +126,17 @@ export default class App extends React.Component<
 			this.setState(delegate);
 		}
 	});
+
+	// user accounts
+	private readonly _changeDisplayPreference = (preference: DisplayPreference) => {
+		if (this.props.displayPreference) {
+			const message = getDisplayPreferenceChangeMessage(this.props.displayPreference, preference);
+			if (message) {
+				this._toaster.addToast(message, Intent.Success);
+			}
+		}
+		return this.props.onChangeDisplayPreference(preference);
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -165,8 +179,10 @@ export default class App extends React.Component<
 				<div className={classNames('header-container', { 'hidden': this.props.isHeaderHidden })}>
 					<ReaderHeader
 						article={this.props.article}
+						displayPreference={this.props.displayPreference}
 						isHidden={this.props.isHeaderHidden}
 						onNavBack={this.props.onNavBack}
+						onChangeDisplayPreference={this._changeDisplayPreference}
 						onReportArticleIssue={this._reportArticleIssue}
 					/>
 				</div>

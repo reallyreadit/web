@@ -1,5 +1,6 @@
 import { isReadupElement } from '../contentParsing/utils';
 import { formatList } from '../format';
+import DisplayPreference, { DisplayTheme, getClientPreferredColorScheme } from '../models/userAccounts/DisplayPreference';
 
 const styleContent = `
 #com_readup_document.com_readup_scroll_capture {
@@ -7,8 +8,13 @@ const styleContent = `
 }
 #com_readup_article {
 	font-family: serif;
-	font-size: 16pt;
 	line-height: 1.35;
+}
+#com_readup_article[data-com_readup_text_size='1'] {
+	font-size: 16pt;
+}
+#com_readup_article[data-com_readup_text_size='2'] {
+	font-size: 20pt;
 }
 #com_readup_document.com_readup_scroll_capture #com_readup_article {
 	height: 100%;
@@ -27,7 +33,7 @@ const styleContent = `
 	height: 300px;
 }
 #com_readup_article_content {
-	max-width: 640px;
+	max-width: 800px;
 	padding: 0 10px;
 	margin: 0 auto;
 	transition: opacity 350ms;
@@ -89,11 +95,18 @@ const styleContent = `
 #com_readup_article_content code,
 #com_readup_article_content pre {
 	font-family: "Menlo", "Inconsolata", "Consolas", "Roboto Mono", "Ubuntu Mono", "Liberation Mono", "Courier New", monospace;
-	font-size: 11pt;
 	line-height: 1.45;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 0.25em;
+}
+#com_readup_article[data-com_readup_text_size='1'] #com_readup_article_content code,
+#com_readup_article[data-com_readup_text_size='1'] #com_readup_article_content pre {
+	font-size: 11pt;
+}
+#com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content code,
+#com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content pre {
+	font-size: 15pt;
 }
 #com_readup_article_content code {
 	padding: 0.1em 0.3em;
@@ -108,6 +121,10 @@ const styleContent = `
 	padding: 0;
 	border: none;
 	margin: 0;
+}
+#com_readup_article_content a,
+#com_readup_article_content a:hover {
+	text-decoration: none;
 }
 #com_readup_article_content strong {
 	font-weight: bold;
@@ -135,16 +152,26 @@ const styleContent = `
 }
 #com_readup_article_content .com_readup_article_image_caption {
 	text-align: center;
-	font-size: 14pt;
 	margin: 1em;
 	line-height: 1.15;
 }
+#com_readup_article[data-com_readup_text_size='1'] #com_readup_article_content .com_readup_article_image_caption {
+	font-size: 14pt;
+}
+#com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content .com_readup_article_image_caption {
+	font-size: 18pt;
+}
 #com_readup_article_content .com_readup_article_image_credit {
 	text-align: center;
-	font-size: 12pt;
 	font-style: italic;
 	margin: 1em;
 	line-height: 1.15;
+}
+#com_readup_article[data-com_readup_text_size='1'] #com_readup_article_content .com_readup_article_image_credit {
+	font-size: 12pt;
+}
+#com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content .com_readup_article_image_credit {
+	font-size: 16pt;
 }
 
 #com_readup_document {
@@ -164,6 +191,15 @@ const styleContent = `
 	border-color: #e8e8e8;
 	background-color: #eeeeff;
 }
+#com_readup_article_content a[href] {
+	color: #2a7ae2;
+}
+#com_readup_article_content a[href]:visited {
+	color: #1756a9;
+}
+#com_readup_article_content a[href]:hover {
+	color: #111111;
+}
 
 #com_readup_document[data-com_readup_theme=dark] {
 	color: #bbbbbb;
@@ -181,6 +217,15 @@ const styleContent = `
 :root[data-com_readup_theme=dark] #com_readup_article_content pre {
 	border-color: #404040;
 	background-color: #212121;
+}
+:root[data-com_readup_theme=dark] #com_readup_article_content a[href] {
+	color: #79b8ff;
+}
+:root[data-com_readup_theme=dark] #com_readup_article_content a[href]:visited {
+	color: #79b8ff;
+}
+:root[data-com_readup_theme=dark] #com_readup_article_content a[href]:hover {
+	color: #bbbbbb;
 }
 
 #com_readup_article_content pre .c { color: #998; font-style: italic; }
@@ -337,14 +382,56 @@ export function createByline(authors: string[] | { name?: string }[]) {
 			.sort()
 	);
 }
+export function applyDisplayPreferenceToArticleDocument(preference: DisplayPreference | null) {
+	// set theme
+	const theme = (
+		preference ?
+			preference.theme :
+			getClientPreferredColorScheme()
+	);
+	let scheme: 'light' | 'dark';
+	if (theme === DisplayTheme.Light) {
+		scheme = 'light';
+	} else {
+		scheme = 'dark';
+	}
+	document.documentElement.dataset['com_readup_theme'] = scheme;
+	// set text size
+	document
+		.getElementById('com_readup_article')
+		.dataset['com_readup_text_size'] = (
+			preference ?
+				preference.textSize.toString() :
+				'1'
+		);
+	// hide or show links
+	const anchors = Array.from(
+		document.getElementsByTagName('a')
+	);
+	if (preference == null || preference.hideLinks) {
+		anchors.forEach(
+			a => {
+				a.removeAttribute('href');
+			}
+		);
+	} else {
+		anchors.forEach(
+			a => {
+				a.setAttribute('href', a.dataset['com_readup_href']);
+			}
+		);
+	}
+}
 export default (
 	{
+		displayPreference,
 		document,
 		title,
 		byline,
 		useScrollContainer
 	}:
 	{
+		displayPreference: DisplayPreference | null,
 		document: Document,
 		title?: string,
 		byline?: string,
@@ -393,26 +480,24 @@ export default (
 		document.body.style.opacity = bodyOpacity;
 		document.body.style.transition = bodyTransition;
 	}
-	// strip links
+	// cache link hrefs
 	Array
-		.from(document.getElementsByTagName('a'))
-		.forEach(a => {
-			a.removeAttribute('href');
-		});
+		.from(
+			document.getElementsByTagName('a')
+		)
+		.forEach(
+			a => {
+				a.dataset['com_readup_href'] = a.href;
+			}
+		);
 	// add custom classes
 	document.documentElement.id = 'com_readup_document';
 	if (useScrollContainer) {
 		document.documentElement.classList.add('com_readup_scroll_capture');
 	}
 	document.body.id = 'com_readup_article';
-	// set theme (should be a parameter from local storage)
-	let scheme: 'light' | 'dark';
-	if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-		scheme = 'light';
-	} else {
-		scheme = 'dark';
-	}
-	document.documentElement.dataset['com_readup_theme'] = scheme;
+	// apply display preference
+	applyDisplayPreferenceToArticleDocument(displayPreference);
 	// add styles
 	const styleElement = document.createElement('style');
 	styleElement.type = 'text/css';

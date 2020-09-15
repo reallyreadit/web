@@ -47,6 +47,8 @@ import AuthenticationError from '../../../common/models/auth/AuthenticationError
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
 import createDiscoverScreenFactory from './screens/DiscoverScreen';
+import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
+import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -617,14 +619,16 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ScreenKey.Settings,
 				{
 					onCloseDialog: this._dialog.closeDialog,
+					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
 					onChangeTimeZone: this._changeTimeZone,
-					onGetSettings: this.props.serverApi.getSettings,
+					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
+					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
@@ -661,7 +665,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams ||
 			(
-				props.initialUser &&
+				props.initialUserProfile &&
 				!props.extensionApi.isInstalled &&
 				isCompatibleBrowser(props.deviceType) &&
 				route.screenKey !== ScreenKey.EmailSubscriptions &&
@@ -719,6 +723,12 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				this.onCommentUpdated(comment, EventSource.Remote);
 			})
 			.addListener(
+				'displayPreferenceChanged',
+				preference => {
+					this.onDisplayPreferenceChanged(preference, EventSource.Remote);
+				}
+			)
+			.addListener(
 				'extensionInstallationChanged',
 				event => {
 					this.props.extensionApi.extensionInstallationEventReceived(event);
@@ -742,8 +752,31 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					this.setUpdateAvailable();
 				}
 			})
-			.addListener('userSignedIn', user => {
-				this.onUserSignedIn(user, SignInEventType.ExistingUser, EventSource.Remote);
+			.addListener('userSignedIn', data => {
+				let profile: WebAppUserProfile;
+				// check for broadcast from legacy web app instance
+				if ('userAccount' in data) {
+					profile = data;
+				} else {
+					profile = {
+						userAccount: data
+					};
+					// manually check for display preference before setting default
+					this.props.serverApi.getDisplayPreference(
+						result => {
+							if (result.value) {
+								if (this.state.displayTheme == null) {
+									this.onDisplayPreferenceChanged(result.value, EventSource.Local);
+								}
+							} else {
+								this._changeDisplayPreference(
+									getClientDefaultDisplayPreference()
+								);
+							}
+						}
+					);
+				}
+				this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Remote);
 			})
 			.addListener('userSignedOut', () => {
 				this.onUserSignedOut(EventSource.Remote);
@@ -773,6 +806,12 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			.addListener('commentUpdated', comment => {
 				this.onCommentUpdated(comment, EventSource.Remote);
 			})
+			.addListener(
+				'displayPreferenceChanged',
+				preference => {
+					this.onDisplayPreferenceChanged(preference, EventSource.Remote);
+				}
+			)
 			.addListener('userUpdated', user => {
 				if (!areUsersEqual(this.state.user, user)) {
 					this.onUserUpdated(user, EventSource.Remote);
@@ -895,6 +934,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 	}
 	protected getSharedState() {
 		return {
+			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
 			user: this.state.user
 		};
@@ -935,6 +975,13 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		}
 		super.onCommentUpdated(comment);
 	}
+	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.displayPreferenceChanged(preference);
+			this.props.extensionApi.displayPreferenceChanged(preference);
+		}
+		super.onDisplayPreferenceChanged(preference, eventSource);
+	}
 	protected onLocationChanged(path: string, title?: string) {
 		window.history.pushState(
 			null,
@@ -954,16 +1001,19 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
-	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType, eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
 		// update analytics before potentially changing the screen
-		this.props.analytics.setUserId(user.id);
+		this.props.analytics.setUserId(profile.userAccount.id);
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
-			this.props.browserApi.userSignedIn(user);
+			this.props.browserApi.userSignedIn(profile);
+			if (profile.displayPreference) {
+				this.props.extensionApi.displayPreferenceChanged(profile.displayPreference);
+			}
 		}
 		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
 		let supplementaryState: Partial<State>;
-		if (screenAuthLevel != null && user.role !== screenAuthLevel) {
+		if (screenAuthLevel != null && profile.userAccount.role !== screenAuthLevel) {
 			supplementaryState = this.changeScreen({
 				key: ScreenKey.Home,
 				method: 'replace'
@@ -977,7 +1027,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onboarding: null
 			};
 		}
-		return super.onUserSignedIn(user, eventType, supplementaryState);
+		return super.onUserSignedIn(profile, eventType, eventSource, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
 		// update analytics before potentially changing the screen
@@ -1213,6 +1263,11 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			this.props.browserApi.userUpdated(this.state.user);
 			this.props.extensionApi.userUpdated(this.state.user);
 			this._hasBroadcastInitialUser = true;
+		}
+		// broadcast display preference if signed in
+		if (this.props.initialUserProfile?.displayPreference) {
+			this.props.browserApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
+			this.props.extensionApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
 		}
 		// broadcast extension installation or removal
 		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);

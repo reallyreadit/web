@@ -4,6 +4,7 @@ import CommentThread from '../../common/models/CommentThread';
 import UserAccount from '../../common/models/UserAccount';
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export default class extends ExtensionApi {
     public articleUpdated(event: ArticleUpdatedEvent) {
@@ -16,6 +17,9 @@ export default class extends ExtensionApi {
         throw new Error('Operation not supported in server environment');
     }
     public commentUpdated(comment: CommentThread) {
+        throw new Error('Operation not supported in server environment');
+    }
+    public displayPreferenceChanged(preference: DisplayPreference) {
         throw new Error('Operation not supported in server environment');
     }
     public extensionInstallationEventReceived(event: ExtensionInstallationEvent) {

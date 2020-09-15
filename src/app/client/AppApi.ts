@@ -11,6 +11,7 @@ import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -49,6 +50,9 @@ export default class extends AppApi {
 					break;
 				case 'didBecomeActive':
 					this.emitEvent('didBecomeActive', message.data);
+					break;
+				case 'displayPreferenceChanged':
+					this.emitEvent('displayPreferenceChanged', message.data);
 					break;
 				case 'deviceInfoUpdated':
 					this.setDeviceInfo(message.data);	
@@ -92,6 +96,12 @@ export default class extends AppApi {
 			...deviceInfo,
 			appVersion: new SemanticVersion(deviceInfo.appVersion)
 		};
+	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		this._messagingContext.sendMessage({
+			type: 'displayPreferenceChanged',
+			data: preference
+		});
 	}
 	public getDeviceInfo() {
 		if (this._deviceInfo.appVersion.compareTo(new SemanticVersion('0.0.0')) > 0) {

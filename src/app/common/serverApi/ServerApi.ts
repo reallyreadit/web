@@ -64,6 +64,8 @@ import AuthorLeaderboardsRequest from '../../../common/models/stats/AuthorLeader
 import AuthorRanking from '../../../common/models/AuthorRanking';
 import SearchOptions from '../../../common/models/articles/SearchOptions';
 import SearchQuery from '../../../common/models/articles/SearchQuery';
+import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -88,17 +90,11 @@ export default abstract class {
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
 	public abstract getClientHeaderValue(): string;
-	public readonly createUserAccount = (data: UserAccountForm) => {
-		return this.post<UserAccount>({ path: '/UserAccounts/CreateAccount', data });
-	};
 	public readonly resendConfirmationEmail = () => {
 		return this.post({ path: '/UserAccounts/ResendConfirmationEmail' });
 	};
 	public readonly changePassword = (currentPassword: string, newPassword: string) => {
 		return this.post({ path: '/UserAccounts/ChangePassword', data: { currentPassword, newPassword } });
-	};
-	public readonly resetPassword = (data: PasswordResetForm) => {
-		return this.post<UserAccount>({ path: '/UserAccounts/ResetPassword', data });
 	};
 	public readonly changeEmailAddress = (email: string) => {
 		return this.post<UserAccount>({ path: '/UserAccounts/ChangeEmailAddress', data: { email } });
@@ -203,12 +199,16 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// UserAccounts
+	public readonly changeDisplayPreference = (data: DisplayPreference) => this.post<DisplayPreference>({ path: '/UserAccounts/DisplayPreference', data });
 	public readonly changeNotificationPreference = (data: NotificationPreference) => this.post<NotificationPreference>({ path: '/UserAccounts/NotificationPreference', data });
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });
-	public readonly createAuthServiceAccount = (data: AuthServiceAccountForm) => this.post<UserAccount>({ path: '/UserAccounts/AuthServiceAccount', data });
+	public readonly createAuthServiceAccount = (data: AuthServiceAccountForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/AuthServiceAccount', data });
+	public readonly createUserAccount = (data: UserAccountForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/CreateAccount', data });
+	public readonly getDisplayPreference = this.createFetchFunction<DisplayPreference>('/UserAccounts/DisplayPreference');
 	public readonly getSettings = this.createFetchFunction<Settings>('/UserAccounts/Settings');
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
 	public readonly requestPasswordReset = (data: PasswordResetRequestForm) => this.post({ path: '/UserAccounts/RequestPasswordReset', data });
+	public readonly resetPassword = (data: PasswordResetForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/ResetPassword', data });
 	public readonly sendPasswordCreationEmail = () => this.post({ path: '/UserAccounts/PasswordCreationEmailDispatch' });
-	public readonly signIn = (data: SignInForm) => this.post<UserAccount>({ path: '/UserAccounts/SignIn', data });
+	public readonly signIn = (data: SignInForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/SignIn', data });
 }

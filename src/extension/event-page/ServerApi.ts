@@ -21,6 +21,7 @@ import CommentRevisionForm from '../../common/models/social/CommentRevisionForm'
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
+import DisplayPreference, { getClientDefaultDisplayPreference } from '../../common/models/userAccounts/DisplayPreference';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -79,6 +80,7 @@ export default class ServerApi {
 		'displayedNotifications',
 		notification => notification.id
 	);
+	private _displayPreference = new ObjectStore<DisplayPreference | null>('displayPreference', null);
 	private _blacklist = new ObjectStore<Cached<string[]>>('blacklist', {
 		value: [],
 		timestamp: 0,
@@ -86,15 +88,18 @@ export default class ServerApi {
 	});
 	private _user = new ObjectStore<UserAccount>('user', null);
 	// handlers
+	private readonly _onDisplayPreferenceUpdated: (preference: DisplayPreference) => void;
 	private readonly _onUserUpdated: (user: UserAccount) => void;
 	constructor(handlers: {
 		onAuthenticationStatusChanged: (isAuthenticated: boolean) => void,
+		onDisplayPreferenceUpdated: (preference: DisplayPreference) => void,
 		onUserUpdated: (user: UserAccount) => void
 	}) {
 		// extension install
 		chrome.runtime.onInstalled.addListener(details => {
 			// clear entire cache
 			this._displayedNotifications.clear();
+			this._displayPreference.clear();
 			this._blacklist.clear();
 			this._user.clear();
 		});
@@ -104,11 +109,13 @@ export default class ServerApi {
 				const isAuthenticated = !changeInfo.removed;
 				// clear user specific cache
 				this._displayedNotifications.clear();
+				this._displayPreference.clear();
 				this._user.clear();
 				// check source rules cache
 				if (isAuthenticated) {
 					this.checkNotifications();
 					this.checkBlacklistCache();
+					this.getDisplayPreference();
 				}
 				// fire handler
 				handlers.onAuthenticationStatusChanged(isAuthenticated);
@@ -146,6 +153,7 @@ export default class ServerApi {
 			}
 		);
 		// handlers
+		this._onDisplayPreferenceUpdated = handlers.onDisplayPreferenceUpdated;
 		this._onUserUpdated = handlers.onUserUpdated;
 	}
 	private checkNotifications() {
@@ -368,5 +376,41 @@ export default class ServerApi {
 	}
 	public updateUser(user: UserAccount) {
 		this._user.set(user || null);
+	}
+	public getDisplayPreference() {
+		// refresh the cache on every article load
+		fetchJson<DisplayPreference | null>({
+				method: 'GET',
+				path: '/UserAccounts/DisplayPreference'
+			})
+			.then(
+				preference => {
+					if (preference) {
+						this.updateDisplayPreference(preference);
+					} else {
+						this.changeDisplayPreference(
+							preference = getClientDefaultDisplayPreference()
+						);
+					}
+					this._onDisplayPreferenceUpdated(preference);
+				}
+			)
+			.catch(
+				() => {
+					// ignore
+				}
+			);
+		return this._displayPreference.get();
+	}
+	public updateDisplayPreference(preference: DisplayPreference) {
+		this._displayPreference.set(preference);
+	}
+	public changeDisplayPreference(preference: DisplayPreference) {
+		this.updateDisplayPreference(preference);
+		return fetchJson<DisplayPreference>({
+			method: 'POST',
+			path: '/UserAccounts/DisplayPreference',
+			data: preference
+		});
 	}
 }

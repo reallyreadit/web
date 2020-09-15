@@ -15,6 +15,7 @@ import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -26,8 +27,10 @@ export default abstract class extends EventEmitter<{
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
 	'didBecomeActive': AppActivationEvent,
+	'displayPreferenceChanged': DisplayPreference,
 	'loadUrl': string
 }> {
+	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract getDeviceInfo(): Promise<DeviceInfo>;
 	public abstract initialize(user?: UserAccount): Promise<DeviceInfo>;
 	public abstract openExternalUrl(url: string): void;

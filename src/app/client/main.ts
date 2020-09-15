@@ -25,8 +25,8 @@ const serverApi = new ServerApi(
 const rootProps = {
 	analytics: new Analytics({
 		trackingCode: initData.analyticsTrackingCode,
-		userId: initData.userAccount ?
-			initData.userAccount.id :
+		userId: initData.userProfile ?
+			initData.userProfile.userAccount.id :
 			null
 	}),
 	captcha: new Captcha(
@@ -38,7 +38,7 @@ const rootProps = {
 		}
 	),
 	initialLocation: initData.initialLocation,
-	initialUser: initData.userAccount,
+	initialUserProfile: initData.userProfile,
 	marketingVariant: initData.marketingVariant,
 	serverApi,
 	version: new SemanticVersion(initData.version),

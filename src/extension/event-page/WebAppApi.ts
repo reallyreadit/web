@@ -5,6 +5,7 @@ import UserAccount from '../../common/models/UserAccount';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import { Message } from '../../common/MessagingContext';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export default class WebAppApi {
 	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
@@ -14,6 +15,7 @@ export default class WebAppApi {
 			onAuthServiceLinkCompleted: (response: AuthServiceBrowserLinkResponse) => void,
 			onCommentPosted: (comment: CommentThread) => void,
 			onCommentUpdated: (comment: CommentThread) => void,
+			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
 			onUserUpdated: (user: UserAccount) => void
 		}
 	) {
@@ -34,6 +36,9 @@ export default class WebAppApi {
 							break;
 						case 'commentUpdated':
 							handlers.onCommentUpdated(message.data);
+							break;
+						case 'displayPreferenceChanged':
+							handlers.onDisplayPreferenceChanged(message.data);
 							break;
 						case 'registerPage':
 							this.addTab(sender.tab.id);
@@ -110,6 +115,12 @@ export default class WebAppApi {
 		this.broadcastMessage({
 			type: 'commentUpdated',
 			data: comment
+		});
+	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		this.broadcastMessage({
+			type: 'displayPreferenceChanged',
+			data: preference
 		});
 	}
 	public injectContentScripts() {

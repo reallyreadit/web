@@ -64,6 +64,13 @@ export default class Page {
 	public getReadState() {
 		return new ReadState(this._contentEls.map(b => b.getReadState()));
 	}
+	public updateLineHeight() {
+		this._contentEls.forEach(
+			element => {
+				element.setLineHeight();
+			}
+		);
+	}
 	public updateOffset() {
 		this._contentEls.forEach(block => block.updateOffset());
 	}

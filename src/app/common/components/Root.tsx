@@ -53,12 +53,17 @@ import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalytic
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
+import DisplayPreference, { getClientPreferredColorScheme, DisplayTheme, getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
+import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
+import EventSource from '../EventSource';
+import Fetchable from '../../../common/Fetchable';
+import Settings from '../../../common/models/Settings';
 
 export interface Props {
 	analytics: Analytics,
 	captcha: Captcha,
 	initialLocation: RouteLocation,
-	initialUser: UserAccount | null,
+	initialUserProfile: WebAppUserProfile | null,
 	marketingVariant: number,
 	serverApi: ServerApi,
 	version: SemanticVersion,
@@ -86,19 +91,21 @@ export interface ScreenFactory<TSharedState> {
 }
 export type State = (
 	{
+		displayTheme: DisplayTheme | null,
 		screens: Screen[],
 		user: UserAccount | null
 	} &
 	ToasterState &
 	DialogState
 );
-export type SharedState = Pick<State, 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'user'>;
 export type SharedEvents = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
+	'displayPreferenceChanged': DisplayPreference,
 	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
@@ -278,6 +285,9 @@ export default abstract class Root<
 	protected readonly _registerCommentUpdatedEventHandler = (handler: (comment: CommentThread) => void) => {
 		return this._eventManager.addListener('commentUpdated', handler);
 	};
+	protected readonly _registerDisplayPreferenceChangedEventHandler = (handler: (preference: DisplayPreference) => void) => {
+		return this._eventManager.addListener('displayPreferenceChanged', handler);
+	};
 	protected readonly _registerFolloweeCountChangedEventHandler = (handler: (change: FolloweeCountChange) => void) => {
 		return this._eventManager.addListener('followeeCountChanged', handler);
 	};
@@ -392,6 +402,10 @@ export default abstract class Root<
 	});
 
 	// user account
+	protected readonly _changeDisplayPreference = (preference: DisplayPreference) => {
+		this.onDisplayPreferenceChanged(preference, EventSource.Local);
+		return this.props.serverApi.changeDisplayPreference(preference);
+	};
 	protected readonly _changeEmailAddress = (email: string) => {
 		return this.props.serverApi
 			.changeEmailAddress(email)
@@ -427,13 +441,14 @@ export default abstract class Root<
 				password: form.password,
 				captchaResponse: form.captchaResponse,
 				timeZoneName: DateTime.local().zoneName,
+				theme: getClientPreferredColorScheme(),
 				analytics: this.getSignUpAnalyticsForm(form.analyticsAction),
 				pushDevice: this.getPushDeviceForm()
 			})
 			.then(
-				user => {
+				profile => {
 					this.props.analytics.sendSignUp();
-					this.onUserSignedIn(user, SignInEventType.NewUser);
+					this.onUserSignedIn(profile, SignInEventType.NewUser, EventSource.Local);
 				}
 			);
 	};
@@ -442,15 +457,26 @@ export default abstract class Root<
 			.createAuthServiceAccount({
 				...form,
 				timeZoneName: DateTime.local().zoneName,
+				theme: getClientPreferredColorScheme(),
 				pushDevice: this.getPushDeviceForm()
 			})
 			.then(
-				user => {
+				profile => {
 					this.props.analytics.sendSignUp();
-					this.onUserSignedIn(user, SignInEventType.NewUser);
+					this.onUserSignedIn(profile, SignInEventType.NewUser, EventSource.Local);
 				}
 			);
 	};
+	protected readonly _getSettings = (callback: (result: Fetchable<Settings>) => void) => {
+		return this.props.serverApi.getSettings(
+			settings => {
+				if (settings.value) {
+					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
+				}
+				callback(settings);
+			}
+		);
+	}
 	protected abstract readonly _linkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>;
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
@@ -459,7 +485,11 @@ export default abstract class Root<
 				password,
 				pushDevice: this.getPushDeviceForm()
 			})
-			.then(user => this.onUserSignedIn(user, SignInEventType.ExistingUser));
+			.then(
+				profile => {
+					return this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Local);
+				}
+			);
 	};
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
@@ -485,12 +515,11 @@ export default abstract class Root<
 				...form,
 				pushDevice: this.getPushDeviceForm()
 			})
-			.then(user => {
-				if (user.timeZoneId == null) {
-					this.setTimeZone();
+			.then(
+				profile => {
+					return this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Local);
 				}
-				return this.onUserSignedIn(user, SignInEventType.ExistingUser);
-			});
+			);
 	};
 	protected readonly _signOut = () => {
 		const pushDeviceForm = this.getPushDeviceForm();
@@ -522,8 +551,9 @@ export default abstract class Root<
 
 		// state
 		this.state = {
+			displayTheme: props.initialUserProfile?.displayPreference.theme,
 			toasts: [],
-			user: props.initialUser
+			user: props.initialUserProfile?.userAccount
 		} as S;
 
 		// clipboard
@@ -573,19 +603,41 @@ export default abstract class Root<
 			})
 		};
 	}
-	private setTimeZone() {
-		return this._changeTimeZone({ name: DateTime.local().zoneName });
+	private checkProfileForUnsetValues(profile: WebAppUserProfile) {
+		if (profile.userAccount.timeZoneId == null) {
+			this._changeTimeZone({
+				name: DateTime
+					.local()
+					.zoneName
+			});
+		}
+		if (profile.displayPreference == null) {
+			this._changeDisplayPreference(
+				getClientDefaultDisplayPreference()
+			);
+		}
 	}
-	private setUserAuthChangedState(user: UserAccount | null, supplementaryState?: Partial<S>) {
+	private setThemeAttribute(theme: DisplayTheme | null) {
+		document.documentElement.dataset['com_readup_theme'] = (
+			theme != null ?
+				theme === DisplayTheme.Dark ?
+					'dark' :
+					'light' :
+				''
+		);
+	}
+	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<S>) {
+		this.setThemeAttribute(userProfile?.displayPreference?.theme);
 		return new Promise<void>(
 			resolve => {
 				this.setState(
 					{
 						...supplementaryState as State,
-						user
+						displayTheme: userProfile?.displayPreference.theme,
+						user: userProfile?.userAccount
 					},
 					() => {
-						this._eventManager.triggerEvent('authChanged', user);
+						this._eventManager.triggerEvent('authChanged', userProfile?.userAccount);
 						resolve();
 					}
 				);
@@ -662,13 +714,26 @@ export default abstract class Root<
 	protected onCommentUpdated(comment: CommentThread) {
 		this._eventManager.triggerEvent('commentUpdated', comment);
 	}
+	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
+		this.setThemeAttribute(preference.theme);
+		this.setState({
+			displayTheme: preference.theme
+		});
+		this._eventManager.triggerEvent('displayPreferenceChanged', preference);
+	}
 	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
 	protected onTitleChanged(title: string) { }
-	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType, supplementaryState?: Partial<S>) {
-		return this.setUserAuthChangedState(user, supplementaryState);
+	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<S>) {
+		if (
+			eventType === SignInEventType.ExistingUser &&
+			eventSource === EventSource.Local
+		) {
+			this.checkProfileForUnsetValues(userProfile);
+		}
+		return this.setUserAuthChangedState(userProfile, supplementaryState);
 	}
 	protected onUserSignedOut(supplementaryState?: Partial<S>) {
 		return this.setUserAuthChangedState(null, supplementaryState);
@@ -682,8 +747,8 @@ export default abstract class Root<
 	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string): void;
 	protected abstract viewProfile(userName?: string): void;
 	public componentDidMount() {
-		if (this.state.user && this.state.user.timeZoneId == null) {
-			this.setTimeZone();
+		if (this.props.initialUserProfile) {
+			this.checkProfileForUnsetValues(this.props.initialUserProfile);
 		}
 	}
 	public componentWillUnmount() {

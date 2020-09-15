@@ -1,6 +1,7 @@
 import icons from '../../../common/svg/icons';
 import InitData from '../InitData';
 import { TwitterCard, TwitterCardType } from '../../server/TwitterCard';
+import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 
 function escapeQuotes(value: string) {
 	return value.replace(/"/g, '&quot;');
@@ -28,9 +29,21 @@ export default (
 	} = {
 		send_page_view: false
 	};
-	if (initData.userAccount) {
-		gtagConfig.user_id = initData.userAccount.id.toString();
+	if (initData.userProfile) {
+		gtagConfig.user_id = initData.userProfile.userAccount.id.toString();
 	}
+	let themeAttribute = 'data-com_readup_theme';
+	if (initData.userProfile?.displayPreference) {
+		switch (initData.userProfile.displayPreference.theme) {
+			case DisplayTheme.Dark:
+				themeAttribute += '="dark"';
+				break;
+			case DisplayTheme.Light:
+				themeAttribute += '="light"';
+				break;
+		}
+	}
+	
 	let twitterCardMarkup: string;
 	switch (twitterCard?.type) {
 		case TwitterCardType.App:
@@ -62,7 +75,7 @@ export default (
 	}
 	return (
 `<!DOCTYPE html>
-<html lang="en" data-client-type="${initData.clientType}" data-com_readup_theme>
+<html lang="en" data-client-type="${initData.clientType}" ${themeAttribute}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />

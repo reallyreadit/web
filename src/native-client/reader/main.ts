@@ -11,7 +11,7 @@ import ShareData from '../../common/sharing/ShareData';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment, updateComment } from '../../common/comments';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
-import styleArticleDocument, { createByline } from '../../common/reading/styleArticleDocument';
+import styleArticleDocument, { createByline, applyDisplayPreferenceToArticleDocument } from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
 import procesLazyImages from '../../common/contentParsing/processLazyImages';
 import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
@@ -33,6 +33,8 @@ import UserPage from '../../common/models/UserPage';
 import UserAccount from '../../common/models/UserAccount';
 import ScrollService from '../../common/services/ScrollService';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { Message } from '../../common/MessagingContext';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -42,10 +44,34 @@ window.reallyreadit = {
 	}
 };
 
+messagingContext.addListener(
+	(message: Message, sendResponse: (data: any) => void) => {
+		switch (message.type) {
+			case 'displayPreferenceChanged':
+				updateDisplayPreference(message.data);
+				break;
+		}
+	}
+);
+
 let
 	article: UserArticle,
+	displayPreference: DisplayPreference,
 	userPage: UserPage,
 	user: UserAccount;
+
+function updateDisplayPreference(preference: DisplayPreference) {
+	const textSizeChanged = (
+		displayPreference == null ||
+		displayPreference.textSize !== preference.textSize
+	);
+	displayPreference = preference;
+	render();
+	applyDisplayPreferenceToArticleDocument(preference);
+	if (textSizeChanged) {
+		page.updateLineHeight();
+	}
+}
 
 const
 	metadataParseResult = parseDocumentMetadata(),
@@ -54,6 +80,7 @@ const
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 
 styleArticleDocument({
+	displayPreference: null,
 	document: window.document,
 	title: metadataParseResult.metadata.article.title,
 	byline: createByline(metadataParseResult.metadata.article.authors)
@@ -114,6 +141,25 @@ window.addEventListener(
 	}
 );
 
+// handle article links
+function handleArticleLink(this: HTMLAnchorElement, ev: MouseEvent) {
+	ev.preventDefault();
+	if (
+		this.hasAttribute('href')
+	) {
+		openExternalUrl(this.href);
+	}
+}
+Array
+	.from(
+		document.getElementsByTagName('a')
+	)
+	.forEach(
+		anchor => {
+			anchor.addEventListener('click', handleArticleLink);
+		}
+	);
+
 // user interface
 const dialogService = new DialogService({
 	setState: delegate => {
@@ -121,11 +167,12 @@ const dialogService = new DialogService({
 	}
 });
 let
-	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>> = {
+	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user'>> = {
 		comments: null,
 		dialogs: [],
 		dialogService,
 		isHeaderHidden: false,
+		onChangeDisplayPreference: changeDisplayPreference,
 		onDeleteComment: deleteComment,
 		onLinkAuthServiceAccount: linkAuthServiceAccount,
 		onNavBack: navBack,
@@ -187,6 +234,7 @@ function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'arti
 					isLoading: !article,
 					value: article
 				},
+				displayPreference,
 				user
 			}
 		),
@@ -420,6 +468,23 @@ function reportArticleIssue(request: ArticleIssueReportRequest) {
 	});
 }
 
+function changeDisplayPreference(preference: DisplayPreference) {
+	updateDisplayPreference(preference);
+	return new Promise<DisplayPreference>(
+		resolve => {
+			messagingContext.sendMessage(
+				{
+					type: 'changeDisplayPreference',
+					data: preference
+				},
+				(preference: DisplayPreference) => {
+					resolve(preference);
+				}
+			);
+		}
+	);
+}
+
 function deleteComment(form: CommentRevisionForm) {
 	return new Promise<CommentThread>(
 		resolve => {
@@ -468,45 +533,57 @@ insertEmbed();
 
 messagingContext.sendMessage(
 	{
-		type: 'parseResult',
-		data: createPageParseResult(metadataParseResult, contentParseResult)
+		type: 'getDisplayPreference'
 	},
-	(result: ArticleLookupResult) => {
+	(preference: DisplayPreference | null) => {
 		// set globals
-		article = result.userArticle;
-		userPage = result.userPage;
-		user = result.user;
-		// set up the reader
-		page.setReadState(result.userPage.readState);
-		reader.loadPage(page);
-		// re-render ui
-		render();
-		// load comments or check for bookmark
-		if (result.userArticle.isRead) {
-			loadComments();
-		} else if (page.getBookmarkScrollTop() > window.innerHeight) {
-			dialogService.openDialog(
-				React.createElement(
-					BookmarkDialog,
-					{
-						onClose: dialogService.closeDialog,
-						onSubmit: () => {
-							const scrollTop = page.getBookmarkScrollTop();
-							if (scrollTop > window.innerHeight) {
-								contentRoot.style.opacity = '0';
-								setTimeout(
-									() => {
-										window.scrollTo(0, scrollTop);
-										contentRoot.style.opacity = '1';
-									},
-									350
-								);
+		displayPreference = preference;
+		// style article
+		applyDisplayPreferenceToArticleDocument(preference);
+		// send parse result
+		messagingContext.sendMessage(
+			{
+				type: 'parseResult',
+				data: createPageParseResult(metadataParseResult, contentParseResult)
+			},
+			(result: ArticleLookupResult) => {
+				// set globals
+				article = result.userArticle;
+				userPage = result.userPage;
+				user = result.user;
+				// set up the reader
+				page.setReadState(result.userPage.readState);
+				reader.loadPage(page);
+				// re-render ui
+				render();
+				// load comments or check for bookmark
+				if (result.userArticle.isRead) {
+					loadComments();
+				} else if (page.getBookmarkScrollTop() > window.innerHeight) {
+					dialogService.openDialog(
+						React.createElement(
+							BookmarkDialog,
+							{
+								onClose: dialogService.closeDialog,
+								onSubmit: () => {
+									const scrollTop = page.getBookmarkScrollTop();
+									if (scrollTop > window.innerHeight) {
+										contentRoot.style.opacity = '0';
+										setTimeout(
+											() => {
+												window.scrollTo(0, scrollTop);
+												contentRoot.style.opacity = '1';
+											},
+											350
+										);
+									}
+									return Promise.resolve();
+								}
 							}
-							return Promise.resolve();
-						}
-					}
-				)
-			);
-		}
+						)
+					);
+				}
+			}
+		);
 	}
 );

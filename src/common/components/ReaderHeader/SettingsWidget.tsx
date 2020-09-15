@@ -2,15 +2,15 @@ import * as React from 'react';
 import Popover, { MenuPosition, MenuState } from '../Popover';
 import Icon from '../Icon';
 import RadioButtons from '../RadioButtons';
+import DisplayPreference, { DisplayTheme } from '../../models/userAccounts/DisplayPreference';
 
 interface Props {
-	isHidden: boolean
+	displayPreference: DisplayPreference | null,
+	isHidden: boolean,
+	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 }
 interface State {
-	links: 'show' | 'hide',
-	menuState: MenuState,
-	textSize: 'default' | 'large' | 'xlarge',
-	theme: 'light' | 'dark'
+	menuState: MenuState
 }
 const
 	linkOptions = [
@@ -25,26 +25,22 @@ const
 	],
 	textSizeOptions = [
 		{
-			key: 'Default',
-			value: 'default'
+			key: 'Medium',
+			value: '1'
 		},
 		{
 			key: 'Large',
-			value: 'large'
-		},
-		{
-			key: 'X-Large',
-			value: 'xlarge'
+			value: '2'
 		}
 	],
 	themeOptions = [
 		{
 			key: 'Light',
-			value: 'light'
+			value: DisplayTheme.Light.toString()
 		},
 		{
 			key: 'Dark',
-			value: 'dark'
+			value: DisplayTheme.Dark.toString()
 		}
 	];
 export default class SettingsWidget extends React.PureComponent<Props, State> {
@@ -64,27 +60,36 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 		});
 	};
 	private readonly _setLinks = (value: string) => {
-		this.setState({
-			links: value as 'show' | 'hide'
+		if (!this.props.displayPreference) {
+			return;
+		}
+		this.props.onChangeDisplayPreference({
+			...this.props.displayPreference,
+			hideLinks: value === 'hide'
 		});
 	};
 	private readonly _setTextSize = (value: string) => {
-		this.setState({
-			textSize: value as 'default' | 'large' | 'xlarge'
+		if (!this.props.displayPreference) {
+			return;
+		}
+		this.props.onChangeDisplayPreference({
+			...this.props.displayPreference,
+			textSize: parseInt(value)
 		});
 	};
 	private readonly _setTheme = (value: string) => {
-		this.setState({
-			theme: value as 'light' | 'dark'
+		if (!this.props.displayPreference) {
+			return;
+		}
+		this.props.onChangeDisplayPreference({
+			...this.props.displayPreference,
+			theme: parseInt(value) as DisplayTheme
 		});
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			links: 'hide',
-			menuState: MenuState.Closed,
-			textSize: 'default',
-			theme: 'light'
+			menuState: MenuState.Closed
 		};
 	}
 	public componentDidUpdate(prevProps: Props) {
@@ -102,20 +107,16 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 				<Popover
 					menuChildren={
 						<div className="widget-menu-content">
-							<label>Reader mode settings</label>
 							<table>
 								<tbody>
 									<tr>
-										<td colSpan={2}></td>
-									</tr>
-									<tr>
-										<th>Links</th>
+										<th>Theme</th>
 										<td>
-											<label>Links</label>
+											<label>Theme</label>
 											<RadioButtons
-												onChange={this._setLinks}
-												options={linkOptions}
-												value={this.state.links}
+												onChange={this._setTheme}
+												options={themeOptions}
+												value={this.props.displayPreference?.theme.toString() ?? ''}
 											/>
 										</td>
 									</tr>
@@ -129,7 +130,7 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 											<RadioButtons
 												onChange={this._setTextSize}
 												options={textSizeOptions}
-												value={this.state.textSize}
+												value={this.props.displayPreference?.textSize.toString() ?? ''}
 											/>
 										</td>
 									</tr>
@@ -137,13 +138,19 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 										<td colSpan={2}></td>
 									</tr>
 									<tr>
-										<th>Theme</th>
+										<th>Links</th>
 										<td>
-											<label>Theme</label>
+											<label>Links</label>
 											<RadioButtons
-												onChange={this._setTheme}
-												options={themeOptions}
-												value={this.state.theme}
+												onChange={this._setLinks}
+												options={linkOptions}
+												value={
+													this.props.displayPreference != null ?
+														this.props.displayPreference.hideLinks ?
+															'hide' :
+															'show' :
+														''
+												}
 											/>
 										</td>
 									</tr>
@@ -160,7 +167,7 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 					<Icon
 						badge={false}
 						display="block"
-						name="gear"
+						name="equalizer"
 					/>
 				</Popover>
 			</div>

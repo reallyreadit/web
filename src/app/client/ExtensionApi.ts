@@ -9,6 +9,7 @@ import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthSer
 import SemanticVersion from '../../common/SemanticVersion';
 import * as Cookies  from 'js-cookie';
 import { extensionVersionCookieKey } from '../../common/cookies';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
@@ -36,6 +37,9 @@ export default class extends ExtensionApi {
                         break;
                     case 'commentUpdated':
                         this.emitEvent('commentUpdated', message.data);
+                        break;
+                    case 'displayPreferenceChanged':
+                        this.emitEvent('displayPreferenceChanged', message.data);
                         break;
                     case 'initialize':
                         // set communication established
@@ -112,6 +116,9 @@ export default class extends ExtensionApi {
     }
     public commentUpdated(comment: CommentThread) {
         this.sendMessage('commentUpdated', comment);
+    }
+    public displayPreferenceChanged(preference: DisplayPreference) {
+        this.sendMessage('displayPreferenceChanged', preference);
     }
     public extensionInstallationEventReceived(event: ExtensionInstallationEvent) {
         if (this.isInstalled && event.type === 'uninstalled') {

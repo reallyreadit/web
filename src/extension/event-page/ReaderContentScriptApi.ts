@@ -21,6 +21,7 @@ import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import UserAccount from '../../common/models/UserAccount';
 import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 interface ReaderContentScriptTab {
 	articleId: number | null,
@@ -31,6 +32,8 @@ export default class ReaderContentScriptApi {
 	private readonly _tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'localStorage');
 	constructor(
 		handlers: {
+			onGetDisplayPreference: () => DisplayPreference | null,
+			onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 			onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 			onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
 			onLoadContentParser: (tabId: number) => void,
@@ -51,6 +54,24 @@ export default class ReaderContentScriptApi {
 				if (message.to === 'eventPage' && message.from === 'readerContentScript') {
 					console.log(`[ReaderApi] received ${message.type} message from tab # ${sender.tab?.id}`);
 					switch (message.type) {
+						case 'getDisplayPreference':
+							sendResponse({
+								value: handlers.onGetDisplayPreference()
+							});
+							break;
+						case 'changeDisplayPreference':
+							this.sendMessageToOtherTabs(
+								sender.tab.id,
+								{
+									type: 'displayPreferenceChanged',
+									data: message.data
+								}
+							);
+							createMessageResponseHandler(
+								handlers.onChangeDisplayPreference(message.data),
+								sendResponse
+							);
+							return true;
 						case 'registerPage':
 							this._tabs.set({
 								articleId: null,
@@ -236,29 +257,51 @@ export default class ReaderContentScriptApi {
 			}
 		);
 	}
-	private broadcastMessage<T>(articleId: number, message: Message) {
-		this._tabs
-			.getAll()
-			.forEach(
-				tab => {
-					if (articleId == null || tab.articleId === articleId) {
-						console.log(`[ReaderApi] sending ${message.type} message to tab # ${tab.id}`);
-						chrome.tabs.sendMessage(
-							tab.id,
-							message,
-							() => {
-								if (chrome.runtime.lastError) {
-									console.log(`[ReaderApi] error sending message to tab # ${tab.id}, message: ${chrome.runtime.lastError.message}`);
-									this._tabs.remove(tab.id);
-								}
-							}
-						);
+	private broadcastMessage<T>(tabs: ReaderContentScriptTab[], message: Message) {
+		tabs.forEach(
+			tab => {
+				console.log(`[ReaderApi] sending ${message.type} message to tab # ${tab.id}`);
+				chrome.tabs.sendMessage(
+					tab.id,
+					message,
+					() => {
+						if (chrome.runtime.lastError) {
+							console.log(`[ReaderApi] error sending message to tab # ${tab.id}, message: ${chrome.runtime.lastError.message}`);
+							this._tabs.remove(tab.id);
+						}
 					}
-				}
-			);
+				);
+			}
+		);
+	}
+	private sendMessageToAllTabs(message: Message) {
+		this.broadcastMessage(
+			this._tabs.getAll(),
+			message
+		);
+	}
+	private sendMessageToOtherTabs(fromTabId: number, message: Message) {
+		this.broadcastMessage(
+			this._tabs
+				.getAll()
+				.filter(
+					tab => tab.id !== fromTabId
+				),
+			message
+		);
+	}
+	private sendMessageToArticleTabs(articleId: number, message: Message) {
+		this.broadcastMessage(
+			this._tabs
+				.getAll()
+				.filter(
+					tab => tab.articleId === articleId
+				),
+			message
+		);
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
-		this.broadcastMessage(
+		this.sendMessageToArticleTabs(
 			event.article.id,
 			{
 				type: 'articleUpdated',
@@ -267,8 +310,7 @@ export default class ReaderContentScriptApi {
 		);
 	}
 	public authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse) {
-		this.broadcastMessage(
-			null,
+		this.sendMessageToAllTabs(
 			{
 				type: 'authServiceLinkCompleted',
 				data: response
@@ -279,7 +321,7 @@ export default class ReaderContentScriptApi {
 		this._tabs.clear();
 	}
 	public commentPosted(comment: CommentThread) {
-		this.broadcastMessage(
+		this.sendMessageToArticleTabs(
 			comment.articleId,
 			{
 				type: 'commentPosted',
@@ -288,7 +330,7 @@ export default class ReaderContentScriptApi {
 		);
 	}
 	public commentUpdated(comment: CommentThread) {
-		this.broadcastMessage(
+		this.sendMessageToArticleTabs(
 			comment.articleId,
 			{
 				type: 'commentUpdated',
@@ -296,9 +338,16 @@ export default class ReaderContentScriptApi {
 			}
 		);
 	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		this.sendMessageToAllTabs(
+			{
+				type: 'displayPreferenceChanged',
+				data: preference
+			}
+		)
+	};
 	public userSignedOut() {
-		this.broadcastMessage(
-			null,
+		this.sendMessageToAllTabs(
 			{
 				type: 'userSignedOut'
 			}
@@ -313,8 +362,7 @@ export default class ReaderContentScriptApi {
 		this._tabs.clear();
 	}
 	public userUpdated(user: UserAccount) {
-		this.broadcastMessage(
-			null,
+		this.sendMessageToAllTabs(
 			{
 				type: 'userUpdated',
 				data: user

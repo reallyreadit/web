@@ -7,6 +7,7 @@ import ExtensionInstallationEvent from './ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import SemanticVersion from '../../common/SemanticVersion';
 import HttpEndpoint from '../../common/HttpEndpoint';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export interface Params {
 	installedVersion: SemanticVersion | null,
@@ -15,6 +16,7 @@ export interface Params {
 export default abstract class ExtensionApi extends EventEmitter<{
 	'articlePosted': Post,
 	'articleUpdated': ArticleUpdatedEvent,
+	'displayPreferenceChanged': DisplayPreference,
 	'installationStatusChanged': SemanticVersion | null,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
@@ -42,6 +44,7 @@ export default abstract class ExtensionApi extends EventEmitter<{
 	public abstract authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
+	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract extensionInstallationEventReceived(event: ExtensionInstallationEvent): void;
 	public abstract userUpdated(user: UserAccount): void;
 	public get installedVersion() {

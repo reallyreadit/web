@@ -43,6 +43,9 @@ import createAuthorScreenFactory from './screens/AuthorScreen';
 import { DeviceType } from '../../../common/DeviceType';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
 import createDiscoverScreenFactory from './screens/DiscoverScreen';
+import EventSource from '../EventSource';
+import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
+import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -70,7 +73,7 @@ const authScreenPageviewParams = {
 export default class extends Root<
 	Props,
 	State,
-	Pick<State, 'user'>,
+	Pick<State, 'displayTheme' | 'user'>,
 	SharedEvents & {
 		'newStars': number
 	}
@@ -215,7 +218,14 @@ export default class extends Root<
 				/>
 			);
 		} else {
-			this.onUserSignedIn(response.user, SignInEventType.ExistingUser);
+			this.onUserSignedIn(
+				{
+					displayPreference: response.displayPreference,
+					userAccount: response.user
+				},
+				SignInEventType.ExistingUser,
+				EventSource.Local
+			);
 		}
 		this.setState({
 			authStatus: null
@@ -590,14 +600,16 @@ export default class extends Root<
 				ScreenKey.Settings,
 				{
 					onCloseDialog: this._dialog.closeDialog,
+					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
 					onChangeTimeZone: this._changeTimeZone,
-					onGetSettings: this.props.serverApi.getSettings,
+					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
+					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
@@ -607,7 +619,7 @@ export default class extends Root<
 		};
 
 		// state
-		const { screens, dialog } = this.processNavigationRequest(props.initialUser, props.initialLocation);
+		const { screens, dialog } = this.processNavigationRequest(props.initialUserProfile?.userAccount, props.initialLocation);
 		this.state = {
 			...this.state,
 			dialogs: (
@@ -748,6 +760,12 @@ export default class extends Root<
 				})()
 			)
 			.addListener(
+				'displayPreferenceChanged',
+				preference => {
+					this.onDisplayPreferenceChanged(preference, EventSource.Remote);
+				}
+			)
+			.addListener(
 				'loadUrl',
 				urlString => {
 					// check if the url matches a route
@@ -867,7 +885,10 @@ export default class extends Root<
 		};
 	}
 	protected getSharedState() {
-		return { user: this.state.user };
+		return {
+			displayTheme: this.state.displayTheme,
+			user: this.state.user
+		};
 	}
 	protected getSignUpAnalyticsForm(action: string) {
 		return {
@@ -878,11 +899,17 @@ export default class extends Root<
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
 	}
-	protected onUserSignedIn(user: UserAccount, eventType: SignInEventType) {
+	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
+		if (eventSource === EventSource.Local) {
+			this.props.appApi.displayPreferenceChanged(preference);
+		}
+		super.onDisplayPreferenceChanged(preference, eventSource);
+	}
+	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
 		// sync auth state with app
 		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.2')) >= 0) {
 			this.props.appApi
-				.signIn(user, eventType)
+				.signIn(profile.userAccount, eventType)
 				.then(
 					response => {
 						if (
@@ -894,7 +921,11 @@ export default class extends Root<
 					}
 				);
 		} else {
-			this.props.appApi.syncAuthCookie(user);
+			this.props.appApi.syncAuthCookie(profile.userAccount);
+		}
+		// sync display preference with app
+		if (profile.displayPreference) {
+			this.props.appApi.displayPreferenceChanged(profile.displayPreference);
 		}
 		// set screen
 		let screen: Screen;
@@ -928,11 +959,12 @@ export default class extends Root<
 			isInOrientation = false;
 		}
 		// update analytics
-		this.props.analytics.setUserId(user.id);
+		this.props.analytics.setUserId(profile.userAccount.id);
 		this.props.analytics.sendPageview(screen);
 		return super.onUserSignedIn(
-			user,
+			profile,
 			eventType,
+			eventSource,
 			{
 				isInOrientation,
 				screens: [screen]
@@ -1093,12 +1125,16 @@ export default class extends Root<
 			.then(
 				deviceInfo => {
 					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
-						this.props.appApi.initialize(this.props.initialUser);
+						this.props.appApi.initialize(this.props.initialUserProfile?.userAccount);
 					} else {
-						this.props.appApi.syncAuthCookie(this.props.initialUser);
+						this.props.appApi.syncAuthCookie(this.props.initialUserProfile?.userAccount);
 					}
 				}
 			);
+		// sync display preference with app
+		if (this.props.initialUserProfile?.displayPreference) {
+			this.props.appApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
+		}
 		// super
 		super.componentDidMount();
 		// get the initial route
@@ -1113,7 +1149,7 @@ export default class extends Root<
 		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
 		// send the initial pageview
 		this.props.analytics.sendPageview(
-			this.props.initialUser ?
+			this.props.initialUserProfile ?
 				{
 					title: initialRoute.analyticsName,
 					path: this.props.initialLocation.path
@@ -1127,7 +1163,7 @@ export default class extends Root<
 			}
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
-		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUser) {
+		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUserProfile) {
 			const pathParams = initialRoute.getPathParams(this.props.initialLocation.path);
 			this.props.appApi.readArticle({
 				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']

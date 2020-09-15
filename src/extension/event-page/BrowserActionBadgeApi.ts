@@ -2,8 +2,8 @@ import UserArticle from '../../common/models/UserArticle';
 
 enum Color {
 	Default = '#555555',
-	Read = 'LimeGreen',
-	Unread = 'DarkGray'
+	Read = '#32CD32',
+	Unread = '#A9A9A9'
 }
 interface LoadingAnimation {
 	interval: number,

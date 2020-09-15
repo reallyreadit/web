@@ -26,7 +26,7 @@ export default class ContentElement {
         // measure the element and then get the line height or use the element height
         this._contentOffset = this._getContentOffset();
         this._contentRect = this._getContentRect();
-        this._lineHeight = this._getLineHeight() || this._contentRect.height || 1;
+        this.setLineHeight();
         // assign the wordCount before calculating the lines
         this._wordCount = wordCount;
         // set the lines
@@ -64,20 +64,6 @@ export default class ContentElement {
             wordCount += lineWordCount;
         }
         this._syncDebugDisplay();
-    }
-    private _getLineHeight() {
-        const testElement = this._createListItemOrSpanElement();
-        if (testElement.nodeName === 'LI') {
-            testElement.style.display = 'inline';
-        }
-        testElement.style.whiteSpace = 'pre';
-        testElement.innerHTML = '&nbsp;\n&nbsp';
-        this._element.appendChild(testElement);
-        const
-            clientRects = testElement.getClientRects(),
-            lineHeight = clientRects[clientRects.length - 1].top - clientRects[0].top;
-        testElement.remove();
-        return lineHeight;
     }
     private _getContentOffset() {
         const computedStyle = window.getComputedStyle(this._element);
@@ -152,6 +138,20 @@ export default class ContentElement {
                 debugElement.style.backgroundImage = `linear-gradient(to right, rgba(0, 255, 0, 0.5) ${percentComplete}%, transparent ${percentComplete}%)`;
             }
         );
+    }
+    public setLineHeight() {
+        const testElement = this._createListItemOrSpanElement();
+        if (testElement.nodeName === 'LI') {
+            testElement.style.display = 'inline';
+        }
+        testElement.style.whiteSpace = 'pre';
+        testElement.innerHTML = '&nbsp;\n&nbsp';
+        this._element.appendChild(testElement);
+        const
+            clientRects = testElement.getClientRects(),
+            lineHeight = clientRects[clientRects.length - 1].top - clientRects[0].top;
+        testElement.remove();
+        this._lineHeight = lineHeight || this._contentRect.height || 1;
     }
     public updateOffset() {
         const contentRect = this._getContentRect();

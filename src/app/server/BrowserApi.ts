@@ -8,6 +8,8 @@ import NotificationPreference from '../../common/models/notifications/Notificati
 import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
 import { ExitReason as OnboardingExitReason } from '../common/components/BrowserRoot/OnboardingFlow';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export default class extends BrowserApi {
 	private _title: string;
@@ -29,6 +31,9 @@ export default class extends BrowserApi {
 	public commentUpdated(comment: CommentThread) {
 		throw new Error('Operation not supported in server environment');
 	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public extensionInstallationChanged(event: ExtensionInstallationEvent) {
 		throw new Error('Operation not supported in server environment');
 	}
@@ -44,7 +49,7 @@ export default class extends BrowserApi {
 	public updateAvailable(version: SemanticVersion) {
 		throw new Error('Operation not supported in server environment');
 	}
-	public userSignedIn(user: UserAccount) {
+	public userSignedIn(profile: WebAppUserProfile) {
 		throw new Error('Operation not supported in server environment');
 	}
 	public userSignedOut() {

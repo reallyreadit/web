@@ -8,6 +8,8 @@ import NotificationPreference from '../../common/models/notifications/Notificati
 import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from '../common/ExtensionInstallationEvent';
 import { ExitReason as OnboardingExitReason } from '../common/components/BrowserRoot/OnboardingFlow';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 type SerializedExtensionInstallationEvent = (
 	Pick<ExtensionInstalledEvent, 'type'> & {
@@ -69,6 +71,9 @@ export default class extends BrowserApi {
 	public commentUpdated(comment: CommentThread) {
 		this.broadcastUpdate('commentUpdated', comment);
 	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		this.broadcastUpdate('displayPreferenceChanged', preference);
+	}
 	public extensionInstallationChanged(event: ExtensionInstallationEvent) {
 		let data: SerializedExtensionInstallationEvent;
 		switch (event.type) {
@@ -96,8 +101,15 @@ export default class extends BrowserApi {
 	public updateAvailable(version: SemanticVersion) {
 		this.broadcastUpdate('updateAvailable', version.toString());
 	}
-	public userSignedIn(user: UserAccount) {
-		this.broadcastUpdate('userSignedIn', user);
+	public userSignedIn(profile: WebAppUserProfile) {
+		// support legacy api for the initial release
+		this.broadcastUpdate(
+			'userSignedIn',
+			{
+				...profile.userAccount,
+				...profile
+			}
+		);
 	}
 	public userSignedOut() {
 		this.broadcastUpdate('userSignedOut');

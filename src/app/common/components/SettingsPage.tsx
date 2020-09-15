@@ -26,9 +26,12 @@ import { formatIsoDateAsUtc } from '../../../common/format';
 import LinkAccountDialog from './SettingsPage/LinkAccountDialog';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import ContentBox from '../../../common/components/ContentBox';
+import DisplayPreferencesControl from './SettingsPage/DisplayPreferencesControl';
+import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 
 interface Props {
 	onCloseDialog: () => void,
+	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onChangeEmailAddress: (email: string) => Promise<void>,
 	onChangeNotificationPreference: (data: NotificationPreference) => Promise<NotificationPreference>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
@@ -37,6 +40,7 @@ interface Props {
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
+	onRegisterDisplayPreferenceChangedEventHandler: (handler: (preference: DisplayPreference) => void) => () => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
@@ -166,6 +170,19 @@ class SettingsPage extends React.PureComponent<
 			)
 		};
 		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterDisplayPreferenceChangedEventHandler(
+				displayPreference => {
+					this.setState({
+						settings: {
+							...this.state.settings,
+							value: {
+								...this.state.settings.value,
+								displayPreference
+							}
+						}
+					});
+				}
+			),
 			props.onRegisterNotificationPreferenceChangedEventHandler(
 				notificationPreference => {
 					this.setState({
@@ -249,6 +266,17 @@ class SettingsPage extends React.PureComponent<
 						</div>
 						<div className="setting">
 							<div className="header">
+								<span className="label">Display</span>
+							</div>
+							<div className="section">
+								<DisplayPreferencesControl
+									onChangeDisplayPreference={this.props.onChangeDisplayPreference}
+									preference={this.state.settings.value.displayPreference}
+								/>
+							</div>
+						</div>
+						<div className="setting">
+							<div className="header">
 								<span className="label">Notifications</span>
 							</div>
 							<div className="section">
@@ -318,6 +346,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
 				onCloseDialog={deps.onCloseDialog}
+				onChangeDisplayPreference={deps.onChangeDisplayPreference}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
 				onChangeNotificationPreference={deps.onChangeNotificationPreference}
 				onChangePassword={deps.onChangePassword}
@@ -325,6 +354,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onOpenDialog={deps.onOpenDialog}
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}
+				onRegisterDisplayPreferenceChangedEventHandler={deps.onRegisterDisplayPreferenceChangedEventHandler}
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
 				onLinkAuthServiceAccount={deps.onLinkAuthServiceAccount}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}

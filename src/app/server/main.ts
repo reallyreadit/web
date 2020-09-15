@@ -27,13 +27,13 @@ import VerificationTokenData from '../../common/models/VerificationTokenData';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
 import { variants as marketingVariants } from '../common/marketingTesting';
-import UserAccount from '../../common/models/UserAccount';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
 import { getDeviceType } from '../../common/DeviceType';
 import TwitterCardMetadata from '../../common/models/articles/TwitterCardMetadata';
 import TwitterCardMetadataRequest from '../../common/models/articles/TwitterCardMetadataRequest';
 import { TwitterCard, TwitterCardType } from './TwitterCard';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -143,13 +143,10 @@ server = server.use((req, res, next) => {
 	req.clientType = clientType;
 	if (api.hasAuthCookie()) {
 		api
-			.fetchJson<UserAccount>('GET', { path: '/UserAccounts/GetUserAccount' })
+			.fetchJson<WebAppUserProfile>('GET', { path: '/UserAccounts/WebAppUserProfile' })
 			.then(
-				user => {
-					if (!user) {
-						throw new Error('InvalidSessionKey');
-					}
-					req.user = user;
+				profile => {
+					req.userProfile = profile;
 					next();
 				}
 			)
@@ -174,7 +171,7 @@ server = server.use((req, res, next) => {
 	if (
 		!route ||
 		route.authLevel == null ||
-		(req.user && (req.user.role === route.authLevel || req.user.role === UserAccountRole.Admin))
+		(req.userProfile && (req.userProfile.userAccount.role === route.authLevel || req.userProfile.userAccount.role === UserAccountRole.Admin))
 	) {
 		next();
 	} else {
@@ -445,7 +442,7 @@ server = server.get('/*', (req, res) => {
 			path: req.path,
 			queryString: createQueryString(req.query)
 		},
-		initialUser: req.user,
+		initialUserProfile: req.userProfile,
 		marketingVariant,
 		serverApi: req.api,
 		version: new SemanticVersion(version.app),
@@ -521,7 +518,7 @@ server = server.get('/*', (req, res) => {
 				extensionVersion: extensionVersionString,
 				marketingVariant,
 				initialLocation: rootProps.initialLocation,
-				userAccount: req.user,
+				userProfile: req.userProfile,
 				version: version.app,
 				webServerEndpoint: config.webServer
 			},

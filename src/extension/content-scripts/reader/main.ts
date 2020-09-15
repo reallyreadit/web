@@ -6,7 +6,7 @@ import createPageParseResult from '../../../common/reading/createPageParseResult
 import UserArticle from '../../../common/models/UserArticle';
 import ArticleLookupResult from '../../../common/models/ArticleLookupResult';
 import ParseResult from '../../../common/contentParsing/ParseResult';
-import styleArticleDocument from '../../../common/reading/styleArticleDocument';
+import styleArticleDocument, { applyDisplayPreferenceToArticleDocument } from '../../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 import * as React from 'react';
 import GlobalComponentHost from './GlobalComponentHost';
@@ -24,6 +24,7 @@ import HeaderComponentHost from './HeaderComponentHost';
 import UserAccount from '../../../common/models/UserAccount';
 import { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
+import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -38,6 +39,7 @@ window.reallyreadit = {
 // globals
 let
 	contentParseResult: ParseResult,
+	displayPreference: DisplayPreference | null,
 	contentRoot: HTMLElement,
 	scrollRoot: HTMLElement,
 	lookupResult: ArticleLookupResult,
@@ -64,6 +66,19 @@ function updateArticle(article: UserArticle) {
 					commentsSection.commentsLoaded(comments);
 				}
 			);
+	}
+}
+
+function updateDisplayPreference(preference: DisplayPreference) {
+	const textSizeChanged = (
+		displayPreference == null ||
+		displayPreference.textSize !== preference.textSize
+	);
+	displayPreference = preference;
+	header.displayPreferenceUpdated(preference);
+	applyDisplayPreferenceToArticleDocument(preference);
+	if (textSizeChanged && page) {
+		page.updateLineHeight();
 	}
 }
 
@@ -109,6 +124,9 @@ const eventPageApi = new EventPageApi({
 	},
 	onCommentUpdated: comment => {
 		updateComment(comment);
+	},
+	onDisplayPreferenceChanged: preference => {
+		updateDisplayPreference(preference);
 	},
 	onUserSignedOut: () => {
 		reader.unloadPage();
@@ -168,6 +186,16 @@ const header = new HeaderComponentHost({
 		scrollRoot.prepend(headerContainer);
 	},
 	services: {
+		onChangeDisplayPreference: preference => {
+			if (displayPreference) {
+				const message = getDisplayPreferenceChangeMessage(displayPreference, preference);
+				if (message) {
+					globalUi.toaster.addToast(message, Intent.Success);
+				}
+			}
+			updateDisplayPreference(preference);
+			return eventPageApi.changeDisplayPreference(preference);
+		},
 		onReportArticleIssue: request => {
 			eventPageApi.reportArticleIssue(request);
 			globalUi.toaster.addToast('Issue Reported', Intent.Success);
@@ -374,6 +402,7 @@ Promise
 			contentParseResult: ParseResult,
 			lookupResult: Promise<ArticleLookupResult>
 		},
+		DisplayPreference | null,
 		void
 	>([
 		window.reallyreadit.readerContentScript.contentParser
@@ -390,6 +419,7 @@ Promise
 					};
 				}
 			),
+		eventPageApi.getDisplayPreference(),
 		new Promise<void>(
 			resolve => setTimeout(resolve, transitionAnimationDuration / 2)
 		)	
@@ -399,11 +429,15 @@ Promise
 			// store the parse result
 			contentParseResult = results[0].contentParseResult;
 
+			// store the display preference
+			displayPreference = results[1];
+
 			// prune and style
 			const rootElements = results[0].contentParser.prune(contentParseResult);
 			contentRoot = rootElements.contentRoot;
 			scrollRoot = rootElements.scrollRoot;
 			styleArticleDocument({
+				displayPreference,
 				document,
 				useScrollContainer: true
 			});
@@ -420,7 +454,7 @@ Promise
 
 			// set up the header user interface
 			header
-				.initialize()
+				.initialize(displayPreference)
 				.attach();
 
 			new ScrollService({

@@ -42,6 +42,11 @@ const serverApi = new ServerApi({
 			readerContentScriptApi.userSignedOut();
 		}
 	},
+	onDisplayPreferenceUpdated: preference => {
+		console.log('serverApi.onDisplayPreferenceUpdated');
+		readerContentScriptApi.displayPreferenceChanged(preference);
+		webAppApi.displayPreferenceChanged(preference);
+	},
 	onUserUpdated: user => {
 		console.log('serverApi.onUserUpdated');
 		webAppApi.userUpdated(user);
@@ -50,6 +55,15 @@ const serverApi = new ServerApi({
 
 // reader content script
 const readerContentScriptApi = new ReaderContentScriptApi({
+	onGetDisplayPreference: () => {
+		return serverApi.getDisplayPreference();
+	},
+	onChangeDisplayPreference: preference => {
+		// update web app
+		webAppApi.displayPreferenceChanged(preference);
+		// persist
+		return serverApi.changeDisplayPreference(preference);
+	},
 	onRegisterPage: (tabId, data) => serverApi
 		.registerPage(tabId, data)
 		.then(
@@ -183,6 +197,12 @@ const webAppApi = new WebAppApi({
 	onAuthServiceLinkCompleted: response => {
 		// update readers
 		readerContentScriptApi.authServiceLinkCompleted(response);
+	},
+	onDisplayPreferenceChanged: preference => {
+		// update server cache
+		serverApi.updateDisplayPreference(preference);
+		// update readers
+		readerContentScriptApi.displayPreferenceChanged(preference);
 	},
 	onCommentPosted: comment => {
 		// update readers

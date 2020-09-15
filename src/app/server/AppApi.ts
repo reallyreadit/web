@@ -4,8 +4,12 @@ import DeviceInfo from '../../common/models/app/DeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
 import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
 export default class extends AppApi {
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		throw new Error('Operation not supported in server environment');
+	}
 	public getDeviceInfo() {
 		return Promise.reject('Operation not supported in server environment');
 	}

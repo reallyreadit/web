@@ -6,15 +6,19 @@ import * as classNames from 'classnames';
 import Icon from './Icon';
 import ArticleIssueReportRequest from '../models/analytics/ArticleIssueReportRequest';
 import ReportWidget from './ReaderHeader/ReportWidget';
+import SettingsWidget from './ReaderHeader/SettingsWidget';
+import DisplayPreference from '../models/userAccounts/DisplayPreference';
 
 export interface Props {
 	article: Fetchable<UserArticle>,
+	displayPreference: DisplayPreference | null,
 	isHidden: boolean,
 	onNavBack?: () => void,
+	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	showProgressBar?: boolean
 }
-export default class ReaderHeader extends React.PureComponent<Props> {
+export default class ReaderHeader extends React.Component<Props> {
 	public static defaultProps: Partial<Props> = {
 		showProgressBar: true
 	};
@@ -32,6 +36,12 @@ export default class ReaderHeader extends React.PureComponent<Props> {
 						null}
 				</div>
 				<div className="separator"></div>
+				<SettingsWidget
+					displayPreference={this.props.displayPreference}
+					isHidden={this.props.isHidden}
+					onChangeDisplayPreference={this.props.onChangeDisplayPreference}
+				/>
+				<div className="spacer"></div>
 				<ReportWidget
 					article={this.props.article}
 					isHidden={this.props.isHidden}
