@@ -153,7 +153,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			.then(this._handleExistingUserAuthentication);
 	};
 	private readonly _stepMap = {
-		[Step.Twitter]: (
+		[Step.Twitter]: (_: UserAccount) => (
 			<TwitterStep
 				analyticsAction={this.props.analyticsAction}
 				onSignIn={this._goToSignInStep}
@@ -161,7 +161,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 				onSkip={this._goToCreateAccountStep}
 			/>
 		),
-		[Step.CreateAccount]: (
+		[Step.CreateAccount]: (_: UserAccount) => (
 			<CreateAccountStep
 				analyticsAction={this.props.analyticsAction}
 				captcha={this.props.captcha}
@@ -171,7 +171,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 				onSignInWithTwitter={this.props.onSignInWithTwitter}
 			/>
 		),
-		[Step.SignIn]: (
+		[Step.SignIn]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
 				onCreateAccount={this._goToCreateAccountStep}
@@ -181,14 +181,14 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 				onSignInWithTwitter={this.props.onSignInWithTwitter}
 			/>
 		),
-		[Step.CreateAuthServiceAccount]: (
+		[Step.CreateAuthServiceAccount]: (_: UserAccount) => (
 			<CreateAuthServiceAccountStep
 				authServiceToken={this.props.authServiceToken}
 				onCreateAuthServiceAccount={this._createAuthServiceAccount}
 				onLinkExistingAccount={this._goToLinkAccountStep}
 			/>
 		),
-		[Step.LinkAccount]: (
+		[Step.LinkAccount]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
 				authServiceToken={this.props.authServiceToken}
@@ -196,48 +196,48 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 				onSignIn={this._signIn}
 			/>
 		),
-		[Step.RequestPasswordReset]: (
+		[Step.RequestPasswordReset]: (_: UserAccount) => (
 			<RequestPasswordResetStep
 				authServiceToken={this.props.authServiceToken}
 				captcha={this.props.captcha}
 				onRequestPasswordReset={this.props.onRequestPasswordReset}
 			/>
 		),
-		[Step.ResetPassword]: (
+		[Step.ResetPassword]: (_: UserAccount) => (
 			<ResetPasswordStep
 				email={this.props.passwordResetEmail}
 				onResetPassword={this._resetPassword}
 				token={this.props.passwordResetToken}
 			/>
 		),
-		[Step.InstallExtension]: (
+		[Step.InstallExtension]: (_: UserAccount) => (
 			<InstallExtensionStep
 				deviceType={this.props.deviceType}
 			/>
 		),
-		[Step.ExtensionInstalled]: (
+		[Step.ExtensionInstalled]: (_: UserAccount) => (
 			<ExtensionInstalledStep
 				deviceType={this.props.deviceType}
 				onContinue={this._goToButtonTutorialStep}
 			/>
 		),
-		[Step.ButtonTutorial]: (
+		[Step.ButtonTutorial]: (_: UserAccount) => (
 			<ButtonTutorialStep
 				onContinue={this._goToTrackingAnimationStep}
 			/>
 		),
-		[Step.TrackingAnimation]: (
+		[Step.TrackingAnimation]: (_: UserAccount) => (
 			<TrackingAnimationStep
 				onContinue={this._goToShareStep}
 			/>
 		),
-		[Step.Share]: (
+		[Step.Share]: (user: UserAccount) => (
 			<ShareStep
 				onContinue={this._complete}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onShare={this.props.onShare}
-				user={this.props.user}
+				user={user}
 			/>
 		)
 	};
@@ -311,7 +311,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 							}
 							onAnimationEnd={this._handleStepAnimationEnd}
 						>
-							{this._stepMap[this.state.step]}
+							{this._stepMap[this.state.step](this.props.user)}
 						</div>
 					</div>
 				</div>
