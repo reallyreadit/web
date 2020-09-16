@@ -21,6 +21,7 @@ export default (props: {
 			onEnterKeyPressed={props.onEnterKeyPressed}
 			required
 			showError={props.showError}
+			subtext="Your username will be public, but you can choose to be as anonymous as you wish. (ex: JenFox or Human123)"
 			type="username"
 			value={props.value}
 		/>
