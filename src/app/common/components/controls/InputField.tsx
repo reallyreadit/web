@@ -7,7 +7,8 @@ import { ClassValue } from 'classnames/types';
 export { LabelPosition };
 export default (props: Props & {
 	className?: ClassValue,
-	labelPosition?: LabelPosition
+	labelPosition?: LabelPosition,
+	subtext?: string
 }) => {
 	const { className, labelPosition, ...inputControlProps } = props;
 	return (
@@ -15,6 +16,7 @@ export default (props: Props & {
 			label={props.label}
 			className={classNames(props.className, 'input-field')}
 			labelPosition={props.labelPosition}
+			subtext={props.subtext}
 		>
 			<InputControl {...inputControlProps} />
 		</FormField>
