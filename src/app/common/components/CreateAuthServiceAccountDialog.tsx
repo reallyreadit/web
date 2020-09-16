@@ -21,7 +21,7 @@ export default class CreateAuthServiceAccountDialog extends FormDialog<void, Pro
 	constructor(props: Props & FormDialogProps) {
 		super(
 			{
-				title: 'Choose a User Name',
+				title: 'Choose a Username',
 				submitButtonText: 'Sign Up'
 			},
 			props
