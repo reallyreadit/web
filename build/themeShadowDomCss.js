@@ -6,6 +6,6 @@ module.exports = cssFilePath => {
 		fs
 			.readFileSync(cssFilePath)
 			.toString()
-			.replace(/:root(:not\()?\[data-com_readup_theme(=(light|dark))?\]\)?/g, ':host-context($&)')
+			.replace(/:root((:not\()?\[data-com_readup_theme(=(light|dark))?\]\)?)/g, ':host($1)')
 	);
 };

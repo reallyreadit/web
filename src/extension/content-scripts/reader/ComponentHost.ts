@@ -27,6 +27,15 @@ export default abstract class ComponentHost<Services, State> {
 		this._shadowHost = document.createElement('div');
 		this._shadowHost.style.visibility = 'hidden';
 
+		// set initial theme and listen for changes
+		this.setTheme();
+		window.addEventListener(
+			'com.readup.themechange',
+			() => {
+				this.setTheme();
+			}
+		);
+
 		// create shadow root by attaching to host
 		this._shadowRoot = this._shadowHost.attachShadow({
 			mode: 'open'
@@ -43,6 +52,9 @@ export default abstract class ComponentHost<Services, State> {
 		(this._shadowRoot as any).createElement = (...args: any[]) => (document as any).createElement(...args);
 		(this._shadowRoot as any).createElementNS = (...args: any[]) => (document as any).createElementNS(...args);
 		(this._shadowRoot as any).createTextNode = (...args: any[]) => (document as any).createTextNode(...args);
+	}
+	private setTheme() {
+		this._shadowHost.dataset['com_readup_theme'] = document.documentElement.dataset['com_readup_theme'];
 	}
 	protected setState(nextState: Partial<State>) {
 		ReactDOM.render(

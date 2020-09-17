@@ -625,6 +625,14 @@ export default abstract class Root<
 					'light' :
 				''
 		);
+		window.dispatchEvent(
+			new CustomEvent(
+				'com.readup.themechange',
+				{
+					detail: theme
+				}
+			)
+		);
 	}
 	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<S>) {
 		this.setThemeAttribute(userProfile?.displayPreference?.theme);

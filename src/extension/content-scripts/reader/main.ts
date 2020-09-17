@@ -77,6 +77,14 @@ function updateDisplayPreference(preference: DisplayPreference) {
 	displayPreference = preference;
 	header.displayPreferenceUpdated(preference);
 	applyDisplayPreferenceToArticleDocument(preference);
+	window.dispatchEvent(
+		new CustomEvent(
+			'com.readup.themechange',
+			{
+				detail: preference.theme
+			}
+		)
+	);
 	if (textSizeChanged && page) {
 		page.updateLineHeight();
 	}

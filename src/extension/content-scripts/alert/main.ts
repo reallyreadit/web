@@ -62,6 +62,18 @@ shadowHost.style.padding = '0';
 shadowHost.style.transform = 'none';
 shadowHost.style.zIndex = '2147483647';
 
+// set initial theme and listen for changes
+function setTheme() {
+	shadowHost.dataset['com_readup_theme'] = document.documentElement.dataset['com_readup_theme'];
+}
+setTheme();
+window.addEventListener(
+	'com.readup.themechange',
+	() => {
+		setTheme();
+	}
+);
+
 const shadowRoot = document.body
 	.appendChild(shadowHost)
 	.attachShadow({
