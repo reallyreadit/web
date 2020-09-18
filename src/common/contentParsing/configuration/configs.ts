@@ -179,6 +179,12 @@ export default {
 			}
 		},
 		{
+			hostname: 'politico.com',
+			imageContainerSearch: {
+				selectorBlacklist: ['.social-tools']
+			}
+		},
+		{
 			hostname: 'qsrmagazine.com',
 			contentSearchRootElementSelector: '.post'
 		},
