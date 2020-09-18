@@ -6,11 +6,11 @@
     "version": {
       "app": "1.31.0",
       "extension": {
-        "package": "4.0.1",
-        "content-parser": "1.1.0"
+        "package": "4.0.2",
+        "content-parser": "1.1.1"
       },
       "native-client": {
-        "reader": "11.0.0",
+        "reader": "11.0.1",
         "share-extension": "4.0.1"
       }
     }
