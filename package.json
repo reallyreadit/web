@@ -7,7 +7,7 @@
       "app": "1.31.0",
       "extension": {
         "package": "4.0.1",
-        "content-parser": "1.0.16"
+        "content-parser": "1.1.0"
       },
       "native-client": {
         "reader": "11.0.0",
