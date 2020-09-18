@@ -60,7 +60,10 @@ let
 	userPage: UserPage,
 	user: UserAccount;
 
-function updateDisplayPreference(preference: DisplayPreference) {
+function updateDisplayPreference(preference: DisplayPreference | null) {
+	if (!preference) {
+		return;
+	}
 	const textSizeChanged = (
 		displayPreference == null ||
 		displayPreference.textSize !== preference.textSize
