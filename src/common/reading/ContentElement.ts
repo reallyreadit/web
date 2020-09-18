@@ -147,9 +147,11 @@ export default class ContentElement {
         testElement.style.whiteSpace = 'pre';
         testElement.innerHTML = '&nbsp;\n&nbsp';
         this._element.appendChild(testElement);
-        const
-            clientRects = testElement.getClientRects(),
+        const clientRects = testElement.getClientRects();
+        let lineHeight: number;
+        if (clientRects.length) {
             lineHeight = clientRects[clientRects.length - 1].top - clientRects[0].top;
+        }
         testElement.remove();
         this._lineHeight = lineHeight || this._contentRect.height || 1;
     }
