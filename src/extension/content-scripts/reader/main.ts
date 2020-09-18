@@ -44,7 +44,8 @@ let
 	scrollRoot: HTMLElement,
 	lookupResult: ArticleLookupResult,
 	page: Page,
-	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void;
+	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void,
+	hasStyledArticleDocument = false;
 
 function updateArticle(article: UserArticle) {
 	if (!lookupResult) {
@@ -70,21 +71,21 @@ function updateArticle(article: UserArticle) {
 }
 
 function updateDisplayPreference(preference: DisplayPreference | null) {
-	if (!preference) {
-		return;
+	let textSizeChanged = false;
+	if (preference) {
+		textSizeChanged = (
+			displayPreference == null ||
+			displayPreference.textSize !== preference.textSize
+		);
+		displayPreference = preference;
+		header.displayPreferenceUpdated(preference);
 	}
-	const textSizeChanged = (
-		displayPreference == null ||
-		displayPreference.textSize !== preference.textSize
-	);
-	displayPreference = preference;
-	header.displayPreferenceUpdated(preference);
 	applyDisplayPreferenceToArticleDocument(preference);
 	window.dispatchEvent(
 		new CustomEvent(
 			'com.readup.themechange',
 			{
-				detail: preference.theme
+				detail: preference?.theme
 			}
 		)
 	);
@@ -137,7 +138,12 @@ const eventPageApi = new EventPageApi({
 		updateComment(comment);
 	},
 	onDisplayPreferenceChanged: preference => {
-		updateDisplayPreference(preference);
+		// only update if already styled
+		if (hasStyledArticleDocument) {
+			updateDisplayPreference(preference);
+		} else {
+			displayPreference = preference;
+		}
 	},
 	onUserSignedOut: () => {
 		reader.unloadPage();
@@ -448,9 +454,12 @@ Promise
 				document,
 				useScrollContainer: true
 			});
+			hasStyledArticleDocument = true;
 
 			// update the display preference
-			updateDisplayPreference(results[1]);
+			// this version is loaded from local storage. prefer an existing copy
+			// that would have been set by an external change event.
+			updateDisplayPreference(displayPreference || results[1]);
 
 			// set up the global user interface
 			const resetStyleLink = document.createElement('link');

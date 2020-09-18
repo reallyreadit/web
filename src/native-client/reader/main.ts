@@ -57,21 +57,22 @@ messagingContext.addListener(
 let
 	article: UserArticle,
 	displayPreference: DisplayPreference,
+	page: Page,
 	userPage: UserPage,
 	user: UserAccount;
 
 function updateDisplayPreference(preference: DisplayPreference | null) {
-	if (!preference) {
-		return;
+	let textSizeChanged = false;
+	if (preference) {
+		textSizeChanged = (
+			displayPreference == null ||
+			displayPreference.textSize !== preference.textSize
+		);
+		displayPreference = preference;
+		render();
 	}
-	const textSizeChanged = (
-		displayPreference == null ||
-		displayPreference.textSize !== preference.textSize
-	);
-	displayPreference = preference;
-	render();
 	applyDisplayPreferenceToArticleDocument(preference);
-	if (textSizeChanged) {
+	if (textSizeChanged && page) {
 		page.updateLineHeight();
 	}
 }
@@ -87,8 +88,6 @@ styleArticleDocument({
 	title: metadataParseResult.metadata.article.title,
 	byline: createByline(metadataParseResult.metadata.article.authors)
 });
-
-const page = new Page(contentParseResult.primaryTextContainers);
 
 const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
 procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
@@ -538,10 +537,12 @@ messagingContext.sendMessage(
 		type: 'getDisplayPreference'
 	},
 	(preference: DisplayPreference | null) => {
-		// set globals
-		displayPreference = preference;
-		// style article
-		applyDisplayPreferenceToArticleDocument(preference);
+		// update the display preference
+		// this version is loaded from local storage. prefer an existing copy
+		// that would have been set by an external change event.
+		if (!displayPreference) {
+			updateDisplayPreference(preference);
+		}
 		// send parse result
 		messagingContext.sendMessage(
 			{
@@ -554,6 +555,7 @@ messagingContext.sendMessage(
 				userPage = result.userPage;
 				user = result.user;
 				// set up the reader
+				page = new Page(contentParseResult.primaryTextContainers);
 				page.setReadState(result.userPage.readState);
 				reader.loadPage(page);
 				// re-render ui
