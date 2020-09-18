@@ -43,7 +43,7 @@ export default class extends React.PureComponent<{
 							/> :
 							null}
 					<span key="text">{this.props.text}</span>
-					{!this.props.iconLeft ?
+					{this.props.badge != null ?
 						<AlertBadge count={this.props.badge} /> :
 						null}
 				</>
