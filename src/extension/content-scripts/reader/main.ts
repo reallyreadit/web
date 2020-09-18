@@ -437,18 +437,17 @@ Promise
 			// store the parse result
 			contentParseResult = results[0].contentParseResult;
 
-			// store the display preference
-			displayPreference = results[1];
-
 			// prune and style
 			const rootElements = results[0].contentParser.prune(contentParseResult);
 			contentRoot = rootElements.contentRoot;
 			scrollRoot = rootElements.scrollRoot;
 			styleArticleDocument({
-				displayPreference,
 				document,
 				useScrollContainer: true
 			});
+
+			// update the display preference
+			updateDisplayPreference(results[1]);
 
 			// set up the global user interface
 			const resetStyleLink = document.createElement('link');

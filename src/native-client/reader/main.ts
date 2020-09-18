@@ -80,7 +80,6 @@ const
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 
 styleArticleDocument({
-	displayPreference: null,
 	document: window.document,
 	title: metadataParseResult.metadata.article.title,
 	byline: createByline(metadataParseResult.metadata.article.authors)

@@ -424,14 +424,12 @@ export function applyDisplayPreferenceToArticleDocument(preference: DisplayPrefe
 }
 export default (
 	{
-		displayPreference,
 		document,
 		title,
 		byline,
 		useScrollContainer
 	}:
 	{
-		displayPreference: DisplayPreference | null,
 		document: Document,
 		title?: string,
 		byline?: string,
@@ -496,8 +494,6 @@ export default (
 		document.documentElement.classList.add('com_readup_scroll_capture');
 	}
 	document.body.id = 'com_readup_article';
-	// apply display preference
-	applyDisplayPreferenceToArticleDocument(displayPreference);
 	// add styles
 	const styleElement = document.createElement('style');
 	styleElement.type = 'text/css';
