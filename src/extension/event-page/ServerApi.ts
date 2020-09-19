@@ -145,18 +145,23 @@ export default class ServerApi {
 			}
 		});
 		// notifications
-		chrome.notifications.onClicked.addListener(
-			id => {
-				chrome.tabs.create({
-					url: createUrl(window.reallyreadit.extension.config.api, '/Extension/Notification/' + id)
-				});
-			}
-		);
+		if (chrome.notifications) {
+			chrome.notifications.onClicked.addListener(
+				id => {
+					chrome.tabs.create({
+						url: createUrl(window.reallyreadit.extension.config.api, '/Extension/Notification/' + id)
+					});
+				}
+			);
+		}
 		// handlers
 		this._onDisplayPreferenceUpdated = handlers.onDisplayPreferenceUpdated;
 		this._onUserUpdated = handlers.onUserUpdated;
 	}
 	private checkNotifications() {
+		if (!chrome.notifications) {
+			return;
+		}
 		chrome.notifications.getAll(
 			chromeNotifications => {
 				const
