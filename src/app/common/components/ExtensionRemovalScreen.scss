@@ -2,6 +2,7 @@
 	componentPath: src/app/common/components/ExtensionRemovalScreen
 	cssComponentId: extension-removal-screen_6csgkd
 */
+@import '../../../common/styles/colors';
 
 .extension-removal-screen_6csgkd {
 	display: flex;
@@ -19,4 +20,16 @@
 	margin: 20px 0;
 	min-width: 360px;
 	height: 100px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .extension-removal-screen_6csgkd > textarea {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
 }
