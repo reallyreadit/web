@@ -7,6 +7,13 @@ export default interface DisplayPreference {
 	textSize: number,
 	theme: DisplayTheme
 }
+export function areEqual(a: DisplayPreference, b: DisplayPreference) {
+	return (
+		a.hideLinks === b.hideLinks &&
+		a.textSize === b.textSize &&
+		a.theme === b.theme
+	);
+}
 export function getClientPreferredColorScheme() {
 	if (
 		window

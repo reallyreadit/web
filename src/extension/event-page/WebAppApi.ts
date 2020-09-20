@@ -6,6 +6,7 @@ import ObjectStore from '../../common/webStorage/ObjectStore';
 import { Message } from '../../common/MessagingContext';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 export default class WebAppApi {
 	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
@@ -16,6 +17,8 @@ export default class WebAppApi {
 			onCommentPosted: (comment: CommentThread) => void,
 			onCommentUpdated: (comment: CommentThread) => void,
 			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
+			onUserSignedIn: (profile: WebAppUserProfile) => void,
+			onUserSignedOut: () => void,
 			onUserUpdated: (user: UserAccount) => void
 		}
 	) {
@@ -47,6 +50,12 @@ export default class WebAppApi {
 							// sender.tab.id is undefined in Firefox
 							// tab won't be removed until a messaging error occurs
 							this.removeTab(sender.tab.id);
+							break;
+						case 'userSignedIn':
+							handlers.onUserSignedIn(message.data);
+							break;
+						case 'userSignedOut':
+							handlers.onUserSignedOut();
 							break;
 						case 'userUpdated':
 							handlers.onUserUpdated(message.data);

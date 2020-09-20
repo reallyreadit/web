@@ -29,26 +29,16 @@ function setIcon(state: 'authenticated' | 'unauthenticated') {
 
 // server
 const serverApi = new ServerApi({
-	onAuthenticationStatusChanged: isAuthenticated => {
-		console.log('serverApi.onAuthenticationStatusChanged');
-		// update icon
-		setIcon(
-			isAuthenticated ?
-				'authenticated' :
-				'unauthenticated'
-		);
-		// stop reading on sign out
-		if (!isAuthenticated) {
-			readerContentScriptApi.userSignedOut();
-		}
-	},
-	onDisplayPreferenceUpdated: preference => {
-		console.log('serverApi.onDisplayPreferenceUpdated');
+	onDisplayPreferenceChanged: preference => {
 		readerContentScriptApi.displayPreferenceChanged(preference);
 		webAppApi.displayPreferenceChanged(preference);
 	},
+	onUserSignedOut: () => {
+		setIcon('unauthenticated');
+		readerContentScriptApi.userSignedOut();
+	},
 	onUserUpdated: user => {
-		console.log('serverApi.onUserUpdated');
+		readerContentScriptApi.userUpdated(user);
 		webAppApi.userUpdated(user);
 	}
 });
@@ -200,7 +190,7 @@ const webAppApi = new WebAppApi({
 	},
 	onDisplayPreferenceChanged: preference => {
 		// update server cache
-		serverApi.updateDisplayPreference(preference);
+		serverApi.displayPreferenceChanged(preference);
 		// update readers
 		readerContentScriptApi.displayPreferenceChanged(preference);
 	},
@@ -212,9 +202,18 @@ const webAppApi = new WebAppApi({
 		// update readers
 		readerContentScriptApi.commentUpdated(comment);
 	},
+	onUserSignedIn: profile => {
+		setIcon('authenticated');
+		serverApi.userSignedIn(profile);
+	},
+	onUserSignedOut: () => {
+		setIcon('unauthenticated');
+		serverApi.userSignedOut();
+		readerContentScriptApi.userSignedOut();
+	},
 	onUserUpdated: user => {
 		// update server cache
-		serverApi.updateUser(user);
+		serverApi.userUpdated(user);
 		// update readers
 		readerContentScriptApi.userUpdated(user);
 	}
@@ -259,17 +258,11 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('tabs');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// update icon
-	serverApi
-		.getAuthStatus()
-		.then(
-			isAuthenticated => {
-				setIcon(
-					isAuthenticated ?
-						'authenticated' :
-						'unauthenticated'
-				);
-			}
-		);
+	setIcon(
+		serverApi.isAuthenticated() ?
+			'authenticated' :
+			'unauthenticated'
+	);
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
@@ -313,13 +306,13 @@ chrome.runtime.onInstalled.addListener(details => {
 		}
 	);
 	if (chrome.notifications) {
-	chrome.alarms.create(
-		ServerApi.alarms.checkNotifications,
-		{
-			when: Date.now(),
-			periodInMinutes: 2.5
-		}
-	);
+		chrome.alarms.create(
+			ServerApi.alarms.checkNotifications,
+			{
+				when: Date.now(),
+				periodInMinutes: 2.5
+			}
+		);
 	}
 	chrome.alarms.create(
 		ServerApi.alarms.getBlacklist,
@@ -369,17 +362,11 @@ chrome.runtime.onStartup.addListener(
 	() => {
 		console.log('[EventPage] startup');
 		// update icon
-		serverApi
-			.getAuthStatus()
-			.then(
-				isAuthenticated => {
-					setIcon(
-						isAuthenticated ?
-							'authenticated' :
-							'unauthenticated'
-					);
-				}
-			);
+		setIcon(
+			serverApi.isAuthenticated() ?
+				'authenticated' :
+				'unauthenticated'
+		);
 		// initialize tabs
 		readerContentScriptApi.clearTabs();
 		webAppApi.clearTabs();
@@ -389,60 +376,54 @@ chrome.runtime.onStartup.addListener(
 chrome.browserAction.onClicked.addListener(
 	tab => {
 		// check if we're logged in
-		serverApi
-			.getAuthStatus()
-			.then(
-				isAuthenticated => {
-					if (!isAuthenticated) {
-						chrome.tabs.create({
-							url: createUrl(
-								window.reallyreadit.extension.config.web,
-								null,
-								{ 
-									[extensionAuthQueryStringKey]: null
-								}
-							)
-						});
-						return;
+		if (!serverApi.isAuthenticated()) {
+			chrome.tabs.create({
+				url: createUrl(
+					window.reallyreadit.extension.config.web,
+					null,
+					{
+						[extensionAuthQueryStringKey]: null
 					}
-					// check which type of page we're looking at
-					if (!tab.url) {
-						return;
-					}
-					// web app
-					if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.web))) {
-						chrome.tabs.executeScript(
-							tab.id,
-							{
-								code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
-							}
-						);
-						return;
-					}
-					// blacklisted
-					const blacklist = serverApi.getBlacklist();
-					if (
-						blacklist.some(
-							regex => regex.test(tab.url)
-						)
-					) {
-						chrome.tabs.executeScript(
-							tab.id,
-							{
-								code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
-							}
-						);
-						return;
-					}
-					// article
-					chrome.tabs.executeScript(
-						tab.id,
-						{
-							code: "if (!window.reallyreadit?.readerContentScript) { window.reallyreadit = { ...window.reallyreadit, readerContentScript: { } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectReader' }); }"
-						}
-					);
+				)
+			});
+			return;
+		}
+		// check which type of page we're looking at
+		if (!tab.url) {
+			return;
+		}
+		// web app
+		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.web))) {
+			chrome.tabs.executeScript(
+				tab.id,
+				{
+					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
 				}
 			);
+			return;
+		}
+		// blacklisted
+		const blacklist = serverApi.getBlacklist();
+		if (
+			blacklist.some(
+				regex => regex.test(tab.url)
+			)
+		) {
+			chrome.tabs.executeScript(
+				tab.id,
+				{
+					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+				}
+			);
+			return;
+		}
+		// article
+		chrome.tabs.executeScript(
+			tab.id,
+			{
+				code: "if (!window.reallyreadit?.readerContentScript) { window.reallyreadit = { ...window.reallyreadit, readerContentScript: { } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectReader' }); }"
+			}
+		);
 	}
 );
 chrome.runtime.onMessage.addListener(

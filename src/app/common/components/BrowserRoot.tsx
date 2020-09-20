@@ -1007,6 +1007,8 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedIn(profile);
+			this.props.extensionApi.userSignedIn(profile);
+			// legacy compatibility for versions prior to userSignedIn
 			if (profile.displayPreference) {
 				this.props.extensionApi.displayPreferenceChanged(profile.displayPreference);
 			}
@@ -1034,7 +1036,8 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.props.analytics.setUserId(null);
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
-			this.props.browserApi.userSignedOut()
+			this.props.browserApi.userSignedOut();
+			this.props.extensionApi.userSignedOut();
 		}
 		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
 		let supplementaryState: Partial<State>;

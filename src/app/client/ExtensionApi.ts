@@ -10,6 +10,7 @@ import SemanticVersion from '../../common/SemanticVersion';
 import * as Cookies  from 'js-cookie';
 import { extensionVersionCookieKey } from '../../common/cookies';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
@@ -130,6 +131,12 @@ export default class extends ExtensionApi {
             // update install status
             this.changeInstallationStatus(event.version);
         }
+    }
+    public userSignedIn(profile: WebAppUserProfile) {
+        this.sendMessage('userSignedIn', profile);
+    }
+    public userSignedOut() {
+        this.sendMessage('userSignedOut');
     }
     public userUpdated(user: UserAccount) {
         this.sendMessage('userUpdated', user);
