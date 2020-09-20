@@ -312,6 +312,7 @@ chrome.runtime.onInstalled.addListener(details => {
 			periodInMinutes: 120
 		}
 	);
+	if (chrome.notifications) {
 	chrome.alarms.create(
 		ServerApi.alarms.checkNotifications,
 		{
@@ -319,6 +320,7 @@ chrome.runtime.onInstalled.addListener(details => {
 			periodInMinutes: 2.5
 		}
 	);
+	}
 	chrome.alarms.create(
 		ServerApi.alarms.getBlacklist,
 		{
