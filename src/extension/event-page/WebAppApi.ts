@@ -134,9 +134,10 @@ export default class WebAppApi {
 	}
 	public injectContentScripts() {
 		// some browsers do not allow querying whitelisted urls without 'tabs' permission
+		const webAppBaseUrl = window.reallyreadit.extension.config.web.protocol + '://' + window.reallyreadit.extension.config.web.host + '/';
 		chrome.tabs.query(
 			{
-				url: window.reallyreadit.extension.config.web.protocol + '://' + window.reallyreadit.extension.config.web.host + '/*',
+				url: webAppBaseUrl + '*',
 				status: 'complete'
 			},
 			tabs => {
@@ -146,6 +147,10 @@ export default class WebAppApi {
 				}
 				tabs.forEach(
 					tab => {
+						// safari allows querying but returns all tabs with the url set to empty strings
+						if (!tab.url?.startsWith(webAppBaseUrl)) {
+							return;
+						}
 						console.log('[WebAppApi] injecting content script into tab # ' + tab.id);
 						chrome.tabs.executeScript(
 							tab.id,
