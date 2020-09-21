@@ -13,6 +13,9 @@
 .footer_ink40x > .store-links_gbmsih {
 	margin: 15px 0;
 }
+.footer_ink40x > .corp {
+	font-size: 11pt;
+}
 
 @include theme using ($root, $scheme) {
 	#{$root} .footer_ink40x {
@@ -21,6 +24,14 @@
 			(
 				"border-top-color": $nav-border-color,
 				"background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .footer_ink40x > .corp {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
 			)
 		);
 	}
