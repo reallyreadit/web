@@ -4,14 +4,20 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
-import { extensionVersionCookieKey, extensionInstallationRedirectPathCookieKey, sessionIdCookieKey } from '../../common/cookies';
+import { sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
+import BrowserActionBadgeApi from './BrowserActionBadgeApi';
+import UserAccount from '../../common/models/UserAccount';
 
 // browser action icon
-function setIcon(state: 'authenticated' | 'unauthenticated') {
+function setIcon(
+	state: {
+		user: UserAccount | null
+	}
+) {
 	const placeholder = '{SIZE}';
 	let pathTemplate = '/icons/';
-	if (state === 'authenticated') {
+	if (state.user) {
 		pathTemplate += `icon-${placeholder}.png`;
 	} else {
 		pathTemplate += `icon-${placeholder}-warning.png`;
@@ -27,6 +33,9 @@ function setIcon(state: 'authenticated' | 'unauthenticated') {
 	});
 }
 
+// browser action badge
+const badgeApi = new BrowserActionBadgeApi();
+
 // server
 const serverApi = new ServerApi({
 	onDisplayPreferenceChanged: preference => {
@@ -34,10 +43,15 @@ const serverApi = new ServerApi({
 		webAppApi.displayPreferenceChanged(preference);
 	},
 	onUserSignedOut: () => {
-		setIcon('unauthenticated');
+		setIcon({
+			user: null
+		});
 		readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: user => {
+		setIcon({
+			user
+		});
 		readerContentScriptApi.userUpdated(user);
 		webAppApi.userUpdated(user);
 	}
@@ -45,6 +59,7 @@ const serverApi = new ServerApi({
 
 // reader content script
 const readerContentScriptApi = new ReaderContentScriptApi({
+	badgeApi,
 	onGetDisplayPreference: () => {
 		return serverApi.getDisplayPreference();
 	},
@@ -203,15 +218,22 @@ const webAppApi = new WebAppApi({
 		readerContentScriptApi.commentUpdated(comment);
 	},
 	onUserSignedIn: profile => {
-		setIcon('authenticated');
+		setIcon({
+			user: profile.userAccount
+		});
 		serverApi.userSignedIn(profile);
 	},
 	onUserSignedOut: () => {
-		setIcon('unauthenticated');
+		setIcon({
+			user: null
+		});
 		serverApi.userSignedOut();
 		readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: user => {
+		setIcon({
+			user
+		});
 		// update server cache
 		serverApi.userUpdated(user);
 		// update readers
@@ -258,11 +280,9 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('tabs');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// update icon
-	setIcon(
-		serverApi.isAuthenticated() ?
-			'authenticated' :
-			'unauthenticated'
-	);
+	setIcon({
+		user: serverApi.getUser()
+	});
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
@@ -270,33 +290,64 @@ chrome.runtime.onInstalled.addListener(details => {
 	readerContentScriptApi.clearTabs();
 	webAppApi.clearTabs();
 	webAppApi.injectContentScripts();
-	// log new installations or old unrecorded ones
-	if (
-		details.reason === 'install' ||
-		(
-			details.reason === 'update' &&
-			!localStorage.getItem('installationId')
-		)
-	) {
-		chrome.runtime.getPlatformInfo(platformInfo => {
+	// log all installations
+	// safari doesn't allow us to get or set cookies prior to user granting access
+	// in fact chrome.cookies.* api calls take 30+s to time out with no results
+	// so we need to rely on the api server to get and set them for us
+	chrome.runtime.getPlatformInfo(
+		platformInfo => {
+			if (details.reason === 'install') {
+				badgeApi.setLoading();
+			}
 			serverApi
-				.logExtensionInstallation(platformInfo)
-				.then(result => {
-					chrome.runtime.setUninstallURL(
-						createUrl(window.reallyreadit.extension.config.web, '/extension/uninstall', { installationId: result.installationId })
-					);
-					localStorage.setItem('installationId', result.installationId);
+				.logExtensionInstallation({
+					arch: platformInfo.arch,
+					installationId: localStorage.getItem('installationId'),
+					os: platformInfo.os
 				})
+				.then(
+					response => {
+						if (details.reason === 'install') {
+							chrome.tabs.create({
+								url: createUrl(
+									window.reallyreadit.extension.config.web,
+									response.redirectPath,
+									{
+										[extensionInstalledQueryStringKey]: null
+									}
+								)
+							});
+						}
+						if (!response.installationId) {
+							return;
+						}
+						chrome.runtime.setUninstallURL(
+							createUrl(
+								window.reallyreadit.extension.config.web,
+								'/extension/uninstall',
+								{
+									installationId: response.installationId
+								}
+							)
+						);
+						localStorage.setItem('installationId', response.installationId);	
+					}
+				)
 				.catch(
 					error => {
-						console.log('[EventPage] error logging installation')
+						console.log('[EventPage] error logging installation');
 						if (error) {
 							console.log(error);
 						}
 					}
+				)
+				.finally(
+					() => {
+						badgeApi.setDefault();
+					}
 				);
-		});
-	}
+		}
+	);
 	// create alarms
 	chrome.alarms.create(
 		'updateContentParser',
@@ -323,50 +374,14 @@ chrome.runtime.onInstalled.addListener(details => {
 	);
 	// clean up old alarm
 	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
-	// set cookie and open new tab on new install
-	chrome.cookies.set(
-		{
-			url: createUrl(window.reallyreadit.extension.config.web),
-			domain: '.' + window.reallyreadit.extension.config.web.host,
-			expirationDate: (Date.now() + (365 * 24 * 60 * 60 * 1000)) / 1000,
-			name: extensionVersionCookieKey,
-			secure: window.reallyreadit.extension.config.web.protocol === 'https',
-			value: window.reallyreadit.extension.config.version,
-			path: '/',
-			sameSite: 'no_restriction'
-		},
-		() => {
-			if (details.reason === 'install') {
-				chrome.cookies.get(
-					{
-						url: createUrl(window.reallyreadit.extension.config.web),
-						name: extensionInstallationRedirectPathCookieKey,
-					},
-					cookie => {
-						chrome.tabs.create({
-							url: createUrl(
-								window.reallyreadit.extension.config.web,
-								cookie?.value,
-								{
-									[extensionInstalledQueryStringKey]: null
-								}
-							)
-						});
-					}
-				);
-			}
-		}
-	);
 });
 chrome.runtime.onStartup.addListener(
 	() => {
 		console.log('[EventPage] startup');
 		// update icon
-		setIcon(
-			serverApi.isAuthenticated() ?
-				'authenticated' :
-				'unauthenticated'
-		);
+		setIcon({
+			user: serverApi.getUser()
+		});
 		// initialize tabs
 		readerContentScriptApi.clearTabs();
 		webAppApi.clearTabs();

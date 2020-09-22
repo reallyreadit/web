@@ -5,11 +5,12 @@ enum Color {
 	Read = '#32CD32',
 	Unread = '#A9A9A9'
 }
+type OptionalTabId = number | null;
 interface LoadingAnimation {
 	interval: number,
-	tabId: number
+	tabId: OptionalTabId
 }
-function createLoadingAnimation(tabId: number) {
+function createLoadingAnimation(tabId: OptionalTabId) {
 	let frameIndex = 0;
 	let frameCount = 5;
 	chrome.browserAction.setBadgeBackgroundColor(
@@ -43,7 +44,7 @@ function createLoadingAnimation(tabId: number) {
 }
 export default class BrowserActionBadgeApi {
 	private readonly _animations: LoadingAnimation[] = [];
-	private cancelAnimation(tabId: number) {
+	private cancelAnimation(tabId: OptionalTabId) {
 		const animation = this.getAnimation(tabId);
 		if (animation) {
 			console.log(`[BrowserActionBadgeApi] cancelling loading animation for tab # ${tabId}`);
@@ -54,12 +55,12 @@ export default class BrowserActionBadgeApi {
 			);
 		}
 	}
-	private getAnimation(tabId: number) {
+	private getAnimation(tabId: OptionalTabId) {
 		return this._animations.find(
 			animation => animation.tabId === tabId
 		);			
 	}
-	public setDefault(tabId: number) {
+	public setDefault(tabId: OptionalTabId = null) {
 		this.cancelAnimation(tabId);
 		chrome.browserAction.setBadgeBackgroundColor({
 			color: Color.Default,
@@ -70,7 +71,7 @@ export default class BrowserActionBadgeApi {
 			text: ''
 		});
 	}
-	public setLoading(tabId: number) {
+	public setLoading(tabId: OptionalTabId = null) {
 		if (this.getAnimation(tabId)) {
 			return;
 		}

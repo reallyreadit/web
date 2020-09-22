@@ -23,6 +23,8 @@ import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference, { areEqual as areDisplayPreferencesEqual, getClientDefaultDisplayPreference } from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import InstallationRequest from '../../common/models/extension/InstallationRequest';
+import InstallationResponse from '../../common/models/extension/InstallationResponse';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
@@ -168,7 +170,7 @@ export default class ServerApi {
 									});
 								}
 							);
-							const currentUser = this._user.get();
+							const currentUser = this.getUser();
 							if (!areEqual(currentUser, result.user)) {
 								this._user.set(result.user);
 								// don't broadcast on sign in order to avoid sending stale data
@@ -300,7 +302,10 @@ export default class ServerApi {
 		});
 	}
 	public isAuthenticated() {
-		return this._user.get() != null;
+		return this.getUser() != null;
+	}
+	public getUser() {
+		return this._user.get();
 	}
 	public getBlacklist() {
 		return this._blacklist
@@ -345,11 +350,11 @@ export default class ServerApi {
 			}
 		});
 	}
-	public logExtensionInstallation(platformInfo: Pick<chrome.runtime.PlatformInfo, 'arch' | 'os'>) {
-		return this.fetchJson<{ installationId: string }>({
+	public logExtensionInstallation(data: InstallationRequest) {
+		return this.fetchJson<InstallationResponse>({
 			method: 'POST',
 			path: '/Extension/Install',
-			data: platformInfo
+			data
 		});
 	}
 	public userSignedIn(profile: WebAppUserProfile) {

@@ -28,10 +28,11 @@ interface ReaderContentScriptTab {
 	id: number
 }
 export default class ReaderContentScriptApi {
-	private readonly _badge = new BrowserActionBadgeApi();
+	private readonly _badge: BrowserActionBadgeApi;
 	private readonly _tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'localStorage');
 	constructor(
-		handlers: {
+		params: {
+			badgeApi: BrowserActionBadgeApi,
 			onGetDisplayPreference: () => DisplayPreference | null,
 			onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 			onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
@@ -48,6 +49,8 @@ export default class ReaderContentScriptApi {
 			onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>
 		}
 	) {
+		// set badge api
+		this._badge = params.badgeApi;
 		// listen for messages from content script
 		chrome.runtime.onMessage.addListener(
 			(message, sender, sendResponse) => {
@@ -56,7 +59,7 @@ export default class ReaderContentScriptApi {
 					switch (message.type) {
 						case 'getDisplayPreference':
 							sendResponse({
-								value: handlers.onGetDisplayPreference()
+								value: params.onGetDisplayPreference()
 							});
 							break;
 						case 'changeDisplayPreference':
@@ -68,7 +71,7 @@ export default class ReaderContentScriptApi {
 								}
 							);
 							createMessageResponseHandler(
-								handlers.onChangeDisplayPreference(message.data),
+								params.onChangeDisplayPreference(message.data),
 								sendResponse
 							);
 							return true;
@@ -79,7 +82,7 @@ export default class ReaderContentScriptApi {
 							});
 							this._badge.setLoading(sender.tab.id);
 							createMessageResponseHandler(
-								handlers
+								params
 									.onRegisterPage(sender.tab.id, message.data)
 									.then(
 										result => {
@@ -115,7 +118,7 @@ export default class ReaderContentScriptApi {
 							return true;
 						case 'commitReadState':
 							createMessageResponseHandler(
-								handlers
+								params
 									.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit)
 									.then(
 										article => {
@@ -140,7 +143,7 @@ export default class ReaderContentScriptApi {
 							this._tabs.remove(sender.tab.id);
 							break;
 						case 'loadContentParser':
-							handlers.onLoadContentParser(sender.tab.id);
+							params.onLoadContentParser(sender.tab.id);
 							break;
 						case 'closeWindow':
 							chrome.windows.remove(
@@ -154,7 +157,7 @@ export default class ReaderContentScriptApi {
 							break;
 						case 'getComments':
 							createMessageResponseHandler(
-								handlers.onGetComments(message.data),
+								params.onGetComments(message.data),
 								sendResponse
 							);
 							return true;
@@ -205,49 +208,49 @@ export default class ReaderContentScriptApi {
 							return true;
 						case 'postArticle':
 							createMessageResponseHandler(
-								handlers.onPostArticle(message.data),
+								params.onPostArticle(message.data),
 								sendResponse
 							);
 							return true;
 						case 'postComment':
 							createMessageResponseHandler(
-								handlers.onPostComment(message.data),
+								params.onPostComment(message.data),
 								sendResponse
 							);
 							return true;
 						case 'postCommentAddendum':
 							createMessageResponseHandler(
-								handlers.onPostCommentAddendum(message.data),
+								params.onPostCommentAddendum(message.data),
 								sendResponse
 							);
 							return true;
 						case 'postCommentRevision':
 							createMessageResponseHandler(
-								handlers.onPostCommentRevision(message.data),
+								params.onPostCommentRevision(message.data),
 								sendResponse
 							);
 							return true;
 						case 'reportArticleIssue':
 							createMessageResponseHandler(
-								handlers.onReportArticleIssue(message.data),
+								params.onReportArticleIssue(message.data),
 								sendResponse
 							);
 							return true;
 						case 'requestTwitterBrowserLinkRequestToken':
 							createMessageResponseHandler(
-								handlers.onRequestTwitterBrowserLinkRequestToken(),
+								params.onRequestTwitterBrowserLinkRequestToken(),
 								sendResponse
 							);
 							return true;
 						case 'setStarred':
 							createMessageResponseHandler(
-								handlers.onSetStarred(message.data),
+								params.onSetStarred(message.data),
 								sendResponse
 							);
 							return true;
 						case 'deleteComment':
 							createMessageResponseHandler(
-								handlers.onDeleteComment(message.data),
+								params.onDeleteComment(message.data),
 								sendResponse
 							);
 							return true;
