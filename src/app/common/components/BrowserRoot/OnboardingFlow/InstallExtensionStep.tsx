@@ -14,7 +14,11 @@ export default class InstallExtensionStep extends React.PureComponent<Props> {
 				extensionInstallationRedirectPathCookieKey,
 				window.location.pathname,
 				{
-					expires: new Date(Date.now() + (15 * 60 * 1000))
+					domain: '.' + window.location.hostname,
+					expires: new Date(Date.now() + (15 * 60 * 1000)),
+					path: '/',
+					secure: window.location.protocol.startsWith('https'),
+					sameSite: 'none'
 				}
 			);
 		}
@@ -26,13 +30,24 @@ export default class InstallExtensionStep extends React.PureComponent<Props> {
 				{isCompatibleBrowser(this.props.deviceType) ?
 					<>
 						<h1>To read on Readup, add the {this.props.deviceType} {getExtensionName(this.props.deviceType)}.</h1>
-						<Button
-							href={getStoreUrl(this.props.deviceType)}
-							intent="loud"
-							onClick={this._addExtension}
-							size="large"
-							text={`Add to ${this.props.deviceType} — It's Free`}
-						/>
+						{this.props.deviceType === DeviceType.DesktopSafari ?
+							<>
+								<h3>Step 1: Install the Readup App</h3>
+								<p>The Readup macOS app is available in the Mac App Store and comes bundled with the Readup Safari Extension.</p>
+								<h3>Step 2: Enable the Safari Extension</h3>
+								<p>In Safari click on the "Safari" menu, select "Preferences...", select the "Extensions" tab and then check the box next to Readup.</p>
+								<img
+									alt="Enable Readup Extension Screenshot"
+									src="/images/safari-enable-extension-screenshot.png"
+								/>
+							</> :
+							<Button
+								href={getStoreUrl(this.props.deviceType)}
+								intent="loud"
+								onClick={this._addExtension}
+								size="large"
+								text={`Add to ${this.props.deviceType} — It's Free`}
+							/>}
 					</> :
 					<>
 						<h2>Readup isn't available yet for {this.props.deviceType}.</h2>

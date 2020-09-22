@@ -11,8 +11,24 @@ export default (
 ) => (
 	<div className="extension-installed-step_k3sj2r">
 		<h1>Great! You now have the Readup button!</h1>
-		<h2>Whenever you see something you want to read, hit that button.</h2>
-		<ExtensionButtonImage deviceType={props.deviceType} />
+		{props.deviceType === DeviceType.DesktopSafari ?
+			<>
+				<h3>Grant Permission to the Extension to Get Started</h3>
+				<p>Click the Readup button and then select "Always Allow on This Website" to allow the extension to talk to the Readup website. You only have to do this once.</p>
+				<img
+					alt="Grant Extension Access Screenshot"
+					src="/images/bai-screenshot-safari-warning.png"
+				/>
+				<img
+					alt="Extension Access Granted Screenshot"
+					src="/images/bai-screenshot-safari.png"
+				/>
+				<h3>Now, whenever you see something you want to read, just hit that button.</h3>
+			</> :
+			<>
+				<h2>Whenever you see something you want to read, hit that button.</h2>
+				<ExtensionButtonImage deviceType={props.deviceType} />
+			</>}
 		<Button
 			intent="loud"
 			onClick={props.onContinue}

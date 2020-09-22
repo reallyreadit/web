@@ -9,6 +9,8 @@ export default (
 	let imgUrl = '/images/';
 	if (props.deviceType === DeviceType.DesktopFirefox) {
 		imgUrl += 'bai-screenshot-firefox.png';
+	} else if (props.deviceType === DeviceType.DesktopSafari) {
+		imgUrl += 'bai-screenshot-safari.png';
 	} else {
 		imgUrl += 'bai-screenshot-chrome.png';
 	}

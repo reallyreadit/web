@@ -7,6 +7,8 @@
 .extension-button-image_dr3we4 {
 	border-width: 1px;
 	border-style: solid;
+	width: 170px;
+	height: 110px;
 }
 
 @include theme using ($root, $scheme) {
