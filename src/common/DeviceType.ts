@@ -38,6 +38,7 @@ export function getDeviceType(userAgent: string) {
 export function getExtensionName(deviceType: CompatibleBrowser) {
 	switch (deviceType) {
 		case DeviceType.DesktopChrome:
+			return 'extension';
 		case DeviceType.DesktopSafari:
 			return 'extension';
 		case DeviceType.DesktopFirefox:
@@ -51,9 +52,9 @@ export function getStoreUrl(deviceType: CompatibleDevice) {
 		case DeviceType.DesktopFirefox:
 			return 'https://addons.mozilla.org/en-US/firefox/addon/readup/';
 		case DeviceType.DesktopSafari:
-			return '';
+			return 'https://apps.apple.com/us/app/readup-social-reading/id1441825432';
 		case DeviceType.Ios:
-			return 'https://apps.apple.com/us/app/readup-app/id1441825432';
+			return 'https://apps.apple.com/us/app/readup-social-reading/id1441825432';
 	}
 }
 export function isCompatibleBrowser(deviceType: DeviceType): deviceType is CompatibleBrowser {
