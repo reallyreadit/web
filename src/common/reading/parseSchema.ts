@@ -8,6 +8,27 @@ function many(value: any, map?: (value: any) => any) {
 	const retValue = value instanceof Array ? value : value ? [value] : [];
 	return map ? retValue.map(map) : retValue;
 }
+function processKeywords(keywords: any) {
+	const tags: string[] = [];
+	if (keywords) {
+		if (
+			Array.isArray(keywords)
+		) {
+			for (const element of keywords) {
+				tags.push(
+					...processKeywords(element)
+				);
+			}
+		} else if (
+			typeof keywords === 'string'
+		) {
+			tags.push(
+				...keywords.split(',')
+			);
+		}
+	}
+	return tags;
+}
 function parseSchema(topLevelTypes: any[]): ParseResult {
 	const data = topLevelTypes.find(
 		type =>
@@ -32,7 +53,7 @@ function parseSchema(topLevelTypes: any[]): ParseResult {
 				})),
 				section: first(data.articleSection) || first(data.printSection),
 				description: first(data.description),
-				tags: data.keywords ? data.keywords instanceof Array ? data.keywords : data.keywords.split(',') : [],
+				tags: processKeywords(data.keywords),
 				pageLinks: [],
 				imageUrl: firstImage ?
 					typeof firstImage === 'string' || typeof firstImage === 'object' ?
