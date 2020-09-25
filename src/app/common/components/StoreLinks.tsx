@@ -17,6 +17,10 @@ export default () => (
 				className="firefox"
 				href={getStoreUrl(DeviceType.DesktopFirefox)} target="_blank"
 			></a>
+			<a
+				className="edge"
+				href={getStoreUrl(DeviceType.DesktopEdge)} target="_blank"
+			></a>
 		</div>
 	</div>
 );

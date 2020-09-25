@@ -34,6 +34,10 @@
 	background-image: url(/images/firefox.svg);
 	width: 40px;
 }
+.store-links_gbmsih > .images > a.edge {
+	background-image: url(/images/edge.svg);
+	width: 40px;
+}
 
 @include theme using ($root, $scheme) {
 	#{$root} .store-links_gbmsih > .images > a.apple {

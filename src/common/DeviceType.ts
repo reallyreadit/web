@@ -7,7 +7,7 @@ export enum DeviceType {
 	DesktopSafari = 'Safari',
 	DesktopEdge = 'Edge'
 }
-type CompatibleBrowser = DeviceType.DesktopChrome | DeviceType.DesktopFirefox | DeviceType.DesktopSafari;
+type CompatibleBrowser = DeviceType.DesktopChrome | DeviceType.DesktopEdge | DeviceType.DesktopFirefox | DeviceType.DesktopSafari;
 type CompatibleDevice = CompatibleBrowser | DeviceType.Ios;
 export function getDeviceType(userAgent: string) {
 	// test for mobile os first since browsers don't matter there
@@ -22,7 +22,7 @@ export function getDeviceType(userAgent: string) {
 		return DeviceType.DesktopFirefox;
 	}
 	// test edge before chrome and safari since it also includes 'chrome' and 'safari'
-	if (/(edge)/i.test(userAgent)) {
+	if (/(edg)/i.test(userAgent)) {
 		return DeviceType.DesktopEdge;
 	}
 	// test chrome before safari since brave includes 'chrome' and 'safari'
@@ -39,6 +39,8 @@ export function getExtensionName(deviceType: CompatibleBrowser) {
 	switch (deviceType) {
 		case DeviceType.DesktopChrome:
 			return 'extension';
+		case DeviceType.DesktopEdge:
+			return 'add-on';
 		case DeviceType.DesktopSafari:
 			return 'extension';
 		case DeviceType.DesktopFirefox:
@@ -49,6 +51,8 @@ export function getStoreUrl(deviceType: CompatibleDevice) {
 	switch (deviceType) {
 		case DeviceType.DesktopChrome:
 			return 'https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi';
+		case DeviceType.DesktopEdge:
+			return 'https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm';
 		case DeviceType.DesktopFirefox:
 			return 'https://addons.mozilla.org/en-US/firefox/addon/readup/';
 		case DeviceType.DesktopSafari:
@@ -60,6 +64,7 @@ export function getStoreUrl(deviceType: CompatibleDevice) {
 export function isCompatibleBrowser(deviceType: DeviceType): deviceType is CompatibleBrowser {
 	return (
 		deviceType === DeviceType.DesktopChrome ||
+		deviceType === DeviceType.DesktopEdge ||
 		deviceType === DeviceType.DesktopFirefox ||
 		deviceType === DeviceType.DesktopSafari
 	);
