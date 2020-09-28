@@ -127,10 +127,15 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 		}
 	};
 	private readonly _handleExistingUserAuthentication = () => {
-		if (this.props.isExtensionInstalled) {
+		if (
+			this.props.isExtensionInstalled &&
+			this.props.user.dateOrientationCompleted
+		) {
 			this._beginClosing(ExitReason.ExistingUserAuthenticated);
-		} else {
+		} else if (!this.props.isExtensionInstalled) {
 			this.goToStep(Step.InstallExtension);
+		} else {
+			this.goToStep(Step.ExtensionInstalled);
 		}
 	};
 	private readonly _handleStepAnimationEnd = (event: React.AnimationEvent) => {

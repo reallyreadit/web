@@ -46,6 +46,7 @@ import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import { formatIsoDateAsDotNet } from '../../../common/format';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -130,10 +131,27 @@ export default class extends Root<
 
 	// screens
 	private readonly _completeOrientation = (analytics: OrientationAnalytics) => {
-		this.setState({
-			isInOrientation: false
-		});
+		this.props.serverApi
+			.registerOrientationCompletion()
+			.catch(
+				() => {
+					// ignore. non-critical error path. orientation will just be repeated
+				}
+			);
 		this.props.serverApi.logOrientationAnalytics(analytics);
+		this.onUserUpdated(
+			{
+				...this.state.user,
+				dateOrientationCompleted: formatIsoDateAsDotNet(
+					new Date()
+						.toISOString()
+				)
+			},
+			EventSource.Local,
+			{
+				isInOrientation: false
+			}
+		);
 	};
 	private readonly _createAuthorScreenTitle = (name: string) => name;
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
@@ -277,10 +295,13 @@ export default class extends Root<
 			.then(
 				association => {
 					if (!this.state.user.hasLinkedTwitterAccount) {
-						this.onUserUpdated({
-							...this.state.user,
-							hasLinkedTwitterAccount: true
-						});
+						this.onUserUpdated(
+							{
+								...this.state.user,
+								hasLinkedTwitterAccount: true
+							},
+							EventSource.Local
+						);
 					}
 					return association;
 				}
@@ -628,7 +649,11 @@ export default class extends Root<
 					[]
 			),
 			authStatus: null,
-			isInOrientation: false,
+			isInOrientation: (
+				props.initialUserProfile ?
+					!props.initialUserProfile.userAccount.dateOrientationCompleted :
+					false
+			),
 			isPoppingScreen: false,
 			menuState: 'closed',
 			screens
@@ -645,7 +670,7 @@ export default class extends Root<
 							...status
 						};
 						if (!areUsersEqual(updatedUser, this.state.user)) {
-							this.onUserUpdated(updatedUser);
+							this.onUserUpdated(updatedUser, EventSource.Remote);
 						}
 					}
 				}
@@ -713,7 +738,8 @@ export default class extends Root<
 							{
 								...this.state.user,
 								hasLinkedTwitterAccount: true
-							}
+							},
+							EventSource.Remote
 						);
 					}
 				}
@@ -746,7 +772,7 @@ export default class extends Root<
 								result => {
 									if (result.value) {
 										if (!areUsersEqual(result.value, this.state.user)) {
-											this.onUserUpdated(result.value);
+											this.onUserUpdated(result.value, EventSource.Local);
 										}
 										lastUserCheck = now;
 									}
@@ -956,7 +982,7 @@ export default class extends Root<
 				this.props.appApi.requestNotificationAuthorization();
 			}
 		} else {
-			isInOrientation = false;
+			isInOrientation = !profile.userAccount.dateOrientationCompleted;
 		}
 		// update analytics
 		this.props.analytics.setUserId(profile.userAccount.id);

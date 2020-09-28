@@ -207,6 +207,7 @@ export default abstract class {
 	public readonly getDisplayPreference = this.createFetchFunction<DisplayPreference>('/UserAccounts/DisplayPreference');
 	public readonly getSettings = this.createFetchFunction<Settings>('/UserAccounts/Settings');
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
+	public readonly registerOrientationCompletion = () => this.post<UserAccount>({ path: '/UserAccounts/OrientationCompletion' });
 	public readonly requestPasswordReset = (data: PasswordResetRequestForm) => this.post({ path: '/UserAccounts/RequestPasswordReset', data });
 	public readonly resetPassword = (data: PasswordResetForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/ResetPassword', data });
 	public readonly sendPasswordCreationEmail = () => this.post({ path: '/UserAccounts/PasswordCreationEmailDispatch' });

@@ -6,7 +6,6 @@ import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
 import ExtensionInstallationEvent from './ExtensionInstallationEvent';
-import { ExitReason as OnboardingExitReason } from './components/BrowserRoot/OnboardingFlow';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
@@ -20,7 +19,6 @@ export default abstract class extends EventEmitter<{
 	'displayPreferenceChanged': DisplayPreference,
 	'extensionInstallationChanged': ExtensionInstallationEvent,
 	'notificationPreferenceChanged': NotificationPreference,
-	'onboardingEnded': OnboardingExitReason,
 	'updateAvailable': SemanticVersion,
 	'userSignedIn': WebAppUserProfile | UserAccount,
 	'userSignedOut': void,
@@ -34,7 +32,6 @@ export default abstract class extends EventEmitter<{
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract extensionInstallationChanged(event: ExtensionInstallationEvent): void;
 	public abstract notificationPreferenceChanged(preference: NotificationPreference): void;
-	public abstract onboardingEnded(reason: OnboardingExitReason): void;
 	public abstract setTitle(title: string): void;
 	public abstract updateAvailable(version: SemanticVersion): void;
 	public abstract userSignedIn(profile: WebAppUserProfile): void;

@@ -1,5 +1,8 @@
 import Fetchable from "./Fetchable";
 
+export function formatIsoDateAsDotNet(isoDate: string) {
+	return isoDate.replace(/z$/i, '');
+}
 export function formatIsoDateAsUtc(isoDate: string) {
 	return isoDate.endsWith('Z') ? isoDate : isoDate + 'Z';
 }

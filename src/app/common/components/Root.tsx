@@ -321,7 +321,7 @@ export default abstract class Root<
 		this.props.serverApi.clearAlerts({
 			alerts
 		});
-		this.onUserUpdated(newUser);
+		this.onUserUpdated(newUser, EventSource.Local);
 	};
 
 	// routing
@@ -410,7 +410,7 @@ export default abstract class Root<
 		return this.props.serverApi
 			.changeEmailAddress(email)
 			.then(user => {
-				this.onUserUpdated(user);
+				this.onUserUpdated(user, EventSource.Local);
 			});
 	};
 	protected readonly _changeNotificationPreference = (data: NotificationPreference) => {
@@ -430,7 +430,7 @@ export default abstract class Root<
 		return this.props.serverApi
 			.changeTimeZone(timeZone)
 			.then(user => {
-				this.onUserUpdated(user);
+				this.onUserUpdated(user, EventSource.Local);
 			});
 	};
 	protected readonly _createAccount = (form: CreateAccountDialogForm) => {
@@ -746,8 +746,11 @@ export default abstract class Root<
 	protected onUserSignedOut(supplementaryState?: Partial<S>) {
 		return this.setUserAuthChangedState(null, supplementaryState);
 	}
-	protected onUserUpdated(user: UserAccount) {
-		this.setState({ user });
+	protected onUserUpdated(user: UserAccount, eventSource: EventSource, supplementaryState?: Partial<S>) {
+		this.setState({
+			...supplementaryState as State,
+			user
+		});
 	}
 	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;

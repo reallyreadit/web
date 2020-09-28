@@ -49,6 +49,7 @@ import createNotificationsScreenFactory from './screens/NotificationsScreen';
 import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
+import { formatIsoDateAsDotNet } from '../../../common/format';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -261,10 +262,29 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		});
 	};
 	private readonly _endOnboarding = (reason: OnboardingExitReason) => {
-		this.setState({
-			onboarding: null
-		});
-		this.props.browserApi.onboardingEnded(reason);
+		if (reason === OnboardingExitReason.Completed) {
+			this.props.serverApi
+				.registerOrientationCompletion()
+				.catch(
+					() => {
+						// ignore. non-critical error path. orientation will just be repeated
+					}
+				);
+			this.onUserUpdated(
+				{
+					...this.state.user,
+					dateOrientationCompleted: formatIsoDateAsDotNet(
+						new Date()
+							.toISOString()
+					)
+				},
+				EventSource.Local
+			);
+		} else {
+			this.setState({
+				onboarding: null
+			});
+		}
 	};
 	protected readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
 		// open window synchronously to avoid being blocked by popup blockers
@@ -666,7 +686,10 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			extensionInstalledQueryStringKey in queryStringParams ||
 			(
 				props.initialUserProfile &&
-				!props.extensionApi.isInstalled &&
+				(
+					!props.extensionApi.isInstalled ||
+					!props.initialUserProfile.userAccount.dateOrientationCompleted
+				) &&
 				isCompatibleBrowser(props.deviceType) &&
 				route.screenKey !== ScreenKey.EmailSubscriptions &&
 				route.screenKey !== ScreenKey.ExtensionRemoval
@@ -737,16 +760,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
-			.addListener(
-				'onboardingEnded',
-				reason => {
-					if (reason !== OnboardingExitReason.Aborted && this.state.onboarding) {
-						this.setState({
-							onboarding: null
-						});
-					}
-				}
-			)
 			.addListener('updateAvailable', version => {
 				if (!this._isUpdateAvailable && version.compareTo(this.props.version) > 0) {
 					this.setUpdateAvailable();
@@ -1057,7 +1070,18 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				this._hasBroadcastInitialUser = true;
 			}
 		}
-		super.onUserUpdated(user);
+		// check for orientation completion and end onboarding if active
+		let supplementaryState: Partial<State>;
+		if (
+			this.state.onboarding != null &&
+			this.state.user.dateOrientationCompleted == null &&
+			user.dateOrientationCompleted != null
+		) {
+			supplementaryState = {
+				onboarding: null
+			};
+		}
+		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		if (!this.state.user || !this.props.extensionApi.isInstalled) {
