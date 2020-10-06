@@ -78,9 +78,7 @@ const version = JSON
 	.parse(fs.readFileSync(config.packageFilePath, { encoding: 'utf8' }))
 	['it.reallyread']
 	.version as {
-		app: string,
-		contentScript: number,
-		extension: string
+		app: string
 	};
 
 // set up logger
