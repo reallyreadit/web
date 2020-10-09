@@ -66,6 +66,7 @@ import SearchOptions from '../../../common/models/articles/SearchOptions';
 import SearchQuery from '../../../common/models/articles/SearchQuery';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
+import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -185,7 +186,7 @@ export default abstract class {
 	public readonly getNotificationPosts = this.createFetchFunctionWithParams<NotificationPostsQuery, PageResult<Post>>('/Social/NotificationPosts');
 	public readonly getReplyPosts = this.createFetchFunctionWithParams<ReplyPostsQuery, PageResult<Post>>('/Social/ReplyPosts');
 	public readonly postArticle = (data: PostForm) => this.post<Post>({ path: '/Social/Post', data });
-	public readonly postComment = (data: CommentForm) => this.post<{ article: UserArticle, comment: CommentThread }>({ path: '/Social/Comment', data });
+	public readonly postComment = (data: CommentForm) => this.post<CommentCreationResponse>({ path: '/Social/Comment', data });
 	public readonly postCommentAddendum = (data: CommentAddendumForm) => this.post<CommentThread>({ path: '/Social/CommentAddendum', data });
 	public readonly postCommentRevision = (data: CommentRevisionForm) => this.post<CommentThread>({ path: '/Social/CommentRevision', data });
 	public readonly getPostsFromUser = this.createFetchFunctionWithParams<UserPostsQuery, PageResult<Post>>('/Social/UserPosts');

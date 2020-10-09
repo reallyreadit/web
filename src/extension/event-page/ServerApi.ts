@@ -25,6 +25,7 @@ import DisplayPreference, { areEqual as areDisplayPreferencesEqual, getClientDef
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
+import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension.package}`);
@@ -264,10 +265,7 @@ export default class ServerApi {
 		});
 	}
 	public postComment(form: CommentForm) {
-		return this.fetchJson<{
-			article: UserArticle,
-			comment: CommentThread
-		}>({
+		return this.fetchJson<CommentCreationResponse>({
 			method: 'POST',
 			path: '/Social/Comment',
 			data: form
