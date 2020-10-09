@@ -158,7 +158,7 @@ const eventPageApi = new EventPageApi({
 window.addEventListener(
 	'message',
 	event => {
-		if (!event.origin.endsWith('readup.com')) {
+		if (!/(\/\/|\.)readup\.com$/.test(event.origin)) {
 			return;
 		}
 		switch (event.data?.type as String || null) {

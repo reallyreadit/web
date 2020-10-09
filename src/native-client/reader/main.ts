@@ -118,7 +118,7 @@ const reader = new Reader(
 );
 
 // document messaging interface
-if (window.location.hostname.endsWith('readup.com')) {
+if (/(^|\.)readup\.com$/.test(window.location.hostname)) {
 	const postScript = document.querySelector('#com_readup_blog_post_script script');
 	if (postScript) {
 		// the browser won't execute the script if we just alter the type attribute.
