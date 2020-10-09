@@ -7,11 +7,11 @@
       "app": "1.31.0",
       "extension": {
         "package": "4.1.2",
-        "content-parser": "1.1.1"
+        "contentParser": "1.1.1"
       },
-      "native-client": {
+      "nativeClient": {
         "reader": "11.0.1",
-        "share-extension": "4.0.1"
+        "shareExtension": "4.0.1"
       }
     }
   },

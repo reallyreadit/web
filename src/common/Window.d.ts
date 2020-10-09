@@ -1,5 +1,6 @@
 import Page from './reading/Page';
 import HttpEndpoint from './HttpEndpoint';
+import PackageVersionInfo from './PackageVersionInfo';
 
 declare global {
 	interface AppWindow {
@@ -17,12 +18,11 @@ declare global {
 			extension?: {
 				config?: {
 					api: HttpEndpoint,
-					contentParserVersion: string,
 					cookieName: string,
 					cookieDomain: string,
 					static: HttpEndpoint,
 					web: HttpEndpoint,
-					version: string
+					version: PackageVersionInfo
 				}
 			},
 			nativeClient?: {

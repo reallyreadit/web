@@ -13,7 +13,7 @@ const package = JSON.parse(
 		.toString()
 );
 
-const jsBundleFileName = `bundle-${package['it.reallyread'].version['native-client'].reader}.js`;
+const jsBundleFileName = `bundle-${package['it.reallyread'].version.nativeClient.reader}.js`;
 
 const styleInliningTemplate = `
 (function () {

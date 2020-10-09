@@ -34,6 +34,7 @@ import TwitterCardMetadata from '../../common/models/articles/TwitterCardMetadat
 import TwitterCardMetadataRequest from '../../common/models/articles/TwitterCardMetadataRequest';
 import { TwitterCard, TwitterCardType } from './TwitterCard';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import PackageVersionInfo from '../../common/PackageVersionInfo';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -77,9 +78,7 @@ function replaceSpacesWithPlusSign(token: string) {
 const version = JSON
 	.parse(fs.readFileSync(config.packageFilePath, { encoding: 'utf8' }))
 	['it.reallyread']
-	.version as {
-		app: string
-	};
+	.version as PackageVersionInfo;
 
 // set up logger
 const log = bunyan.createLogger({

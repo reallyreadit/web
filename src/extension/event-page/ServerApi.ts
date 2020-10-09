@@ -27,7 +27,7 @@ import InstallationRequest from '../../common/models/extension/InstallationReque
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
-	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version}`);
+	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension.package}`);
 	if (params.context) {
 		req.setRequestHeader('X-Readup-Context', params.context);
 	}

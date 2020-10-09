@@ -70,8 +70,7 @@ function configureWebpack(params) {
 				.readFileSync('./package.json')
 				.toString()
 		);
-		config.version = package['it.reallyread'].version.extension.package.toString();
-		config.contentParserVersion = package['it.reallyread'].version.extension['content-parser'].toString();
+		config.version = package['it.reallyread'].version;
 		stringifyProperties(config);
 		define = Object.assign(define || {}, { [params.appConfig.key]: config });
 	}

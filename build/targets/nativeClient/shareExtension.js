@@ -16,7 +16,7 @@ const build = createBuild({
 	path: 'native-client/share-extension',
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'native-client/share-extension/main.ts'),
-		fileName: `bundle-${package['it.reallyread'].version['native-client']['share-extension']}.js`,
+		fileName: `bundle-${package['it.reallyread'].version.nativeClient.shareExtension}.js`,
 		sourceMaps: false
 	}
 });
