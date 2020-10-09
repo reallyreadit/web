@@ -1,4 +1,4 @@
-import insertFontStyleElement from '../ui/insertFontStyleElement';
+import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
 
 const globalContext = window.reallyreadit.alertContentScript;
 
@@ -45,7 +45,7 @@ function createAlertComponent() {
 	return component;
 }
 
-insertFontStyleElement();
+insertExtensionFontStyleElement();
 
 const componentStyleLink = document.createElement('link');
 componentStyleLink.rel = 'stylesheet';

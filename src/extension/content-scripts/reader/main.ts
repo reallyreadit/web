@@ -12,7 +12,7 @@ import * as React from 'react';
 import GlobalComponentHost from './GlobalComponentHost';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import TitleComponentHost from './TitleComponentHost';
-import insertFontStyleElement from '../ui/insertFontStyleElement';
+import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
@@ -466,7 +466,7 @@ Promise
 			resetStyleLink.rel = 'stylesheet';
 			resetStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/reset.css');
 			document.head.appendChild(resetStyleLink);
-			insertFontStyleElement();
+			insertExtensionFontStyleElement();
 			globalUi
 				.initialize()
 				.attach();

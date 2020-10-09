@@ -28,12 +28,11 @@ const fonts = [
 		fileName: 'museo-sans-900.ttf'
 	}
 ];
-export default function insertFontStyleElement() {
+export default function insertFontStyleElement(fontDirectoryPath: string) {
 	const styleElement = document.createElement('style');
-	styleElement.type = 'text/css';
 	styleElement.textContent = fonts
 		.map(
-			font => `@font-face { font-family: '${font.family}'; src: url('${chrome.runtime.getURL('/content-scripts/ui/fonts/' + font.fileName)}'); }`
+			font => `@font-face { font-family: '${font.family}'; src: url('${fontDirectoryPath + font.fileName}'); }`
 		)
 		.join('\n');
 	document.body.append(styleElement);
