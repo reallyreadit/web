@@ -1,0 +1,17 @@
+/* variable will be injected into scss files at build time */
+$readup-config: null !default;
+
+@function prefix-path($path) {
+    @if str-slice($path, 1, 1) != "/" {
+        @return "/" + $path;
+    }
+    @return $path;
+}
+
+@function create-url($endpoint, $path: null) {
+    $url: map-get($endpoint, "protocol") + "://" + map-get($endpoint, "host");
+    @if $path != null {
+        $url: $url + prefix-path($path)
+    }
+    @return $url;
+}

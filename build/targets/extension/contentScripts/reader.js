@@ -5,25 +5,20 @@ const
 const
 	project = require('../../../project'),
 	createBuild = require('../../../createBuild'),
-	contentParserBuild = require('./reader/contentParser'),
-	themeShadowDomCss = require('../../../themeShadowDomCss');
+	contentParserBuild = require('./reader/contentParser');
 
 const
 	targetPath = 'extension/content-scripts/reader',
 	contentScriptBuild = createBuild({
-		onBuildComplete: (buildInfo, resolve) => {
-			if (buildInfo.build === 'scss') {
-				themeShadowDomCss(path.join(buildInfo.outPath, 'bundle.css'));
-			}
-			if (resolve) {
-				resolve();
-			}
+		scss: {
+			files: [
+				`${project.srcDir}/common/components/**/*.{css,scss}`,
+				`${project.srcDir}/common/styles/reset.css`,
+				`${project.srcDir}/common/styles/shadow-host.css`,
+				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`
+			],
+			targetShadowDom: true
 		},
-		scss: [
-			`${project.srcDir}/common/**/*.{css,scss}`,
-			`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`,
-			`${project.srcDir}/extension/content-scripts/ui/shadow-host.scss`
-		],
 		staticAssets: [
 			{
 				src: `${project.srcDir}/common/styles/reset.css`,

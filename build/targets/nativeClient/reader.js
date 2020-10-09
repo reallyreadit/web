@@ -118,10 +118,13 @@ const build = createBuild({
 		};
 	}()),
 	path: 'native-client/reader',
-	scss: [
-		`${project.srcDir}/common/**/*.{css,scss}`,
-		`${project.srcDir}/native-client/reader/**/*.{css,scss}`
-	],
+	scss: {
+		files: [
+			`${project.srcDir}/common/components/**/*.{css,scss}`,
+			`${project.srcDir}/common/styles/reset.css`,
+			`${project.srcDir}/native-client/reader/**/*.{css,scss}`
+		]
+	},
 	staticAssets: [
 		`${project.srcDir}/native-client/reader/fonts/**/*.*`
 	],

@@ -9,10 +9,13 @@ const app = createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'app/client/main.ts')
 	},
-	scss: [
-		`${project.srcDir}/app/{client,common}/**/*.{css,scss}`,
-		`${project.srcDir}/common/**/*.{css,scss}`
-	],
+	scss: {
+		files: [
+			`${project.srcDir}/app/**/*.{css,scss}`,
+			`${project.srcDir}/common/components/**/*.{css,scss}`,
+			`${project.srcDir}/common/styles/reset.css`
+		]
+	},
 	staticAssets: [
 		`${project.srcDir}/app/client/.well-known/**/*`,
 		`${project.srcDir}/app/client/fonts/**/*`,

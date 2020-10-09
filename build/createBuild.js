@@ -93,17 +93,31 @@ function createBuild(params) {
 				}));
 			}
 			if (params.scss) {
-				tasks.push(new Promise(resolve => {
+				tasks.push(
+					new Promise(
+						resolve => {
 					buildScss({
-						src: params.scss,
+								appConfig: params.scss.appConfig,
+								src: params.scss.files,
 						dest: outPath,
 						base: srcPath,
 						onComplete: () => {
-							params.onBuildComplete({ build: 'scss', env, outPath }, resolve);
+									params.onBuildComplete(
+										{
+											build: 'scss',
+											env,
+											outPath
 						},
-						env
+										resolve
+									);
+								},
+								env,
+								sourceMaps: params.scss.sourceMaps,
+								targetShadowDom: params.scss.targetShadowDom
 					});
-				}));
+			}
+					)
+				);
 			}
 			if (staticAssets) {
 				staticAssets.forEach(asset => tasks.push(new Promise(resolve => {
@@ -152,10 +166,11 @@ function createBuild(params) {
 					new Promise(
 						resolve => {
 							watch(
-								params.scss,
+								params.scss.files,
 								function buildScssTask() {
 									return buildScss({
-										src: params.scss,
+										appConfig: params.scss.appConfig,
+										src: params.scss.files,
 										dest: outPath,
 										base: srcPath,
 										env: project.env.dev,
@@ -168,7 +183,9 @@ function createBuild(params) {
 												},
 												resolve
 											);
-										}
+										},
+										sourceMaps: params.scss.sourceMaps,
+										targetShadowDom: params.scss.targetShadowDom
 									});
 								}
 							);
