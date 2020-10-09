@@ -8,7 +8,8 @@ const
 	configureWebpack = require('./configureWebpack'),
 	runWebpack = require('./runWebpack'),
 	buildStaticAssets = require('./buildStaticAssets'),
-	buildScss = require('./buildScss');
+	buildScss = require('./buildScss'),
+	buildTemplates = require('./buildTemplates');
 
 function createBuild(params) {
 	// set the source path
@@ -96,40 +97,80 @@ function createBuild(params) {
 				tasks.push(
 					new Promise(
 						resolve => {
-					buildScss({
+							buildScss({
 								appConfig: params.scss.appConfig,
 								src: params.scss.files,
-						dest: outPath,
-						base: srcPath,
-						onComplete: () => {
+								dest: outPath,
+								base: srcPath,
+								onComplete: () => {
 									params.onBuildComplete(
 										{
 											build: 'scss',
 											env,
 											outPath
-						},
+										},
 										resolve
 									);
 								},
 								env,
 								sourceMaps: params.scss.sourceMaps,
 								targetShadowDom: params.scss.targetShadowDom
-					});
-			}
+							});
+						}
 					)
 				);
 			}
 			if (staticAssets) {
-				staticAssets.forEach(asset => tasks.push(new Promise(resolve => {
-					buildStaticAssets({
-						src: asset.src,
-						dest: outPath,
-						base: asset.base,
-						onComplete: () => {
-							params.onBuildComplete({ build: 'staticAssets', env, outPath }, resolve);
+				staticAssets.forEach(
+					asset => tasks.push(
+						new Promise(
+							resolve => {
+								buildStaticAssets({
+									src: asset.src,
+									dest: outPath,
+									base: asset.base,
+									env,
+									onComplete: () => {
+										params.onBuildComplete(
+											{
+												build: 'staticAssets',
+												env,
+												outPath
+											},
+											resolve
+										);
+									}
+								});
+							}
+						)
+					)
+				);
+			}
+			if (params.templates) {
+				tasks.push(
+					new Promise(
+						resolve => {
+							buildTemplates({
+								base: srcPath,
+								data: params.templates.data,
+								dest: outPath,
+								env,
+								extension: params.templates.extension,
+								onComplete: () => {
+									params.onBuildComplete(
+										{
+											build: 'templates',
+											env,
+											outPath
+										},
+										resolve
+									);
+								},
+								src: params.templates.files
+							});
 						}
-					});
-				})));
+					)
+				);
 			}
 			return Promise.all(tasks);
 		},
@@ -224,6 +265,37 @@ function createBuild(params) {
 							)
 						);
 					}
+				);
+			}
+			if (params.templates) {
+				tasks.push(
+					new Promise(
+						resolve => {
+							watch(
+								params.templates.files,
+								function buildTemplatesTask() {
+									return buildTemplates({
+										base: srcPath,
+										data: params.templates.data,
+										dest: outPath,
+										env: project.env.dev,
+										extension: params.templates.extension,
+										onComplete: () => {
+											params.onBuildComplete(
+												{
+													build: 'templates',
+													env: project.env.dev,
+													outPath: outPath
+												},
+												resolve
+											);
+										},
+										src: params.templates.files
+									});
+								}
+							);
+						}
+					)
 				);
 			}
 			return Promise.all(tasks);
