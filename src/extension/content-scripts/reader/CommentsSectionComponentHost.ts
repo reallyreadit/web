@@ -1,13 +1,14 @@
-import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
+import { DomAttachmentDelegate } from '../../../common/shadowDom/ComponentHost';
 import BrowserCommentsSection, { Props as CommentsSectionProps } from './components/BrowserCommentsSection';
 import CommentThread from '../../../common/models/CommentThread';
 import { updateComment, mergeComment } from '../../../common/comments';
 import UserArticle from '../../../common/models/UserArticle';
 import UserAccount from '../../../common/models/UserAccount';
+import ExtensionComponentHost from './ExtensionComponentHost';
 
 type Services = Pick<CommentsSectionProps, 'clipboardService' | 'dialogService' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onLinkAuthServiceAccount' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onViewProfile' | 'toasterService'>;
 type State = Pick<CommentsSectionProps, 'article' | 'comments' | 'user'>;
-export default class CommentsSectionComponentHost extends ComponentHost<Services, State> {
+export default class CommentsSectionComponentHost extends ExtensionComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	protected readonly _services: Services;
 	protected _state: State;

@@ -1,10 +1,11 @@
-import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
+import { DomAttachmentDelegate } from '../../../common/shadowDom/ComponentHost';
 import Title, { Props as TitleProps } from './components/Title';
 import UserArticle from '../../../common/models/UserArticle';
+import ExtensionComponentHost from './ExtensionComponentHost';
 
 type Services = Pick<TitleProps, 'onCreateAbsoluteUrl' | 'onSetStarred' | 'onToggleDebugMode' | 'onViewComments' | 'onViewProfile'>;
 type State = Pick<TitleProps, 'article' | 'authors' | 'title' | 'wordCount'>;
-export default class TitleComponentHost extends ComponentHost<Services, State> {
+export default class TitleComponentHost extends ExtensionComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	protected readonly _services: Services;
 	protected _state: State;

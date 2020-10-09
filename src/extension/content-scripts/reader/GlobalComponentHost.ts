@@ -1,4 +1,4 @@
-import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
+import { DomAttachmentDelegate } from '../../../common/shadowDom/ComponentHost';
 import Global from './components/Global';
 import ClipboardService from '../../../common/services/ClipboardService';
 import DialogService, { State as DialogState } from '../../../common/services/DialogService';
@@ -10,6 +10,7 @@ import { createUrl } from '../../../common/HttpEndpoint';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import UserArticle from '../../../common/models/UserArticle';
+import ExtensionComponentHost from './ExtensionComponentHost';
 
 interface Services {
 	clipboardService: ClipboardService,
@@ -19,7 +20,7 @@ interface Services {
 type State = DialogState & ToasterState & {
 	error: string | null
 };
-export default class GlobalComponentHost extends ComponentHost<Services, State> {
+export default class GlobalComponentHost extends ExtensionComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	protected readonly _services: Services;
 	protected _state: State;

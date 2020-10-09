@@ -1,15 +1,16 @@
-import ComponentHost, { DomAttachmentDelegate } from './ComponentHost';
+import { DomAttachmentDelegate } from '../../../common/shadowDom/ComponentHost';
 import ReaderHeader, { Props as HeaderProps } from '../../../common/components/ReaderHeader';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import UserArticle from '../../../common/models/UserArticle';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import ExtensionComponentHost from './ExtensionComponentHost';
 
 interface Services {
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void
 }
 type State = Pick<HeaderProps, 'article' | 'displayPreference' | 'isHidden' | 'showProgressBar'>;
-export default class HeaderComponentHost extends ComponentHost<Services, State> {
+export default class HeaderComponentHost extends ExtensionComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
 	protected readonly _services: Services;
 	protected _state: State;

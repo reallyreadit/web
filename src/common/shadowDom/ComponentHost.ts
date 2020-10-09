@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import icons from '../../../common/svg/icons';
+import icons from '../svg/icons';
 
 export type DomAttachmentDelegate = (shadowHost: HTMLElement) => void;
 export default abstract class ComponentHost<Services, State> {
@@ -56,6 +56,7 @@ export default abstract class ComponentHost<Services, State> {
 	private setTheme() {
 		this._shadowHost.dataset['com_readup_theme'] = document.documentElement.dataset['com_readup_theme'];
 	}
+	protected abstract getStylesheetUrl(): string;
 	protected setState(nextState: Partial<State>) {
 		ReactDOM.render(
 			React.createElement(
@@ -83,7 +84,7 @@ export default abstract class ComponentHost<Services, State> {
 		// create the shadow dom style link
 		const styleLink = document.createElement('link');
 		styleLink.rel = 'stylesheet';
-		styleLink.href = chrome.runtime.getURL('/content-scripts/reader/bundle.css');
+		styleLink.href = this.getStylesheetUrl();
 
 		// create the svg icons
 		const iconsElement = document.createElement('div');
