@@ -32,6 +32,7 @@ enum CompositionState {
 interface Props {
 	comment: CommentThread,
 	highlightedCommentId?: string,
+	onAuthenticationRequired?: (completionDelegate?: () => void) => Function,
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -64,7 +65,23 @@ export default class CommentDetails extends React.Component<
 		}
 	};
 	private readonly _openReplyComposer = () => {
-		this.setState({ compositionState: CompositionState.Reply });
+		const openComposer = () => {
+			this.setState({
+				compositionState: CompositionState.Reply
+			});
+		};
+		if (this.props.user) {
+			openComposer();
+		} else if (this.props.onAuthenticationRequired) {
+			const unsubscribe = this.props.onAuthenticationRequired(
+				() => {
+					unsubscribe();
+					this._asyncTracker.removeCancellationDelegate(unsubscribe);
+					openComposer();
+				}
+			);
+			this._asyncTracker.addCancellationDelegate(unsubscribe);
+		}
 	};
 	private readonly _closeComposer = () => {
 		this.setState({ compositionState: CompositionState.None });
@@ -311,6 +328,7 @@ export default class CommentDetails extends React.Component<
 									<CommentDetails
 										comment={comment}
 										highlightedCommentId={this.props.highlightedCommentId}
+										onAuthenticationRequired={this.props.onAuthenticationRequired}
 										onCloseDialog={this.props.onCloseDialog}
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}

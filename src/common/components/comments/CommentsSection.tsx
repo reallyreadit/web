@@ -17,6 +17,7 @@ export default (props: {
 	comments: CommentThread[],
 	highlightedCommentId?: string | null,
 	noCommentsMessage: string,
+	onAuthenticationRequired?: (completionDelegate?: () => void) => Function,
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -53,6 +54,7 @@ export default (props: {
 								<CommentDetails
 									comment={comment}
 									highlightedCommentId={props.highlightedCommentId}
+									onAuthenticationRequired={props.onAuthenticationRequired}
 									onCloseDialog={props.onCloseDialog}
 									onCopyTextToClipboard={props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
