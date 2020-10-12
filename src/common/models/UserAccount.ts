@@ -16,7 +16,6 @@ export default interface UserAccount {
 	followerAlertCount: number,
 	isPasswordSet: boolean,
 	hasLinkedTwitterAccount: boolean,
-	dateRegistered: string | null,
 	dateOrientationCompleted: string | null
 }
 export function areEqual(a: UserAccount, b: UserAccount) {
@@ -38,7 +37,6 @@ export function areEqual(a: UserAccount, b: UserAccount) {
 		a.followerAlertCount === b.followerAlertCount &&
 		a.isPasswordSet === b.isPasswordSet &&
 		a.hasLinkedTwitterAccount === b.hasLinkedTwitterAccount &&
-		a.dateRegistered === b.dateRegistered &&
 		a.dateOrientationCompleted === b.dateOrientationCompleted
 	);
 }
