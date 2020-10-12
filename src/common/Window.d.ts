@@ -1,4 +1,3 @@
-import Page from './reading/Page';
 import HttpEndpoint from './HttpEndpoint';
 import PackageVersionInfo from './PackageVersionInfo';
 
