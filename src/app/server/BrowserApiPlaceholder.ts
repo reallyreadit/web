@@ -1,4 +1,4 @@
-import BrowserApi from '../common/BrowserApi';
+import BrowserApiBase from '../../common/BrowserApiBase';
 import UserAccount from '../../common/models/UserAccount';
 import SemanticVersion from '../../common/SemanticVersion';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
@@ -10,7 +10,7 @@ import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthSer
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 
-export default class extends BrowserApi {
+export default class BrowserApiPlaceholder extends BrowserApiBase {
 	private _title: string;
 	public setTitle(title: string) {
 		this._title = title;

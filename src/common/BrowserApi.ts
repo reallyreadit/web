@@ -1,14 +1,14 @@
-import BrowserApi from '../common/BrowserApi';
-import UserAccount from '../../common/models/UserAccount';
-import SemanticVersion from '../../common/SemanticVersion';
-import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
-import CommentThread from '../../common/models/CommentThread';
-import Post from '../../common/models/social/Post';
-import NotificationPreference from '../../common/models/notifications/NotificationPreference';
-import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from '../common/ExtensionInstallationEvent';
-import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
-import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
-import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import BrowserApiBase from './BrowserApiBase';
+import UserAccount from './models/UserAccount';
+import SemanticVersion from './SemanticVersion';
+import ArticleUpdatedEvent from './models/ArticleUpdatedEvent';
+import CommentThread from './models/CommentThread';
+import Post from './models/social/Post';
+import NotificationPreference from './models/notifications/NotificationPreference';
+import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from '../app/common/ExtensionInstallationEvent';
+import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
+import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
+import DisplayPreference from './models/userAccounts/DisplayPreference';
 
 type SerializedExtensionInstallationEvent = (
 	Pick<ExtensionInstalledEvent, 'type'> & {
@@ -16,16 +16,9 @@ type SerializedExtensionInstallationEvent = (
 	} |
 	ExtensionUninstalledEvent
 );
-export default class extends BrowserApi {
-	private readonly _channel: BroadcastChannel | null;
-	constructor() {
+export default class BrowserApi extends BrowserApiBase {
 		super();
-		try {
-			this._channel = new BroadcastChannel('BrowserApi');
-			this._channel.addEventListener('message', ev => {
-				switch (ev.data.type) {
 					case 'extensionInstallationChanged':
-						const serializedEvent = ev.data.data as SerializedExtensionInstallationEvent;
 						let data: ExtensionInstallationEvent;
 						switch (serializedEvent.type) {
 							case 'installed':
@@ -38,22 +31,14 @@ export default class extends BrowserApi {
 								data = serializedEvent;
 								break;
 						}
-						this.emitEvent(ev.data.type, data);
 						break;
 					case 'updateAvailable':
-						this.emitEvent(ev.data.type, new SemanticVersion(ev.data.data));
 						break;
 					default:
-						this.emitEvent(ev.data.type, ev.data.data);
 				}
-			});
-		} catch (ex) {
-			this._channel = null;
-		}
+			}
 	}
 	private broadcastUpdate(type: string, data?: {}) {
-		if (this._channel) {
-			this._channel.postMessage({ type, data });}
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
 		this.broadcastUpdate('articleUpdated', event);

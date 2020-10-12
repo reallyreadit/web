@@ -18,7 +18,7 @@ import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
 import { extensionVersionCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
-import BrowserApi from './BrowserApi';
+import BrowserApiPlaceholder from './BrowserApiPlaceholder';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
@@ -431,7 +431,7 @@ server = server.get('/*', (req, res) => {
 	// prepare props
 	const deviceType = getDeviceType(req.headers['user-agent']);
 	const extensionVersionString = req.cookies[extensionVersionCookieKey];
-	const browserApi = new BrowserApi();
+	const browserApi = new BrowserApiPlaceholder();
 	const rootProps = {
 		analytics: new Analytics(),
 		captcha: new CaptchaPlaceholder(),

@@ -5,7 +5,7 @@ import ServerApi from './ServerApi';
 import Captcha from '../../common/captcha/Captcha';
 import ClientType from '../common/ClientType';
 import BrowserRoot from '../common/components/BrowserRoot';
-import BrowserApi from './BrowserApi';
+import BrowserApi from '../../common/BrowserApi';
 import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';

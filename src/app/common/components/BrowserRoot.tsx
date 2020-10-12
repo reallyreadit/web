@@ -11,7 +11,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
-import BrowserApi from '../BrowserApi';
+import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
@@ -52,7 +52,7 @@ import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../c
 import { formatIsoDateAsDotNet } from '../../../common/format';
 
 interface Props extends RootProps {
-	browserApi: BrowserApi,
+	browserApi: BrowserApiBase,
 	deviceType: DeviceType,
 	extensionApi: ExtensionApi
 }

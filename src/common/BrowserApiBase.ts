@@ -1,16 +1,16 @@
-import EventEmitter from './EventEmitter';
-import UserAccount from '../../common/models/UserAccount';
-import SemanticVersion from '../../common/SemanticVersion';
-import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
-import CommentThread from '../../common/models/CommentThread';
-import Post from '../../common/models/social/Post';
-import NotificationPreference from '../../common/models/notifications/NotificationPreference';
-import ExtensionInstallationEvent from './ExtensionInstallationEvent';
-import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
-import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
-import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import EventEmitter from '../app/common/EventEmitter';
+import UserAccount from './models/UserAccount';
+import SemanticVersion from './SemanticVersion';
+import ArticleUpdatedEvent from './models/ArticleUpdatedEvent';
+import CommentThread from './models/CommentThread';
+import Post from './models/social/Post';
+import NotificationPreference from './models/notifications/NotificationPreference';
+import ExtensionInstallationEvent from '../app/common/ExtensionInstallationEvent';
+import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
+import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
+import DisplayPreference from './models/userAccounts/DisplayPreference';
 
-export default abstract class extends EventEmitter<{
+export default abstract class BrowserApiBase extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
 	'authServiceLinkCompleted': AuthServiceBrowserLinkResponse,
