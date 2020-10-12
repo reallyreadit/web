@@ -1,6 +1,6 @@
-import Captcha from '../common/Captcha';
+import CaptchaBase from '../../common/captcha/CaptchaBase';
 
-export default class extends Captcha {
+export default class CaptchaPlaceholder extends CaptchaBase {
 	public execute(action: string): Promise<string> {
 		throw new Error('Operation not supported in server environment');
 	}

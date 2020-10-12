@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserAccount, { hasAnyAlerts } from '../../../common/models/UserAccount';
-import Captcha from '../Captcha';
+import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
@@ -61,7 +61,7 @@ import Settings from '../../../common/models/Settings';
 
 export interface Props {
 	analytics: Analytics,
-	captcha: Captcha,
+	captcha: CaptchaBase,
 	initialLocation: RouteLocation,
 	initialUserProfile: WebAppUserProfile | null,
 	marketingVariant: number,

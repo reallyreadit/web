@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Captcha from '../../Captcha';
+import CaptchaBase from '../../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../../common/components/Toaster';
 import AppleIdButton from '../../../../common/components/AppleIdButton';
 import Icon from '../../../../common/components/Icon';
@@ -17,7 +17,7 @@ const authProviderNames = {
 };
 interface Props {
 	authStatus: AuthStatus,
-	captcha: Captcha,
+	captcha: CaptchaBase,
 	onCloseDialog: () => void,
 	onCreateAccount: (form: CreateAccountDialogForm) => Promise<void>,
 	onOpenDialog: (element: React.ReactNode) => void,

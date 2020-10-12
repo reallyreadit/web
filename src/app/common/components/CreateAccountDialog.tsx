@@ -1,16 +1,13 @@
 import * as React from 'react';
 import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
-import EmailAddressField from './controls/authentication/EmailAddressField';
-import PasswordField from './controls/authentication/PasswordField';
-import UsernameField from './controls/authentication/UsernameField';
-import Captcha from '../../server/Captcha';
+import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../common/components/Toaster';
 import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';
 
 interface Props {
 	analyticsAction: string,
 	autoFocus?: boolean,
-	captcha: Captcha,
+	captcha: CaptchaBase,
 	onCreateAccount: (form: Form) => Promise<void>,
 	onSignIn?: () => void,
 	title?: string

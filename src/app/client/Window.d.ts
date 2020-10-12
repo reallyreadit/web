@@ -1,4 +1,4 @@
-import ReCaptchaV3 from "./ReCaptchaV3";
+import ReCaptchaV3 from "../../common/captcha/ReCaptchaV3";
 
 declare global {
 	interface Window {

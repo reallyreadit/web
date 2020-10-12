@@ -1,14 +1,14 @@
 import * as React from 'react';
 import InputField from './controls/InputField';
 import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
-import Captcha from '../Captcha';
+import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../common/components/Toaster';
 import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
 
 interface Props {
 	authServiceToken?: string,
 	autoFocus?: boolean,
-	captcha: Captcha,
+	captcha: CaptchaBase,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>
 }
 export default class RequestPasswordResetDialog extends FormDialog<void, Props, Partial<State> & {

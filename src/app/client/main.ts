@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import AppRoot from '../common/components/AppRoot';
 import ServerApi from './ServerApi';
-import Captcha from './Captcha';
+import Captcha from '../../common/captcha/Captcha';
 import ClientType from '../common/ClientType';
 import BrowserRoot from '../common/components/BrowserRoot';
 import BrowserApi from './BrowserApi';

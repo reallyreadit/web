@@ -12,7 +12,7 @@ import * as url from 'url';
 import PasswordResetRequest from '../../common/models/PasswordResetRequest';
 import CommentThread from '../../common/models/CommentThread';
 import AppRoot from '../common/components/AppRoot';
-import Captcha from './Captcha';
+import CaptchaPlaceholder from './CaptchaPlaceholder';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
 import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
@@ -434,7 +434,7 @@ server = server.get('/*', (req, res) => {
 	const browserApi = new BrowserApi();
 	const rootProps = {
 		analytics: new Analytics(),
-		captcha: new Captcha(),
+		captcha: new CaptchaPlaceholder(),
 		initialLocation: {
 			path: req.path,
 			queryString: createQueryString(req.query)

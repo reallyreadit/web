@@ -1,7 +1,7 @@
-import Captcha from '../common/Captcha';
+import CaptchaBase from './CaptchaBase';
 import ReCaptchaV3 from './ReCaptchaV3';
 
-export default class extends Captcha {
+export default class Captcha extends CaptchaBase {
 	private _captcha: ReCaptchaV3 | null = null;
 	private readonly _queue: ((captcha: ReCaptchaV3) => void)[] = [];
 	private readonly _siteKey: string | null;

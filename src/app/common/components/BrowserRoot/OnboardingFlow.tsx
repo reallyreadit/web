@@ -1,10 +1,6 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
-import CreateAccountStep, { Form as CreateAccountForm } from './OnboardingFlow/CreateAccountStep';
-import Captcha from '../../Captcha';
-import SignInStep, { Form as SignInForm } from './OnboardingFlow/SignInStep';
-import * as classNames from 'classnames';
-import Icon from '../../../../common/components/Icon';
+import CaptchaBase from '../../../../common/captcha/CaptchaBase';
 import PasswordResetRequestForm from '../../../../common/models/userAccounts/PasswordResetRequestForm';
 import RequestPasswordResetStep from './OnboardingFlow/RequestPasswordResetStep';
 import AuthServiceAccountForm from '../../../../common/models/userAccounts/AuthServiceAccountForm';
@@ -42,7 +38,7 @@ export enum ExitReason {
 export interface Props {
 	analyticsAction?: string,
 	authServiceToken?: string,
-	captcha: Captcha,
+	captcha: CaptchaBase,
 	deviceType: DeviceType,
 	initialAuthenticationStep?: Step.Twitter | Step.SignIn,
 	isExtensionInstalled: boolean,
