@@ -1,0 +1,54 @@
+/*
+	componentPath: src/common/components/BrowserOnboardingFlow/CreateAccountStep
+	cssComponentId: create-account-step_wf72jc
+*/
+@import '../../styles/colors';
+
+.create-account-step_wf72jc {
+	text-align: center;
+}
+.create-account-step_wf72jc > h1 {
+	font-size: 20pt;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 25px;
+}
+.create-account-step_wf72jc > .form-field_uv9cq4 + .form-field_uv9cq4 {
+	margin-top: 15px;
+}
+.create-account-step_wf72jc > .global-error {
+	margin-top: 15px;
+}
+.create-account-step_wf72jc > .button_ovrlmi {
+	margin-top: 20px;
+}
+.create-account-step_wf72jc > .form-partition_eo32pq {
+	margin-top: 15px;
+}
+.create-account-step_wf72jc > .apple-id-button_mrmms4,
+.create-account-step_wf72jc > .twitter-auth-button_h10z4a {
+	margin-top: 15px;
+}
+.create-account-step_wf72jc > .action-link_ftamt8 {
+	display: inline-block;
+	margin-top: 25px;
+	font-size: 11pt;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .create-account-step_wf72jc > .global-error {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-danger-color
+			)
+		);
+	}
+	#{$root} .create-account-step_wf72jc > .action-link_ftamt8 {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}

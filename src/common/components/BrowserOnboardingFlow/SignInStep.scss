@@ -1,0 +1,57 @@
+/*
+	componentPath: src/common/components/BrowserOnboardingFlow/SignInStep
+	cssComponentId: sign-in-step_cg2uy5
+*/
+@import '../../styles/colors';
+
+.sign-in-step_cg2uy5 {
+	text-align: center;
+}
+.sign-in-step_cg2uy5 > h1 {
+	font-size: 20pt;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 25px;
+}
+.sign-in-step_cg2uy5 > .form-field_uv9cq4 + .form-field_uv9cq4 {
+	margin-top: 15px;
+}
+.sign-in-step_cg2uy5 > .global-error {
+	margin-top: 15px;
+}
+.sign-in-step_cg2uy5 > .button_ovrlmi {
+	margin-top: 20px;
+}
+.sign-in-step_cg2uy5 > .form-partition_eo32pq {
+	margin-top: 15px;
+}
+.sign-in-step_cg2uy5 > .apple-id-button_mrmms4,
+.sign-in-step_cg2uy5 > .twitter-auth-button_h10z4a {
+	margin-top: 15px;
+}
+.sign-in-step_cg2uy5 > .action-link_ftamt8 {
+	display: inline-block;
+	margin-top: 25px;
+	font-size: 11pt;
+}
+.sign-in-step_cg2uy5 > .action-link_ftamt8 + .action-link_ftamt8 {
+	margin-top: 15px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .sign-in-step_cg2uy5 > .global-error {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-danger-color
+			)
+		);
+	}
+	#{$root} .sign-in-step_cg2uy5 > .action-link_ftamt8 {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}

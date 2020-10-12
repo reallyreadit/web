@@ -1,17 +1,18 @@
 import * as React from 'react';
-import EmailAddressField from '../../controls/authentication/EmailAddressField';
-import PasswordField from '../../controls/authentication/PasswordField';
-import AppleIdButton from '../../../../../common/components/AppleIdButton';
-import Button from '../../../../../common/components/Button';
-import ActionLink from '../../../../../common/components/ActionLink';
-import SignInForm from '../../../../../common/models/userAccounts/SignInForm';
-import FormPartition from '../../controls/FormPartition';
-import TwitterAuthButton from '../../../../../common/components/TwitterAuthButton';
+import EmailAddressField from '../controls/authentication/EmailAddressField';
+import PasswordField from '../controls/authentication/PasswordField';
+import AppleIdButton from '../AppleIdButton';
+import Button from '../Button';
+import ActionLink from '../ActionLink';
+import SignInForm from '../../models/userAccounts/SignInForm';
+import FormPartition from '../controls/FormPartition';
+import TwitterAuthButton from '../TwitterAuthButton';
 
 export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string };
 interface Props {
 	analyticsAction: string,
 	authServiceToken?: string,
+	imageBasePath: string,
 	onCreateAccount?: () => void,
 	onRequestPasswordReset: (authServiceToken?: string) => void,
 	onSignIn: (form: Form) => Promise<void>,
@@ -136,7 +137,7 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 				break;
 		}
 		return (
-			<div className="sign-in-step_ffly8u">
+			<div className="sign-in-step_cg2uy5">
 				<h1>
 					{this.props.authServiceToken ?
 						'Link Existing Account' :
@@ -184,7 +185,10 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 					<AppleIdButton onClick={this._signInWithApple} /> :
 					null}
 				{this.props.onSignInWithTwitter ?
-					<TwitterAuthButton onClick={this._signInWithTwitter} /> :
+					<TwitterAuthButton
+						imageBasePath={this.props.imageBasePath}
+						onClick={this._signInWithTwitter}
+					/> :
 					null}
 				<ActionLink
 					onClick={this._requestPasswordReset}

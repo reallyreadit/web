@@ -1,5 +1,5 @@
 import * as React from 'react';
-import InputField from '../controls/InputField';
+import InputField from '../../../../common/components/controls/InputField';
 import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
 import NewPlatformNotificationRequest from '../../../../common/models/analytics/NewPlatformNotificationRequest';
 

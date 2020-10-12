@@ -1,10 +1,10 @@
 /*
-	componentPath: src/app/common/components/controls/InputControl
-	cssComponentId: input-control_dua9vb
+	componentPath: src/common/components/controls/InputControl
+	cssComponentId: input-control_k7j7i9
 */
-@import '../../../../common/styles/colors';
+@import '../../styles/colors';
 
-.input-control_dua9vb > input {
+.input-control_k7j7i9 > input {
 	display: block;
 	width: 100%;
 	line-height: 26px;
@@ -15,11 +15,11 @@
 	border-radius: 0;
 	border-radius: 3px;
 }
-.input-control_dua9vb > input:focus {
+.input-control_k7j7i9 > input:focus {
 	outline-width: 1px;
 	outline-style: solid;
 }
-.input-control_dua9vb > .error {
+.input-control_k7j7i9 > .error {
 	display: inline-block;
 	border-radius: 3px;
 	padding: 3px 5px;
@@ -31,7 +31,7 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .input-control_dua9vb > input {
+	#{$root} .input-control_k7j7i9 > input {
 		@include theme-colors(
 			$scheme,
 			(
@@ -40,7 +40,7 @@
 			)
 		);
 	}
-	#{$root} .input-control_dua9vb > input:focus {
+	#{$root} .input-control_k7j7i9 > input:focus {
 		@include theme-colors(
 			$scheme,
 			(
@@ -48,7 +48,7 @@
 			)
 		);
 	}
-	#{$root} .input-control_dua9vb > .error {
+	#{$root} .input-control_k7j7i9 > .error {
 		@include theme-colors(
 			$scheme,
 			(

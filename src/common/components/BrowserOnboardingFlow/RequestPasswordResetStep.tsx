@@ -1,8 +1,8 @@
 import * as React from 'react';
-import EmailAddressField from '../../controls/authentication/EmailAddressField';
-import Button from '../../../../../common/components/Button';
-import PasswordResetRequestForm from '../../../../../common/models/userAccounts/PasswordResetRequestForm';
-import Captcha from '../../../Captcha';
+import EmailAddressField from '../controls/authentication/EmailAddressField';
+import Button from '../Button';
+import PasswordResetRequestForm from '../../models/userAccounts/PasswordResetRequestForm';
+import Captcha from '../../captcha/CaptchaBase';
 import * as classNames from 'classnames';
 
 interface Props {
@@ -126,7 +126,7 @@ export default class RequestPasswordResetStep extends React.PureComponent<Props,
 			<div
 				className={
 					classNames(
-						'request-password-reset-step_em0y1x',
+						'request-password-reset-step_pf8nss',
 						{
 							'submitted': this.state.formState === FormState.Submitted
 						}

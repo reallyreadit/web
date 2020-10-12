@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Button from '../../../../../common/components/Button';
-import AuthServiceAccountForm from '../../../../../common/models/userAccounts/AuthServiceAccountForm';
-import UsernameField from '../../controls/authentication/UsernameField';
-import ActionLink from '../../../../../common/components/ActionLink';
+import Button from '../Button';
+import AuthServiceAccountForm from '../../models/userAccounts/AuthServiceAccountForm';
+import UsernameField from '../controls/authentication/UsernameField';
+import ActionLink from '../ActionLink';
 
 export type Form = Pick<AuthServiceAccountForm, 'token' | 'name'>;
 interface Props {
@@ -107,7 +107,7 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 				break;
 		}
 		return (
-			<div className="create-auth-service-account-step_tnixn3">
+			<div className="create-auth-service-account-step_7minpy">
 				<h1>Choose a Username</h1>
 				<UsernameField
 					autoFocus

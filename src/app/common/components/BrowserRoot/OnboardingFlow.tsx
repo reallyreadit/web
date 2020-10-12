@@ -1,10 +1,11 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
+import CreateAccountStep, { Form as CreateAccountForm } from '../../../../common/components/BrowserOnboardingFlow/CreateAccountStep';
 import CaptchaBase from '../../../../common/captcha/CaptchaBase';
+import SignInStep, { Form as SignInForm } from '../../../../common/components/BrowserOnboardingFlow/SignInStep';
 import PasswordResetRequestForm from '../../../../common/models/userAccounts/PasswordResetRequestForm';
-import RequestPasswordResetStep from './OnboardingFlow/RequestPasswordResetStep';
-import AuthServiceAccountForm from '../../../../common/models/userAccounts/AuthServiceAccountForm';
-import CreateAuthServiceAccountStep from './OnboardingFlow/CreateAuthServiceAccountStep';
+import RequestPasswordResetStep from '../../../../common/components/BrowserOnboardingFlow/RequestPasswordResetStep';
+import CreateAuthServiceAccountStep, { Form as CreateAuthServiceAccountForm } from '../../../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
 import ResetPasswordStep from './OnboardingFlow/ResetPasswordStep';
 import InstallExtensionStep from './OnboardingFlow/InstallExtensionStep';
 import { DeviceType, isCompatibleBrowser } from '../../../../common/DeviceType';
@@ -15,6 +16,7 @@ import ShareStep from './OnboardingFlow/ShareStep';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import TwitterStep from './OnboardingFlow/TwitterStep';
+import BrowserOnboardingFlow, { BaseProps, ExitReason } from '../../../../common/components/BrowserOnboardingFlow';
 
 export enum Step {
 	Twitter,
@@ -30,23 +32,17 @@ export enum Step {
 	TrackingAnimation,
 	Share
 }
-export enum ExitReason {
-	Aborted,
-	Completed,
-	ExistingUserAuthenticated
-}
-export interface Props {
+export interface Props extends BaseProps {
 	analyticsAction?: string,
 	authServiceToken?: string,
 	captcha: CaptchaBase,
 	deviceType: DeviceType,
 	initialAuthenticationStep?: Step.Twitter | Step.SignIn,
 	isExtensionInstalled: boolean,
-	onClose: (reason: ExitReason) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (userName: string) => string,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
-	onCreateAuthServiceAccount: (form: AuthServiceAccountForm) => Promise<void>,
+	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareResponse,
@@ -54,33 +50,15 @@ export interface Props {
 	onSignInWithApple: (analyticsAction: string) => void,
 	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>,
 	passwordResetEmail?: string,
-	passwordResetToken?: string,
-	user: UserAccount | null
+	passwordResetToken?: string
 }
-interface State {
-	exitReason: ExitReason | null,
-	goingToStep: Step | null,
-	isInitialStep: boolean,
-	step: Step
-}
-export default class OnboardingFlow extends React.PureComponent<Props, State> {
-	private readonly _abort = () => {
-		this._beginClosing(ExitReason.Aborted);
-	};
-	private readonly _beginClosing = (exitReason: ExitReason) => {
-		this.setState({
-			exitReason
-		});
-	};
-	private readonly _complete = () => {
-		this._beginClosing(ExitReason.Completed);
-	};
+export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	private readonly _createAccount = (form: CreateAccountForm) => {
 		return this.props
 			.onCreateAccount(form)
 			.then(this._handleAccountCreation);
 	};
-	private readonly _createAuthServiceAccount = (form: AuthServiceAccountForm) => {
+	private readonly _createAuthServiceAccount = (form: CreateAuthServiceAccountForm) => {
 		return this.props
 			.onCreateAuthServiceAccount(form)
 			.then(this._handleAccountCreation);
@@ -106,15 +84,6 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 	private readonly _goToTrackingAnimationStep = () => {
 		this.goToStep(Step.TrackingAnimation);
 	};
-	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
-		if (event.animationName === 'onboarding-flow_uzsr66-steps-slide-out') {
-			this.props.onClose(
-				this.state.exitReason != null ?
-					this.state.exitReason :
-					ExitReason.Aborted
-			);
-		}
-	};
 	private readonly _handleAccountCreation = () => {
 		if (this.props.isExtensionInstalled) {
 			this.goToStep(Step.ExtensionInstalled);
@@ -134,15 +103,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			this.goToStep(Step.ExtensionInstalled);
 		}
 	};
-	private readonly _handleStepAnimationEnd = (event: React.AnimationEvent) => {
-		if (event.animationName === 'onboarding-flow_uzsr66-container-fade-out') {
-			this.setState({
-				goingToStep: null,
-				isInitialStep: false,
-				step: this.state.goingToStep
-			});
-		}
-	};
+	private readonly _imageBasePath = '/images/';
 	private readonly _resetPassword = (token: string, email: string) => {
 		return this.props
 			.onResetPassword(token, email)
@@ -166,6 +127,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			<CreateAccountStep
 				analyticsAction={this.props.analyticsAction}
 				captcha={this.props.captcha}
+				imageBasePath={this._imageBasePath}
 				onCreateAccount={this._createAccount}
 				onSignIn={this._goToSignInStep}
 				onSignInWithApple={this.props.onSignInWithApple}
@@ -175,6 +137,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 		[Step.SignIn]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
+				imageBasePath={this._imageBasePath}
 				onCreateAccount={this._goToCreateAccountStep}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onSignIn={this._signIn}
@@ -193,6 +156,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
 				authServiceToken={this.props.authServiceToken}
+				imageBasePath={this._imageBasePath}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onSignIn={this._signIn}
 			/>
@@ -245,9 +209,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			exitReason: null,
-			goingToStep: null,
-			isInitialStep: true,
+			...this.state,
 			step: (
 				!props.user ?
 					props.authServiceToken ?
@@ -263,10 +225,15 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			)
 		};
 	}
-	private goToStep(step: Step) {
-		this.setState({
-			goingToStep: step
-		});
+	protected getStepRenderer(step: Step) {
+		return this._stepMap[step];
+	}
+	protected shouldAllowCancellation() {
+		return (
+			!this.props.user ||
+			!isCompatibleBrowser(this.props.deviceType) ||
+			this.state.step === Step.InstallExtension
+		);
 	}
 	public componentDidUpdate(prevProps: Props) {
 		if (
@@ -276,47 +243,5 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 		) {
 			this._abort();
 		}
-	}
-	public render() {
-		return (
-			<div
-				className={classNames('onboarding-flow_uzsr66', { 'closing': this.state.exitReason != null })}
-				onAnimationEnd={this._handleAnimationEnd}
-			>
-				<div className="steps">
-					<div className="titlebar">
-						<div className="icon-right">
-							{(
-								!this.props.user ||
-								!isCompatibleBrowser(this.props.deviceType) ||
-								this.state.step === Step.InstallExtension
-							 ) ?
-								<Icon
-									display="block"
-									name="cancel"
-									onClick={this._abort}
-								/> :
-								null}
-						</div>
-					</div>
-					<div className="content">
-						<div
-							className={
-								classNames(
-									'container',
-									{
-										'changing': this.state.goingToStep != null,
-										'changed': this.state.goingToStep == null && !this.state.isInitialStep
-									}
-								)
-							}
-							onAnimationEnd={this._handleStepAnimationEnd}
-						>
-							{this._stepMap[this.state.step](this.props.user)}
-						</div>
-					</div>
-				</div>
-			</div>
-		);
 	}
 }

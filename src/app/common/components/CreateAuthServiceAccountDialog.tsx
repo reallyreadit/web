@@ -1,6 +1,6 @@
 import * as React from 'react';
 import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
-import UsernameField from './controls/authentication/UsernameField';
+import UsernameField from '../../../common/components/controls/authentication/UsernameField';
 import { Intent } from '../../../common/components/Toaster';
 import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
 

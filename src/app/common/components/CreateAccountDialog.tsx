@@ -1,5 +1,8 @@
 import * as React from 'react';
 import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
+import EmailAddressField from '../../../common/components/controls/authentication/EmailAddressField';
+import PasswordField from '../../../common/components/controls/authentication/PasswordField';
+import UsernameField from '../../../common/components/controls/authentication/UsernameField';
 import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../common/components/Toaster';
 import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';

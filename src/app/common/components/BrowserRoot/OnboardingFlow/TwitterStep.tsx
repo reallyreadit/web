@@ -19,6 +19,7 @@ export default class TwitterStep extends React.PureComponent<Props> {
 				<h2>Want to quick start with Twitter?</h2>
 				<h2>We'll never post without your permission.</h2>
 				<TwitterAuthButton
+					imageBasePath="/images/"
 					text="Connect with Twitter"
 					onClick={this._signInWithTwitter}
 				/>

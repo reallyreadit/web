@@ -1,19 +1,20 @@
 import * as React from 'react';
-import Captcha from '../../../Captcha';
-import UserAccountForm from '../../../../../common/models/userAccounts/UserAccountForm';
-import UsernameField from '../../controls/authentication/UsernameField';
-import EmailAddressField from '../../controls/authentication/EmailAddressField';
-import PasswordField from '../../controls/authentication/PasswordField';
-import AppleIdButton from '../../../../../common/components/AppleIdButton';
-import Button from '../../../../../common/components/Button';
-import ActionLink from '../../../../../common/components/ActionLink';
-import FormPartition from '../../controls/FormPartition';
-import TwitterAuthButton from '../../../../../common/components/TwitterAuthButton';
+import CaptchaBase from '../../captcha/CaptchaBase';
+import UserAccountForm from '../../models/userAccounts/UserAccountForm';
+import UsernameField from '../controls/authentication/UsernameField';
+import EmailAddressField from '../controls/authentication/EmailAddressField';
+import PasswordField from '../controls/authentication/PasswordField';
+import AppleIdButton from '../../components/AppleIdButton';
+import Button from '../../components/Button';
+import ActionLink from '../../components/ActionLink';
+import FormPartition from '../controls/FormPartition';
+import TwitterAuthButton from '../../components/TwitterAuthButton';
 
 export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
 interface Props {
 	analyticsAction: string,
-	captcha: Captcha,
+	captcha: CaptchaBase,
+	imageBasePath: string,
 	onCreateAccount: (form: Form) => Promise<void>,
 	onSignIn: () => void,
 	onSignInWithApple: (analyticsAction: string) => void,
@@ -148,7 +149,7 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 				break;
 		}
 		return (
-			<div className="create-account-step_3cn5rp">
+			<div className="create-account-step_wf72jc">
 				<h1>Create Account</h1>
 				<UsernameField
 					autoFocus
@@ -190,7 +191,10 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 				/>
 				<FormPartition />
 				<AppleIdButton onClick={this._signInWithApple} />
-				<TwitterAuthButton onClick={this._signInWithTwitter} />
+				<TwitterAuthButton
+					imageBasePath={this.props.imageBasePath}
+					onClick={this._signInWithTwitter}
+				/>
 				<ActionLink
 					onClick={this.props.onSignIn}
 					state={

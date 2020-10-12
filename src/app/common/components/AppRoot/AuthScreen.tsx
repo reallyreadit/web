@@ -73,7 +73,10 @@ export default class extends React.PureComponent<Props> {
 								`Error signing in with ${authProviderNames[this.props.authStatus.provider]}` :
 							null}
 					</div>
-					<TwitterAuthButton onClick={this.props.onSignInWithTwitter} />
+					<TwitterAuthButton
+						imageBasePath="/images/"
+						onClick={this.props.onSignInWithTwitter}
+					/>
 					<div className="twitter-notice">Recommended. We'll never tweet without your permission.</div>
 					<AppleIdButton onClick={this.props.onSignInWithApple} />
 					<div className="email-button" onClick={this._openCreateAccountDialog}>

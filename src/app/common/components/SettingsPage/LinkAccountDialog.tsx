@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Dialog from '../../../../common/components/Dialog';
-import FormField from '../../../common/components/controls/FormField';
+import FormField from '../../../../common/components/controls/FormField';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 import { Intent } from '../../../../common/components/Toaster';
 import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthServiceAccountAssociation';

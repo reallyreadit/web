@@ -1,10 +1,10 @@
 /*
-	componentPath: src/app/common/components/controls/FormPartition
-	cssComponentId: form-partition_69q83q
+	componentPath: src/common/components/controls/FormPartition
+	cssComponentId: form-partition_eo32pq
 */
-@import '../../../../common/styles/colors';
+@import '../../styles/colors';
 
-.form-partition_69q83q {
+.form-partition_eo32pq {
 	display: flex;
 	height: 20px;
 	margin: 0 auto;
@@ -13,23 +13,23 @@
 	font-family: 'Museo Sans (900)';
 	font-size: 10pt;
 }
-.form-partition_69q83q::before,
-.form-partition_69q83q::after {
+.form-partition_eo32pq::before,
+.form-partition_eo32pq::after {
 	content: "";
 	flex: 1 1 auto;
 	display: block;
 	height: 1px;
 }
-.form-partition_69q83q::before {
+.form-partition_eo32pq::before {
 	margin-right: 10px;
 }
-.form-partition_69q83q::after {
+.form-partition_eo32pq::after {
 	margin-left: 10px;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .form-partition_69q83q::before,
-	#{$root} .form-partition_69q83q::after {
+	#{$root} .form-partition_eo32pq::before,
+	#{$root} .form-partition_eo32pq::after {
 		@include theme-colors(
 			$scheme,
 			(

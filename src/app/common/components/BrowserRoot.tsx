@@ -40,7 +40,8 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
 import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
-import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep, ExitReason as OnboardingExitReason } from './BrowserRoot/OnboardingFlow';
+import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep } from './BrowserRoot/OnboardingFlow';
+import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';

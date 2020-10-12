@@ -1,7 +1,7 @@
 import * as React from 'react';
 import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
-import EmailAddressField from './controls/authentication/EmailAddressField';
-import PasswordField from './controls/authentication/PasswordField';
+import EmailAddressField from '../../../common/components/controls/authentication/EmailAddressField';
+import PasswordField from '../../../common/components/controls/authentication/PasswordField';
 import { Intent } from '../../../common/components/Toaster';
 import SignInForm from '../../../common/models/userAccounts/SignInForm';
 

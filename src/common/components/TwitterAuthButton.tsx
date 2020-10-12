@@ -3,6 +3,7 @@ import AsyncTracker from '../AsyncTracker';
 import SpinnerIcon from './SpinnerIcon';
 
 interface Props {
+	imageBasePath: string,
 	onClick: () => Promise<{}>,
 	text?: string
 }
@@ -52,7 +53,7 @@ export default class TwitterAuthButton extends React.PureComponent<Props, State>
 				{this.state.isSubmitting ?
 					<SpinnerIcon /> :
 					<>
-						<img alt="Twitter Logo" src="/images/Twitter_Logo_White.svg" /> {this.props.text || 'Sign in with Twitter'}
+						<img alt="Twitter Logo" src={this.props.imageBasePath + "Twitter_Logo_White.svg"} /> {this.props.text || 'Sign in with Twitter'}
 					</>}
 			</div>
 		);

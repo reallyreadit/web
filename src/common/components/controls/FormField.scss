@@ -1,0 +1,58 @@
+/*
+	componentPath: src/common/components/controls/FormField
+	cssComponentId: form-field_uv9cq4
+*/
+@import '../../styles/colors';
+
+.form-field_uv9cq4 > .control {	
+	text-align: right;
+}
+.form-field_uv9cq4 > .control.vertical {
+	text-align: left;
+}
+.form-field_uv9cq4 > .control > label {
+	display: inline-block;
+	height: 28px;
+	line-height: 28px;
+	margin-right: 10px;
+	vertical-align: top;
+}
+.form-field_uv9cq4 > .control > .field-container {
+	display: inline-block;
+	width: 200px;
+	text-align: left;
+	vertical-align: top;
+}
+.form-field_uv9cq4 > .control.vertical > .field-container {
+	width: 100%;
+}
+.form-field_uv9cq4 > .subtext {	
+	max-width: 290px;
+	margin: 5px auto 10px auto;
+	text-align: center;
+	font-size: 11pt;
+}
+
+@media (max-width: 499px) {
+	.form-field_uv9cq4 > .control:not(.horizontal) {
+		text-align: left;
+	}
+	.form-field_uv9cq4 > .control:not(.horizontal) > label {
+		height: 24px;
+		line-height: 24px;
+	}
+	.form-field_uv9cq4 > .control:not(.horizontal) > .field-container {
+		width: 100%;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .form-field_uv9cq4 > .subtext {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}
