@@ -10,6 +10,40 @@ import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowser
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
 
+export type BroadcastEventListener = (messageData: any) => void;
+interface BroadcastChannelInterface {
+	addEventListener: (listener: BroadcastEventListener) => void,
+	postMessage: (data: any) => void
+}
+export class BrowserBroadcastChannel {
+	private readonly _channel: BroadcastChannel | null;
+	private readonly _listeners: BroadcastEventListener[] = [];
+	constructor() {
+		try {
+			this._channel = new BroadcastChannel('BrowserApi');
+			this._channel.addEventListener(
+				'message',
+				event => {
+					this._listeners.forEach(
+						listener => {
+							listener(event.data);
+						}
+					);
+			});
+		} catch (ex) {
+			this._channel = null;
+		}
+	}
+	public addEventListener(listener: BroadcastEventListener) {
+		this._listeners.push(listener);
+	}
+	public postMessage(data: any) {
+		if (!this._channel) {
+			return;
+		}
+		this._channel.postMessage(data);
+	}
+}
 type SerializedExtensionInstallationEvent = (
 	Pick<ExtensionInstalledEvent, 'type'> & {
 		version: string
@@ -17,8 +51,17 @@ type SerializedExtensionInstallationEvent = (
 	ExtensionUninstalledEvent
 );
 export default class BrowserApi extends BrowserApiBase {
+	private readonly _channel: BroadcastChannelInterface;
+	constructor(
+		channel: BroadcastChannelInterface = new BrowserBroadcastChannel()
+	) {
 		super();
+		this._channel = channel;
+		this._channel.addEventListener(
+			messageData => {
+				switch (messageData.type) {
 					case 'extensionInstallationChanged':
+						const serializedEvent = messageData.data as SerializedExtensionInstallationEvent;
 						let data: ExtensionInstallationEvent;
 						switch (serializedEvent.type) {
 							case 'installed':
@@ -31,14 +74,19 @@ export default class BrowserApi extends BrowserApiBase {
 								data = serializedEvent;
 								break;
 						}
+						this.emitEvent(messageData.type, data);
 						break;
 					case 'updateAvailable':
+						this.emitEvent(messageData.type, new SemanticVersion(messageData.data));
 						break;
 					default:
+						this.emitEvent(messageData.type, messageData.data);
 				}
 			}
+		);
 	}
 	private broadcastUpdate(type: string, data?: {}) {
+		this._channel.postMessage({ type, data });	
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
 		this.broadcastUpdate('articleUpdated', event);
