@@ -28,7 +28,7 @@ import HttpEndpoint from '../../../common/HttpEndpoint';
 import ClipboardService from '../../../common/services/ClipboardService';
 import CommentThread from '../../../common/models/CommentThread';
 import SemanticVersion from '../../../common/SemanticVersion';
-import EventManager from '../EventManager';
+import EventManager from '../../../common/EventManager';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import { createScreenFactory as createStatsScreenFactory } from './screens/StatsScreen';
 import Analytics from '../Analytics';
