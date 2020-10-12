@@ -78,4 +78,12 @@ export default class AsyncTracker {
 			window.clearTimeout(this._timeoutHandles.splice(0, 1)[0]);
 		}
 	}
+	public removeCancellationDelegate(delegate: Function) {
+		const index = this._cancellationDelegates.findIndex(
+			existingDelegate => existingDelegate === delegate
+		);
+		if (index > -1) {
+			this._cancellationDelegates.splice(index, 1);
+		}
+	}
 }
