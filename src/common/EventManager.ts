@@ -17,6 +17,11 @@ export default class EventManager<T> {
 			}
 		};
 	}
+	public removeListeners(key: keyof T) {
+		this._listeners = this._listeners.filter(
+			listener => listener.key !== key
+		);
+	}
 	public triggerEvent<K extends keyof T>(key: K, event: T[K]) {
 		this._listeners
 			.filter(
