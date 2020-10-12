@@ -276,10 +276,10 @@ export default class CommentDetails extends React.Component<
 						parentCommentId={this.props.comment.id}
 					/> :
 					null}
-				{this.state.compositionState === CompositionState.None && this.props.user && (this.props.onPostComment || this.props.onViewThread) && !this.props.comment.dateDeleted ?
+				{this.state.compositionState === CompositionState.None && (this.props.onPostComment || this.props.onViewThread) && !this.props.comment.dateDeleted ?
 					<div className="actions">
 						{this.props.onPostComment ?
-							this.props.user && this.props.user.name === this.props.comment.userAccount ?
+							this.props.user?.name === this.props.comment.userAccount ?
 								<>
 									<ActionLink
 										text="Edit"

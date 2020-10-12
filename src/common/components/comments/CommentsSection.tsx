@@ -30,7 +30,7 @@ export default (props: {
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }) => {
-	const isAllowedToPost = props.article && props.user && props.article.isRead;
+	const isAllowedToPost = props.article.isRead;
 	return (
 		<div className="comments-section_mqmgnd">
 			{!isAllowedToPost ?
