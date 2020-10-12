@@ -1,4 +1,8 @@
-const fonts = [
+interface Font {
+	family: string,
+	fileName: string
+}
+const defaultFonts = [
 	{
 		family: 'Cambria (bold)',
 		fileName: 'cambria-bold.ttf'
@@ -28,9 +32,13 @@ const fonts = [
 		fileName: 'museo-sans-900.ttf'
 	}
 ];
-export default function insertFontStyleElement(fontDirectoryPath: string) {
+export default function insertFontStyleElement(
+	fontDirectoryPath: string,
+	additionalFonts: Font[] = []
+) {
 	const styleElement = document.createElement('style');
-	styleElement.textContent = fonts
+	styleElement.textContent = defaultFonts
+		.concat(additionalFonts)
 		.map(
 			font => `@font-face { font-family: '${font.family}'; src: url('${fontDirectoryPath + font.fileName}'); }`
 		)
