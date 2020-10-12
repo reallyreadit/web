@@ -21,6 +21,28 @@ const app = createBuild({
 		`${project.srcDir}/app/client/fonts/**/*`,
 		`${project.srcDir}/app/client/images/**/*`
 	],
+	templates: {
+		data: env => {
+			let staticServerUrl;
+			switch (env) {
+				case project.env.dev:
+					staticServerUrl = 'https://static.dev.readup.com';
+					break;
+				case project.env.prod:
+					staticServerUrl = 'https://static.readup.com';
+					break;
+				default:
+					throw new Error('Unexpected environment');
+			}
+			return {
+				'static_server_url': staticServerUrl
+			};
+		},
+		extension: '.html',
+		files: [
+			`${project.srcDir}/app/client/embed-iframe-bridge/index.mustache`,
+		]
+	},
 	path: 'app/client'
 });
 

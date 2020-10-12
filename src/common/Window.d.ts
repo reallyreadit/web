@@ -7,12 +7,14 @@ declare global {
 		isFocusedOnField: boolean
 	}
 	interface AlertContentScriptWindow { }
+	interface EmbedWindow { }
 	interface ReaderContentScriptWindow { }
 	interface ReaderWindow { }
 	interface Window {
 		reallyreadit: {
 			alertContentScript?: AlertContentScriptWindow,
 			app?: AppWindow,
+			embed?: EmbedWindow,
 			readerContentScript?: ReaderContentScriptWindow,
 			extension?: {
 				config?: {

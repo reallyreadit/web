@@ -1,0 +1,29 @@
+/*
+	componentPath: src/embed/components/EmbedCommentsSection
+	cssComponentId: embed-comments-section_40yiiy
+*/
+
+.embed-comments-section_40yiiy {
+	opacity: 0;
+	animation: embed-comments-section_40yiiy-fade-in 500ms forwards;
+}
+.embed-comments-section_40yiiy > .post-prompt_de6v6u {
+	margin-bottom: 15px;
+}
+.embed-comments-section_40yiiy > .loading-comments {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.embed-comments-section_40yiiy > .loading-comments > .spinner-icon_6s5uk2 {
+	margin-right: 5px;
+}
+
+@keyframes embed-comments-section_40yiiy-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

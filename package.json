@@ -5,6 +5,7 @@
   "it.reallyread": {
     "version": {
       "app": "1.31.0",
+      "embed": "1.0.0",
       "extension": {
         "package": "4.1.2",
         "contentParser": "1.1.1"

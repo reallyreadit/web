@@ -3,6 +3,7 @@ const
 	project = require('./build/project'),
 	Server = require('./build/targets/Server'),
 	client = require('./build/targets/client'),
+	embed = require('./build/targets/embed'),
 	extension = require('./build/targets/extension'),
 	nativeClientReader = require('./build/targets/nativeClient/reader'),
 	nativeClientShareExtension = require('./build/targets/nativeClient/shareExtension');
@@ -51,6 +52,23 @@ function cleanProdBrowser() {
 }
 function buildProdBrowser() {
 	return client.build(project.env.prod);
+}
+
+/**
+ * embed
+ */
+function cleanDevEmbed() {
+	return embed.clean(project.env.dev);
+}
+function buildDevEmbed() {
+	return embed.build(project.env.dev);
+}
+
+function cleanProdEmbed() {
+	return embed.clean(project.env.prod);
+}
+function buildProdEmbed() {
+	return embed.build(project.env.prod);
 }
 
 /**
@@ -149,6 +167,11 @@ module.exports = {
 	'build:stage:browser': buildStageBrowser,
 	'clean:prod:browser': cleanProdBrowser,
 	'build:prod:browser': buildProdBrowser,
+	'clean:dev:embed': cleanDevEmbed,
+	'build:dev:embed': buildDevEmbed,
+	'watch:dev:embed': embed.watch,
+	'clean:prod:embed': cleanProdEmbed,
+	'build:prod:embed': buildProdEmbed,
 	'clean:dev:extension': cleanDevExtension,
 	'build:dev:extension': buildDevExtension,
 	'watch:dev:extension': extension.watch,
