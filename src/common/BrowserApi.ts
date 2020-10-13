@@ -9,38 +9,40 @@ import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstall
 import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
+import { BroadcastChannelInterface } from './messaging/BroadcastChannelInterface';
+import StorageBroadcastChannel from './messaging/StorageBroadcastChannel';
 
-export type BroadcastEventListener = (messageData: any) => void;
-interface BroadcastChannelInterface {
-	addEventListener: (listener: BroadcastEventListener) => void,
+export type MessageListener = (messageData: any) => void;
+interface Messenger {
+	addListener: (listener: MessageListener) => void,
 	postMessage: (data: any) => void
 }
-export class BrowserBroadcastChannel {
-	private readonly _channel: BroadcastChannel | null;
-	private readonly _listeners: BroadcastEventListener[] = [];
+export class BroadcastChannelMessenger {
+	private readonly _channel: BroadcastChannelInterface;
+	private readonly _listeners: MessageListener[] = [];
 	constructor() {
-		try {
-			this._channel = new BroadcastChannel('BrowserApi');
-			this._channel.addEventListener(
-				'message',
-				event => {
-					this._listeners.forEach(
-						listener => {
-							listener(event.data);
-						}
-					);
-			});
-		} catch (ex) {
-			this._channel = null;
+		const channelName = 'BrowserApi';
+		// BroadcastChannel isn't implemented in Safari
+		if ('BroadcastChannel' in window) {
+			this._channel = new BroadcastChannel(channelName);
+		} else {
+			this._channel = new StorageBroadcastChannel(channelName);
 		}
+		this._channel.addEventListener(
+			'message',
+			event => {
+				this._listeners.forEach(
+					listener => {
+						listener(event.data);
+					}
+				);
+			}
+		); 
 	}
-	public addEventListener(listener: BroadcastEventListener) {
+	public addListener(listener: MessageListener) {
 		this._listeners.push(listener);
 	}
 	public postMessage(data: any) {
-		if (!this._channel) {
-			return;
-		}
 		this._channel.postMessage(data);
 	}
 }
@@ -51,13 +53,13 @@ type SerializedExtensionInstallationEvent = (
 	ExtensionUninstalledEvent
 );
 export default class BrowserApi extends BrowserApiBase {
-	private readonly _channel: BroadcastChannelInterface;
+	private readonly _messenger: Messenger;
 	constructor(
-		channel: BroadcastChannelInterface = new BrowserBroadcastChannel()
+		messenger: Messenger = new BroadcastChannelMessenger()
 	) {
 		super();
-		this._channel = channel;
-		this._channel.addEventListener(
+		this._messenger = messenger;
+		this._messenger.addListener(
 			messageData => {
 				switch (messageData.type) {
 					case 'extensionInstallationChanged':
@@ -86,7 +88,7 @@ export default class BrowserApi extends BrowserApiBase {
 		);
 	}
 	private broadcastUpdate(type: string, data?: {}) {
-		this._channel.postMessage({ type, data });	
+		this._messenger.postMessage({ type, data });	
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
 		this.broadcastUpdate('articleUpdated', event);

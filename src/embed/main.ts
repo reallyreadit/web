@@ -31,7 +31,7 @@ import ShareChannel from '../common/sharing/ShareChannel';
 import ApiServer from './ApiServer';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import GlobalComponentHost from './GlobalComponentHost';
-import RelayBroadcastChannel from './RelayBroadcastChannel';
+import BrowserApiRelayMessenger from './BrowserApiRelayMessenger';
 
 interface State {
 	article: UserArticle,
@@ -86,7 +86,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		}
 	);
 	// iframe communication to readup.com and extension
-	const browserApiRelayChannel = new RelayBroadcastChannel({
+	const browserApiRelayMessenger = new BrowserApiRelayMessenger({
 		onMessagePosted: messageData => {
 			iframeMessaging.sendMessage({
 				type: 'browser',
@@ -94,7 +94,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			});
 		}
 	});
-	const browserApi = new BrowserApi(browserApiRelayChannel)
+	const browserApi = new BrowserApi(browserApiRelayMessenger)
 		.addListener(
 			'articleUpdated',
 			event => {
@@ -181,7 +181,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		message => {
 			switch (message.type) {
 				case 'browser':
-					browserApiRelayChannel.relayMessage(message.data);
+					browserApiRelayMessenger.relayMessage(message.data);
 					break;
 			}
 		}
