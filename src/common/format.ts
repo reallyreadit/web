@@ -63,3 +63,11 @@ export function pad(input: string, direction: 'left' | 'right', padding: string,
 		return (input + padding).slice(0, Math.max(input.length, spaces));
 	}
 }
+export function generateRandomString(byteCount: number) {
+	const bytes = new Uint8Array(byteCount);
+	window.crypto.getRandomValues(bytes);
+	return bytes.reduce(
+		(result, byte) => result + byte.toString(16),
+		''
+	);
+}
