@@ -66,6 +66,10 @@ function activate(initializationResponse: InitializationActivationResponse) {
 						setState({
 							article: res.article
 						});
+						browserApi.articleUpdated({
+							article: res.article,
+							isCompletionCommit: commitEvent.isCompletionCommit
+						});
 					}
 				);
 		}
