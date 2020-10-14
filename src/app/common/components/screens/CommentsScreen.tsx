@@ -43,7 +43,6 @@ export interface Props {
 	comments: Fetchable<CommentThread[]>,
 	deviceType: DeviceType,
 	highlightedCommentId: string | null,
-	marketingVariant: number,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -67,7 +66,7 @@ export interface Props {
 export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => { };
 	public render() {
-		const marketingVariant = marketingVariants[this.props.marketingVariant];
+		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="comments-screen_udh2l6">
 				{this.props.article.isLoading || this.props.comments.isLoading ?

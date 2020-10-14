@@ -64,7 +64,6 @@ export interface Props {
 	captcha: Captcha,
 	initialLocation: RouteLocation,
 	initialUserProfile: WebAppUserProfile | null,
-	marketingVariant: number,
 	serverApi: ServerApi,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint

@@ -6,7 +6,7 @@ export const variants: {
 		subtext: React.ReactNode
 	}
 } = {
-	9: {
+	0: {
 		headline: 'Deep reading is screen time well spent.',
 		subtext: (
 			<>
@@ -14,11 +14,11 @@ export const variants: {
 			</>
 		)
 	},
-	10: {
+	1: {
 		headline: 'Stop feeding. Start reading.',
 		subtext: 'Readup helps you spend more of your time and attention on deep, focused reading. We are a community of readers, writers and free-thinkers. Join us today!'
 	},
-	11: {
+	2: {
 		headline: 'We are a community of readers. Join us!',
 		subtext: 'Readup is a social reading platform. No ads. No distractions. No liking or upvotes. We help you pay attention to what matters: reading.'
 	}

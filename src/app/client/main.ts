@@ -39,7 +39,6 @@ const rootProps = {
 	),
 	initialLocation: initData.initialLocation,
 	initialUserProfile: initData.userProfile,
-	marketingVariant: initData.marketingVariant,
 	serverApi,
 	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint

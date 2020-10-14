@@ -16,7 +16,6 @@ export default interface InitData {
 	exchanges: Exchange[],
 	extensionVersion: string | null,
 	initialLocation: RouteLocation,
-	marketingVariant: number,
 	userProfile: WebAppUserProfile | null,
 	version: string,
 	webServerEndpoint: HttpEndpoint

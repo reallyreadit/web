@@ -418,7 +418,6 @@ export default class extends Root<
 				ScreenKey.Author,
 				{
 					deviceType: DeviceType.Ios,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._noop,
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -455,7 +454,6 @@ export default class extends Root<
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
-				marketingVariant: this.props.marketingVariant,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -537,7 +535,6 @@ export default class extends Root<
 				ScreenKey.Leaderboards,
 				{
 					deviceType: DeviceType.Ios,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._noop,
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCloseDialog: this._dialog.closeDialog,
@@ -895,7 +892,6 @@ export default class extends Root<
 			action: this.props.appReferral.action,
 			currentPath: this.props.initialLocation.path,
 			initialPath: this.props.appReferral.initialPath,
-			marketingVariant: this.props.marketingVariant,
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
 	}

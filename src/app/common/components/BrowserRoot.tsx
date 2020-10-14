@@ -91,12 +91,8 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				action: analyticsAction,
 				currentPath: window.location.pathname,
 				initialPath: this.props.initialLocation.path,
-				marketingVariant: this.props.marketingVariant,
 				referrerUrl: window.document.referrer,
-				timestamp: Date.now(),
-				// legacy compatibility
-				marketingScreenVariant: this.props.marketingVariant,
-				path: window.location.pathname
+				timestamp: Date.now()
 			})
 		);
 	};
@@ -411,7 +407,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ScreenKey.Author,
 				{
 					deviceType: this.props.deviceType,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._beginOnboarding,
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -449,7 +444,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				deviceType: this.props.deviceType,
-				marketingVariant: this.props.marketingVariant,
 				onBeginOnboarding: this._beginOnboarding,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -497,7 +491,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
-				marketingVariant: this.props.marketingVariant,
 				onBeginOnboarding: this._beginOnboarding,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -544,7 +537,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ScreenKey.Leaderboards,
 				{
 					deviceType: this.props.deviceType,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._beginOnboarding,
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCloseDialog: this._dialog.closeDialog,
@@ -944,7 +936,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			action,
 			currentPath: window.location.pathname,
 			initialPath: this.props.initialLocation.path,
-			marketingVariant: this.props.marketingVariant,
 			referrerUrl: window.document.referrer
 		};
 	}

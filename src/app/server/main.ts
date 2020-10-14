@@ -15,7 +15,7 @@ import AppRoot from '../common/components/AppRoot';
 import Captcha from './Captcha';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
 import { extensionVersionCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApi from './BrowserApi';
@@ -26,7 +26,6 @@ import * as fs from 'fs';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import SemanticVersion from '../../common/SemanticVersion';
 import Analytics from './Analytics';
-import { variants as marketingVariants } from '../common/marketingTesting';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
 import { getDeviceType } from '../../common/DeviceType';
@@ -377,53 +376,30 @@ server = server.get('/*', (req, res) => {
 		);
 	}
 	// app referral
-	let appReferral: AppReferral & { marketingVariant?: number };
+	let appReferral: AppReferral;
 	if (req.query[appReferralQueryStringKey]) {
 		try {
 			appReferral = JSON.parse(req.query[appReferralQueryStringKey]);
 		} catch {
 			appReferral = { };
 		}
-	} else if (
-		req.query[marketingScreenVariantQueryStringKey] &&
-		req.query[referrerUrlQueryStringKey]
-	) {
-		// legacy
-		appReferral = {
-			marketingVariant: parseInt(req.query[marketingScreenVariantQueryStringKey]),
-			referrerUrl: req.query[referrerUrlQueryStringKey]
-		};
 	} else {
 		appReferral = { };
-	}
-	// marketing testing
-	const marketingVariantKeys = Object
-		.keys(marketingVariants)
-		.map(key => parseInt(key));
-	let marketingVariant: number | null;
-	if (req.cookies[marketingVariantQueryStringKey]) {
-		marketingVariant = parseInt(req.cookies[marketingVariantQueryStringKey]);
-	} else {
-		marketingVariant = appReferral.marketingVariant;
-	}
-	if (!marketingVariantKeys.includes(marketingVariant)) {
-		marketingVariant = marketingVariantKeys[Math.floor(Math.random() * marketingVariantKeys.length)];
-		res.cookie(
-			marketingVariantQueryStringKey,
-			marketingVariant,
-			{
-				maxAge: 7 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
-				domain: config.cookieDomain,
-				secure: config.secureCookie,
-				sameSite: 'none'
-			}
-		);
 	}
 	// legacy
 	if (req.cookies[marketingScreenVariantQueryStringKey]) {
 		res.clearCookie(
 			marketingScreenVariantQueryStringKey,
+			{
+				httpOnly: true,
+				domain: config.cookieDomain,
+				secure: config.secureCookie
+			}
+		);
+	}
+	if (req.cookies[marketingVariantQueryStringKey]) {
+		res.clearCookie(
+			marketingVariantQueryStringKey,
 			{
 				httpOnly: true,
 				domain: config.cookieDomain,
@@ -443,7 +419,6 @@ server = server.get('/*', (req, res) => {
 			queryString: createQueryString(req.query)
 		},
 		initialUserProfile: req.userProfile,
-		marketingVariant,
 		serverApi: req.api,
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
@@ -516,7 +491,6 @@ server = server.get('/*', (req, res) => {
 				deviceType,
 				exchanges: req.api.exchanges,
 				extensionVersion: extensionVersionString,
-				marketingVariant,
 				initialLocation: rootProps.initialLocation,
 				userProfile: req.userProfile,
 				version: version.app,

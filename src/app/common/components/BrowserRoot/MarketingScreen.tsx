@@ -29,7 +29,6 @@ import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	deviceType: DeviceType,
-	marketingVariant: number,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -99,7 +98,7 @@ export default class MarketingScreen extends React.Component<
 		this._asyncTracker.cancelAll();
 	}
 	public render () {
-		const marketingVariant = marketingVariants[this.props.marketingVariant];
+		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="marketing-screen_n5a6wc">
 				<Panel className="header">
