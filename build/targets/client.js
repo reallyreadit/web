@@ -1,4 +1,6 @@
-const path = require('path');
+const
+	path = require('path'),
+	del = require('del');
 
 const
 	project = require('../project'),
