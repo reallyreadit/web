@@ -432,11 +432,7 @@ server = server.get('/*', (req, res) => {
 				{
 					...rootProps,
 					appApi: new AppApi(),
-					appReferral: {
-						action: appReferral.action,
-						initialPath: appReferral.initialPath,
-						referrerUrl: appReferral.referrerUrl
-					}
+					appReferral
 				}
 			);
 			break;
@@ -481,11 +477,7 @@ server = server.get('/*', (req, res) => {
 						null
 				),
 				apiServerEndpoint: config.apiServer,
-				appReferral: {
-					action: appReferral.action,
-					initialPath: appReferral.initialPath,
-					referrerUrl: appReferral.referrerUrl
-				},
+				appReferral,
 				captchaSiteKey: config.captchaSiteKey,
 				clientType: req.clientType,
 				deviceType,
