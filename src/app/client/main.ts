@@ -23,7 +23,7 @@ const serverApi = new ServerApi(
 
 const rootProps = {
 	captcha: new Captcha(
-		initData.captchaSiteKey,
+		null,
 		onLoadHandler => {
 			window.onReCaptchaLoaded = () => {
 				onLoadHandler(window.grecaptcha);

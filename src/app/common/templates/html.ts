@@ -93,9 +93,6 @@ export default (
 			//-->
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
-		${initData.captchaSiteKey ?
-			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=${initData.captchaSiteKey}'></script>` :
-			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`
 	);

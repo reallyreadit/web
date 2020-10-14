@@ -471,7 +471,6 @@ server = server.get('/*', (req, res) => {
 			initData: {
 				apiServerEndpoint: config.apiServer,
 				appReferral,
-				captchaSiteKey: config.captchaSiteKey,
 				clientType: req.clientType,
 				deviceType,
 				exchanges: req.api.exchanges,

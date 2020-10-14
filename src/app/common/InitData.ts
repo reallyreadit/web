@@ -9,7 +9,6 @@ import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfil
 export default interface InitData {
 	apiServerEndpoint: HttpEndpoint,
 	appReferral: AppReferral,
-	captchaSiteKey: string | null,
 	clientType: ClientType,
 	deviceType: DeviceType,
 	exchanges: Exchange[],
