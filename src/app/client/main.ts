@@ -11,7 +11,6 @@ import ExtensionApi from './ExtensionApi';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import * as smoothscroll from 'smoothscroll-polyfill';
 import SemanticVersion from '../../common/SemanticVersion';
-import Analytics from './Analytics';
 
 const initData = window.reallyreadit.app.initData;
 
@@ -23,12 +22,6 @@ const serverApi = new ServerApi(
 );
 
 const rootProps = {
-	analytics: new Analytics({
-		trackingCode: initData.analyticsTrackingCode,
-		userId: initData.userProfile ?
-			initData.userProfile.userAccount.id :
-			null
-	}),
 	captcha: new Captcha(
 		initData.captchaSiteKey,
 		onLoadHandler => {

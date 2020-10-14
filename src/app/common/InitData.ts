@@ -7,7 +7,6 @@ import { DeviceType } from '../../common/DeviceType';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 export default interface InitData {
-	analyticsTrackingCode: string | null,
 	apiServerEndpoint: HttpEndpoint,
 	appReferral: AppReferral,
 	captchaSiteKey: string | null,

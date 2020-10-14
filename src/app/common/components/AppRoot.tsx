@@ -66,10 +66,6 @@ interface State extends RootState {
 	isPoppingScreen: boolean,
 	menuState: MenuState,
 }
-const authScreenPageviewParams = {
-	title: 'Auth',
-	path: '/'
-};
 export default class extends Root<
 	Props,
 	State,
@@ -145,8 +141,6 @@ export default class extends Root<
 				isPoppingScreen: false,
 				screens
 			});
-			// send the pageview
-			this.props.analytics.sendPageview(screens[screens.length - 1]);
 		}
 	};
 	private readonly _popScreen = () => {
@@ -857,16 +851,12 @@ export default class extends Root<
 			...this.state.screens,
 			screen
 		]);
-		// send the pageview
-		this.props.analytics.sendPageview(screen);
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		// create the new screen
 		const screen = this.createScreen(key, urlParams, title);
 		// replace the screen
 		this.setScreenState([screen]);
-		// send the pageview
-		this.props.analytics.sendPageview(screen);
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
@@ -954,9 +944,6 @@ export default class extends Root<
 		} else {
 			isInOrientation = false;
 		}
-		// update analytics
-		this.props.analytics.setUserId(profile.userAccount.id);
-		this.props.analytics.sendPageview(screen);
 		return super.onUserSignedIn(
 			profile,
 			eventType,
@@ -974,9 +961,6 @@ export default class extends Root<
 		} else {
 			this.props.appApi.syncAuthCookie();
 		}
-		// update analytics
-		this.props.analytics.setUserId(null);
-		this.props.analytics.sendPageview(authScreenPageviewParams);
 		return super.onUserSignedOut(
 			{
 				menuState: 'closed',
@@ -1143,15 +1127,6 @@ export default class extends Root<
 		);
 		// add visibility change listener
 		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
-		// send the initial pageview
-		this.props.analytics.sendPageview(
-			this.props.initialUserProfile ?
-				{
-					title: initialRoute.analyticsName,
-					path: this.props.initialLocation.path
-				} :
-				authScreenPageviewParams
-		);
 		// iOS keyboard scroll bug
 		window.setTimeout(() => {
 			if (window.scrollY !== 0) {

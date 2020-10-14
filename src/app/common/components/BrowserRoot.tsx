@@ -869,8 +869,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			);
 		}
 		this.props.browserApi.setTitle(title);
-		// send the pageview for the top screen
-		this.props.analytics.sendPageview(screens[screens.length - 1]);
 		// return the new state object
 		return {
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
@@ -999,8 +997,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.props.browserApi.setTitle(title);
 	}
 	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
-		// update analytics before potentially changing the screen
-		this.props.analytics.setUserId(profile.userAccount.id);
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedIn(profile);
@@ -1029,8 +1025,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		return super.onUserSignedIn(profile, eventType, eventSource, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
-		// update analytics before potentially changing the screen
-		this.props.analytics.setUserId(null);
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedOut();
@@ -1286,8 +1280,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		}
 		// clear extension installation redirect cookie
 		Cookies.remove(extensionInstallationRedirectPathCookieKey);
-		// send the initial pageview
-		this.props.analytics.sendPageview(this.state.screens[0]);
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

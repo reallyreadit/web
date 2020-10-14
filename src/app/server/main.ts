@@ -25,7 +25,6 @@ import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import SemanticVersion from '../../common/SemanticVersion';
-import Analytics from './Analytics';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
 import { getDeviceType } from '../../common/DeviceType';
@@ -412,7 +411,6 @@ server = server.get('/*', (req, res) => {
 	const extensionVersionString = req.cookies[extensionVersionCookieKey];
 	const browserApi = new BrowserApi();
 	const rootProps = {
-		analytics: new Analytics(),
 		captcha: new Captcha(),
 		initialLocation: {
 			path: req.path,
@@ -471,11 +469,6 @@ server = server.get('/*', (req, res) => {
 			content,
 			chromeExtensionId: config.chromeExtensionId,
 			initData: {
-				analyticsTrackingCode: (
-					config.analyticsTrackingCodes ?
-						config.analyticsTrackingCodes[req.clientType] :
-						null
-				),
 				apiServerEndpoint: config.apiServer,
 				appReferral,
 				captchaSiteKey: config.captchaSiteKey,
