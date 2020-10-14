@@ -5,108 +5,107 @@ import RouteLocation from '../../../common/routing/RouteLocation';
 const privacyPolicyPage = () => (
 	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
-			<h2>Terms and Conditions of Use</h2>
+			<h2>Privacy Policy and Terms of Use</h2>
+			<h3>Updated: Wednesday, October 14, 2020</h3>
 			<section>
-				<p>Last Updated: Tuesday, February 25, 2020</p>
+				<p>AS A GENERAL RULE, technology companies — and especially social media companies — don’t want you to read contracts like the one you’re reading right now. They don’t want you to fully understand how they work and what they do with your personal information because they know that it’s unsettling and unethical. So they hide the truth in contracts that are so long, boring and confusing they’re virtually impossible to read.</p>
+				<p>As a result, we keep clicking “I agree” to legally binding documents without much of a clue what we’re even agreeing to. It’s a huge problem.</p>
+				<p><strong>Readup has nothing to hide. We’re proud of what we’ve built. And we actually want you to read this whole thing closely, so we’re keeping it short, sweet, clear, and hopefully even interesting. In a word: <em>readable</em>.</strong></p>
 			</section>
 			<section>
-				<p><strong>(1) Terms</strong></p>
-				<p>By accessing this web site, you are agreeing to be bound by these web site Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. The materials contained in this web site are protected by applicable copyright and trade mark law.</p>
+				<p>For starters, keep in mind that the word “Readup” can refer to any of the following:</p>
+				<ul>
+					<li>The technology platform (readup.com, Readup apps and extensions, etc.)</li>
+					<li>The community of readers (real human beings) who use the platform</li>
+					<li>The corporation, reallyread.it, inc., which owns and operates the platform</li>
+					<li>The two-person team, <a href="https://billloundy.com" target="_blank">Bill Loundy</a> and <a href="https://jeffcamera.com" target="_blank">Jeff Camera</a>, who co-own and co-operate the corporation and platform.</li>
+				</ul>
+				<p>Currently, Bill and Jeff each own 50% of reallyread.it, inc. As new employees and investors acquire ownership stakes in Readup, we promise to always disclose this information to our community of readers.</p>
 			</section>
 			<section>
-				<p><strong>(2) Use License</strong></p>
+				<p><strong>When you read on Readup, you create data.</strong> Sometimes you finish reading articles and sometimes you don’t. Readup keeps track. It needs to, in order to function. For example:</p>
+				<ul>
+					<li>On Readup, if you want to comment on an article you need to read the whole thing.</li>
+					<li>Anonymized, aggregate reading data powers <a href="https://github.com/reallyreadit/aotd-algorithms" target="_blank">the algorithm</a> that curates content and selects the Article of the Day (AOTD). Readup is able to identify the best reading material because Readup “knows” the articles and stories that real humans are really reading to completion. <em>Note: As far as we know, Readup is the only social media platform with a [100% transparent algorithm].</em></li>
+				</ul>
+				<p><strong>Your reading data is strictly private by default.</strong> The only way that other readers can see what you have read is if you explicitly choose to post or comment on an article after you have read it. There is no “bulk post” or “default public” option; the choice is yours to make on an article by article basis.</p>
+				<p>If you want, you can use Readup anonymously or pseudonymously, but once you choose a username you can’t change it.</p>
+			</section>
+			<section>
+				<p><strong>You own your data.</strong> We store and use your data, but you own it. That means:</p>
 				<ol>
+					<li>You own the rights to the comments you make on Readup.</li>
+					<li>At any time, you can request a complete copy of your personal data and we will send it to you. We do this manually, so it might take a few days.</li>
+					<li>You can delete your account whenever you want. This is also a manual process. We delete all of your comments from our database and erase your identity, entirely, from our system.</li>
+					<li><strong className="underline"><em>We never share any of your information with any third parties.</em></strong> We don’t even use common services like Google Analytics or Hotjar which monitor everything you do in the background.</li>
+				</ol>
+			</section>
+			<section>
+				<p><strong>We work very hard to avoid collecting data that we do not need.</strong> As a result, we’re proud to be able to provide you with the following comprehensive overview of ALL data that we collect when you use Readup.</p>
+				<p><strong className="underline">Before you create an account on Readup</strong></p>
+				<ul>
+					<li>If you read an article on the Readup Blog, we generate a random, temporary <b>user ID</b> and store your <b>reading progress</b> in case you want to leave a comment after you finish.</li>
+					<li>If you want to get notified when we launch the Android app, we need your <b>email address</b>.</li>
+				</ul>
+				<p><strong className="underline">When you create an account on Readup</strong></p>
+				<ul>
+					<li>We require you to provide an <b>email address</b>. (If you confirm your email, we store that too.)</li>
+					<li>We require you to choose a <b>username</b> and <b>password</b>. Only the salted password hash is stored in our database.</li>
+					<li>We automatically detect your <b>time zone</b> and preferred <b>color scheme</b> (light mode or dark mode) from your device.</li>
 					<li>
-						Permission is granted to temporarily download one copy of the materials (information or software) on reallyread.it, inc.'s web site for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
-						<ol>
-							<li>modify or copy the materials;</li>
-							<li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
-							<li>attempt to decompile or reverse engineer any software contained on reallyread.it, inc.'s web site;</li>
-							<li>remove any copyright or other proprietary notations from the materials; or</li>
-							<li>transfer the materials to another person or "mirror" the materials on any other server.</li>
-						</ol>
+						We also collect the following analytics to help us understand how new people find us. We need this information to improve the onboarding experience for new readers:
+						<ul>
+							<li>The <b>referrer URL</b> tells us which website (if any) sent you to Readup.</li>
+							<li>The <b>initial path</b> tells us where on Readup you first landed.</li>
+							<li>The <b>current path</b> tells us which page on Readup you created an account on.</li>
+							<li>The <b>action button</b> tells us which button you pressed to create an account (such as “Header Button” or “Footer Button.”)</li>
+							<li>When you complete the onboarding process, we mark <b>onboarding complete</b>.</li>
+						</ul>
 					</li>
-					<li>This license shall automatically terminate if you violate any of these restrictions and may be terminated by reallyread.it, inc. at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</li>
-				</ol>
-			</section>
-			<section>
-				<p><strong>(3) Disclaimer</strong></p>
-				<ol>
-					<li>The materials on reallyread.it, inc.'s web site are provided "as is". reallyread.it, inc. makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, reallyread.it, inc. does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its Internet web site or otherwise relating to such materials or on any sites linked to this site.</li>
-				</ol>
-			</section>
-			<section>
-				<p><strong>(4) Limitations</strong></p>
-				<p>In no event shall reallyread.it, inc. or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption,) arising out of the use or inability to use the materials on reallyread.it, inc.'s Internet site, even if reallyread.it, inc. or a reallyread.it, inc. authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.</p>
-			</section>
-			<section>
-				<p><strong>(5) Revisions and Errata</strong></p>
-				<p>The materials appearing on reallyread.it, inc.'s web site could include technical, typographical, or photographic errors. reallyread.it, inc. does not warrant that any of the materials on its web site are accurate, complete, or current. reallyread.it, inc. may make changes to the materials contained on its web site at any time without notice. reallyread.it, inc. does not, however, make any commitment to update the materials.</p>
-			</section>
-			<section>
-				<p><strong>(6) Links</strong></p>
-				<p>reallyread.it, inc. has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by reallyread.it, inc. of the site. Use of any such linked web site is at the user's own risk.</p>
-			</section>
-			<section>
-				<p><strong>(7) Site Terms of Use Modifications</strong></p>
-				<p>reallyread.it, inc. may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.</p>
-			</section>
-			<section>
-				<p><strong>(8) Governing Law</strong></p>
-				<p>Any claim relating to reallyread.it, inc.'s web site shall be governed by the laws of the State of New Jersey without regard to its conflict of law provisions.</p>
-				<p>General Terms and Conditions applicable to Use of a Web Site.</p>
-			</section>
-			<h2>Privacy Policy</h2>
-			<section>
-				<p>Last Updated: Sunday, June 4, 2017</p>
-				<p>This privacy policy (&ldquo;Policy&rdquo;) describes how Readup, and all related products, entities and companies (&ldquo;Company&rdquo;), collect, use and share the personal information of consumer users of our Chrome extension and our website, https://readup.com (the &ldquo;Site&rdquo;). This Policy also applies to any of our other websites that post this Policy. This Policy does not apply to websites that post different statements.</p>
-			</section>
-			<section>
-				<p><strong>WHAT WE COLLECT</strong></p>
-				<p>We get information about you in a range of ways.</p>
-				<p><strong>(1) Information You Give Us.</strong> We collect your&lrm; name, email address, username, password as well as other information you directly give us on our Site.</p>
-				<p><strong>(2) Information We Get From Others.</strong> We may get information about you from other sources. We may add this to information we get from this Site.</p>
-				<p><strong>(3) Information Automatically Collected.</strong> We automatically log information about you, your computer, your browsing activity. For example, when visiting our Site, we log your operating system type, browser type, browser language, the website you visited before browsing to our Site, pages you viewed, how long you spent on a page, access times and information about your use of and actions on our Site. <em>At this time, we do not track or use any info other than the reading progress of articles.</em></p>
-				<p><strong>(4) Cookies.</strong> We may log information using &ldquo;cookies.&rdquo; Cookies are small data files stored on your hard drive by a website. We may use both session Cookies (which expire once you close your web browser) and persistent Cookies (which stay on your computer until you delete them) to provide you with a more personal and interactive experience on our Site. This type of information is collected to make the Site more useful to you and to tailor the experience with us to meet your special interests and needs.</p>
-			</section>
-			<section>
-				<p><strong>USE OF PERSONAL INFORMATION</strong></p>
-				<p>We use your personal information as follows:</p>
+				</ul>
+				<p><strong className="underline">If you use a third party authenticator</strong></p>
 				<ul>
-					<li>We use your personal information to operate, maintain, and improve our sites, products, and services.</li>
-					<li>We use your personal information to send information including confirmations, invoices, technical notices, updates, security alerts, and support and administrative messages.</li>
-					<li>We use your personal information to communicate about promotions, upcoming events, and other news about products and services offered by us and our selected partners.</li>
-					<li>We use your personal information to link or combine user information with other personal information.</li>
-					<li>We use your personal information to protect, investigate, and deter against fraudulent, unauthorized, or illegal activity.</li>
-					<li>We use your personal information to provide and deliver products and services customers request.</li>
+					<li>
+						You can create an account (or connect your existing account) using Apple or Twitter. These companies give us the following data:
+						<ul>
+							<li>Your <b>email address</b> (This is optional if you use your Apple ID.)</li>
+							<li>Your <b>identifier</b> which is a random value used to identify your account</li>
+							<li>Twitter also gives us your <b>display name</b>, <b>handle</b>, <b>verification status</b> and an <b>access token</b> to tweet on your behalf (with your explicit permission, of course.)</li>
+							<li>Apple gives us your <b>real user rating</b>.</li>
+						</ul>
+					</li>
+				</ul>
+				<p><strong className="underline">When you install a Readup browser extension</strong></p>
+				<ul>
+					<li>We generate a <b>random installation ID</b> to determine when an extension is installed, updated or removed.</li>
+					<li>We detect your <b>operating system</b> and <b>processor type</b>. (It’s necessary for us to know if readers are using Linux, Windows or Mac.)</li>
+				</ul>
+				<p><strong className="underline">When you install the Readup iOS or macOS app</strong></p>
+				<ul>
+					<li>You can allow or deny notifications. We store an <b>installation ID</b> and <b>device name</b>. If you allow notifications, we also store a <b>token</b>.</li>
+					<li>If an unexpected error occurs, an <b>error report</b> is automatically sent to Readup.</li>
+				</ul>
+				<p><strong className="underline">When you get an email from Readup</strong></p>
+				<ul>
+					<li>We detect <b>email opens</b> using a tracking pixel image and <b>link clicks</b> with tracking URLs. (This helps us improve the quality of our emails.)</li>
+				</ul>
+				<p><strong className="underline">When you read on Readup</strong></p>
+				<ul>
+					<li>We store your <b>complete reading history</b> in our database. This is absolutely essential in order for Readup to work.</li>
+					<li>We also store your <b>stars</b>, <b>ratings</b>, <b>posts</b> and <b>comments</b>. (Comments can be easily deleted at any time.)</li>
+					<li>We store any <b>article issues</b> that you report.</li>
+				</ul>
+				<p><strong className="underline">When you update your preferences</strong></p>
+				<ul>
+					<li>We store your <b>notification preferences</b> and we make it very easy to unsubscribe from everything.</li>
+					<li>We store your <b>reading preferences</b> (<b>text size</b>, <b>links on/off</b>.)</li>
 				</ul>
 			</section>
 			<section>
-				<p><strong>SHARING OF PERSONAL INFORMATION</strong></p>
-				<p>We may share personal information as follows:</p>
-				<ul>
-					<li>We may share personal information with your consent. For example, you may let us share personal information with others for their own marketing uses. Those uses will be subject to their privacy policies.</li>
-					<li>We may share personal information when we do a business deal, or negotiate a business deal, involving the sale or transfer of all or a part of our business or assets. These deals can include any merger, financing, acquisition, or bankruptcy transaction or proceeding.</li>
-					<li>We may share personal information for legal, protection, and safety purposes.&nbsp;</li>
-					<li>We may share information to comply with laws.&nbsp;</li>
-					<li>We may share information to respond to lawful requests and legal processes.&nbsp;</li>
-					<li>We may share information to protect the rights and property of Readup, our agents, customers, and others. This includes enforcing our agreements, policies, and terms of use.&nbsp;</li>
-					<li>We may share information in an emergency. This includes protecting the safety of our employees and agents, our customers, or any person.&nbsp;</li>
-					<li>We may share information with those who need it to do work for us.</li>
-					<li>We may also share aggregated and/or anonymized data with others for their own uses.</li>
-				</ul>
-			</section>
-			<section>
-				<p><strong>INFORMATION CHOICES AND CHANGES</strong></p>
-				<p>Our marketing emails tell you how to &ldquo;opt-out.&rdquo; If you opt out, we may still send you non-marketing emails. Non-marketing emails include emails about your accounts and our business dealings with you.</p>
-				<p>You may send requests about personal information to our Contact Information below. You can request to change contact choices, opt-out of our sharing with others, and update your personal information.</p>
-				<p>You can typically remove and reject cookies from our Site with your browser settings. Many browsers are set to accept cookies until you change your settings. If you remove or reject our cookies, it could affect how our Site works for you.</p>
-			</section>
-			<section>
-				<p><strong>CHANGES TO THIS PRIVACY POLICY.</strong> We may change this privacy policy. If we make any changes, we will change the Last Updated date above.</p>
-			</section>
-			<section>
-				<p><strong>CONTACT INFORMATION.</strong> Our email address is <a href="mailto:support@readup.com">support@readup.com</a>.</p>
+				<p><strong>COOKIES:</strong> Sometimes we use cookies, but never for marketing purposes. And since we only use “<a href="https://gdpr.eu/cookies/#:~:text=Strictly%20necessary%20cookies%20%E2%80%94%20These%20cookies,example%20of%20strictly%20necessary%20cookies." target="_blank">strictly necessary cookies</a>,” we’re not required to make you click “I agree” when we use them.</p>
+				<p><strong>CANARY:</strong> Readup has never received a government request for information.</p>
+				<p><strong>FEEDBACK:</strong> This contract will continue to evolve. Please share your suggestions <a href="https://github.com/reallyreadit/privacy-policy" target="_blank">on GitHub</a>.</p>
+				<p><strong>CONTACT:</strong> Email us. You will always get a reply from a human: <a href="mailto:support@readup.com" target="_blank"><strong>support@readup.com</strong></a></p>
 			</section>
 		</div>
 	</ScreenContainer>

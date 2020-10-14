@@ -137,8 +137,8 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Password
 	},
 	{
-		createUrl: () => '/terms',
-		pathRegExp: /^\/terms$/,
+		createUrl: () => '/privacy',
+		pathRegExp: /^\/privacy$/,
 		screenKey: ScreenKey.PrivacyPolicy
 	},
 	(function () {
