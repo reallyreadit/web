@@ -6,7 +6,7 @@ import * as classNames from 'classnames';
 
 interface Props {
 	onContinue: () => void,
-	onPlay: () => void,
+	onPlay?: () => void,
 	onSkip: () => void
 }
 enum ControlState {

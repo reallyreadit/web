@@ -32,7 +32,6 @@ import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import OrientationWizard from './AppRoot/OrientationWizard';
-import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 import createSettingsScreenFactory from './SettingsPage';
@@ -125,11 +124,10 @@ export default class extends Root<
 	}
 
 	// screens
-	private readonly _completeOrientation = (analytics: OrientationAnalytics) => {
+	private readonly _completeOrientation = () => {
 		this.setState({
 			isInOrientation: false
 		});
-		this.props.serverApi.logOrientationAnalytics(analytics);
 	};
 	private readonly _createAuthorScreenTitle = (name: string) => name;
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
