@@ -238,11 +238,10 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ShareChannel.Email,
 				ShareChannel.Twitter
 			],
-			completionHandler: this._logShareCompletion
+			completionHandler: (data: ShareForm) => {
+				
+			}
 		};
-	};
-	private readonly _logShareCompletion = (form: ShareForm) => {
-		this.props.serverApi.logShareAnalytics(form);
 	};
 
 	// user account
