@@ -18,10 +18,8 @@ import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
 import ShareStep from './OnboardingFlow/ShareStep';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
-import TwitterStep from './OnboardingFlow/TwitterStep';
 
 export enum Step {
-	Twitter,
 	CreateAccount,
 	SignIn,
 	CreateAuthServiceAccount,
@@ -44,7 +42,7 @@ export interface Props {
 	authServiceToken?: string,
 	captcha: Captcha,
 	deviceType: DeviceType,
-	initialAuthenticationStep?: Step.Twitter | Step.SignIn,
+	initialAuthenticationStep?: Step.CreateAccount | Step.SignIn,
 	isExtensionInstalled: boolean,
 	onClose: (reason: ExitReason) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -153,14 +151,6 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 			.then(this._handleExistingUserAuthentication);
 	};
 	private readonly _stepMap = {
-		[Step.Twitter]: (_: UserAccount) => (
-			<TwitterStep
-				analyticsAction={this.props.analyticsAction}
-				onSignIn={this._goToSignInStep}
-				onSignInWithTwitter={this.props.onSignInWithTwitter}
-				onSkip={this._goToCreateAccountStep}
-			/>
-		),
 		[Step.CreateAccount]: (_: UserAccount) => (
 			<CreateAccountStep
 				analyticsAction={this.props.analyticsAction}
@@ -255,7 +245,7 @@ export default class OnboardingFlow extends React.PureComponent<Props, State> {
 							Step.ResetPassword :
 							props.initialAuthenticationStep != null ?
 								props.initialAuthenticationStep :
-								Step.Twitter :
+								Step.CreateAccount :
 					!props.isExtensionInstalled ?
 						Step.InstallExtension :
 						Step.ExtensionInstalled

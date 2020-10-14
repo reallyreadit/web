@@ -249,7 +249,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setState({
 			onboarding: {
 				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.Twitter
+				initialAuthenticationStep: OnboardingStep.CreateAccount
 			}
 		});
 	};
@@ -657,7 +657,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			};
 		} else if (extensionAuthQueryStringKey in queryStringParams) {
 			onboardingState = {
-				initialAuthenticationStep: OnboardingStep.Twitter
+				initialAuthenticationStep: OnboardingStep.CreateAccount
 			};
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams ||
