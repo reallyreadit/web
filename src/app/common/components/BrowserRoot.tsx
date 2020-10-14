@@ -20,7 +20,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
@@ -49,6 +49,7 @@ import createNotificationsScreenFactory from './screens/NotificationsScreen';
 import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
+import { createUrl } from '../../../common/HttpEndpoint';
 
 interface Props extends RootProps {
 	browserApi: BrowserApi,
@@ -86,14 +87,19 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 	// app
 	private readonly _copyAppReferrerTextToClipboard = (analyticsAction: string) => {
 		this._clipboard.copyText(
-			'com.readup.nativeClientClipboardReferrer:' +
-			JSON.stringify({
-				action: analyticsAction,
-				currentPath: window.location.pathname,
-				initialPath: this.props.initialLocation.path,
-				referrerUrl: window.document.referrer,
-				timestamp: Date.now()
-			})
+			createUrl(
+				this.props.webServerEndpoint,
+				'/',
+				{
+					[appReferralQueryStringKey]: JSON.stringify({
+						action: analyticsAction,
+						currentPath: window.location.pathname,
+						initialPath: this.props.initialLocation.path,
+						referrerUrl: window.document.referrer,
+						timestamp: Date.now()
+					})
+				}
+			)
 		);
 	};
 
