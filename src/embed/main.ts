@@ -337,7 +337,6 @@ function activate(initializationResponse: InitializationActivationResponse) {
 							action: req.analyticsAction,
 							currentPath: window.location.pathname,
 							initialPath: window.location.pathname,
-							marketingVariant: 0,
 							referrerUrl: window.document.referrer
 						},
 						pushDevice: null
