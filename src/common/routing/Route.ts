@@ -4,7 +4,6 @@ import UserAccountRole from '../models/UserAccountRole';
 import routes from './routes';
 
 export interface Route<TDialogKey, TScreenKey> {
-	analyticsName: string,
 	authLevel?: UserAccountRole,
 	createUrl: (params?: { [key: string]: string }) => string,
 	dialogKey?: TDialogKey,

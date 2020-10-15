@@ -29,7 +29,6 @@ import { Sort } from '../controls/articles/AotdView';
 
 interface Props {
 	deviceType: DeviceType,
-	marketingVariant: number,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -297,7 +296,6 @@ class HomeScreen extends React.Component<Props, State> {
 			<MarketingScreen
 				communityReads={this.state.communityReads}
 				deviceType={this.props.deviceType}
-				marketingVariant={this.props.marketingVariant}
 				onBeginOnboarding={this.props.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}

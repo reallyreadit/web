@@ -22,7 +22,6 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 interface Props {
 	deviceType: DeviceType,
-	marketingVariant: number,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
@@ -213,7 +212,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const marketingVariant = marketingVariants[this.props.marketingVariant];
+		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="leaderboards-screen_wuzsob">
 				{this.state.isScreenLoading ?
@@ -282,7 +281,6 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 		render: (screen: Screen, sharedState: SharedState) => (
 			<LeaderboardsScreen
 				deviceType={services.deviceType}
-				marketingVariant={services.marketingVariant}
 				onBeginOnboarding={services.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={services.onCopyAppReferrerTextToClipboard}
 				onCloseDialog={services.onCloseDialog}

@@ -32,7 +32,6 @@ import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import OrientationWizard from './AppRoot/OrientationWizard';
-import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 import createSettingsScreenFactory from './SettingsPage';
@@ -67,10 +66,6 @@ interface State extends RootState {
 	isPoppingScreen: boolean,
 	menuState: MenuState,
 }
-const authScreenPageviewParams = {
-	title: 'Auth',
-	path: '/'
-};
 export default class extends Root<
 	Props,
 	State,
@@ -130,7 +125,7 @@ export default class extends Root<
 	}
 
 	// screens
-	private readonly _completeOrientation = (analytics: OrientationAnalytics) => {
+	private readonly _completeOrientation = () => {
 		this.props.serverApi
 			.registerOrientationCompletion()
 			.catch(
@@ -138,7 +133,6 @@ export default class extends Root<
 					// ignore. non-critical error path. orientation will just be repeated
 				}
 			);
-		this.props.serverApi.logOrientationAnalytics(analytics);
 		this.onUserUpdated(
 			{
 				...this.state.user,
@@ -163,8 +157,6 @@ export default class extends Root<
 				isPoppingScreen: false,
 				screens
 			});
-			// send the pageview
-			this.props.analytics.sendPageview(screens[screens.length - 1]);
 		}
 	};
 	private readonly _popScreen = () => {
@@ -439,7 +431,6 @@ export default class extends Root<
 				ScreenKey.Author,
 				{
 					deviceType: DeviceType.Ios,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._noop,
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -476,7 +467,6 @@ export default class extends Root<
 				}
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
-				marketingVariant: this.props.marketingVariant,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -558,7 +548,6 @@ export default class extends Root<
 				ScreenKey.Leaderboards,
 				{
 					deviceType: DeviceType.Ios,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._noop,
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCloseDialog: this._dialog.closeDialog,
@@ -886,16 +875,12 @@ export default class extends Root<
 			...this.state.screens,
 			screen
 		]);
-		// send the pageview
-		this.props.analytics.sendPageview(screen);
 	}
 	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
 		// create the new screen
 		const screen = this.createScreen(key, urlParams, title);
 		// replace the screen
 		this.setScreenState([screen]);
-		// send the pageview
-		this.props.analytics.sendPageview(screen);
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
@@ -921,7 +906,6 @@ export default class extends Root<
 			action: this.props.appReferral.action,
 			currentPath: this.props.initialLocation.path,
 			initialPath: this.props.appReferral.initialPath,
-			marketingVariant: this.props.marketingVariant,
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
 	}
@@ -984,9 +968,6 @@ export default class extends Root<
 		} else {
 			isInOrientation = !profile.userAccount.dateOrientationCompleted;
 		}
-		// update analytics
-		this.props.analytics.setUserId(profile.userAccount.id);
-		this.props.analytics.sendPageview(screen);
 		return super.onUserSignedIn(
 			profile,
 			eventType,
@@ -1004,9 +985,6 @@ export default class extends Root<
 		} else {
 			this.props.appApi.syncAuthCookie();
 		}
-		// update analytics
-		this.props.analytics.setUserId(null);
-		this.props.analytics.sendPageview(authScreenPageviewParams);
 		return super.onUserSignedOut(
 			{
 				menuState: 'closed',
@@ -1173,15 +1151,6 @@ export default class extends Root<
 		);
 		// add visibility change listener
 		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
-		// send the initial pageview
-		this.props.analytics.sendPageview(
-			this.props.initialUserProfile ?
-				{
-					title: initialRoute.analyticsName,
-					path: this.props.initialLocation.path
-				} :
-				authScreenPageviewParams
-		);
 		// iOS keyboard scroll bug
 		window.setTimeout(() => {
 			if (window.scrollY !== 0) {

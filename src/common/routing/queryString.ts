@@ -51,10 +51,10 @@ export const authServiceTokenQueryStringKey = 'authServiceToken';
 export const clientTypeQueryStringKey = 'clientType';
 export const extensionAuthQueryStringKey = 'extensionAuth';
 export const extensionInstalledQueryStringKey = 'extensionInstalled';
-export const marketingVariantQueryStringKey = 'marketingVariant';
 export const messageQueryStringKey = 'message';
 // legacy
 export const marketingScreenVariantQueryStringKey = 'marketingScreenVariant';
+export const marketingVariantQueryStringKey = 'marketingVariant';
 export const referrerUrlQueryStringKey = 'referrerUrl';
 export const unroutableQueryStringKeys = [
 	appReferralQueryStringKey,
@@ -62,9 +62,9 @@ export const unroutableQueryStringKeys = [
 	clientTypeQueryStringKey,
 	extensionAuthQueryStringKey,
 	extensionInstalledQueryStringKey,
-	marketingVariantQueryStringKey,
 	messageQueryStringKey,
 	// legacy
 	marketingScreenVariantQueryStringKey,
+	marketingVariantQueryStringKey,
 	referrerUrlQueryStringKey
 ];

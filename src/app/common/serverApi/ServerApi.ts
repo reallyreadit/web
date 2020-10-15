@@ -45,8 +45,6 @@ import PasswordResetRequestForm from '../../../common/models/userAccounts/Passwo
 import AppleIdCredentialAuthForm from '../../../common/models/app/AppleIdCredentialAuthForm';
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import PublisherArticleQuery from '../../../common/models/articles/PublisherArticleQuery';
-import ShareForm from '../../../common/models/analytics/ShareForm';
-import OrientationAnalytics from '../../../common/models/analytics/OrientationAnalytics';
 import CommunityReadsQuery from '../../../common/models/articles/CommunityReadsQuery';
 import NewPlatformNotificationRequest from '../../../common/models/analytics/NewPlatformNotificationRequest';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
@@ -144,9 +142,7 @@ export default abstract class {
 	public readonly getSignupAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>('/Analytics/Signups');
 	public readonly logExtensionRemoval = (installationId: string) => this.post({ path: '/Extension/Uninstall', data: { installationId } });
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
-	public readonly logShareAnalytics = (data: ShareForm) => this.post({ path: '/Analytics/Share', data });
 	public readonly logNewPlatformNotificationRequest = (data: NewPlatformNotificationRequest) => this.post({ path: '/Analytics/NewPlatformNotificationRequest', data });
-	public readonly logOrientationAnalytics = (data: OrientationAnalytics) => this.post({ path: '/Analytics/Orientation', data });
 
 	// Articles
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');

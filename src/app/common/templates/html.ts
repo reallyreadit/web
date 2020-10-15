@@ -23,15 +23,6 @@ export default (
 		twitterCard: TwitterCard | null
 	}
 ) => {
-	let gtagConfig: {
-		send_page_view: boolean,
-		user_id?: string
-	} = {
-		send_page_view: false
-	};
-	if (initData.userProfile) {
-		gtagConfig.user_id = initData.userProfile.userAccount.id.toString();
-	}
 	let themeAttribute = 'data-com_readup_theme';
 	if (initData.userProfile?.displayPreference) {
 		switch (initData.userProfile.displayPreference.theme) {
@@ -88,21 +79,6 @@ export default (
 		<link rel="stylesheet" type="text/css" href="/bundle.css" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${chromeExtensionId}">
 		<title>${title}</title>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		${initData.analyticsTrackingCode ?
-			`<script async src="https://www.googletagmanager.com/gtag/js?id=${initData.analyticsTrackingCode}"></script>` :
-			'<!-- analytics disabled in dev mode -->'}
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-
-			gtag(
-				'config',
-				'${initData.analyticsTrackingCode}',
-				${JSON.stringify(gtagConfig)}
-			);
-		</script>
 	</head>
 	<body>
 		${icons}
@@ -117,9 +93,6 @@ export default (
 			//-->
 		</script>
 		<script type="text/javascript" src="/bundle.js"></script>
-		${initData.captchaSiteKey ?
-			`<script async src='https://www.google.com/recaptcha/api.js?onload=onReCaptchaLoaded&render=${initData.captchaSiteKey}'></script>` :
-			'<!-- captcha disabled in dev mode -->'}
 	</body>
 </html>`
 	);

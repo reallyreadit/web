@@ -34,7 +34,6 @@ import { variants as marketingVariants } from '../../marketingTesting';
 interface Props {
 	authorSlug: string,
 	deviceType: DeviceType,
-	marketingVariant: number,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -134,7 +133,7 @@ class AuthorScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const marketingVariant = marketingVariants[this.props.marketingVariant];
+		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="author-screen_2cri7v">
 				{this.state.isScreenLoading ?
@@ -273,7 +272,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 			<AuthorScreen
 				authorSlug={getSlug(state.location)}
 				deviceType={deps.deviceType}
-				marketingVariant={deps.marketingVariant}
 				onBeginOnboarding={deps.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={deps.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={deps.onCopyTextToClipboard}

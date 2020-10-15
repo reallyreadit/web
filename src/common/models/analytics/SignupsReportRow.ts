@@ -5,7 +5,6 @@ export default interface SignupsReportRow {
 	dateCreated: string,
 	timeZoneName: string,
 	clientMode: string,
-	marketingVariant: number,
 	referrerUrl: string | null,
 	initialPath: string | null,
 	currentPath: string | null,

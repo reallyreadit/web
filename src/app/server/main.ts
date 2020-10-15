@@ -15,7 +15,7 @@ import AppRoot from '../common/components/AppRoot';
 import CaptchaPlaceholder from './CaptchaPlaceholder';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey, referrerUrlQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
 import { extensionVersionCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApiPlaceholder from './BrowserApiPlaceholder';
@@ -25,8 +25,6 @@ import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import SemanticVersion from '../../common/SemanticVersion';
-import Analytics from './Analytics';
-import { variants as marketingVariants } from '../common/marketingTesting';
 import * as crypto from 'crypto';
 import AppReferral from '../common/AppReferral';
 import { getDeviceType } from '../../common/DeviceType';
@@ -241,6 +239,13 @@ server = server.get('/privacy-policy', (req, res) => {
 		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
 	);
 });
+server = server.get('/terms', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
+	);
+});
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api
@@ -374,48 +379,15 @@ server = server.get('/*', (req, res) => {
 		);
 	}
 	// app referral
-	let appReferral: AppReferral & { marketingVariant?: number };
+	let appReferral: AppReferral;
 	if (req.query[appReferralQueryStringKey]) {
 		try {
 			appReferral = JSON.parse(req.query[appReferralQueryStringKey]);
 		} catch {
 			appReferral = { };
 		}
-	} else if (
-		req.query[marketingScreenVariantQueryStringKey] &&
-		req.query[referrerUrlQueryStringKey]
-	) {
-		// legacy
-		appReferral = {
-			marketingVariant: parseInt(req.query[marketingScreenVariantQueryStringKey]),
-			referrerUrl: req.query[referrerUrlQueryStringKey]
-		};
 	} else {
 		appReferral = { };
-	}
-	// marketing testing
-	const marketingVariantKeys = Object
-		.keys(marketingVariants)
-		.map(key => parseInt(key));
-	let marketingVariant: number | null;
-	if (req.cookies[marketingVariantQueryStringKey]) {
-		marketingVariant = parseInt(req.cookies[marketingVariantQueryStringKey]);
-	} else {
-		marketingVariant = appReferral.marketingVariant;
-	}
-	if (!marketingVariantKeys.includes(marketingVariant)) {
-		marketingVariant = marketingVariantKeys[Math.floor(Math.random() * marketingVariantKeys.length)];
-		res.cookie(
-			marketingVariantQueryStringKey,
-			marketingVariant,
-			{
-				maxAge: 7 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
-				domain: config.cookieDomain,
-				secure: config.secureCookie,
-				sameSite: 'none'
-			}
-		);
 	}
 	// legacy
 	if (req.cookies[marketingScreenVariantQueryStringKey]) {
@@ -428,19 +400,27 @@ server = server.get('/*', (req, res) => {
 			}
 		);
 	}
+	if (req.cookies[marketingVariantQueryStringKey]) {
+		res.clearCookie(
+			marketingVariantQueryStringKey,
+			{
+				httpOnly: true,
+				domain: config.cookieDomain,
+				secure: config.secureCookie
+			}
+		);
+	}
 	// prepare props
 	const deviceType = getDeviceType(req.headers['user-agent']);
 	const extensionVersionString = req.cookies[extensionVersionCookieKey];
 	const browserApi = new BrowserApiPlaceholder();
 	const rootProps = {
-		analytics: new Analytics(),
 		captcha: new CaptchaPlaceholder(),
 		initialLocation: {
 			path: req.path,
 			queryString: createQueryString(req.query)
 		},
 		initialUserProfile: req.userProfile,
-		marketingVariant,
 		serverApi: req.api,
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
@@ -454,11 +434,7 @@ server = server.get('/*', (req, res) => {
 				{
 					...rootProps,
 					appApi: new AppApi(),
-					appReferral: {
-						action: appReferral.action,
-						initialPath: appReferral.initialPath,
-						referrerUrl: appReferral.referrerUrl
-					}
+					appReferral
 				}
 			);
 			break;
@@ -497,23 +473,12 @@ server = server.get('/*', (req, res) => {
 			content,
 			chromeExtensionId: config.chromeExtensionId,
 			initData: {
-				analyticsTrackingCode: (
-					config.analyticsTrackingCodes ?
-						config.analyticsTrackingCodes[req.clientType] :
-						null
-				),
 				apiServerEndpoint: config.apiServer,
-				appReferral: {
-					action: appReferral.action,
-					initialPath: appReferral.initialPath,
-					referrerUrl: appReferral.referrerUrl
-				},
-				captchaSiteKey: config.captchaSiteKey,
+				appReferral,
 				clientType: req.clientType,
 				deviceType,
 				exchanges: req.api.exchanges,
 				extensionVersion: extensionVersionString,
-				marketingVariant,
 				initialLocation: rootProps.initialLocation,
 				userProfile: req.userProfile,
 				version: version.app,

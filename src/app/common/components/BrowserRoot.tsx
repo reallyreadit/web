@@ -20,7 +20,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
@@ -51,6 +51,7 @@ import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet } from '../../../common/format';
+import { createUrl } from '../../../common/HttpEndpoint';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -88,18 +89,19 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 	// app
 	private readonly _copyAppReferrerTextToClipboard = (analyticsAction: string) => {
 		this._clipboard.copyText(
-			'com.readup.nativeClientClipboardReferrer:' +
-			JSON.stringify({
-				action: analyticsAction,
-				currentPath: window.location.pathname,
-				initialPath: this.props.initialLocation.path,
-				marketingVariant: this.props.marketingVariant,
-				referrerUrl: window.document.referrer,
-				timestamp: Date.now(),
-				// legacy compatibility
-				marketingScreenVariant: this.props.marketingVariant,
-				path: window.location.pathname
-			})
+			createUrl(
+				this.props.webServerEndpoint,
+				'/',
+				{
+					[appReferralQueryStringKey]: JSON.stringify({
+						action: analyticsAction,
+						currentPath: window.location.pathname,
+						initialPath: this.props.initialLocation.path,
+						referrerUrl: window.document.referrer,
+						timestamp: Date.now()
+					})
+				}
+			)
 		);
 	};
 
@@ -238,11 +240,10 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ShareChannel.Email,
 				ShareChannel.Twitter
 			],
-			completionHandler: this._logShareCompletion
+			completionHandler: (data: ShareForm) => {
+				
+			}
 		};
-	};
-	private readonly _logShareCompletion = (form: ShareForm) => {
-		this.props.serverApi.logShareAnalytics(form);
 	};
 
 	// user account
@@ -250,7 +251,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setState({
 			onboarding: {
 				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.Twitter
+				initialAuthenticationStep: OnboardingStep.CreateAccount
 			}
 		});
 	};
@@ -432,7 +433,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ScreenKey.Author,
 				{
 					deviceType: this.props.deviceType,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._beginOnboarding,
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -470,7 +470,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				deviceType: this.props.deviceType,
-				marketingVariant: this.props.marketingVariant,
 				onBeginOnboarding: this._beginOnboarding,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -518,7 +517,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
-				marketingVariant: this.props.marketingVariant,
 				onBeginOnboarding: this._beginOnboarding,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -565,7 +563,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ScreenKey.Leaderboards,
 				{
 					deviceType: this.props.deviceType,
-					marketingVariant: this.props.marketingVariant,
 					onBeginOnboarding: this._beginOnboarding,
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCloseDialog: this._dialog.closeDialog,
@@ -681,7 +678,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			};
 		} else if (extensionAuthQueryStringKey in queryStringParams) {
 			onboardingState = {
-				initialAuthenticationStep: OnboardingStep.Twitter
+				initialAuthenticationStep: OnboardingStep.CreateAccount
 			};
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams ||
@@ -885,8 +882,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			);
 		}
 		this.props.browserApi.setTitle(title);
-		// send the pageview for the top screen
-		this.props.analytics.sendPageview(screens[screens.length - 1]);
 		// return the new state object
 		return {
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
@@ -958,7 +953,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			action,
 			currentPath: window.location.pathname,
 			initialPath: this.props.initialLocation.path,
-			marketingVariant: this.props.marketingVariant,
 			referrerUrl: window.document.referrer
 		};
 	}
@@ -1016,8 +1010,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.props.browserApi.setTitle(title);
 	}
 	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
-		// update analytics before potentially changing the screen
-		this.props.analytics.setUserId(profile.userAccount.id);
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedIn(profile);
@@ -1046,8 +1038,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		return super.onUserSignedIn(profile, eventType, eventSource, supplementaryState);
 	}
 	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
-		// update analytics before potentially changing the screen
-		this.props.analytics.setUserId(null);
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedOut();
@@ -1314,8 +1304,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		}
 		// clear extension installation redirect cookie
 		Cookies.remove(extensionInstallationRedirectPathCookieKey);
-		// send the initial pageview
-		this.props.analytics.sendPageview(this.state.screens[0]);
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

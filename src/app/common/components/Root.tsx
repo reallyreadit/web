@@ -31,7 +31,6 @@ import SemanticVersion from '../../../common/SemanticVersion';
 import EventManager from '../../../common/EventManager';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import { createScreenFactory as createStatsScreenFactory } from './screens/StatsScreen';
-import Analytics from '../Analytics';
 import createExtensionRemovalScreenFactory from './ExtensionRemovalScreen';
 import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
@@ -60,11 +59,9 @@ import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
 
 export interface Props {
-	analytics: Analytics,
 	captcha: CaptchaBase,
 	initialLocation: RouteLocation,
 	initialUserProfile: WebAppUserProfile | null,
-	marketingVariant: number,
 	serverApi: ServerApi,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
@@ -447,7 +444,6 @@ export default abstract class Root<
 			})
 			.then(
 				profile => {
-					this.props.analytics.sendSignUp();
 					this.onUserSignedIn(profile, SignInEventType.NewUser, EventSource.Local);
 				}
 			);
@@ -462,7 +458,6 @@ export default abstract class Root<
 			})
 			.then(
 				profile => {
-					this.props.analytics.sendSignUp();
 					this.onUserSignedIn(profile, SignInEventType.NewUser, EventSource.Local);
 				}
 			);
