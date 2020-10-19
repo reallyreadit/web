@@ -1,14 +1,13 @@
 import * as React from 'react';
 import CaptchaBase from '../../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../../common/components/Toaster';
-import AppleIdButton from '../../../../common/components/AppleIdButton';
 import Icon from '../../../../common/components/Icon';
 import CreateAccountDialog, { Form as CreateAccountDialogForm } from '../CreateAccountDialog';
 import SignInDialog, { Form as SignInDialogForm } from '../SignInDialog';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import classNames from 'classnames';
 import { AuthStatus, AuthStep } from '../AppRoot';
-import TwitterAuthButton from '../../../../common/components/TwitterAuthButton';
+import AuthServiceButton from '../../../../common/components/AuthServiceButton';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 
 const authProviderNames = {
@@ -73,12 +72,17 @@ export default class extends React.PureComponent<Props> {
 								`Error signing in with ${authProviderNames[this.props.authStatus.provider]}` :
 							null}
 					</div>
-					<TwitterAuthButton
+					<AuthServiceButton
 						imageBasePath="/images/"
 						onClick={this.props.onSignInWithTwitter}
+						provider={AuthServiceProvider.Twitter}
 					/>
 					<div className="twitter-notice">Recommended. We'll never tweet without your permission.</div>
-					<AppleIdButton onClick={this.props.onSignInWithApple} />
+					<AuthServiceButton
+						imageBasePath="/images/"
+						onClick={this.props.onSignInWithApple}
+						provider={AuthServiceProvider.Apple}
+					/>
 					<div className="email-button" onClick={this._openCreateAccountDialog}>
 						<Icon name="at-sign" /> Sign in with Email
 					</div>

@@ -5,6 +5,9 @@ import CreateAccountStep, { Form as CreateAccountForm } from '../../common/compo
 import CreateAuthServiceAccountStep, { Form as CreateAuthServiceAccountForm } from '../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
 import RequestPasswordResetStep from '../../common/components/BrowserOnboardingFlow/RequestPasswordResetStep';
 import SignInStep, { Form as SignInForm } from '../../common/components/BrowserOnboardingFlow/SignInStep';
+import { Intent } from '../../common/components/Toaster';
+import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
+import BrowserPopupResponseResponse from '../../common/models/auth/BrowserPopupResponseResponse';
 import UserAccount from '../../common/models/UserAccount';
 import PasswordResetRequestForm from '../../common/models/userAccounts/PasswordResetRequestForm';
 
@@ -22,9 +25,9 @@ interface Props extends BaseProps {
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
 	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: SignInForm) => Promise<void>,
-	onSignInWithApple: (analyticsAction: string) => void,
-	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>
+	onSignInWithAuthService: (provider: AuthServiceProvider) => Promise<BrowserPopupResponseResponse>
 }
 export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	private readonly _createAccount = (form: CreateAccountForm) => {
@@ -50,16 +53,39 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		this.goToStep(Step.SignIn);
 	};
 	private readonly _handleAccountCreation = () => {
-		this.props.onClose(ExitReason.ExistingUserAuthenticated);
+		this._beginClosing(ExitReason.Completed);
 	};
 	private readonly _handleExistingUserAuthentication = () => {
-		this.props.onClose(ExitReason.ExistingUserAuthenticated);
+		this._beginClosing(ExitReason.ExistingUserAuthenticated);
 	};
 	private readonly _signIn = (form: SignInForm) => {
 		return this.props
 			.onSignIn(form)
 			.then(this._handleExistingUserAuthentication);
 	};
+	private readonly _signInWithAuthService = (provider: AuthServiceProvider) => (
+		this.props
+			.onSignInWithAuthService(provider)
+			.then(
+				response => {
+					if (
+						response.error
+					) {
+						// handle in calling component
+					} else if (
+						response.authServiceToken
+					) {
+						// switch to auth service account creation step
+						this._authServiceToken = response.authServiceToken;
+						this.goToStep(Step.CreateAuthServiceAccount);
+					} else {
+						// user was signed in
+						this._handleExistingUserAuthentication();
+					}
+					return response;
+				}
+			)
+	);
 	private readonly _stepMap = {
 		[Step.CreateAccount]: (_: UserAccount) => (
 			<CreateAccountStep
@@ -67,9 +93,9 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 				captcha={this.props.captcha}
 				imageBasePath={this.props.imageBasePath}
 				onCreateAccount={this._createAccount}
+				onShowToast={this.props.onShowToast}
 				onSignIn={this._goToSignInStep}
-				onSignInWithApple={this.props.onSignInWithApple}
-				onSignInWithTwitter={this.props.onSignInWithTwitter}
+				onSignInWithAuthService={this._signInWithAuthService}
 			/>
 		),
 		[Step.SignIn]: (_: UserAccount) => (
@@ -78,14 +104,15 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 				imageBasePath={this.props.imageBasePath}
 				onCreateAccount={this._goToCreateAccountStep}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
+				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}
-				onSignInWithApple={this.props.onSignInWithApple}
-				onSignInWithTwitter={this.props.onSignInWithTwitter}
+				onSignInWithAuthService={this._signInWithAuthService}
 			/>
 		),
 		[Step.CreateAuthServiceAccount]: (_: UserAccount) => (
 			<CreateAuthServiceAccountStep
-				authServiceToken={''}
+				analyticsAction={this.props.analyticsAction}
+				authServiceToken={this._authServiceToken}
 				onCreateAuthServiceAccount={this._createAuthServiceAccount}
 				onLinkExistingAccount={this._goToLinkAccountStep}
 			/>
@@ -93,20 +120,22 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.LinkAccount]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
-				authServiceToken={''}
+				authServiceToken={this._authServiceToken}
 				imageBasePath={this.props.imageBasePath}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
+				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}
 			/>
 		),
 		[Step.RequestPasswordReset]: (_: UserAccount) => (
 			<RequestPasswordResetStep
-				authServiceToken={''}
+				authServiceToken={this._authServiceToken}
 				captcha={this.props.captcha}
 				onRequestPasswordReset={this.props.onRequestPasswordReset}
 			/>
 		)
 	};
+	private _authServiceToken: string | null;
 	constructor(props: Props) {
 		super(props);
 		this.state = {

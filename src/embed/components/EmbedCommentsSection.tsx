@@ -27,7 +27,7 @@ export interface Props {
 	clipboardService: ClipboardService,
 	comments: Fetchable<CommentThread[]>,
 	dialogService: DialogService,
-	onAuthenticationRequired: (completionDelegate: () => void) => Function,
+	onAuthenticationRequired: (analyticsAction: string, completionDelegate: () => void) => Function,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>
@@ -58,6 +58,7 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 		};
 		if (!this.props.user) {
 			const unsubscribe = this.props.onAuthenticationRequired(
+				'EmbedPost',
 				() => {
 					unsubscribe();
 					openDialog(article);
@@ -67,6 +68,9 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 			openDialog(article);
 		}
 	};
+	private readonly _requireAuthenticationForReply = (completionDelegate: () => void) => (
+		this.props.onAuthenticationRequired('EmbedReply', completionDelegate)
+	);
 	public render() {
 		return (
 			<div className="embed-comments-section_40yiiy">
@@ -85,7 +89,7 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 						article={this.props.article}
 						comments={this.props.comments.value}
 						noCommentsMessage="No comments on this article yet."
-						onAuthenticationRequired={this.props.onAuthenticationRequired}
+						onAuthenticationRequired={this._requireAuthenticationForReply}
 						onCloseDialog={this.props.dialogService.closeDialog}
 						onCopyTextToClipboard={this.props.clipboardService.copyText}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}

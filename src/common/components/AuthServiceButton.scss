@@ -1,0 +1,52 @@
+/*
+	componentPath: src/common/components/AuthServiceButton
+	cssComponentId: auth-service-button_bj12nx
+*/
+@import '../styles/colors';
+
+.auth-service-button_bj12nx {
+	height: 40px;
+	border-radius: 5px;
+	font-family: 'Museo Sans (500)';
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+}
+.auth-service-button_bj12nx > .icon_rour3d {
+	width: 0.9em;
+}
+.auth-service-button_bj12nx.apple > .content {
+	font-family: 'SF Pro Text';
+	font-size: 0.95em;
+	font-synthesis: none;
+	-moz-font-feature-settings: kern;
+	font-feature-settings: kern;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.auth-service-button_bj12nx.twitter > .content > img {
+	width: 0.9em;
+	margin-right: 0.25em;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .auth-service-button_bj12nx.apple {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $apple-button-text-color,
+				"background-color": $apple-button-background-color
+			)
+		);
+	}
+	#{$root} .auth-service-button_bj12nx.twitter {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $twitter-button-text-color,
+				"background-color": $twitter-button-background-color
+			)
+		);
+	}
+}

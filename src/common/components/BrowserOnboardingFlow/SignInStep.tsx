@@ -1,12 +1,16 @@
 import * as React from 'react';
 import EmailAddressField from '../controls/authentication/EmailAddressField';
 import PasswordField from '../controls/authentication/PasswordField';
-import AppleIdButton from '../AppleIdButton';
 import Button from '../Button';
 import ActionLink from '../ActionLink';
 import SignInForm from '../../models/userAccounts/SignInForm';
 import FormPartition from '../controls/FormPartition';
-import TwitterAuthButton from '../TwitterAuthButton';
+import AuthServiceButton from '../AuthServiceButton';
+import AuthServiceProvider from '../../models/auth/AuthServiceProvider';
+import BrowserPopupResponseResponse from '../../models/auth/BrowserPopupResponseResponse';
+import AuthenticationError, { errorMessage as authenticationErrorMessage } from '../../models/auth/AuthenticationError';
+import { Intent } from '../Toaster';
+import { getPromiseErrorMessage } from '../../format';
 
 export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string };
 interface Props {
@@ -15,9 +19,9 @@ interface Props {
 	imageBasePath: string,
 	onCreateAccount?: () => void,
 	onRequestPasswordReset: (authServiceToken?: string) => void,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: Form) => Promise<void>,
-	onSignInWithApple?: (analyticsAction: string) => void,
-	onSignInWithTwitter?: (analyticsAction: string) => Promise<{}>
+	onSignInWithAuthService?: (provider: AuthServiceProvider, analyticsAction: string) => Promise<BrowserPopupResponseResponse>
 }
 enum GlobalError {
 	Unknown,
@@ -105,11 +109,30 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 			}
 		);
 	};
-	private readonly _signInWithApple = () => {
-		this.props.onSignInWithApple(this.props.analyticsAction);
-	};
-	private readonly _signInWithTwitter = () => {
-		return this.props.onSignInWithTwitter(this.props.analyticsAction);
+	private readonly _signInWithAuthService = (provider: AuthServiceProvider) => {
+		return this.props
+			.onSignInWithAuthService(provider, this.props.analyticsAction)
+			.then(
+				response => {
+					if (response.error != null) {
+						this.props.onShowToast(
+							authenticationErrorMessage[response.error],
+							response.error === AuthenticationError.Cancelled ?
+								Intent.Neutral :
+								Intent.Danger
+						);
+					}
+					return response;
+				}
+			)
+			.catch(
+				reason => {
+					this.props.onShowToast(
+						getPromiseErrorMessage(reason),
+						Intent.Danger
+					);
+				}
+			);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -178,17 +201,20 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 							'Log In'
 					}
 				/>
-				{this.props.onSignInWithApple || this.props.onSignInWithTwitter ?
-					<FormPartition /> :
-					null}
-				{this.props.onSignInWithApple ?
-					<AppleIdButton onClick={this._signInWithApple} /> :
-					null}
-				{this.props.onSignInWithTwitter ?
-					<TwitterAuthButton
-						imageBasePath={this.props.imageBasePath}
-						onClick={this._signInWithTwitter}
-					/> :
+				{this.props.onSignInWithAuthService ?
+					<>
+						<FormPartition />
+						<AuthServiceButton
+							imageBasePath={this.props.imageBasePath}
+							onClick={this._signInWithAuthService}
+							provider={AuthServiceProvider.Apple}
+						/>
+						<AuthServiceButton
+							imageBasePath={this.props.imageBasePath}
+							onClick={this._signInWithAuthService}
+							provider={AuthServiceProvider.Twitter}
+						/>
+					</> :
 					null}
 				<ActionLink
 					onClick={this._requestPasswordReset}

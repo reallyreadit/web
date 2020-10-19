@@ -1,6 +1,5 @@
 import HttpEndpoint, { createUrl } from '../common/HttpEndpoint';
 import HttpMethod from '../common/HttpMethod';
-import TwitterRequestToken from '../common/models/auth/TwitterRequestToken';
 import CommentThread from '../common/models/CommentThread';
 import InitializationRequest from '../common/models/embed/InitializationRequest';
 import { InitializationResponse } from '../common/models/embed/InitializationResponse';
@@ -19,6 +18,10 @@ import WebAppUserProfile from '../common/models/userAccounts/WebAppUserProfile';
 import AuthServiceAccountForm from '../common/models/userAccounts/AuthServiceAccountForm';
 import PasswordResetRequestForm from '../common/models/userAccounts/PasswordResetRequestForm';
 import SignInForm from '../common/models/userAccounts/SignInForm';
+import BrowserPopupRequestRequest from '../common/models/auth/BrowserPopupRequestRequest';
+import BrowserPopupRequestResponse from '../common/models/auth/BrowserPopupRequestResponse';
+import BrowserPopupResponseRequest from '../common/models/auth/BrowserPopupResponseRequest';
+import BrowserPopupResponseResponse from '../common/models/auth/BrowserPopupResponseResponse';
 
 export default class ApiServer {
 	private readonly _clientVersion: SemanticVersion;
@@ -60,10 +63,10 @@ export default class ApiServer {
 			.then(
 				res => {
 					// asp.net sets content-type = "application/json; charset=utf-8"
+					const contentType = res.headers.get('content-type');
 					if (
-						res.headers
-							.get('content-type')
-							?.includes('application/json')
+						contentType?.includes('application/json') ||
+						contentType?.includes('application/problem+json')
 					) {
 						return res
 							.json()
@@ -75,8 +78,14 @@ export default class ApiServer {
 									return json;
 								}
 							);
+					} else {
+						if (!res.ok) {
+							const error = new Error();
+							error.name = res.status.toString();
+							throw error;
+						}
+						return null;
 					}
-					return undefined;
 				}
 			);
 	}
@@ -88,6 +97,9 @@ export default class ApiServer {
 	}
 	public deleteComment(request: CommentDeletionForm) {
 		return this.fetch<CommentThread>(HttpMethod.Post, '/Social/CommentDeletion', request);
+	}
+	public getAuthServiceBrowserPopupResponse(request: BrowserPopupResponseRequest) {
+		return this.fetch<BrowserPopupResponseResponse>(HttpMethod.Get, '/Auth/BrowserPopupResponse', request);
 	}
 	public getComments(slug: string) {
 		return this.fetch<CommentThread[]>(HttpMethod.Get, '/Articles/ListComments', { slug });
@@ -107,11 +119,11 @@ export default class ApiServer {
 	public postCommentRevision(request: CommentRevisionForm) {
 		return this.fetch<CommentThread>(HttpMethod.Post, '/Social/CommentRevision', request);
 	}
+	public requestAuthServiceBrowserPopupRequest(request: BrowserPopupRequestRequest) {
+		return this.fetch<BrowserPopupRequestResponse>(HttpMethod.Post, '/Auth/BrowserPopupRequest', request);
+	}
 	public requestPasswordReset(request: PasswordResetRequestForm) {
 		return this.fetch<void>(HttpMethod.Post, '/UserAccounts/RequestPasswordReset', request);
-	}
-	public requestTwitterBrowserLinkRequestToken() {
-		return this.fetch<TwitterRequestToken>(HttpMethod.Post, '/Auth/TwitterBrowserLinkRequest');
 	}
 	public signIn(request: SignInForm) {
 		return this.fetch<WebAppUserProfile>(HttpMethod.Post, '/UserAccounts/SignIn', request);

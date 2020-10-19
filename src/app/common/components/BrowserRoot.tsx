@@ -52,6 +52,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
+import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -366,10 +367,15 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			})
 		});
 		window.location.href = 'https://appleid.apple.com/auth/authorize' + queryString;
+		return new Promise<BrowserPopupResponseResponse>(
+			() => {
+				// leave the promise unresolved as the browser navigates
+			}
+		);
 	};
 	private readonly _signInWithTwitter = (action: string) => {
-		return new Promise(
-			resolve => {
+		return new Promise<BrowserPopupResponseResponse>(
+			(resolve, reject) => {
 				this.props.serverApi
 					.requestTwitterBrowserAuthRequestToken({
 						redirectPath: window.location.pathname,
@@ -384,8 +390,9 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					)
 					.catch(
 						() => {
-							resolve();
-							this._toaster.addToast('Error Requesting Token', Intent.Danger);
+							reject(
+								new Error('Error Requesting Token')
+							);
 						}
 					);
 				// leave the promise unresolved as the browser navigates
@@ -1216,6 +1223,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						onCreateAuthServiceAccount={this._createAuthServiceAccount}
 						onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
 						onResetPassword={this._resetPassword}
+						onShowToast={this._toaster.addToast}
 						onShare={this._handleShareRequest}
 						onSignIn={this._signIn}
 						onSignInWithApple={this._signInWithApple}

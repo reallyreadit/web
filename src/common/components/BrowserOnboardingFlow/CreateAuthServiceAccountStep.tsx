@@ -4,8 +4,11 @@ import AuthServiceAccountForm from '../../models/userAccounts/AuthServiceAccount
 import UsernameField from '../controls/authentication/UsernameField';
 import ActionLink from '../ActionLink';
 
-export type Form = Pick<AuthServiceAccountForm, 'token' | 'name'>;
+export type Form = Pick<AuthServiceAccountForm, 'token' | 'name'> & {
+	analyticsAction: string
+};
 interface Props {
+	analyticsAction: string,
 	authServiceToken: string,
 	onCreateAuthServiceAccount: (form: Form) => Promise<void>,
 	onLinkExistingAccount: () => void,
@@ -48,6 +51,7 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 			() => {
 				this.props
 					.onCreateAuthServiceAccount({
+						analyticsAction: this.props.analyticsAction,
 						token: this.props.authServiceToken,
 						name: this.state.name
 					})

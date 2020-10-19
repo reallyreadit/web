@@ -4,11 +4,15 @@ import UserAccountForm from '../../models/userAccounts/UserAccountForm';
 import UsernameField from '../controls/authentication/UsernameField';
 import EmailAddressField from '../controls/authentication/EmailAddressField';
 import PasswordField from '../controls/authentication/PasswordField';
-import AppleIdButton from '../../components/AppleIdButton';
 import Button from '../../components/Button';
 import ActionLink from '../../components/ActionLink';
 import FormPartition from '../controls/FormPartition';
-import TwitterAuthButton from '../../components/TwitterAuthButton';
+import AuthServiceButton from '../AuthServiceButton';
+import BrowserPopupResponseResponse from '../../models/auth/BrowserPopupResponseResponse';
+import { Intent } from '../Toaster';
+import AuthenticationError, { errorMessage as authenticationErrorMessage } from '../../models/auth/AuthenticationError';
+import AuthServiceProvider from '../../models/auth/AuthServiceProvider';
+import { getPromiseErrorMessage } from '../../format';
 
 export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
 interface Props {
@@ -16,9 +20,9 @@ interface Props {
 	captcha: CaptchaBase,
 	imageBasePath: string,
 	onCreateAccount: (form: Form) => Promise<void>,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: () => void,
-	onSignInWithApple: (analyticsAction: string) => void,
-	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>
+	onSignInWithAuthService: (provider: AuthServiceProvider, analyticsAction: string) => Promise<BrowserPopupResponseResponse>
 }
 enum GlobalError {
 	Unknown,
@@ -112,11 +116,30 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 			}
 		);
 	};
-	private readonly _signInWithApple = () => {
-		this.props.onSignInWithApple(this.props.analyticsAction);
-	};
-	private readonly _signInWithTwitter = () => {
-		return this.props.onSignInWithTwitter(this.props.analyticsAction);
+	private readonly _signInWithAuthService = (provider: AuthServiceProvider) => {
+		return this.props
+			.onSignInWithAuthService(provider, this.props.analyticsAction)
+			.then(
+				response => {
+					if (response.error != null) {
+						this.props.onShowToast(
+							authenticationErrorMessage[response.error],
+							response.error === AuthenticationError.Cancelled ?
+								Intent.Neutral :
+								Intent.Danger
+						);
+					}
+					return response;
+				}
+			)
+			.catch(
+				reason => {
+					this.props.onShowToast(
+						getPromiseErrorMessage(reason),
+						Intent.Danger
+					);
+				}
+			);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -190,10 +213,15 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 					text="Create Account"
 				/>
 				<FormPartition />
-				<AppleIdButton onClick={this._signInWithApple} />
-				<TwitterAuthButton
+				<AuthServiceButton
 					imageBasePath={this.props.imageBasePath}
-					onClick={this._signInWithTwitter}
+					onClick={this._signInWithAuthService}
+					provider={AuthServiceProvider.Apple}
+				/>
+				<AuthServiceButton
+					imageBasePath={this.props.imageBasePath}
+					onClick={this._signInWithAuthService}
+					provider={AuthServiceProvider.Twitter}
 				/>
 				<ActionLink
 					onClick={this.props.onSignIn}

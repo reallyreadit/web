@@ -16,6 +16,9 @@ import ShareStep from './OnboardingFlow/ShareStep';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
 import BrowserOnboardingFlow, { BaseProps, ExitReason } from '../../../../common/components/BrowserOnboardingFlow';
+import { Intent } from '../../../../common/components/Toaster';
+import BrowserPopupResponseResponse from '../../../../common/models/auth/BrowserPopupResponseResponse';
+import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 
 export enum Step {
 	CreateAccount,
@@ -44,9 +47,10 @@ export interface Props extends BaseProps {
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareResponse,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: SignInForm) => Promise<void>,
-	onSignInWithApple: (analyticsAction: string) => void,
-	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>,
+	onSignInWithApple: (analyticsAction: string) => Promise<BrowserPopupResponseResponse>,
+	onSignInWithTwitter: (analyticsAction: string) => Promise<BrowserPopupResponseResponse>,
 	passwordResetEmail?: string,
 	passwordResetToken?: string
 }
@@ -112,6 +116,14 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			.onSignIn(form)
 			.then(this._handleExistingUserAuthentication);
 	};
+	private readonly _signInWithAuthService = (provider: AuthServiceProvider, analyticsAction: string) => {
+		switch (provider) {
+			case AuthServiceProvider.Apple:
+				return this.props.onSignInWithApple(analyticsAction);
+			case AuthServiceProvider.Twitter:
+				return this.props.onSignInWithTwitter(analyticsAction);
+		}
+	};
 	private readonly _stepMap = {
 		[Step.CreateAccount]: (_: UserAccount) => (
 			<CreateAccountStep
@@ -119,9 +131,9 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 				captcha={this.props.captcha}
 				imageBasePath={this._imageBasePath}
 				onCreateAccount={this._createAccount}
+				onShowToast={this.props.onShowToast}
 				onSignIn={this._goToSignInStep}
-				onSignInWithApple={this.props.onSignInWithApple}
-				onSignInWithTwitter={this.props.onSignInWithTwitter}
+				onSignInWithAuthService={this._signInWithAuthService}
 			/>
 		),
 		[Step.SignIn]: (_: UserAccount) => (
@@ -130,13 +142,14 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 				imageBasePath={this._imageBasePath}
 				onCreateAccount={this._goToCreateAccountStep}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
+				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}
-				onSignInWithApple={this.props.onSignInWithApple}
-				onSignInWithTwitter={this.props.onSignInWithTwitter}
+				onSignInWithAuthService={this._signInWithAuthService}
 			/>
 		),
 		[Step.CreateAuthServiceAccount]: (_: UserAccount) => (
 			<CreateAuthServiceAccountStep
+				analyticsAction={this.props.analyticsAction}
 				authServiceToken={this.props.authServiceToken}
 				onCreateAuthServiceAccount={this._createAuthServiceAccount}
 				onLinkExistingAccount={this._goToLinkAccountStep}
@@ -148,6 +161,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 				authServiceToken={this.props.authServiceToken}
 				imageBasePath={this._imageBasePath}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
+				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}
 			/>
 		),

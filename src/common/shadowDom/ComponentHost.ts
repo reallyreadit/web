@@ -57,23 +57,6 @@ export default abstract class ComponentHost<Services, State> {
 		this._shadowHost.dataset['com_readup_theme'] = document.documentElement.dataset['com_readup_theme'];
 	}
 	protected abstract getStylesheetUrl(): string;
-	protected setState(nextState: Partial<State>) {
-		ReactDOM.render(
-			React.createElement(
-				this._component,
-				{
-					...this._services,
-					...(
-						this._state = {
-							...this._state,
-							...nextState
-						}
-					)
-				}
-			),
-			this._reactContainer
-		);
-	}
 	public attach() {
 		// check if we're already attached
 		if (this._isAttached) {
@@ -95,5 +78,27 @@ export default abstract class ComponentHost<Services, State> {
 
 		// append the root to the document
 		this._domAttachmentDelegate(this._shadowHost);
+	}
+	public setState(nextState: Partial<State>) {
+		return new Promise(
+			resolve => {
+				ReactDOM.render(
+					React.createElement(
+						this._component,
+						{
+							...this._services,
+							...(
+								this._state = {
+									...this._state,
+									...nextState
+								}
+							)
+						}
+					),
+					this._reactContainer,
+					resolve
+				);
+			}
+		);
 	}
 }

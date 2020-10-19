@@ -1,6 +1,6 @@
 import * as React from 'react';
 import DialogManager from '../../common/components/DialogManager';
-import Toaster, { Toast } from '../../common/components/Toaster';
+import Toaster, { Intent, Toast } from '../../common/components/Toaster';
 import ClipboardTextInput from '../../common/components/ClipboardTextInput';
 import DialogService, { Dialog } from '../../common/services/DialogService';
 import ToasterService from '../../common/services/ToasterService';
@@ -17,6 +17,8 @@ import { Form as SignInForm } from '../../common/components/BrowserOnboardingFlo
 import { Form as CreateAuthServiceAccountForm } from '../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
 import PasswordResetRequestForm from '../../common/models/userAccounts/PasswordResetRequestForm';
 import { ExitReason } from '../../common/components/BrowserOnboardingFlow';
+import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
+import BrowserPopupResponseResponse from '../../common/models/auth/BrowserPopupResponseResponse';
 
 export enum GlobalError {
 	None,
@@ -31,14 +33,14 @@ export interface Props {
 	dialogService: DialogService,
 	error: string | null,
 	imageBasePath: string,
-	isOnboarding: boolean,
+	onboardingAnalyticsAction: string | null,
 	onCloseOnboarding: (reason: ExitReason) => void,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
 	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
+	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: SignInForm) => Promise<void>,
-	onSignInWithApple: (analyticsAction: string) => void,
-	onSignInWithTwitter: (analyticsAction: string) => Promise<{}>,
+	onSignInWithAuthService: (provider: AuthServiceProvider) => Promise<BrowserPopupResponseResponse>,
 	toasterService: ToasterService,
 	toasts: Toast[],
 	user: UserAccount | null
@@ -48,18 +50,18 @@ export default (props: Props) => (
 		<ProgressIndicator
 			article={props.article}
 		/>
-		{props.isOnboarding ?
+		{props.onboardingAnalyticsAction ?
 			<OnboardingFlow
-				analyticsAction=""
+				analyticsAction={props.onboardingAnalyticsAction}
 				captcha={props.captcha}
 				imageBasePath={props.imageBasePath}
 				onClose={props.onCloseOnboarding}
 				onCreateAccount={props.onCreateAccount}
 				onCreateAuthServiceAccount={props.onCreateAuthServiceAccount}
 				onRequestPasswordReset={props.onRequestPasswordReset}
+				onShowToast={props.onShowToast}
 				onSignIn={props.onSignIn}
-				onSignInWithApple={props.onSignInWithApple}
-				onSignInWithTwitter={props.onSignInWithTwitter}
+				onSignInWithAuthService={props.onSignInWithAuthService}
 				user={props.user}
 			/> :
 			null}
