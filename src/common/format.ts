@@ -1,4 +1,5 @@
 import Fetchable from "./Fetchable";
+import { isProblemResponse } from "./ProblemResponse";
 
 export function formatIsoDateAsDotNet(isoDate: string) {
 	return isoDate.replace(/z$/i, '');
@@ -70,4 +71,28 @@ export function generateRandomString(byteCount: number) {
 		(result, byte) => result + byte.toString(16),
 		''
 	);
+}
+export function getPromiseErrorMessage(reason: any) {
+	let message: string;
+	if (
+		isProblemResponse(reason)
+	) {
+		message = reason.detail ?? reason.status.toString();
+	} else if (
+		Array.isArray(reason) &&
+		typeof reason[0] === 'string'
+	) {
+		message = reason[0];
+	} else if (
+		'message' in reason
+	) {
+		message = reason.message;
+	} else if (
+		typeof reason === 'string'
+	) {
+		message = reason;
+	} else {
+		message = 'An Unknown Error Occurred';
+	}
+	return message;
 }
