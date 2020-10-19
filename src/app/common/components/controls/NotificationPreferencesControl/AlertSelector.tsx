@@ -74,15 +74,15 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 	}
 	private saveChanges(value: Partial<Value>) {
 		this.setState({ indicator: SaveIndicatorState.Saving });
-		this._asyncTracker.addPromise(
-			this.props
-				.onChange(value)
-				.then(
-					() => {
-						this.setState({ indicator: SaveIndicatorState.Saved });
-					}
-				)
-		);
+		this._asyncTracker
+			.addPromise(
+				this.props.onChange(value)
+			)
+			.then(
+				() => {
+					this.setState({ indicator: SaveIndicatorState.Saved });
+				}
+			);
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();

@@ -64,37 +64,35 @@ class HomeScreen extends React.Component<Props, State> {
 			isLoadingNewItems: false,
 			newAotd: false
 		});
-		return this._asyncTracker.addPromise(
-			new Promise<void>(
-				resolve => {
-					this.props.onGetCommunityReads(
-						{
-							pageNumber: this.state.communityReads.value.articles.pageNumber + 1,
-							pageSize: 10,
-							sort: this.state.sort,
-							minLength: this.state.minLength,
-							maxLength: this.state.maxLength
-						},
-						this._asyncTracker.addCallback(
-							communityReads => {
-								resolve();
-								this.setState(
-									produce(
-										(state: State) => {
-											state.communityReads.value.articles = {
-												...communityReads.value.articles,
-												items: state.communityReads.value.articles.items.concat(
-													communityReads.value.articles.items
-												)
-											}
+		return new Promise<void>(
+			resolve => {
+				this.props.onGetCommunityReads(
+					{
+						pageNumber: this.state.communityReads.value.articles.pageNumber + 1,
+						pageSize: 10,
+						sort: this.state.sort,
+						minLength: this.state.minLength,
+						maxLength: this.state.maxLength
+					},
+					this._asyncTracker.addCallback(
+						communityReads => {
+							resolve();
+							this.setState(
+								produce(
+									(state: State) => {
+										state.communityReads.value.articles = {
+											...communityReads.value.articles,
+											items: state.communityReads.value.articles.items.concat(
+												communityReads.value.articles.items
+											)
 										}
-									)
-								);
-							}
-						)
-					);
-				}
-			)
+									}
+								)
+							);
+						}
+					)
+				);
+			}
 		);
 	};
 	private readonly _loadNewItems = () => {

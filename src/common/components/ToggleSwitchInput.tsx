@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AsyncTracker from '../AsyncTracker';
+import AsyncTracker, { CancellationToken } from '../AsyncTracker';
 import { State as SaveIndicatorState } from './SaveIndicator';
 import ToggleSwitchExpandableInput from './ToggleSwitchExpandableInput';
 import { ClassValue } from 'classnames/types';
@@ -29,25 +29,27 @@ export default class ToggleSwitchInput extends React.PureComponent<Props, State>
 			this.setState({
 				indicator: SaveIndicatorState.Saving
 			});
-			this._asyncTracker.addPromise(
-				changePromise
-					.then(
-						() => {
-							this._isSaving = false;
-							this.setState({
-								indicator: SaveIndicatorState.Saved
-							});
+			this._asyncTracker
+				.addPromise(changePromise)
+				.then(
+					() => {
+						this._isSaving = false;
+						this.setState({
+							indicator: SaveIndicatorState.Saved
+						});
+					}
+				)
+				.catch(
+					reason => {
+						if ((reason as CancellationToken)?.isCancelled) {
+							return;
 						}
-					)
-					.catch(
-						() => {
-							this._isSaving = false;
-							this.setState({
-								indicator: SaveIndicatorState.None
-							});
-						}
-					)
-			);
+						this._isSaving = false;
+						this.setState({
+							indicator: SaveIndicatorState.None
+						});
+					}
+				);
 		}
 	};
 	constructor(props: Props) {

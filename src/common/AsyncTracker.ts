@@ -1,4 +1,4 @@
-interface CancellationToken {
+export interface CancellationToken {
 	isCancelled: boolean
 }
 export default class AsyncTracker {

@@ -106,26 +106,26 @@ class DiscoverScreen extends React.Component<Props, State> {
 				}
 			},
 			() => {
-				this._asyncTracker.addPromise(
-					this.props
-						.onSearchArticles({
+				this._asyncTracker
+					.addPromise(
+						this.props.onSearchArticles({
 							authors: this.state.authors,
 							maxLength: this.state.maxLength,
 							minLength: this.state.minLength,
 							sources: this.state.sources,
 							tags: this.state.tags
 						})
-						.then(
-							articles => {
-								this.setState({
-									articles: {
-										isLoading: false,
-										value: articles
-									}
-								});
-							}
-						)
-				);
+					)
+					.then(
+						articles => {
+							this.setState({
+								articles: {
+									isLoading: false,
+									value: articles
+								}
+							});
+						}
+					);
 			}
 		);
 	};

@@ -132,28 +132,28 @@ export default class CommentDetails extends React.Component<
 			);
 	};
 	private readonly _postCommentRevision = (form: CommentRevisionForm) => {
-		return this._asyncTracker.addPromise(
-			this.props
-				.onPostCommentRevision(form)
-				.then(
-					comment => {
-						this.setState({ compositionState: CompositionState.None });
-						return comment;
-					}
-				)
-		);
+		return this._asyncTracker
+			.addPromise(
+				this.props.onPostCommentRevision(form)
+			)
+			.then(
+				comment => {
+					this.setState({ compositionState: CompositionState.None });
+					return comment;
+				}
+			);
 	};
 	private readonly _postCommentAddendum = (form: CommentAddendumForm) => {
-		return this._asyncTracker.addPromise(
-			this.props
-				.onPostCommentAddendum(form)
-				.then(
-					comment => {
-						this.setState({ compositionState: CompositionState.None });
-						return comment;
-					}
-				)
-		);
+		return this._asyncTracker
+			.addPromise(
+				this.props.onPostCommentAddendum(form)
+			)
+			.then(
+				comment => {
+					this.setState({ compositionState: CompositionState.None });
+					return comment;
+				}
+			);
 	};
 	private readonly _getShareData = () => {
 		const
