@@ -53,6 +53,9 @@ $control-background-color:				"control-background";
 $control-border-color:					"control-border";
 $control-disabled-color:				"control-disabled";
 
+$embed-progress-background-color:	"embed-progress-background";
+$embed-progress-fill-color:			"embed-progress-fill";
+
 $intent-alert-color:						"intent-alert";
 $intent-danger-color:					"intent-danger";
 $intent-neutral-color:					"intent-neutral";
@@ -122,6 +125,9 @@ $light-theme: (
 	$control-background-color:				#ffffff,
 	$control-border-color:					#999999,
 	$control-disabled-color:				#cccccc,
+
+	$embed-progress-background-color:	#cccccc,
+	$embed-progress-fill-color:			#999999,
 
 	$intent-alert-color:						#ff0000,
 	$intent-danger-color:					#8b0000,
@@ -193,6 +199,9 @@ $dark-theme: (
 	$control-background-color:				#2e2e2e,
 	$control-border-color:					#999999,
 	$control-disabled-color:				#666666,
+
+	$embed-progress-background-color:	#555555,
+	$embed-progress-fill-color:			#999999,
 
 	$intent-alert-color:						#cc0000,
 	$intent-danger-color:					#8b0000,

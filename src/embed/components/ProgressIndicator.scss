@@ -176,7 +176,7 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $intent-neutral-color
+				"border-color": $embed-progress-background-color
 			)
 		);
 	}
@@ -184,7 +184,7 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $control-border-color
+				"border-color": $embed-progress-fill-color
 			)
 		);
 	}
