@@ -82,21 +82,19 @@ export default abstract class BrowserOnboardingFlow<Props extends BaseProps> ext
 								null}
 						</div>
 					</div>
-					<div className="content">
-						<div
-							className={
-								classNames(
-									'container',
-									{
-										'changing': this.state.goingToStep != null,
-										'changed': this.state.goingToStep == null && !this.state.isInitialStep
-									}
-								)
-							}
-							onAnimationEnd={this._handleStepAnimationEnd}
-						>
-							{this.getStepRenderer(this.state.step)(this.props.user)}
-						</div>
+					<div
+						className={
+							classNames(
+								'content',
+								{
+									'changing': this.state.goingToStep != null,
+									'changed': this.state.goingToStep == null && !this.state.isInitialStep
+								}
+							)
+						}
+						onAnimationEnd={this._handleStepAnimationEnd}
+					>
+						{this.getStepRenderer(this.state.step)(this.props.user)}
 					</div>
 				</div>
 			</div>
