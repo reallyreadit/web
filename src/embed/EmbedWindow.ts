@@ -6,7 +6,6 @@ declare global {
 		config?: {
 			apiServer: HttpEndpoint,
 			staticServer: HttpEndpoint,
-			twitterApiServer: HttpEndpoint,
 			version: PackageVersionInfo,
 			webServer: HttpEndpoint
 		}
