@@ -216,7 +216,7 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $progress-complete-color
+				"border-color": $embed-progress-complete-color
 			)
 		);
 	}
