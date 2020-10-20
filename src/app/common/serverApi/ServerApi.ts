@@ -65,6 +65,7 @@ import SearchQuery from '../../../common/models/articles/SearchQuery';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
+import { DeviceType, isMobileDevice } from '../../../common/DeviceType';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -73,12 +74,23 @@ export default abstract class {
 	protected readonly _reqStore: RequestStore;
 	protected readonly _clientType: ClientType;
 	protected readonly _clientVersion: string;
+	protected readonly _shouldIncludeCredentials: boolean;
 	protected _isInitialized = false;
-	constructor(endpoint: HttpEndpoint, requestStore: RequestStore, clientType: ClientType, clientVersion: string) {
+	constructor(
+		endpoint: HttpEndpoint,
+		requestStore: RequestStore,
+		clientType: ClientType,
+		clientVersion: string,
+		deviceType: DeviceType
+	) {
 		this._endpoint = endpoint;
 		this._reqStore = requestStore;
 		this._clientType = clientType;
 		this._clientVersion = clientVersion;
+		this._shouldIncludeCredentials = (
+			clientType === ClientType.App ||
+			!isMobileDevice(deviceType)
+		);
 	}
 	private createFetchFunction<TResult>(path: string) {
 		return (callback: (value: Fetchable<TResult>) => void) => this.get<TResult>({ path }, callback);
@@ -89,6 +101,9 @@ export default abstract class {
 	protected abstract get<T = void>(request: Request, callback: (data: Fetchable<T>) => void) : Fetchable<T>;
 	protected abstract post<T = void>(request: Request) : Promise<T>;
 	public abstract getClientHeaderValue(): string;
+	public get shouldIncludeCredentials() {
+		return this._shouldIncludeCredentials;
+	}
 	public readonly resendConfirmationEmail = () => {
 		return this.post({ path: '/UserAccounts/ResendConfirmationEmail' });
 	};

@@ -129,6 +129,7 @@ server = server.use((req, res, next) => {
 		config.apiServer,
 		clientType,
 		version.app.toString(),
+		getDeviceType(req.headers['user-agent']),
 		{
 			key: config.cookieName,
 			value: req.cookies[config.cookieName]
@@ -136,7 +137,7 @@ server = server.use((req, res, next) => {
 	);
 	req.api = api;
 	req.clientType = clientType;
-	if (api.hasAuthCookie()) {
+	if (api.hasAuthCookie() && api.shouldIncludeCredentials) {
 		api
 			.fetchJson<WebAppUserProfile>('GET', { path: '/UserAccounts/WebAppUserProfile' })
 			.then(

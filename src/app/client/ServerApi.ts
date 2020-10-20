@@ -6,19 +6,22 @@ import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 import Exchange from '../common/serverApi/Exchange';
 import ClientType from '../common/ClientType';
+import { DeviceType } from '../../common/DeviceType';
 
 export default class extends ServerApi {
 	constructor(
 		endpoint: HttpEndpoint,
 		clientType: ClientType,
 		clientVersion: string,
+		deviceType: DeviceType,
 		exchanges: Exchange[]
 	) {
 		super(
 			endpoint,
 			new RequestStore(exchanges),
 			clientType,
-			clientVersion
+			clientVersion,
+			deviceType
 		);
 	}
 	private addCustomHeaders(req: XMLHttpRequest, params: Request) {
@@ -28,7 +31,9 @@ export default class extends ServerApi {
 		return new Promise<T>((resolve, reject) => {
 			const url = createUrl(this._endpoint, params.path);
 			const req = new XMLHttpRequest();
-			req.withCredentials = true;
+			if (this.shouldIncludeCredentials) {
+				req.withCredentials = true;
+			}
 			req.addEventListener('load', function () {
 				if (this.status === 200 || this.status === 400) {
 					const contentType = this.getResponseHeader('Content-Type');

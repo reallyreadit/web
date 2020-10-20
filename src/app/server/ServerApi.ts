@@ -7,6 +7,7 @@ import KeyValuePair from '../../common/KeyValuePair';
 import ServerApi from '../common/serverApi/ServerApi';
 import { createQueryString } from '../../common/routing/queryString';
 import ClientType from '../common/ClientType';
+import { DeviceType } from '../../common/DeviceType';
 
 export default class extends ServerApi {
 	private _authCookie: KeyValuePair<string, string | null>;
@@ -14,13 +15,15 @@ export default class extends ServerApi {
 		endpoint: HttpEndpoint,
 		clientType: ClientType,
 		clientVersion: string,
+		deviceType: DeviceType,
 		authCookie: KeyValuePair<string, string | null>
 	) {
 		super(
 			endpoint,
 			new RequestStore(),
 			clientType,
-			clientVersion
+			clientVersion,
+			deviceType
 		);
 		this._authCookie = authCookie;
 	}
@@ -54,7 +57,7 @@ export default class extends ServerApi {
 					}
 				}
 			};
-			if (this.hasAuthCookie()) {
+			if (this.hasAuthCookie() && this.shouldIncludeCredentials) {
 				options.headers['Cookie'] = this._authCookie.key + '=' + this._authCookie.value;
 			}
 			if (method === 'POST') {
