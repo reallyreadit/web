@@ -45,4 +45,12 @@
 			)
 		);
 	}
+	#{$root} .post-header_f4a846 > .share-control_mnbspk > .menu_qla37i {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-color
+			)
+		);
+	}
 }
