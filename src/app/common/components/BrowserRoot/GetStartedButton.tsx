@@ -36,7 +36,7 @@ export default class GetStartedButton extends React.PureComponent<{
 								onClick={this.props.onOpenNewPlatformNotificationRequestDialog}
 							/>
 							<div className="platforms">
-								Readup is currently available on <a href={getStoreUrl(DeviceType.Ios)} target="_blank">iOS</a>, <a href={getStoreUrl(DeviceType.DesktopChrome)} target="_blank">Chrome</a> and <a href={getStoreUrl(DeviceType.DesktopFirefox)} target="_blank">Firefox</a>.
+								Readup is currently available on <a href={getStoreUrl(DeviceType.Ios)} target="_blank">iOS</a>, <a href={getStoreUrl(DeviceType.DesktopChrome)} target="_blank">Chrome</a>, <a href={getStoreUrl(DeviceType.DesktopFirefox)} target="_blank">Firefox</a>, <a href={getStoreUrl(DeviceType.DesktopSafari)} target="_blank">Safari</a> and <a href={getStoreUrl(DeviceType.DesktopEdge)} target="_blank">Edge</a>.
 							</div>
 						</div> :
 						<Button

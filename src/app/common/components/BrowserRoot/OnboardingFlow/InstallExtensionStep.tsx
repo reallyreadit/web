@@ -57,7 +57,7 @@ export default class InstallExtensionStep extends React.PureComponent<Props> {
 					</> :
 					<>
 						<h2>Readup isn't available yet for {this.props.deviceType}.</h2>
-						<h2>Readup is currently available on <a href={getStoreUrl(DeviceType.Ios)} target="_blank">iOS</a>, <a href={getStoreUrl(DeviceType.DesktopChrome)} target="_blank">Chrome</a> and <a href={getStoreUrl(DeviceType.DesktopFirefox)} target="_blank">Firefox</a>.</h2>
+						<h2>Readup is currently available on <a href={getStoreUrl(DeviceType.Ios)} target="_blank">iOS</a>, <a href={getStoreUrl(DeviceType.DesktopChrome)} target="_blank">Chrome</a>, <a href={getStoreUrl(DeviceType.DesktopFirefox)} target="_blank">Firefox</a>, <a href={getStoreUrl(DeviceType.DesktopSafari)} target="_blank">Safari</a> and <a href={getStoreUrl(DeviceType.DesktopEdge)} target="_blank">Edge</a>.</h2>
 					</>}
 			</div>
 		);
