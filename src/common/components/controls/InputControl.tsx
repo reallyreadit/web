@@ -4,6 +4,7 @@ const
 	emailRegExp = /.+@.+/,
 	usernameRegExp = /^[A-Za-z0-9\-_]+$/;
 export interface Props {
+	autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters',
 	type: 'text' | 'email' | 'password' | 'multiline' | 'username',
 	label: string,
 	value?: string,
@@ -98,6 +99,7 @@ export default class extends React.PureComponent<Props, { isEditing: boolean }> 
 	public render() {
 		const inErrorState = !this.state.isEditing && this.props.showError && !!this.props.error;
 		const controlProps = {
+			autoCapitalize: this.props.autoCapitalize,
 			autoFocus: this.props.autoFocus,
 			value: this.props.value,
 			onChange: this._handleChange,

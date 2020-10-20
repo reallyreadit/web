@@ -11,6 +11,7 @@ export default (props: {
 	value: string
 }) => (
 		<InputField
+			autoCapitalize="none"
 			autoFocus={props.autoFocus}
 			error={props.error}
 			label="Username"
