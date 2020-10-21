@@ -93,7 +93,7 @@ function buildScss(params) {
 				.on('error', sass.logError)
 		)
 		.pipe(
-			concat('bundle.css')
+			concat(params.fileName || 'bundle.css')
 		);
 	// retarget theme selectors if targeting shadow dom
 	if (params.targetShadowDom) {

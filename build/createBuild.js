@@ -102,6 +102,7 @@ function createBuild(params) {
 								src: params.scss.files,
 								dest: outPath,
 								base: srcPath,
+								fileName: params.scss.fileName,
 								onComplete: () => {
 									params.onBuildComplete(
 										{
@@ -214,6 +215,7 @@ function createBuild(params) {
 										src: params.scss.files,
 										dest: outPath,
 										base: srcPath,
+										fileName: params.scss.fileName,
 										env: project.env.dev,
 										onComplete: () => {
 											params.onBuildComplete(

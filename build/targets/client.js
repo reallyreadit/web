@@ -1,11 +1,18 @@
 const
 	path = require('path'),
-	del = require('del');
+	del = require('del'),
+	fs = require('fs');
 
 const
 	project = require('../project'),
 	createBuild = require('../createBuild'),
 	authServiceLinkHandler = require('./client/authServiceLinkHandler');
+
+const package = JSON.parse(
+	fs
+		.readFileSync('./package.json')
+		.toString()
+);
 
 const app = createBuild({
 	webpack: {
@@ -37,6 +44,7 @@ const app = createBuild({
 					throw new Error('Unexpected environment');
 			}
 			return {
+				'embed_iframe_version': package['it.reallyread'].version.embedIframe,
 				'static_server_url': staticServerUrl
 			};
 		},

@@ -1,4 +1,6 @@
-const path = require('path');
+const
+	fs = require('fs'),
+	path = require('path');
 
 const
 	project = require('../project'),
@@ -6,12 +8,19 @@ const
 	appConfigPath = path.posix.join(project.srcDir, 'embed/config.{env}.json'),
 	iframe = require('./embed/iframe');
 
+const package = JSON.parse(
+	fs
+		.readFileSync('./package.json')
+		.toString()
+);
+
 const embed = createBuild({
 	path: 'embed',
 	scss: {
 		appConfig: {
 			path: appConfigPath
 		},
+		fileName: `bundle-${package['it.reallyread'].version.embed}.css`,
 		files: [
 			`${project.srcDir}/common/components/**/*.{css,scss}`,
 			`${project.srcDir}/common/styles/reset.css`,
@@ -25,7 +34,8 @@ const embed = createBuild({
 			path: appConfigPath,
 			key: 'window.reallyreadit.embed.config'
 		},
-		entry: path.posix.join(project.srcDir, 'embed/main.ts')
+		entry: path.posix.join(project.srcDir, 'embed/main.ts'),
+		fileName: `bundle-${package['it.reallyread'].version.embed}.js`
 	}
 });
 
