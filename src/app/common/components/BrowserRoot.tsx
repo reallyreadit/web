@@ -30,7 +30,6 @@ import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
-import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
@@ -176,12 +175,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			title: name ?
 				this._createAuthorScreenTitle(name) :
 				null
-		});
-	};
-	private readonly _viewBlog = () => {
-		this.setScreenState({
-			key: ScreenKey.Blog,
-			method: 'push'
 		});
 	};
 	private readonly _viewDiscover = () => {
@@ -453,22 +446,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile
-				}
-			),
-			[ScreenKey.Blog]: createBlogScreenFactory(
-				ScreenKey.Blog,
-				{
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
@@ -1155,7 +1132,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						this.state.user
 					) ?
 						<NavBar
-							onViewBlog={this._viewBlog}
 							onViewDiscover={this._viewDiscover}
 							onViewHome={this._viewHome}
 							onViewLeaderboards={this._viewLeaderboards}
@@ -1182,7 +1158,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 									)
 								) ?
 									<Footer
-										onViewBlog={this._viewBlog}
 										onViewPrivacyPolicy={this._viewPrivacyPolicy}
 									/> :
 									null}

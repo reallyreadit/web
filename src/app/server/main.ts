@@ -247,6 +247,17 @@ server = server.get('/terms', (req, res) => {
 		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
 	);
 });
+server = server.get('/blog', (req, res) => {
+	if (req.clientType === ClientType.App) {
+		redirect(
+			req,
+			res,
+			findRouteByKey(routes, ScreenKey.Home).createUrl()
+		);
+	} else {
+		res.redirect(301, 'https://blog.readup.com/');
+	}
+});
 // handle redirects
 server = server.get('/confirmEmail', (req, res) => {
 	req.api

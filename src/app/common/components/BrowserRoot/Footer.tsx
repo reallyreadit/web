@@ -6,13 +6,8 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import StoreLinks from '../StoreLinks';
 
 export default class extends React.PureComponent<{
-	onViewBlog: () => void,
 	onViewPrivacyPolicy: () => void
 }> {
-	private readonly _viewBlog = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewBlog();
-	};
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
@@ -25,8 +20,7 @@ export default class extends React.PureComponent<{
 			>
 				<div className="links">
 					<a
-						href={findRouteByKey(routes, ScreenKey.Blog).createUrl()}
-						onClick={this._viewBlog}
+						href="https://blog.readup.com/"
 					>
 						Blog
 					</a>

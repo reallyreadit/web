@@ -30,7 +30,6 @@ import RouteLocation from '../../../common/routing/RouteLocation';
 import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
 import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
-import createBlogScreenFactory from './AppRoot/BlogScreen';
 import OrientationWizard from './AppRoot/OrientationWizard';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
@@ -444,22 +443,6 @@ export default class extends Root<
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile
-				}
-			),
-			[ScreenKey.Blog]: createBlogScreenFactory(
-				ScreenKey.Blog,
-				{
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,

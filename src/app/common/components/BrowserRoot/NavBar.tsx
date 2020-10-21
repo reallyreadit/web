@@ -15,7 +15,6 @@ const
 	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
 
 interface Props {
-	onViewBlog: () => void,
 	onViewDiscover: () => void,
 	onViewHome: () => void,
 	onViewLeaderboards: () => void,
@@ -25,10 +24,6 @@ interface Props {
 	user: UserAccount
 }
 export default class NavBar extends React.PureComponent<Props> {
-	private readonly _viewBlog = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewBlog();
-	};
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
@@ -85,8 +80,8 @@ export default class NavBar extends React.PureComponent<Props> {
 				</ol>
 				<div className="footer">
 					<a
-						href={findRouteByKey(routes, ScreenKey.Blog).createUrl()}
-						onClick={this._viewBlog}
+						href="https://blog.readup.com/"
+						target="_blank"
 					>
 						Blog
 					</a>
