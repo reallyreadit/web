@@ -85,24 +85,29 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 					<ContentBox className="loading-comments">
 						<SpinnerIcon /> Loading comments...
 					</ContentBox> :
-					<CommentsSection
-						article={this.props.article}
-						comments={this.props.comments.value}
-						noCommentsMessage="No comments on this article yet."
-						onAuthenticationRequired={this._requireAuthenticationForReply}
-						onCloseDialog={this.props.dialogService.closeDialog}
-						onCopyTextToClipboard={this.props.clipboardService.copyText}
-						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-						onDeleteComment={this.props.onDeleteComment}
-						onNavTo={this.props.onNavTo}
-						onOpenDialog={this.props.dialogService.openDialog}
-						onPostComment={this.props.onPostComment}
-						onPostCommentAddendum={this.props.onPostCommentAddendum}
-						onPostCommentRevision={this.props.onPostCommentRevision}
-						onShare={this.props.onShare}
-						onViewProfile={this.props.onViewProfile}
-						user={this.props.user}
-					/>}
+					<>
+						<CommentsSection
+							article={this.props.article}
+							comments={this.props.comments.value}
+							noCommentsMessage="No comments on this article yet."
+							onAuthenticationRequired={this._requireAuthenticationForReply}
+							onCloseDialog={this.props.dialogService.closeDialog}
+							onCopyTextToClipboard={this.props.clipboardService.copyText}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onDeleteComment={this.props.onDeleteComment}
+							onNavTo={this.props.onNavTo}
+							onOpenDialog={this.props.dialogService.openDialog}
+							onPostComment={this.props.onPostComment}
+							onPostCommentAddendum={this.props.onPostCommentAddendum}
+							onPostCommentRevision={this.props.onPostCommentRevision}
+							onShare={this.props.onShare}
+							onViewProfile={this.props.onViewProfile}
+							user={this.props.user}
+						/>
+						<div className="embed-solicitation">
+							Want a reader-only comments section like this on your blog? <a href="mailto:support@readup.com?subject=Blog%20Comments%20Embed">Drop us a line.</a>
+						</div>
+					</>}
 			</div>
 		);
 	}
