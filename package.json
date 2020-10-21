@@ -4,7 +4,7 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.31.0",
+      "app": "1.32.0",
       "embed": "1.0.0",
       "embedIframe": "1.0.0",
       "extension": {
