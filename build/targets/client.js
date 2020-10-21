@@ -20,7 +20,6 @@ const app = createBuild({
 	},
 	staticAssets: [
 		`${project.srcDir}/app/client/.well-known/**/*`,
-		`${project.srcDir}/app/client/auth-service-popup-handler/index.html`,
 		`${project.srcDir}/app/client/fonts/**/*`,
 		`${project.srcDir}/app/client/images/**/*`
 	],
