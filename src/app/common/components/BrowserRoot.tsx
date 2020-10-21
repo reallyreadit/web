@@ -1059,9 +1059,15 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
-		if (!this.state.user || !this.props.extensionApi.isInstalled) {
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		if (
+			(
+				!this.state.user ||
+				!this.props.extensionApi.isInstalled
+			) &&
+			sourceSlug !== 'blogreadupcom'
+		) {
 			ev?.preventDefault();
-			const [sourceSlug, articleSlug] = article.slug.split('_');
 			this.setScreenState({
 				key: ScreenKey.Read,
 				method: 'replace',
