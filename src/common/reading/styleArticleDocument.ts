@@ -361,6 +361,7 @@ const styleContent = `
 :root[data-com_readup_theme=dark] #com_readup_article_content pre .vi { color: #EEFFFF; }
 :root[data-com_readup_theme=dark] #com_readup_article_content pre .il { color: #F78C6C; }
 `;
+const obsoleteBodyStyleAttributes = ['alink', 'background', 'bgcolor', 'bottommargin', 'leftmargin', 'link', 'rightmargin', 'text', 'topmargin', 'vlink '];
 
 export function createByline(authors: string[] | { name?: string }[]) {
 	if (!authors.length) {
@@ -488,6 +489,11 @@ export default (
 				}
 			}
 		);
+	obsoleteBodyStyleAttributes.forEach(
+		attribute => {
+			document.body.removeAttribute(attribute);
+		}
+	);
 	Array
 		.from(document.querySelectorAll('[align], [style], [tabindex]'))
 		.forEach(
