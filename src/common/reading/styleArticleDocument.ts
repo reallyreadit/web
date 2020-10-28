@@ -478,12 +478,13 @@ export default (
 		bodyOpacity = document.body.style.opacity,
 		bodyTransition = document.body.style.transition;
 	Array
-		.from(document.querySelectorAll('[align], [style]'))
+		.from(document.querySelectorAll('[align], [style], [tabindex]'))
 		.forEach(
 			element => {
 				if (!isReadupElement(element)) {
 					element.removeAttribute('align');
 					element.removeAttribute('style');
+					element.removeAttribute('tabindex');
 				}
 			}
 	);
