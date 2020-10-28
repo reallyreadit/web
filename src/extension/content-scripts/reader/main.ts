@@ -456,6 +456,16 @@ Promise
 			});
 			hasStyledArticleDocument = true;
 
+			// intercept mouseup event on article content to prevent article scripts from handling
+			document
+				.getElementById('com_readup_article_content')
+				.addEventListener(
+					'mouseup',
+					event => {
+						event.stopPropagation();
+					}
+				);
+
 			// update the display preference
 			// this version is loaded from local storage. prefer an existing copy
 			// that would have been set by an external change event.
