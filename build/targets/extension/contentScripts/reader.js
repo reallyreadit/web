@@ -14,7 +14,7 @@ const
 			files: [
 				`${project.srcDir}/common/components/**/*.{css,scss}`,
 				`${project.srcDir}/common/styles/reset.css`,
-				`${project.srcDir}/common/styles/shadow-host.css`,
+				`${project.srcDir}/common/styles/shadow-host.scss`,
 				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`
 			],
 			targetShadowDom: true
