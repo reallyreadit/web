@@ -25,12 +25,16 @@ const
 	],
 	textSizeOptions = [
 		{
-			key: 'Medium',
+			key: 'M',
 			value: '1'
 		},
 		{
-			key: 'Large',
+			key: 'L',
 			value: '2'
+		},
+		{
+			key: 'XL',
+			value: '3'
 		}
 	],
 	themeOptions = [

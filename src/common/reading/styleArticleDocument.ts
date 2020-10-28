@@ -16,6 +16,9 @@ const styleContent = `
 #com_readup_article[data-com_readup_text_size='2'] {
 	font-size: 20pt;
 }
+#com_readup_article[data-com_readup_text_size='3'] {
+	font-size: 24pt;
+}
 #com_readup_document.com_readup_scroll_capture #com_readup_article {
 	height: 100%;
 	overflow: hidden;
@@ -108,6 +111,10 @@ const styleContent = `
 #com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content pre {
 	font-size: 15pt;
 }
+#com_readup_article[data-com_readup_text_size='3'] #com_readup_article_content code,
+#com_readup_article[data-com_readup_text_size='3'] #com_readup_article_content pre {
+	font-size: 19pt;
+}
 #com_readup_article_content code {
 	padding: 0.1em 0.3em;
 	tab-size: 2em;
@@ -161,6 +168,9 @@ const styleContent = `
 #com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content .com_readup_article_image_caption {
 	font-size: 18pt;
 }
+#com_readup_article[data-com_readup_text_size='3'] #com_readup_article_content .com_readup_article_image_caption {
+	font-size: 22pt;
+}
 #com_readup_article_content .com_readup_article_image_credit {
 	text-align: center;
 	font-style: italic;
@@ -172,6 +182,9 @@ const styleContent = `
 }
 #com_readup_article[data-com_readup_text_size='2'] #com_readup_article_content .com_readup_article_image_credit {
 	font-size: 16pt;
+}
+#com_readup_article[data-com_readup_text_size='3'] #com_readup_article_content .com_readup_article_image_credit {
+	font-size: 20pt;
 }
 
 #com_readup_document {
