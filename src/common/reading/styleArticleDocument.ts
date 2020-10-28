@@ -462,12 +462,21 @@ export default (
 	}
 	// strip styles
 	Array
-		.from(document.getElementsByTagName('link'))
-		.forEach(link => {
-			if (link.rel && link.rel.toLowerCase() === 'stylesheet') {
-				link.remove();
+		.from(
+			document.getElementsByTagName('link')
+		)
+		.forEach(
+			link => {
+				// rel value could be "stylesheet prefetch"
+				if (
+					link.rel
+						?.toLowerCase()
+						.includes('stylesheet')
+				) {
+					link.remove();
+				}
 			}
-		});
+		);
 	Array
 		.from(document.getElementsByTagName('style'))
 		.forEach(style => {
