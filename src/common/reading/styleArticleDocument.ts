@@ -475,9 +475,6 @@ export default (
 				style.remove();	
 			}
 		});
-	const
-		bodyOpacity = document.body.style.opacity,
-		bodyTransition = document.body.style.transition;
 	Array
 		.from(
 			document.getElementsByTagName('font')
@@ -494,6 +491,10 @@ export default (
 			document.body.removeAttribute(attribute);
 		}
 	);
+	// cache transition body styles before stripping style attributes
+	const
+		bodyOpacity = document.body.style.opacity,
+		bodyTransition = document.body.style.transition;
 	Array
 		.from(document.querySelectorAll('[align], [style], [tabindex]'))
 		.forEach(
