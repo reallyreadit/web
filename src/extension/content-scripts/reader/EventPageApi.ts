@@ -21,15 +21,23 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: MessageResponse<T>) => void) {
-	chrome.runtime.sendMessage(
-		{
-			to: 'eventPage',
-			from: 'readerContentScript',
-			type,
-			data
-		},
-		responseCallback
-	);
+	try {
+		chrome.runtime.sendMessage(
+			{
+				to: 'eventPage',
+				from: 'readerContentScript',
+				type,
+				data
+			},
+			responseCallback
+		);
+	} catch (ex) {
+		if (responseCallback) {
+			responseCallback({
+				error: 'Failed to send message.'
+			});
+		}
+	}
 }
 function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
 	return new Promise<T>(
