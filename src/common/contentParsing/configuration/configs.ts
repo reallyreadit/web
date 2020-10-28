@@ -157,6 +157,20 @@ export default {
 			contentSearchRootElementSelector: 'div.article-content'
 		},
 		{
+			hostname: 'newyorker.com',
+			textContainerSearch: {
+				selectorBlacklist: ['.persistent-top']
+			},
+			transpositions: [
+				{
+					elementSelectors: [
+						'inline-embed p'
+					],
+					parentElementSelector: '.article__body'
+				}
+			]
+		},
+		{
 			hostname: 'nymag.com',
 			contentSearchRootElementSelector: '.article-content'
 		},
