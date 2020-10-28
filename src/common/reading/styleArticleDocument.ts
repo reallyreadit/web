@@ -478,6 +478,17 @@ export default (
 		bodyOpacity = document.body.style.opacity,
 		bodyTransition = document.body.style.transition;
 	Array
+		.from(
+			document.getElementsByTagName('font')
+		)
+		.forEach(
+			fontElement => {
+				while (fontElement.attributes.length) {
+					fontElement.removeAttribute(fontElement.attributes[0].name);
+				}
+			}
+		);
+	Array
 		.from(document.querySelectorAll('[align], [style], [tabindex]'))
 		.forEach(
 			element => {
