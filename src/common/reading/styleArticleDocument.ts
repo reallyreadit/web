@@ -361,7 +361,12 @@ const styleContent = `
 :root[data-com_readup_theme=dark] #com_readup_article_content pre .vi { color: #EEFFFF; }
 :root[data-com_readup_theme=dark] #com_readup_article_content pre .il { color: #F78C6C; }
 `;
-const obsoleteBodyStyleAttributes = ['alink', 'background', 'bgcolor', 'bottommargin', 'leftmargin', 'link', 'rightmargin', 'text', 'topmargin', 'vlink '];
+const obsoleteStyles: {
+	[key: string]: string[]
+} = {
+	'body': ['alink', 'background', 'bgcolor', 'bottommargin', 'leftmargin', 'link', 'rightmargin', 'text', 'topmargin', 'vlink '],
+	'table': ['align', 'bgcolor', 'border', 'cellpadding', 'cellspacing', 'frame', 'rules', 'summary', 'width']
+};
 
 export function createByline(authors: string[] | { name?: string }[]) {
 	if (!authors.length) {
@@ -495,11 +500,15 @@ export default (
 				}
 			}
 		);
-	obsoleteBodyStyleAttributes.forEach(
-		attribute => {
-			document.body.removeAttribute(attribute);
+	for (const elementName in obsoleteStyles) {
+		for (
+			const element of document.getElementsByTagName(elementName)
+		) {
+			for (const attributeName of obsoleteStyles[elementName]) {
+				element.removeAttribute(attributeName);
+			}
 		}
-	);
+	}
 	// cache transition body styles before stripping style attributes
 	const
 		bodyOpacity = document.body.style.opacity,
