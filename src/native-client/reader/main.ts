@@ -83,10 +83,15 @@ const
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 
+// hide html element until custom css is applied
+document.documentElement.style.transition = 'none';
+document.documentElement.style.opacity = '0';
+
 styleArticleDocument({
-	document: window.document,
 	title: metadataParseResult.metadata.article.title,
-	byline: createByline(metadataParseResult.metadata.article.authors)
+	byline: createByline(metadataParseResult.metadata.article.authors),
+	transitionElement: document.documentElement,
+	completeTransition: true
 });
 
 const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);

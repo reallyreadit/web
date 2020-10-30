@@ -401,7 +401,6 @@ const reader = new Reader(
 const transitionAnimationDuration = 700;
 document.body.style.transition = `opacity ${transitionAnimationDuration / 2}ms`;
 document.body.style.opacity = '0';
-document.body.classList.add('com_readup_activating_reader_mode');
 
 // parse metadata
 const metaParseResult = parseDocumentMetadata();
@@ -451,8 +450,8 @@ Promise
 			contentRoot = rootElements.contentRoot;
 			scrollRoot = rootElements.scrollRoot;
 			styleArticleDocument({
-				document,
-				useScrollContainer: true
+				useScrollContainer: true,
+				transitionElement: document.body
 			});
 			hasStyledArticleDocument = true;
 
@@ -511,7 +510,6 @@ Promise
 
 			// begin fade in animation
 			document.body.style.opacity = '1';
-			document.body.classList.remove('com_readup_activating_reader_mode');
 			
 			// process the lookup result while the animation is happening
 			Promise
