@@ -29,11 +29,19 @@ ol, ul {
 	list-style: none;
 }
 /*
-Reset table borders.
+Reset table borders and other styles from older HTML specs.
 */
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
+	color: inherit;
+	font-size: inherit;
+	font-style: inherit;
+	font-variant: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	text-align: inherit;
+	white-space: inherit;
 }
 /*
 Reset form controls.
