@@ -33,9 +33,6 @@ function prune(element: ChildNode, depth: number, isInsideImageContainer: boolea
 				createMetadataElements(image.caption, image.credit, element as HTMLElement);
 			}
 		}
-		if (isElement(element)) {
-			element.removeAttribute('style');
-		}
 		Array
 			.from(element.childNodes)
 			.forEach(child => {
@@ -141,17 +138,8 @@ export default function pruneDocument(parseResult: ParseResult) {
 				}
 			}
 		);
-	// copy the body style properties in case we are transitioning into reader mode in the extension
-	const
-		bodyOpacity = document.body.style.opacity,
-		bodyTransition = document.body.style.transition;
 	// prune the document
 	prune(document.body, 0, false, content, imageContainers, configs.universal.imageContainerContent);
-	// reapply body styles if we were transitioning
-	if (document.body.classList.contains('com_readup_activating_reader_mode')) {
-		document.body.style.opacity = bodyOpacity;
-		document.body.style.transition = bodyTransition;
-	}
 	// trim the lineage if possible (this might break some sites. required on React sites that trash the root on script errors)
 	if (document.body.children.length === 1) {
 		let contentRoot: Element = document.body.children[0];
