@@ -165,16 +165,7 @@ $progress-bar-width: 0.75em;
 			$scheme,
 			(
 				"background-color": $content-background-color,
-				"border-color": $content-border-color,
-				"box-shadow": 0px 0px 3px 1px
-			)
-		);
-	}
-	#{$root} .progress-indicator_vgryrl > .handle {
-		@include theme-colors(
-			$scheme,
-			(
-				"box-shadow": 0px 0px 3px 1px
+				"border-color": $content-border-color
 			)
 		);
 	}
