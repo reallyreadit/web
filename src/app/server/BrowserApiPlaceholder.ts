@@ -5,7 +5,7 @@ import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import Post from '../../common/models/social/Post';
 import NotificationPreference from '../../common/models/notifications/NotificationPreference';
-import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';

@@ -1,4 +1,4 @@
-import SemanticVersion from '../../common/SemanticVersion';
+import SemanticVersion from './SemanticVersion';
 
 export type ExtensionInstalledEvent = {
 	type: 'installed',

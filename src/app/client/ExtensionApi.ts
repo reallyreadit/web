@@ -4,7 +4,7 @@ import CommentThread from '../../common/models/CommentThread';
 import UserAccount from '../../common/models/UserAccount';
 import ContentScriptMessagingContext from '../../common/ContentScriptMessagingContext';
 import { Message } from '../../common/MessagingContext';
-import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import SemanticVersion from '../../common/SemanticVersion';
 import * as Cookies  from 'js-cookie';

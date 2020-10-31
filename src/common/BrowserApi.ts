@@ -5,7 +5,7 @@ import ArticleUpdatedEvent from './models/ArticleUpdatedEvent';
 import CommentThread from './models/CommentThread';
 import Post from './models/social/Post';
 import NotificationPreference from './models/notifications/NotificationPreference';
-import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from '../app/common/ExtensionInstallationEvent';
+import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from './ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';

@@ -2,7 +2,7 @@ import ExtensionApi from '../common/ExtensionApi';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import CommentThread from '../../common/models/CommentThread';
 import UserAccount from '../../common/models/UserAccount';
-import ExtensionInstallationEvent from '../common/ExtensionInstallationEvent';
+import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';

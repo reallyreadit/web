@@ -1,9 +1,9 @@
-import EventEmitter from './EventEmitter';
+import EventEmitter from '../../common/EventEmitter';
 import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
-import ExtensionInstallationEvent from './ExtensionInstallationEvent';
+import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import SemanticVersion from '../../common/SemanticVersion';
 import HttpEndpoint from '../../common/HttpEndpoint';

@@ -1,11 +1,11 @@
-import EventEmitter from '../app/common/EventEmitter';
+import EventEmitter from './EventEmitter';
 import UserAccount from './models/UserAccount';
 import SemanticVersion from './SemanticVersion';
 import ArticleUpdatedEvent from './models/ArticleUpdatedEvent';
 import CommentThread from './models/CommentThread';
 import Post from './models/social/Post';
 import NotificationPreference from './models/notifications/NotificationPreference';
-import ExtensionInstallationEvent from '../app/common/ExtensionInstallationEvent';
+import ExtensionInstallationEvent from './ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
