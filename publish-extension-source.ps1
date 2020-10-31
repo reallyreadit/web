@@ -6,7 +6,7 @@ if (-not (Test-Path $targetDir)) {
 }
 
 Write-Host 'Copying build scripts...'
-Robocopy.exe build $(Join-Path $targetDir 'build') /MIR /XF client.js server.js /XD client nativeClient
+Robocopy.exe build $(Join-Path $targetDir 'build') /MIR /XF client.js server.js /XD client embed nativeClient
 
 Write-Host 'Copying source files...'
 Robocopy.exe src/common $(Join-Path $targetDir 'src/common') /MIR
