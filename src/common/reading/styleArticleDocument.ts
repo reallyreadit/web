@@ -2,6 +2,10 @@ import { isReadupElement } from '../contentParsing/utils';
 import { formatList } from '../format';
 import DisplayPreference, { DisplayTheme, getClientPreferredColorScheme } from '../models/userAccounts/DisplayPreference';
 
+export const
+	lightBackgroundColor = '#fdfdfd',
+	darkBackgroundColor = '#181818';
+
 const styleContent = `
 #com_readup_document.com_readup_scroll_capture {
 	height: 100vh;
@@ -189,7 +193,7 @@ const styleContent = `
 
 #com_readup_document {
 	color: #222;
-	background-color: #fdfdfd
+	background-color: ${lightBackgroundColor};
 }
 .com_readup_article_image_caption,
 .com_readup_article_image_credit {
@@ -216,7 +220,7 @@ const styleContent = `
 
 #com_readup_document[data-com_readup_theme=dark] {
 	color: #bbbbbb;
-	background-color: #181818;
+	background-color: ${darkBackgroundColor};
 }
 :root[data-com_readup_theme=dark] .com_readup_article_image_caption,
 :root[data-com_readup_theme=dark] .com_readup_article_image_credit {
