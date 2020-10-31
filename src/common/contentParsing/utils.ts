@@ -25,6 +25,11 @@ const wordRegex = /\S+/g;
 export function getWordCount(node: Node) {
 	return (node.textContent.match(wordRegex) || []).length;
 };
+https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
+const blockElementNodeNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'DETAILS', 'DIALOG', 'DD', 'DIV', 'DL', 'DT', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI', 'MAIN', 'NAV', 'OL', 'P', 'PRE', 'SECTION', 'TABLE', 'UL'];
+export function isBlockElement(node: Node): node is HTMLElement {
+	return blockElementNodeNames.includes(node.nodeName);
+}
 export function isElement(node: Node): node is Element {
 	return node.nodeType === Node.ELEMENT_NODE;
 }

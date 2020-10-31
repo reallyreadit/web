@@ -1,7 +1,7 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
 import Line from './Line';
-import { getWordCount, isElement } from '../contentParsing/utils';
+import { getWordCount, isBlockElement, isElement } from '../contentParsing/utils';
 import TextContainer from '../contentParsing/TextContainer';
 
 // it's important the count the words of each individual text node
@@ -20,17 +20,22 @@ function countTextNodeWords(element: Element) {
 	return wordCount;
 }
 function findContentElements(element: Element, contentElements: ContentElement[] = []) {
-	let isContentElement = false;
+	let
+		containsTextNodeContent = false,
+		containsBlockElement = false;
 	for (let child of element.childNodes) {
 		if (
 			child.nodeType === Node.TEXT_NODE &&
 			child.textContent.trim().length
 		) {
-			isContentElement = true;
-			break;
+			containsTextNodeContent = true;
+		} else if (
+			isBlockElement(child)
+		) {
+			containsBlockElement = true;
 		}
 	}
-	if (isContentElement) {
+	if (containsTextNodeContent || !containsBlockElement) {
 		contentElements.push(
 			new ContentElement(
 				element as HTMLElement,
