@@ -5,15 +5,15 @@
   "it.reallyread": {
     "version": {
       "app": "1.32.0",
-      "embed": "1.0.0",
+      "embed": "1.0.1",
       "embedIframe": "1.0.0",
       "extension": {
-        "package": "4.1.2",
-        "contentParser": "1.1.1"
+        "package": "4.2.0",
+        "contentParser": "1.1.2"
       },
       "nativeClient": {
-        "reader": "11.0.1",
-        "shareExtension": "4.0.1"
+        "reader": "11.1.0",
+        "shareExtension": "4.0.2"
       }
     }
   },
