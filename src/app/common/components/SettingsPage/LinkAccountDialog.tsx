@@ -4,6 +4,7 @@ import FormField from '../../../../common/components/controls/FormField';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 import { Intent } from '../../../../common/components/Toaster';
 import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthServiceAccountAssociation';
+import SelectList from '../../../../common/components/SelectList';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -14,6 +15,11 @@ interface State {
 	provider: AuthServiceProvider
 }
 export default class LinkAccountDialog extends React.PureComponent<Props, State> {
+	private readonly _changeProvider = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		this.setState({
+			provider: parseInt(event.currentTarget.value) as AuthServiceProvider
+		});
+	};
 	private readonly _submit = () => {
 		return this.props
 			.onLinkAuthServiceAccount(this.state.provider)
@@ -60,9 +66,14 @@ export default class LinkAccountDialog extends React.PureComponent<Props, State>
 					className="provider"
 					label="Provider"
 				>
-					<select>
-						<option>Twitter</option>
-					</select>
+					<SelectList
+						onChange={this._changeProvider}
+						options={[{
+							key: 'Twitter',
+							value: AuthServiceProvider.Twitter
+						}]}
+						value={this.state.provider}
+					/>
 				</FormField>
 				<div className="notice">We'll never post without your permission.</div>
 			</Dialog>

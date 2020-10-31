@@ -17,6 +17,10 @@
 	outline: none;
 	padding: 5px 23px 5px 5px;
 	font-size: 12pt;
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 @include theme using ($root, $scheme) {

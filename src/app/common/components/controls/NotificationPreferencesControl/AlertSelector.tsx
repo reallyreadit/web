@@ -3,6 +3,7 @@ import AlertEmailPreference from '../../../../../common/models/notifications/Ale
 import AsyncTracker from '../../../../../common/AsyncTracker';
 import { State as SaveIndicatorState } from '../../../../../common/components/SaveIndicator';
 import ToggleSwitchExpandableInput from '../../../../../common/components/ToggleSwitchExpandableInput';
+import SelectList, { SelectListOption } from '../../../../../common/components/SelectList';
 
 export interface Value {
 	isEnabled: boolean,
@@ -88,6 +89,35 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		let emailSelectList: React.ReactNode;
+		if (this.props.email !== AlertEmailPreference.None) {
+			const options: SelectListOption[] = [];
+			if (!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.Immediately) {
+				options.push({
+					key: 'Immediately',
+					value: AlertEmailPreference.Immediately
+				});
+			}
+			if (!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.DailyDigest) {
+				options.push({
+					key: 'Daily Digest',
+					value: AlertEmailPreference.DailyDigest
+				});
+			}
+			if (!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.WeeklyDigest) {
+				options.push({
+					key: 'Weekly Digest',
+					value: AlertEmailPreference.WeeklyDigest
+				});
+			}
+			emailSelectList = (
+				<SelectList
+					onChange={this._selectEmail}
+					options={options}
+					value={this.props.email}
+				/>
+			)
+		}
 		return (
 			<ToggleSwitchExpandableInput
 				className="alert-selector_esabj4"
@@ -108,22 +138,7 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 								/>
 								<span>Email</span>
 							</label>
-							{this.props.email !== AlertEmailPreference.None ?
-								<select
-									value={this.props.email}
-									onChange={this._selectEmail}
-								>
-									{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.Immediately ?
-										<option value={AlertEmailPreference.Immediately}>Immediately</option> :
-										null}
-									{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.DailyDigest ?
-										<option value={AlertEmailPreference.DailyDigest}>Daily Digest</option> :
-										null}
-									{!this.props.emailOptions || this.props.emailOptions & AlertEmailPreference.WeeklyDigest ?
-										<option value={AlertEmailPreference.WeeklyDigest}>Weekly Digest</option> :
-										null}
-								</select> :
-								null}
+							{emailSelectList}
 						</li>
 						<li>
 							<label>

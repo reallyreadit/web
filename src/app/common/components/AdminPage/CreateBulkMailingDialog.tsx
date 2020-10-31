@@ -3,6 +3,7 @@ import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDia
 import Fetchable from '../../../../common/Fetchable';
 import ActionLink from '../../../../common/components/ActionLink';
 import { Intent } from '../../../../common/components/Toaster';
+import SelectList, { SelectListOption } from '../../../../common/components/SelectList';
 
 interface Props {
 	onGetLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
@@ -63,17 +64,25 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 		};
 	}
 	protected renderFields() {
+		let listOptions: SelectListOption[];
+		if (!this.state.lists.isLoading) {
+			listOptions = this.state.lists.value;
+		} else {
+			listOptions = [{
+				key: this._listPlaceholder
+			}];
+		}
 		return (
 			<table className="create-bulk-mailing-dialog_bbvobo">
 				<tbody>
 					<tr>
 						<th>List</th>
 						<td>
-							<select value={this.state.list} onChange={this._changeList}>
-								{!this.state.lists.isLoading ?
-									this.state.lists.value.map(kvp => <option key={kvp.key} value={kvp.value}>{kvp.key}</option>) :
-									<option disabled>{this._listPlaceholder}</option>}
-							</select>
+							<SelectList
+								onChange={this._changeList}
+								options={listOptions}
+								value={this.state.list}
+							/>
 						</td>
 					</tr>
 					<tr>

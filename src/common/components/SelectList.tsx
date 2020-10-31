@@ -2,14 +2,15 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 
+export interface SelectListOption {
+	key: string | number,
+	value?: string | number
+}
 interface Props {
 	className?: ClassValue,
 	disabled?: boolean,
 	onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void,
-	options: {
-		key: string | number,
-		value?: string | number
-	}[],
+	options: SelectListOption[],
 	value: string | number
 }
 export default class SelectList extends React.Component<Props> {

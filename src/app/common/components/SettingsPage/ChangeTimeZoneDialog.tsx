@@ -5,6 +5,7 @@ import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../..
 import Fetchable from '../../../../common/Fetchable';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../../common/AsyncTracker';
+import SelectList, { SelectListOption } from '../../../../common/components/SelectList';
 
 interface Props {
 	currentTimeZoneId: number | null,
@@ -85,23 +86,34 @@ export default class ChangeTimeZoneDialog extends FormDialog<void, Props, Partia
 			!this.state.timeZoneSelectListItems.isLoading &&
 			this.state.timeZoneSelectListItems.value
 		);
+		let options: SelectListOption[];
+		if (this.state.timeZoneSelectListItems.isLoading) {
+			options = [{
+				key: 'Loading...'
+			}];
+		} else if (this.state.timeZoneSelectListItems.value) {
+			options = this.state.timeZoneSelectListItems.value.map(
+				zone => ({
+					key: zone.key
+				})
+			);
+		} else {
+			options = [{
+				key: 'Error loading time zones.'
+			}];
+		}
 		return (
 			<div className="change-time-zone-dialog_gparpx">
-				<select
+				<SelectList
 					{...{ disabled: !canSelect }}
 					onChange={this._selectTimeZone}
+					options={options}
 					value={
 						this.state.timeZoneSelection ?
 							this.state.timeZoneSelection.selectListItem.key :
 							''
 					}
-				>
-					{this.state.timeZoneSelectListItems.isLoading ?
-						<option>Loading...</option> :
-						this.state.timeZoneSelectListItems.value ?
-							this.state.timeZoneSelectListItems.value.map(zone => <option key={zone.key}>{zone.key}</option>) :
-							<option>Error loading time zones.</option>}
-				</select>
+				/>
 			</div>
 		);
 	}
