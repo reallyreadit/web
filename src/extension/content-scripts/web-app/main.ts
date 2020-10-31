@@ -18,25 +18,21 @@ if (!window.reallyreadit) {
 	};
 
 	const sendMessageToExtension = (message: Message) => {
-		chrome.runtime.sendMessage({
-			to: 'eventPage',
-			from: 'webAppContentScript',
-			type: message.type,
-			data: message.data
-		});
+		// sendMessage will throw if this extension context is invalidated
+		try {
+			chrome.runtime.sendMessage({
+				to: 'eventPage',
+				from: 'webAppContentScript',
+				type: message.type,
+				data: message.data
+			});
+		} catch {
+			chrome.runtime.onMessage.removeListener(handleMessageFromExtension);
+			webApp.destruct();
+		}
 	};
 
-	webApp.addListener(
-		message => {
-			// sendMessage will throw if this extension context is invalidated
-			try {
-				sendMessageToExtension(message);	
-			} catch {
-				chrome.runtime.onMessage.removeListener(handleMessageFromExtension);
-				webApp.destruct();
-			}
-		}
-	);
+	webApp.addListener(sendMessageToExtension);
 
 	chrome.runtime.onMessage.addListener(handleMessageFromExtension);
 
