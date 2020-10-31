@@ -1,9 +1,24 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
 import Line from './Line';
-import { getWordCount } from '../contentParsing/utils';
+import { getWordCount, isElement } from '../contentParsing/utils';
 import TextContainer from '../contentParsing/TextContainer';
 
+// it's important the count the words of each individual text node
+// since that's how parseDocumentContent does it
+function countTextNodeWords(element: Element) {
+	let wordCount = 0;
+	for (const childNode of element.childNodes) {
+		if (childNode.nodeType === Node.TEXT_NODE) {
+			wordCount += getWordCount(childNode);
+		} else if (
+			isElement(childNode)
+		) {
+			wordCount += countTextNodeWords(childNode);
+		}
+	}
+	return wordCount;
+}
 function findContentElements(element: Element, contentElements: ContentElement[] = []) {
 	let isContentElement = false;
 	for (let child of element.childNodes) {
@@ -19,7 +34,7 @@ function findContentElements(element: Element, contentElements: ContentElement[]
 		contentElements.push(
 			new ContentElement(
 				element as HTMLElement,
-				getWordCount(element)
+				countTextNodeWords(element)
 			)
 		);
 	} else {
