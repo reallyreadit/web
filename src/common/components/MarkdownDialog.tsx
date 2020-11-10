@@ -33,7 +33,7 @@ export default (
 					<td><span className="link">link</span></td>
 				</tr>
 				<tr>
-					<td>> Quoted text</td>
+					<td>&gt; Quoted text</td>
 					<td>
 						<blockquote>Quoted text</blockquote>
 					</td>
