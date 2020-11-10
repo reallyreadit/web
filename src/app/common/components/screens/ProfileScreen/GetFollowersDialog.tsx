@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../../../../common/components/Dialog';
+import FormDialog from '../../../../../common/components/FormDialog';
 import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
 import Icon from '../../../../../common/components/Icon';
 import ShareData from '../../../../../common/sharing/ShareData';
@@ -33,7 +33,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 	}
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				className="get-followers-dialog_woa1zs"
 				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
@@ -51,7 +51,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 						<strong>{`readup.com${this.getProfilePath()}`}</strong> <Icon name="share" />
 					</ShareControl>
 				</div>
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

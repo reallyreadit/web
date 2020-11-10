@@ -18,7 +18,7 @@ import CommentRevisionForm from '../../models/social/CommentRevisionForm';
 import CommentAddendumForm from '../../models/social/CommentAddendumForm';
 import CommentDeletionForm from '../../models/social/CommentDeletionForm';
 import CommentRevisionComposer from './CommentRevisionComposer';
-import Dialog from '../Dialog';
+import FormDialog from '../FormDialog';
 import CommentAddendumComposer from './CommentAddendumComposer';
 import { DateTime } from 'luxon';
 import MarkdownContent from './MarkdownContent';
@@ -88,7 +88,7 @@ export default class CommentDetails extends React.Component<
 	};
 	private readonly _openDeleteDialog = () => {
 		this.props.onOpenDialog(
-			<Dialog
+			<FormDialog
 				closeButtonText="Cancel"
 				onClose={this.props.onCloseDialog}
 				onSubmit={
@@ -100,14 +100,14 @@ export default class CommentDetails extends React.Component<
 			>
 				<p>Are you sure?</p>
 				<p>Comment deletion is permanant. You can't undo this action.</p>
-			</Dialog>
+			</FormDialog>
 		);
 	};
 	private readonly _navTo = (url: string) => {
 		const result = this.props.onNavTo(url);
 		if (!result) {
 			this.props.onOpenDialog(
-				<Dialog
+				<FormDialog
 					closeButtonText="Ok"
 					onClose={this.props.onCloseDialog}
 					size="small"
@@ -115,7 +115,7 @@ export default class CommentDetails extends React.Component<
 					title="Navigation Error"
 				>
 					<p>This link is invalid.</p>
-				</Dialog>
+				</FormDialog>
 			);
 		}
 		return result;

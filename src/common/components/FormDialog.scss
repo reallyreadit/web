@@ -1,10 +1,10 @@
 /*
-	componentPath: src/app/common/components/controls/Dialog
-	cssComponentId: dialog_1wfm87
+	componentPath: src/common/components/FormDialog
+	cssComponentId: form-dialog_jnqz4n
 */
 @import '../styles/colors';
 
-.dialog_1wfm87 {
+.form-dialog_jnqz4n {
 	display: flex;
 	flex-flow: column;
 	margin: 0 10px;
@@ -14,10 +14,10 @@
 	box-sizing: border-box;
 	border-radius: 5px;
 }
-.dialog_1wfm87.small {
+.form-dialog_jnqz4n.small {
 	max-width: 400px;
 }
-.dialog_1wfm87 > .header {
+.form-dialog_jnqz4n > .header {
 	flex: 0 0 auto;
 	font-size: 16pt;
 	text-align: center;
@@ -25,36 +25,36 @@
 	padding: 5px 10px;
 	line-height: 32px;
 }
-.dialog_1wfm87 > .children {
+.form-dialog_jnqz4n > .children {
 	padding: 15px;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 	border-width: 1px 0 1px 0;
 	border-style: solid;
 }
-.dialog_1wfm87 > .children.center {
+.form-dialog_jnqz4n > .children.center {
 	text-align: center;
 }
-.dialog_1wfm87 > .children.right {
+.form-dialog_jnqz4n > .children.right {
 	text-align: right;
 }
-.dialog_1wfm87 > .children > p + p {
+.form-dialog_jnqz4n > .children > p + p {
 	margin-top: 10px;
 }
-.dialog_1wfm87 > .buttons {
+.form-dialog_jnqz4n > .buttons {
 	flex: 0 0 auto;
 	display: flex;
 	padding: 5px 10px;
 }
-.dialog_1wfm87 > .buttons.single {
+.form-dialog_jnqz4n > .buttons.single {
 	justify-content: center;
 }
-.dialog_1wfm87 > .buttons.double {
+.form-dialog_jnqz4n > .buttons.double {
 	justify-content: space-between;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .dialog_1wfm87 {
+	#{$root} .form-dialog_jnqz4n {
 		@include theme-colors(
 			$scheme,
 			(
@@ -63,7 +63,7 @@
 			)
 		);
 	}
-	#{$root} .dialog_1wfm87 > .children {
+	#{$root} .form-dialog_jnqz4n > .children {
 		@include theme-colors(
 			$scheme,
 			(

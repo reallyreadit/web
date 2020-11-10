@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from './Dialog';
+import FormDialog from './FormDialog';
 import RatingSelector from './RatingSelector';
 import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
@@ -133,7 +133,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 	}
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				buttonsDisabled={this.state.isLinkingTwitterAccount}
 				className="post-dialog_to9nib"
 				closeButtonText="Cancel"
@@ -170,7 +170,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 					onChange={this._changeTweet}
 					title="Tweet this post"
 				/>
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

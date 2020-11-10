@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from './Dialog';
+import FormDialog from './FormDialog';
 
 export default (
 	props: {
@@ -7,7 +7,7 @@ export default (
 		onSubmit: () => Promise<void>
 	}
 ) => (
-	<Dialog
+	<FormDialog
 		className="bookmark-dialog_esk9ow"
 		closeButtonText="No"
 		onClose={props.onClose}
@@ -18,5 +18,5 @@ export default (
 		title="Bookmark"
 	>
 		<p>Want to pick up where you left off?</p>
-	</Dialog>
+	</FormDialog>
 );

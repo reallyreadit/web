@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Intent } from '../../../../common/components/Toaster';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 import classNames from 'classnames';
 
 export interface Props {
@@ -73,7 +73,7 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>> ext
 	protected onError(errors: string[]) { }
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				className={classNames('fieldset-dialog_y5ez5w', this._className)}
 				closeButtonText="Cancel"
 				footer={this.renderFooter()}
@@ -90,7 +90,7 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>> ext
 					</div> :
 					null}
 				{this.renderFields()}
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

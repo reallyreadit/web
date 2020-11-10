@@ -16,7 +16,7 @@ interface Props {
 	textAlign?: 'left' | 'center' | 'right',
 	title: string
 }
-export default class Dialog extends React.PureComponent<
+export default class FormDialog extends React.PureComponent<
 	Props,
 	{
 		isSubmitting: boolean
@@ -55,7 +55,7 @@ export default class Dialog extends React.PureComponent<
 			<div
 				className={
 					classNames(
-						'dialog_1wfm87',
+						'form-dialog_jnqz4n',
 						this.props.className,
 						{
 							'small': this.props.size === 'small'

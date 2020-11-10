@@ -25,7 +25,7 @@ import Rating from '../../../../common/models/Rating';
 import UserAccount from '../../../../common/models/UserAccount';
 import CenteringContainer from '../../../../common/components/CenteringContainer';
 import StickyNote from '../../../../common/components/StickyNote';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 
 enum List {
 	History = 'History',
@@ -97,13 +97,13 @@ class MyReadsScreen extends React.Component<Props, State> {
 	};
 	private readonly _openImportDialog = () => {
 		this.props.onOpenDialog(
-			<Dialog
+			<FormDialog
 				onClose={this.props.onCloseDialog}
 				size="small"
 				title="Import Articles to Readup"
 			>
 				<img src="/images/import-screenshot.png" alt="Import Screenshot" style={{ maxWidth: '100%' }} />
-			</Dialog>
+			</FormDialog>
 		);
 	};
 	constructor(props: Props) {

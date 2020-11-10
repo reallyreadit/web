@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../../common/components/Dialog';
+import FormDialog from '../../../common/components/FormDialog';
 import { FetchFunction } from '../serverApi/ServerApi';
 import Following from '../../../common/models/social/Following';
 import Fetchable from '../../../common/Fetchable';
@@ -130,7 +130,7 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				className="following-list-dialog_7vsgrb"
 				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
@@ -183,7 +183,7 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 							)}
 						</ol>
 					</>}
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

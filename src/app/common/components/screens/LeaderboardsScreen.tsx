@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import Leaderboards from '../../../../common/models/Leaderboards';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
@@ -117,14 +117,14 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	];
 	private readonly _openExplainer = (title: string, content: React.ReactNode) => {
 		this.props.onOpenDialog(
-			<Dialog
+			<FormDialog
 				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
 				size="small"
 				title={title}
 			>
 				{content}
-			</Dialog>
+			</FormDialog>
 		);
 	};
 	constructor(props: Props) {

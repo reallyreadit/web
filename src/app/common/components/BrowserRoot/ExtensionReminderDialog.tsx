@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 import { DeviceType } from '../../../../common/DeviceType';
 import ExtensionButtonImage from './ExtensionButtonImage';
 
@@ -9,7 +9,7 @@ export default (
 		onSubmit: () => Promise<void>
 	}
 ) => (
-	<Dialog
+	<FormDialog
 		className="extension-reminder-dialog_i546dx"
 		onSubmit={props.onSubmit}
 		size="small"
@@ -19,5 +19,5 @@ export default (
 	>
 		<p>Click the Readup button to turn on Reader-mode. Otherwise you won't get credit.</p>
 		<ExtensionButtonImage deviceType={props.deviceType} />
-	</Dialog>
+	</FormDialog>
 );

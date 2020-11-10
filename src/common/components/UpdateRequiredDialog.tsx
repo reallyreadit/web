@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from './Dialog';
+import FormDialog from './FormDialog';
 
 export default (
 	props: {
@@ -9,7 +9,7 @@ export default (
 		versionRequired: string
 	}
 ) => (
-	<Dialog
+	<FormDialog
 		className="update-required-dialog_v6ptk5"
 		closeButtonText="Dismiss"
 		onClose={props.onClose}
@@ -27,5 +27,5 @@ export default (
 		{props.message ?
 			<p>{props.message}</p> :
 			null}
-	</Dialog>
+	</FormDialog>
 );
