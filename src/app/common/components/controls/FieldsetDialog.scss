@@ -1,0 +1,46 @@
+/*
+	componentPath: src/app/common/components/controls/FieldsetDialog
+	cssComponentId: fieldset-dialog_y5ez5w
+*/
+@import '../../../../common/styles/colors';
+
+.fieldset-dialog_y5ez5w > .children > .error-message {
+	padding-bottom: 10px;
+	text-align: center;
+}
+.fieldset-dialog_y5ez5w > .children > .form-field_uv9cq4 + .form-field_uv9cq4 {
+	margin-top: 10px;
+}
+.fieldset-dialog_y5ez5w > .children > .link,
+.fieldset-dialog_y5ez5w > .children > .note {
+	margin-top: 10px;
+	text-align: center;
+}
+.fieldset-dialog_y5ez5w > .children > .link > span,
+.fieldset-dialog_y5ez5w > .children > .note > span {
+	font-size: 11pt;
+}
+.fieldset-dialog_y5ez5w > .children > .link > span {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .fieldset-dialog_y5ez5w > .children > .error-message {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $intent-danger-color
+			)
+		);
+	}
+	#{$root} .fieldset-dialog_y5ez5w > .children > .link > span,
+	#{$root} .fieldset-dialog_y5ez5w > .children > .note > span {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}

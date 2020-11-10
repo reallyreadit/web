@@ -1,11 +1,11 @@
 import * as React from 'react';
 import InputField from '../../../../common/components/controls/InputField';
-import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
+import FieldsetDialog, { Props as FieldsetDialogProps, State } from '../controls/FieldsetDialog';
 
 interface Props {
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>
 }
-export default class ChangePasswordDialog extends FormDialog<void, Props, Partial<State> & {
+export default class ChangePasswordDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	currentPassword?: string,
 	currentPasswordError?: string,
 	password1?: string,
@@ -16,7 +16,7 @@ export default class ChangePasswordDialog extends FormDialog<void, Props, Partia
 	private _handleCurrentPasswordChange = (currentPassword: string, currentPasswordError: string) => this.setState({ currentPassword, currentPasswordError });
 	private _handlePassword1Change = (password1: string, password1Error: string) => this.setState({ password1, password1Error });
 	private _handlePassword2Change = (password2: string, password2Error: string) => this.setState({ password2, password2Error });
-	constructor(props: Props & FormDialogProps) {
+	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				title: 'Change Password',

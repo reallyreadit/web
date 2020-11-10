@@ -12,7 +12,7 @@ export interface State {
 	showErrors: boolean,
 	isLoading: boolean
 }
-export default abstract class FormDialog<T, P, S extends Partial<State>> extends React.PureComponent<P & Props, S> {
+export default abstract class FieldsetDialog<T, P, S extends Partial<State>> extends React.PureComponent<P & Props, S> {
 	private readonly _className: string;
 	private readonly _title: string;
 	private readonly _submitButtonText: string;
@@ -74,7 +74,7 @@ export default abstract class FormDialog<T, P, S extends Partial<State>> extends
 	public render() {
 		return (
 			<Dialog
-				className={classNames('form-dialog_bdppnq', this._className)}
+				className={classNames('fieldset-dialog_y5ez5w', this._className)}
 				closeButtonText="Cancel"
 				footer={this.renderFooter()}
 				onClose={this.props.onCloseDialog}

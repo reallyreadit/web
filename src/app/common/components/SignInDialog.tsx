@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
+import FieldsetDialog, { Props as FieldsetDialogProps, State } from './controls/FieldsetDialog';
 import EmailAddressField from '../../../common/components/controls/authentication/EmailAddressField';
 import PasswordField from '../../../common/components/controls/authentication/PasswordField';
 import { Intent } from '../../../common/components/Toaster';
@@ -13,7 +13,7 @@ interface Props {
 	onSignIn: (form: Form) => Promise<void>
 }
 export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string };
-export default class SignInDialog extends FormDialog<void, Props, Partial<State> & {
+export default class SignInDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string,
 	password?: string,
@@ -27,7 +27,7 @@ export default class SignInDialog extends FormDialog<void, Props, Partial<State>
 	private readonly _openPasswordResetDialog = () => {
 		this.props.onOpenPasswordResetDialog(this.props.authServiceToken);
 	};
-	constructor(props: Props & FormDialogProps) {
+	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				className: 'sign-in-dialog_rmrt01',

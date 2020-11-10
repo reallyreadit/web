@@ -1,6 +1,6 @@
 import * as React from 'react';
 import InputField from '../../../common/components/controls/InputField';
-import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
+import FieldsetDialog, { Props as FieldsetDialogProps, State } from './controls/FieldsetDialog';
 import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../common/components/Toaster';
 import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
@@ -11,7 +11,7 @@ interface Props {
 	captcha: CaptchaBase,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>
 }
-export default class RequestPasswordResetDialog extends FormDialog<void, Props, Partial<State> & {
+export default class RequestPasswordResetDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string
 }> {
@@ -19,7 +19,7 @@ export default class RequestPasswordResetDialog extends FormDialog<void, Props, 
 		autoFocus: true
 	};
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
-	constructor(props: Props & FormDialogProps) {
+	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				title: 'Request Password Reset',

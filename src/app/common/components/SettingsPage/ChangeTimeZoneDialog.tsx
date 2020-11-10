@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
+import FieldsetDialog, { Props as FormDialogProps, State } from '../controls/FieldsetDialog';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../../../common/Fetchable';
@@ -12,7 +12,7 @@ interface Props {
 	onChangeTimeZone: (id: number, displayName: string) => Promise<void>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>
 }
-export default class ChangeTimeZoneDialog extends FormDialog<void, Props, Partial<State> & {
+export default class ChangeTimeZoneDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	timeZoneSelectListItems: Fetchable<TimeZoneSelectListItem[]>,
 	timeZoneSelection: {
 		id: number,

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import InputField from '../../../../common/components/controls/InputField';
-import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
+import FieldsetDialog, { Props as FormDialogProps, State } from '../controls/FieldsetDialog';
 import NewPlatformNotificationRequest from '../../../../common/models/analytics/NewPlatformNotificationRequest';
 
 interface Props {
 	onSubmitRequest: (form: NewPlatformNotificationRequest) => Promise<void>
 }
-export default class NewPlatformNotificationRequestDialog extends FormDialog<void, Props, Partial<State> & {
+export default class NewPlatformNotificationRequestDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string
 }> {
