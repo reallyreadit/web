@@ -36,7 +36,7 @@ import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import Alert from '../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
@@ -93,7 +93,7 @@ export type State = (
 		user: UserAccount | null
 	} &
 	ToasterState &
-	DialogState
+	DialogServiceState
 );
 export type SharedState = Pick<State, 'displayTheme' | 'user'>;
 export type SharedEvents = {
@@ -208,8 +208,8 @@ export default abstract class Root<
 
 	// dialogs
 	protected readonly _dialog = new DialogService({
-		setState: delegate => {
-			this.setState(delegate);
+		setState: (delegate, callback) => {
+			this.setState(delegate, callback);
 		}
 	});
 	protected _dialogCreatorMap: Partial<{ [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode }> = {

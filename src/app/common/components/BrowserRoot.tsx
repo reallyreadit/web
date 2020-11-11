@@ -1187,6 +1187,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					null}
 				<DialogManager
 					dialogs={this.state.dialogs}
+					onGetDialogRenderer={this._dialog.getDialogRenderer}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
 				/>
 				{this.state.onboarding ?

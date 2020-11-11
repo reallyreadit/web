@@ -1066,6 +1066,7 @@ export default class extends Root<
 					/>}
 				<DialogManager
 					dialogs={this.state.dialogs}
+					onGetDialogRenderer={this._dialog.getDialogRenderer}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
 				/>
 				<Toaster

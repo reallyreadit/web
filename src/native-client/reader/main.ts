@@ -168,8 +168,11 @@ Array
 
 // user interface
 const dialogService = new DialogService({
-	setState: delegate => {
-		render(delegate(embedProps));
+	setState: (delegate, callback) => {
+		render(
+			delegate(embedProps),
+			callback
+		);
 	}
 });
 let
@@ -225,7 +228,7 @@ function insertEmbed() {
 		}
 	);
 }
-function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>) {
+function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>, callback?: () => void) {
 	ReactDOM.render(
 		React.createElement(
 			App,
@@ -244,7 +247,8 @@ function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'arti
 				user
 			}
 		),
-		embedRootElement
+		embedRootElement,
+		callback
 	);
 }
 

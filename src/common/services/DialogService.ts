@@ -1,19 +1,26 @@
-export interface Dialog {
-	element: React.ReactNode,
-	key: number,
-	state: 'opening' | 'opened' | 'closing'
+import KeyValuePair from '../KeyValuePair';
+import UserAccount from '../models/UserAccount';
+
+export interface DialogState {
+	stage: 'opening' | 'opened' | 'closing'
 }
-export interface State {
-	dialogs: Dialog[]
+export interface DialogServiceState {
+	dialogs: KeyValuePair<number, DialogState>[]
 }
+type StateChangeDelegate = (state: (prevState: DialogServiceState) => Pick<DialogServiceState, keyof DialogServiceState>, callback?: () => void) => void;
+interface SharedGlobalState {
+	user: UserAccount | null
+}
+export type DialogRenderer = (sharedState: SharedGlobalState) => React.ReactNode;
 export default class DialogService {
 	private _key = 0;
-	private readonly _setState: (state: (prevState: State) => Pick<State, keyof State>) => void;
+	private readonly _renderers: KeyValuePair<number, DialogRenderer>[] = [];
+	private readonly _setState: StateChangeDelegate;
 	constructor(
 		{
 			setState
 		}: {
-			setState: (state: (prevState: State) => Pick<State, keyof State>) => void
+			setState: StateChangeDelegate
 		}
 	) {
 		this._setState = setState;
@@ -27,7 +34,9 @@ export default class DialogService {
 					1,
 					{
 						...dialogs[dialogs.length - 1],
-						state: 'closing'
+						value: {
+							stage: 'closing'
+						}
 					}
 				);
 				return {
@@ -36,13 +45,30 @@ export default class DialogService {
 			}
 		);
 	};
-	public createDialog(dialogElement: React.ReactNode): Dialog {
+	public createDialog(arg0: DialogRenderer | React.ReactNode): KeyValuePair<number, DialogState> {
+		const key = this._key++;
+		this._renderers.push({
+			key,
+			value: (
+				typeof arg0 === 'function' ?
+					arg0 as DialogRenderer:
+					() => arg0
+			)
+		});
 		return {
-			element: dialogElement,
-			key: this._key++,
-			state: 'opening'
+			key,
+			value: {
+				stage: 'opening'
+			}
 		};
 	}
+	public getDialogRenderer = (key: number) => {
+		return this._renderers
+			.find(
+				renderer => renderer.key === key
+			)
+			.value;
+	};
 	public handleTransitionCompletion = (key: number, transition: 'closing' | 'opening') => {
 		switch (transition) {
 			case 'closing':
@@ -50,15 +76,22 @@ export default class DialogService {
 					prevState => {
 						const dialogs = prevState.dialogs.slice();
 						dialogs.splice(
-							dialogs.findIndex(dialog => dialog.key === key),
+							dialogs.findIndex(
+								dialog => dialog.key === key
+							),
 							1
 						);
-						if (!dialogs.length) {
-							this._key = 0;
-						}
 						return {
 							dialogs
-						}
+						};
+					},
+					() => {
+						this._renderers.splice(
+							this._renderers.findIndex(
+								renderer => renderer.key === key
+							),
+							1
+						);
 					}
 				);
 				break;
@@ -67,35 +100,43 @@ export default class DialogService {
 					prevState => {
 						const
 							dialogs = prevState.dialogs.slice(),
-							dialog = dialogs.find(dialog => dialog.key === key);
+							dialog = dialogs.find(
+								dialog => dialog.key === key
+							);
 						dialogs.splice(
 							dialogs.indexOf(dialog),
 							1,
 							{
 								...dialog,
-								state: 'opened'
+								value: {
+									stage: 'opened'
+								}
 							}
 						);
 						return {
 							dialogs
-						}
+						};
 					}
 				);
 				break;
 		}
 	};
-	public openDialog = (dialogElement: React.ReactNode, method: 'push' | 'replace' = 'replace') => {
+	public openDialog = (arg0: DialogRenderer | React.ReactNode, method: 'push' | 'replace' = 'replace') => {
 		this._setState(
 			prevState => {
 				const dialogs = prevState.dialogs.slice();
-				dialogs.push(this.createDialog(dialogElement));
+				dialogs.push(
+					this.createDialog(arg0)
+				);
 				if (method === 'replace' && dialogs.length > 1) {
 					dialogs.splice(
 						dialogs.length - 2,
 						1,
 						{
 							...dialogs[dialogs.length - 2],
-							state: 'closing'
+							value: {
+								stage: 'closing'
+							}
 						}
 					);
 				}

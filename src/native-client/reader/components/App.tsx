@@ -4,7 +4,7 @@ import ShareChannel from '../../../common/sharing/ShareChannel';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import { createUrl } from '../../../common/HttpEndpoint';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
 import AsyncTracker from '../../../common/AsyncTracker';
 import UserArticle from '../../../common/models/UserArticle';
 import Fetchable from '../../../common/Fetchable';
@@ -32,7 +32,7 @@ import ReaderHeader from '../../../common/components/ReaderHeader';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
 
-export interface Props extends DialogState {
+export interface Props extends DialogServiceState {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
 	dialogService: DialogService,
@@ -188,6 +188,7 @@ export default class App extends React.Component<
 				</div>
 				<DialogManager
 					dialogs={this.props.dialogs}
+					onGetDialogRenderer={this.props.dialogService.getDialogRenderer}
 					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}
 				/>
 				<Toaster

@@ -23,7 +23,7 @@ import routes from '../common/routing/routes';
 import ScreenKey from '../common/routing/ScreenKey';
 import SemanticVersion from '../common/SemanticVersion';
 import ClipboardService from '../common/services/ClipboardService';
-import DialogService, { Dialog } from '../common/services/DialogService';
+import DialogService, { DialogState } from '../common/services/DialogService';
 import ToasterService from '../common/services/ToasterService';
 import insertFontStyleElement from '../common/shadowDom/insertFontStyleElement';
 import ShareChannel from '../common/sharing/ShareChannel';
@@ -33,10 +33,11 @@ import GlobalComponentHost from './GlobalComponentHost';
 import BrowserApiRelayMessenger from './BrowserApiRelayMessenger';
 import { isProblemResponse } from '../common/ProblemResponse';
 import AuthServiceBrowserPopup from '../common/AuthServiceBrowserPopup';
+import KeyValuePair from '../common/KeyValuePair';
 
 interface State {
 	article: UserArticle,
-	dialogs: Dialog[],
+	dialogs: KeyValuePair<number, DialogState>[],
 	error: string | null,
 	onboardingAnalyticsAction: string | null,
 	toasts: Toast[],
@@ -202,10 +203,11 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			return createUrl(window.reallyreadit.embed.config.webServer, path)
 		},
 		dialogService = new DialogService({
-			setState: nextState => {
+			setState: (nextState, callback) => {
 				setState(
-					nextState(state)
-				);
+						nextState(state)
+					)
+					.then(callback);
 			}
 		}),
 		eventManager = new EventManager<{

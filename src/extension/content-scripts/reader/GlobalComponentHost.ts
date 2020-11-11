@@ -1,7 +1,7 @@
 import { DomAttachmentDelegate } from '../../../common/shadowDom/ComponentHost';
 import Global from './components/Global';
 import ClipboardService from '../../../common/services/ClipboardService';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
 import AsyncTracker from '../../../common/AsyncTracker';
 import ShareChannel from '../../../common/sharing/ShareChannel';
@@ -17,7 +17,7 @@ interface Services {
 	dialogService: DialogService,
 	toasterService: ToasterService
 }
-type State = DialogState & ToasterState & {
+type State = DialogServiceState & ToasterState & {
 	error: string | null
 };
 export default class GlobalComponentHost extends ExtensionComponentHost<Services, State> {
@@ -38,8 +38,12 @@ export default class GlobalComponentHost extends ExtensionComponentHost<Services
 				}
 			),
 			dialogService: new DialogService({
-				setState: delegate => {
-					this.setState(delegate(this._state));
+				setState: (delegate, callback) => {
+					this
+						.setState(
+							delegate(this._state)
+						)
+						.then(callback);
 				}
 			}),
 			toasterService: new ToasterService({
