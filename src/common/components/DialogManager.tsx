@@ -2,17 +2,16 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { DialogRenderer, DialogState } from '../services/DialogService';
 import KeyValuePair from '../KeyValuePair';
-import UserAccount from '../models/UserAccount';
 
-interface Props {
+interface Props<SharedState> {
 	dialogs: KeyValuePair<number, DialogState>[],
-	onGetDialogRenderer: (key: number) => DialogRenderer,
+	onGetDialogRenderer: (key: number) => DialogRenderer<SharedState>,
 	onTransitionComplete: (key: number, transition: 'closing' | 'opening') => void,
-	user: UserAccount | null,
+	sharedState: SharedState,
 	verticalAlignment?: 'auto' | 'top'
 }
-export default class DialogManager extends React.PureComponent<Props> {
-	public static defaultProps: Partial<Props> = {
+export default class DialogManager<SharedState> extends React.Component<Props<SharedState>> {
+	public static defaultProps: Pick<Props<unknown>, 'verticalAlignment'> = {
 		verticalAlignment: 'auto'
 	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
@@ -85,7 +84,7 @@ export default class DialogManager extends React.PureComponent<Props> {
 										data-key={dialog.key}
 										onAnimationEnd={this._handleAnimationEnd}
 									>
-										{this.props.onGetDialogRenderer(dialog.key)({ user: this.props.user })}
+										{this.props.onGetDialogRenderer(dialog.key)(this.props.sharedState)}
 									</div>
 								</li>
 							)

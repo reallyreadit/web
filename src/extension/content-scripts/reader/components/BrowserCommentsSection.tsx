@@ -26,7 +26,7 @@ export interface Props {
 	article: UserArticle
 	clipboardService: ClipboardService,
 	comments: Fetchable<CommentThread[]>,
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>

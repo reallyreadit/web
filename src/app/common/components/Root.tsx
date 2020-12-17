@@ -96,7 +96,7 @@ export type State = (
 	DialogServiceState
 );
 export type SharedState = Pick<State, 'displayTheme' | 'user'>;
-export type SharedEvents = {
+export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
 	'authChanged': UserAccount | null,
@@ -107,11 +107,11 @@ export type SharedEvents = {
 	'notificationPreferenceChanged': NotificationPreference
 };
 export default abstract class Root<
-	P extends Props,
-	S extends State,
+	TProps extends Props,
+	TState extends State,
 	TSharedState extends SharedState,
-	TEvents extends SharedEvents
-> extends React.Component<P, S> {
+	TEvents extends Events
+> extends React.Component<TProps, TState> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _autoFocusInputs: boolean;
 	private readonly _concreteClassName: ClassValue;
@@ -207,7 +207,7 @@ export default abstract class Root<
 	};
 
 	// dialogs
-	protected readonly _dialog = new DialogService({
+	protected readonly _dialog = new DialogService<TSharedState>({
 		setState: (delegate, callback) => {
 			this.setState(delegate, callback);
 		}
@@ -539,7 +539,7 @@ export default abstract class Root<
 		this.reloadWindow();
 	};
 
-	constructor(className: ClassValue, autoFocusInputs: boolean, props: P) {
+	constructor(className: ClassValue, autoFocusInputs: boolean, props: TProps) {
 		super(props);
 		this._autoFocusInputs = autoFocusInputs;
 		this._concreteClassName = className;
@@ -549,7 +549,7 @@ export default abstract class Root<
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
 			toasts: [],
 			user: props.initialUserProfile?.userAccount
-		} as S;
+		} as TState;
 
 		// clipboard
 		this._clipboard = new ClipboardService(
@@ -629,7 +629,7 @@ export default abstract class Root<
 			)
 		);
 	}
-	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<S>) {
+	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<TState>) {
 		this.setThemeAttribute(userProfile?.displayPreference?.theme);
 		return new Promise<void>(
 			resolve => {
@@ -729,7 +729,7 @@ export default abstract class Root<
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
 	protected onTitleChanged(title: string) { }
-	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<S>) {
+	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<TState>) {
 		if (
 			eventType === SignInEventType.ExistingUser &&
 			eventSource === EventSource.Local
@@ -738,10 +738,10 @@ export default abstract class Root<
 		}
 		return this.setUserAuthChangedState(userProfile, supplementaryState);
 	}
-	protected onUserSignedOut(supplementaryState?: Partial<S>) {
+	protected onUserSignedOut(supplementaryState?: Partial<TState>) {
 		return this.setUserAuthChangedState(null, supplementaryState);
 	}
-	protected onUserUpdated(user: UserAccount, eventSource: EventSource, supplementaryState?: Partial<S>) {
+	protected onUserUpdated(user: UserAccount, eventSource: EventSource, supplementaryState?: Partial<TState>) {
 		this.setState({
 			...supplementaryState as State,
 			user

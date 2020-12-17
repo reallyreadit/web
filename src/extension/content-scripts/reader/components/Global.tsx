@@ -18,7 +18,7 @@ export default (
 	props: {
 		clipboardService: ClipboardService,
 		dialogs: KeyValuePair<number, DialogState>[],
-		dialogService: DialogService,
+		dialogService: DialogService<{}>,
 		error: string | null,
 		toasterService: ToasterService,
 		toasts: Toast[]
@@ -29,6 +29,7 @@ export default (
 			dialogs={props.dialogs}
 			onGetDialogRenderer={props.dialogService.getDialogRenderer}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}
+			sharedState={{}}
 		/>
 		<Toaster
 			onRemoveToast={props.toasterService.removeToast}

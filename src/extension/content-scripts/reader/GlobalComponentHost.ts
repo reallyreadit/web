@@ -14,7 +14,7 @@ import ExtensionComponentHost from './ExtensionComponentHost';
 
 interface Services {
 	clipboardService: ClipboardService,
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	toasterService: ToasterService
 }
 type State = DialogServiceState & ToasterState & {

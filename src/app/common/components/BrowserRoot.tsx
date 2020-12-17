@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events } from './Root';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -81,7 +81,7 @@ const welcomeMessages = {
 	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
 	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.'
 };
-export default class extends Root<Props, State, SharedState, SharedEvents> {
+export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
 	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
@@ -1189,6 +1189,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
+					sharedState={this.state}
 				/>
 				{this.state.onboarding ?
 					<OnboardingFlow

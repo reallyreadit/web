@@ -35,7 +35,7 @@ import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../c
 export interface Props extends DialogServiceState {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	displayPreference: DisplayPreference | null,
 	isHeaderHidden: boolean,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
@@ -190,6 +190,7 @@ export default class App extends React.Component<
 					dialogs={this.props.dialogs}
 					onGetDialogRenderer={this.props.dialogService.getDialogRenderer}
 					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}
+					sharedState={{}}
 				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}

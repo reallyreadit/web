@@ -1,5 +1,4 @@
 import KeyValuePair from '../KeyValuePair';
-import UserAccount from '../models/UserAccount';
 
 export interface DialogState {
 	stage: 'opening' | 'opened' | 'closing'
@@ -8,13 +7,10 @@ export interface DialogServiceState {
 	dialogs: KeyValuePair<number, DialogState>[]
 }
 type StateChangeDelegate = (state: (prevState: DialogServiceState) => Pick<DialogServiceState, keyof DialogServiceState>, callback?: () => void) => void;
-interface SharedGlobalState {
-	user: UserAccount | null
-}
-export type DialogRenderer = (sharedState: SharedGlobalState) => React.ReactNode;
-export default class DialogService {
+export type DialogRenderer<SharedState> = (sharedState: SharedState) => React.ReactNode;
+export default class DialogService<SharedState> {
 	private _key = 0;
-	private readonly _renderers: KeyValuePair<number, DialogRenderer>[] = [];
+	private readonly _renderers: KeyValuePair<number, DialogRenderer<SharedState>>[] = [];
 	private readonly _setState: StateChangeDelegate;
 	constructor(
 		{
@@ -45,13 +41,13 @@ export default class DialogService {
 			}
 		);
 	};
-	public createDialog(arg0: DialogRenderer | React.ReactNode): KeyValuePair<number, DialogState> {
+	public createDialog(arg0: DialogRenderer<SharedState> | React.ReactNode): KeyValuePair<number, DialogState> {
 		const key = this._key++;
 		this._renderers.push({
 			key,
 			value: (
 				typeof arg0 === 'function' ?
-					arg0 as DialogRenderer:
+					arg0 as DialogRenderer<SharedState>:
 					() => arg0
 			)
 		});
@@ -121,7 +117,7 @@ export default class DialogService {
 				break;
 		}
 	};
-	public openDialog = (arg0: DialogRenderer | React.ReactNode, method: 'push' | 'replace' = 'replace') => {
+	public openDialog = (arg0: DialogRenderer<SharedState> | React.ReactNode, method: 'push' | 'replace' = 'replace') => {
 		this._setState(
 			prevState => {
 				const dialogs = prevState.dialogs.slice();

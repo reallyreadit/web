@@ -31,7 +31,7 @@ export interface Props {
 	captcha: CaptchaBase,
 	clipboardService: ClipboardService,
 	dialogs: KeyValuePair<number, DialogState>[],
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	error: string | null,
 	imageBasePath: string,
 	onboardingAnalyticsAction: string | null,
@@ -70,6 +70,7 @@ export default (props: Props) => (
 			dialogs={props.dialogs}
 			onGetDialogRenderer={props.dialogService.getDialogRenderer}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}
+			sharedState={{}}
 		/>
 		<Toaster
 			onRemoveToast={props.toasterService.removeToast}

@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState } from './Root';
 import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -65,14 +65,10 @@ interface State extends RootState {
 	isPoppingScreen: boolean,
 	menuState: MenuState,
 }
-export default class extends Root<
-	Props,
-	State,
-	Pick<State, 'displayTheme' | 'user'>,
-	SharedEvents & {
+interface Events extends RootEvents {
 		'newStars': number
 	}
-> {
+export default class extends Root<Props, State, RootSharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
 	private _signInLocation: RouteLocation | null;
 	private readonly _noop = () => {
@@ -1068,6 +1064,7 @@ export default class extends Root<
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
+					sharedState={this.state}
 				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
