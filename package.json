@@ -12,7 +12,7 @@
         "contentParser": "1.1.2"
       },
       "nativeClient": {
-        "reader": "11.1.0",
+        "reader": "11.1.1",
         "shareExtension": "4.0.2"
       }
     }

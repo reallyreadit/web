@@ -35,6 +35,8 @@ import ScrollService from '../../common/services/ScrollService';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import { Message } from '../../common/MessagingContext';
+import { parseUrlForRoute } from '../../common/routing/Route';
+import ScreenKey from '../../common/routing/ScreenKey';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -147,13 +149,29 @@ window.addEventListener(
 	}
 );
 
-// handle article links
+// handle article and embed links
+function handleLink(url: string) {
+	const result = parseUrlForRoute(url);
+	if (result.isInternal && result.route) {
+		if (result.route.screenKey === ScreenKey.Read) {
+			const params = result.route.getPathParams(result.url.pathname);
+			readArticle(params['sourceSlug'] + '_' + params['articleSlug']);
+		} else {
+			navTo(result.url.href);
+		}
+		return true;
+	} else if (!result.isInternal && result.url) {
+		openExternalUrl(result.url.href);
+		return true;
+	}
+	return false;
+}
 function handleArticleLink(this: HTMLAnchorElement, ev: MouseEvent) {
 	ev.preventDefault();
 	if (
 		this.hasAttribute('href')
 	) {
-		openExternalUrl(this.href);
+		handleLink(this.href);
 	}
 }
 Array
@@ -182,13 +200,11 @@ let
 		onDeleteComment: deleteComment,
 		onLinkAuthServiceAccount: linkAuthServiceAccount,
 		onNavBack: navBack,
-		onNavTo: navTo,
-		onOpenExternalUrl: openExternalUrl,
+		onNavTo: handleLink,
 		onPostArticle: postArticle,
 		onPostComment: postComment,
 		onPostCommentAddendum: postCommentAddendum,
 		onPostCommentRevision: postCommentRevision,
-		onReadArticle: readArticle,
 		onReportArticleIssue: reportArticleIssue,
 		onShare: share
 	},
