@@ -12,6 +12,12 @@ import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { ErrorResponse } from '../../common/models/app/AppResult';
+import { ProductsRequestError, PurchaseError, ReceiptRequestError } from '../../common/models/app/Errors';
+import { Result } from '../../common/Result';
+import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../../common/models/app/SubscriptionProducts';
+import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
+import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -59,6 +65,9 @@ export default class extends AppApi {
 					break;
 				case 'loadUrl':
 					this.emitEvent('loadUrl', message.data);
+					break;
+				case 'subscriptionPurchaseCompleted':
+					this.emitEvent('subscriptionPurchaseCompleted', message.data);
 					break;
 			}
 		});
@@ -151,6 +160,44 @@ export default class extends AppApi {
 				this._messagingContext.sendMessage(
 					{
 						type: 'requestNotificationAuthorization'
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public requestSubscriptionProducts(request: SubscriptionProductsRequest) {
+		return new Promise<Result<SubscriptionProductsResponse, ErrorResponse<ProductsRequestError>>>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestSubscriptionProducts',
+						data: request
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public requestSubscriptionPurchase(request: SubscriptionPurchaseRequest) {
+		return new Promise<Result<SubscriptionPurchaseResponse, ErrorResponse<PurchaseError>>>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestSubscriptionPurchase',
+						data: request
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public requestSubscriptionReceipt() {
+		return new Promise<Result<SubscriptionReceiptResponse, ErrorResponse<ReceiptRequestError>>>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestSubscriptionReceipt'
 					},
 					resolve
 				);

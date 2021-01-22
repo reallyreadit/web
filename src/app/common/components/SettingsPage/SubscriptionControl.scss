@@ -1,0 +1,32 @@
+/*
+	componentPath: src/app/common/components/SettingsPage/SubscriptionControl
+	cssComponentId: subscription-control_ryw1sb
+*/
+
+.subscription-control_ryw1sb {
+	width: max-content;
+}
+.subscription-control_ryw1sb > .title {
+	font-family: "Museo Sans (700)";
+}
+.subscription-control_ryw1sb > .title,
+.subscription-control_ryw1sb > .price-name,
+.subscription-control_ryw1sb > .price-amount,
+.subscription-control_ryw1sb > .payment-info,
+.subscription-control_ryw1sb > .message {
+	margin-bottom: 5px;
+}
+.subscription-control_ryw1sb > .payment-info {
+	display: flex;
+	align-items: center;
+}
+.subscription-control_ryw1sb > .payment-info > .icon_rour3d {
+	width: 30px;
+	height: 22px;
+}
+.subscription-control_ryw1sb > .payment-info > .last-four {
+	margin: 0 10px;
+}
+.subscription-control_ryw1sb > .actions > .action-link_ftamt8 + .action-link_ftamt8 {
+	margin-left: 10px;
+}

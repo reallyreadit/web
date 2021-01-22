@@ -35,10 +35,13 @@ export default class extends ServerApi {
 				req.withCredentials = true;
 			}
 			req.addEventListener('load', function () {
-				if (this.status === 200 || this.status === 400) {
+				if (this.status === 200 || this.status === 400 || this.status === 500) {
 					const contentType = this.getResponseHeader('Content-Type');
 					let object: any;
-					if (contentType && contentType.startsWith('application/json')) {
+					if (
+						contentType?.startsWith('application/json') ||
+						contentType?.startsWith('application/problem+json')
+					) {
 						object = JSON.parse(this.responseText);
 					}
 					if (this.status === 200) {

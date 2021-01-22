@@ -464,7 +464,9 @@ server = server.get('/*', (req, res) => {
 								null
 						),
 						webServerEndpoint: config.webServer
-					})
+					}),
+					staticServerEndpoint: config.staticServer,
+					stripeLoader: null
 				}
 			);
 			break;
@@ -492,6 +494,8 @@ server = server.get('/*', (req, res) => {
 				exchanges: req.api.exchanges,
 				extensionVersion: extensionVersionString,
 				initialLocation: rootProps.initialLocation,
+				staticServerEndpoint: config.staticServer,
+				stripePublishableKey: config.stripePublishableKey,
 				userProfile: req.userProfile,
 				version: version.app,
 				webServerEndpoint: config.webServer

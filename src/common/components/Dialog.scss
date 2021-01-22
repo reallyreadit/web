@@ -1,0 +1,72 @@
+/*
+	componentPath: src/common/components/Dialog
+	cssComponentId: dialog_1wfm87
+*/
+@import '../styles/colors';
+
+.dialog_1wfm87 {
+	border-radius: 5px;
+}
+.dialog_1wfm87::after {
+	content: "";
+	display: block;
+	height: 40px;
+}
+.dialog_1wfm87 > .titlebar {
+	display: flex;
+	justify-content: flex-end;
+}
+.dialog_1wfm87 > .titlebar > .icon-right {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 40px;
+	height: 40px;
+}
+.dialog_1wfm87 > .titlebar > .icon-right > .icon_rour3d {
+	font-size: 16px;
+	cursor: pointer;
+}
+.dialog_1wfm87 > .content {
+	padding: 0 15px;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.dialog_1wfm87 > .content > h1 {
+	font-size: 20pt;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 25px;
+	text-align: center;
+}
+
+@media (max-width: 499px) {
+	.dialog_1wfm87::after {
+		height: 0;
+	}
+	.dialog_1wfm87 > .content::after {
+		content: "";
+		display: block;
+		height: 40px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .dialog_1wfm87 {
+		@include theme-colors(
+			$scheme,
+			(
+				"background": $app-background-color,
+				"box-shadow": 0px 1px 3px 1px
+			)
+		);
+	}
+	#{$root} .dialog_1wfm87 > .titlebar > .icon-right > .icon_rour3d {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}

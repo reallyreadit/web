@@ -14,6 +14,8 @@ export default interface InitData {
 	exchanges: Exchange[],
 	extensionVersion: string | null,
 	initialLocation: RouteLocation,
+	staticServerEndpoint: HttpEndpoint,
+	stripePublishableKey: string,
 	userProfile: WebAppUserProfile | null,
 	version: string,
 	webServerEndpoint: HttpEndpoint

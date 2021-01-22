@@ -10,6 +10,7 @@ export default class extends React.PureComponent<{
 	className?: ClassValue,
 	href?: string,
 	iconLeft?: IconName,
+	iconRight?: IconName,
 	onAnimationEnd?: (event: React.AnimationEvent) => void,
 	onClick?: (e: React.MouseEvent<HTMLElement>, href?: string) => void,
 	state?: 'normal' | 'disabled' | 'busy',
@@ -37,12 +38,21 @@ export default class extends React.PureComponent<{
 						<SpinnerIcon key="spinner" /> :
 						this.props.iconLeft ?
 							<Icon
+								className="icon-left"
 								badge={this.props.badge}
-								key="icon"
+								key="icon-left"
 								name={this.props.iconLeft}
 							/> :
 							null}
 					<span key="text">{this.props.text}</span>
+					{this.props.iconRight ?
+						<Icon
+							className="icon-right"
+							badge={this.props.badge}
+							key="icon-right"
+							name={this.props.iconRight}
+						/> :
+						null}
 					{this.props.badge != null ?
 						<AlertBadge count={this.props.badge} /> :
 						null}

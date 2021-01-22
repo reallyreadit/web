@@ -54,17 +54,18 @@ a, button, div, span, svg {
 a {
 	color: inherit;
 }
-html > body > div:not(#root) {
+/* captcha animation. tabindex prevents interference with stripe.js 3ds container. */
+html > body:not([tabindex="-1"]) > div:not(#root) {
 	position: absolute;
 	right: 0;
 	bottom: 0;
 	z-index: -1;
 	transform: translateX(75px);
 }
-html > body.show-captcha > div:not(#root) {
+html > body:not([tabindex="-1"]).show-captcha > div:not(#root) {
 	animation: show-captcha 200ms forwards;
 }
-html > body.hide-captcha > div:not(#root) {
+html > body:not([tabindex="-1"]).hide-captcha > div:not(#root) {
 	animation: hide-captcha 200ms forwards;
 }
 

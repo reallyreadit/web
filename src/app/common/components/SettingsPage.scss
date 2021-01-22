@@ -40,15 +40,11 @@
 	margin-top: 10px;
 }
 .settings-page_ejwkk > .accounts > .section > .account > .provider {
-	font-family: 'Museo Sans (500)';
-	font-size: 14pt;
+	font-family: 'Museo Sans (700)';
 	margin-bottom: 5px;
 }
 .settings-page_ejwkk > .accounts > .section > .account > .date {
 	margin-bottom: 5px;
-}
-.settings-page_ejwkk > .accounts > .section > .account > .integrations {
-	margin-top: 10px;
 }
 
 @include theme using ($root, $scheme) {

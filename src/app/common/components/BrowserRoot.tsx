@@ -50,13 +50,24 @@ import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet } from '../../../common/format';
-import { createUrl } from '../../../common/HttpEndpoint';
+import HttpEndpoint, { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
+import StripeSubscriptionPrompt from './BrowserRoot/StripeSubscriptionPrompt';
+import { Stripe, StripeCardElement } from '@stripe/stripe-js';
+import Lazy from '../../../common/Lazy';
+import Fetchable from '../../../common/Fetchable';
+import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
+import { SubscriptionPrice, isSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { StripePaymentResponseType, StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
 	deviceType: DeviceType,
-	extensionApi: ExtensionApi
+	extensionApi: ExtensionApi,
+	staticServerEndpoint: HttpEndpoint,
+	stripeLoader: Lazy<Promise<Stripe>> | null
 }
 type OnboardingState = Pick<OnboardingProps, 'analyticsAction' | 'authServiceToken' | 'initialAuthenticationStep' | 'passwordResetEmail' | 'passwordResetToken'>;
 interface State extends RootState {
@@ -742,6 +753,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
+			.addListener(
+				'subscriptionStatusChanged',
+				status => {
+					this.onSubscriptionStatusChanged(status, EventSource.Remote);
+				}
+			)
 			.addListener('updateAvailable', version => {
 				if (!this._isUpdateAvailable && version.compareTo(this.props.version) > 0) {
 					this.setUpdateAvailable();
@@ -754,7 +771,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					profile = data;
 				} else {
 					profile = {
-						userAccount: data
+						userAccount: data,
+						subscriptionStatus: null
 					};
 					// manually check for display preference before setting default
 					this.props.serverApi.getDisplayPreference(
@@ -929,6 +947,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
+			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
 	}
@@ -989,6 +1008,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.browserApi.notificationPreferenceChanged(preference);
 		}
 		super.onNotificationPreferenceChanged(preference);
+	}
+	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource = EventSource.Local) {
+		if (eventSource === EventSource.Local) {
+			this.props.browserApi.subscriptionStatusChanged(status);
+		}
+		super.onSubscriptionStatusChanged(status);
 	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
@@ -1059,6 +1084,92 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
+		if (
+			this.state.user &&
+			!this.state.subscriptionStatus.isUserFreeForLife &&
+			this.state.subscriptionStatus.type !== SubscriptionStatusType.Active
+		) {
+			ev?.preventDefault();
+			const
+				confirmCardPayment: ((clientSecret: string, invoiceId: string) => Promise<StripePaymentResponse>) = (clientSecret, invoiceId) => this.props.stripeLoader.value
+					.then(
+						stripe => stripe.confirmCardPayment(clientSecret)
+					)
+					.then(
+						result => {
+							return this.props.serverApi
+								.confirmStripeSubscriptionPayment({
+									invoiceId
+								})
+								.then(handlePaymentResponse);
+							}
+					),
+				getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
+					response => {
+						if (response.value) {
+							this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
+						}
+						callback(response);
+					}
+				),
+				handlePaymentResponse = (response: StripePaymentResponse) => {
+					this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
+					if (response.type === StripePaymentResponseType.RequiresConfirmation) {
+						return confirmCardPayment(response.clientSecret, response.invoiceId);
+					}
+					return response;
+				},
+				subscribe = (card: StripeCardElement, price: SubscriptionPrice) => this.props.stripeLoader.value
+					.then(
+						stripe => stripe.createPaymentMethod({
+							type: 'card',
+							card
+						})
+					)
+					.then(
+						result => {
+							if (result.error) {
+								throw new Error(result.error.message);
+							}
+							let request: StripeSubscriptionCreationRequest;
+							if (
+								isSubscriptionPriceLevel(price)
+							) {
+								request = {
+									paymentMethodId: result.paymentMethod.id,
+									priceLevelId: price.id
+								};
+							} else {
+								request = {
+									paymentMethodId: result.paymentMethod.id,
+									customPriceAmount: price.amount
+								};
+							}
+							return this.props.serverApi
+								.createStripeSubscription(request)
+								.then(handlePaymentResponse);
+						}
+					);
+			this._dialog.openDialog(
+				sharedState => (
+					<StripeSubscriptionPrompt
+						article={article}
+						displayTheme={sharedState.displayTheme}
+						onClose={this._dialog.closeDialog}
+						onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+						onGetSubscriptionStatus={getSubscriptionStatus}
+						onReadArticle={this._readArticle}
+						onShowToast={this._toaster.addToast}
+						onSubscribe={subscribe}
+						staticServerEndpoint={this.props.staticServerEndpoint}
+						stripe={this.props.stripeLoader.value}
+						subscriptionStatus={sharedState.subscriptionStatus}
+						user={sharedState.user}
+					/>
+				)
+			);
+			return;
+		}
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
 			(
@@ -1277,6 +1388,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (this.props.initialUserProfile?.displayPreference) {
 			this.props.browserApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
 			this.props.extensionApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
+		}
+		// broadcast subscription status if signed in
+		if (this.props.initialUserProfile?.subscriptionStatus) {
+			this.props.browserApi.subscriptionStatusChanged(this.props.initialUserProfile.subscriptionStatus);
 		}
 		// broadcast extension installation or removal
 		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);

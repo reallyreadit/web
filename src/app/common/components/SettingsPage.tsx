@@ -28,6 +28,8 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import ContentBox from '../../../common/components/ContentBox';
 import DisplayPreferencesControl from './SettingsPage/DisplayPreferencesControl';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import SubscriptionControl from './SettingsPage/SubscriptionControl';
+import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
 	onCloseDialog: () => void,
@@ -45,6 +47,7 @@ interface Props {
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
+	subscriptionStatus: SubscriptionStatus,
 	user: UserAccount
 }
 class SettingsPage extends React.PureComponent<
@@ -199,7 +202,10 @@ class SettingsPage extends React.PureComponent<
 		);
 	}
 	public componentDidUpdate(prevProps: Props) {
-		if (this.props.user.timeZoneId !== prevProps.user.timeZoneId) {
+		if (
+			this.props.user.timeZoneId !== prevProps.user.timeZoneId ||
+			this.props.subscriptionStatus.type !== prevProps.subscriptionStatus.type
+		) {
 			this.props.onGetSettings(
 				this._asyncTracker.addCallback(
 					settings => {
@@ -233,8 +239,6 @@ class SettingsPage extends React.PureComponent<
 							</div>
 							<div className="section">
 								{user.name}
-								<br />
-								<small>(Account # {this.props.user.id} of {this.state.settings.value.userCount}.)</small>
 							</div>
 						</div>
 						<div className="setting">
@@ -262,6 +266,17 @@ class SettingsPage extends React.PureComponent<
 											/>
 										</div>}
 								</div>
+							</div>
+						</div>
+						<div className="setting">
+							<div className="header">
+								<span className="label">Subscription</span>
+							</div>
+							<div className="section">
+								<SubscriptionControl
+									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
+									status={this.props.subscriptionStatus}
+								/>
 							</div>
 						</div>
 						<div className="setting">
@@ -340,7 +355,7 @@ class SettingsPage extends React.PureComponent<
 		);
 	}
 }
-export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
+export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'subscriptionStatus' | 'user'>>) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
@@ -360,6 +375,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}
+				subscriptionStatus={sharedState.subscriptionStatus}
 				user={sharedState.user}
 			/>
 		)

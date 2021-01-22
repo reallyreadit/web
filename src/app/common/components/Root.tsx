@@ -57,6 +57,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
+import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -90,12 +91,13 @@ export type State = (
 	{
 		displayTheme: DisplayTheme | null,
 		screens: Screen[],
+		subscriptionStatus: SubscriptionStatus,
 		user: UserAccount | null
 	} &
 	ToasterState &
 	DialogServiceState
 );
-export type SharedState = Pick<State, 'displayTheme' | 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'subscriptionStatus' | 'user'>;
 export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
@@ -467,6 +469,7 @@ export default abstract class Root<
 			settings => {
 				if (settings.value) {
 					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
+					this.onSubscriptionStatusChanged(settings.value.subscriptionStatus);
 				}
 				callback(settings);
 			}
@@ -548,6 +551,7 @@ export default abstract class Root<
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
 			toasts: [],
+			subscriptionStatus: props.initialUserProfile?.subscriptionStatus,
 			user: props.initialUserProfile?.userAccount
 		} as TState;
 
@@ -637,6 +641,7 @@ export default abstract class Root<
 					{
 						...supplementaryState as State,
 						displayTheme: userProfile?.displayPreference.theme,
+						subscriptionStatus: userProfile?.subscriptionStatus,
 						user: userProfile?.userAccount
 					},
 					() => {
@@ -727,6 +732,11 @@ export default abstract class Root<
 	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
+	}
+	protected onSubscriptionStatusChanged(status: SubscriptionStatus) {
+		this.setState({
+			subscriptionStatus: status
+		});
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<TState>) {

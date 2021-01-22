@@ -1,5 +1,7 @@
+import { CancellationToken } from "./AsyncTracker";
 import Fetchable from "./Fetchable";
 import { isProblemResponse } from "./ProblemResponse";
+import { FailureResult, ResultType } from "./Result";
 
 export function formatIsoDateAsDotNet(isoDate: string) {
 	return isoDate.replace(/z$/i, '');
@@ -95,4 +97,13 @@ export function getPromiseErrorMessage(reason: any) {
 		message = 'An Unknown Error Occurred';
 	}
 	return message;
+}
+export function mapPromiseErrorToResultIfNotCancelled(reason: any, handler: (result: FailureResult<string>) => void) {
+	if ((reason as CancellationToken)?.isCancelled) {
+		return;
+	}
+	handler({
+		type: ResultType.Failure,
+		error: getPromiseErrorMessage(reason)
+	});
 }

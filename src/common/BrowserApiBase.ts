@@ -9,6 +9,7 @@ import ExtensionInstallationEvent from './ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
+import { SubscriptionStatus } from './models/subscriptions/SubscriptionStatus';
 
 export default abstract class BrowserApiBase extends EventEmitter<{
 	'articleUpdated': ArticleUpdatedEvent,
@@ -19,6 +20,7 @@ export default abstract class BrowserApiBase extends EventEmitter<{
 	'displayPreferenceChanged': DisplayPreference,
 	'extensionInstallationChanged': ExtensionInstallationEvent,
 	'notificationPreferenceChanged': NotificationPreference,
+	'subscriptionStatusChanged': SubscriptionStatus,
 	'updateAvailable': SemanticVersion,
 	'userSignedIn': WebAppUserProfile | UserAccount,
 	'userSignedOut': void,
@@ -32,6 +34,7 @@ export default abstract class BrowserApiBase extends EventEmitter<{
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract extensionInstallationChanged(event: ExtensionInstallationEvent): void;
 	public abstract notificationPreferenceChanged(preference: NotificationPreference): void;
+	public abstract subscriptionStatusChanged(status: SubscriptionStatus): void;
 	public abstract setTitle(title: string): void;
 	public abstract updateAvailable(version: SemanticVersion): void;
 	public abstract userSignedIn(profile: WebAppUserProfile): void;
