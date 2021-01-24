@@ -1,7 +1,7 @@
 # reallyread.it web
 ## Setup Guide
 ### Common
-1. Install NodeJS	8.9.3
+1. Install NodeJS	LTS: https://nodejs.org/en/download/
 2. Configure the NodeJS environment for development
 
         NODE_ENV=development
@@ -11,54 +11,99 @@
 ### App
 1. Configure the web server
 
-        /src/app/server/config.ts
+        src/app/server/config.ts
     ```typescript
     export default {
-    	api: {
-    		protocol: 'http',
-    		host: 'api.dev.reallyread.it',
-    		port: 80
+    	apiServer: {
+    		protocol: 'https',
+    		host: 'api.dev.readup.com'
     	},
-    	cacheEnabled: false,
-    	contentRootPath: 'bin/dev/app/browser',
-    	cookieDomain: 'dev.reallyread.it',
+    	chromeExtensionId: '',
+    	contentRootPath: 'bin/dev/app/client',
+    	cookieDomain: '.dev.readup.com',
     	cookieName: 'devSessionKey',
-    	enableCaptcha: false,	    
-    	extensionId: 'YOUR-LOCAL-EXTENSION-ID-HERE',
-    	logStream: null as {
-    		type: string,
-    		path: string,
-    		period: string,
-    		count: number,
-    		level: number
+    	packageFilePath: 'package.json',
+    	port: 5001,
+    	secureCookie: true,
+    	serveStaticContent: true,
+    	staticServer: {
+    		protocol: 'https',
+    		host: 'static.dev.readup.com'
     	},
-    	port: 5001
+    	stripePublishableKey: '',
+    	webServer: {
+    		protocol: 'https',
+    		host: 'dev.readup.com'
+    	}
     };
     ```
 2. Start the server
 
         gulp watch:dev:app
+### Embed
+1. Configure the embed
+
+        src/embed/config/dev/json
+    ```json
+    {
+    	"apiServer": {
+    		"protocol": "https",
+    		"host": "api.dev.readup.com"
+    	},
+    	"staticServer": {
+    		"protocol": "https",
+    		"host": "static.dev.readup.com"
+    	},
+    	"webServer": {
+    		"protocol": "https",
+    		"host": "dev.readup.com"
+    	}
+    }
+    ```
+2. Build the embed
+
+        gulp build:dev:embed
 ### Extension
 1. Configure the extension
 
-        /src/extension/common/config.dev.json
+        src/extension/common/config.dev.json
     ```json
     {
     	"api": {
-    		"protocol": "http",
-    		"host": "api.dev.reallyread.it"
+    		"protocol": "https",
+    		"host": "api.dev.readup.com"
     	},
+    	"cookieDomain": "dev.readup.com",
     	"cookieName": "devSessionKey",
+    	"static": {
+    		"protocol": "https",
+    		"host": "static.dev.readup.com"
+    	},
     	"web": {
-    		"protocol": "http",
-    		"host": "dev.reallyread.it"
+    		"protocol": "https",
+    		"host": "dev.readup.com"
     	}
     }
     ```
 2. Build the extension
 
         gulp build:dev:extension
-    If you see a compile error for drawBrowserActionIcon.ts implement the changes from my pull request here: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/22658
 2. Go to chrome://extensions and enable "Developer mode"
-3. Click "Load unpacked extension..." and select the output directory (/bin/dev/extension)
-4. Note extension ID (specific to your local machine) for use in other config files
+3. Click "Load unpacked extension..." and select the output directory (`bin/dev/extension`)
+### Native Client
+1. Configure the native client reader
+
+        src/native-client/reader/config.dev.json
+    ```json
+    {
+    	"webServer": {
+    		"protocol": "https",
+    		"host": "dev.readup.com"
+    	}
+    }
+    ```
+2. Build the native client script bundles
+
+        gulp build:dev:native-client-reader
+        gulp build:dev:native-client-share-extension
+3. Copy files to the `ios` repository under `IosApp/reader.js` and `ShareExtension/share-extension.js` and update `RRITReaderScriptVersion` and `RRITShareExtensionScriptVersion` in the `plist` files.
