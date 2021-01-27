@@ -5,3 +5,4 @@
 /src/embed/config.*.json
 /src/extension/common/config.*.json
 /src/native-client/reader/config.*.json
+/npm-shrinkwrap.json
