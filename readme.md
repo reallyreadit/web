@@ -4,16 +4,43 @@
 1. Install NodeJS	LTS: https://nodejs.org/en/download/
 2. Configure the NodeJS environment for development
 
-        NODE_ENV=development
+        export NODE_ENV=development
 3. Install packages
 
         npm install
+4. Gulp is included as a development dependency and is used to execute build actions. If you do not have Gulp installed globally or have an incompatible global version installed you can create an alias to the version included in this repository.
+
+        alias gulp="node node_modules/gulp/bin/gulp.js"
 ### App
-1. Configure the web server
+1. Configure the web server. Optionally set the value for `stripePublishableKey` if you want to enable subscription purchases through Stripe.
 
         src/app/server/config.ts
     ```typescript
-    export default {
+    import HttpEndpoint from '../../common/HttpEndpoint';
+    
+    let config: {
+    	apiServer: HttpEndpoint,
+    	chromeExtensionId: string,
+    	contentRootPath: string,
+    	cookieDomain: string,
+    	cookieName: string,
+    	logStream?: {
+    		type: string,
+    		path: string,
+    		period: string,
+    		count: number,
+    		level: number
+    	},
+    	packageFilePath: string,
+    	port: number | string,
+    	secureCookie: boolean,
+    	serveStaticContent: boolean,
+    	staticServer: HttpEndpoint,
+    	stripePublishableKey: string,
+    	webServer: HttpEndpoint
+	 };
+	 
+    config = {
     	apiServer: {
     		protocol: 'https',
     		host: 'api.dev.readup.com'
@@ -35,7 +62,9 @@
     		protocol: 'https',
     		host: 'dev.readup.com'
     	}
-    };
+	 };
+
+    export default config;
     ```
 2. Start the server
 
