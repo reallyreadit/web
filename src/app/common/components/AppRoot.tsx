@@ -53,7 +53,7 @@ import { Result, ResultType } from '../../../common/Result';
 import { PurchaseError, TransactionError } from '../../../common/models/app/Errors';
 import { ErrorResponse, reduceAppErrorResponse } from '../../../common/models/app/AppResult';
 import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
-import { createMyContributionScreenFactory } from './screens/MyContributionScreen';
+import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -558,8 +558,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewProfile: this._viewProfile
 				}
 			),
-			[ScreenKey.MyContribution]: createMyContributionScreenFactory(
-				ScreenKey.MyContribution
+			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
+				ScreenKey.MyImpact
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCloseDialog: this._dialog.closeDialog,

@@ -61,7 +61,7 @@ import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/mode
 import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
 import { SubscriptionPrice, isSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
 import { StripePaymentResponseType, StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
-import { createMyContributionScreenFactory } from './screens/MyContributionScreen';
+import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -572,8 +572,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewProfile: this._viewProfile
 				}
 			),
-			[ScreenKey.MyContribution]: createMyContributionScreenFactory(
-				ScreenKey.MyContribution
+			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
+				ScreenKey.MyImpact
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCloseDialog: this._dialog.closeDialog,

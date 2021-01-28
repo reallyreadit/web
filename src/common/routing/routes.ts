@@ -57,12 +57,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	})(),
 	{
 		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/contribution',
-		pathRegExp: /^\/contribution$/,
-		screenKey: ScreenKey.MyContribution
-	},
-	{
-		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/discover',
 		pathRegExp: /^\/discover$/,
 		screenKey: ScreenKey.Discover
@@ -92,6 +86,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/extension\/uninstall$/,
 		queryStringKeys: ['installationId'],
 		screenKey: ScreenKey.ExtensionRemoval
+	},
+	{
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/impact',
+		pathRegExp: /^\/impact$/,
+		screenKey: ScreenKey.MyImpact
 	},
 	{
 		createUrl: () => '/leaderboards',

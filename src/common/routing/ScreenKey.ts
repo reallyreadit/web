@@ -9,7 +9,7 @@ enum ScreenKey {
 	ExtensionRemoval,
 	Home,
 	Leaderboards,
-	MyContribution,
+	MyImpact,
 	MyReads,
 	Notifications,
 	Password,

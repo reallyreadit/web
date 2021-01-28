@@ -2,16 +2,16 @@ import * as React from 'react';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 
-class MyContributionScreen extends React.Component {
+class MyImpactScreen extends React.Component {
 	public render() {
 		return (
-			<ScreenContainer className="my-contribution-screen_jagh2k">
+			<ScreenContainer className="my-impact-screen_n8wfkf">
 				<h1>Pie Chart, etc.</h1>
 			</ScreenContainer>
 		);
 	}
 }
-export function createMyContributionScreenFactory<TScreenKey>(
+export function createMyImpactScreenFactory<TScreenKey>(
 	key: TScreenKey
 ) {
 	return {
@@ -19,10 +19,10 @@ export function createMyContributionScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'My Contribution'
+			title: 'My Impact'
 		}),
 		render: () => (
-			<MyContributionScreen />
+			<MyImpactScreen />
 		)
 	};
 }
