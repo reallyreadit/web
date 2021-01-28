@@ -64,8 +64,11 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 		});
 	};
 	private readonly _readArticle = () => {
-		this.props.onReadArticle(this.props.article);
+		// trying to read the article could open another dialog so we need to make sure to
+		// close ourself first. should probably manage this better by having onClose accept
+		// the dialog's id.
 		this.props.onClose();
+		this.props.onReadArticle(this.props.article);
 	};
 	private readonly _selectPrice = (price: SubscriptionPrice) => {
 		this.setState({
