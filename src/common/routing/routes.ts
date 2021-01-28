@@ -57,6 +57,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	})(),
 	{
 		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/contribution',
+		pathRegExp: /^\/contribution$/,
+		screenKey: ScreenKey.MyContribution
+	},
+	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/discover',
 		pathRegExp: /^\/discover$/,
 		screenKey: ScreenKey.Discover
