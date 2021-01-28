@@ -1409,7 +1409,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 			});
 		}
 		// clear extension installation redirect cookie
-		Cookies.remove(extensionInstallationRedirectPathCookieKey);
+		Cookies.remove(
+			extensionInstallationRedirectPathCookieKey,
+			{
+				domain: '.' + this.props.webServerEndpoint.host,
+				sameSite: 'none',
+				secure: this.props.webServerEndpoint.protocol === 'https'
+			}
+		);
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();
