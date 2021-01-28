@@ -68,7 +68,7 @@ export default (props: {
 				>
 					<Icon
 						badge={props.user.followerAlertCount}
-						name="user"
+						name="menu2"
 					/>
 				</div>
 			</div>
