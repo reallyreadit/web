@@ -201,6 +201,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewLeaderboards = () => {
 		this.replaceScreen(ScreenKey.Leaderboards);
 	};
+	private readonly _viewMyImpact = () => {
+		this.replaceScreen(ScreenKey.MyImpact);
+	};
 	private readonly _viewMyReads = () => {
 		this.replaceScreen(ScreenKey.MyReads);
 	};
@@ -1200,9 +1203,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 							</ol>
 						</div>
 						<NavTray
-							onViewDiscover={this._viewDiscover}
 							onViewHome={this._viewHome}
-							onViewLeaderboards={this._viewLeaderboards}
+							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
@@ -1214,6 +1216,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 								onClosed={this._hideMenu}
 								onSignOut={this._signOut}
 								onViewAdminPage={this._viewAdminPage}
+								onViewDiscover={this._viewDiscover}
+								onViewLeaderboards={this._viewLeaderboards}
 								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 								onViewProfile={this._viewProfile}
 								onViewSettings={this._viewSettings}

@@ -10,14 +10,12 @@ import Separator from '../../../../common/components/Separator';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
-	discoverUrl = findRouteByKey(routes, ScreenKey.Discover).createUrl(),
-	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl(),
-	leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl();
+	myImpactUrl = findRouteByKey(routes, ScreenKey.MyImpact).createUrl(),
+	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
-	onViewDiscover: () => void,
 	onViewHome: () => void,
-	onViewLeaderboards: () => void,
+	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
 	onViewPrivacyPolicy: () => void,
 	selectedScreen: Screen,
@@ -46,17 +44,6 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 					<li>
 						<Button
-							href={discoverUrl}
-							onClick={this.props.onViewDiscover}
-							state={this.props.selectedScreen.key === ScreenKey.Discover ? 'selected' : 'normal'}
-							iconLeft="earth"
-							text="Discover"
-							size="x-large"
-							display="block"
-						/>
-					</li>
-					<li>
-						<Button
 							href={myReadsUrl}
 							onClick={this.props.onViewMyReads}
 							state={this.props.selectedScreen.key === ScreenKey.MyReads ? 'selected' : 'normal'}
@@ -68,11 +55,11 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 					<li>
 						<Button
-							href={leaderboardsUrl}
-							onClick={this.props.onViewLeaderboards}
-							state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
-							iconLeft="podium"
-							text="Leaderboards"
+							href={myImpactUrl}
+							onClick={this.props.onViewMyImpact}
+							state={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : 'normal'}
+							iconLeft="dollar"
+							text="My Impact"
 							size="x-large"
 							display="block"
 						/>

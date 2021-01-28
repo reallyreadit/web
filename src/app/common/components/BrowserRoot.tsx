@@ -213,6 +213,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
+	private readonly _viewMyImpact = () => {
+		this.setScreenState({
+			key: ScreenKey.MyImpact,
+			method: 'replace'
+		});
+	};
 	private readonly _viewMyReads = () => {
 		this.setScreenState({
 			key: ScreenKey.MyReads,
@@ -1253,9 +1259,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 						this.state.user
 					) ?
 						<NavBar
-							onViewDiscover={this._viewDiscover}
 							onViewHome={this._viewHome}
-							onViewLeaderboards={this._viewLeaderboards}
+							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							selectedScreen={this.state.screens[0]}
@@ -1293,6 +1298,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onClosed={this._hideMenu}
 						onSignOut={this._signOut}
 						onViewAdminPage={this._viewAdminPage}
+						onViewDiscover={this._viewDiscover}
+						onViewLeaderboards={this._viewLeaderboards}
 						onViewProfile={this._viewProfile}
 						onViewSettings={this._viewSettings}
 						onViewStats={this._viewStats}
