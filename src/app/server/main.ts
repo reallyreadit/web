@@ -95,19 +95,19 @@ if (config.logStream) {
 // create server
 let server = express();
 // configure request logging
-server = server.use((req, res, next) => {
+server.use((req, res, next) => {
 	log.info({ req });
 	next();
 });
 // configure cookie parser
-server = server.use(cookieParser());
+server.use(cookieParser());
 // configure static content
 if (config.serveStaticContent) {
 	// attempt to serve static files first
-	server = server.use(express.static(config.contentRootPath));
+	server.use(express.static(config.contentRootPath));
 }
 // apple app site association
-server = server.get('/apple-app-site-association', (req, res) => {
+server.get('/apple-app-site-association', (req, res) => {
 	res.json({
 		'applinks': {
 			'apps': [],
@@ -119,11 +119,11 @@ server = server.get('/apple-app-site-association', (req, res) => {
 	});
 });
 // version check
-server = server.get('/version', (req, res) => {
+server.get('/version', (req, res) => {
 	res.status(200).send(version.app);
 });
 // authenticate
-server = server.use((req, res, next) => {
+server.use((req, res, next) => {
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	const api = new ServerApi(
 		config.apiServer,
@@ -162,7 +162,7 @@ server = server.use((req, res, next) => {
 	}
 });
 // authorize
-server = server.use((req, res, next) => {
+server.use((req, res, next) => {
 	const route = findRouteByRequest(req);
 	if (
 		!route ||
@@ -175,7 +175,7 @@ server = server.use((req, res, next) => {
 	}
 });
 // url migration
-server = server.get('/articles/:sourceSlug/:articleSlug/:commentId?', (req, res) => {
+server.get('/articles/:sourceSlug/:articleSlug/:commentId?', (req, res) => {
 	let params: { [key: string]: string } = {
 		'sourceSlug': req.params['sourceSlug'],
 		'articleSlug': req.params['articleSlug']
@@ -190,7 +190,7 @@ server = server.get('/articles/:sourceSlug/:articleSlug/:commentId?', (req, res)
 			.createUrl(params)
 	);
 });
-server = server.get('/proof/:token', (req, res) => {
+server.get('/proof/:token', (req, res) => {
 	req.api
 		.fetchJson<VerificationTokenData>(
 			'GET',
@@ -212,42 +212,42 @@ server = server.get('/proof/:token', (req, res) => {
 			);
 		});
 });
-server = server.get('/reads', (req, res) => {
+server.get('/reads', (req, res) => {
 	redirect(
 		req,
 		res,
 		findRouteByKey(routes, ScreenKey.MyReads).createUrl()
 	);
 });
-server = server.get('/inbox', (req, res) => {
+server.get('/inbox', (req, res) => {
 	redirect(
 		req,
 		res,
 		findRouteByKey(routes, ScreenKey.Notifications).createUrl()
 	);
 });
-server = server.get('/following', (req, res) => {
+server.get('/following', (req, res) => {
 	redirect(
 		req,
 		res,
 		findRouteByKey(routes, ScreenKey.Notifications).createUrl()
 	);
 });
-server = server.get('/privacy-policy', (req, res) => {
+server.get('/privacy-policy', (req, res) => {
 	redirect(
 		req,
 		res,
 		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
 	);
 });
-server = server.get('/terms', (req, res) => {
+server.get('/terms', (req, res) => {
 	redirect(
 		req,
 		res,
 		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
 	);
 });
-server = server.get('/blog', (req, res) => {
+server.get('/blog', (req, res) => {
 	if (req.clientType === ClientType.App) {
 		redirect(
 			req,
@@ -259,7 +259,7 @@ server = server.get('/blog', (req, res) => {
 	}
 });
 // handle redirects
-server = server.get('/confirmEmail', (req, res) => {
+server.get('/confirmEmail', (req, res) => {
 	req.api
 		.fetchJson('POST', { path: '/UserAccounts/ConfirmEmail2', data: { token: replaceSpacesWithPlusSign(req.query['token']) } })
 		.then(() => {
@@ -278,7 +278,7 @@ server = server.get('/confirmEmail', (req, res) => {
 			}
 		});
 });
-server = server.get('/resetPassword', (req, res) => {
+server.get('/resetPassword', (req, res) => {
 	const token = replaceSpacesWithPlusSign(req.query['token']);
 	req.api
 		.fetchJson<PasswordResetRequest>('GET', { path: '/UserAccounts/PasswordResetRequest2', data: { token } })
@@ -304,7 +304,7 @@ server = server.get('/resetPassword', (req, res) => {
 			}
 		});
 });
-server = server.get('/viewReply/:id?', (req, res) => {
+server.get('/viewReply/:id?', (req, res) => {
 	let path = '/UserAccounts/ViewReply2';
 	const params = {} as { [key: string]: string };
 	if (req.params['id']) {
@@ -331,7 +331,7 @@ server = server.get('/viewReply/:id?', (req, res) => {
 			redirectToHomeScreen(req, res);
 		});
 });
-server = server.get('/extension/uninstall', (req, res, next) => {
+server.get('/extension/uninstall', (req, res, next) => {
 	if ('installationId' in req.query) {
 		// log the removal
 		req.api
@@ -349,7 +349,7 @@ server = server.get('/extension/uninstall', (req, res, next) => {
 	}
 	next();
 });
-server = server.get('/mailLink/:id', (req, res) => {
+server.get('/mailLink/:id', (req, res) => {
 	req.api
 		.fetchJson('POST', { path: '/Email/Link/' + req.params['id'] })
 		.then(
@@ -364,7 +364,7 @@ server = server.get('/mailLink/:id', (req, res) => {
 		);
 });
 // render matched route or return 404
-server = server.use((req, res, next) => {
+server.use((req, res, next) => {
 	const route = findRouteByRequest(req);
 	if (route) {
 		req.matchedRoute = route;
@@ -374,7 +374,7 @@ server = server.use((req, res, next) => {
 	}
 });
 // render the app
-server = server.get('/*', (req, res) => {
+server.get('/*', (req, res) => {
 	// session id
 	if (!req.cookies[sessionIdCookieKey]) {
 		res.cookie(
