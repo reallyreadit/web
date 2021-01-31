@@ -40,7 +40,7 @@ function findRouteByRequest(req: express.Request) {
 		routes,
 		{
 			path: req.path,
-			queryString: createQueryString(req.query)
+			queryString: createQueryString(req.query as { [key: string]: string | string[] })
 		},
 		unroutableQueryStringKeys
 	);
@@ -48,7 +48,7 @@ function findRouteByRequest(req: express.Request) {
 
 // redirect helper functions
 const nodeUrl = url;
-function redirect(req: express.Request, res: express.Response, url: string) {
+function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey]?: string, [key: string]: any }>, res: express.Response, url: string) {
 	if (clientTypeQueryStringKey in req.query) {
 		const redirectUrl = nodeUrl.parse(url, true);
 		url = nodeUrl.format({
@@ -259,7 +259,7 @@ server.get('/blog', (req, res) => {
 	}
 });
 // handle redirects
-server.get('/confirmEmail', (req, res) => {
+server.get<{}, any, any, { token: string }>('/confirmEmail', (req, res) => {
 	req.api
 		.fetchJson('POST', { path: '/UserAccounts/ConfirmEmail2', data: { token: replaceSpacesWithPlusSign(req.query['token']) } })
 		.then(() => {
@@ -278,7 +278,7 @@ server.get('/confirmEmail', (req, res) => {
 			}
 		});
 });
-server.get('/resetPassword', (req, res) => {
+server.get<{}, any, any, { token: string }>('/resetPassword', (req, res) => {
 	const token = replaceSpacesWithPlusSign(req.query['token']);
 	req.api
 		.fetchJson<PasswordResetRequest>('GET', { path: '/UserAccounts/PasswordResetRequest2', data: { token } })
@@ -304,7 +304,7 @@ server.get('/resetPassword', (req, res) => {
 			}
 		});
 });
-server.get('/viewReply/:id?', (req, res) => {
+server.get<{ id?: string }, any, any, { token?: string }>('/viewReply/:id?', (req, res) => {
 	let path = '/UserAccounts/ViewReply2';
 	const params = {} as { [key: string]: string };
 	if (req.params['id']) {
@@ -331,7 +331,7 @@ server.get('/viewReply/:id?', (req, res) => {
 			redirectToHomeScreen(req, res);
 		});
 });
-server.get('/extension/uninstall', (req, res, next) => {
+server.get<{}, any, any, { installationId?: string }>('/extension/uninstall', (req, res, next) => {
 	if ('installationId' in req.query) {
 		// log the removal
 		req.api
@@ -374,7 +374,7 @@ server.use((req, res, next) => {
 	}
 });
 // render the app
-server.get('/*', (req, res) => {
+server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, res) => {
 	// session id
 	if (!req.cookies[sessionIdCookieKey]) {
 		res.cookie(
