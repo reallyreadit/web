@@ -18,7 +18,7 @@
         src/app/server/config.ts
     ```typescript
     import HttpEndpoint from '../../common/HttpEndpoint';
-    
+
     let config: {
     	apiServer: HttpEndpoint,
     	chromeExtensionId: string,
@@ -40,7 +40,7 @@
     	stripePublishableKey: string,
     	webServer: HttpEndpoint
 	 };
-	 
+
     config = {
     	apiServer: {
     		protocol: 'https',
@@ -73,7 +73,7 @@
 ### Embed
 1. Configure the embed
 
-        src/embed/config/dev/json
+        src/embed/config.dev.json
     ```json
     {
     	"apiServer": {
