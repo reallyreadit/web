@@ -25,6 +25,7 @@ import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
+import ImageAndText from './ImageAndText';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -101,6 +102,14 @@ export default class MarketingScreen extends React.Component<
 		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="marketing-screen_n5a6wc">
+				<Panel
+					className="value-points"
+					data-nosnippet
+				>
+					<h1>Test content!</h1>
+					<ImageAndText />
+					<ImageAndText imageRight={true} />
+				</Panel>
 				<Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>
