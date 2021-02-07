@@ -1,17 +1,23 @@
 /*
-	componentPath: src/app/common/components/BrowserRoot/ImageAndText
-	cssComponentId: image-and-text_n5a6wc
+        componentPath: src/app/common/components/BrowserRoot/ImageAndText
+        cssComponentId: image-and-text_54dk3j
 */
 @import '../../../../common/styles/colors';
 @import '../../../../common/styles/fonts';
 
 // TODO: might need css-id
-.image-text {
-	&__wrapper {
-		display: flex;
-		flex-direction: column;
-		margin: 84px auto;
-		align-items: center;
+.image-and-text_54dk3j {
+	display: flex;
+	flex-direction: column;
+	margin: 28px auto;
+	align-items: center;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&:last-child {
+		margin-bottom: 0;
 	}
 
 	&__text {
@@ -21,7 +27,7 @@
 		align-items: center;
 		max-width: 440px;
 
-		margin: 24px auto;
+		margin: 28px auto;
 
 		 & p {
 			 text-align: center;
@@ -43,18 +49,16 @@
 // TODO: probably best define standard breakpoints
 @media screen and (min-width: 768px) {
 	$image-text__image-margin: 60px;
-	.image-text {
-		&__wrapper {
-			flex-direction: row;
-			margin: 84px auto;
+	.image-and-text_54dk3j {
+		flex-direction: row;
+		margin: 84px auto;
 
-			// for the other direction
-			&--image-right {
-				flex-direction: row-reverse;
+		// for the other direction
+		&--image-right {
+			flex-direction: row-reverse;
 
-				.image-text__image {
-					margin-left: $image-text__image-margin;
-				}
+			.image-and-text_54dk3j__image {
+				margin-left: $image-text__image-margin;
 			}
 		}
 
@@ -84,7 +88,7 @@
 
 
 @include theme using ($root, $scheme) {
-	#{$root} .marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(even) {
+	#{$root} .marketing-screen_n5a6wc > .home-panel_w65z7c:nth-child(even) {
 		@include theme-colors(
 			$scheme,
 			(

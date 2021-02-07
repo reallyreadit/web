@@ -1,0 +1,66 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/HomePanel
+        cssComponentId: home-panel_w65z7c
+*/
+
+.home-panel_w65z7c > .content {
+	max-width: 980px;
+	padding: 40px 20px;
+	margin: 0 auto;
+}
+
+// .home-panel_w65z7c > .content > h1 {
+// 	font-family: 'Cambria (bold)';
+// 	font-size: 36pt;
+// 	margin-bottom: 50px;
+// 	line-height: 1em;
+// }
+
+// .home-panel_w65z7c > .content > h2 {
+// 	font-family: 'Museo Sans (700)';
+// 	font-size: 20pt;
+// 	text-align: center;
+// }
+.home-panel_w65z7c > .content > h3 {
+	font-size: 20pt;
+	text-align: center;
+}
+
+.home-panel_w65z7c > .content > p {
+	margin: 20px 0;
+	font-family: 'Cambria (Regular)';
+	font-size: 16pt;
+	line-height: 1.35em;
+}
+.home-panel_w65z7c > .content > .buttons {
+	margin: 50px 0;
+	text-align: center;
+}
+.home-panel_w65z7c > .content > :first-child {
+	margin-top: 0 !important;
+}
+.home-panel_w65z7c > .content > :last-child {
+	margin-bottom: 0 !important;
+}
+
+@media (max-width: 449px) {
+	.home-panel_w65z7c > .content {
+		// in panel: padding: 24px 10px; <- bit more spacing on mobile is nice
+		padding: 24px 16px;
+		margin: 0 auto;
+	}
+	.home-panel_w65z7c > .content > h1 {
+		font-size: 24pt;
+		margin-bottom: 20px;
+	}
+	.home-panel_w65z7c > .content > h3 {
+		font-size: 16pt;
+	}
+	.home-panel_w65z7c > .content > p {
+		margin: 10px 0;
+		line-height: 1.3em;
+	}
+	.home-panel_w65z7c > .content > .buttons {
+		margin: 20px 0;
+	}
+}

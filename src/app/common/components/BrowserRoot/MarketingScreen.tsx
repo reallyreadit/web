@@ -26,6 +26,7 @@ import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ImageAndText from './ImageAndText';
+import HomePanel from './HomePanel';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -100,16 +101,56 @@ export default class MarketingScreen extends React.Component<
 	}
 	public render () {
 		const marketingVariant = marketingVariants[0];
+		const valuePoints = [
+			{
+				heading: "Read anything you want.",
+				paragraph: "Easily import articles from your favorite publishers and blogs. Or browse Readup's collection of top-quality articles.",
+				imageName: "read-anything.png",
+				imageAlt: "Import from any publication"
+			},
+			{
+				heading: "Reading perfected.",
+				paragraph: "Readup's iPhone app and browser extensions offer immersive, 100% distraction-free reading. No time to finish? Readup bookmarks everything, automatically. ",
+				imageName: "reading-perfected.png",
+				imageAlt: "Reading view without clutter or distractions"
+			},
+			{
+				heading: "Algorithms you can trust",
+				paragraph: "Readup doesn't have liking or upvoting. Instead, Readers \"vote\" with their time and attention. All algorithms are 100% transparent and Reader-powered. (No mods!) ",
+				imageName: "good-algorithms.png",
+				imageAlt: "Transparent recommendation mechanism"
+			},
+			{
+				heading: "Civil discourse. Finally.",
+				paragraph: "On Readup, it's impossible for anybody to comment on any article that they haven't fully read. Readup is troll-free, non-toxic, and non-addictive.",
+				imageName: "civil-discourse.png",
+				imageAlt: "You must read the article before you can post or reply."
+			},
+			{
+				heading: "You pay writers directly",
+				paragraph: "Everything you pay for Readup gets automatically distributed to the Writers you read. Readup shows you your impact, down to the penny (and minute). We claim the money of dead and anonymous writers to sustain ourself.",
+				imageName: "pay-directly.png",
+				imageAlt: "Pay writers directly"
+			}
+		]
 		return (
 			<div className="marketing-screen_n5a6wc">
-				<Panel
-					className="value-points"
+				<HomePanel className="hero">
+					<h1 className="heading-regular">The internet broke reading.<br />We fixed it.</h1>
+					<p className="">Readup makes online reading more peaceful and focused.</p>
+					<GetStartedButton
+						analyticsAction="HomeScreenHeader"
+						deviceType={this.props.deviceType}
+						onBeginOnboarding={this.props.onBeginOnboarding}
+						onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+						onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+					/>
+				</HomePanel>
+				<HomePanel
 					data-nosnippet
 				>
-					<h1>Test content!</h1>
-					<ImageAndText />
-					<ImageAndText imageRight={true} />
-				</Panel>
+					{valuePoints.map((pointData, i) => <ImageAndText {...pointData} imageRight={!(i % 2 == 0)} />) }
+				</HomePanel>
 				<Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>

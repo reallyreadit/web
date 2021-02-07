@@ -30,6 +30,31 @@
 	margin-bottom: 20px;
 }
 
+// styles for the hero section on top
+.marketing-screen_n5a6wc > .hero > .content {
+	max-width: 475px;
+	margin: 48px auto;
+	padding: 10px 10px;
+	text-align: center;
+
+	& p {
+		margin: 24px 0;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.marketing-screen_n5a6wc > .hero > .content {
+		max-width: 475px;
+		margin: auto;
+		padding: 110px 10px;
+		text-align: center;
+
+		.heading-regular {
+			line-height: 44px;
+		}
+	}
+}
+
 @include theme using ($root, $scheme) {
 	#{$root} .marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(even) {
 		@include theme-colors(
