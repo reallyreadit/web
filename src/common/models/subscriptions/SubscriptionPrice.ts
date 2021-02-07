@@ -3,12 +3,12 @@ export type SubscriptionPriceLevel = {
 	name: string,
 	amount: number
 };
-export type SubscriptionPrice = 
+export type SubscriptionPrice =
 	SubscriptionPriceLevel | {
 		amount: number
 	};
-export function formatSubscriptionPriceAmount(price: SubscriptionPrice) {
-	return (price.amount / 100)
+export function formatSubscriptionPriceAmount(amount: number) {
+	return (amount / 100)
 		.toLocaleString(
 			'en-US',
 			{

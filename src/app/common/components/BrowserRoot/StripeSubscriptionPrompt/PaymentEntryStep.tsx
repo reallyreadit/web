@@ -258,7 +258,7 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 				<ContentBox className="selection">
 					<div className="title">Selected Subscription</div>
 					<div className="name">{formatSubscriptionPriceName(this.props.selectedPrice)}</div>
-					<div className="price">{formatSubscriptionPriceAmount(this.props.selectedPrice)} / month</div>
+					<div className="price">{formatSubscriptionPriceAmount(this.props.selectedPrice.amount)} / month</div>
 					<ActionLink
 						iconLeft="arrow-left"
 						onClick={this.props.onChangePrice}

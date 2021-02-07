@@ -171,7 +171,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 							this.state.priceLevels.value.prices.map(
 								priceLevel => ({
 									...priceLevel,
-									formattedAmount: formatSubscriptionPriceAmount(priceLevel)
+									formattedAmount: formatSubscriptionPriceAmount(priceLevel.amount)
 								})
 							)
 						}

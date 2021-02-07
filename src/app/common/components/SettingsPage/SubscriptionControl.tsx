@@ -39,7 +39,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 		return (
 			<>
 				<div className="price-name">{formatSubscriptionPriceName(price)}</div>
-				<div className="price-amount">{formatSubscriptionPriceAmount(price)} / month</div>
+				<div className="price-amount">{formatSubscriptionPriceAmount(price.amount)} / month</div>
 			</>
 		);
 	}
