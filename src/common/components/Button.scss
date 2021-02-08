@@ -27,6 +27,14 @@
 .button_ovrlmi > .text > .alert-badge_ejzklr {
 	right: -16px;
 }
+.button_ovrlmi > .text > .beta-badge {
+	font-size: 11pt;
+	font-family: 'Museo Sans (300)';
+	padding: 1px 3px;
+	border-radius: 3px;
+	margin-left: 10px;
+	vertical-align: middle;
+}
 /* display */
 .button_ovrlmi.inline {
 	display: inline-flex;
@@ -164,6 +172,15 @@
 			(
 				"border-top-color": $intent-alert-color,
 				"border-right-color": $intent-alert-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi > .text > .beta-badge {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color,
+				"color": $intent-text-color
 			)
 		);
 	}

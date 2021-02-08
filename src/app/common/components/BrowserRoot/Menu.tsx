@@ -114,6 +114,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						</li>
 						<li>
 							<Button
+								badge="beta"
 								href={findRouteByKey(routes, ScreenKey.Discover).createUrl()}
 								onClick={this.props.onViewDiscover}
 								state={this.props.selectedScreen.key === ScreenKey.Discover ? 'selected' : 'normal'}
@@ -124,6 +125,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						</li>
 						<li>
 							<Button
+								badge="beta"
 								href={findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()}
 								onClick={this.props.onViewLeaderboards}
 								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}

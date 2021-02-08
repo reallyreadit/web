@@ -8,7 +8,7 @@ import AlertBadge from './AlertBadge';
 export type ButtonSize = 'normal' | 'large' | 'x-large';
 interface Props {
 	align: 'left' | 'center' | 'right',
-	badge?: number,
+	badge?: number | 'beta',
 	className?: ClassValue,
 	display?: 'block' | 'inline',
 	href?: string,
@@ -58,28 +58,34 @@ export default class Button extends React.PureComponent<Props> {
 				);
 				break;
 		}
+		let badgeCount: number | undefined;
+		if (typeof this.props.badge === 'number') {
+			badgeCount = this.props.badge;
+		}
 		const sharedProps = {
 			children: (
 				<>
 					{this.props.iconLeft ?
 						<Icon
-							badge={this.props.badge}
+							badge={badgeCount}
 							name={this.props.iconLeft}
 						/> :
 						null}
 					<span className="text">
 						{this.props.text}
 						{
-							this.props.badge &&
+							badgeCount &&
 							!this.props.iconLeft &&
 							!this.props.iconRight ?
-								<AlertBadge count={this.props.badge} /> :
-								null
+								<AlertBadge count={badgeCount} /> :
+								this.props.badge === 'beta' ?
+									<span className="beta-badge">Beta</span> :
+									null
 						}
 					</span>
 					{this.props.iconRight ?
 						<Icon
-							badge={this.props.badge}
+							badge={badgeCount}
 							name={this.props.iconRight}
 						/> :
 						null}
@@ -117,4 +123,4 @@ export default class Button extends React.PureComponent<Props> {
 			<button {...sharedProps} />
 		);
 	}
-} 
+}
