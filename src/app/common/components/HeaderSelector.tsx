@@ -6,18 +6,23 @@ export interface Item {
 	badge?: number,
 	value: string
 }
-export default class HeaderSelector extends React.PureComponent<{
+interface Props {
 	disabled?: boolean,
 	items: Item[],
 	onChange: (value: string) => void,
+	style?: 'auto' | 'compact' | 'extended'
 	value: string
-}> {
+}
+export default class HeaderSelector extends React.Component<Props> {
+	public static defaultProps: Partial<Props> = {
+		style: 'auto'
+	};
 	private readonly _change = (event: React.MouseEvent<HTMLButtonElement>) => {
 		this.props.onChange(event.currentTarget.value);
 	};
 	public render() {
 		return (
-			<div className="header-selector_9li9z5">
+			<div className={classNames('header-selector_9li9z5', this.props.style)}>
 				{this.props.items.map(
 					item => (
 						<button
