@@ -7,26 +7,34 @@ export enum SubscriptionStatusType {
 	Active = 3,
 	Lapsed = 4
 }
-export type SubscriptionStatus = {
-		type: SubscriptionStatusType.NeverSubscribed,
-		isUserFreeForLife: boolean
-	} | {
-		type: SubscriptionStatusType.Incomplete,
-		provider: SubscriptionProvider,
-		price: SubscriptionPrice,
-		requiresConfirmation: boolean,
-		isUserFreeForLife: boolean
-	} | {
-		type: SubscriptionStatusType.Active,
-		provider: SubscriptionProvider,
-		price: SubscriptionPrice,
-		currentPeriodBeginDate: string,
-		currentPeriodEndDate: string,
-		isUserFreeForLife: boolean
-	} | {
-		type: SubscriptionStatusType.Lapsed,
-		provider: SubscriptionProvider,
-		price: SubscriptionPrice,
-		lastPeriodEndDate: string,
-		isUserFreeForLife: boolean
-	};
+export type NeverSubscribedSubscriptionStatus = {
+	type: SubscriptionStatusType.NeverSubscribed,
+	isUserFreeForLife: boolean
+};
+export type IncompleteSubscriptionStatus = {
+	type: SubscriptionStatusType.Incomplete,
+	provider: SubscriptionProvider,
+	price: SubscriptionPrice,
+	requiresConfirmation: boolean,
+	isUserFreeForLife: boolean
+};
+export type ActiveSubscriptionStatus = {
+	type: SubscriptionStatusType.Active,
+	provider: SubscriptionProvider,
+	price: SubscriptionPrice,
+	currentPeriodBeginDate: string,
+	currentPeriodEndDate: string,
+	isUserFreeForLife: boolean
+};
+export type LapsedSubscriptionStatus = {
+	type: SubscriptionStatusType.Lapsed,
+	provider: SubscriptionProvider,
+	price: SubscriptionPrice,
+	lastPeriodEndDate: string,
+	isUserFreeForLife: boolean
+};
+export type SubscriptionStatus =
+	NeverSubscribedSubscriptionStatus |
+	IncompleteSubscriptionStatus |
+	ActiveSubscriptionStatus |
+	LapsedSubscriptionStatus;
