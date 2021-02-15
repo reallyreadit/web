@@ -58,6 +58,7 @@ import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -391,6 +392,18 @@ export default abstract class Root<
 			}
 		}
 	};
+
+	// subscriptions
+	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => {
+		return this.props.serverApi.getSubscriptionDistributionSummary(
+			summary => {
+				if (summary.value) {
+					this.onSubscriptionStatusChanged(summary.value.subscriptionStatus);
+				}
+				callback(summary);
+			}
+		);
+	}
 
 	// toasts
 	protected readonly _toaster = new ToasterService({

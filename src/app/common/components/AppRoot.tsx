@@ -227,7 +227,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
 		return this.props.appApi.share(data);
 	};
-	
+
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
 		if (
@@ -562,7 +562,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
-				ScreenKey.MyImpact
+				ScreenKey.MyImpact,
+				{
+					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewAuthor: this._viewAuthor
+				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCloseDialog: this._dialog.closeDialog,
@@ -714,7 +719,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 									authStatus: {
 										provider: AuthServiceProvider.Apple,
 										step: AuthStep.Error
-									}	
+									}
 								});
 							}
 						);

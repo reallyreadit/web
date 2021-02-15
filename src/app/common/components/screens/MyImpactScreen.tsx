@@ -1,18 +1,261 @@
 import * as React from 'react';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
+import { SubscriptionDistributionReport } from '../../../../common/models/subscriptions/SubscriptionDistributionReport';
+import { FetchFunction } from '../../serverApi/ServerApi';
+import Fetchable from '../../../../common/Fetchable';
+import AsyncTracker from '../../../../common/AsyncTracker';
+import LoadingOverlay from '../controls/LoadingOverlay';
+import DistributionChart from './MyImpactScreen/DistributionChart';
+import { formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { formatCountable, formatIsoDateAsUtc } from '../../../../common/format';
+import { DateTime } from 'luxon';
+import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
+import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import Button from '../../../../common/components/Button';
+import HeaderSelector from '../HeaderSelector';
+import * as classNames from 'classnames';
+import { Screen, SharedState } from '../Root';
 
-class MyImpactScreen extends React.Component {
+function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
+	const daysRemaining = Math.ceil(
+			DateTime
+				.utc()
+				.until(
+					DateTime.fromISO(
+						formatIsoDateAsUtc(status.currentPeriodEndDate)
+					)
+				)
+				.length('days')
+		);
+	if (dist.authorDistributions.length) {
+		return (
+			<div className="content-block">{daysRemaining} {formatCountable(daysRemaining, 'day')} until your first month's payments are finalized and processed. Keep reading!</div>
+		);
+	}
+	return (
+		<div className="content-block">{daysRemaining} {formatCountable(daysRemaining, 'day')} until your current cycle ends.</div>
+	);
+}
+
+enum ReportType {
+	CurrentPeriod,
+	CompletedPeriods
+}
+
+const headerSelectorItems = [
+	{
+		reportType: ReportType.CurrentPeriod,
+		value: 'Current Cycle'
+	},
+	{
+		reportType: ReportType.CompletedPeriods,
+		value: 'All Time'
+	}
+];
+
+interface Props {
+	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
+	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onViewAuthor: (slug: string, name: string) => void,
+	subscriptionStatus: SubscriptionStatus
+}
+interface State {
+	hasChangedReportType: boolean,
+	selectedReportType: ReportType,
+	summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>
+}
+class MyImpactScreen extends React.Component<Props, State> {
+	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _selectReportType = (value: string) => {
+		this.setState({
+			hasChangedReportType: true,
+			selectedReportType: headerSelectorItems
+				.find(
+					item => item.value === value
+				)
+				.reportType
+		});
+	};
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			hasChangedReportType: false,
+			selectedReportType: ReportType.CurrentPeriod,
+			summary: this.fetchData()
+		};
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterArticleChangeHandler(
+				event => {
+					if (event.isCompletionCommit) {
+						this.fetchData();
+					}
+				}
+			)
+		);
+	}
+	private fetchData() {
+		return this.props.onGetSubscriptionDistributionSummary(
+			this._asyncTracker.addCallback(
+				summary => {
+					this.setState({
+						summary
+					});
+				}
+			)
+		);
+	}
+	private renderContent() {
+		if (this.state.summary.isLoading) {
+			return (
+				<LoadingOverlay position="absolute" />
+			);
+		}
+		const summary = this.state.summary.value;
+		if (this.state.selectedReportType === ReportType.CompletedPeriods) {
+			return (
+				<>
+					{this.renderViewToggle()}
+					<div className="content-block title">Total contributions: {formatSubscriptionPriceAmount(summary.completedPeriods.subscriptionAmount)}</div>
+					<div className="spacer"></div>
+					<DistributionChart
+						report={summary.completedPeriods}
+						onViewAuthor={this.props.onViewAuthor}
+					/>
+				</>
+			);
+		}
+		switch (this.props.subscriptionStatus.type) {
+			case SubscriptionStatusType.NeverSubscribed:
+				return (
+					<>
+						<div className="content-block title">
+							{this.props.subscriptionStatus.isUserFreeForLife ?
+								'Subscribe to Support Writers and Readup' :
+								'Subscribe to Start Reading'}
+						</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							<Button
+								intent="loud"
+								size="large"
+								text="See Options"
+							/>
+						</div>
+					</>
+				);
+			case SubscriptionStatusType.Incomplete:
+				return (
+					<>
+						{this.renderViewToggle()}
+						<div className="content-block title">Subscription Incomplete</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							{this.props.subscriptionStatus.requiresConfirmation ?
+								'Payment confirmation required.' :
+								'Initial payment failed.'}
+						</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							<Button
+								intent="loud"
+								size="large"
+								text={
+									this.props.subscriptionStatus.requiresConfirmation ?
+										'Confirm Payment' :
+										'Start New Subscription'
+								}
+							/>
+						</div>
+					</>
+				);
+			case SubscriptionStatusType.Active:
+				return (
+					<>
+						{this.renderViewToggle()}
+						<div className="content-block title">Monthly contribution: {formatSubscriptionPriceAmount(this.props.subscriptionStatus.price.amount)}</div>
+						<div className="spacer"></div>
+						<DistributionChart
+							report={summary.currentPeriod}
+							onViewAuthor={this.props.onViewAuthor}
+						/>
+						<div className="spacer"></div>
+						{renderCountdown(this.props.subscriptionStatus, summary.currentPeriod)}
+					</>
+				);
+			case SubscriptionStatusType.Lapsed:
+				return (
+					<>
+						{this.renderViewToggle()}
+						<div className="content-block title">Subscription Inactive</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}
+						</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							<Button
+								intent="loud"
+								size="large"
+								text="See Options"
+							/>
+						</div>
+					</>
+				);
+		}
+	}
+	private renderViewToggle() {
+		if (
+			!this.state.summary.value ||
+			this.state.summary.value.completedPeriods.subscriptionAmount === 0
+		) {
+			return null;
+		}
+		return (
+			<>
+				<div className="content-block toggle">
+					<HeaderSelector
+						items={headerSelectorItems}
+						onChange={this._selectReportType}
+						style="compact"
+						value={
+							headerSelectorItems
+								.find(
+									item => item.reportType === this.state.selectedReportType
+								)
+								.value
+						}
+					/>
+				</div>
+				<div className="spacer"></div>
+			</>
+		);
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
+	}
 	public render() {
 		return (
-			<ScreenContainer className="my-impact-screen_n8wfkf">
-				<h1>Pie Chart, etc.</h1>
+			<ScreenContainer className={
+				classNames(
+					'my-impact-screen_n8wfkf',
+					{
+						'fade-in':
+							!this.state.hasChangedReportType &&
+							this.state.summary.value &&
+							this.props.subscriptionStatus.type === SubscriptionStatusType.Active
+					}
+				)
+			}>
+				{this.renderContent()}
 			</ScreenContainer>
 		);
 	}
 }
 export function createMyImpactScreenFactory<TScreenKey>(
-	key: TScreenKey
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'subscriptionStatus'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -21,8 +264,13 @@ export function createMyImpactScreenFactory<TScreenKey>(
 			location,
 			title: 'My Impact'
 		}),
-		render: () => (
-			<MyImpactScreen />
+		render: (screen: Screen, sharedState: SharedState) => (
+			<MyImpactScreen
+				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
+				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
+				onViewAuthor={deps.onViewAuthor}
+				subscriptionStatus={sharedState.subscriptionStatus}
+			/>
 		)
 	};
 }

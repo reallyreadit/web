@@ -253,7 +253,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ShareChannel.Twitter
 			],
 			completionHandler: (data: ShareForm) => {
-				
+
 			}
 		};
 	};
@@ -340,7 +340,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 												break;
 										}
 										reject(new Error(errorMessage));
-									}	
+									}
 								}
 							};
 							this.props.browserApi.addListener('authServiceLinkCompleted', completionHandler);
@@ -579,7 +579,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
-				ScreenKey.MyImpact
+				ScreenKey.MyImpact,
+				{
+					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewAuthor: this._viewAuthor
+				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCloseDialog: this._dialog.closeDialog,
@@ -669,7 +674,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		const
 			queryStringParams = parseQueryString(props.initialLocation.queryString),
 			welcomeMessage = queryStringParams[messageQueryStringKey] as WelcomeMessage;
-		
+
 		// onboarding state
 		let onboardingState: OnboardingState;
 		if (authServiceTokenQueryStringKey in queryStringParams) {
