@@ -128,6 +128,10 @@ function createDataPoints(report: SubscriptionDistributionReport) {
 	const authorColors = generateColors(report.authorDistributions.length);
 	points.push(
 		...report.authorDistributions
+			.slice()
+			.sort(
+				(a, b) => a.amount - b.amount
+			)
 			.map(
 				(author, index) => ({
 					type: DataPointType.KnownAuthor as DataPointType.KnownAuthor,
@@ -139,9 +143,6 @@ function createDataPoints(report: SubscriptionDistributionReport) {
 					value: author.amount,
 					color: authorColors[index],
 				})
-			)
-			.sort(
-				(a, b) => a.value - b.value
 			)
 	);
 	return points;
