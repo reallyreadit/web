@@ -118,8 +118,14 @@
 2. Build the extension
 
         gulp build:dev:extension
-2. Go to chrome://extensions and enable "Developer mode"
-3. Click "Load unpacked extension..." and select the output directory (`bin/dev/extension`)
+3. Load the extension in a browser
+    - Chrome
+        1. Go to chrome://extensions and enable "Developer mode"
+        2. Click "Load unpacked extension..." and select the output directory (`bin/dev/extension`)
+    - Firefox
+        1. Go to about:debugging
+        2. Click "This Firefox"
+        2. Click "Load Temporary Add-on" and select the `manifest.json` file from the output directory (`bin/dev/extension`)
 ### Native Client
 1. Configure the native client reader
 
