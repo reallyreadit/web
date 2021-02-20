@@ -17,7 +17,6 @@ export default (
 	}
 ) => (
 	<div
-		// TODO: might need to use css-id here?
 		className={classNames('image-and-text_54dk3j', props.imageRight ? "image-and-text_54dk3j--image-right" : "", props.className)}
 		data-nosnippet={props.noGoogleSnippet ? '' : null}
 	>

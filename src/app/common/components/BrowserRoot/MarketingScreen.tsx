@@ -27,6 +27,8 @@ import { DeviceType } from '../../../../common/DeviceType';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ImageAndText from './ImageAndText';
 import HomePanel from './HomePanel';
+import Card from './Card';
+import QuoteCard from './QuoteCard';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -133,6 +135,33 @@ export default class MarketingScreen extends React.Component<
 				imageAlt: "Pay writers directly"
 			}
 		]
+		const quotes = [
+			{
+				quote: "Readup gave me my brain back.",
+				reader: "Pegeen"
+			},
+			{
+				quote: "Readup has me discussing articles again. I didn't realize I missed it until I started using Readup.",
+				reader: "alexa"
+			},
+			{
+				quote: "I have no desire to go elsewhere on social media. This platform is intelligent, caring, supportive and interesting. Long live Readup!",
+				reader: "Tarunika"
+			},
+			{
+				quote: "All of a sudden I find myself deep reading online more than before. Readup is a game changer.",
+				reader: "Florian"
+			},
+			{
+				quote: "Readup has provided the purest and most positive source of news and information since I’ve joined. ",
+				reader: "jeff"
+			},
+			{
+				quote: "The world needs Readup right now. ",
+				reader: "bill"
+			},
+		];
+
 		return (
 			<div className="marketing-screen_n5a6wc">
 				<HomePanel className="hero">
@@ -149,7 +178,37 @@ export default class MarketingScreen extends React.Component<
 				<HomePanel
 					data-nosnippet
 				>
-					{valuePoints.map((pointData, i) => <ImageAndText {...pointData} imageRight={!(i % 2 == 0)} />) }
+					{valuePoints.map((pointData, i) => <ImageAndText key={pointData.imageName} {...pointData} imageRight={!(i % 2 == 0)} />) }
+				</HomePanel>
+				<HomePanel
+					data-nosnippet	
+				>
+					<h2 className="heading-regular">We're on a quest to save journalism.</h2>
+					<div className="flex-panel">
+						<Card>
+							Test
+						</Card>
+						<Card>
+							Test
+						</Card>
+						<Card>
+							Test
+						</Card>
+					</div>
+				</HomePanel>
+				<HomePanel
+					data-nosnippet	
+				>
+					<h2 className="heading-regular">What our Readers say</h2>
+					<div className="quote-grid">
+						{quotes.map(quote => 
+						<QuoteCard 
+							key={quote.quote} 
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onViewProfile={this.props.onViewProfile}
+							{...quote} />
+						)}
+					</div>
 				</HomePanel>
 				<Panel className="header">
 					<h1>{marketingVariant.headline}</h1>

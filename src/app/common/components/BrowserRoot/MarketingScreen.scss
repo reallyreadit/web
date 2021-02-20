@@ -42,7 +42,58 @@
 	}
 }
 
+// styles for the quotes flex grid
+.marketing-screen_n5a6wc .quote-grid {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 30px;
+	// justify-content: space-between;
+	// height: 900px;
+
+	.quote-card_xa1vt  {
+		width: 100%;
+		margin: 24px 0;
+		min-height: 80px;
+		box-sizing: border-box;
+		max-width: 600px;
+
+		&__inner {
+			margin: auto;
+			max-width: 480px;
+		}
+	}
+
+	// larger sizes & up: collapse
+	@media screen and (min-width: 1024px) {
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: column;
+		justify-content: space-between;
+		height: 960px;
+
+		.quote-card_xa1vt  {
+			width: 45%;
+			margin: 0 32px 32px 0;
+		}
+	}
+}
+
+// styles for flex-panel
+.marketing-screen_n5a6wc .flex-panel {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 240px;
+	flex-wrap: wrap;
+
+	// & > div {
+	// 	width: 100%;
+	// }
+}
+
 @media screen and (min-width: 768px) {
+	// styles for the hero section on top
 	.marketing-screen_n5a6wc > .hero > .content {
 		max-width: 475px;
 		margin: auto;
@@ -53,6 +104,33 @@
 			line-height: 44px;
 		}
 	}
+
+	// styles for flex-panel
+	.marketing-screen_n5a6wc .flex-panel {
+		display: flex;
+		flex-wrap: nowrap;
+		flex-direction: row;
+		justify-content: space-between;
+		min-height: 240px;
+		
+		.card_d4pcqo {
+			min-height: 180px;
+			margin: 10px 0;
+		}	
+
+		@media screen and (min-width: 768px) {
+			.card_d4pcqo {
+				margin: 20px 10px;
+				&:first-child {
+					margin-left: 0;
+				}
+				&:last-child {
+					margin-right: 0;
+				}
+			}
+		}
+	}
+
 }
 
 @include theme using ($root, $scheme) {

@@ -1,0 +1,46 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/QuoteCard
+        cssComponentId: quote-card_xa1fvt
+*/
+
+.quote-card_xa1vt {
+   p {
+       font-size: 26.67px;
+       font-family: 'Museo Sans (300)', sans-serif;
+       line-height: 41px;
+       position: relative;
+
+       margin-top: 36px;
+   }
+
+   // quote signs    
+   p::before, p::after {
+       position: absolute;
+       display: block;
+       font-size: 124px;
+       display: inline-block;
+       font-family: 'Cambria (bold)';
+       color: #ebebeb;
+       line-height: 1;
+   }
+
+    p::before {
+        content: "“";
+        left: -12px;
+        top: -56px;
+    }
+
+    p::after {
+        content: "”";
+        right: 0px;
+        bottom: -118px;
+    }
+
+    // reader
+    &__reader {
+        margin-top: 13px;
+        display: block;
+        font-size: 1.1rem;
+        font-style: italic;
+    }
+}
