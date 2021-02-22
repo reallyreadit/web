@@ -17,6 +17,7 @@ import Button from '../../../../common/components/Button';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
 import { Screen, SharedState } from '../Root';
+import UserArticle from '../../../../common/models/UserArticle';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -57,6 +58,7 @@ const headerSelectorItems = [
 
 interface Props {
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
+	onOpenSubscriptionPromptDialog: (article?: UserArticle) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewAuthor: (slug: string, name: string) => void,
 	subscriptionStatus: SubscriptionStatus
@@ -68,6 +70,9 @@ interface State {
 }
 class MyImpactScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _openSubscriptionPromptDialog = () => {
+		this.props.onOpenSubscriptionPromptDialog();
+	};
 	private readonly _selectReportType = (value: string) => {
 		this.setState({
 			hasChangedReportType: true,
@@ -139,6 +144,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						<div className="content-block">
 							<Button
 								intent="loud"
+								onClick={this._openSubscriptionPromptDialog}
 								size="large"
 								text="See Options"
 							/>
@@ -197,6 +203,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						<div className="content-block">
 							<Button
 								intent="loud"
+								onClick={this._openSubscriptionPromptDialog}
 								size="large"
 								text="See Options"
 							/>
@@ -267,6 +274,7 @@ export function createMyImpactScreenFactory<TScreenKey>(
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyImpactScreen
 				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
+				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
 				onViewAuthor={deps.onViewAuthor}
 				subscriptionStatus={sharedState.subscriptionStatus}

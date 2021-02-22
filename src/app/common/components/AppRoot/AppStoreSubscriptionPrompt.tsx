@@ -21,7 +21,7 @@ import SubscriptionProvider from '../../../../common/models/subscriptions/Subscr
 import { SubscriptionPriceLevel, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
 
 interface Props {
-	article: UserArticle,
+	article: UserArticle | null,
 	isPaymentProcessing: boolean,
 	onClose: () => void,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
@@ -54,9 +54,14 @@ const initialState: State = {
 };
 export default class AppStoreSubscriptionPrompt extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _readArticle = () => {
-		this.props.onReadArticle(this.props.article);
+	private readonly _continue = () => {
+		// trying to read the article could open another dialog so we need to make sure to
+		// close ourself first. should probably manage this better by having onClose accept
+		// the dialog's id.
 		this.props.onClose();
+		if (this.props.article) {
+			this.props.onReadArticle(this.props.article);
+		}
 	};
 	private readonly _requestPurchase = (price: SubscriptionPrice) => {
 		this.props.onRequestSubscriptionPurchase({
@@ -179,11 +184,16 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			return (
 				<>
 					<div className="message">You're all set.</div>
-					<Button
-						iconRight="chevron-right"
-						onClick={this._readArticle}
-						text="Continue to Article"
-					/>
+					{this.props.article ?
+						<Button
+							iconRight="chevron-right"
+							onClick={this._continue}
+							text="Continue to Article"
+						/> :
+						<Button
+							onClick={this._continue}
+							text="Ok"
+						/>}
 				</>
 			);
 		}

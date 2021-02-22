@@ -8,8 +8,10 @@ import { DateTime } from 'luxon';
 import { formatIsoDateAsUtc } from '../../../../common/format';
 import Icon from '../../../../common/components/Icon';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
+import UserArticle from '../../../../common/models/UserArticle';
 
 interface Props {
+	onOpenSubscriptionPromptDialog: (article?: UserArticle) => void,
 	paymentMethod: SubscriptionPaymentMethod | null
 	status: SubscriptionStatus
 }
@@ -17,6 +19,9 @@ interface State {
 
 }
 export default class SubscriptionControl extends React.Component<Props, State> {
+	private readonly _openSubscriptionPromptDialog = () => {
+		this.props.onOpenSubscriptionPromptDialog();
+	};
 	private getCreditCardIcon(brand: SubscriptionPaymentMethodBrand) {
 		switch (brand) {
 			case SubscriptionPaymentMethodBrand.Amex:
@@ -57,7 +62,10 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 							<div className="message">Subscribe to Start Reading</div>
 						</>}
 					<div className="actions">
-						<ActionLink text="See Options" />
+						<ActionLink
+							onClick={this._openSubscriptionPromptDialog}
+							text="See Options"
+						/>
 					</div>
 				</>
 			);
@@ -120,7 +128,10 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				{this.renderSubscriptionDetails(this.props.status.price)}
 				<div className="message">Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}</div>
 				<div className="actions">
-					<ActionLink text="See Options" />
+					<ActionLink
+						onClick={this._openSubscriptionPromptDialog}
+						text="See Options"
+					/>
 				</div>
 			</>
 		);

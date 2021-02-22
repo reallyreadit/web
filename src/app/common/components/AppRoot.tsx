@@ -228,6 +228,84 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return this.props.appApi.share(data);
 	};
 
+	// subscriptions
+	private readonly _openSubscriptionPromptDialog = (article?: UserArticle) => {
+		const
+			requestProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request),
+			requestPurchase = (request: SubscriptionPurchaseRequest) => {
+				this.setState(
+					prevState => {
+						if (prevState.isProcessingPayment) {
+							return null;
+						}
+						this.props.appApi
+							.requestSubscriptionPurchase(request)
+							.then(
+								result => {
+									// only process failures here. if the transaction was successfully added to the
+									// payment queue then we will remain in a processing state until we receive a
+									// payment completion event
+									if (result.type === ResultType.Failure) {
+										this._toaster.addToast(
+											reduceAppErrorResponse(
+												result.error,
+												{
+													[PurchaseError.ProductNotFound]: 'Product not found.'
+												}
+											),
+											Intent.Danger
+										);
+										this.setState({
+											isProcessingPayment: false
+										});
+									}
+								}
+							)
+							.catch(
+								reason => {
+									this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
+									this.setState({
+										isProcessingPayment: false
+									});
+								}
+							);
+						return {
+							isProcessingPayment: true
+						};
+					}
+				);
+			},
+			requestReceipt = () => this.props.appApi.requestSubscriptionReceipt(),
+			validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
+				.validateAppleSubscription(request)
+				.then(
+					response => {
+						if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
+							this.onSubscriptionStatusChanged(response.subscriptionStatus);
+						}
+						return response;
+					}
+				);
+		this._dialog.openDialog(
+			sharedState => (
+				<AppStoreSubscriptionPrompt
+					article={article}
+					isPaymentProcessing={sharedState.isProcessingPayment}
+					onClose={this._dialog.closeDialog}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onReadArticle={this._readArticle}
+					onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
+					onRequestSubscriptionProducts={requestProducts}
+					onRequestSubscriptionPurchase={requestPurchase}
+					onRequestSubscriptionReceipt={requestReceipt}
+					onValidateSubscription={validateSubscription}
+					subscriptionStatus={sharedState.subscriptionStatus}
+					user={sharedState.user}
+				/>
+			)
+		);
+	};
+
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
 		if (
@@ -565,6 +643,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.MyImpact,
 				{
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onViewAuthor: this._viewAuthor
 				}
@@ -627,6 +706,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
@@ -1089,80 +1169,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				this.state.isProcessingPayment
 			)
 		) {
-			const
-				requestProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request),
-				requestPurchase = (request: SubscriptionPurchaseRequest) => {
-					this.setState(
-						prevState => {
-							if (prevState.isProcessingPayment) {
-								return null;
-							}
-							this.props.appApi
-								.requestSubscriptionPurchase(request)
-								.then(
-									result => {
-										// only process failures here. if the transaction was successfully added to the
-										// payment queue then we will remain in a processing state until we receive a
-										// payment completion event
-										if (result.type === ResultType.Failure) {
-											this._toaster.addToast(
-												reduceAppErrorResponse(
-													result.error,
-													{
-														[PurchaseError.ProductNotFound]: 'Product not found.'
-													}
-												),
-												Intent.Danger
-											);
-											this.setState({
-												isProcessingPayment: false
-											});
-										}
-									}
-								)
-								.catch(
-									reason => {
-										this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
-										this.setState({
-											isProcessingPayment: false
-										});
-									}
-								);
-							return {
-								isProcessingPayment: true
-							};
-						}
-					);
-				},
-				requestReceipt = () => this.props.appApi.requestSubscriptionReceipt(),
-				validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
-					.validateAppleSubscription(request)
-					.then(
-						response => {
-							if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-								this.onSubscriptionStatusChanged(response.subscriptionStatus);
-							}
-							return response;
-						}
-					);
-			this._dialog.openDialog(
-				sharedState => (
-					<AppStoreSubscriptionPrompt
-						article={article}
-						isPaymentProcessing={sharedState.isProcessingPayment}
-						onClose={this._dialog.closeDialog}
-						onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-						onReadArticle={this._readArticle}
-						onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
-						onRequestSubscriptionProducts={requestProducts}
-						onRequestSubscriptionPurchase={requestPurchase}
-						onRequestSubscriptionReceipt={requestReceipt}
-						onValidateSubscription={validateSubscription}
-						subscriptionStatus={sharedState.subscriptionStatus}
-						user={sharedState.user}
-					/>
-				)
-			);
+			this._openSubscriptionPromptDialog(article);
 		} else {
 			this.props.appApi.readArticle(article);
 		}

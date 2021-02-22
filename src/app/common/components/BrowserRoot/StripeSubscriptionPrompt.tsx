@@ -22,7 +22,7 @@ import SubscriptionProvider from '../../../../common/models/subscriptions/Subscr
 import { StripePaymentResponse } from '../../../../common/models/subscriptions/StripePaymentResponse';
 
 interface Props {
-	article: UserArticle,
+	article: UserArticle | null,
 	displayTheme: DisplayTheme | null,
 	onClose: () => void,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
@@ -40,7 +40,7 @@ enum Step {
 	PriceLevelsCheck,
 	PriceSelection,
 	PaymentEntry,
-	ContinueToArticle
+	Continue
 }
 interface State {
 	currentStep: Step,
@@ -58,17 +58,19 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			transitioningToStep: null
 		});
 	};
-	private readonly _goToPriceSelectionStep = () => {
-		this.setState({
-			transitioningToStep: Step.PriceSelection
-		});
-	};
-	private readonly _readArticle = () => {
+	private readonly _continue = () => {
 		// trying to read the article could open another dialog so we need to make sure to
 		// close ourself first. should probably manage this better by having onClose accept
 		// the dialog's id.
 		this.props.onClose();
-		this.props.onReadArticle(this.props.article);
+		if (this.props.article) {
+			this.props.onReadArticle(this.props.article);
+		}
+	};
+	private readonly _goToPriceSelectionStep = () => {
+		this.setState({
+			transitioningToStep: Step.PriceSelection
+		});
 	};
 	private readonly _selectPrice = (price: SubscriptionPrice) => {
 		this.setState({
@@ -189,9 +191,12 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 						stripe={this.props.stripe}
 					/>
 				);
-			case Step.ContinueToArticle:
+			case Step.Continue:
 				return (
-					<ContinueStep onContinue={this._readArticle} />
+					<ContinueStep
+						isReadingArticle={!!this.props.article}
+						onContinue={this._continue}
+					/>
 				);
 		}
 	}
@@ -201,7 +206,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			prevProps.subscriptionStatus.type !== SubscriptionStatusType.Active
 		) {
 			this.setState({
-				transitioningToStep: Step.ContinueToArticle
+				transitioningToStep: Step.Continue
 			});
 		}
 	}

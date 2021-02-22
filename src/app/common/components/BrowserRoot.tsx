@@ -258,6 +258,88 @@ export default class extends Root<Props, State, SharedState, Events> {
 		};
 	};
 
+	// subscriptions
+	private readonly _openSubscriptionPromptDialog = (article?: UserArticle) => {
+		const
+			confirmCardPayment: ((clientSecret: string, invoiceId: string) => Promise<StripePaymentResponse>) = (clientSecret, invoiceId) => this.props.stripeLoader.value
+				.then(
+					stripe => stripe.confirmCardPayment(clientSecret)
+				)
+				.then(
+					result => {
+						return this.props.serverApi
+							.confirmStripeSubscriptionPayment({
+								invoiceId
+							})
+							.then(handlePaymentResponse);
+					}
+				),
+			getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
+				response => {
+					if (response.value) {
+						this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
+					}
+					callback(response);
+				}
+			),
+			handlePaymentResponse = (response: StripePaymentResponse) => {
+				this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
+				if (response.type === StripePaymentResponseType.RequiresConfirmation) {
+					return confirmCardPayment(response.clientSecret, response.invoiceId);
+				}
+				return response;
+			},
+			subscribe = (card: StripeCardElement, price: SubscriptionPrice) => this.props.stripeLoader.value
+				.then(
+					stripe => stripe.createPaymentMethod({
+						type: 'card',
+						card
+					})
+				)
+				.then(
+					result => {
+						if (result.error) {
+							throw new Error(result.error.message);
+						}
+						let request: StripeSubscriptionCreationRequest;
+						if (
+							isSubscriptionPriceLevel(price)
+						) {
+							request = {
+								paymentMethodId: result.paymentMethod.id,
+								priceLevelId: price.id
+							};
+						} else {
+							request = {
+								paymentMethodId: result.paymentMethod.id,
+								customPriceAmount: price.amount
+							};
+						}
+						return this.props.serverApi
+							.createStripeSubscription(request)
+							.then(handlePaymentResponse);
+					}
+				);
+		this._dialog.openDialog(
+			sharedState => (
+				<StripeSubscriptionPrompt
+					article={article}
+					displayTheme={sharedState.displayTheme}
+					onClose={this._dialog.closeDialog}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onGetSubscriptionStatus={getSubscriptionStatus}
+					onReadArticle={this._readArticle}
+					onShowToast={this._toaster.addToast}
+					onSubscribe={subscribe}
+					staticServerEndpoint={this.props.staticServerEndpoint}
+					stripe={this.props.stripeLoader.value}
+					subscriptionStatus={sharedState.subscriptionStatus}
+					user={sharedState.user}
+				/>
+			)
+		);
+	};
+
 	// user account
 	private readonly _beginOnboarding = (analyticsAction: string) => {
 		this.setState({
@@ -582,6 +664,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.MyImpact,
 				{
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onViewAuthor: this._viewAuthor
 				}
@@ -656,6 +739,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
@@ -1105,84 +1189,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.state.subscriptionStatus.type !== SubscriptionStatusType.Active
 		) {
 			ev?.preventDefault();
-			const
-				confirmCardPayment: ((clientSecret: string, invoiceId: string) => Promise<StripePaymentResponse>) = (clientSecret, invoiceId) => this.props.stripeLoader.value
-					.then(
-						stripe => stripe.confirmCardPayment(clientSecret)
-					)
-					.then(
-						result => {
-							return this.props.serverApi
-								.confirmStripeSubscriptionPayment({
-									invoiceId
-								})
-								.then(handlePaymentResponse);
-							}
-					),
-				getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
-					response => {
-						if (response.value) {
-							this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
-						}
-						callback(response);
-					}
-				),
-				handlePaymentResponse = (response: StripePaymentResponse) => {
-					this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-					if (response.type === StripePaymentResponseType.RequiresConfirmation) {
-						return confirmCardPayment(response.clientSecret, response.invoiceId);
-					}
-					return response;
-				},
-				subscribe = (card: StripeCardElement, price: SubscriptionPrice) => this.props.stripeLoader.value
-					.then(
-						stripe => stripe.createPaymentMethod({
-							type: 'card',
-							card
-						})
-					)
-					.then(
-						result => {
-							if (result.error) {
-								throw new Error(result.error.message);
-							}
-							let request: StripeSubscriptionCreationRequest;
-							if (
-								isSubscriptionPriceLevel(price)
-							) {
-								request = {
-									paymentMethodId: result.paymentMethod.id,
-									priceLevelId: price.id
-								};
-							} else {
-								request = {
-									paymentMethodId: result.paymentMethod.id,
-									customPriceAmount: price.amount
-								};
-							}
-							return this.props.serverApi
-								.createStripeSubscription(request)
-								.then(handlePaymentResponse);
-						}
-					);
-			this._dialog.openDialog(
-				sharedState => (
-					<StripeSubscriptionPrompt
-						article={article}
-						displayTheme={sharedState.displayTheme}
-						onClose={this._dialog.closeDialog}
-						onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-						onGetSubscriptionStatus={getSubscriptionStatus}
-						onReadArticle={this._readArticle}
-						onShowToast={this._toaster.addToast}
-						onSubscribe={subscribe}
-						staticServerEndpoint={this.props.staticServerEndpoint}
-						stripe={this.props.stripeLoader.value}
-						subscriptionStatus={sharedState.subscriptionStatus}
-						user={sharedState.user}
-					/>
-				)
-			);
+			this._openSubscriptionPromptDialog(article);
 			return;
 		}
 		const [sourceSlug, articleSlug] = article.slug.split('_');
