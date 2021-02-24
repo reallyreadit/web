@@ -7,7 +7,7 @@ import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import DistributionChart from './MyImpactScreen/DistributionChart';
-import { formatSubscriptionPriceAmount, formatSubscriptionPriceName } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { formatSubscriptionPriceAmount, formatSubscriptionPriceName, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { formatCountable, formatIsoDateAsUtc } from '../../../../common/format';
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
@@ -39,6 +39,14 @@ function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDis
 	}
 	return (
 		<div className="content-block">{daysRemaining} {formatCountable(daysRemaining, 'day')} until your current cycle ends.</div>
+	);
+}
+function renderSubscriptionDetails(price: SubscriptionPrice) {
+	return (
+		<div className="content-block">
+			{formatSubscriptionPriceName(price)}<br />
+			{formatSubscriptionPriceAmount(price.amount)} / month
+		</div>
 	);
 }
 
@@ -159,10 +167,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						{this.renderViewToggle()}
 						<div className="content-block title">Subscription Incomplete</div>
 						<div className="spacer"></div>
-						<div className="content-block">
-							{formatSubscriptionPriceName(this.props.subscriptionStatus.price)}<br />
-							{formatSubscriptionPriceAmount(this.props.subscriptionStatus.price.amount)} / month
-						</div>
+						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
 						<div className="spacer"></div>
 						<div className="content-block">
 							{this.props.subscriptionStatus.requiresConfirmation ?
@@ -216,6 +221,8 @@ class MyImpactScreen extends React.Component<Props, State> {
 					<>
 						{this.renderViewToggle()}
 						<div className="content-block title">Subscription Inactive</div>
+						<div className="spacer"></div>
+						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
 						<div className="spacer"></div>
 						<div className="content-block">
 							Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}
