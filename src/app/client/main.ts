@@ -36,6 +36,15 @@ const rootProps = {
 	initialLocation: initData.initialLocation,
 	initialUserProfile: initData.userProfile,
 	serverApi,
+	staticServerEndpoint: initData.staticServerEndpoint,
+	stripeLoader: new Lazy(
+		() => {
+			loadStripe.setLoadParameters({
+				advancedFraudSignals: false
+			});
+			return loadStripe(initData.stripePublishableKey);
+		}
+	),
 	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint
 };
@@ -70,16 +79,7 @@ switch (initData.clientType) {
 							null
 					),
 					webServerEndpoint: initData.webServerEndpoint
-				}),
-				staticServerEndpoint: initData.staticServerEndpoint,
-				stripeLoader: new Lazy(
-					() => {
-						loadStripe.setLoadParameters({
-							advancedFraudSignals: false
-						});
-						return loadStripe(initData.stripePublishableKey);
-					}
-				)
+				})
 			}
 		);
 		break;

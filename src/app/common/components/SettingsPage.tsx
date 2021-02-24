@@ -31,8 +31,11 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import SubscriptionControl from './SettingsPage/SubscriptionControl';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import UserArticle from '../../../common/models/UserArticle';
+import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import { DeviceType } from '../../../common/DeviceType';
 
 interface Props {
+	deviceType: DeviceType,
 	onCloseDialog: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onChangeEmailAddress: (email: string) => Promise<void>,
@@ -43,7 +46,7 @@ interface Props {
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle) => void,
+	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterDisplayPreferenceChangedEventHandler: (handler: (preference: DisplayPreference) => void) => () => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
 	onResendConfirmationEmail: () => Promise<void>,
@@ -276,6 +279,7 @@ class SettingsPage extends React.PureComponent<
 							</div>
 							<div className="section">
 								<SubscriptionControl
+									deviceType={this.props.deviceType}
 									onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
 									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
 									status={this.props.subscriptionStatus}
@@ -363,6 +367,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
+				deviceType={deps.deviceType}
 				onCloseDialog={deps.onCloseDialog}
 				onChangeDisplayPreference={deps.onChangeDisplayPreference}
 				onChangeEmailAddress={deps.onChangeEmailAddress}

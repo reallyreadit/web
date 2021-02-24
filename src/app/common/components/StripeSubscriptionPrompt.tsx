@@ -1,25 +1,25 @@
 import * as React from 'react';
-import Dialog from '../../../../common/components/Dialog';
-import UserArticle from '../../../../common/models/UserArticle';
-import SubscriptionSelector from '../controls/SubscriptionSelector';
-import TransitionContainer from '../../../../common/components/TransitionContainer';
+import Dialog from '../../../common/components/Dialog';
+import UserArticle from '../../../common/models/UserArticle';
+import SubscriptionSelector from './controls/SubscriptionSelector';
+import TransitionContainer from '../../../common/components/TransitionContainer';
 import PaymentEntryStep from './StripeSubscriptionPrompt/PaymentEntryStep';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import HttpEndpoint from '../../../../common/HttpEndpoint';
-import { DisplayTheme } from '../../../../common/models/userAccounts/DisplayPreference';
-import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
-import { Intent } from '../../../../common/components/Toaster';
-import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import UserAccount from '../../../../common/models/UserAccount';
+import HttpEndpoint from '../../../common/HttpEndpoint';
+import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
+import AsyncTracker, { CancellationToken } from '../../../common/AsyncTracker';
+import { Intent } from '../../../common/components/Toaster';
+import { FetchFunction, FetchFunctionWithParams } from '../serverApi/ServerApi';
+import UserAccount from '../../../common/models/UserAccount';
 import ContinueStep from './StripeSubscriptionPrompt/ContinueStep';
-import { SubscriptionStatusResponse } from '../../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../../common/models/subscriptions/SubscriptionPriceLevels';
-import Fetchable from '../../../../common/Fetchable';
-import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
-import { SubscriptionStatusType, SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
-import { SubscriptionPrice, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
-import { StripePaymentResponse } from '../../../../common/models/subscriptions/StripePaymentResponse';
+import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
+import Fetchable from '../../../common/Fetchable';
+import DialogSpinner from '../../../common/components/Dialog/DialogSpinner';
+import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionPrice, formatSubscriptionPriceAmount } from '../../../common/models/subscriptions/SubscriptionPrice';
+import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 
 interface Props {
 	article: UserArticle | null,
@@ -223,7 +223,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 				}
 				title="Subscription Required"
 			>
-				<div className="stripe-subscription-prompt_c91uto">
+				<div className="stripe-subscription-prompt_3cqidx">
 					<TransitionContainer
 						isTransitioning={this.state.transitioningToStep != null}
 						onTransitionComplete={this._completeTransition}

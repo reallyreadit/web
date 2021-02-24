@@ -33,6 +33,8 @@ import TwitterCardMetadataRequest from '../../common/models/articles/TwitterCard
 import { TwitterCard, TwitterCardType } from './TwitterCard';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import PackageVersionInfo from '../../common/PackageVersionInfo';
+import Lazy from '../../common/Lazy';
+import { Stripe } from '@stripe/stripe-js';
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -434,6 +436,12 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 		},
 		initialUserProfile: req.userProfile,
 		serverApi: req.api,
+		staticServerEndpoint: config.staticServer,
+		stripeLoader: new Lazy<Promise<Stripe>>(
+			() => Promise.reject(
+				new Error('Operation not supported in server environment.')
+			)
+		),
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
 	};
@@ -464,9 +472,7 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 								null
 						),
 						webServerEndpoint: config.webServer
-					}),
-					staticServerEndpoint: config.staticServer,
-					stripeLoader: null
+					})
 				}
 			);
 			break;
@@ -519,7 +525,7 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 							type: TwitterCardType.App
 						});
 					}
-				);	
+				);
 			break;
 		case ScreenKey.Comments:
 			const pathParams = req.matchedRoute.getPathParams(req.path);

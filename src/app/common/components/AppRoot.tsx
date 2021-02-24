@@ -54,6 +54,7 @@ import { PurchaseError, TransactionError } from '../../../common/models/app/Erro
 import { ErrorResponse, reduceAppErrorResponse } from '../../../common/models/app/AppResult';
 import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
+import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -229,7 +230,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
-	private readonly _openSubscriptionPromptDialog = (article?: UserArticle) => {
+	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
+		if (provider === SubscriptionProvider.Stripe) {
+			this._openStripeSubscriptionPromptDialog(article);
+			return;
+		}
 		const
 			requestProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request),
 			requestPurchase = (request: SubscriptionPurchaseRequest) => {
@@ -281,7 +286,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				.then(
 					response => {
 						if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-							this.onSubscriptionStatusChanged(response.subscriptionStatus);
+							this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
 						}
 						return response;
 					}
@@ -696,6 +701,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
+					deviceType: DeviceType.Ios,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
@@ -914,7 +920,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								this.state.subscriptionStatus.type !== SubscriptionStatusType.Active &&
 								result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser
 							) {
-								this.onSubscriptionStatusChanged(result.value.subscriptionStatus);
+								this.onSubscriptionStatusChanged(result.value.subscriptionStatus, EventSource.Local);
 							}
 							if (this.state.isProcessingPayment) {
 								this.setState({

@@ -1,12 +1,12 @@
 import * as React from 'react';
-import Button from '../../../../../common/components/Button';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	isReadingArticle: boolean,
 	onContinue: () => void
 }
 const ContinueStep: React.SFC<Props> = (props: Props) => (
-	<div className="continue-step_yedqha">
+	<div className="continue-step_dzecha">
 		<div className="message">You're all set.</div>
 		{props.isReadingArticle ?
 			<Button

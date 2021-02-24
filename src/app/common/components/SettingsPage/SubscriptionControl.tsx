@@ -9,9 +9,11 @@ import { formatIsoDateAsUtc } from '../../../../common/format';
 import Icon from '../../../../common/components/Icon';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import UserArticle from '../../../../common/models/UserArticle';
+import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
-	onOpenSubscriptionPromptDialog: (article?: UserArticle) => void,
+	deviceType: DeviceType,
+	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	paymentMethod: SubscriptionPaymentMethod | null
 	status: SubscriptionStatus
 }

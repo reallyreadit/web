@@ -59,12 +59,21 @@ import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
+import Lazy from '../../../common/Lazy';
+import { Stripe, StripeCardElement } from '@stripe/stripe-js';
+import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
+import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { SubscriptionPrice, isSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
+import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
 
 export interface Props {
 	captcha: CaptchaBase,
 	initialLocation: RouteLocation,
 	initialUserProfile: WebAppUserProfile | null,
 	serverApi: ServerApi,
+	staticServerEndpoint: HttpEndpoint,
+	stripeLoader: Lazy<Promise<Stripe>>,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
 }
@@ -398,12 +407,92 @@ export default abstract class Root<
 		return this.props.serverApi.getSubscriptionDistributionSummary(
 			summary => {
 				if (summary.value) {
-					this.onSubscriptionStatusChanged(summary.value.subscriptionStatus);
+					this.onSubscriptionStatusChanged(summary.value.subscriptionStatus, EventSource.Local);
 				}
 				callback(summary);
 			}
 		);
 	}
+	protected readonly _openStripeSubscriptionPromptDialog = (article?: UserArticle) => {
+		const
+			confirmCardPayment: ((clientSecret: string, invoiceId: string) => Promise<StripePaymentResponse>) = (clientSecret, invoiceId) => this.props.stripeLoader.value
+				.then(
+					stripe => stripe.confirmCardPayment(clientSecret)
+				)
+				.then(
+					result => {
+						return this.props.serverApi
+							.confirmStripeSubscriptionPayment({
+								invoiceId
+							})
+							.then(handlePaymentResponse);
+					}
+				),
+			getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
+				response => {
+					if (response.value) {
+						this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
+					}
+					callback(response);
+				}
+			),
+			handlePaymentResponse = (response: StripePaymentResponse) => {
+				this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
+				if (response.type === StripePaymentResponseType.RequiresConfirmation) {
+					return confirmCardPayment(response.clientSecret, response.invoiceId);
+				}
+				return response;
+			},
+			subscribe = (card: StripeCardElement, price: SubscriptionPrice) => this.props.stripeLoader.value
+				.then(
+					stripe => stripe.createPaymentMethod({
+						type: 'card',
+						card
+					})
+				)
+				.then(
+					result => {
+						if (result.error) {
+							throw new Error(result.error.message);
+						}
+						let request: StripeSubscriptionCreationRequest;
+						if (
+							isSubscriptionPriceLevel(price)
+						) {
+							request = {
+								paymentMethodId: result.paymentMethod.id,
+								priceLevelId: price.id
+							};
+						} else {
+							request = {
+								paymentMethodId: result.paymentMethod.id,
+								customPriceAmount: price.amount
+							};
+						}
+						return this.props.serverApi
+							.createStripeSubscription(request)
+							.then(handlePaymentResponse);
+					}
+				);
+		this._dialog.openDialog(
+			sharedState => (
+				<StripeSubscriptionPrompt
+					article={article}
+					displayTheme={sharedState.displayTheme}
+					onClose={this._dialog.closeDialog}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onGetSubscriptionStatus={getSubscriptionStatus}
+					onReadArticle={this._readArticle}
+					onShowToast={this._toaster.addToast}
+					onSubscribe={subscribe}
+					staticServerEndpoint={this.props.staticServerEndpoint}
+					stripe={this.props.stripeLoader.value}
+					subscriptionStatus={sharedState.subscriptionStatus}
+					user={sharedState.user}
+				/>
+			)
+		);
+	};
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
@@ -482,7 +571,7 @@ export default abstract class Root<
 			settings => {
 				if (settings.value) {
 					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
-					this.onSubscriptionStatusChanged(settings.value.subscriptionStatus);
+					this.onSubscriptionStatusChanged(settings.value.subscriptionStatus, EventSource.Local);
 				}
 				callback(settings);
 			}
@@ -746,7 +835,7 @@ export default abstract class Root<
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
-	protected onSubscriptionStatusChanged(status: SubscriptionStatus) {
+	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
 		this.setState({
 			subscriptionStatus: status
 		});

@@ -18,6 +18,7 @@ import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
 import { Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
+import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -58,7 +59,7 @@ const headerSelectorItems = [
 
 interface Props {
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle) => void,
+	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewAuthor: (slug: string, name: string) => void,
 	subscriptionStatus: SubscriptionStatus

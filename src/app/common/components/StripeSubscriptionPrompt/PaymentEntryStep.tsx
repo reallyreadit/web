@@ -1,16 +1,16 @@
 import * as React from 'react';
-import ActionLink from '../../../../../common/components/ActionLink';
+import ActionLink from '../../../../common/components/ActionLink';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import AsyncTracker, { CancellationToken } from '../../../../../common/AsyncTracker';
-import DialogSpinner from '../../../../../common/components/Dialog/DialogSpinner';
-import Button from '../../../../../common/components/Button';
-import HttpEndpoint, { createUrl } from '../../../../../common/HttpEndpoint';
-import { DisplayTheme, getClientPreferredColorScheme } from '../../../../../common/models/userAccounts/DisplayPreference';
-import { getPromiseErrorMessage } from '../../../../../common/format';
-import { Intent } from '../../../../../common/components/Toaster';
-import { SubscriptionPrice, formatSubscriptionPriceName, formatSubscriptionPriceAmount } from '../../../../../common/models/subscriptions/SubscriptionPrice';
-import ContentBox from '../../../../../common/components/ContentBox';
-import { StripePaymentResponse, StripePaymentResponseType } from '../../../../../common/models/subscriptions/StripePaymentResponse';
+import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
+import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
+import Button from '../../../../common/components/Button';
+import HttpEndpoint, { createUrl } from '../../../../common/HttpEndpoint';
+import { DisplayTheme, getClientPreferredColorScheme } from '../../../../common/models/userAccounts/DisplayPreference';
+import { getPromiseErrorMessage } from '../../../../common/format';
+import { Intent } from '../../../../common/components/Toaster';
+import { SubscriptionPrice, formatSubscriptionPriceName, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import ContentBox from '../../../../common/components/ContentBox';
+import { StripePaymentResponse, StripePaymentResponseType } from '../../../../common/models/subscriptions/StripePaymentResponse';
 
 interface Props {
 	displayTheme: DisplayTheme | null,
@@ -254,7 +254,7 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="payment-entry-step_c3xgsp">
+			<div className="payment-entry-step_utsg1r">
 				<ContentBox className="selection">
 					<div className="title">Selected Subscription</div>
 					<div className="name">{formatSubscriptionPriceName(this.props.selectedPrice)}</div>

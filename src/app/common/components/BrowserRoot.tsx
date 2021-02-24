@@ -50,25 +50,16 @@ import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet } from '../../../common/format';
-import HttpEndpoint, { createUrl } from '../../../common/HttpEndpoint';
+import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
-import StripeSubscriptionPrompt from './BrowserRoot/StripeSubscriptionPrompt';
-import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import Lazy from '../../../common/Lazy';
-import Fetchable from '../../../common/Fetchable';
-import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
-import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
-import { SubscriptionPrice, isSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
-import { StripePaymentResponseType, StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
+import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
 	deviceType: DeviceType,
-	extensionApi: ExtensionApi,
-	staticServerEndpoint: HttpEndpoint,
-	stripeLoader: Lazy<Promise<Stripe>> | null
+	extensionApi: ExtensionApi
 }
 type OnboardingState = Pick<OnboardingProps, 'analyticsAction' | 'authServiceToken' | 'initialAuthenticationStep' | 'passwordResetEmail' | 'passwordResetToken'>;
 interface State extends RootState {
@@ -259,85 +250,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
-	private readonly _openSubscriptionPromptDialog = (article?: UserArticle) => {
-		const
-			confirmCardPayment: ((clientSecret: string, invoiceId: string) => Promise<StripePaymentResponse>) = (clientSecret, invoiceId) => this.props.stripeLoader.value
-				.then(
-					stripe => stripe.confirmCardPayment(clientSecret)
-				)
-				.then(
-					result => {
-						return this.props.serverApi
-							.confirmStripeSubscriptionPayment({
-								invoiceId
-							})
-							.then(handlePaymentResponse);
-					}
-				),
-			getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
-				response => {
-					if (response.value) {
-						this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
-					}
-					callback(response);
-				}
-			),
-			handlePaymentResponse = (response: StripePaymentResponse) => {
-				this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-				if (response.type === StripePaymentResponseType.RequiresConfirmation) {
-					return confirmCardPayment(response.clientSecret, response.invoiceId);
-				}
-				return response;
-			},
-			subscribe = (card: StripeCardElement, price: SubscriptionPrice) => this.props.stripeLoader.value
-				.then(
-					stripe => stripe.createPaymentMethod({
-						type: 'card',
-						card
-					})
-				)
-				.then(
-					result => {
-						if (result.error) {
-							throw new Error(result.error.message);
-						}
-						let request: StripeSubscriptionCreationRequest;
-						if (
-							isSubscriptionPriceLevel(price)
-						) {
-							request = {
-								paymentMethodId: result.paymentMethod.id,
-								priceLevelId: price.id
-							};
-						} else {
-							request = {
-								paymentMethodId: result.paymentMethod.id,
-								customPriceAmount: price.amount
-							};
-						}
-						return this.props.serverApi
-							.createStripeSubscription(request)
-							.then(handlePaymentResponse);
-					}
-				);
-		this._dialog.openDialog(
-			sharedState => (
-				<StripeSubscriptionPrompt
-					article={article}
-					displayTheme={sharedState.displayTheme}
-					onClose={this._dialog.closeDialog}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onGetSubscriptionStatus={getSubscriptionStatus}
-					onReadArticle={this._readArticle}
-					onShowToast={this._toaster.addToast}
-					onSubscribe={subscribe}
-					staticServerEndpoint={this.props.staticServerEndpoint}
-					stripe={this.props.stripeLoader.value}
-					subscriptionStatus={sharedState.subscriptionStatus}
-					user={sharedState.user}
-				/>
-			)
-		);
+	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
+		if (provider === SubscriptionProvider.Apple) {
+			throw new Error('Operation not supported in browser environment.');
+		}
+		this._openStripeSubscriptionPromptDialog(article);
 	};
 
 	// user account
@@ -729,6 +646,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
+					deviceType: this.props.deviceType,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
@@ -1108,11 +1026,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onNotificationPreferenceChanged(preference);
 	}
-	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource = EventSource.Local) {
+	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.subscriptionStatusChanged(status);
 		}
-		super.onSubscriptionStatusChanged(status);
+		super.onSubscriptionStatusChanged(status, eventSource);
 	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
