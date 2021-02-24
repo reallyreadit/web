@@ -7,7 +7,7 @@ import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import DistributionChart from './MyImpactScreen/DistributionChart';
-import { formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { formatSubscriptionPriceAmount, formatSubscriptionPriceName } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { formatCountable, formatIsoDateAsUtc } from '../../../../common/format';
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
@@ -19,6 +19,7 @@ import * as classNames from 'classnames';
 import { Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
+import ActionLink from '../../../../common/components/ActionLink';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -159,21 +160,40 @@ class MyImpactScreen extends React.Component<Props, State> {
 						<div className="content-block title">Subscription Incomplete</div>
 						<div className="spacer"></div>
 						<div className="content-block">
+							{formatSubscriptionPriceName(this.props.subscriptionStatus.price)}<br />
+							{formatSubscriptionPriceAmount(this.props.subscriptionStatus.price.amount)} / month
+						</div>
+						<div className="spacer"></div>
+						<div className="content-block">
 							{this.props.subscriptionStatus.requiresConfirmation ?
 								'Payment confirmation required.' :
 								'Initial payment failed.'}
 						</div>
+						{this.props.subscriptionStatus.requiresConfirmation ?
+							<>
+								<div className="spacer"></div>
+								<div className="content-block">
+									<Button
+										intent="loud"
+										size="large"
+										text="Confirm Payment"
+									/>
+								</div>
+							</> :
+							null}
 						<div className="spacer"></div>
 						<div className="content-block">
-							<Button
-								intent="loud"
-								size="large"
-								text={
-									this.props.subscriptionStatus.requiresConfirmation ?
-										'Confirm Payment' :
-										'Start New Subscription'
-								}
-							/>
+							{this.props.subscriptionStatus.requiresConfirmation ?
+								<ActionLink
+									onClick={this._openSubscriptionPromptDialog}
+									text="Start New Subscription"
+								/> :
+								<Button
+									intent="loud"
+									onClick={this._openSubscriptionPromptDialog}
+									size="large"
+									text="Start New Subscription"
+								/>}
 						</div>
 					</>
 				);

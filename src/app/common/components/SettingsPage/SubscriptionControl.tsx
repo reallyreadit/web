@@ -86,7 +86,10 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 						{this.props.status.requiresConfirmation ?
 							<ActionLink text="Confirm Payment" /> :
 							null}
-						<ActionLink text="Start New Subscription" />
+						<ActionLink
+							onClick={this._openSubscriptionPromptDialog}
+							text="Start New Subscription"
+						/>
 					</div>
 				</>
 			);
