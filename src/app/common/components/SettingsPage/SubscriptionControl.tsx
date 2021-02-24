@@ -111,19 +111,25 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 							<div className="message">Loading payment method...</div> :
 						<div className="message">Billed through Apple</div>}
 					<div className="message">Will renew on {DateTime.fromISO(formatIsoDateAsUtc(this.props.status.currentPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}</div>
-					{this.props.status.provider === SubscriptionProvider.Stripe ?
-						this.props.paymentMethod ?
-							<div className="actions">
-								<ActionLink text="Change Card" />
-								<ActionLink text="Update Card" />
-								<ActionLink text="Change Plan" />
-								<ActionLink text="Cancel Plan" />
-							</div> :
-							null :
-						<div className="actions">
-							<ActionLink text="Change Plan" />
-							<ActionLink text="Cancel Plan" />
-						</div>}
+					<div className="actions">
+						{this.props.status.provider === SubscriptionProvider.Stripe ?
+							this.props.paymentMethod ?
+								<>
+									<ActionLink text="Change Card" />
+									<ActionLink text="Update Card" />
+									<ActionLink text="Change Plan" />
+									<ActionLink text="Cancel Plan" />
+								</> :
+								null :
+							this.props.deviceType === DeviceType.Ios ?
+								<>
+									<ActionLink text="Change Plan" />
+									<ActionLink text="Cancel Plan" />
+								</> :
+								<>
+									Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.
+								</>}
+					</div>
 				</>
 			);
 		}
