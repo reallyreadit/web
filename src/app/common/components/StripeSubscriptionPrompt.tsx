@@ -115,31 +115,33 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			},
 			selectedPrice: null,
 			subscriptionStatus: props.onGetSubscriptionStatus(
-				subscriptionStatus => {
-					if (
-						subscriptionStatus.value &&
-						subscriptionStatus.value.status.type !== SubscriptionStatusType.Active
-					) {
-						props.onGetSubscriptionPriceLevels(
-							{
-								provider: SubscriptionProvider.Stripe
-							},
-							this._asyncTracker.addCallback(
-								priceLevels => {
-									this.setState({
-										priceLevels,
-										transitioningToStep: Step.PriceSelection
-									});
-								}
-							)
-						);
-						this.setState({
-							transitioningToStep: Step.PriceLevelsCheck
-						});
-					} else if (subscriptionStatus.errors) {
-						this.setState({ subscriptionStatus });
+				this._asyncTracker.addCallback(
+					subscriptionStatus => {
+						if (
+							subscriptionStatus.value &&
+							subscriptionStatus.value.status.type !== SubscriptionStatusType.Active
+						) {
+							props.onGetSubscriptionPriceLevels(
+								{
+									provider: SubscriptionProvider.Stripe
+								},
+								this._asyncTracker.addCallback(
+									priceLevels => {
+										this.setState({
+											priceLevels,
+											transitioningToStep: Step.PriceSelection
+										});
+									}
+								)
+							);
+							this.setState({
+								transitioningToStep: Step.PriceLevelsCheck
+							});
+						} else if (subscriptionStatus.errors) {
+							this.setState({ subscriptionStatus });
+						}
 					}
-				}
+				)
 			),
 			transitioningToStep: null
 		};
