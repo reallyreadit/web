@@ -13,6 +13,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
 	deviceType: DeviceType,
+	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	paymentMethod: SubscriptionPaymentMethod | null
 	status: SubscriptionStatus
@@ -21,6 +22,11 @@ interface State {
 
 }
 export default class SubscriptionControl extends React.Component<Props, State> {
+	private readonly _openPaymentConfirmationDialog = () => {
+		if (this.props.status.type === SubscriptionStatusType.PaymentConfirmationRequired) {
+			this.props.onOpenPaymentConfirmationDialog(this.props.status.invoiceId);
+		}
+	};
 	private readonly _openSubscriptionPromptDialog = () => {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
@@ -72,20 +78,32 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				</>
 			);
 		}
-		if (this.props.status.type === SubscriptionStatusType.Incomplete) {
+		if (this.props.status.type === SubscriptionStatusType.PaymentConfirmationRequired) {
 			return (
 				<>
 					<div className="title">Subscription Incomplete</div>
 					{this.renderSubscriptionDetails(this.props.status.price)}
-					<div className="message">
-						{this.props.status.requiresConfirmation ?
-							'Payment confirmation required' :
-							'Initial payment failed'}
-					</div>
+					<div className="message">Payment confirmation required</div>
 					<div className="actions">
-						{this.props.status.requiresConfirmation ?
-							<ActionLink text="Confirm Payment" /> :
-							null}
+						<ActionLink
+							onClick={this._openPaymentConfirmationDialog}
+							text="Confirm Payment"
+						/>
+						<ActionLink
+							onClick={this._openSubscriptionPromptDialog}
+							text="Start New Subscription"
+						/>
+					</div>
+				</>
+			);
+		}
+		if (this.props.status.type === SubscriptionStatusType.PaymentFailed) {
+			return (
+				<>
+					<div className="title">Subscription Incomplete</div>
+					{this.renderSubscriptionDetails(this.props.status.price)}
+					<div className="message">Initial payment failed</div>
+					<div className="actions">
 						<ActionLink
 							onClick={this._openSubscriptionPromptDialog}
 							text="Start New Subscription"

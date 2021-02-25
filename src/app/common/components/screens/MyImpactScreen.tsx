@@ -68,6 +68,7 @@ const headerSelectorItems = [
 
 interface Props {
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
+	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewAuthor: (slug: string, name: string) => void,
@@ -80,6 +81,11 @@ interface State {
 }
 class MyImpactScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _openPaymentConfirmationDialog = () => {
+		if (this.props.subscriptionStatus.type === SubscriptionStatusType.PaymentConfirmationRequired) {
+			this.props.onOpenPaymentConfirmationDialog(this.props.subscriptionStatus.invoiceId);
+		}
+	};
 	private readonly _openSubscriptionPromptDialog = () => {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
@@ -161,7 +167,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						</div>
 					</>
 				);
-			case SubscriptionStatusType.Incomplete:
+			case SubscriptionStatusType.PaymentConfirmationRequired:
 				return (
 					<>
 						{this.renderViewToggle()}
@@ -169,36 +175,42 @@ class MyImpactScreen extends React.Component<Props, State> {
 						<div className="spacer"></div>
 						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
 						<div className="spacer"></div>
-						<div className="content-block">
-							{this.props.subscriptionStatus.requiresConfirmation ?
-								'Payment confirmation required.' :
-								'Initial payment failed.'}
-						</div>
-						{this.props.subscriptionStatus.requiresConfirmation ?
-							<>
-								<div className="spacer"></div>
-								<div className="content-block">
-									<Button
-										intent="loud"
-										size="large"
-										text="Confirm Payment"
-									/>
-								</div>
-							</> :
-							null}
+						<div className="content-block">Payment confirmation required.</div>
 						<div className="spacer"></div>
 						<div className="content-block">
-							{this.props.subscriptionStatus.requiresConfirmation ?
-								<ActionLink
-									onClick={this._openSubscriptionPromptDialog}
-									text="Start New Subscription"
-								/> :
-								<Button
-									intent="loud"
-									onClick={this._openSubscriptionPromptDialog}
-									size="large"
-									text="Start New Subscription"
-								/>}
+							<Button
+								intent="loud"
+								onClick={this._openPaymentConfirmationDialog}
+								size="large"
+								text="Confirm Payment"
+							/>
+						</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							<ActionLink
+								onClick={this._openSubscriptionPromptDialog}
+								text="Start New Subscription"
+							/>
+						</div>
+					</>
+				);
+			case SubscriptionStatusType.PaymentFailed:
+				return (
+					<>
+						{this.renderViewToggle()}
+						<div className="content-block title">Subscription Incomplete</div>
+						<div className="spacer"></div>
+						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
+						<div className="spacer"></div>
+						<div className="content-block">Initial payment failed.</div>
+						<div className="spacer"></div>
+						<div className="content-block">
+							<Button
+								intent="loud"
+								onClick={this._openSubscriptionPromptDialog}
+								size="large"
+								text="Start New Subscription"
+							/>
 						</div>
 					</>
 				);
@@ -302,6 +314,7 @@ export function createMyImpactScreenFactory<TScreenKey>(
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyImpactScreen
 				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
+				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
 				onViewAuthor={deps.onViewAuthor}

@@ -46,6 +46,7 @@ interface Props {
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
+	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterDisplayPreferenceChangedEventHandler: (handler: (preference: DisplayPreference) => void) => () => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
@@ -280,6 +281,7 @@ class SettingsPage extends React.PureComponent<
 							<div className="section">
 								<SubscriptionControl
 									deviceType={this.props.deviceType}
+									onOpenPaymentConfirmationDialog={this.props.onOpenPaymentConfirmationDialog}
 									onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
 									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
 									status={this.props.subscriptionStatus}
@@ -375,6 +377,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onChangePassword={deps.onChangePassword}
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onOpenDialog={deps.onOpenDialog}
+				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}
