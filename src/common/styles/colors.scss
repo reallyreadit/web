@@ -1,5 +1,10 @@
 // theming functions
-// the root selector needs to be injectable into :host-context() for components
+
+// This will duplicate and prefix the content given to the mixin with a root selector,
+// once for the light scheme and once for the dark scheme.
+// The scheme is determined by an attribute, which can switched by JS
+// or the browser 'prefers-color-scheme' media query.
+// The root selector needs to be injectable into :host-context() for components
 // in a shadow dom
 @mixin theme {
 	@content(":root[data-com_readup_theme]", light);
@@ -9,6 +14,12 @@
 	}
 }
 
+// takes a scheme (light | dark) and a list of declarations
+// the properties (keys) of the declarations can be any css property
+// the values MUST be theme variables 
+// The mixin will then render the declarations, 
+// substituting the variable name for its value in the given scheme
+// Two exceptions: when the properties are 'animation-name' or 'box-shadow': see code
 @mixin theme-colors($scheme, $declarations) {
 	$theme: $light-theme;
 	@if $scheme == dark {
