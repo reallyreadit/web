@@ -151,8 +151,7 @@ server = server.use((req, res, next) => {
 		req.query['message'] = 'rebrand';
 		res.redirect('https://readup.com' + req.path + createQueryString(req.query));
 	} else {
-		req.clientType = clientType;
-		next();
+		res.send('<!DOCTYPE html><html style="height:100%;"><head><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"></head><body style="height:100%;display:flex;flex-flow:column;justify-content:center;align-items:center;"><h1 style="text-align:center;">Heads up, we changed our name. reallyread.it is now Readup!</h1><h2 style="text-align:center;">You need to update this app in the App Store to continue.</h2></body></html>');
 	}
 });
 // authenticate
