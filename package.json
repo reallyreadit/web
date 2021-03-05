@@ -24,7 +24,6 @@
     "@types/commonmark": "^0.27.4",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.2",
-    "@types/gtag.js": "0.0.3",
     "@types/js-cookie": "^2.2.4",
     "@types/linkify-it": "^2.1.0",
     "@types/luxon": "^1.21.0",
