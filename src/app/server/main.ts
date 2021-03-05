@@ -148,7 +148,7 @@ server = server.get('/assets/update/ContentScript.js', (req, res) => {
 server = server.use((req, res, next) => {
 	const clientType = (req.query[clientTypeQueryStringKey] as ClientType) || ClientType.Browser;
 	if (clientType === ClientType.Browser) {
-		req.query['redirected'] = null;
+		req.query['message'] = 'rebrand';
 		res.redirect('https://readup.com' + req.path + createQueryString(req.query));
 	} else {
 		req.clientType = clientType;
