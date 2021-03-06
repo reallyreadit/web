@@ -1,8 +1,9 @@
 import * as React from 'react';
-import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
+import HomeHeader from './BrowserRoot/HomeHeader';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEven
+ts } from './Root';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -53,7 +54,6 @@ import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
-
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
 	deviceType: DeviceType,
@@ -181,6 +181,12 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 	private readonly _viewDiscover = () => {
 		this.setScreenState({
 			key: ScreenKey.Discover,
+			method: 'replace'
+		});
+	};
+	private readonly _viewFaq = () => {
+		this.setScreenState({
+			key: ScreenKey.Faq,
 			method: 'replace'
 		});
 	};
@@ -1120,12 +1126,13 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					topScreen.templateSection == null ||
 					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
-					<Header
+					<HomeHeader
 						deviceType={this.props.deviceType}
 						onBeginOnboarding={this._beginOnboarding}
 						onOpenMenu={this._openMenu}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
+						onViewFaq={this._viewFaq}
 						onViewNotifications={this._viewNotifications}
 						user={this.state.user}
 					/> :
