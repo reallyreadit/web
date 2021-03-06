@@ -22,7 +22,7 @@ import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
-import Footer from './BrowserRoot/Footer';
+// import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
@@ -52,6 +52,7 @@ import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../c
 import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
+import ColumnFooter from './BrowserRoot/ColumnFooter';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -1163,9 +1164,10 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 										!this.state.user
 									)
 								) ?
-									<Footer
-										onViewPrivacyPolicy={this._viewPrivacyPolicy}
-									/> :
+									// <Footer
+									// 	onViewPrivacyPolicy={this._viewPrivacyPolicy}
+									// /> :
+									<ColumnFooter onViewPrivacyPolicy={this._viewPrivacyPolicy} /> : 
 									null}
 							</li>
 						))}

@@ -5,12 +5,15 @@
 
 .quote-card_xa1vt {
    p {
-       font-size: 26.67px;
+       font-size: 24px;
        font-family: 'Museo Sans (300)', sans-serif;
-       line-height: 41px;
+       line-height: 1.55;
        position: relative;
-
        margin-top: 36px;
+       font-style: italic;
+
+       padding-left: 12px;
+       padding-right: 4px;
    }
 
    // quote signs    
@@ -26,13 +29,14 @@
 
     p::before {
         content: "“";
-        left: -12px;
+        // left: -12px;
+        left: -18px;
         top: -56px;
     }
 
     p::after {
         content: "”";
-        right: 0px;
+        right: 12px;
         bottom: -118px;
     }
 
@@ -42,5 +46,11 @@
         display: block;
         font-size: 1.1rem;
         font-style: italic;
+    }
+
+    @media screen and (min-width: 768px) {
+        p {
+			font-size: 26.67px;
+        }
     }
 }

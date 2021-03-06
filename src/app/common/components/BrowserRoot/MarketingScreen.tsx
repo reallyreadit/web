@@ -1,30 +1,30 @@
 import * as React from 'react';
-import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
-import ScreenKey from '../../../../common/routing/ScreenKey';
-import routes from '../../../../common/routing/routes';
-import { findRouteByKey } from '../../../../common/routing/Route';
-import AotdView from '../controls/articles/AotdView';
+// import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
+// import ScreenKey from '../../../../common/routing/ScreenKey';
+// import routes from '../../../../common/routing/routes';
+// import { findRouteByKey } from '../../../../common/routing/Route';
+// import AotdView from '../controls/articles/AotdView';
 import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
 import UserAccount from '../../../../common/models/UserAccount';
 import ShareData from '../../../../common/sharing/ShareData';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Rating from '../../../../common/models/Rating';
-import LoadingOverlay from '../controls/LoadingOverlay';
+// import LoadingOverlay from '../controls/LoadingOverlay';
 import CommunityReads from '../../../../common/models/CommunityReads';
-import Panel from './Panel';
+// import Panel from './Panel';
 import GetStartedButton from './GetStartedButton';
-import { variants as marketingVariants } from '../../marketingTesting';
+// import { variants as marketingVariants } from '../../marketingTesting';
 import PageResult from '../../../../common/models/PageResult';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import ArticleList from '../controls/articles/ArticleList';
-import ArticleDetails from '../../../../common/components/ArticleDetails';
+// import ArticleList from '../controls/articles/ArticleList';
+// import ArticleDetails from '../../../../common/components/ArticleDetails';
 import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
-import CommunityReadSort from '../../../../common/models/CommunityReadSort';
+// import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ImageAndText from './ImageAndText';
 import HomePanel from './HomePanel';
 import Card from './Card';
@@ -54,30 +54,30 @@ export default class MarketingScreen extends React.Component<
 	Props,
 	{
 		blogPosts: Fetchable<PageResult<UserArticle>>,
-		menuState: MenuState
+		// menuState: MenuState
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _beginClosingMenu = () => {
-		this.setState({ menuState: MenuState.Closing });
-	};
-	private readonly _closeMenu = () => {
-		this.setState({ menuState: MenuState.Closed });
-	};
-	private readonly _openMenu = () => {
-		this.setState({ menuState: MenuState.Opened });
-	};
-	private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
-	private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
-		event.preventDefault();
-		this._beginClosingMenu();
-		this.props.onViewProfile('bill');
-	};
-	private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
-		event.preventDefault();
-		this._beginClosingMenu();
-		this.props.onViewProfile('jeff');
-	};
+	// private readonly _beginClosingMenu = () => {
+	// 	this.setState({ menuState: MenuState.Closing });
+	// };
+	// private readonly _closeMenu = () => {
+	// 	this.setState({ menuState: MenuState.Closed });
+	// };
+	// private readonly _openMenu = () => {
+	// 	this.setState({ menuState: MenuState.Opened });
+	// };
+	// private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
+	// private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	// 	event.preventDefault();
+	// 	this._beginClosingMenu();
+	// 	this.props.onViewProfile('bill');
+	// };
+	// private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	// 	event.preventDefault();
+	// 	this._beginClosingMenu();
+	// 	this.props.onViewProfile('jeff');
+	// };
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -95,14 +95,14 @@ export default class MarketingScreen extends React.Component<
 					}
 				)
 			),
-			menuState: MenuState.Closed
+			// menuState: MenuState.Closed
 		};
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render () {
-		const marketingVariant = marketingVariants[0];
+		// const marketingVariant = marketingVariants[0];
 		const valuePoints = [
 			{
 				heading: "Read anything you want.",
@@ -210,7 +210,14 @@ export default class MarketingScreen extends React.Component<
 						)}
 					</div>
 				</HomePanel>
-				<Panel className="header">
+				<HomePanel
+					data-nosnippet
+					className="closing-quote-panel"
+				>
+					<span className="preheading">Remember</span>
+					<cite className="closing-quote"><p>If you're not paying for the product, you are the product.</p><p>Join Readup today.</p></cite>
+				</HomePanel>
+				{/* <Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>
 					<div
@@ -326,7 +333,7 @@ export default class MarketingScreen extends React.Component<
 								)
 							)}
 						</ArticleList>}
-				</Panel>
+				</Panel> */}
 				<JsonLd<Corporation>
 					item={{
 						"@context": "https://schema.org",
