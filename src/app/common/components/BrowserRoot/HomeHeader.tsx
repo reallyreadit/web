@@ -1,0 +1,89 @@
+import * as React from 'react';
+import classNames from 'classnames';
+import Icon from '../../../../common/components/Icon';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import routes from '../../../../common/routing/routes';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import Button from '../../../../common/components/Button';
+import UserAccount from '../../../../common/models/UserAccount';
+import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
+
+interface Props {
+	deviceType: DeviceType,
+	onBeginOnboarding: (analyticsAction: string) => void,
+	onOpenMenu: () => void,
+	onOpenSignInPrompt: (analyticsAction: string) => void,
+	onViewFaq: () => void,
+	onViewHome: () => void,
+	onViewNotifications: () => void,
+	user: UserAccount | null
+}
+export default class extends React.PureComponent<Props> {
+	private readonly _beginOnboarding = () => {
+		this.props.onBeginOnboarding('Header');
+	};
+	private readonly _handleLogoClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		this.props.onViewHome();
+	};
+	private readonly _openSignInPrompt = () => {
+		this.props.onOpenSignInPrompt('Header');
+	};
+	public render() {
+		const
+			showLoginButtons = (
+				!this.props.user &&
+				!isMobileDevice(this.props.deviceType)
+			),
+			showMenu = !!this.props.user;
+		return (
+			<header className={
+				classNames(
+					'home-header_2afwll',
+					{ 'menu': showLoginButtons || showMenu }
+				)
+			}>
+				<a
+					className="logo"
+					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
+					onClick={this._handleLogoClick}
+				>
+				</a>
+				{showLoginButtons || showMenu ?
+					<div className="menu-container">
+						{showMenu ?
+							<>
+								<Icon
+									badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
+									name="bell"
+									onClick={this.props.onViewNotifications}
+								/>
+								<Icon
+									badge={this.props.user.followerAlertCount}
+									name="user"
+									onClick={this.props.onOpenMenu}
+								/>
+							</> :
+							null}
+						{showLoginButtons ?
+							<>
+								<a onClick={this.props.onViewFaq}>FAQ</a>
+								<Button
+									text="Log In"
+									size="large"
+									onClick={this._openSignInPrompt}
+								/>
+								<Button
+									intent="loud"
+									text="Get Started"
+									size="large"
+									onClick={this._beginOnboarding}
+								/>
+							</> :
+							null}
+					</div> :
+					null}
+			</header>
+		);
+	}
+}

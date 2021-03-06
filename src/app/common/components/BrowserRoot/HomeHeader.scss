@@ -1,0 +1,68 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/HomeHeader
+        cssComponentId: home-header_2afwll
+*/
+@import '../../../../common/styles/colors';
+
+.home-header_2afwll {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: space-between;
+	padding: 20px 30px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+.home-header_2afwll:not(.menu) {
+	justify-content: center;
+}
+.home-header_2afwll > .logo {
+	width: 114px;
+	height: 60px;
+	background-size: contain;
+}
+.home-header_2afwll > .menu-container {
+	display: flex;
+	align-items: center;
+}
+.home-header_2afwll > .menu-container > .icon_rour3d {
+	display: block;
+	font-size: 26px;
+	cursor: pointer;
+}
+.home-header_2afwll > .menu-container > .icon_rour3d + .icon_rour3d {
+	margin-left: 20px;
+}
+.home-header_2afwll > .menu-container > .button_ovrlmi + .button_ovrlmi {
+	margin-left: 10px;
+}
+
+@media (max-width: 499px) {
+	.home-header_2afwll {
+		padding: 10px;
+	}
+	.home-header_2afwll:not(.menu) > .menu-container {
+		margin-top: 10px;
+	}
+	.home-header_2afwll > .logo-container > img {
+		height: 40px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .home-header_2afwll {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $nav-border-color,
+				"background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .home-header_2afwll > .logo {
+		@if $scheme == light {
+			background-image: url(/images/logo.svg);
+		} @else {
+			background-image: url(/images/logo-white.svg);
+		}
+	}
+}
