@@ -45,6 +45,7 @@ interface Props {
 	deviceType: DeviceType,
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
@@ -371,6 +372,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 										<GetStartedButton
 											analyticsAction="ProfileScreenCreateAccount"
 											deviceType={this.props.deviceType}
+											location={this.props.location}
 											onBeginOnboarding={this.props.onBeginOnboarding}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}

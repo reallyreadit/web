@@ -1,10 +1,15 @@
 import * as React from 'react';
 import { DeviceType, getStoreUrl } from '../../../../common/DeviceType';
 import Button from '../../../../common/components/Button';
+import RouteLocation from '../../../../common/routing/RouteLocation';
+import { findRouteByLocation } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 export default class GetStartedButton extends React.PureComponent<{
 	analyticsAction: string,
 	deviceType: DeviceType,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void
@@ -16,16 +21,25 @@ export default class GetStartedButton extends React.PureComponent<{
 		this.props.onCopyAppReferrerTextToClipboard(this.props.analyticsAction);
 	};
 	public render() {
+		const route = findRouteByLocation(routes, this.props.location);
 		return (
 			<div className="get-started-button_z950ea">
 				{this.props.deviceType === DeviceType.Ios ?
-					<a
-						className="ios"
-						href={getStoreUrl(DeviceType.Ios)}
-						onClick={this._copyAppReferrerTextToClipboard}
-					>
-						<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-					</a> :
+					route.screenKey === ScreenKey.Home ?
+						<a
+							className="ios"
+							href={getStoreUrl(DeviceType.Ios)}
+							onClick={this._copyAppReferrerTextToClipboard}
+						>
+							<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+						</a> :
+						<Button
+							text="Open In App"
+							size="x-large"
+							intent="loud"
+							href={'https://reallyread.it' + this.props.location.path}
+							hrefPreventDefault={false}
+						/> :
 					this.props.deviceType === DeviceType.Android ?
 						<div className="android">
 							<div className="coming-soon">Coming soon to Android!</div>

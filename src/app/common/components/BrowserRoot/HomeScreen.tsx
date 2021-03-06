@@ -29,6 +29,7 @@ import { Sort } from '../controls/articles/AotdView';
 
 interface Props {
 	deviceType: DeviceType,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -296,6 +297,7 @@ class HomeScreen extends React.Component<Props, State> {
 			<MarketingScreen
 				communityReads={this.state.communityReads}
 				deviceType={this.props.deviceType}
+				location={this.props.location}
 				onBeginOnboarding={this.props.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
@@ -318,7 +320,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'isExtensionInstalled' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
@@ -331,7 +333,8 @@ export default function createScreenFactory<TScreenKey>(
 			<HomeScreen {
 				...{
 					...deps,
-					...sharedState
+					...sharedState,
+					location: screenState.location
 				}
 			} />
 		)

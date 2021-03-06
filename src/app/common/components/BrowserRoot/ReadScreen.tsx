@@ -22,6 +22,7 @@ import InfoBox from '../../../../common/components/InfoBox';
 interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
+	location: RouteLocation,
 	isExtensionInstalled: boolean,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -94,6 +95,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								<GetStartedButton
 									analyticsAction="ReadScreen"
 									deviceType={this.props.deviceType}
+									location={this.props.location}
 									onBeginOnboarding={this.props.onBeginOnboarding}
 									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 									onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
@@ -116,7 +118,7 @@ class ReadScreen extends React.PureComponent<Props> {
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'article' | 'isExtensionInstalled' | 'user'>> & {
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'isExtensionInstalled' | 'user'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
@@ -152,6 +154,7 @@ export default function createReadScreenFactory<TScreenKey>(
 					...{
 						...deps,
 						article: screenState.componentState,
+						location: screenState.location,
 						isExtensionInstalled: sharedState.isExtensionInstalled,
 						user: sharedState.user
 					}

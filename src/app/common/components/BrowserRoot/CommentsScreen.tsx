@@ -103,7 +103,7 @@ class BrowserCommentsScreen extends React.Component<
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'onReloadArticle' | 'screenId' | 'user'>> & {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'location' | 'onReloadArticle' | 'screenId' | 'user'>> & {
 	onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>
 };
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies<TScreenKey>) {
@@ -155,6 +155,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 							article: state.componentState,
 							articleSlug: pathParams.slug,
 							highlightedCommentId: pathParams.commentId,
+							location: state.location,
 							onReloadArticle: reloadArticle,
 							screenId: state.id
 						}
