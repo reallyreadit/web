@@ -27,30 +27,30 @@
        line-height: 1;
    }
 
-    p::before {
-        content: "“";
-        // left: -12px;
-        left: -18px;
-        top: -56px;
-    }
+   p::before {
+       content: "“";
+       // left: -12px;
+       left: -18px;
+       top: -56px;
+   }
 
-    p::after {
-        content: "”";
-        right: 12px;
-        bottom: -118px;
-    }
+   p::after {
+       content: "”";
+       right: 12px;
+       bottom: -118px;
+   }
 
-    // reader
-    &__reader {
-        margin-top: 13px;
-        display: block;
-        font-size: 1.1rem;
-        font-style: italic;
-    }
+   // reader
+   &__reader {
+       margin-top: 13px;
+       display: block;
+       font-size: 1.1rem;
+       font-style: italic;
+   }
 
-    @media screen and (min-width: 768px) {
-        p {
-			font-size: 26.67px;
-        }
-    }
+//    @media screen and (min-width: 768px) {
+//        p {
+//            font-size: 26.67px;
+//        }
+//    }
 }
