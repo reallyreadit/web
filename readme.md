@@ -1,7 +1,7 @@
 # reallyread.it web
 ## Setup Guide
 ### Common
-1. Install NodeJS	LTS: https://nodejs.org/en/download/
+1. Install NodeJS	14: https://nodejs.org/en/download/
 2. Configure the NodeJS environment for development
 
         export NODE_ENV=development
