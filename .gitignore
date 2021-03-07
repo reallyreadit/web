@@ -1,9 +1,9 @@
 /.vscode/settings.json
 /bin
 /node_modules
+/pkg
+/pub
 /src/app/server/config.ts
 /src/embed/config.*.json
 /src/extension/common/config.*.json
 /src/native-client/reader/config.*.json
-/npm-shrinkwrap.json
-/package-lock.json

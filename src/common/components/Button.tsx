@@ -12,6 +12,7 @@ interface Props {
 	className?: ClassValue,
 	display?: 'block' | 'inline',
 	href?: string,
+	hrefPreventDefault?: boolean,
 	iconLeft?: IconName,
 	iconRight?: IconName,
 	intent?: 'normal' | 'default' | 'loud' | 'warning' | 'success',
@@ -27,10 +28,11 @@ interface Props {
 export default class Button extends React.PureComponent<Props> {
 	public static defaultProps: Partial<Props> = {
 		align: 'left',
-		display: 'inline'
+		display: 'inline',
+		hrefPreventDefault: true
 	};
 	private readonly _click = (event: React.MouseEvent) => {
-		if (this.props.href) {
+		if (this.props.href && this.props.hrefPreventDefault) {
 			event.preventDefault();
 		}
 		if (

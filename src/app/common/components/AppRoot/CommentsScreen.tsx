@@ -110,7 +110,7 @@ class AppCommentsScreen extends React.Component<
 		);
 	}
 }
-type Dependencies = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'user'>>;
+type Dependencies = Pick<Props, Exclude<keyof Props, 'article' | 'articleSlug' | 'highlightedCommentId' | 'location' | 'user'>>;
 export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Dependencies) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -128,6 +128,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 							...deps,
 							articleSlug: pathParams.slug,
 							highlightedCommentId: pathParams.commentId,
+							location: state.location,
 							user: sharedState.user
 						}
 					}

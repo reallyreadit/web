@@ -18,7 +18,8 @@ class Server {
 		return del([
 			project.getOutPath(targetPath, env),
 			path.posix.join(project.getOutPath('app', env), 'web.config'),
-			path.posix.join(project.getOutPath('app', env), 'npm-shrinkwrap.json')
+			path.posix.join(project.getOutPath('app', env), 'package-lock.json'),
+			path.posix.join(project.getOutPath('app', env), 'package.json')
 		]);
 	}
 	build(env) {
@@ -56,7 +57,7 @@ class Server {
 				onComplete: resolve
 			})));
 			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-				src: 'npm-shrinkwrap.json',
+				src: 'package-lock.json',
 				dest: project.getOutPath('app', env),
 				onComplete: resolve
 			})));

@@ -22,6 +22,7 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 
 interface Props {
 	deviceType: DeviceType,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
@@ -226,6 +227,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 									<GetStartedButton
 										analyticsAction="LeaderboardsScreen"
 										deviceType={this.props.deviceType}
+										location={this.props.location}
 										onBeginOnboarding={this.props.onBeginOnboarding}
 										onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 										onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
@@ -269,7 +271,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 }
 export default function createLeaderboardsScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	services: Pick<Props, Exclude<keyof Props, 'user'>>
+	services: Pick<Props, Exclude<keyof Props, 'location' | 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -281,6 +283,7 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 		render: (screen: Screen, sharedState: SharedState) => (
 			<LeaderboardsScreen
 				deviceType={services.deviceType}
+				location={screen.location}
 				onBeginOnboarding={services.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={services.onCopyAppReferrerTextToClipboard}
 				onCloseDialog={services.onCloseDialog}

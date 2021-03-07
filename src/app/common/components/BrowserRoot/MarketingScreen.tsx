@@ -25,10 +25,12 @@ import { Corporation } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	deviceType: DeviceType,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -111,6 +113,7 @@ export default class MarketingScreen extends React.Component<
 						<GetStartedButton
 							analyticsAction="HomeScreenHeader"
 							deviceType={this.props.deviceType}
+							location={this.props.location}
 							onBeginOnboarding={this.props.onBeginOnboarding}
 							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
@@ -184,6 +187,7 @@ export default class MarketingScreen extends React.Component<
 						<GetStartedButton
 							analyticsAction="HomeScreenFooter"
 							deviceType={this.props.deviceType}
+							location={this.props.location}
 							onBeginOnboarding={this.props.onBeginOnboarding}
 							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}

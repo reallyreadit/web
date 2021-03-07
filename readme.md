@@ -1,7 +1,7 @@
 # reallyread.it web
 ## Setup Guide
 ### Common
-1. Install NodeJS	LTS: https://nodejs.org/en/download/
+1. Install NodeJS	14: https://nodejs.org/en/download/
 2. Configure the NodeJS environment for development
 
         export NODE_ENV=development
@@ -9,7 +9,7 @@
 3. Install packages
 
         npm install
-4. Gulp is included as a development dependency and is used to execute build actions. If you do not have Gulp installed globally or have an incompatible global version installed you can create an alias to the version included in this repository.
+4. Gulp is included as a development dependency and is used to execute build actions. If you do not have Gulp installed globally or have an incompatible global version installed you can use a package runner like [npx](https://www.npmjs.com/package/npx) or create an alias to execute the version included in this repository.
 
         alias gulp="node node_modules/gulp/bin/gulp.js"
 ### App

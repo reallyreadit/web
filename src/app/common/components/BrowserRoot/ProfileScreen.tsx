@@ -15,7 +15,7 @@ function createTitle(userName: string) {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Deps, Exclude<keyof Deps, 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
+	deps: Pick<Deps, Exclude<keyof Deps, 'location' | 'onReloadProfile' | 'onUpdateProfile' | 'profile' | 'screenId'>> & {
 		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
 	}
@@ -89,6 +89,7 @@ export default function createScreenFactory<TScreenKey>(
 					...{
 							...deps,
 							...pathParams,
+							location: state.location,
 							onReloadProfile: reloadProfile,
 							onUpdateProfile: updateProfile,
 							profile: state.componentState,

@@ -23,7 +23,7 @@ import CommentAddendumForm from '../../../common/models/social/CommentAddendumFo
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import ContentBox from '../../../common/components/ContentBox';
 import SpinnerIcon from '../../../common/components/SpinnerIcon';
-import { findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
+import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
@@ -42,13 +42,11 @@ export interface Props extends DialogServiceState {
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onNavBack: () => void,
-	onNavTo: (url: string) => void,
-	onOpenExternalUrl: (url: string) => void,
+	onNavTo: (url: string) => boolean,
 	onPostArticle: (form: PostForm) => Promise<Post>,
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onReadArticle: (slug: string) => void,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	onShare: (data: ShareData) => void,
 	user: UserAccount | null
@@ -94,22 +92,6 @@ export default class App extends React.Component<
 
 	// routing
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
-	private readonly _navTo = (url: string) => {
-		const result = parseUrlForRoute(url);
-		if (result.isInternal && result.route) {
-			if (result.route.screenKey === ScreenKey.Read) {
-				const params = result.route.getPathParams(result.url.pathname);
-				this.props.onReadArticle(params['sourceSlug'] + '_' + params['articleSlug']);
-			} else {
-				this.props.onNavTo(result.url.href);
-			}
-			return true;
-		} else if (!result.isInternal && result.url) {
-			this.props.onOpenExternalUrl(result.url.href);
-			return true;
-		}
-		return false;
-	}
 
 	// sharing
 	private readonly _handleShareRequest = (data: ShareData) => {
@@ -166,7 +148,7 @@ export default class App extends React.Component<
 							onCopyTextToClipboard={this._copyTextToClipboard}
 							onCreateAbsoluteUrl={this._createAbsoluteUrl}
 							onDeleteComment={this.props.onDeleteComment}
-							onNavTo={this._navTo}
+							onNavTo={this.props.onNavTo}
 							onOpenDialog={this.props.dialogService.openDialog}
 							onPostComment={this.props.onPostComment}
 							onPostCommentAddendum={this.props.onPostCommentAddendum}

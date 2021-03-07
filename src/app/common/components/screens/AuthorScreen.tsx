@@ -34,6 +34,7 @@ import { variants as marketingVariants } from '../../marketingTesting';
 interface Props {
 	authorSlug: string,
 	deviceType: DeviceType,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -154,6 +155,7 @@ class AuthorScreen extends React.Component<Props, State> {
 										<GetStartedButton
 											analyticsAction="AuthorScreen"
 											deviceType={this.props.deviceType}
+											location={this.props.location}
 											onBeginOnboarding={this.props.onBeginOnboarding}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
@@ -223,7 +225,7 @@ class AuthorScreen extends React.Component<Props, State> {
 		);
 	}
 }
-type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'authorSlug' | 'profile' | 'user'>> & {
+type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'authorSlug' | 'location' | 'profile' | 'user'>> & {
 	onCreateTitle: (profile: AuthorProfile) => string,
 	onGetAuthorProfile: FetchFunctionWithParams<AuthorProfileRequest, AuthorProfile>,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<AuthorProfile>>>) => Partial<Screen<Fetchable<AuthorProfile>>>) => void
@@ -272,6 +274,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 			<AuthorScreen
 				authorSlug={getSlug(state.location)}
 				deviceType={deps.deviceType}
+				location={state.location}
 				onBeginOnboarding={deps.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={deps.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={deps.onCopyTextToClipboard}

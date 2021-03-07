@@ -43,6 +43,7 @@ export interface Props {
 	comments: Fetchable<CommentThread[]>,
 	deviceType: DeviceType,
 	highlightedCommentId: string | null,
+	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -89,6 +90,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 										<GetStartedButton
 											analyticsAction="CommentsScreen"
 											deviceType={this.props.deviceType}
+											location={this.props.location}
 											onBeginOnboarding={this.props.onBeginOnboarding}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
