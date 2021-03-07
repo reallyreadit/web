@@ -2,8 +2,7 @@ import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
 import HomeHeader from './BrowserRoot/HomeHeader';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEven
-ts } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, SharedEvents } from './Root';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';

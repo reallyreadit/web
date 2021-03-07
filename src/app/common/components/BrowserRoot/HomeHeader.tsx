@@ -18,7 +18,16 @@ interface Props {
 	onViewNotifications: () => void,
 	user: UserAccount | null
 }
-export default class extends React.PureComponent<Props> {
+
+type State = {
+	menuOpen: boolean
+}
+
+export default class extends React.PureComponent<Props, State> {
+	state: State = {
+		menuOpen: false
+	}
+
 	private readonly _beginOnboarding = () => {
 		this.props.onBeginOnboarding('Header');
 	};
@@ -29,7 +38,18 @@ export default class extends React.PureComponent<Props> {
 	private readonly _openSignInPrompt = () => {
 		this.props.onOpenSignInPrompt('Header');
 	};
+
+	private _toggleMenu() {
+		this.setState((prevState) => ({menuOpen: !prevState.menuOpen}));	
+	}
+
+	constructor(props: Props) {
+		super(props);
+		this.state = { 'menuOpen': false };
+	}
+
 	public render() {
+
 		const
 			showLoginButtons = (
 				!this.props.user &&
@@ -43,14 +63,25 @@ export default class extends React.PureComponent<Props> {
 					{ 'menu': showLoginButtons || showMenu }
 				)
 			}>
-				<a
-					className="logo"
-					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
-					onClick={this._handleLogoClick}
-				>
-				</a>
+				<div className="menu-controls-container">
+					<a
+						className="logo"
+						href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
+						onClick={this._handleLogoClick}
+					>
+					</a>
+					<Icon
+						className="mobile-menu-toggle"
+						name="binoculars"	
+						onClick={this._toggleMenu.bind(this)}
+					/>
+				</div>
 				{showLoginButtons || showMenu ?
-					<div className="menu-container">
+					<div className={
+						classNames(
+							"menu-container", 
+							{ open: this.state.menuOpen }
+						)}>
 						{showMenu ?
 							<>
 								<Icon
@@ -67,6 +98,9 @@ export default class extends React.PureComponent<Props> {
 							null}
 						{showLoginButtons ?
 							<>
+								<a onClick={this.props.onViewFaq}>How it works</a>
+								{/* <a onClick={this.props.onViewFaq}>Pricing</a> */}
+								<a onClick={this.props.onViewFaq}>Our Mission</a>
 								<a onClick={this.props.onViewFaq}>FAQ</a>
 								<Button
 									text="Log In"
