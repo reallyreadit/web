@@ -31,13 +31,16 @@
 	// align-items: flex-start;
 	align-items: center;
 
-	font-size: 15pt;
-	margin: 4px 0;
-	
 	display: none;
 	&.open {
 		display: flex;
 		@media screen and (max-width: 767px) {
+			font-size: 24px;
+			
+			> *:not(:last-child) {
+				margin-bottom: 12px;
+			}
+
 			position: absolute;
 			width: 100%;
 			box-sizing: border-box;
@@ -89,23 +92,10 @@
 // desktop styles
 @media screen and (min-width: 768px) {
 	// reset mobile change
+	// TODO: test this if replacing Header.tsx
 	.home-header_2afwll:not(.menu) > .menu-container {
 		margin-top: 0;
 	}
-
-	// .home-header_2afwll:not(.menu) > .menu-container {
-	// 	margin-top: 10px;
-	// }
-	
-	// .home-header_2afwll > .logo-container > img {
-	// 	height: 40px;
-	// }
-	
-	// .home-header_2afwll > .logo {
-	// 	width: 114px;
-	// 	height: 60px;
-	// 	background-size: contain;
-	// }
 
 	.home-header_2afwll > .menu-controls-container > .logo {
 		width: 114px;
@@ -130,6 +120,7 @@
 	}
 
 	.home-header_2afwll > .menu-container {
+		display: flex;
 		flex-direction: row;
 		// align-items: center; // vertical center here
 

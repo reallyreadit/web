@@ -6,7 +6,8 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
-import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
+// import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
 	deviceType: DeviceType,
@@ -41,7 +42,14 @@ export default class extends React.PureComponent<Props, State> {
 
 	private _toggleMenu() {
 		this.setState((prevState) => ({menuOpen: !prevState.menuOpen}));	
-	}
+	};
+
+	// capture the page navigation and close the mobile menu
+	private pageNavigation(navFunction: (e: React.MouseEvent) => void, event?: React.MouseEvent) {
+		this.setState({menuOpen: false}, () => {
+			navFunction(event);
+		});
+	};
 
 	constructor(props: Props) {
 		super(props);
@@ -52,8 +60,12 @@ export default class extends React.PureComponent<Props, State> {
 
 		const
 			showLoginButtons = (
-				!this.props.user &&
-				!isMobileDevice(this.props.deviceType)
+				!this.props.user 
+				// removed these because we always want login buttons (= home menu too),
+				// even on mobile on the marketing site.
+				// TODO: maybe this file should replace Header.tsx at some point
+				// &&
+				// !isMobileDevice(this.props.deviceType)
 			),
 			showMenu = !!this.props.user;
 		return (
@@ -67,12 +79,12 @@ export default class extends React.PureComponent<Props, State> {
 					<a
 						className="logo"
 						href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
-						onClick={this._handleLogoClick}
+						onClick={(event) => this.pageNavigation(this._handleLogoClick, event)}
 					>
 					</a>
 					<Icon
 						className="mobile-menu-toggle"
-						name="binoculars"	
+						name={ this.state.menuOpen ? "cross" : "menu" }	
 						onClick={this._toggleMenu.bind(this)}
 					/>
 				</div>
@@ -83,6 +95,7 @@ export default class extends React.PureComponent<Props, State> {
 							{ open: this.state.menuOpen }
 						)}>
 						{showMenu ?
+						// TODO: these are not used here now, legacy from the Header.tsx copy
 							<>
 								<Icon
 									badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
@@ -98,20 +111,20 @@ export default class extends React.PureComponent<Props, State> {
 							null}
 						{showLoginButtons ?
 							<>
-								<a onClick={this.props.onViewFaq}>How it works</a>
+								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>How it works</a>
 								{/* <a onClick={this.props.onViewFaq}>Pricing</a> */}
-								<a onClick={this.props.onViewFaq}>Our Mission</a>
-								<a onClick={this.props.onViewFaq}>FAQ</a>
+								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>Our Mission</a>
+								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>FAQ</a>
 								<Button
 									text="Log In"
 									size="large"
-									onClick={this._openSignInPrompt}
+									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
 								/>
 								<Button
 									intent="loud"
 									text="Get Started"
 									size="large"
-									onClick={this._beginOnboarding}
+									onClick={this.pageNavigation.bind(this, this._beginOnboarding)}
 								/>
 							</> :
 							null}
