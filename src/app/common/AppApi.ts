@@ -42,6 +42,7 @@ export default abstract class extends EventEmitter<{
 	public abstract getDeviceInfo(): Promise<DeviceInfo>;
 	public abstract initialize(user?: UserAccount): Promise<DeviceInfo>;
 	public abstract openExternalUrl(url: string): void;
+	public abstract openExternalUrlUsingSystem(url: string): void;
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract requestAppleIdCredential(): void;
 	public abstract requestNotificationAuthorization(): Promise<NotificationAuthorizationRequestResult>;

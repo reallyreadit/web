@@ -61,7 +61,7 @@ export default class extends AppApi {
 					this.emitEvent('displayPreferenceChanged', message.data);
 					break;
 				case 'deviceInfoUpdated':
-					this.setDeviceInfo(message.data);	
+					this.setDeviceInfo(message.data);
 					break;
 				case 'loadUrl':
 					this.emitEvent('loadUrl', message.data);
@@ -140,6 +140,12 @@ export default class extends AppApi {
 	public openExternalUrl(url: string) {
 		this._messagingContext.sendMessage({
 			type: 'openExternalUrl',
+			data: url
+		});
+	}
+	public openExternalUrlUsingSystem(url: string) {
+		this._messagingContext.sendMessage({
+			type: 'openExternalUrlUsingSystem',
 			data: url
 		});
 	}
