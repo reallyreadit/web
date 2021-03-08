@@ -14,6 +14,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 interface Props {
 	deviceType: DeviceType,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
+	onOpenSubscriptionCancellationDialog: (provider: SubscriptionProvider) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	paymentMethod: SubscriptionPaymentMethod | null
 	status: SubscriptionStatus
@@ -25,6 +26,11 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 	private readonly _openPaymentConfirmationDialog = () => {
 		if (this.props.status.type === SubscriptionStatusType.PaymentConfirmationRequired) {
 			this.props.onOpenPaymentConfirmationDialog(this.props.status.invoiceId);
+		}
+	};
+	private readonly _openSubscriptionCancellationDialog = () => {
+		if (this.props.status.type === SubscriptionStatusType.Active) {
+			this.props.onOpenSubscriptionCancellationDialog(this.props.status.provider);
 		}
 	};
 	private readonly _openSubscriptionPromptDialog = () => {
@@ -136,13 +142,19 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 									<ActionLink text="Change Card" />
 									<ActionLink text="Update Card" />
 									<ActionLink text="Change Plan" />
-									<ActionLink text="Cancel Plan" />
+									<ActionLink
+										onClick={this._openSubscriptionCancellationDialog}
+										text="Cancel Plan"
+									/>
 								</> :
 								null :
 							this.props.deviceType === DeviceType.Ios ?
 								<>
 									<ActionLink text="Change Plan" />
-									<ActionLink text="Cancel Plan" />
+									<ActionLink
+										onClick={this._openSubscriptionCancellationDialog}
+										text="Cancel Plan"
+									/>
 								</> :
 								<>
 									Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.

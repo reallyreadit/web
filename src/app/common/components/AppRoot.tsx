@@ -230,6 +230,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
+	private readonly _openSubscriptionCancellationDialog = (provider?: SubscriptionProvider) => {
+		if (provider === SubscriptionProvider.Stripe) {
+			this._openStripeSubscriptionCancellationDialog();
+			return;
+		}
+		this.props.appApi.openExternalUrlUsingSystem('https://apps.apple.com/account/subscriptions');
+	};
 	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
 		if (provider === SubscriptionProvider.Stripe) {
 			this._openStripeSubscriptionPromptDialog(article);
@@ -713,6 +720,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
+					onOpenSubscriptionCancellationDialog: this._openSubscriptionCancellationDialog,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,

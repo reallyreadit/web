@@ -490,6 +490,9 @@ export default abstract class Root<
 			)
 		);
 	};
+	protected readonly _openStripeSubscriptionCancellationDialog = () => {
+
+	};
 	protected readonly _openStripeSubscriptionPromptDialog = (article?: UserArticle) => {
 		this._dialog.openDialog(
 			sharedState => (

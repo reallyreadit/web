@@ -250,6 +250,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
+	private readonly _openSubscriptionCancellationDialog = (provider: SubscriptionProvider) => {
+		if (provider === SubscriptionProvider.Apple) {
+			throw new Error('Operation not supported in browser environment.');
+		}
+		this._openStripeSubscriptionCancellationDialog();
+	};
 	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
 		if (provider === SubscriptionProvider.Apple) {
 			throw new Error('Operation not supported in browser environment.');
@@ -659,6 +665,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
+					onOpenSubscriptionCancellationDialog: this._openSubscriptionCancellationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
