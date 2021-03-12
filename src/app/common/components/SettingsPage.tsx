@@ -47,7 +47,7 @@ interface Props {
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
-	onOpenSubscriptionCancellationDialog: (provider: SubscriptionProvider) => void,
+	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterDisplayPreferenceChangedEventHandler: (handler: (preference: DisplayPreference) => void) => () => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
@@ -283,7 +283,7 @@ class SettingsPage extends React.PureComponent<
 								<SubscriptionControl
 									deviceType={this.props.deviceType}
 									onOpenPaymentConfirmationDialog={this.props.onOpenPaymentConfirmationDialog}
-									onOpenSubscriptionCancellationDialog={this.props.onOpenSubscriptionCancellationDialog}
+									onOpenSubscriptionAutoRenewDialog={this.props.onOpenSubscriptionAutoRenewDialog}
 									onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
 									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
 									status={this.props.subscriptionStatus}
@@ -380,7 +380,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onOpenDialog={deps.onOpenDialog}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
-				onOpenSubscriptionCancellationDialog={deps.onOpenSubscriptionCancellationDialog}
+				onOpenSubscriptionAutoRenewDialog={deps.onOpenSubscriptionAutoRenewDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}

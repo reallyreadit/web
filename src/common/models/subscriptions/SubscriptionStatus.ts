@@ -26,13 +26,20 @@ export type PaymentFailedSubscriptionStatus = {
 	isUserFreeForLife: boolean
 };
 export type ActiveSubscriptionStatus = {
-	type: SubscriptionStatusType.Active,
-	provider: SubscriptionProvider,
-	price: SubscriptionPrice,
-	currentPeriodBeginDate: string,
-	currentPeriodEndDate: string,
-	isUserFreeForLife: boolean
-};
+		type: SubscriptionStatusType.Active,
+		provider: SubscriptionProvider,
+		price: SubscriptionPrice,
+		currentPeriodBeginDate: string,
+		currentPeriodEndDate: string,
+		isUserFreeForLife: boolean
+	} & (
+		{
+			autoRenewEnabled: true,
+			autoRenewPrice: SubscriptionPrice
+		} | {
+			autoRenewEnabled: false
+		}
+	);
 export type LapsedSubscriptionStatus = {
 	type: SubscriptionStatusType.Lapsed,
 	provider: SubscriptionProvider,

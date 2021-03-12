@@ -57,7 +57,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatus, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import Lazy from '../../../common/Lazy';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
@@ -67,6 +67,8 @@ import { SubscriptionPrice, isSubscriptionPriceLevel } from '../../../common/mod
 import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
 import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
 import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
+import StripeAutoRenewDialog from './StripeAutoRenewDialog';
+import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -477,6 +479,31 @@ export default abstract class Root<
 			callback(response);
 		}
 	);
+	protected readonly _openStripeAutoRenewDialog = (currentStatus: ActiveSubscriptionStatus) => new Promise<void>(
+		resolve => {
+			const
+				close = () => {
+					this._dialog.closeDialog();
+					resolve();
+				},
+				setAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.props.serverApi
+					.setStripeSubscriptionAutoRenewStatus(request)
+					.then(
+						response => {
+							this.onSubscriptionStatusChanged(response.status, EventSource.Local);
+						}
+					);
+			this._dialog.openDialog(
+				() => (
+					<StripeAutoRenewDialog
+						currentStatus={currentStatus}
+						onClose={close}
+						onSetStripeSubscriptionAutoRenewStatus={setAutoRenewStatus}
+					/>
+				)
+			);
+		}
+	);
 	protected readonly _openStripePaymentConfirmationDialog = (invoiceId: string) => {
 		this._dialog.openDialog(
 			() => (
@@ -489,9 +516,6 @@ export default abstract class Root<
 				/>
 			)
 		);
-	};
-	protected readonly _openStripeSubscriptionCancellationDialog = () => {
-
 	};
 	protected readonly _openStripeSubscriptionPromptDialog = (article?: UserArticle) => {
 		this._dialog.openDialog(

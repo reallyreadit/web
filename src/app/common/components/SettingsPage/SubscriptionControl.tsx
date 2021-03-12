@@ -10,32 +10,61 @@ import Icon from '../../../../common/components/Icon';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import UserArticle from '../../../../common/models/UserArticle';
 import { DeviceType } from '../../../../common/DeviceType';
+import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 
 interface Props {
 	deviceType: DeviceType,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
-	onOpenSubscriptionCancellationDialog: (provider: SubscriptionProvider) => void,
+	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	paymentMethod: SubscriptionPaymentMethod | null
 	status: SubscriptionStatus
 }
 interface State {
-
+	isChangingAutoRenewStatus: boolean
 }
 export default class SubscriptionControl extends React.Component<Props, State> {
+	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _openPaymentConfirmationDialog = () => {
 		if (this.props.status.type === SubscriptionStatusType.PaymentConfirmationRequired) {
 			this.props.onOpenPaymentConfirmationDialog(this.props.status.invoiceId);
 		}
 	};
-	private readonly _openSubscriptionCancellationDialog = () => {
-		if (this.props.status.type === SubscriptionStatusType.Active) {
-			this.props.onOpenSubscriptionCancellationDialog(this.props.status.provider);
-		}
+	private readonly _openSubscriptionAutoRenewDialog = () => {
+		this.setState({
+			isChangingAutoRenewStatus: true
+		});
+		this._asyncTracker
+			.addPromise(
+				this.props.onOpenSubscriptionAutoRenewDialog()
+			)
+			.then(
+				() => {
+					this.setState({
+						isChangingAutoRenewStatus: false
+					});
+				}
+			)
+			.catch(
+				reason => {
+					if ((reason as CancellationToken)?.isCancelled) {
+						return;
+					}
+					this.setState({
+						isChangingAutoRenewStatus: false
+					});
+				}
+			);
 	};
 	private readonly _openSubscriptionPromptDialog = () => {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
+	constructor(props: Props) {
+		super(props);
+		this.state = {
+			isChangingAutoRenewStatus: false
+		};
+	}
 	private getCreditCardIcon(brand: SubscriptionPaymentMethodBrand) {
 		switch (brand) {
 			case SubscriptionPaymentMethodBrand.Amex:
@@ -119,6 +148,30 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 			);
 		}
 		if (this.props.status.type === SubscriptionStatusType.Active) {
+			// renewal message
+			const formattedEndDate = DateTime
+				.fromISO(
+					formatIsoDateAsUtc(this.props.status.currentPeriodEndDate)
+				)
+				.toLocaleString(DateTime.DATE_MED);
+			let renewalMessage: string;
+			if (this.props.status.autoRenewEnabled) {
+				if (this.props.status.autoRenewPrice.amount === this.props.status.price.amount) {
+					renewalMessage = `Will renew on ${formattedEndDate}`;
+				} else {
+					renewalMessage = `Will renew on ${formattedEndDate} at ${formatSubscriptionPriceAmount(this.props.status.autoRenewPrice.amount)} / month`
+				}
+			} else {
+				renewalMessage = `Will end on ${formattedEndDate}`;
+			}
+			// renewal control
+			const renewalControl = (
+				<ActionLink
+					onClick={this._openSubscriptionAutoRenewDialog}
+					state={this.state.isChangingAutoRenewStatus ? 'busy' : 'normal'}
+					text={this.props.status.autoRenewEnabled ? 'Cancel Plan' : 'Resume Plan'}
+				/>
+			);
 			return (
 				<>
 					<div className="title">Subscription Active</div>
@@ -134,27 +187,33 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 							</div> :
 							<div className="message">Loading payment method...</div> :
 						<div className="message">Billed through Apple</div>}
-					<div className="message">Will renew on {DateTime.fromISO(formatIsoDateAsUtc(this.props.status.currentPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}</div>
+					<div className="message">{renewalMessage}</div>
 					<div className="actions">
 						{this.props.status.provider === SubscriptionProvider.Stripe ?
 							this.props.paymentMethod ?
 								<>
-									<ActionLink text="Change Card" />
-									<ActionLink text="Update Card" />
-									<ActionLink text="Change Plan" />
 									<ActionLink
-										onClick={this._openSubscriptionCancellationDialog}
-										text="Cancel Plan"
+										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+										text="Change Card"
 									/>
+									<ActionLink
+										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+										text="Update Card"
+									/>
+									<ActionLink
+										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+										text="Change Plan"
+									/>
+									{renewalControl}
 								</> :
 								null :
 							this.props.deviceType === DeviceType.Ios ?
 								<>
-									<ActionLink text="Change Plan" />
 									<ActionLink
-										onClick={this._openSubscriptionCancellationDialog}
-										text="Cancel Plan"
+										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+										text="Change Plan"
 									/>
+									{renewalControl}
 								</> :
 								<>
 									Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.
@@ -176,6 +235,9 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				</div>
 			</>
 		);
+	}
+	public componentWillUnmount() {
+		this._asyncTracker.cancelAll();
 	}
 	public render() {
 		return (

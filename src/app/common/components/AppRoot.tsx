@@ -230,12 +230,33 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
-	private readonly _openSubscriptionCancellationDialog = (provider?: SubscriptionProvider) => {
-		if (provider === SubscriptionProvider.Stripe) {
-			this._openStripeSubscriptionCancellationDialog();
-			return;
+	private readonly _openSubscriptionAutoRenewDialog = () => {
+		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
+			return Promise.reject(
+				new Error('Invalid subscription state.')
+			);
+		}
+		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
+			return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
 		}
 		this.props.appApi.openExternalUrlUsingSystem('https://apps.apple.com/account/subscriptions');
+		return new Promise<void>(
+			(resolve, reject) => {
+				const refreshSubscriptionStatus = () => {
+					this.props.appApi.removeListener('didBecomeActive', refreshSubscriptionStatus);
+					this.props.serverApi
+						.requestAppleSubscriptionStatusUpdate()
+						.then(
+							response => {
+								this.onSubscriptionStatusChanged(response.status, EventSource.Local);
+								resolve();
+							}
+						)
+						.catch(reject);
+				};
+				this.props.appApi.addListener('didBecomeActive', refreshSubscriptionStatus);
+			}
+		);
 	};
 	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
 		if (provider === SubscriptionProvider.Stripe) {
@@ -720,7 +741,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
-					onOpenSubscriptionCancellationDialog: this._openSubscriptionCancellationDialog,
+					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
