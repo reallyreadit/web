@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
-import { findRouteByKey } from '../../../../common/routing/Route';
+import { findRouteByKey, findRouteByLocation } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
 // import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
@@ -23,11 +23,14 @@ interface Props {
 
 type State = {
 	menuOpen: boolean
+	activeScreen: ScreenKey | undefined
 }
 
 export default class extends React.PureComponent<Props, State> {
 	state: State = {
-		menuOpen: false
+		menuOpen: false,
+		// TODO: probably not the correct way. Also: doesn't work due to server/client mismatch error.
+		activeScreen: findRouteByLocation<any, ScreenKey>(routes, { path: typeof window != 'undefined' && window.location.pathname})?.screenKey
 	}
 
 	private readonly _beginOnboarding = () => {
@@ -42,7 +45,7 @@ export default class extends React.PureComponent<Props, State> {
 	};
 
 	private _toggleMenu() {
-		this.setState((prevState) => ({menuOpen: !prevState.menuOpen}));	
+		this.setState((prevState) => ({menuOpen: !prevState.menuOpen}));
 	};
 
 	// capture the page navigation and close the mobile menu
@@ -54,14 +57,13 @@ export default class extends React.PureComponent<Props, State> {
 
 	constructor(props: Props) {
 		super(props);
-		this.state = { 'menuOpen': false };
 	}
 
 	public render() {
 
 		const
 			showLoginButtons = (
-				!this.props.user 
+				!this.props.user
 				// removed these because we always want login buttons (= home menu too),
 				// even on mobile on the marketing site.
 				// TODO: maybe this file should replace Header.tsx at some point
@@ -69,6 +71,25 @@ export default class extends React.PureComponent<Props, State> {
 				// !isMobileDevice(this.props.deviceType)
 			),
 			showMenu = !!this.props.user;
+
+		const menuLinks = [
+				{
+					screenKey: ScreenKey.Faq,
+					linkText: 'How it works',
+					navFunction: this.props.onViewFaq
+				},
+				{
+					screenKey: ScreenKey.Mission,
+					linkText: 'Our Mission',
+					navFunction: this.props.onViewMission
+				},
+				{
+					screenKey: ScreenKey.Faq,
+					linkText: 'FAQ',
+					navFunction: this.props.onViewFaq
+				}
+			];
+
 		return (
 			<header className={
 				classNames(
@@ -85,14 +106,14 @@ export default class extends React.PureComponent<Props, State> {
 					</a>
 					<Icon
 						className="mobile-menu-toggle"
-						name={ this.state.menuOpen ? "cross" : "menu" }	
+						name={ this.state.menuOpen ? "cross" : "menu" }
 						onClick={this._toggleMenu.bind(this)}
 					/>
 				</div>
 				{showLoginButtons || showMenu ?
 					<div className={
 						classNames(
-							"menu-container", 
+							"menu-container",
 							{ open: this.state.menuOpen }
 						)}>
 						{showMenu ?
@@ -112,10 +133,13 @@ export default class extends React.PureComponent<Props, State> {
 							null}
 						{showLoginButtons ?
 							<>
-								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>How it works</a>
-								{/* <a onClick={this.props.onViewFaq}>Pricing</a> */}
-								<a onClick={this.pageNavigation.bind(this, this.props.onViewMission)}>Our Mission</a>
-								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>FAQ</a>
+								{menuLinks.map(link =>
+									<a
+										key={link.linkText}
+										className={this.state.activeScreen === link.screenKey ? 'active' : ''}
+										onClick={this.pageNavigation.bind(this, link.navFunction)}
+									>{link.linkText}</a>)
+								}
 								<Button
 									text="Log In"
 									size="large"
