@@ -36,7 +36,7 @@
 		display: flex;
 		@media screen and (max-width: 767px) {
 			font-size: 24px;
-			
+
 			> *:not(:last-child) {
 				margin-bottom: 12px;
 			}
@@ -52,6 +52,14 @@
 			margin-top: 0;
 			padding-top: 20px;
 		}
+	}
+}
+
+.home-header_2afwll a {
+	cursor: pointer;
+
+	&:hover {
+		font-family: 'Museo Sans (700)';
 	}
 }
 
@@ -124,8 +132,12 @@
 		flex-direction: row;
 		// align-items: center; // vertical center here
 
-		> *:not(:last-child) {
+		> a:not(:first-child) {
 			margin-left: 32px;
+		}
+
+		> button:nth-of-type(1) {
+			margin-left: 18px;
 		}
 	}
 

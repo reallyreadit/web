@@ -10,6 +10,7 @@ enum ScreenKey {
 	Faq,
 	Home,
 	Leaderboards,
+	Mission,
 	MyReads,
 	Notifications,
 	Password,

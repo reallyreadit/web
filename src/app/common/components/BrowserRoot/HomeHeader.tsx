@@ -15,6 +15,7 @@ interface Props {
 	onOpenMenu: () => void,
 	onOpenSignInPrompt: (analyticsAction: string) => void,
 	onViewFaq: () => void,
+	onViewMission: () => void,
 	onViewHome: () => void,
 	onViewNotifications: () => void,
 	user: UserAccount | null
@@ -113,7 +114,7 @@ export default class extends React.PureComponent<Props, State> {
 							<>
 								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>How it works</a>
 								{/* <a onClick={this.props.onViewFaq}>Pricing</a> */}
-								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>Our Mission</a>
+								<a onClick={this.pageNavigation.bind(this, this.props.onViewMission)}>Our Mission</a>
 								<a onClick={this.pageNavigation.bind(this, this.props.onViewFaq)}>FAQ</a>
 								<Button
 									text="Log In"

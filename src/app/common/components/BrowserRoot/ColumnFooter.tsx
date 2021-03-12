@@ -26,8 +26,8 @@ export default class extends React.PureComponent<{
 
 		interface LinkSet {
 			title: string,
-			sublinks: (Link|ComponentLink)[] 
-		} 
+			sublinks: (Link|ComponentLink)[]
+		}
 
 		const links:LinkSet[] = [
 			{
@@ -66,14 +66,14 @@ export default class extends React.PureComponent<{
 						// TODO: copied from web/src/app/common/components/BrowserRoot/GetStartedButton.tsx
 						// extract as reusable component
 						key: "ios_button",
-						component: 	
+						component:
 							<a
 							className="ios"
 							// href={getStoreUrl(DeviceType.Ios)}
 							// onClick={this._copyAppReferrerTextToClipboard}
 							>
 								<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-							</a> 
+							</a>
 					},
 					{
 						text: "Chrome"
@@ -90,29 +90,29 @@ export default class extends React.PureComponent<{
 		return (
 			<div
 				className="column-footer_ltflpc"
-				data-nosnippet	
+				data-nosnippet
 			>
 				<div className="content">
 					<div className="column-footer_ltflpc__links">
 						<img className="logo" alt="Readup Logo" src={`/images/logo-white.svg`} />
-						{links.map((linkSet, i) => 
+						{links.map((linkSet, i) =>
 							<div className="column-footer_ltflpc__link-set" key={linkSet.toString() + i}>
-								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>	
+								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>
 								<ul>
 									{
 										linkSet.sublinks.map(
-											(link, i) => 
+											(link, i) =>
 											{
 												let simpleLink = link as Link;
 												let componentLink = link as ComponentLink;
 												if (simpleLink.text) {
-													return <li><a key={simpleLink.text}>{simpleLink.text}</a></li>
+													return <li key={simpleLink.text}><a>{simpleLink.text}</a></li>
 												} else if (componentLink.component) {
 													return <li key={componentLink.key}>{componentLink.component}</li>
 												} else {
 													return null;
 												}
-											})
+											}).filter(e => e != null)
 									}
 								</ul>
 							</div>

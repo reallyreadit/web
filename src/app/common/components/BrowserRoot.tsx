@@ -207,6 +207,12 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			method: 'replace'
 		});
 	};
+	private readonly _viewMission = () => {
+		this.setScreenState({
+			key: ScreenKey.Mission,
+			method: 'replace'
+		});
+	};
 	private readonly _viewMyReads = () => {
 		this.setScreenState({
 			key: ScreenKey.MyReads,
@@ -1129,6 +1135,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						deviceType={this.props.deviceType}
 						onBeginOnboarding={this._beginOnboarding}
 						onOpenMenu={this._openMenu}
+						onViewMission={this._viewMission}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
 						onViewFaq={this._viewFaq}

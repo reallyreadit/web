@@ -181,29 +181,21 @@ export default class MarketingScreen extends React.Component<
 					{valuePoints.map((pointData, i) => <ImageAndText key={pointData.imageName} {...pointData} imageRight={!(i % 2 == 0)} />) }
 				</HomePanel>
 				<HomePanel
-					data-nosnippet	
+					data-nosnippet
 				>
 					<h2 className="heading-regular">We're on a quest to save journalism.</h2>
 					<div className="flex-panel">
-						<Card>
-							Test
-						</Card>
-						<Card>
-							Test
-						</Card>
-						<Card>
-							Test
-						</Card>
+						{[1,2,3].map(n => <Card key={n}>Test</Card>)}
 					</div>
 				</HomePanel>
 				<HomePanel
-					data-nosnippet	
+					data-nosnippet
 				>
 					<h2 className="heading-regular">What our Readers say</h2>
 					<div className="quote-grid">
-						{quotes.map(quote => 
-						<QuoteCard 
-							key={quote.quote} 
+						{quotes.map(quote =>
+						<QuoteCard
+							key={quote.quote}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onViewProfile={this.props.onViewProfile}
 							{...quote} />

@@ -103,6 +103,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/notifications$/,
 		screenKey: ScreenKey.Notifications
 	},
+	{
+		createUrl: () => '/mission',
+		pathRegExp: /^\/mission|about$/,
+		screenKey: ScreenKey.Mission
+	},
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;
 		return {

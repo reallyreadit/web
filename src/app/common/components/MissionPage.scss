@@ -1,0 +1,36 @@
+/*
+  componentPath: src/app/common/components/MissionPage
+  cssComponentId: mission-page_hvneey
+*/
+
+.mission-page_hvneey {
+	.mission-point {
+		> .heading-regular {
+			margin-bottom: 14px;
+		}
+
+		> p {
+			margin-bottom: 22px;
+			line-height: 1.25;
+		}
+	}
+
+	@media screen and (min-width: 768px) {
+		display: flex;
+		flex-direction: column;
+
+		.mission-point {
+			display: block;
+			align-self: flex-start;
+			max-width: 600px;
+			> p {
+				line-height: 1.4;
+				margin-bottom: 72px;
+			}
+		}
+
+		.mission-point:nth-child(2n) {
+			align-self: flex-end;
+		}
+	}
+}
