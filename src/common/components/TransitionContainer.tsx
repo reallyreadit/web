@@ -11,6 +11,7 @@ interface State {
 }
 export default class TransitionContainer extends React.Component<Props, State> {
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
+		event.stopPropagation();
 		if (event.animationName === 'transition-container_ko0vbz-fade-out') {
 			this.setState(
 				{
