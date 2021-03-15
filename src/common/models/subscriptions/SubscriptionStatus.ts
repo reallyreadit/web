@@ -1,5 +1,5 @@
 import SubscriptionProvider from './SubscriptionProvider';
-import { SubscriptionPrice } from './SubscriptionPrice';
+import { SubscriptionPriceLevel } from './SubscriptionPrice';
 
 export enum SubscriptionStatusType {
 	NeverSubscribed = 1,
@@ -15,27 +15,27 @@ export type NeverSubscribedSubscriptionStatus = {
 export type PaymentConfirmationRequiredSubscriptionStatus = {
 	type: SubscriptionStatusType.PaymentConfirmationRequired,
 	provider: SubscriptionProvider,
-	price: SubscriptionPrice,
+	price: SubscriptionPriceLevel,
 	invoiceId: string,
 	isUserFreeForLife: boolean
 };
 export type PaymentFailedSubscriptionStatus = {
 	type: SubscriptionStatusType.PaymentFailed,
 	provider: SubscriptionProvider,
-	price: SubscriptionPrice,
+	price: SubscriptionPriceLevel,
 	isUserFreeForLife: boolean
 };
 export type ActiveSubscriptionStatus = {
 		type: SubscriptionStatusType.Active,
 		provider: SubscriptionProvider,
-		price: SubscriptionPrice,
+		price: SubscriptionPriceLevel,
 		currentPeriodBeginDate: string,
 		currentPeriodEndDate: string,
 		isUserFreeForLife: boolean
 	} & (
 		{
 			autoRenewEnabled: true,
-			autoRenewPrice: SubscriptionPrice
+			autoRenewPrice: SubscriptionPriceLevel
 		} | {
 			autoRenewEnabled: false
 		}
@@ -43,7 +43,7 @@ export type ActiveSubscriptionStatus = {
 export type LapsedSubscriptionStatus = {
 	type: SubscriptionStatusType.Lapsed,
 	provider: SubscriptionProvider,
-	price: SubscriptionPrice,
+	price: SubscriptionPriceLevel,
 	lastPeriodEndDate: string,
 	isUserFreeForLife: boolean
 };

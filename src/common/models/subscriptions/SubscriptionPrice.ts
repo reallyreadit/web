@@ -3,6 +3,8 @@ export type StandardSubscriptionPriceLevel = {
 	name: string,
 	amount: number
 };
+export type CustomSubscriptionPriceLevel = Pick<StandardSubscriptionPriceLevel, 'amount' | 'id'>;
+export type SubscriptionPriceLevel = StandardSubscriptionPriceLevel | CustomSubscriptionPriceLevel;
 export type SubscriptionPrice =
 	StandardSubscriptionPriceLevel | {
 		amount: number

@@ -3,7 +3,7 @@ import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/m
 import { SubscriptionPaymentMethod, SubscriptionPaymentMethodBrand } from '../../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import ContentBox from '../../../../common/components/ContentBox';
 import ActionLink from '../../../../common/components/ActionLink';
-import { formatSubscriptionPriceName, formatSubscriptionPriceAmount, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { formatSubscriptionPriceName, formatSubscriptionPriceAmount, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { DateTime } from 'luxon';
 import { formatIsoDateAsUtc } from '../../../../common/format';
 import Icon from '../../../../common/components/Icon';
@@ -83,7 +83,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				return 'credit-card';
 		}
 	}
-	private renderSubscriptionDetails(price: SubscriptionPrice) {
+	private renderSubscriptionDetails(price: SubscriptionPriceLevel) {
 		return (
 			<>
 				<div className="price-name">{formatSubscriptionPriceName(price)}</div>

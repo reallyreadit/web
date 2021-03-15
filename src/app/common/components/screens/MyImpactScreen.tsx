@@ -7,7 +7,7 @@ import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import DistributionChart from './MyImpactScreen/DistributionChart';
-import { formatSubscriptionPriceAmount, formatSubscriptionPriceName, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { formatSubscriptionPriceAmount, formatSubscriptionPriceName, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { formatCountable, formatIsoDateAsUtc } from '../../../../common/format';
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
@@ -41,7 +41,7 @@ function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDis
 		<div className="content-block">{daysRemaining} {formatCountable(daysRemaining, 'day')} until your current cycle ends.</div>
 	);
 }
-function renderSubscriptionDetails(price: SubscriptionPrice) {
+function renderSubscriptionDetails(price: SubscriptionPriceLevel) {
 	return (
 		<div className="content-block">
 			{formatSubscriptionPriceName(price)}<br />
