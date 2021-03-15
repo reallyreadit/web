@@ -6,14 +6,24 @@ import * as classNames from 'classnames';
 type SubscriptionSelectorOption = StandardSubscriptionPriceLevel & {
 	formattedAmount: string
 };
-interface Props {
-	allowCustomPrice?: boolean,
-	onSelect: (price: SubscriptionPriceSelection) => void,
-}
+type BaseProps = {
+	options: SubscriptionSelectorOption[]
+};
+type CustomPriceSelectionProps = BaseProps & {
+	allowCustomPrice: true,
+	onSelect: (price: SubscriptionPriceSelection) => void
+};
+type StandardPriceSelectionProps = BaseProps & {
+	onSelect: (price: StandardSubscriptionPriceLevel) => void
+};
+type Props = CustomPriceSelectionProps | StandardPriceSelectionProps;
 interface State {
 	customAmount: string,
 	customAmountError: string | null,
 	isSettingCustomPrice: boolean
+}
+function isCustomPriceAllowed(props: Props): props is CustomPriceSelectionProps {
+	return 'allowCustomPrice' in props;
 }
 export default class SubscriptionSelector extends React.Component<Props, State> {
 	private readonly _changeCustomAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +50,11 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 		});
 	};
 	private readonly _selectCustomPrice = () => {
+		if (
+			!isCustomPriceAllowed(this.props)
+		) {
+			return;
+		}
 		const match = this.state.customAmount
 			.trim()
 			.match(/^\$?\s*([\d,]+(\.\d{0,2})?)$/);
@@ -104,7 +119,7 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 						</button>
 					)
 				)}
-				{this.props.allowCustomPrice ?
+				{isCustomPriceAllowed(this.props) ?
 					<div className="custom-price-control">
 						<label
 							className={

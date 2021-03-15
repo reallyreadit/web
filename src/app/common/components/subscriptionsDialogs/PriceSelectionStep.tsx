@@ -2,11 +2,17 @@ import * as React from 'react';
 import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import SubscriptionSelector from '../controls/SubscriptionSelector';
 
-interface Props {
-	allowCustomPrice: boolean,
-	onSelectPrice: (price: SubscriptionPriceSelection) => void,
+type BaseProps = {
 	priceLevels: StandardSubscriptionPriceLevel[]
-}
+};
+type CustomSelectionProps = BaseProps & {
+	allowCustomPrice: true,
+	onSelectPrice: (price: SubscriptionPriceSelection) => void
+};
+type StandardPriceSelectionProps = BaseProps & {
+	onSelectPrice: (price: StandardSubscriptionPriceLevel) => void
+};
+type Props = CustomSelectionProps & StandardPriceSelectionProps;
 interface State {
 
 }
