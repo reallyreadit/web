@@ -230,6 +230,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
+	private readonly _openAppStoreSubscriptionPromptDialog = (article?: UserArticle) => {
+		this._dialog.openDialog(
+			sharedState => (
+				<AppStoreSubscriptionPrompt
+					article={article}
+					isPaymentProcessing={sharedState.isProcessingPayment}
+					onClose={this._dialog.closeDialog}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onReadArticle={this._readArticle}
+					onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
+					onRequestSubscriptionProducts={this._requestSubscriptionProducts}
+					onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
+					onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
+					onValidateSubscription={this._validateSubscription}
+					subscriptionStatus={sharedState.subscriptionStatus}
+				/>
+			)
+		);
+	};
 	private readonly _openSubscriptionAutoRenewDialog = () => {
 		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
 			return Promise.reject(
@@ -263,9 +282,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this._openStripeSubscriptionPromptDialog(article);
 			return;
 		}
-		const
-			requestProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request),
-			requestPurchase = (request: SubscriptionPurchaseRequest) => {
+		this._openAppStoreSubscriptionPromptDialog(article);
+	};
+	private readonly _requestSubscriptionProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request);
+	private readonly _requestSubscriptionPurchase = (request: SubscriptionPurchaseRequest) => {
 				this.setState(
 					prevState => {
 						if (prevState.isProcessingPayment) {
@@ -307,9 +327,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 						};
 					}
 				);
-			},
-			requestReceipt = () => this.props.appApi.requestSubscriptionReceipt(),
-			validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
+	};
+	private readonly _requestSubscriptionReceipt = () => this.props.appApi.requestSubscriptionReceipt();
+	private readonly _validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
 				.validateAppleSubscription(request)
 				.then(
 					response => {
@@ -319,24 +339,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						return response;
 					}
 				);
-		this._dialog.openDialog(
-			sharedState => (
-				<AppStoreSubscriptionPrompt
-					article={article}
-					isPaymentProcessing={sharedState.isProcessingPayment}
-					onClose={this._dialog.closeDialog}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onReadArticle={this._readArticle}
-					onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
-					onRequestSubscriptionProducts={requestProducts}
-					onRequestSubscriptionPurchase={requestPurchase}
-					onRequestSubscriptionReceipt={requestReceipt}
-					onValidateSubscription={validateSubscription}
-					subscriptionStatus={sharedState.subscriptionStatus}
-				/>
-			)
-		);
-	};
 
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
