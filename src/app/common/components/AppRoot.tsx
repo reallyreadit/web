@@ -333,7 +333,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRequestSubscriptionReceipt={requestReceipt}
 					onValidateSubscription={validateSubscription}
 					subscriptionStatus={sharedState.subscriptionStatus}
-					user={sharedState.user}
 				/>
 			)
 		);

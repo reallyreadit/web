@@ -9,7 +9,6 @@ import { SubscriptionProductsRequest, SubscriptionProductsResponse, Subscription
 import { SubscriptionPurchaseRequest } from '../../../../common/models/app/SubscriptionPurchase';
 import { SubscriptionReceiptResponse } from '../../../../common/models/app/SubscriptionReceipt';
 import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../../common/models/subscriptions/AppleSubscriptionValidation';
-import UserAccount from '../../../../common/models/UserAccount';
 import UserArticle from '../../../../common/models/UserArticle';
 import { AsyncResult, Result, ResultType } from '../../../../common/Result';
 import SubscriptionSelector from '../controls/SubscriptionSelector';
@@ -31,8 +30,7 @@ interface Props {
 	onRequestSubscriptionPurchase: (request: SubscriptionPurchaseRequest) => void,
 	onRequestSubscriptionReceipt: () => Promise<Result<SubscriptionReceiptResponse, ErrorResponse<ReceiptRequestError>>>,
 	onValidateSubscription: (request: AppleSubscriptionValidationRequest) => Promise<AppleSubscriptionValidationResponse>,
-	subscriptionStatus: SubscriptionStatus,
-	user: UserAccount | null
+	subscriptionStatus: SubscriptionStatus
 }
 interface State {
 	productsResult: AsyncResult<(SubscriptionProduct & { usdAmount: number })[], string>,
