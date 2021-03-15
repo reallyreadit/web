@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Dialog from '../../../common/components/Dialog';
 import UserArticle from '../../../common/models/UserArticle';
-import SubscriptionSelector from './controls/SubscriptionSelector';
 import TransitionContainer from '../../../common/components/TransitionContainer';
 import PaymentEntryStep from './StripeSubscriptionPrompt/PaymentEntryStep';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
@@ -13,12 +12,14 @@ import { FetchFunction, FetchFunctionWithParams } from '../serverApi/ServerApi';
 import ContinueStep from './StripeSubscriptionPrompt/ContinueStep';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
-import Fetchable from '../../../common/Fetchable';
-import DialogSpinner from '../../../common/components/Dialog/DialogSpinner';
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
-import { SubscriptionPrice, formatSubscriptionPriceAmount } from '../../../common/models/subscriptions/SubscriptionPrice';
-import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import { SubscriptionPrice, SubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
 import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
+import StatusCheckStep from './subscriptionsDialogs/StatusCheckStep';
+import PriceLevelsCheckStep from './subscriptionsDialogs/PriceLevelsCheckStep';
+import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import PriceSelectionStep from './subscriptionsDialogs/PriceSelectionStep';
+import { Require } from '../../../common/Require';
 
 interface Props {
 	article: UserArticle | null,
@@ -40,21 +41,69 @@ enum Step {
 	PaymentEntry,
 	Continue
 }
-interface State {
-	currentStep: Step,
+type SubscriptionStatusCheckState = {
+	step: Step.SubscriptionStatusCheck,
+	nextState?: PriceLevelsCheckState | ContinueState
+}
+type PriceLevelsCheckState = {
+	step: Step.PriceLevelsCheck,
+	nextState?: PriceSelectionState | ContinueState
+};
+type PriceSelectionState = {
+	step: Step.PriceSelection,
+	priceLevels: SubscriptionPriceLevel[],
+	nextState?: PaymentEntryState | ContinueState
+};
+type PaymentEntryState = {
+	step: Step.PaymentEntry,
 	isDismissable: boolean,
-	priceLevels: Fetchable<SubscriptionPriceLevelsResponse>,
-	selectedPrice: SubscriptionPrice | null,
-	subscriptionStatus: Fetchable<SubscriptionStatusResponse>,
-	transitioningToStep: Step | null
+	priceLevels: SubscriptionPriceLevel[],
+	selectedPrice: SubscriptionPrice,
+	nextState?: PriceSelectionState | ContinueState
+}
+type ContinueState = {
+	step: Step.Continue
+};
+type TransitioningState = (
+	Require<SubscriptionStatusCheckState, 'nextState'> |
+	Require<PriceLevelsCheckState, 'nextState'> |
+	Require<PriceSelectionState, 'nextState'> |
+	Require<PaymentEntryState, 'nextState'>
+);
+type State = (
+	SubscriptionStatusCheckState |
+	PriceLevelsCheckState |
+	PriceSelectionState |
+	PaymentEntryState |
+	ContinueState
+);
+function isTransitioning(state: State): state is TransitioningState {
+	return state.step !== Step.Continue && state.nextState != null;
 }
 export default class StripeSubscriptionPrompt extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _checkSubscriptionStatus = (status: SubscriptionStatus) => {
+		if (
+			this.state.step === Step.SubscriptionStatusCheck &&
+			status.type !== SubscriptionStatusType.Active
+		) {
+			this.setState({
+				step: this.state.step,
+				nextState: {
+					step: Step.PriceLevelsCheck
+				}
+			});
+		}
+	};
 	private readonly _completeTransition = () => {
-		this.setState({
-			currentStep: this.state.transitioningToStep,
-			transitioningToStep: null
-		});
+		if (
+			isTransitioning(this.state)
+		) {
+			this.setState({
+				...this.state.nextState,
+				nextState: null
+			});
+		}
 	};
 	private readonly _continue = () => {
 		// trying to read the article could open another dialog so we need to make sure to
@@ -66,18 +115,51 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 		}
 	};
 	private readonly _goToPriceSelectionStep = () => {
+		if (this.state.step !== Step.PaymentEntry) {
+			return;
+		}
 		this.setState({
-			transitioningToStep: Step.PriceSelection
+			step: this.state.step,
+			nextState: {
+				step: Step.PriceSelection,
+				priceLevels: this.state.priceLevels
+			}
 		});
 	};
 	private readonly _selectPrice = (price: SubscriptionPrice) => {
+		if (this.state.step !== Step.PriceSelection) {
+			return;
+		}
 		this.setState({
-			selectedPrice: price,
-			transitioningToStep: Step.PaymentEntry
+			step: this.state.step,
+			nextState: {
+				step: Step.PaymentEntry,
+				isDismissable: true,
+				priceLevels: this.state.priceLevels,
+				selectedPrice: price
+			}
+		})
+	};
+	private readonly _setPriceLevels = (priceLevels: SubscriptionPriceLevel[]) => {
+		if (this.state.step !== Step.PriceLevelsCheck) {
+			return;
+		}
+		this.setState({
+			step: this.state.step,
+			nextState: {
+				step: Step.PriceSelection,
+				priceLevels
+			}
 		})
 	};
 	private readonly _subscribe = (card: StripeCardElement, price: SubscriptionPrice) => {
+		if (this.state.step !== Step.PaymentEntry) {
+			return Promise.reject(
+				new Error('Invalid step state.')
+			);
+		}
 		this.setState({
+			step: this.state.step,
 			isDismissable: false
 		});
 		return this._asyncTracker
@@ -87,6 +169,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			.then(
 				response => {
 					this.setState({
+						step: Step.PaymentEntry,
 						isDismissable: true
 					});
 					return response;
@@ -96,6 +179,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 				reason => {
 					if (!(reason as CancellationToken)?.isCancelled) {
 						this.setState({
+							step: Step.PaymentEntry,
 							isDismissable: true
 						});
 					}
@@ -106,77 +190,32 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			currentStep: Step.SubscriptionStatusCheck,
-			isDismissable: true,
-			priceLevels: {
-				isLoading: true
-			},
-			selectedPrice: null,
-			subscriptionStatus: props.onGetSubscriptionStatus(
-				this._asyncTracker.addCallback(
-					subscriptionStatus => {
-						if (
-							subscriptionStatus.value &&
-							subscriptionStatus.value.status.type !== SubscriptionStatusType.Active
-						) {
-							props.onGetSubscriptionPriceLevels(
-								{
-									provider: SubscriptionProvider.Stripe
-								},
-								this._asyncTracker.addCallback(
-									priceLevels => {
-										this.setState({
-											priceLevels,
-											transitioningToStep: Step.PriceSelection
-										});
-									}
-								)
-							);
-							this.setState({
-								transitioningToStep: Step.PriceLevelsCheck
-							});
-						} else if (subscriptionStatus.errors) {
-							this.setState({ subscriptionStatus });
-						}
-					}
-				)
-			),
-			transitioningToStep: null
+			step: Step.SubscriptionStatusCheck
 		};
 	}
-	private renderContent() {
-		switch (this.state.currentStep) {
+	private renderStep() {
+		switch (this.state.step) {
 			case Step.SubscriptionStatusCheck:
-				if (this.state.subscriptionStatus.errors) {
-					return <span>Error checking subscription status: {this.state.subscriptionStatus.errors[0]}</span>;
-				}
 				return (
-					<DialogSpinner message="Checking subscription status." />
+					<StatusCheckStep
+						onGetSubscriptionStatus={this.props.onGetSubscriptionStatus}
+						onSubscriptionStatusCheckCompleted={this._checkSubscriptionStatus}
+					/>
 				);
-				// If the status check completed successfully we'll either be transitioning to
-				// the price selection or continuation step.
 			case Step.PriceLevelsCheck:
-				if (this.state.priceLevels.errors) {
-					return <span>Error loading subscription options: {this.state.priceLevels.errors[0]}</span>;
-				}
 				return (
-					<DialogSpinner message="Loading subscription options." />
+					<PriceLevelsCheckStep
+						onGetSubscriptionPriceLevels={this.props.onGetSubscriptionPriceLevels}
+						onSubscriptionPriceLevelsLoaded={this._setPriceLevels}
+						provider={SubscriptionProvider.Stripe}
+					/>
 				);
-				// If the price levels check completed successfully we'll be transitioning to the
-				// price selection step.
 			case Step.PriceSelection:
 				return (
-					<SubscriptionSelector
+					<PriceSelectionStep
 						allowCustomPrice
-						onSelect={this._selectPrice}
-						options={
-							this.state.priceLevels.value.prices.map(
-								priceLevel => ({
-									...priceLevel,
-									formattedAmount: formatSubscriptionPriceAmount(priceLevel.amount)
-								})
-							)
-						}
+						onSelectPrice={this._selectPrice}
+						priceLevels={this.state.priceLevels}
 					/>
 				);
 			case Step.PaymentEntry:
@@ -203,11 +242,22 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 	public componentDidUpdate(prevProps: Props) {
 		if (
 			this.props.subscriptionStatus.type === SubscriptionStatusType.Active &&
-			prevProps.subscriptionStatus.type !== SubscriptionStatusType.Active
+			prevProps.subscriptionStatus.type !== SubscriptionStatusType.Active &&
+			this.state.step !== Step.Continue
 		) {
-			this.setState({
-				transitioningToStep: Step.Continue
-			});
+			this.setState(
+				{
+					step: this.state.step,
+					nextState: {
+						step: Step.Continue
+					}
+				} as (
+					Pick<SubscriptionStatusCheckState, 'step' | 'nextState'> |
+					Pick<PriceLevelsCheckState, 'step' | 'nextState'> |
+					Pick<PriceSelectionState, 'step' | 'nextState'> |
+					Pick<PaymentEntryState, 'step' | 'nextState'>
+				)
+			);
 		}
 	}
 	public componentWillUnmount() {
@@ -217,6 +267,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 		return (
 			<Dialog
 				onClose={
+					this.state.step !== Step.PaymentEntry ||
 					this.state.isDismissable ?
 						this.props.onClose :
 						null
@@ -225,10 +276,12 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			>
 				<div className="stripe-subscription-prompt_3cqidx">
 					<TransitionContainer
-						isTransitioning={this.state.transitioningToStep != null}
+						isTransitioning={
+							isTransitioning(this.state)
+						}
 						onTransitionComplete={this._completeTransition}
 					>
-						{this.renderContent()}
+						{this.renderStep()}
 					</TransitionContainer>
 				</div>
 			</Dialog>
