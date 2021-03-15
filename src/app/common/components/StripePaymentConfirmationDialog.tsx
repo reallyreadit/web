@@ -10,6 +10,7 @@ import { Intent } from '../../../common/components/Toaster';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { getPromiseErrorMessage } from '../../../common/format';
+import { Require } from '../../../common/Require';
 
 interface Props {
 	invoiceId: string,
@@ -39,10 +40,7 @@ type FailureState = {
 	step: Step.Failure,
 	message: string
 };
-type RequireNextState<State extends { nextState?: unknown }> = Pick<State, Exclude<keyof State, 'nextState'>> & {
-	nextState: State['nextState']
-};
-type TransitioningState = RequireNextState<SubscriptionStatusCheckState> | RequireNextState<PaymentConfirmationState>;
+type TransitioningState = Require<SubscriptionStatusCheckState, 'nextState'> | Require<PaymentConfirmationState, 'nextState'>;
 type State = SubscriptionStatusCheckState | PaymentConfirmationState | SuccessState | FailureState;
 function isTransitioning(state: State): state is TransitioningState {
 	return (
