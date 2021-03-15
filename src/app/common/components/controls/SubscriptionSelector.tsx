@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel, isStandardSubscriptionPriceLevel, formatSubscriptionPriceName, formatSubscriptionPriceAmount, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import Icon from '../../../../common/components/Icon';
 import * as classNames from 'classnames';
 
@@ -7,7 +7,8 @@ type SubscriptionSelectorOption = StandardSubscriptionPriceLevel & {
 	formattedAmount: string
 };
 type BaseProps = {
-	options: SubscriptionSelectorOption[]
+	options: SubscriptionSelectorOption[],
+	currentPrice?: SubscriptionPriceLevel
 };
 type CustomPriceSelectionProps = BaseProps & {
 	allowCustomPrice: true,
@@ -84,6 +85,10 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 				this.setState({
 					customAmountError: 'Must be $1,000.00 or less.'
 				});
+			} else if (amount === this.props.currentPrice?.amount) {
+				this.setState({
+					customAmountError: 'Must be a new amount.'
+				});
 			} else {
 				this.props.onSelect({
 					amount
@@ -103,22 +108,55 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 			isSettingCustomPrice: false
 		};
 	}
+	private renderButton(id: string | null, name: string, formattedAmount: string, isSelected: boolean) {
+		return (
+			<button
+				disabled={isSelected}
+				key={id}
+				onClick={
+					isSelected ?
+						null :
+						this._purchase
+				}
+				value={id}
+			>
+				<span className="name">{name}</span>
+				<span className="price">{formattedAmount} / month</span>
+				{isSelected ?
+					<span className="selected">
+						<Icon name="checkmark" /> Current Plan
+					</span> :
+					null}
+			</button>
+		);
+	}
 	public render() {
 		return (
 			<div className="subscription-selector_nuri7o">
 				<label>Choose your Price</label>
 				{this.props.options.map(
-					product => (
-						<button
-							key={product.id}
-							onClick={this._purchase}
-							value={product.id}
-						>
-							<span className="name">{product.name}</span>
-							<span className="price">{product.formattedAmount} / month</span>
-						</button>
+					product => this.renderButton(
+						product.id,
+						product.name,
+						product.formattedAmount,
+						(
+							this.props.currentPrice != null &&
+							isStandardSubscriptionPriceLevel(this.props.currentPrice) &&
+							this.props.currentPrice.id === product.id
+						)
 					)
 				)}
+				{(
+					this.props.currentPrice != null &&
+					!isStandardSubscriptionPriceLevel(this.props.currentPrice)
+				) ?
+					this.renderButton(
+						null,
+						formatSubscriptionPriceName(this.props.currentPrice),
+						formatSubscriptionPriceAmount(this.props.currentPrice.amount),
+						true
+					) :
+					null}
 				{isCustomPriceAllowed(this.props) ?
 					<div className="custom-price-control">
 						<label

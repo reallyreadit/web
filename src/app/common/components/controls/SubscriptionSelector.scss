@@ -2,7 +2,6 @@
 	componentPath: src/app/common/components/controls/SubscriptionSelector
 	cssComponentId: subscription-selector_nuri7o
 */
-@import '../../../../common/styles/colors.scss';
 
 .subscription-selector_nuri7o > label {
 	display: block;
@@ -19,6 +18,16 @@
 	font-family: 'Museo Sans (500)';
 	outline: none;
 	cursor: pointer;
+	border-color: var(--control-border-color);
+	background-color: var(--control-background-color);
+}
+.subscription-selector_nuri7o > button:focus {
+	border-color: var(--intent-primary-color);
+}
+.subscription-selector_nuri7o > button:disabled {
+	color: var(--text-muted-color);
+	border-color: var(--control-disabled-color);
+	cursor: default;
 }
 .subscription-selector_nuri7o > button + button {
 	margin-top: 10px;
@@ -27,12 +36,20 @@
 	display: block;
 	margin-bottom: 5px;
 }
+.subscription-selector_nuri7o > button > .selected {
+	display: block;
+	margin-top: 5px;
+}
+.subscription-selector_nuri7o > button > .selected > .icon_rour3d {
+	vertical-align: text-top;
+}
 .subscription-selector_nuri7o > .custom-price-control {
 	text-align: center;
 	margin-top: 20px;
 }
 .subscription-selector_nuri7o > .custom-price-control > label {
 	font-size: 11pt;
+	color: var(--text-muted-color);
 }
 .subscription-selector_nuri7o > .custom-price-control > label.link {
 	cursor: pointer;
@@ -58,6 +75,8 @@
 	border-radius: 0;
 	border-radius: 3px;
 	text-align: right;
+	border-color: var(--control-border-color);
+	background: var(--control-background-color);
 }
 .subscription-selector_nuri7o > .custom-price-control > .form > .controls > input:focus {
 	outline: none;
@@ -70,41 +89,4 @@
 .subscription-selector_nuri7o > .custom-price-control > .form > .error {
 	font-size: 11pt;
 	margin-top: 15px;
-}
-
-@include theme using ($root, $scheme) {
-	#{$root} .subscription-selector_nuri7o > button {
-		@include theme-colors(
-			$scheme,
-			(
-				"border-color": $control-border-color,
-				"background-color": $control-background-color
-			)
-		);
-	}
-	#{$root} .subscription-selector_nuri7o > button:focus {
-		@include theme-colors(
-			$scheme,
-			(
-				"border-color": $intent-primary-color
-			)
-		);
-	}
-	#{$root} .subscription-selector_nuri7o > .custom-price-control > label {
-		@include theme-colors(
-			$scheme,
-			(
-				"color": $text-muted-color
-			)
-		);
-	}
-	#{$root} .subscription-selector_nuri7o > .custom-price-control > .form > .controls > input {
-		@include theme-colors(
-			$scheme,
-			(
-				"border-color": $control-border-color,
-				"background": $control-background-color
-			)
-		);
-	}
 }

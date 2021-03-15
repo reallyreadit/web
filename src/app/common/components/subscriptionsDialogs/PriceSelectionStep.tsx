@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel, formatSubscriptionPriceAmount, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import SubscriptionSelector from '../controls/SubscriptionSelector';
 
 type BaseProps = {
-	priceLevels: StandardSubscriptionPriceLevel[]
+	priceLevels: StandardSubscriptionPriceLevel[],
+	currentPrice?: SubscriptionPriceLevel
 };
 type CustomSelectionProps = BaseProps & {
 	allowCustomPrice: true,
@@ -31,6 +32,7 @@ export default class PriceSelectionStep extends React.Component<Props, State> {
 							})
 						)
 					}
+					currentPrice={this.props.currentPrice}
 				/>
 			</div>
 		);
