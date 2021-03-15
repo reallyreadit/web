@@ -532,7 +532,6 @@ export default abstract class Root<
 					staticServerEndpoint={this.props.staticServerEndpoint}
 					stripe={this.props.stripeLoader.value}
 					subscriptionStatus={sharedState.subscriptionStatus}
-					user={sharedState.user}
 				/>
 			)
 		);

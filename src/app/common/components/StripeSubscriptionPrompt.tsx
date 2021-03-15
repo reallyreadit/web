@@ -10,7 +10,6 @@ import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPrefere
 import AsyncTracker, { CancellationToken } from '../../../common/AsyncTracker';
 import { Intent } from '../../../common/components/Toaster';
 import { FetchFunction, FetchFunctionWithParams } from '../serverApi/ServerApi';
-import UserAccount from '../../../common/models/UserAccount';
 import ContinueStep from './StripeSubscriptionPrompt/ContinueStep';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
@@ -32,8 +31,7 @@ interface Props {
 	onSubscribe: (card: StripeCardElement, price: SubscriptionPrice) => Promise<StripePaymentResponse>,
 	staticServerEndpoint: HttpEndpoint,
 	stripe: Promise<Stripe> | null,
-	subscriptionStatus: SubscriptionStatus,
-	user: UserAccount | null
+	subscriptionStatus: SubscriptionStatus
 }
 enum Step {
 	SubscriptionStatusCheck,
