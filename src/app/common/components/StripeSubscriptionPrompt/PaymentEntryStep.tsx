@@ -8,7 +8,7 @@ import HttpEndpoint, { createUrl } from '../../../../common/HttpEndpoint';
 import { DisplayTheme, getClientPreferredColorScheme } from '../../../../common/models/userAccounts/DisplayPreference';
 import { getPromiseErrorMessage } from '../../../../common/format';
 import { Intent } from '../../../../common/components/Toaster';
-import { SubscriptionPrice, formatSubscriptionPriceName, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, formatSubscriptionPriceName, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import ContentBox from '../../../../common/components/ContentBox';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../../common/models/subscriptions/StripePaymentResponse';
 
@@ -16,8 +16,8 @@ interface Props {
 	displayTheme: DisplayTheme | null,
 	onChangePrice: () => void,
 	onShowToast: (content: string, intent: Intent) => void,
-	onSubscribe: (card: StripeCardElement, price: SubscriptionPrice) => Promise<StripePaymentResponse>,
-	selectedPrice: SubscriptionPrice,
+	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
+	selectedPrice: SubscriptionPriceSelection,
 	staticServerEndpoint: HttpEndpoint,
 	stripe: Promise<Stripe> | null
 }

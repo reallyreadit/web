@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SubscriptionPrice, StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import Icon from '../../../../common/components/Icon';
 import * as classNames from 'classnames';
 
@@ -8,8 +8,7 @@ type SubscriptionSelectorOption = StandardSubscriptionPriceLevel & {
 };
 interface Props {
 	allowCustomPrice?: boolean,
-	onSelect: (price: SubscriptionPrice) => void,
-	options: SubscriptionSelectorOption[]
+	onSelect: (price: SubscriptionPriceSelection) => void,
 }
 interface State {
 	customAmount: string,

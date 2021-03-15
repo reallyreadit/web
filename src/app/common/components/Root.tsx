@@ -63,7 +63,7 @@ import Lazy from '../../../common/Lazy';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { SubscriptionPrice, isSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel, SubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
 import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
 import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
 import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
@@ -423,7 +423,7 @@ export default abstract class Root<
 				.then(this._handleSubscriptionPaymentResponse)
 		);
 	};
-	private readonly _createStripeSubscription = (card: StripeCardElement, price: SubscriptionPrice) => this.props.stripeLoader.value
+	private readonly _createStripeSubscription = (card: StripeCardElement, price: SubscriptionPriceSelection) => this.props.stripeLoader.value
 		.then(
 			stripe => stripe.createPaymentMethod({
 				type: 'card',
@@ -437,7 +437,7 @@ export default abstract class Root<
 				}
 				let request: StripeSubscriptionCreationRequest;
 				if (
-					isSubscriptionPriceLevel(price)
+					isStandardSubscriptionPriceLevel(price)
 				) {
 					request = {
 						paymentMethodId: result.paymentMethod.id,

@@ -5,10 +5,10 @@ export type StandardSubscriptionPriceLevel = {
 };
 export type CustomSubscriptionPriceLevel = Pick<StandardSubscriptionPriceLevel, 'amount' | 'id'>;
 export type SubscriptionPriceLevel = StandardSubscriptionPriceLevel | CustomSubscriptionPriceLevel;
-export type SubscriptionPrice =
-	StandardSubscriptionPriceLevel | {
-		amount: number
-	};
+export type SubscriptionPriceSelection = (
+	StandardSubscriptionPriceLevel |
+	Pick<CustomSubscriptionPriceLevel, 'amount'>
+);
 export function formatSubscriptionPriceAmount(amount: number) {
 	return (amount / 100)
 		.toLocaleString(
@@ -19,14 +19,14 @@ export function formatSubscriptionPriceAmount(amount: number) {
 			}
 		);
 }
-export function formatSubscriptionPriceName(price: SubscriptionPrice) {
+export function formatSubscriptionPriceName(price: SubscriptionPriceLevel | SubscriptionPriceSelection) {
 	if (
-		isSubscriptionPriceLevel(price)
+		isStandardSubscriptionPriceLevel(price)
 	) {
 		return price.name;
 	}
 	return 'Custom Price';
 }
-export function isSubscriptionPriceLevel(price: SubscriptionPrice): price is StandardSubscriptionPriceLevel {
-	return (price as StandardSubscriptionPriceLevel).id != null;
+export function isStandardSubscriptionPriceLevel(price: SubscriptionPriceLevel | SubscriptionPriceSelection): price is StandardSubscriptionPriceLevel {
+	return (price as StandardSubscriptionPriceLevel).name != null;
 }

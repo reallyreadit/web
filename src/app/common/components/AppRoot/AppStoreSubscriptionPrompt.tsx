@@ -18,7 +18,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
-import { StandardSubscriptionPriceLevel, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { StandardSubscriptionPriceLevel, SubscriptionPriceSelection } from '../../../../common/models/subscriptions/SubscriptionPrice';
 
 interface Props {
 	article: UserArticle | null,
@@ -63,7 +63,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			this.props.onReadArticle(this.props.article);
 		}
 	};
-	private readonly _requestPurchase = (price: SubscriptionPrice) => {
+	private readonly _requestPurchase = (price: SubscriptionPriceSelection) => {
 		this.props.onRequestSubscriptionPurchase({
 			productId: (price as StandardSubscriptionPriceLevel).id
 		});

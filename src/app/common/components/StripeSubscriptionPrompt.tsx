@@ -13,7 +13,7 @@ import ContinueStep from './StripeSubscriptionPrompt/ContinueStep';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
-import { SubscriptionPrice, StandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
 import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 import StatusCheckStep from './subscriptionsDialogs/StatusCheckStep';
 import PriceLevelsCheckStep from './subscriptionsDialogs/PriceLevelsCheckStep';
@@ -29,7 +29,7 @@ interface Props {
 	onGetSubscriptionStatus: FetchFunction<SubscriptionStatusResponse>,
 	onReadArticle: (article: UserArticle) => void,
 	onShowToast: (content: string, intent: Intent) => void,
-	onSubscribe: (card: StripeCardElement, price: SubscriptionPrice) => Promise<StripePaymentResponse>,
+	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
 	staticServerEndpoint: HttpEndpoint,
 	stripe: Promise<Stripe> | null,
 	subscriptionStatus: SubscriptionStatus
@@ -58,7 +58,7 @@ type PaymentEntryState = {
 	step: Step.PaymentEntry,
 	isDismissable: boolean,
 	priceLevels: StandardSubscriptionPriceLevel[],
-	selectedPrice: SubscriptionPrice,
+	selectedPrice: SubscriptionPriceSelection,
 	nextState?: PriceSelectionState | ContinueState
 }
 type ContinueState = {
@@ -126,7 +126,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			}
 		});
 	};
-	private readonly _selectPrice = (price: SubscriptionPrice) => {
+	private readonly _selectPrice = (price: SubscriptionPriceSelection) => {
 		if (this.state.step !== Step.PriceSelection) {
 			return;
 		}
@@ -152,7 +152,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			}
 		})
 	};
-	private readonly _subscribe = (card: StripeCardElement, price: SubscriptionPrice) => {
+	private readonly _subscribe = (card: StripeCardElement, price: SubscriptionPriceSelection) => {
 		if (this.state.step !== Step.PaymentEntry) {
 			return Promise.reject(
 				new Error('Invalid step state.')
