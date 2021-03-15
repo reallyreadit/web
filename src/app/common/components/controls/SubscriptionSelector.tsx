@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { SubscriptionPrice, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPrice, StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import Icon from '../../../../common/components/Icon';
 import * as classNames from 'classnames';
 
-type SubscriptionSelectorOption = SubscriptionPriceLevel & {
+type SubscriptionSelectorOption = StandardSubscriptionPriceLevel & {
 	formattedAmount: string
 };
 interface Props {

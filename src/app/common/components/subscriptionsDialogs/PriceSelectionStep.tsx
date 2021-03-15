@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { SubscriptionPrice, SubscriptionPriceLevel, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPrice, StandardSubscriptionPriceLevel, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import SubscriptionSelector from '../controls/SubscriptionSelector';
 
 interface Props {
 	allowCustomPrice: boolean,
 	onSelectPrice: (price: SubscriptionPrice) => void,
-	priceLevels: SubscriptionPriceLevel[]
+	priceLevels: StandardSubscriptionPriceLevel[]
 }
 interface State {
 

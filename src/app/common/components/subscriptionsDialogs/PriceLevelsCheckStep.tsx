@@ -4,12 +4,12 @@ import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from 
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
 
 interface Props {
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
-	onSubscriptionPriceLevelsLoaded: (priceLevels: SubscriptionPriceLevel[]) => void,
+	onSubscriptionPriceLevelsLoaded: (priceLevels: StandardSubscriptionPriceLevel[]) => void,
 	provider: SubscriptionProvider
 }
 interface State {

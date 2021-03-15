@@ -13,7 +13,7 @@ import ContinueStep from './StripeSubscriptionPrompt/ContinueStep';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
-import { SubscriptionPrice, SubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPrice, StandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
 import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 import StatusCheckStep from './subscriptionsDialogs/StatusCheckStep';
 import PriceLevelsCheckStep from './subscriptionsDialogs/PriceLevelsCheckStep';
@@ -51,13 +51,13 @@ type PriceLevelsCheckState = {
 };
 type PriceSelectionState = {
 	step: Step.PriceSelection,
-	priceLevels: SubscriptionPriceLevel[],
+	priceLevels: StandardSubscriptionPriceLevel[],
 	nextState?: PaymentEntryState | ContinueState
 };
 type PaymentEntryState = {
 	step: Step.PaymentEntry,
 	isDismissable: boolean,
-	priceLevels: SubscriptionPriceLevel[],
+	priceLevels: StandardSubscriptionPriceLevel[],
 	selectedPrice: SubscriptionPrice,
 	nextState?: PriceSelectionState | ContinueState
 }
@@ -140,7 +140,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			}
 		})
 	};
-	private readonly _setPriceLevels = (priceLevels: SubscriptionPriceLevel[]) => {
+	private readonly _setPriceLevels = (priceLevels: StandardSubscriptionPriceLevel[]) => {
 		if (this.state.step !== Step.PriceLevelsCheck) {
 			return;
 		}

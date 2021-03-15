@@ -18,7 +18,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
-import { SubscriptionPriceLevel, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { StandardSubscriptionPriceLevel, SubscriptionPrice } from '../../../../common/models/subscriptions/SubscriptionPrice';
 
 interface Props {
 	article: UserArticle | null,
@@ -65,7 +65,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 	};
 	private readonly _requestPurchase = (price: SubscriptionPrice) => {
 		this.props.onRequestSubscriptionPurchase({
-			productId: (price as SubscriptionPriceLevel).id
+			productId: (price as StandardSubscriptionPriceLevel).id
 		});
 	};
 	private readonly _restart = () => {
@@ -105,7 +105,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 	private loadProducts() {
 		this._asyncTracker
 			.addPromise(
-				new Promise<SubscriptionPriceLevel[]>(
+				new Promise<StandardSubscriptionPriceLevel[]>(
 					(resolve, reject) => {
 						this.props.onGetSubscriptionPriceLevels(
 							{

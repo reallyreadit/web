@@ -1,9 +1,9 @@
 import SubscriptionProvider from './SubscriptionProvider';
-import { SubscriptionPriceLevel } from './SubscriptionPrice';
+import { StandardSubscriptionPriceLevel } from './SubscriptionPrice';
 
 export interface SubscriptionPriceLevelsRequest {
 	provider: SubscriptionProvider
 }
 export interface SubscriptionPriceLevelsResponse {
-	prices: SubscriptionPriceLevel[]
+	prices: StandardSubscriptionPriceLevel[]
 }

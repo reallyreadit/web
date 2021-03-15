@@ -1,10 +1,10 @@
-export type SubscriptionPriceLevel = {
+export type StandardSubscriptionPriceLevel = {
 	id: string,
 	name: string,
 	amount: number
 };
 export type SubscriptionPrice =
-	SubscriptionPriceLevel | {
+	StandardSubscriptionPriceLevel | {
 		amount: number
 	};
 export function formatSubscriptionPriceAmount(amount: number) {
@@ -25,6 +25,6 @@ export function formatSubscriptionPriceName(price: SubscriptionPrice) {
 	}
 	return 'Custom Price';
 }
-export function isSubscriptionPriceLevel(price: SubscriptionPrice): price is SubscriptionPriceLevel {
-	return (price as SubscriptionPriceLevel).id != null;
+export function isSubscriptionPriceLevel(price: SubscriptionPrice): price is StandardSubscriptionPriceLevel {
+	return (price as StandardSubscriptionPriceLevel).id != null;
 }
