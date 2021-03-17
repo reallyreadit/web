@@ -1,14 +1,15 @@
 import * as React from 'react';
-import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel, isStandardSubscriptionPriceLevel, formatSubscriptionPriceName, formatSubscriptionPriceAmount, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel, isStandardSubscriptionPriceLevel, formatSubscriptionPriceName, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import Icon from '../../../../common/components/Icon';
 import * as classNames from 'classnames';
+import { ActiveSubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 type SubscriptionSelectorOption = StandardSubscriptionPriceLevel & {
 	formattedAmount: string
 };
 type BaseProps = {
-	options: SubscriptionSelectorOption[],
-	currentPrice?: SubscriptionPriceLevel
+	activeSubscription?: ActiveSubscriptionStatus,
+	options: SubscriptionSelectorOption[]
 };
 type CustomPriceSelectionProps = BaseProps & {
 	allowCustomPrice: true,
@@ -25,6 +26,14 @@ interface State {
 }
 function isCustomPriceAllowed(props: Props): props is CustomPriceSelectionProps {
 	return 'allowCustomPrice' in props;
+}
+function getNextPrice(status: ActiveSubscriptionStatus | null) {
+	if (status == null) {
+		return null;
+	}
+	return status.autoRenewEnabled ?
+		status.autoRenewPrice :
+		status.price;
 }
 export default class SubscriptionSelector extends React.Component<Props, State> {
 	private readonly _changeCustomAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +94,9 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 				this.setState({
 					customAmountError: 'Must be $1,000.00 or less.'
 				});
-			} else if (amount === this.props.currentPrice?.amount) {
+			} else if (
+				amount === getNextPrice(this.props.activeSubscription)?.amount
+			) {
 				this.setState({
 					customAmountError: 'Must be a new amount.'
 				});
@@ -108,7 +119,33 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 			isSettingCustomPrice: false
 		};
 	}
-	private renderButton(id: string | null, name: string, formattedAmount: string, isSelected: boolean) {
+	private renderButton(
+		{
+			id,
+			name,
+			formattedAmount,
+			isSelected
+		}: {
+			id?: string,
+			name: string,
+			formattedAmount: string,
+			isSelected: boolean
+		}
+	) {
+		let selectionIndicator: React.ReactNode;
+		if (isSelected) {
+			const selectionLabel = (
+					this.props.activeSubscription.autoRenewEnabled &&
+					this.props.activeSubscription.autoRenewPrice.id !== this.props.activeSubscription.price.id
+				) ?
+					'Next Price' :
+					'Current Price';
+			selectionIndicator = (
+				<span className="selected">
+					<Icon name="checkmark" /> {selectionLabel}
+				</span>
+			);
+		}
 		return (
 			<button
 				disabled={isSelected}
@@ -122,40 +159,36 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 			>
 				<span className="name">{name}</span>
 				<span className="price">{formattedAmount} / month</span>
-				{isSelected ?
-					<span className="selected">
-						<Icon name="checkmark" /> Current Plan
-					</span> :
-					null}
+				{selectionIndicator}
 			</button>
 		);
 	}
 	public render() {
+		const nextPrice = getNextPrice(this.props.activeSubscription);
 		return (
 			<div className="subscription-selector_nuri7o">
 				<label>Choose your Price</label>
 				{this.props.options.map(
-					product => this.renderButton(
-						product.id,
-						product.name,
-						product.formattedAmount,
-						(
-							this.props.currentPrice != null &&
-							isStandardSubscriptionPriceLevel(this.props.currentPrice) &&
-							this.props.currentPrice.id === product.id
+					product => this.renderButton({
+						id: product.id,
+						name: product.name,
+						formattedAmount: product.formattedAmount,
+						isSelected: (
+							nextPrice != null &&
+							isStandardSubscriptionPriceLevel(nextPrice) &&
+							nextPrice.id === product.id
 						)
-					)
+					})
 				)}
 				{(
-					this.props.currentPrice != null &&
-					!isStandardSubscriptionPriceLevel(this.props.currentPrice)
+					nextPrice != null &&
+					!isStandardSubscriptionPriceLevel(nextPrice)
 				) ?
-					this.renderButton(
-						null,
-						formatSubscriptionPriceName(this.props.currentPrice),
-						formatSubscriptionPriceAmount(this.props.currentPrice.amount),
-						true
-					) :
+					this.renderButton({
+						name: formatSubscriptionPriceName(nextPrice),
+						formattedAmount: formatSubscriptionPriceAmount(nextPrice.amount),
+						isSelected: true
+					}) :
 					null}
 				{isCustomPriceAllowed(this.props) ?
 					<div className="custom-price-control">
