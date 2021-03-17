@@ -947,11 +947,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					// processing a payment.
 					switch (result.type) {
 						case ResultType.Success:
-							if (
-								this.state.subscriptionStatus &&
-								this.state.subscriptionStatus.type !== SubscriptionStatusType.Active &&
-								result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser
-							) {
+							if (result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
 								this.onSubscriptionStatusChanged(result.value.subscriptionStatus, EventSource.Local);
 							}
 							if (this.state.isProcessingPayment) {
