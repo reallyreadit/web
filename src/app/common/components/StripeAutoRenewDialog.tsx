@@ -1,19 +1,40 @@
 import * as React from 'react';
-import { ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { ActiveSubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import FormDialog from '../../../common/components/FormDialog';
 import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
+import { Intent } from '../../../common/components/Toaster';
+import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { getPromiseErrorMessage } from '../../../common/format';
 
 interface Props {
 	currentStatus: ActiveSubscriptionStatus,
 	onClose: () => void,
-	onSetStripeSubscriptionAutoRenewStatus: (request: StripeAutoRenewStatusRequest) => Promise<unknown>
+	onShowToast: (content: string, intent: Intent) => void,
+	onSetStripeSubscriptionAutoRenewStatus: (request: StripeAutoRenewStatusRequest) => Promise<SubscriptionStatusResponse>
 }
 export default class StripeAutoRenewDialog extends React.Component<Props> {
-	private readonly _submit = () => {
-		return this.props.onSetStripeSubscriptionAutoRenewStatus({
+	private readonly _submit = () => this.props
+		.onSetStripeSubscriptionAutoRenewStatus({
 			autoRenewEnabled: !this.props.currentStatus.autoRenewEnabled
-		});
-	};
+		})
+		.then(
+			response => {
+				if (response.status.type === SubscriptionStatusType.Active) {
+					this.props.onShowToast(
+						response.status.autoRenewEnabled ?
+							'Subscription resumed.' :
+							'Subscription cancelled.',
+						Intent.Success
+					);
+				}
+			}
+		)
+		.catch(
+			reason => {
+				this.props.onShowToast(`Error: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
+				throw reason;
+			}
+		);
 	public render() {
 		let
 			content: React.ReactNode,
