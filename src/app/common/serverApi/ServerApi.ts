@@ -74,6 +74,7 @@ import { StripePaymentConfirmationRequest } from '../../../common/models/subscri
 import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
+import { StripePriceChangeRequest } from '../../../common/models/subscriptions/StripePriceChangeRequest';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -219,6 +220,7 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// Subscriptions
+	public readonly changeStripeSubscriptionPrice = (request: StripePriceChangeRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePriceChange', data: request });
 	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');

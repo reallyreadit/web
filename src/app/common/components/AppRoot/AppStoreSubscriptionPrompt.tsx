@@ -15,11 +15,12 @@ import SubscriptionSelector from '../controls/SubscriptionSelector';
 import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../../common/models/subscriptions/SubscriptionPriceLevels';
-import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import { StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 
 interface Props {
+	activeSubscription?: ActiveSubscriptionStatus,
 	article: UserArticle | null,
 	isPaymentProcessing: boolean,
 	onClose: () => void,
@@ -29,12 +30,11 @@ interface Props {
 	onRequestSubscriptionProducts: (request: SubscriptionProductsRequest) => Promise<Result<SubscriptionProductsResponse, ErrorResponse<ProductsRequestError>>>,
 	onRequestSubscriptionPurchase: (request: SubscriptionPurchaseRequest) => void,
 	onRequestSubscriptionReceipt: () => Promise<Result<SubscriptionReceiptResponse, ErrorResponse<ReceiptRequestError>>>,
-	onValidateSubscription: (request: AppleSubscriptionValidationRequest) => Promise<AppleSubscriptionValidationResponse>,
-	subscriptionStatus: SubscriptionStatus
+	onValidateSubscription: (request: AppleSubscriptionValidationRequest) => Promise<AppleSubscriptionValidationResponse>
 }
 interface State {
 	productsResult: AsyncResult<(SubscriptionProduct & { usdAmount: number })[], string>,
-	purchaseFailed: boolean,
+	purchaseResultType: ResultType,
 	receiptResult: AsyncResult<SubscriptionReceiptResponse, string>,
 	subscriptionStatusResult: AsyncResult<AppleSubscriptionValidationResponse, string>
 }
@@ -42,7 +42,7 @@ const initialState: State = {
 	productsResult: {
 		type: ResultType.Loading
 	},
-	purchaseFailed: false,
+	purchaseResultType: ResultType.Loading,
 	receiptResult: {
 		type: ResultType.Loading
 	},
@@ -76,25 +76,27 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterPurchaseCompletedEventHandler(
 				result => {
-					// if the purchase succeeds the user will be subscribed and will be prompted
-					// to continue to the article. if the purchase fails for any reason other than
-					// a cancellation we need to set an error state to prevent the subscription
-					// selector from being displayed again.
 					if (
-						(
-							result.type === ResultType.Success &&
-							result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser
-						) ||
-						(
-							result.type === ResultType.Failure &&
-							result.error.value === TransactionError.Cancelled
-						)
+						result.type === ResultType.Failure &&
+						result.error.value === TransactionError.Cancelled
 					) {
 						return;
 					}
-					this.setState({
-						purchaseFailed: true
-					});
+					if (
+						this.props.activeSubscription &&
+						result.type === ResultType.Success
+					) {
+						this.props.onClose();
+					} else {
+						this.setState({
+							purchaseResultType: (
+									result.type === ResultType.Success &&
+									result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser
+								) ?
+									ResultType.Success :
+									ResultType.Failure
+						});
+					}
 				}
 			)
 		);
@@ -178,36 +180,40 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 		if (this.props.isPaymentProcessing) {
 			return this.renderLoadingContent('Processing payment.');
 		}
-		if (this.props.subscriptionStatus.type === SubscriptionStatusType.Active) {
-			return (
-				<>
-					<div className="message">You're all set.</div>
-					{this.props.article ?
+		// then check for purchase completion
+		switch (this.state.purchaseResultType) {
+			case ResultType.Loading:
+				// processing initial checks or waiting for price selection
+				break;
+			case ResultType.Success:
+				return (
+					<>
+						<div className="message">You're all set.</div>
+						{this.props.article ?
+							<Button
+								iconRight="chevron-right"
+								onClick={this._continue}
+								text="Continue to Article"
+							/> :
+							<Button
+								onClick={this._continue}
+								text="Ok"
+							/>}
+					</>
+				);
+			case ResultType.Failure:
+				return (
+					<>
 						<Button
-							iconRight="chevron-right"
-							onClick={this._continue}
-							text="Continue to Article"
-						/> :
-						<Button
-							onClick={this._continue}
-							text="Ok"
-						/>}
-				</>
-			);
+							iconLeft="refresh2"
+							onClick={this._restart}
+							text="Refresh Subscription Status"
+						/>
+						<div className="subtitle">You will not be charged.</div>
+					</>
+				);
 		}
-		// then fall back to the local state
-		if (this.state.purchaseFailed) {
-			return (
-				<>
-					<Button
-						iconLeft="refresh2"
-						onClick={this._restart}
-						text="Refresh Subscription Status"
-					/>
-					<div className="subtitle">You will not be charged.</div>
-				</>
-			);
-		}
+		// then process the receipt retrieval, status check, and price selection steps
 		switch (this.state.receiptResult.type) {
 			case ResultType.Loading:
 				return this.renderLoadingContent('Checking for existing receipt.');
@@ -223,7 +229,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			case ResultType.Success:
 				switch (this.state.subscriptionStatusResult.value.type) {
 					case AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser:
-						// use global state from props if active else products should be loading
+						// products should be loading if changing price, otherwise purchase will have been completed
 						break;
 					case AppleSubscriptionValidationResponseType.AssociatedWithAnotherUser:
 						return (
@@ -243,6 +249,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			case ResultType.Success:
 				return (
 					<SubscriptionSelector
+						activeSubscription={this.props.activeSubscription}
 						onSelect={this._requestPurchase}
 						options={
 							this.state.productsResult.value.map(
@@ -320,6 +327,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 						}
 					});
 					if (
+						this.props.activeSubscription ||
 						response.type === AppleSubscriptionValidationResponseType.EmptyReceipt ||
 						(
 							response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser &&
@@ -327,6 +335,16 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 						)
 					) {
 						this.loadProducts();
+					} else if (
+						!this.props.activeSubscription &&
+						(
+							response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser &&
+							response.subscriptionStatus.type === SubscriptionStatusType.Active
+						)
+					) {
+						this.setState({
+							purchaseResultType: ResultType.Success
+						});
 					}
 				}
 			)
@@ -350,7 +368,13 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 		return (
 			<Dialog
 				onClose={this.props.onClose}
-				title="Subscription Required"
+				title={
+					this.props.article ?
+						'Subscription Required' :
+						this.props.activeSubscription ?
+							'Change Price' :
+							'Subscribe'
+				}
 			>
 				<div className="app-store-subscription-prompt_7y5k2n">
 					{this.renderContent()}

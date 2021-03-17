@@ -250,6 +250,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
+	private readonly _openPriceChangeDialog = () => {
+		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
+			throw new Error('Invalid subscription state.');
+		}
+		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Apple) {
+			throw new Error('Operation not supported in browser environment.');
+		}
+		this._openStripePriceChangeDialog(this.state.subscriptionStatus);
+	};
 	private readonly _openSubscriptionAutoRenewDialog = () => {
 		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
 			return Promise.reject(
@@ -672,6 +681,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
+					onOpenPriceChangeDialog: this._openPriceChangeDialog,
 					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,

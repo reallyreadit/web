@@ -15,6 +15,7 @@ import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker
 interface Props {
 	deviceType: DeviceType,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
+	onOpenPriceChangeDialog: () => void,
 	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	paymentMethod: SubscriptionPaymentMethod | null
@@ -98,11 +99,11 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 					{this.props.status.isUserFreeForLife ?
 						<>
 							<div className="title">Free for Life</div>
-							<div className="message">Subscribe to Support Writers and Readup</div>
+							<div className="message">Subscribe to Support Writers and Readup.</div>
 						</> :
 						<>
 							<div className="title">Never Subscribed</div>
-							<div className="message">Subscribe to Start Reading</div>
+							<div className="message">Subscribe to Start Reading.</div>
 						</>}
 					<div className="actions">
 						<ActionLink
@@ -118,7 +119,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				<>
 					<div className="title">Subscription Incomplete</div>
 					{this.renderSubscriptionDetails(this.props.status.price)}
-					<div className="message">Payment confirmation required</div>
+					<div className="message">Payment confirmation required.</div>
 					<div className="actions">
 						<ActionLink
 							onClick={this._openPaymentConfirmationDialog}
@@ -137,7 +138,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				<>
 					<div className="title">Subscription Incomplete</div>
 					{this.renderSubscriptionDetails(this.props.status.price)}
-					<div className="message">Initial payment failed</div>
+					<div className="message">Initial payment failed.</div>
 					<div className="actions">
 						<ActionLink
 							onClick={this._openSubscriptionPromptDialog}
@@ -154,24 +155,16 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 					formatIsoDateAsUtc(this.props.status.currentPeriodEndDate)
 				)
 				.toLocaleString(DateTime.DATE_MED);
-			let renewalMessage: string;
+			let renewalMessage: React.ReactNode;
 			if (this.props.status.autoRenewEnabled) {
 				if (this.props.status.autoRenewPrice.amount === this.props.status.price.amount) {
-					renewalMessage = `Will renew on ${formattedEndDate}`;
+					renewalMessage = `Will renew on ${formattedEndDate}.`;
 				} else {
-					renewalMessage = `Will renew on ${formattedEndDate} at ${formatSubscriptionPriceAmount(this.props.status.autoRenewPrice.amount)} / month`
+					renewalMessage = <>Will renew on {formattedEndDate} at <span className="nowrap">{formatSubscriptionPriceAmount(this.props.status.autoRenewPrice.amount)} / month.</span></>
 				}
 			} else {
-				renewalMessage = `Will end on ${formattedEndDate}`;
+				renewalMessage = `Will end on ${formattedEndDate}.`;
 			}
-			// renewal control
-			const renewalControl = (
-				<ActionLink
-					onClick={this._openSubscriptionAutoRenewDialog}
-					state={this.state.isChangingAutoRenewStatus ? 'busy' : 'normal'}
-					text={this.props.status.autoRenewEnabled ? 'Cancel Plan' : 'Resume Plan'}
-				/>
-			);
 			return (
 				<>
 					<div className="title">Subscription Active</div>
@@ -182,42 +175,33 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 								<Icon
 									name={this.getCreditCardIcon(this.props.paymentMethod.brand)}
 								/>
-								<span className="last-four">****-{this.props.paymentMethod.lastFourDigits}</span>
+								<span className="last-four">…{this.props.paymentMethod.lastFourDigits}</span>
 								<span className="expiration">{this.props.paymentMethod.expirationMonth}/{this.props.paymentMethod.expirationYear.toString().substring(2)}</span>
+								<ActionLink
+									state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+									text="Change Card"
+								/>
 							</div> :
 							<div className="message">Loading payment method...</div> :
-						<div className="message">Billed through Apple</div>}
+						<div className="message">Billed through Apple.</div>}
 					<div className="message">{renewalMessage}</div>
 					<div className="actions">
-						{this.props.status.provider === SubscriptionProvider.Stripe ?
-							this.props.paymentMethod ?
-								<>
-									<ActionLink
-										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
-										text="Change Card"
-									/>
-									<ActionLink
-										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
-										text="Update Card"
-									/>
-									<ActionLink
-										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
-										text="Change Plan"
-									/>
-									{renewalControl}
-								</> :
-								null :
-							this.props.deviceType === DeviceType.Ios ?
-								<>
-									<ActionLink
-										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
-										text="Change Plan"
-									/>
-									{renewalControl}
-								</> :
-								<>
-									Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.
-								</>}
+						{this.props.status.provider === SubscriptionProvider.Stripe || this.props.deviceType === DeviceType.Ios ?
+							<>
+								<ActionLink
+									onClick={this.props.onOpenPriceChangeDialog}
+									state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+									text="Change Price"
+								/>
+								<ActionLink
+									onClick={this._openSubscriptionAutoRenewDialog}
+									state={this.state.isChangingAutoRenewStatus ? 'busy' : 'normal'}
+									text={this.props.status.autoRenewEnabled ? 'Cancel' : 'Resume'}
+								/>
+							</> :
+							<>
+								Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.
+							</>}
 					</div>
 				</>
 			);
@@ -226,7 +210,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 			<>
 				<div className="title">Subscription Inactive</div>
 				{this.renderSubscriptionDetails(this.props.status.price)}
-				<div className="message">Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}</div>
+				<div className="message">Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}.</div>
 				<div className="actions">
 					<ActionLink
 						onClick={this._openSubscriptionPromptDialog}

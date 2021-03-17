@@ -63,12 +63,13 @@ import Lazy from '../../../common/Lazy';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel, SubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
 import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
 import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
 import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
 import StripeAutoRenewDialog from './StripeAutoRenewDialog';
 import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
+import StripePriceChangeDialog from './StripePriceChangeDialog';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -406,6 +407,17 @@ export default abstract class Root<
 	};
 
 	// subscriptions
+	private readonly _changeStripeSubscriptionPrice = (price: SubscriptionPriceSelection) => this.props.serverApi
+		.changeStripeSubscriptionPrice(
+			isStandardSubscriptionPriceLevel(price) ?
+				({
+					priceLevelId: price.id
+				}) :
+				({
+					customPriceAmount: price.amount
+				})
+		)
+		.then(this._handleSubscriptionPaymentResponse);
 	private readonly _confirmSubscriptionCardPayment: ((invoiceId: string, clientSecret?: string) => Promise<StripePaymentResponse>) = (invoiceId, clientSecret) => {
 		let clientConfirmation: Promise<any>;
 		if (clientSecret) {
@@ -515,6 +527,21 @@ export default abstract class Root<
 					onGetSubscriptionStatus={this._getSubscriptionStatus}
 					onShowToast={this._toaster.addToast}
 					onConfirmPayment={this._confirmSubscriptionCardPayment}
+				/>
+			)
+		);
+	};
+	protected readonly _openStripePriceChangeDialog = (activeSubscription: ActiveSubscriptionStatus) => {
+		this._dialog.openDialog(
+			() => (
+				<StripePriceChangeDialog
+					activeSubscription={activeSubscription}
+					onChangePrice={this._changeStripeSubscriptionPrice}
+					onClose={this._dialog.closeDialog}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onGetSubscriptionStatus={this._getSubscriptionStatus}
+					onOpenStripeSubscriptionPrompt={this._openStripeSubscriptionPromptDialog}
+					onShowToast={this._toaster.addToast}
 				/>
 			)
 		);

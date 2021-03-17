@@ -4,17 +4,17 @@
 */
 
 .subscription-control_ryw1sb {
-	width: max-content;
+	display: inline-block;
 }
 .subscription-control_ryw1sb > .title {
 	font-family: "Museo Sans (700)";
 }
-.subscription-control_ryw1sb > .title,
 .subscription-control_ryw1sb > .price-name,
 .subscription-control_ryw1sb > .price-amount,
 .subscription-control_ryw1sb > .payment-info,
-.subscription-control_ryw1sb > .message {
-	margin-bottom: 5px;
+.subscription-control_ryw1sb > .message,
+.subscription-control_ryw1sb > .actions > .action-link_ftamt8 {
+	margin-top: 5px;
 }
 .subscription-control_ryw1sb > .payment-info {
 	display: flex;
@@ -27,6 +27,16 @@
 .subscription-control_ryw1sb > .payment-info > .last-four {
 	margin: 0 10px;
 }
-.subscription-control_ryw1sb > .actions > .action-link_ftamt8 + .action-link_ftamt8 {
+.subscription-control_ryw1sb > .payment-info > .action-link_ftamt8 {
 	margin-left: 10px;
+}
+.subscription-control_ryw1sb > .message  > .nowrap {
+	white-space: nowrap;
+}
+.subscription-control_ryw1sb > .actions {
+	display: flex;
+	flex-wrap: wrap;
+}
+.subscription-control_ryw1sb > .actions > .action-link_ftamt8 {
+	margin-right: 10px;
 }

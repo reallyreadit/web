@@ -47,6 +47,7 @@ interface Props {
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
+	onOpenPriceChangeDialog: () => void,
 	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterDisplayPreferenceChangedEventHandler: (handler: (preference: DisplayPreference) => void) => () => void,
@@ -263,16 +264,16 @@ class SettingsPage extends React.PureComponent<
 											Confirmed
 										</div> :
 										<>
-										<div className="status warn">
-											<Icon name="exclamation" />
-											Not Confirmed
+											<div className="status warn">
+												<Icon name="exclamation" />
+												Not Confirmed
 											</div>
 											<div className="status">
-											<AsyncActionLink
-												icon="email"
-												onClick={this.props.onResendConfirmationEmail}
-												text="Resend confirmation email"
-											/>
+												<AsyncActionLink
+													icon="email"
+													onClick={this.props.onResendConfirmationEmail}
+													text="Resend confirmation email"
+												/>
 											</div>
 										</>}
 								</div>
@@ -286,6 +287,7 @@ class SettingsPage extends React.PureComponent<
 								<SubscriptionControl
 									deviceType={this.props.deviceType}
 									onOpenPaymentConfirmationDialog={this.props.onOpenPaymentConfirmationDialog}
+									onOpenPriceChangeDialog={this.props.onOpenPriceChangeDialog}
 									onOpenSubscriptionAutoRenewDialog={this.props.onOpenSubscriptionAutoRenewDialog}
 									onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
 									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
@@ -383,6 +385,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onOpenDialog={deps.onOpenDialog}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
+				onOpenPriceChangeDialog={deps.onOpenPriceChangeDialog}
 				onOpenSubscriptionAutoRenewDialog={deps.onOpenSubscriptionAutoRenewDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onGetSettings={deps.onGetSettings}

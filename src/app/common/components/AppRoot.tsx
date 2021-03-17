@@ -52,7 +52,7 @@ import { SubscriptionPurchaseRequest } from '../../../common/models/app/Subscrip
 import { Result, ResultType } from '../../../common/Result';
 import { PurchaseError, TransactionError } from '../../../common/models/app/Errors';
 import { ErrorResponse, reduceAppErrorResponse } from '../../../common/models/app/AppResult';
-import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 
@@ -230,10 +230,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
-	private readonly _openAppStoreSubscriptionPromptDialog = (article?: UserArticle) => {
+	private readonly _openAppStoreSubscriptionPromptDialog = (article?: UserArticle, activeSubscription?: ActiveSubscriptionStatus) => {
 		this._dialog.openDialog(
 			sharedState => (
 				<AppStoreSubscriptionPrompt
+					activeSubscription={activeSubscription}
 					article={article}
 					isPaymentProcessing={sharedState.isProcessingPayment}
 					onClose={this._dialog.closeDialog}
@@ -244,10 +245,18 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
 					onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
 					onValidateSubscription={this._validateSubscription}
-					subscriptionStatus={sharedState.subscriptionStatus}
 				/>
 			)
 		);
+	};
+	private readonly _openPriceChangeDialog = () => {
+		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
+			throw new Error('Invalid subscription state.');
+		}
+		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
+			this._openStripePriceChangeDialog(this.state.subscriptionStatus);
+		}
+		this._openAppStoreSubscriptionPromptDialog(null, this.state.subscriptionStatus);
 	};
 	private readonly _openSubscriptionAutoRenewDialog = () => {
 		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
@@ -286,59 +295,59 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 	private readonly _requestSubscriptionProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request);
 	private readonly _requestSubscriptionPurchase = (request: SubscriptionPurchaseRequest) => {
-				this.setState(
-					prevState => {
-						if (prevState.isProcessingPayment) {
-							return null;
+		this.setState(
+			prevState => {
+				if (prevState.isProcessingPayment) {
+					return null;
+				}
+				this.props.appApi
+					.requestSubscriptionPurchase(request)
+					.then(
+						result => {
+							// only process failures here. if the transaction was successfully added to the
+							// payment queue then we will remain in a processing state until we receive a
+							// payment completion event
+							if (result.type === ResultType.Failure) {
+								this._toaster.addToast(
+									reduceAppErrorResponse(
+										result.error,
+										{
+											[PurchaseError.ProductNotFound]: 'Product not found.'
+										}
+									),
+									Intent.Danger
+								);
+								this.setState({
+									isProcessingPayment: false
+								});
+							}
 						}
-						this.props.appApi
-							.requestSubscriptionPurchase(request)
-							.then(
-								result => {
-									// only process failures here. if the transaction was successfully added to the
-									// payment queue then we will remain in a processing state until we receive a
-									// payment completion event
-									if (result.type === ResultType.Failure) {
-										this._toaster.addToast(
-											reduceAppErrorResponse(
-												result.error,
-												{
-													[PurchaseError.ProductNotFound]: 'Product not found.'
-												}
-											),
-											Intent.Danger
-										);
-										this.setState({
-											isProcessingPayment: false
-										});
-									}
-								}
-							)
-							.catch(
-								reason => {
-									this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
-									this.setState({
-										isProcessingPayment: false
-									});
-								}
-							);
-						return {
-							isProcessingPayment: true
-						};
-					}
-				);
+					)
+					.catch(
+						reason => {
+							this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
+							this.setState({
+								isProcessingPayment: false
+							});
+						}
+					);
+				return {
+					isProcessingPayment: true
+				};
+			}
+		);
 	};
 	private readonly _requestSubscriptionReceipt = () => this.props.appApi.requestSubscriptionReceipt();
 	private readonly _validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
-				.validateAppleSubscription(request)
-				.then(
-					response => {
-						if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-							this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-						}
-						return response;
-					}
-				);
+		.validateAppleSubscription(request)
+		.then(
+			response => {
+				if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
+					this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
+				}
+				return response;
+			}
+		);
 
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
@@ -744,6 +753,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onOpenDialog: this._dialog.openDialog,
 					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
+					onOpenPriceChangeDialog: this._openPriceChangeDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
