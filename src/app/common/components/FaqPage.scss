@@ -3,6 +3,85 @@
         cssComponentId: faq-page_35vamf
 */
 
+.faq-page_35vamf {
+	display: grid;
+	grid-template-columns: 200px auto;
+	grid-template-rows: 200px auto auto;
+	grid-template-areas:
+		"hero hero"
+		"sidebar sidebar"
+		"questions questions";
+
+	> .hero {
+		grid-area: hero;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		h1 {
+			text-align: center;
+		}
+	}
+
+	> .sidebar {
+		grid-area: sidebar;
+		line-height: 2;
+
+		h3 {
+			font-family: 'Museo Sans (300)';
+			font-size: 24px;
+		}
+
+		ol {
+			display: flex;
+			flex-wrap: wrap;
+			width: 100%;
+			> li {
+				margin-right: 1.5em;
+				text-decoration: underline;
+				cursor: pointer;
+			}
+		}
+
+		@media screen and (min-width: 768px) {
+			margin-left: 30px;
+			ol {
+				display: block;
+			}
+		}
+	}
+
+	> .questions {
+		grid-area: questions;
+		line-height: 2;
+
+		.question {
+			font-size: 20px;
+			cursor: pointer;
+			> span.icon_rour3d {
+				vertical-align: middle;
+			}
+		}
+
+		.answer {
+			display: none;
+			&.open {
+				display: block;
+			}
+		}
+	}
+
+
+	@media screen and (min-width: 768px) {
+
+		grid-template-rows: 1fr 2fr;
+		grid-template-areas:
+			"hero hero"
+			"sidebar questions";
+	}
+}
+
+
 // .privacy-policy-page_75v4wh {
 // 	max-width: 800px;
 // 	margin: 0 auto;
