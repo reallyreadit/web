@@ -262,16 +262,19 @@ class SettingsPage extends React.PureComponent<
 											<Icon name="checkmark" />
 											Confirmed
 										</div> :
+										<>
 										<div className="status warn">
 											<Icon name="exclamation" />
 											Not Confirmed
-											<Separator />
+											</div>
+											<div className="status">
 											<AsyncActionLink
 												icon="email"
 												onClick={this.props.onResendConfirmationEmail}
 												text="Resend confirmation email"
 											/>
-										</div>}
+											</div>
+										</>}
 								</div>
 							</div>
 						</div>
