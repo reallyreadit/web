@@ -491,6 +491,7 @@ export default abstract class Root<
 					.then(
 						response => {
 							this.onSubscriptionStatusChanged(response.status, EventSource.Local);
+							return response;
 						}
 					);
 			this._dialog.openDialog(
@@ -499,6 +500,7 @@ export default abstract class Root<
 						currentStatus={currentStatus}
 						onClose={close}
 						onSetStripeSubscriptionAutoRenewStatus={setAutoRenewStatus}
+						onShowToast={this._toaster.addToast}
 					/>
 				)
 			);
