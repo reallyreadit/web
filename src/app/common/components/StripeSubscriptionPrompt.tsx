@@ -272,7 +272,11 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 						this.props.onClose :
 						null
 				}
-				title="Subscription Required"
+				title={
+					this.props.article ?
+						'Subscription Required' :
+						'Subscribe'
+				}
 			>
 				<div className="stripe-subscription-prompt_3cqidx">
 					<TransitionContainer
