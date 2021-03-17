@@ -4,19 +4,8 @@
 */
 @import '../../../../common/styles/colors';
 
-.payment-entry-step_utsg1r > .selection {
+.payment-entry-step_utsg1r > .price-selection-summary_8w3t0z {
 	margin-bottom: 20px;
-}
-.payment-entry-step_utsg1r > .selection > .title {
-	font-family: 'Museo Sans (700)';
-	margin-bottom: 5px;
-}
-.payment-entry-step_utsg1r > .selection > .name,
-.payment-entry-step_utsg1r > .selection > .price {
-	margin-bottom: 5px;
-}
-.payment-entry-step_utsg1r > .selection > .action-link_ftamt8 {
-	font-size: 11pt;
 }
 .payment-entry-step_utsg1r > .form {
 	text-align: center;
@@ -42,14 +31,6 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .payment-entry-step_utsg1r > .selection > .action-link_ftamt8 {
-		@include theme-colors(
-			$scheme,
-			(
-				"color": $text-muted-color
-			)
-		);
-	}
 	#{$root} .payment-entry-step_utsg1r > .form > .card-element {
 		@include theme-colors(
 			$scheme,

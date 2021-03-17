@@ -1,5 +1,4 @@
 import * as React from 'react';
-import ActionLink from '../../../../common/components/ActionLink';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
@@ -8,9 +7,9 @@ import HttpEndpoint, { createUrl } from '../../../../common/HttpEndpoint';
 import { DisplayTheme, getClientPreferredColorScheme } from '../../../../common/models/userAccounts/DisplayPreference';
 import { getPromiseErrorMessage } from '../../../../common/format';
 import { Intent } from '../../../../common/components/Toaster';
-import { SubscriptionPriceSelection, formatSubscriptionPriceName, formatSubscriptionPriceAmount } from '../../../../common/models/subscriptions/SubscriptionPrice';
-import ContentBox from '../../../../common/components/ContentBox';
+import { SubscriptionPriceSelection } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../../common/models/subscriptions/StripePaymentResponse';
+import { PriceSelectionSummary } from '../subscriptionsDialogs/PriceSelectionSummary';
 
 interface Props {
 	displayTheme: DisplayTheme | null,
@@ -255,21 +254,11 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 	public render() {
 		return (
 			<div className="payment-entry-step_utsg1r">
-				<ContentBox className="selection">
-					<div className="title">Selected Subscription</div>
-					<div className="name">{formatSubscriptionPriceName(this.props.selectedPrice)}</div>
-					<div className="price">{formatSubscriptionPriceAmount(this.props.selectedPrice.amount)} / month</div>
-					<ActionLink
-						iconLeft="arrow-left"
-						onClick={this.props.onChangePrice}
-						state={
-							this.state.formState.status === FormStatus.Submitting ?
-								'disabled' :
-								'normal'
-						}
-						text="Change"
-					/>
-				</ContentBox>
+				<PriceSelectionSummary
+					disabled={this.state.formState.status === FormStatus.Submitting}
+					onChangePrice={this.props.onChangePrice}
+					selectedPrice={this.props.selectedPrice}
+				/>
 				{this.state.stripeStatus === StripeStatus.Loading ?
 					<DialogSpinner message="Loading Stripe." /> :
 					this.state.stripeStatus === StripeStatus.Error ?
