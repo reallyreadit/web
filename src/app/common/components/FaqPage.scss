@@ -4,142 +4,130 @@
 */
 
 .faq-page_35vamf {
-	display: grid;
-	grid-template-columns: 200px auto;
-	grid-template-rows: 200px auto auto;
-	grid-template-areas:
-		"hero hero"
-		"sidebar sidebar"
-		"questions questions";
 
-	> .hero {
-		grid-area: hero;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		h1 {
-			text-align: center;
-		}
+	.home-panel_w65z7c:nth-child(odd) {
+		background-color: var(--app-background-alt-color);
 	}
 
-	> .sidebar {
-		grid-area: sidebar;
-		line-height: 2;
+	.faq-content > .content {
+		display: grid;
+		grid-template-columns: 200px auto;
+		grid-template-rows: auto auto;
+		grid-template-areas:
+			"sidebar sidebar"
+			"questions questions";
 
-		h3 {
-			font-family: 'Museo Sans (300)';
-			font-size: 24px;
+		// > .hero {
+		// 	grid-area: hero;
+		// 	display: flex;
+		// 	flex-direction: column;
+		// 	justify-content: center;
+		// 	align-items: center;
+		// 	h1 {
+		// 		text-align: center;
+		// 	}
+		// }
+
+		> .sidebar {
+			grid-area: sidebar;
+			margin-top: 6px;
+			margin-bottom: 6px;
+
+			h3 {
+				font-family: 'Museo Sans (300)';
+				font-size: 24px;
+				margin-bottom: 4px;
+			}
+
+			ol {
+				line-height: 2;
+				display: flex;
+				flex-wrap: wrap;
+				width: 100%;
+				> li {
+					margin-right: 1.5em;
+					text-decoration: underline;
+					cursor: pointer;
+				}
+			}
+
+			@media screen and (min-width: 768px) {
+				margin-left: 30px;
+				ol {
+					display: block;
+				}
+			}
 		}
 
-		ol {
-			display: flex;
-			flex-wrap: wrap;
-			width: 100%;
-			> li {
-				margin-right: 1.5em;
-				text-decoration: underline;
+		> .questions {
+			grid-area: questions;
+
+			.question-section {
+				margin-top: 12px;
+				&:not(:last-child) {
+					margin-bottom: 28px;
+				}
+			}
+
+			.question {
+				font-size: 20px;
+				margin: 16px auto;
 				cursor: pointer;
+				> span.icon_rour3d {
+					margin-right: 8px;
+					vertical-align: middle;
+					transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+					&.open {
+						transform: rotate(90deg);
+						transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+					}
+				}
+			}
+
+			.answer {
+				display: none;
+				&.open {
+					display: block;
+				}
+				line-height: 1.5;
+
+				> * {
+					padding-left: 26px;
+				}
+			}
+		}
+
+		@media screen and (min-width: 500px) {
+			.sidebar, .questions {
+				width: 440px;
+				margin-left: auto;
+				margin-right: auto;
 			}
 		}
 
 		@media screen and (min-width: 768px) {
-			margin-left: 30px;
-			ol {
-				display: block;
+			grid-template-columns: 0.9fr 2fr;
+			grid-template-areas:
+				"sidebar questions";
+
+			.sidebar, .questions {
+				width: unset;
+				margin: unset;
+			}
+			.sidebar {
+				margin-left: 30px;
+			}
+
+			.questions .question-section {
+				margin-top: 	42px;
+				&:first-child {
+					margin-top: 0;
+				}
 			}
 		}
-	}
 
-	> .questions {
-		grid-area: questions;
-		line-height: 2;
-
-		.question {
-			font-size: 20px;
-			cursor: pointer;
-			> span.icon_rour3d {
-				vertical-align: middle;
-			}
+		@media screen and (min-width: 1024px) {
+			grid-template-columns: 0.8fr 2fr;
 		}
-
-		.answer {
-			display: none;
-			&.open {
-				display: block;
-			}
-		}
-	}
-
-
-	@media screen and (min-width: 768px) {
-
-		grid-template-rows: 1fr 2fr;
-		grid-template-areas:
-			"hero hero"
-			"sidebar questions";
 	}
 }
-
-
-// .privacy-policy-page_75v4wh {
-// 	max-width: 800px;
-// 	margin: 0 auto;
-// }
-// .privacy-policy-page_75v4wh > h2 {
-// 	margin: 15px 0;
-// 	font-size: 16pt;
-// 	font-family: 'Museo Sans (700)';
-// 	text-align: center;
-// }
-// .privacy-policy-page_75v4wh > h3 {
-// 	margin: 15px 0;
-// 	font-style: italic;
-// 	text-align: center;
-// }
-// .privacy-policy-page_75v4wh > section:not(:last-of-type)::after {
-// 	content: "*****";
-// 	display: block;
-// 	text-align: center;
-// 	margin: 10px 0;
-// }
-// .privacy-policy-page_75v4wh > section > p {
-// 	margin: 15px 0;
-// }
-// .privacy-policy-page_75v4wh > section:first-of-type > p {
-// 	margin-top: 0;
-// }
-// .privacy-policy-page_75v4wh > section:last-of-type > p {
-// 	margin-bottom: 0;
-// }
-// .privacy-policy-page_75v4wh > section ol {
-// 	list-style: decimal;
-// 	padding-left: 1.5em;
-// 	margin: 15px 0;
-// }
-// .privacy-policy-page_75v4wh > section ol > li {
-// 	margin: 5px 0;
-// }
-// .privacy-policy-page_75v4wh > section ul {
-// 	list-style: disc;
-// 	padding-left: 1.5em;
-// 	margin: 15px 0;
-// }
-// .privacy-policy-page_75v4wh > section ul > li {
-// 	margin: 5px 0;
-// }
-// .privacy-policy-page_75v4wh > section a {
-// 	cursor: pointer;
-// 	text-decoration: underline;
-// }
-// .privacy-policy-page_75v4wh > section b,
-// .privacy-policy-page_75v4wh > section strong {
-// 	font-family: 'Museo Sans (700)';
-// 	font-weight: normal;
-// }
-// .privacy-policy-page_75v4wh > section em {
-// 	font-style: italic;
-// }
-// .privacy-policy-page_75v4wh > section .underline {
-// 	text-decoration: underline;
-// }

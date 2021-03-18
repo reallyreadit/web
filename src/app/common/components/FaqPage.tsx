@@ -1,9 +1,10 @@
 import * as React from 'react';
-import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import classNames = require('classnames');
 import Icon from '../../../common/components/Icon';
 import { useState } from 'react';
+import HomeHero from './BrowserRoot/HomeHero';
+import HomePanel from './BrowserRoot/HomePanel';
 
 interface Faq {
 	question: string;
@@ -20,19 +21,22 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "Is Readup coming to Android?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 			{
 				question: "Can we fly to mars yet?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 			{
 				question: "How far is asgaard?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <>
+					<p>Lorem id in sunt eiusmod. Incididunt eu officia anim duis minim pariatur quis minim. Lorem aliqua esse Lorem eiusmod. Do adipisicing nulla minim qui commodo qui velit eu nostrud ipsum magna labore. Labore esse Lorem do amet occaecat. Voluptate consequat laborum esse amet in sit ea do enim. Sint nisi magna est ex esse.</p>
+					<p>Adipisicing ut duis et ea nisi do eu labore velit proident ex. Ullamco proident do consequat dolore duis duis. Dolore excepteur labore reprehenderit exercitation ex. Velit cillum laboris enim nulla cillum consequat voluptate do.</p>
+				</>
 			},
 			{
 				question: "Do I have to pay?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 		]
 	},
@@ -41,37 +45,44 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "Is Readup coming to Android?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 			{
 				question: "Can we fly to mars yet?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 			{
 				question: "How far is asgaard?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 			{
 				question: "Do I have to pay?",
-				answer: <>Maybe. Do you want a cookie?</>
+				answer: <p>Maybe. Do you want a cookie?</p>
 			},
 		]
 	}
 ];
 
+const mapToId = (text: string) => text.toLowerCase().replace(/\s/, '-').replace(/[?"'@*]/, '');
+
 const renderFaq = ({question, answer}: Faq) => {
 	const [isOpen, setOpen] = useState(false);
 	return (<li key={question}>
-		<h3 className="question" onClick={() => setOpen(!isOpen)}><Icon name={ isOpen ? "chevron-down" : "chevron-right" } /> {question}</h3>
-		<p className={classNames("answer", {"open": isOpen})}>{answer}</p>
+		<h3
+			className="question"
+			id={mapToId(question)}
+			onClick={() => setOpen(!isOpen)}><Icon className={classNames({"open": isOpen})} name="chevron-right" />
+				{question}
+		</h3>
+		<div className={classNames("answer", {"open": isOpen})}>{answer}</div>
 	</li>);
 }
 
 const renderFaqCategory = (faqCategory: FaqCategory) => {
 	return <div
 		key={faqCategory.title}
-		className="">
-			<h2 className="heading-regular">{ faqCategory.title }</h2>
+		className="question-section">
+			<h2 className="heading-regular" id={mapToId(faqCategory.title)}>{ faqCategory.title }</h2>
 			<ul>
 				{faqCategory.questions.map(renderFaq)}
 			</ul>
@@ -89,25 +100,25 @@ const faqPage = () => {
 	// 		, {}));
 
 	return (
-		<ScreenContainer>
-			<div className="faq-page_35vamf">
-				<div className="hero">
-					<h1 className="heading-display">Frequently Asked Questions</h1>
-					<p>Learn everything you ever wanted to know about Readup.</p>
-				</div>
+		<div className="faq-page_35vamf">
+			<HomeHero
+				title="Frequently Asked Questions"
+				description="Learn everything you ever wanted to know about Readup."
+			/>
+			<HomePanel className="faq-content">
 				<div className="sidebar">
 					<nav>
 						<h3>Jump to</h3>
 						<ol>
-							{faqs.map(faqCategory => <li key={faqCategory.title}>{ faqCategory.title }</li>)}
+							{faqs.map(faqCategory => <li key={faqCategory.title}><a href={`#${mapToId(faqCategory.title)}`} >{ faqCategory.title }</a></li>)}
 						</ol>
 					</nav>
 				</div>
 				<div className="questions">
 					{faqs.map(renderFaqCategory)}
 				</div>
-			</div>
-		</ScreenContainer>
+			</HomePanel>
+		</div>
 	);
 }
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {

@@ -31,18 +31,6 @@
 	margin-bottom: 20px;
 }
 
-// styles for the hero section on top
-.marketing-screen_n5a6wc > .hero > .content {
-	max-width: 475px;
-	margin: 48px auto;
-	padding: 10px 10px;
-	text-align: center;
-
-	& p {
-		margin: 24px 0;
-	}
-}
-
 // styles for the quotes flex grid
 .marketing-screen_n5a6wc .quote-grid {
 	display: flex;
@@ -95,7 +83,7 @@
 
 // styles for closing quote section
 .marketing-screen_n5a6wc .closing-quote-panel .content {
-	// .content overrides 
+	// .content overrides
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -127,17 +115,6 @@
 }
 
 @media screen and (min-width: 768px) {
-	// styles for the hero section on top
-	.marketing-screen_n5a6wc > .hero > .content {
-		max-width: 475px;
-		margin: auto;
-		padding: 110px 10px;
-		text-align: center;
-
-		.heading-regular {
-			line-height: 44px;
-		}
-	}
 
 	// styles for flex-panel
 	.marketing-screen_n5a6wc .flex-panel {
@@ -146,11 +123,11 @@
 		flex-direction: row;
 		justify-content: space-between;
 		min-height: 240px;
-		
+
 		.card_d4pcqo {
 			min-height: 180px;
 			margin: 10px 0;
-		}	
+		}
 
 		@media screen and (min-width: 768px) {
 			.card_d4pcqo {

@@ -29,6 +29,7 @@ import ImageAndText from './ImageAndText';
 import HomePanel from './HomePanel';
 import Card from './Card';
 import QuoteCard from './QuoteCard';
+import HomeHero from './HomeHero';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -164,17 +165,19 @@ export default class MarketingScreen extends React.Component<
 
 		return (
 			<div className="marketing-screen_n5a6wc">
-				<HomePanel className="hero">
-					<h1 className="heading-regular">The internet broke reading.<br />We fixed it.</h1>
-					<p className="">Readup makes online reading more peaceful and focused.</p>
-					<GetStartedButton
-						analyticsAction="HomeScreenHeader"
-						deviceType={this.props.deviceType}
-						onBeginOnboarding={this.props.onBeginOnboarding}
-						onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-						onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-					/>
-				</HomePanel>
+				<HomeHero
+					title={<>The internet broke reading.<br />We fixed it.</>}
+					description={<>Readup makes online reading more peaceful and focused.</>}
+					actionButton={
+						<GetStartedButton
+							analyticsAction="HomeScreenHeader"
+							deviceType={this.props.deviceType}
+							onBeginOnboarding={this.props.onBeginOnboarding}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+						/>
+					}
+				/>
 				<HomePanel
 					data-nosnippet
 				>
