@@ -6,7 +6,8 @@ const
 const
 	project = require('../project'),
 	createBuild = require('../createBuild'),
-	authServiceLinkHandler = require('./client/authServiceLinkHandler');
+	authServiceLinkHandler = require('./client/authServiceLinkHandler'),
+	appConfigPath = path.posix.join(project.srcDir, 'app/server/config.{env}.json');
 
 const package = JSON.parse(
 	fs
@@ -20,6 +21,9 @@ const app = createBuild({
 		fileName: `bundle-${package['it.reallyread'].version.app}.js`
 	},
 	scss: {
+		appConfig: {
+			path: appConfigPath
+		},
 		fileName: `bundle-${package['it.reallyread'].version.app}.css`,
 		files: [
 			`${project.srcDir}/app/**/*.{css,scss}`,
@@ -29,7 +33,6 @@ const app = createBuild({
 	},
 	staticAssets: [
 		`${project.srcDir}/app/client/.well-known/**/*`,
-		`${project.srcDir}/app/client/fonts/**/*`,
 		`${project.srcDir}/app/client/images/**/*`
 	],
 	templates: {
