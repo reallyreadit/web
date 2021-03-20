@@ -16,9 +16,11 @@ const package = JSON.parse(
 
 const app = createBuild({
 	webpack: {
-		entry: path.posix.join(project.srcDir, 'app/client/main.ts')
+		entry: path.posix.join(project.srcDir, 'app/client/main.ts'),
+		fileName: `bundle-${package['it.reallyread'].version.app}.js`
 	},
 	scss: {
+		fileName: `bundle-${package['it.reallyread'].version.app}.css`,
 		files: [
 			`${project.srcDir}/app/**/*.{css,scss}`,
 			`${project.srcDir}/common/components/**/*.{css,scss}`,

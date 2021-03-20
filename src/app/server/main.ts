@@ -529,8 +529,10 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 				req.matchedRoute.authLevel != null ||
 				(req.matchedRoute.noIndex && req.matchedRoute.noIndex(req.path))
 			),
+			staticServer: config.staticServer,
 			title: browserApi.getTitle(),
-			twitterCard
+			twitterCard,
+			version: version.app
 		}));
 	};
 	// check if we need to render a twitter card
