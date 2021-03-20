@@ -61,7 +61,7 @@ const app = createBuild({
 });
 
 function clean(env) {
-	return del(project.getOutPath('app/client', env) + '/*');
+	return del(project.getOutPath('app/client', env));
 }
 function build(env) {
 	return Promise.all([
