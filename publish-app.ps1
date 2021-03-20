@@ -10,11 +10,7 @@ if (-not (Test-Path $publishDir)) {
 }
 
 Write-Host 'Cleaning publish directory...'
-Get-ChildItem $publishDir -Recurse |
-	Select-Object -ExpandProperty FullName |
-	Where-Object { $_ -notlike '*node_modules*' } |
-	Sort-Object Length -Descending |
-	Remove-Item
+Get-ChildItem $publishDir -Exclude node_modules | Remove-Item -Recurse
 
 Write-Host 'Copying program files to publish directory...'
 Copy-Item -Path $outputDir/* -Destination $publishDir -Recurse
