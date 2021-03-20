@@ -4,7 +4,7 @@ import EmbedComponentHost from './EmbedComponentHost';
 
 type Services = Pick<
 	GlobalProps,
-	'captcha' | 'clipboardService' | 'dialogService' | 'imageBasePath' | 'onCloseOnboarding' | 'onCreateAccount' | 'onCreateAuthServiceAccount' | 'onRequestPasswordReset' | 'onShowToast' | 'onSignIn' | 'onSignInWithAuthService' | 'toasterService'
+	'captcha' | 'clipboardService' | 'dialogService' | 'onCloseOnboarding' | 'onCreateAccount' | 'onCreateAuthServiceAccount' | 'onRequestPasswordReset' | 'onShowToast' | 'onSignIn' | 'onSignInWithAuthService' | 'toasterService'
 >;
 type State = Pick<
 	GlobalProps,

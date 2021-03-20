@@ -3,6 +3,7 @@
 	cssComponentId: auth-service-button_bj12nx
 */
 @import '../styles/colors';
+@import '../styles/config';
 
 .auth-service-button_bj12nx {
 	height: 40px;
@@ -25,9 +26,14 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-.auth-service-button_bj12nx.twitter > .content > img {
+.auth-service-button_bj12nx.twitter > .content > .icon {
+	display: inline-block;
 	width: 0.9em;
-	margin-right: 0.25em;
+	height: 0.7em;
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/common/images/Twitter_Logo_White.svg'));
+	background-size: contain;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
 }
 
 @include theme using ($root, $scheme) {

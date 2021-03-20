@@ -5,7 +5,6 @@ import SpinnerIcon from './SpinnerIcon';
 import * as classNames from 'classnames';
 
 interface Props {
-	imageBasePath: string,
 	onClick: (provider: AuthServiceProvider) => Promise<any> | void,
 	provider: AuthServiceProvider
 }
@@ -63,7 +62,7 @@ export default class TwitterAuthButton extends React.PureComponent<Props, State>
 			case AuthServiceProvider.Twitter:
 				content = (
 					<span className="content">
-						<img alt="Twitter Logo" src={this.props.imageBasePath + "Twitter_Logo_White.svg"} /> Sign in with Twitter
+						<span className="icon"></span> Sign in with Twitter
 					</span>
 				);
 				break;
