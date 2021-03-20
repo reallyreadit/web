@@ -5,11 +5,11 @@ import RatingSelector from './RatingSelector';
 import SaveIndicator, { State as SaveIndicatorState } from './SaveIndicator';
 import Rating from '../models/Rating';
 import AsyncTracker from '../AsyncTracker';
+import Icon from './Icon';
 
 export { MenuPosition } from './Popover';
 interface Props {
 	article: UserArticle,
-	imagePath: string,
 	menuPosition: MenuPosition,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>
 }
@@ -107,13 +107,9 @@ export default class RatingControl extends React.PureComponent<
 				onClose={this._closeMenu}
 				onOpen={this._openMenu}
 			>
-				<div
-					className="seal"
-					style={{
-						backgroundImage: `url(${this.props.imagePath}/rating-seal.svg)`
-					}}
-				>
-					<span>
+				<div className="seal">
+					<Icon name="rating-seal" />
+					<span className="number">
 						{
 							this.props.article.averageRatingScore != null ?
 								this.props.article.averageRatingScore < 10 ?

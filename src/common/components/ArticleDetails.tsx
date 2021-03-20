@@ -21,7 +21,6 @@ import UserAccount from '../models/UserAccount';
 interface Props {
 	article: UserArticle,
 	highlight?: boolean,
-	imagePath?: string,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onPost: (article: UserArticle) => void,
@@ -40,7 +39,6 @@ interface Props {
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps: Partial<Props> = {
-		imagePath: '/images',
 		shareMenuPosition: MenuPosition.RightMiddle,
 		showAotdMetadata: true
 	};
@@ -100,7 +98,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		const ratingControl = (
 			<RatingControl
 				article={this.props.article}
-				imagePath={this.props.imagePath}
 				menuPosition={MenuPosition.TopCenter}
 				onRateArticle={this.props.onRateArticle}
 			/>
