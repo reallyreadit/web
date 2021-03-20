@@ -1,6 +1,6 @@
 import * as React from 'react';
-import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import HomePanel from './BrowserRoot/HomePanel';
 
 const missionPoints : {title: string, paragraph: string}[] = [
 	{
@@ -102,8 +102,8 @@ const timeLinePoints = [
 	},
 ];
 const missionPage = () => (
-		<ScreenContainer>
-			<div className="mission-page_hvneey">
+		<div className="mission-page_hvneey">
+			<HomePanel>
 				<section className="mission-points">
 					<h1 className="heading-regular mission-title">We're on a mission to fix digital reading.</h1>
 					{missionPoints.map(({title, paragraph}) =>
@@ -112,26 +112,33 @@ const missionPage = () => (
 							<p>{paragraph}</p>
 						</div>)}
 				</section>
+			</HomePanel>
+			<HomePanel className="our-story-panel">
 				<section className="our-story">
 					<h2 className="heading-regular mission-title mission-title--our-story">Our story</h2>
 					<p className="our-story__intro">Readup started in 2016 when Bill and Jeff, two good friends who love reading, got frustrated with inability of social media companies to encourage deep reading and civilized conversation.</p>
-					<table className="our-story__timeline">
-						<tbody>
-							{/* todo: this toString() might not be optimal */}
-							{timeLinePoints.map(tlP => <tr key={tlP.description.toString()}>
-									<td>
-										{tlP.timeString}
-									</td>
-									<td>
-										{tlP.description}
-									</td>
-								</tr>)}
-						</tbody>
-					</table>
+					<div className="our-story__timeline-card">
+						<table className="our-story__timeline">
+							<tbody>
+								{/* todo: this toString() might not be optimal */}
+								{timeLinePoints.map(tlP => <tr key={tlP.description.toString()}>
+										<td>
+											{tlP.timeString}
+										</td>
+										<td>
+											{tlP.description}
+										</td>
+									</tr>)}
+							</tbody>
+						</table>
+					</div>
 				</section>
+			</HomePanel>
+			<HomePanel className="manifesto-link-panel">
 				<a className="heading-regular manifesto-link" href="https://blog.readup.com/2021/02/08/the-readup-manifesto.html">Read the manifesto →</a>
+			</HomePanel>
+
 		</div>
-	</ScreenContainer>
 );
 export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {

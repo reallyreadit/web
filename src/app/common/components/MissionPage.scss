@@ -36,6 +36,11 @@
 	}
 
 	.our-story {
+
+		&-panel {
+			background-color: var(--app-background-alt-color);
+		}
+
 		$table-width: 480px;
 		&__intro {
 			max-width: $table-width;
@@ -46,16 +51,21 @@
 		}
 
 		.mission-title--our-story {
-			margin-top: 38px;
 			margin-bottom: 44px;
+		}
+
+		&__timeline-card {
+			padding: 20px;
+			background-color: var(--app-background-color);
+			border-radius: 2px;
+			width: max-content;
+			margin: auto;
 		}
 
 		&__timeline {
 			table-layout: fixed;
 			border-collapse: collapse;
-			width: 100%;
 			max-width: $table-width;
-			margin: auto;
 
 			tr > td:nth-child(1) {
 				width: 30%;
@@ -88,6 +98,10 @@
 		display: block;
 		text-decoration: none;
 		margin-top: 50px;
+
+		&-panel {
+			background: var(--app-background-color);
+		}
 	}
 
 	@media screen and (min-width: 768px) {

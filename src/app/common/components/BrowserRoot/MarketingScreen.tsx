@@ -29,7 +29,7 @@ import ImageAndText from './ImageAndText';
 import HomePanel from './HomePanel';
 import Card from './Card';
 import QuoteCard from './QuoteCard';
-import HomeHero from './HomeHero';
+// import HomeHero from './HomeHero';
 
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
@@ -129,13 +129,8 @@ export default class MarketingScreen extends React.Component<
 				imageName: "civil-discourse.png",
 				imageAlt: "You must read the article before you can post or reply."
 			},
-			{
-				heading: "You pay writers directly",
-				paragraph: "Everything you pay for Readup gets automatically distributed to the Writers you read. Readup shows you your impact, down to the penny (and minute). We claim the money of dead and anonymous writers to sustain ourself.",
-				imageName: "pay-directly.png",
-				imageAlt: "Pay writers directly"
-			}
-		]
+		];
+
 		const quotes = [
 			{
 				quote: "Readup gave me my brain back.",
@@ -165,10 +160,10 @@ export default class MarketingScreen extends React.Component<
 
 		return (
 			<div className="marketing-screen_n5a6wc">
-				<HomeHero
-					title={<>The internet broke reading.<br />We fixed it.</>}
-					description={<>Readup makes online reading more peaceful and focused.</>}
-					actionButton={
+				<HomePanel className="home-hero-image">
+					<div className="home-hero-image__intro-text">
+						<h1 className="heading-regular">The internet broke reading.<br />We fixed it.</h1>
+						<p>Readup is a social reading network for articles.<br/>We help you find read and share the best articles online.</p>
 						<GetStartedButton
 							analyticsAction="HomeScreenHeader"
 							deviceType={this.props.deviceType}
@@ -176,8 +171,17 @@ export default class MarketingScreen extends React.Component<
 							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
+					</div>
+					<img className="home-hero-image__image" src="/images/readup-hero.png" alt="A woman and man sit on a bench under a tree.
+							The woman enjoys reading a long article on her phone, the man is scrolling through social media feeds."/>
+				</HomePanel>
+				{/* <HomeHero
+					title={<>The internet broke reading.<br />We fixed it.</>}
+					description={<>Readup makes online reading more peaceful and focused.</>}
+					actionButton={
+
 					}
-				/>
+				/> */}
 				<HomePanel
 					data-nosnippet
 				>
