@@ -120,7 +120,7 @@ server.get('/apple-app-site-association', (req, res) => {
 });
 // version check
 server.get('/version', (req, res) => {
-	res.status(200).send(version.app);
+	res.status(200).send(version.appPublic);
 });
 // authenticate
 server.use((req, res, next) => {
@@ -515,7 +515,7 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 							type: TwitterCardType.App
 						});
 					}
-				);	
+				);
 			break;
 		case ScreenKey.Comments:
 			const pathParams = req.matchedRoute.getPathParams(req.path);

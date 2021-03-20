@@ -1,5 +1,6 @@
 export default interface PackageVersionInfo {
 	app: string,
+	appPublic: string,
 	embed: string,
 	embedIframe: string,
 	extension: {
