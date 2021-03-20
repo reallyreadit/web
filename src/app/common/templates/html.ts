@@ -80,8 +80,7 @@ export default (
 			'<meta name="robots" content="noindex" />' :
 			''}
 		${twitterCardMarkup || ''}
-		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="${createUrl(staticServer, `/app/bundle-${version}.css`)}" />
+		<link rel="stylesheet" type="text/css" href="${createUrl(staticServer, `/app/bundles/bundle-${version}.css`)}" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${chromeExtensionId}">
 		<title>${title}</title>
 	</head>
@@ -97,7 +96,7 @@ export default (
 			};
 			//-->
 		</script>
-		<script type="text/javascript" src="${createUrl(staticServer, `/app/bundle-${version}.js`)}"></script>
+		<script type="text/javascript" src="${createUrl(staticServer, `/app/bundles/bundle-${version}.js`)}"></script>
 	</body>
 </html>`
 	);
