@@ -57,12 +57,10 @@ class Server {
 				onComplete: resolve
 			})));
 			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-				src: 'package-lock.json',
-				dest: project.getOutPath('app', env),
-				onComplete: resolve
-			})));
-			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-				src: 'package.json',
+				src: [
+					'package.json',
+					'package-lock.json'
+				],
 				dest: project.getOutPath('app', env),
 				onComplete: resolve
 			})));
