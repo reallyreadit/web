@@ -3,6 +3,7 @@
 	cssComponentId: store-links_gbmsih
 */
 @import '../../../common/styles/colors';
+@import '../../../common/styles/config';
 
 .store-links_gbmsih {
 	text-align: center;
@@ -27,24 +28,24 @@
 	width: 34px;
 }
 .store-links_gbmsih > .images > a.chrome {
-	background-image: url(/images/chrome.svg);
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/chrome.svg'));
 	width: 40px;
 }
 .store-links_gbmsih > .images > a.firefox {
-	background-image: url(/images/firefox.svg);
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/firefox.svg'));
 	width: 40px;
 }
 .store-links_gbmsih > .images > a.edge {
-	background-image: url(/images/edge.svg);
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/edge.svg'));
 	width: 40px;
 }
 
 @include theme using ($root, $scheme) {
 	#{$root} .store-links_gbmsih > .images > a.apple {
 		@if $scheme == light {
-			background-image: url(/images/apple.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/apple.svg'));
 		} @else {
-			background-image: url(/images/apple-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/apple-white.svg'));
 		}
 	}
 }

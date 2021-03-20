@@ -3,6 +3,7 @@
 	cssComponentId: header_cvm3v7
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/config';
 
 .header_cvm3v7 {
 	flex: 0 0 auto;
@@ -60,9 +61,9 @@
 	}
 	#{$root} .header_cvm3v7 > .logo {
 		@if $scheme == light {
-			background-image: url(/images/logo.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
 		} @else {
-			background-image: url(/images/logo-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
 		}
 	}
 }

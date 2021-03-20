@@ -32,8 +32,7 @@ const app = createBuild({
 		]
 	},
 	staticAssets: [
-		`${project.srcDir}/app/client/.well-known/**/*`,
-		`${project.srcDir}/app/client/images/**/*`
+		`${project.srcDir}/app/client/.well-known/**/*`
 	],
 	templates: {
 		data: env => {

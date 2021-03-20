@@ -3,6 +3,7 @@
 	cssComponentId: auth-screen_gnq77a
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/config';
 
 .auth-screen_gnq77a {
 	flex: 1 1 auto;
@@ -62,9 +63,9 @@
 @include theme using ($root, $scheme) {
 	#{$root} .auth-screen_gnq77a > .content > .logo {
 		@if $scheme == light {
-			background-image: url(/images/logo.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
 		} @else {
-			background-image: url(/images/logo-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
 		}
 	}
 	#{$root} .auth-screen_gnq77a > .content > .email-button {

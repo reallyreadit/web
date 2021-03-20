@@ -80,6 +80,7 @@ export default (
 			'<meta name="robots" content="noindex" />' :
 			''}
 		${twitterCardMarkup || ''}
+		<link rel="icon" type="image/x-icon" href="${createUrl(staticServer, '/app/images/favicon.ico')}" />
 		<link rel="stylesheet" type="text/css" href="${createUrl(staticServer, `/app/bundles/bundle-${version}.css`)}" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${chromeExtensionId}">
 		<title>${title}</title>
