@@ -36,7 +36,6 @@ export default class extends React.PureComponent<Props, State> {
 		this.props.onBeginOnboarding('Header');
 	};
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
-		e.preventDefault();
 		this.props.onViewHome();
 	};
 	private readonly _openSignInPrompt = () => {
@@ -49,7 +48,10 @@ export default class extends React.PureComponent<Props, State> {
 
 	// capture the page navigation and close the mobile menu
 	private pageNavigation(navFunction: (e: React.MouseEvent) => void, event?: React.MouseEvent) {
+		// prevent default navigation synchronously
+		event.preventDefault();
 		this.setState({menuOpen: false}, () => {
+			// perform navigation asynchrounsly
 			navFunction(event);
 		});
 	};
