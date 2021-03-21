@@ -31,7 +31,7 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
+// import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
@@ -102,17 +102,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					})
 				}
 			)
-		);
-	};
-
-	// dialogs
-	private readonly _openNewPlatformNotificationRequestDialog = () => {
-		this._dialog.openDialog(
-			<NewPlatformNotificationRequestDialog
-				onCloseDialog={this._dialog.closeDialog}
-				onShowToast={this._toaster.addToast}
-				onSubmitRequest={this.props.serverApi.logNewPlatformNotificationRequest}
-			/>
 		);
 	};
 
