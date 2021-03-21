@@ -223,6 +223,9 @@ export default class MarketingScreen extends React.Component<
 						{[1,2,3].map(n => <Card key={n}>Test</Card>)}
 					</div>
 				</HomePanel> */}
+				<HomePanel id='how-it-works'>
+
+				</HomePanel>
 				<HomePanel
 					data-nosnippet
 					className="quote-panel"

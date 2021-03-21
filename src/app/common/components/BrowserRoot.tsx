@@ -1141,6 +1141,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						onViewHome={this._viewHome}
 						onViewFaq={this._viewFaq}
 						onViewNotifications={this._viewNotifications}
+						currentScreen={this.state.screens[0]}
 						user={this.state.user}
 					/> :
 					null}
@@ -1181,7 +1182,16 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 									// <Footer
 									// 	onViewPrivacyPolicy={this._viewPrivacyPolicy}
 									// /> :
-									<ColumnFooter onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
+									<ColumnFooter
+										deviceType={this.props.deviceType}
+										onBeginOnboarding={this._beginOnboarding}
+										onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+										onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
+										onViewFaq={this._viewFaq}
+										onViewHome={this._viewHome}
+										onViewMission={this._viewMission}
+										onViewPrivacyPolicy={this._viewPrivacyPolicy}
+										/> :
 									null}
 							</li>
 						))}
@@ -1237,7 +1247,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string) {
+	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {
@@ -1250,7 +1260,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setScreenState({
 			key: ScreenKey.Comments,
 			method: 'push',
-			title: article.title,
 			urlParams
 		});
 	}
@@ -1258,7 +1267,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setScreenState({
 			key: ScreenKey.Profile,
 			method: userName ? 'push' : 'replace',
-			title: '@' + (userName || this.state.user.name),
 			urlParams: { userName: userName || this.state.user.name }
 		});
 	}

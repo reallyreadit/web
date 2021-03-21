@@ -1,11 +1,14 @@
 import * as React from 'react';
-// import Separator from '../../../../common/components/Separator';
-// import { findRouteByKey } from '../../../../common/routing/Route';
-// import routes from '../../../../common/routing/routes';
-// import ScreenKey from '../../../../common/routing/ScreenKey';
-// import StoreLinks from '../StoreLinks';
-
+import { DeviceType } from '../../../../common/DeviceType';
+// import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
+	deviceType: DeviceType,
+	onBeginOnboarding: (analyticsAction: string) => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
+	onViewFaq: () => void,
+	onViewHome: () => void,
+	onViewMission: () => void,
 	onViewPrivacyPolicy: () => void
 }> {
 	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
@@ -16,7 +19,8 @@ export default class extends React.PureComponent<{
 
 		interface Link  {
 			text: string,
-			action?(event: React.MouseEvent): void
+			slug: string,
+			action(event: React.MouseEvent): void,
 		}
 
 		interface ComponentLink {
@@ -30,17 +34,22 @@ export default class extends React.PureComponent<{
 		}
 
 		const links:LinkSet[] = [
+			// TODO: can we import the slug from a single place?
 			{
 				title: "Company",
 				sublinks: [
 					{
 						text: "Our Mission",
+						slug: 'mission',
+						action: this.props.onViewMission
 					},
 					{
-						text: "Contact"
+						key: "Contact",
+						component: <a href="mailto:support@readup.com">Contact</a>
 					},
 					{
 						text: "Privacy Policy",
+						slug: 'privacy',
 						action: this._viewPrivacyPolicy
 					},
 				]
@@ -50,40 +59,59 @@ export default class extends React.PureComponent<{
 				sublinks: [
 					{
 						text: "FAQ",
+						slug: 'faq',
+						action: this.props.onViewFaq
 					},
 					{
-						text: "Article readings in Clubhouse"
-					},
-					{
-						text: "Blog"
+						key: "Blog",
+						component: <a href="https://blog.readup.com/" target="_blank">Blog</a>
 					},
 				]
 			},
 			{
 				title: "Install Readup",
 				sublinks: [
+					// {
+					// 	key: "ios_button",
+					// 	component:
+					// 		// TODO: copied from web/src/app/common/components/BrowserRoot/GetStartedButton.tsx
+					// 		// extract as reusable component
+					// 		// <a
+					// 		// className="ios"
+					// 		// href={getStoreUrl(DeviceType.Ios)}
+					// 		// onClick={this._copyAppReferrerTextToClipboard}
+					// 		// >
+					// 		// 	<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+					// 		// </a>
+					// 		// <GetStartedButton
+					// 		// 	// TODO: is this a valid analytics action?
+					// 		// 	analyticsAction="HomeScreenFooter"
+					// 		// 	deviceType={this.props.deviceType}
+					// 		// 	onBeginOnboarding={this.props.onBeginOnboarding}
+					// 		// 	onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+					// 		// 	onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+					// 		// ></GetStartedButton>
+					// },
 					{
-						// TODO: copied from web/src/app/common/components/BrowserRoot/GetStartedButton.tsx
-						// extract as reusable component
-						key: "ios_button",
-						component:
-							<a
-							className="ios"
-							// href={getStoreUrl(DeviceType.Ios)}
-							// onClick={this._copyAppReferrerTextToClipboard}
-							>
-								<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-							</a>
+						key: 'iOS & iPadOS',
+						component: <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" target="_blank">iOS &amp; iPadOS</a>
 					},
 					{
-						text: "Chrome"
+						key: "Chrome",
+						component: <a href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US" target="_blank">Chrome</a>
 					},
 					{
-						text: "Firefox"
+						key: "Firefox",
+						component: <a href="https://addons.mozilla.org/en-US/firefox/addon/readup/" target="_blank">Firefox</a>
 					},
 					{
-						text: "Edge"
+						key: "Safari",
+						component: <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" target="_blank">Safari</a>
 					},
+					{
+						key: "Edge",
+						component: <a href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm" target="_blank">Edge</a>
+					}
 				]
 			},
 		]
@@ -94,7 +122,7 @@ export default class extends React.PureComponent<{
 			>
 				<div className="content">
 					<div className="column-footer_ltflpc__links">
-						<img className="logo" alt="Readup Logo" src={`/images/logo-white.svg`} />
+						<img className="logo" alt="Readup Logo" src={`/images/logo-white.svg`} onClick={this.props.onViewHome} />
 						{links.map((linkSet, i) =>
 							<div className="column-footer_ltflpc__link-set" key={linkSet.toString() + i}>
 								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>
@@ -106,7 +134,10 @@ export default class extends React.PureComponent<{
 												let simpleLink = link as Link;
 												let componentLink = link as ComponentLink;
 												if (simpleLink.text) {
-													return <li key={simpleLink.text}><a>{simpleLink.text}</a></li>
+													return <li key={simpleLink.text}><a href={`/${simpleLink.slug}`} onClick={(e) => {
+														e.preventDefault();
+														simpleLink.action(e);
+													}}>{simpleLink.text}</a></li>
 												} else if (componentLink.component) {
 													return <li key={componentLink.key}>{componentLink.component}</li>
 												} else {

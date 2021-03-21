@@ -62,10 +62,14 @@
 			margin-bottom: 8px;
 			display: block;
 		}
-		
+
 		&__title {
 			font-size: 22.7px;
 			font-family: 'Museo Sans (700)';
+		}
+
+		a {
+			text-decoration: none;
 		}
 
 		.ios_button {
