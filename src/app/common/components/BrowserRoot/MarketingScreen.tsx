@@ -53,6 +53,11 @@ interface Props {
 	onViewAuthor: (slug: string, name: string) => void,
 	user: UserAccount | null
 }
+export interface Quote {
+	quote: string,
+	reader: string,
+	source: string,
+}
 export default class MarketingScreen extends React.Component<
 	Props,
 	{
@@ -133,7 +138,7 @@ export default class MarketingScreen extends React.Component<
 			},
 		];
 
-		const quotes = [
+		const quotes: Quote[] = [
 			{
 				quote: "There is something inherently decent and civil about reading on Readup. It will be an important experiment to see if it can stay a healthy community.",
 				reader: "Plum",
@@ -235,11 +240,11 @@ export default class MarketingScreen extends React.Component<
 						Consider these spontaneous testimonials from real humans!</p>
 					<div className="quote-grid">
 						{quotes.map(quote =>
-						<QuoteCard
-							key={quote.quote}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onViewProfile={this.props.onViewProfile}
-							{...quote} />
+							<QuoteCard
+								key={quote.quote}
+								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onViewProfile={this.props.onViewProfile}
+								quote={quote} />
 						)}
 					</div>
 				</HomePanel>
