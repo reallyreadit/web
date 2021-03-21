@@ -198,11 +198,10 @@ export default abstract class Root<
 			);
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
-	protected readonly _viewThread = (comment: CommentThread) => {
+	protected readonly _viewThread = (comment: Pick<CommentThread, 'articleSlug' | 'id'>) => {
 		this.viewComments(
 			{
-				slug: comment.articleSlug,
-				title: comment.articleTitle
+				slug: comment.articleSlug
 			},
 			comment.id
 		);
@@ -754,7 +753,7 @@ export default abstract class Root<
 	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
-	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string): void;
+	protected abstract viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string): void;
 	protected abstract viewProfile(userName?: string): void;
 	public componentDidMount() {
 		if (this.props.initialUserProfile) {
