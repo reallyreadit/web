@@ -54,7 +54,7 @@ const missionPoints : {title: string, paragraph: string}[] = [
 const timeLinePoints = [
 	{
 		timeString: "Spring 2016",
-		description: "Bill calls Jeff. The idea is born."
+		description: "Bill calls his lifelong friend Jeff to talk about an idea: People shouldn't be able to comment on articles and stories that they haven't actually read."
 	},
 	{
 		timeString: "Winter 2016",
@@ -66,23 +66,15 @@ const timeLinePoints = [
 	},
 	{
 		timeString: "May 2017",
-		description: "The first user is able to log in."
+		description: "The first Readers enter the reallyread.it database. Readup begins growing purely by word of mouth."
 	},
 	{
 		timeString: "Summer 2017",
-		description: "Readup starts in beta."
-	},
-	{
-		timeString: "Fall 2017",
-		description: <>Readup  <a href="https://www.matter.vc/"> Matter</a>.</>
-	},
-	{
-		timeString: "Winter 2017",
-		description: "Matter begins."
+		description: "reallyread.it's first beta, a weekly article club, launches. Readers begin opting-in to share anonymized reading data in exchange for the fruits of that data: crowdsourced curation of the world’s best digital reading material. Readers begin “voting with their attention."
 	},
 	{
 		timeString: "Summer 2018",
-		description: "Matter ends."
+		description: <><a href="https://vimeo.com/276929332">Matter Demo Day</a>.</>
 	},
 	{
 		timeString: "Fall 2018",
@@ -90,15 +82,31 @@ const timeLinePoints = [
 	},
 	{
 		timeString: "Spring 2019",
-		description: "Readup gets a visual overhaul."
+		description: "reallyread.it becomes Readup."
+	},
+	{
+		timeString: "Summer 2019",
+		description: "Readup launches the Leaderboards. Scouting begins."
+	},
+	{
+		timeString: "Fall 2019",
+		description: "Notifications. Posting. Following. Reader Profiles. Article images."
+	},
+	{
+		timeString: "Spring 2020",
+		description: "Twitter integration. Firefox Add-on."
 	},
 	{
 		timeString: "Summer 2020",
-		description: "Readup starts fundraising."
+		description: "Bill and Jeff commit on a new plan for growth. The idea for an ethical method of monetization is born."
 	},
 	{
 		timeString: "Fall 2020",
-		description: "Readup adds features: Safari & Edge support, dark mode."
+		description: "Dark Mode. Safari and Edge extensions."
+	},
+	{
+		timeString: "Spring 2021",
+		description: "Readup 2.0: Paid Readup. Subscriptions. Writer Profiles."
 	},
 ];
 const missionPage = () => (
