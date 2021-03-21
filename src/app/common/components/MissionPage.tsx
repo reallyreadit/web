@@ -13,7 +13,7 @@ const missionPoints : {title: string, paragraph: string}[] = [
 	},
 	{
 		title: "Free-thinking is at stake.",
-		paragraph: `Readup was built for reading, listening and thinking. It’s an engine of deep, critical, independent thought. George Orwell warned of a world in which people lose their most human qualities and become soulless automatons without even realizing it. We aim to prevent that from happening. Reading requires intention and discipline. That’s why it matters. Reading changes people. (It changed us!) And we believe that it has the power to change the world.`
+		paragraph: `Readup was built for reading, listening, and deep, independent thought. We aim to prevent what George Orwell warned us about, a world in which people lose their most human qualities and become soulless automatons without even realizing it. As the world becomes increasingly chaotic, reading is a way to stay anchored in reality. Reading changes people (it changed us!) and we believe that it has the power to change the world.`
 	}
 ]
 
