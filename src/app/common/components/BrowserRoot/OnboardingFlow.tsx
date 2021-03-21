@@ -44,6 +44,7 @@ export interface Props extends BaseProps {
 	onCreateAbsoluteUrl: (userName: string) => string,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
 	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
+	onCreateStaticContentUrl: (path: string) => string,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareResponse,
@@ -178,12 +179,14 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.InstallExtension]: (_: UserAccount) => (
 			<InstallExtensionStep
 				deviceType={this.props.deviceType}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 			/>
 		),
 		[Step.ExtensionInstalled]: (_: UserAccount) => (
 			<ExtensionInstalledStep
 				deviceType={this.props.deviceType}
 				onContinue={this._goToButtonTutorialStep}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 			/>
 		),
 		[Step.ButtonTutorial]: (_: UserAccount) => (

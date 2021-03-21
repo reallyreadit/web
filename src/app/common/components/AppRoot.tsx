@@ -213,7 +213,7 @@ export default class extends Root<
 	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
 		return this.props.appApi.share(data);
 	};
-	
+
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
 		if (response.authServiceToken) {
@@ -434,6 +434,7 @@ export default class extends Root<
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
@@ -453,6 +454,7 @@ export default class extends Root<
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
@@ -535,6 +537,7 @@ export default class extends Root<
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
@@ -548,6 +551,7 @@ export default class extends Root<
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onOpenDialog: this._dialog.openDialog,
@@ -567,6 +571,7 @@ export default class extends Root<
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
@@ -693,7 +698,7 @@ export default class extends Root<
 									authStatus: {
 										provider: AuthServiceProvider.Apple,
 										step: AuthStep.Error
-									}	
+									}
 								});
 							}
 						);
@@ -1046,6 +1051,7 @@ export default class extends Root<
 							<OrientationWizard
 								onComplete={this._completeOrientation}
 								onCreateAbsoluteUrl={this._createAbsoluteUrl}
+								onCreateStaticContentUrl={this._createStaticContentUrl}
 								onRequestNotificationAuthorization={this._requestNotificationAuthorization}
 								onShare={this._handleShareRequestWithCompletion}
 								user={this.state.user}

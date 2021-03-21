@@ -235,7 +235,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ShareChannel.Twitter
 			],
 			completionHandler: (data: ShareForm) => {
-				
+
 			}
 		};
 	};
@@ -322,7 +322,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 												break;
 										}
 										reject(new Error(errorMessage));
-									}	
+									}
 								}
 							};
 							this.props.browserApi.addListener('authServiceLinkCompleted', completionHandler);
@@ -437,6 +437,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
 					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
@@ -459,6 +460,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
@@ -506,6 +508,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
@@ -551,6 +554,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
@@ -564,6 +568,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onOpenDialog: this._dialog.openDialog,
@@ -585,6 +590,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
@@ -612,6 +618,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				deviceType: this.props.deviceType,
 				onBeginOnboarding: this._beginOnboarding,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onReadArticle: this._readArticle,
@@ -648,7 +655,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		const
 			queryStringParams = parseQueryString(props.initialLocation.queryString),
 			welcomeMessage = queryStringParams[messageQueryStringKey] as WelcomeMessage;
-		
+
 		// onboarding state
 		let onboardingState: OnboardingState;
 		if (authServiceTokenQueryStringKey in queryStringParams) {
@@ -1081,6 +1088,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			this._dialog.openDialog(
 				<ExtensionReminderDialog
 					deviceType={this.props.deviceType}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
 					onSubmit={
 						() => {
 							localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
@@ -1202,6 +1210,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onCreateAccount={this._createAccount}
 						onCreateAuthServiceAccount={this._createAuthServiceAccount}
+						onCreateStaticContentUrl={this._createStaticContentUrl}
 						onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
 						onResetPassword={this._resetPassword}
 						onShowToast={this._toaster.addToast}

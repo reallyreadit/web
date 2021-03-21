@@ -5,7 +5,8 @@ import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../../../common/cookies';
 
 interface Props {
-	deviceType: DeviceType
+	deviceType: DeviceType,
+	onCreateStaticContentUrl: (path: string) => string
 }
 export default class InstallExtensionStep extends React.PureComponent<Props> {
 	private readonly _addExtension = (event: React.MouseEvent) => {
@@ -44,7 +45,7 @@ export default class InstallExtensionStep extends React.PureComponent<Props> {
 								<p>In Safari click on the "Safari" menu, select "Preferences...", select the "Extensions" tab and then check the box next to Readup.</p>
 								<img
 									alt="Enable Readup Extension Screenshot"
-									src="/images/safari-enable-extension-screenshot.png"
+									src={this.props.onCreateStaticContentUrl('/app/images/safari-enable-extension-screenshot.png')}
 								/>
 							</> :
 							<Button

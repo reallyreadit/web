@@ -26,6 +26,7 @@ interface Props {
 	isExtensionInstalled: boolean,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onReadArticle: (article: UserArticle) => void,
 	user: UserAccount | null
@@ -98,6 +99,7 @@ class ReadScreen extends React.PureComponent<Props> {
 									location={this.props.location}
 									onBeginOnboarding={this.props.onBeginOnboarding}
 									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 									onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 								/> :
 								<Button

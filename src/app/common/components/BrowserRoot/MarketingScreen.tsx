@@ -35,6 +35,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
@@ -116,6 +117,7 @@ export default class MarketingScreen extends React.Component<
 							location={this.props.location}
 							onBeginOnboarding={this.props.onBeginOnboarding}
 							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>
@@ -190,6 +192,7 @@ export default class MarketingScreen extends React.Component<
 							location={this.props.location}
 							onBeginOnboarding={this.props.onBeginOnboarding}
 							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</div>

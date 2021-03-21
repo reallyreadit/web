@@ -3,10 +3,11 @@ import { DeviceType } from '../../../../common/DeviceType';
 
 export default (
 	props: {
-		deviceType: DeviceType
+		deviceType: DeviceType,
+		onCreateStaticContentUrl: (path: string) => string
 	}
 ) => {
-	let imgUrl = '/images/';
+	let imgUrl = props.onCreateStaticContentUrl('/app/images/');
 	if (props.deviceType === DeviceType.DesktopFirefox) {
 		imgUrl += 'bai-screenshot-firefox.png';
 	} else if (props.deviceType === DeviceType.DesktopSafari) {

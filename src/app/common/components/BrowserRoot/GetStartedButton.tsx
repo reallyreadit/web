@@ -12,6 +12,7 @@ export default class GetStartedButton extends React.PureComponent<{
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onOpenNewPlatformNotificationRequestDialog: () => void
 }> {
 	private readonly _beginOnboarding = () => {
@@ -31,7 +32,7 @@ export default class GetStartedButton extends React.PureComponent<{
 							href={getStoreUrl(DeviceType.Ios)}
 							onClick={this._copyAppReferrerTextToClipboard}
 						>
-							<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
+							<img src={this.props.onCreateStaticContentUrl('/app/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg')} alt="App Store Badge" />
 						</a> :
 						<Button
 							text="Open In App"

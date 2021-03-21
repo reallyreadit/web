@@ -15,6 +15,7 @@ import ImportStep from './OrientationWizard/ImportStep';
 interface Props {
 	onComplete: () => void,
 	onCreateAbsoluteUrl: (userName: string) => string,
+	onCreateStaticContentUrl: (path: string) => string
 	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>,
 	onShare: (data: ShareData) => Promise<ShareResult>,
 	user: UserAccount
@@ -122,6 +123,7 @@ export default class OrientationWizard extends React.PureComponent<
 		[Step.Import]: (
 			<ImportStep
 				onContinue={this._continue}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 			/>
 		),
 		[Step.Notifications]: (

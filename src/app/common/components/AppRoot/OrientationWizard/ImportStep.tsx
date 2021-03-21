@@ -3,6 +3,7 @@ import Button from '../../../../../common/components/Button';
 
 interface Props {
 	onContinue: () => void
+	onCreateStaticContentUrl: (path: string) => string
 }
 export default class ImportStep extends React.PureComponent<Props> {
 	public render() {
@@ -10,7 +11,7 @@ export default class ImportStep extends React.PureComponent<Props> {
 			<div className="import-step_jg2xdw">
 				<h1>Import articles.</h1>
 				<h2>If you don't see the Readup button, tap "More" first to enable it.</h2>
-				<img src="/images/import-screenshot.png" alt="Import Screenshot" />
+				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Import Screenshot" />
 				<Button
 					intent="loud"
 					onClick={this.props.onContinue}
