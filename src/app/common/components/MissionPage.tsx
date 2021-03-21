@@ -42,27 +42,27 @@ const missionPoints : {title: string, paragraph: string}[] = [
 const timeLinePoints = [
 	{
 		timeString: "2016",
-		description: "Bill gets annoyed about the internet and calls Jeff to talk about an idea: People shouldn't be able to comment on articles and stories that they haven't actually read. Soon after, the first brick of the Chrome extension is laid."
+		description: "Bill gets annoyed about the internet and calls Jeff to talk about an idea: People shouldn't be able to comment on articles and stories that they haven't actually read."
 	},
 	{
 		timeString: "2017",
-		description: "Bill and Jeff invent and release the world’s best read-tracking technology. The first Readers enter the reallyread.it database. The reallyread.it beta, billed as an “Article of the Week Club,” grows widely by word of mouth. Readers begin “voting with their attention.”"
+		description: "Bill and Jeff invent and release the world’s best read-tracking technology. Readers begin “voting with their attention.”"
 	},
 	{
 		timeString: "2018",
-		description: "Bill and Jeff participate in an accelerator program (meh) and fail to fundraise a couple times. The iOS app gets released in the fall and roughly doubles the size of the community overnight. "
+		description: "The iOS app gets released in the fall and roughly doubles the size of the community overnight. "
 	},
 	{
 		timeString: "2019",
-		description: "reallyread.it keeps growing and becomes Readup. Bill and Jeff agree to abandon all remnants of a “B2B” business plan. Instead, they decide to build the world’s best social media platform and reading app, a consumer business. At the same time, Readup starts really feeling like a movement. Lots of big launches: Leaderboards. Scouting. Notifications. Posting. Following. Profiles."
+		description: "reallyread.it becomes Readup. Bill and Jeff abandon all remnants of a “B2B” business plan. Instead, they decide to build the world’s best social media platform and reading app, a consumer business."
 	},
 	{
 		timeString: "2020",
-		description: "Early in the year, Readup fails to get into Y Combinator for the third time. In the midst of the pandemic, and after several failed attempts to fundraise, Bill and Jeff decide to make one last, big move: Start charging people for Readup. The world is enthralled by The Social Dilemma and everybody seems to be aware that if you’re not paying for the product, you are the product."
+		description: "Early in the year, Readup fails to get into Y Combinator for the third time. After several failed attempts to fundraise, Bill and Jeff decide to make one last, big move: Start charging people for Readup."
 	},
 	{
 		timeString: "2021",
-		description: "Readup 2.0 is unlike anything that the internet has ever seen: a direct reader-writer marketplace, a “premium” social media platform, and an ethical alternative to Facebook, Twitter and Reddit for people who want a healthier, more humane way to get news, information and entertainment on the web. Readers pay to read on Readup and Readup gives the money directly to the Writers. Journalists around the world rejoice. To be continued…"
+		description: "Readup 2.0 is the world's first direct reader-writer marketplace, an ethical alternative to Facebook, Twitter and Reddit for people who want a healthier, more humane way to read. Readers pay to read on Readup and watch their money go to the Writers. Journalists around the world rejoice. To be continued…"
 	
 	},
 ];
