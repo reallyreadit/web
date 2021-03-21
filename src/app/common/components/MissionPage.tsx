@@ -13,7 +13,7 @@ const missionPoints : {title: string, paragraph: string}[] = [
 	},
 	{
 		title: "Free-thinking is at stake.",
-		paragraph: `Readup was built for reading, listening and thinking. It’s an engine of deep, critical, independent thought. George Orwell warned of a world in which people lose their most human qualities and become soulless automatons without even realizing it. We aim to prevent that from happening. Reading requires intention and discipline. That’s why it matters. Reading changes people. (It changed us!) And we believe that it has the power to change the world.`
+		paragraph: `Readup was built for reading, listening, and deep, independent thought. We aim to prevent what George Orwell warned us about, a world in which people lose their most human qualities and become soulless automatons without even realizing it. As the world becomes increasingly chaotic, reading is a way to stay anchored in reality. Reading changes people (it changed us!) and we believe that it has the power to change the world.`
 	}
 ]
 
@@ -41,60 +41,29 @@ const missionPoints : {title: string, paragraph: string}[] = [
 // Winter 2020-21  Subscriptions
 const timeLinePoints = [
 	{
-		timeString: "Spring 2016",
-		description: "Bill calls his lifelong friend Jeff to talk about an idea: People shouldn't be able to comment on articles and stories that they haven't actually read."
+		timeString: "2016",
+		description: "Bill gets annoyed about the internet and calls Jeff to talk about an idea: People shouldn't be able to comment on articles and stories that they haven't actually read. Soon after, the first brick of the Chrome extension is laid."
 	},
 	{
-		timeString: "Winter 2016",
-		description: "The first brick of the web app is laid."
+		timeString: "2017",
+		description: "Bill and Jeff invent and release the world’s best read-tracking technology. The first Readers enter the reallyread.it database. The reallyread.it beta, billed as an “Article of the Week Club,” grows widely by word of mouth. Readers begin “voting with their attention.”"
 	},
 	{
-		timeString: "Summer 2016",
-		description: "Experiments start on the first browser extension."
+		timeString: "2018",
+		description: "Bill and Jeff participate in an accelerator program (meh) and fail to fundraise a couple times. The iOS app gets released in the fall and roughly doubles the size of the community overnight. "
 	},
 	{
-		timeString: "May 2017",
-		description: "The first Readers enter the reallyread.it database. Readup begins growing purely by word of mouth."
+		timeString: "2019",
+		description: "reallyread.it keeps growing and becomes Readup. Bill and Jeff agree to abandon all remnants of a “B2B” business plan. Instead, they decide to build the world’s best social media platform and reading app, a consumer business. At the same time, Readup starts really feeling like a movement. Lots of big launches: Leaderboards. Scouting. Notifications. Posting. Following. Profiles."
 	},
 	{
-		timeString: "Summer 2017",
-		description: "reallyread.it's first beta, a weekly article club, launches. Readers begin opting-in to share anonymized reading data in exchange for the fruits of that data: crowdsourced curation of the world’s best digital reading material. Readers begin “voting with their attention."
+		timeString: "2020",
+		description: "Early in the year, Readup fails to get into Y Combinator for the third time. In the midst of the pandemic, and after several failed attempts to fundraise, Bill and Jeff decide to make one last, big move: Start charging people for Readup. The world is enthralled by The Social Dilemma and everybody seems to be aware that if you’re not paying for the product, you are the product."
 	},
 	{
-		timeString: "Summer 2018",
-		description: <><a href="https://vimeo.com/276929332">Matter Demo Day</a>.</>
-	},
-	{
-		timeString: "Fall 2018",
-		description: "The iOS app is released."
-	},
-	{
-		timeString: "Spring 2019",
-		description: "reallyread.it becomes Readup."
-	},
-	{
-		timeString: "Summer 2019",
-		description: "Readup launches the Leaderboards. Scouting begins."
-	},
-	{
-		timeString: "Fall 2019",
-		description: "Notifications. Posting. Following. Reader Profiles. Article images."
-	},
-	{
-		timeString: "Spring 2020",
-		description: "Twitter integration. Firefox Add-on."
-	},
-	{
-		timeString: "Summer 2020",
-		description: "Bill and Jeff commit on a new plan for growth. The idea for an ethical method of monetization is born."
-	},
-	{
-		timeString: "Fall 2020",
-		description: "Dark Mode. Safari and Edge extensions."
-	},
-	{
-		timeString: "Spring 2021",
-		description: "Readup 2.0: Paid Readup. Subscriptions. Writer Profiles."
+		timeString: "2021",
+		description: "Readup 2.0 is unlike anything that the internet has ever seen: a direct reader-writer marketplace, a “premium” social media platform, and an ethical alternative to Facebook, Twitter and Reddit for people who want a healthier, more humane way to get news, information and entertainment on the web. Readers pay to read on Readup and Readup gives the money directly to the Writers. Journalists around the world rejoice. To be continued…"
+	
 	},
 ];
 const missionPage = () => (
@@ -112,7 +81,7 @@ const missionPage = () => (
 			<HomePanel className="our-story-panel">
 				<section className="our-story">
 					<h2 className="heading-regular mission-title mission-title--our-story">Our story</h2>
-					<p className="our-story__intro">Readup started in 2016 when Bill and Jeff, two good friends who love reading, got frustrated with inability of social media companies to encourage deep reading and civilized conversation.</p>
+					<p className="our-story__intro">Readup was invented and built by Bill Loundy and Jeff Camera, who met in pre-school and became lifelong friends. Bill and Jeff both love reading, technology and pizza.</p>
 					<div className="our-story__timeline-card">
 						<table className="our-story__timeline">
 							<tbody>

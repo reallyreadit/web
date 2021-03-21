@@ -236,7 +236,7 @@ export default class MarketingScreen extends React.Component<
 					className="quote-panel"
 				>
 					<h2 className="heading-regular">What our Readers say</h2>
-					<p className="home-section-intro">We're proud to improve the lives of our community members on a daily basis.<br/>
+					<p className="home-section-intro">We're proud to improve the lives of our Readers on a daily basis.<br/>
 						Consider these spontaneous testimonials from real humans!</p>
 					<div className="quote-grid">
 						{quotes.map(quote =>
@@ -253,8 +253,7 @@ export default class MarketingScreen extends React.Component<
 					noGoogleSnippet
 				>
 					<h2 className="heading-regular">From the blog</h2>
-					<p className="home-section-intro">Learn more about Readup and how we are changing the world of online reading through our blog.
-					Join the conversation in the comments!</p>
+					<p className="home-section-intro">Learn more about how Readup is changing the future of digital reading. Add your thoughts and ideas in the comments.</p>
 					{this.state.blogPosts.isLoading ?
 						<LoadingOverlay position="static" /> :
 						<ArticleList>
