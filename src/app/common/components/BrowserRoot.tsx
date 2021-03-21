@@ -1181,7 +1181,16 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 									// <Footer
 									// 	onViewPrivacyPolicy={this._viewPrivacyPolicy}
 									// /> :
-									<ColumnFooter onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
+									<ColumnFooter
+										deviceType={this.props.deviceType}
+										onBeginOnboarding={this._beginOnboarding}
+										onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+										onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
+										onViewFaq={this._viewFaq}
+										onViewHome={this._viewHome}
+										onViewMission={this._viewMission}
+										onViewPrivacyPolicy={this._viewPrivacyPolicy}
+										/> :
 									null}
 							</li>
 						))}
