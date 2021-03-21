@@ -5,10 +5,11 @@ import Icon from '../../../common/components/Icon';
 import { useState } from 'react';
 import HomeHero from './BrowserRoot/HomeHero';
 import HomePanel from './BrowserRoot/HomePanel';
+import Button from '../../../common/components/Button';
 
 interface Faq {
 	question: string;
-	answer: JSX.Element;
+	answer: JSX.Element | ((arg: () => void) => JSX.Element);
 }
 interface FaqCategory {
     title: string;
@@ -114,8 +115,18 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "Do you have an Android app?",
-				// todo: add get notified element here!
-				answer: <p>Not yet, but we will soon!</p>
+				answer: (onOpenNewPlatformNotificationRequestDialog: () => void) => (
+				<>
+					<p>Not yet, but we will soon!<br/>Hit this button to get notified when we do.</p>
+					<div className="faq-android-notify">
+						<Button
+							text="Get Notified"
+							size="x-large"
+							intent="loud"
+							onClick={onOpenNewPlatformNotificationRequestDialog}/>
+					</div>
+				</>
+				)
 			},
 			{
 				question: "Who started Readup?",
@@ -145,7 +156,7 @@ const faqs: FaqCategory[] = [
 
 const mapToId = (text: string) => text.toLowerCase().replace(/\s/, '-').replace(/[?"'@*]/, '');
 
-const renderFaq = ({question, answer}: Faq) => {
+const renderFaq = (onOpenNewPlatformNotificationRequestDialog: () => void, {question, answer}: Faq) => {
 	const [isOpen, setOpen] = useState(false);
 	return (<li key={question}>
 		<h3
@@ -154,22 +165,26 @@ const renderFaq = ({question, answer}: Faq) => {
 			onClick={() => setOpen(!isOpen)}><Icon className={classNames({"open": isOpen})} name="chevron-right" />
 				{question}
 		</h3>
-		<div className={classNames("answer", {"open": isOpen})}>{answer}</div>
+		<div className={classNames("answer", {"open": isOpen})}>{typeof answer === 'function'  ? answer(onOpenNewPlatformNotificationRequestDialog) : answer}</div>
 	</li>);
 }
 
-const renderFaqCategory = (faqCategory: FaqCategory) => {
+const renderFaqCategory = (onOpenNewPlatformNotificationRequestDialog: () => void, faqCategory: FaqCategory) => {
 	return <div
 		key={faqCategory.title}
 		className="question-section">
 			<h2 className="heading-regular" id={mapToId(faqCategory.title)}>{ faqCategory.title }</h2>
 			<ul>
-				{faqCategory.questions.map(renderFaq)}
+				{faqCategory.questions.map(renderFaq.bind(null, onOpenNewPlatformNotificationRequestDialog))}
 			</ul>
 		</div>;
 }
 
-const faqPage = () => {
+interface Props {
+	onOpenNewPlatformNotificationRequestDialog: () => void
+}
+
+const FaqPage = (props: Props): JSX.Element => {
 	// transforms the questions to this mapped format: { "category title 1": {"question 1": true, "question 2": false}}
 	// const [openState, setOpen] = useState(
 	// 		faqs.reduce((acc, fQ) =>
@@ -221,16 +236,19 @@ const faqPage = () => {
 					</nav>
 				</div>
 				<div className="questions">
-					{faqs.map(renderFaqCategory)}
+					{faqs.map(renderFaqCategory.bind(null, props.onOpenNewPlatformNotificationRequestDialog))}
 				</div>
 			</HomePanel>
 		</div>
 	);
 }
-export function createScreenFactory<TScreenKey>(key: TScreenKey) {
+// TODO: Get Android notification button in the FAQ page
+export function createScreenFactory<TScreenKey>(key: TScreenKey, props: Props) {
+// export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Frequently Asked Questions' }),
-		render: () => React.createElement(faqPage)
+		render: () => <FaqPage {...props}></FaqPage>
+		// render: () => <FaqPage onOpenNewPlatformNotificationRequestDialog={() => {}}></FaqPage>
 	};
 }
-export default faqPage;
+export default FaqPage;

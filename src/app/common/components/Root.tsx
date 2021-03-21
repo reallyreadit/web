@@ -59,6 +59,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
+import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -240,6 +241,19 @@ export default abstract class Root<
 			/>
 		);
 	};
+
+	// dialogs
+	// TODO: copied from BrowserRoot.tsx; is that OK?
+	private readonly _openNewPlatformNotificationRequestDialog = () => {
+		this._dialog.openDialog(
+			<NewPlatformNotificationRequestDialog
+				onCloseDialog={this._dialog.closeDialog}
+				onShowToast={this._toaster.addToast}
+				onSubmitRequest={this.props.serverApi.logNewPlatformNotificationRequest}
+			/>
+		);
+	};
+
 	protected readonly _openPostDialog = (article: UserArticle) => {
 		this._dialog.openDialog(
 			<PostDialog
@@ -591,7 +605,9 @@ export default abstract class Root<
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
-			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq),
+			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
+			}),
 			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
