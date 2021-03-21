@@ -8,7 +8,6 @@
 .card_d4pcqo {
     border-radius: 20px;
     padding: 32px;
-    // TODO dark mode
-    background-color: map-get($light-theme, $rating-seal-text-color);
+    background-color: var(--content-background-color);
     flex-grow: 1;
 }

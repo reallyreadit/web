@@ -14,10 +14,34 @@
 	}
 }
 
+// only activate the given styles (content) for a given theme (scheme)
+@mixin theme-only($scheme) {
+	@if $scheme == dark {
+		:root[data-com_readup_theme=dark] {
+			@content;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root:not([data-com_readup_theme=light]) {
+				@content;
+			}
+		}
+	} @else {
+		:root[data-com_readup_theme=light] {
+			@content;
+		}
+		@media (prefers-color-scheme: light) {
+			:root:not([data-com_readup_theme=dark]) {
+				@content;
+			}
+		}
+	}
+
+}
+
 // takes a scheme (light | dark) and a list of declarations
 // the properties (keys) of the declarations can be any css property
-// the values MUST be theme variables 
-// The mixin will then render the declarations, 
+// the values MUST be theme variables
+// The mixin will then render the declarations,
 // substituting the variable name for its value in the given scheme
 // Two exceptions: when the properties are 'animation-name' or 'box-shadow': see code
 @mixin theme-colors($scheme, $declarations) {
@@ -163,7 +187,7 @@ $light-theme: (
 
 	$progress-complete-color:				#98fb98,
 	$progress-incomplete-color:			#ffc0cb,
-	
+
 	$rating-seal-text-color:				#ffffff,
 
 	$reader-header-background-color:		#f7f6f5,
@@ -254,7 +278,7 @@ $dark-theme: (
 
 	$text-color:								#c7c6c5,
 	$text-muted-color:						#888888,
-	
+
 	$twitter-button-background-color:	#1da1f2,
 	$twitter-button-text-color:			#ffffff
 );
