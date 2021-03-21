@@ -1247,7 +1247,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string) {
+	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {
@@ -1260,7 +1260,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setScreenState({
 			key: ScreenKey.Comments,
 			method: 'push',
-			title: article.title,
 			urlParams
 		});
 	}
@@ -1268,7 +1267,6 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		this.setScreenState({
 			key: ScreenKey.Profile,
 			method: userName ? 'push' : 'replace',
-			title: '@' + (userName || this.state.user.name),
 			urlParams: { userName: userName || this.state.user.name }
 		});
 	}
