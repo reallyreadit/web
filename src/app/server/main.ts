@@ -463,6 +463,7 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 		},
 		initialUserProfile: req.userProfile,
 		serverApi: req.api,
+		staticServerEndpoint: config.staticServer,
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
 	};
@@ -521,6 +522,7 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 				exchanges: req.api.exchanges,
 				extensionVersion: extensionVersionString,
 				initialLocation: rootProps.initialLocation,
+				staticServerEndpoint: config.staticServer,
 				userProfile: req.userProfile,
 				version: version.app,
 				webServerEndpoint: config.webServer

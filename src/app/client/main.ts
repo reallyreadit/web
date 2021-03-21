@@ -34,6 +34,7 @@ const rootProps = {
 	initialLocation: initData.initialLocation,
 	initialUserProfile: initData.userProfile,
 	serverApi,
+	staticServerEndpoint: initData.staticServerEndpoint,
 	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint
 };
