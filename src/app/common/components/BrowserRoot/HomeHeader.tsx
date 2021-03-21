@@ -3,34 +3,33 @@ import classNames from 'classnames';
 import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
-import { findRouteByKey, findRouteByLocation } from '../../../../common/routing/Route';
+import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
+import { Screen }  from '../../../common/components/Root'
 // import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
 import { DeviceType } from '../../../../common/DeviceType';
 
 interface Props {
+	currentScreen: Screen,
 	deviceType: DeviceType,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onOpenMenu: () => void,
 	onOpenSignInPrompt: (analyticsAction: string) => void,
 	onViewFaq: () => void,
-	onViewMission: () => void,
 	onViewHome: () => void,
+	onViewMission: () => void,
 	onViewNotifications: () => void,
-	user: UserAccount | null
+	user: UserAccount | null,
 }
 
 type State = {
 	menuOpen: boolean
-	activeScreen: ScreenKey | undefined
 }
 
 export default class extends React.PureComponent<Props, State> {
 	state: State = {
 		menuOpen: false,
-		// TODO: probably not the correct way. Also: doesn't work due to server/client mismatch error.
-		activeScreen: findRouteByLocation<any, ScreenKey>(routes, { path: typeof window != 'undefined' && window.location.pathname})?.screenKey
 	}
 
 	private readonly _beginOnboarding = () => {
@@ -73,11 +72,13 @@ export default class extends React.PureComponent<Props, State> {
 			showMenu = !!this.props.user;
 
 		const menuLinks = [
-				{
-					screenKey: ScreenKey.Faq,
-					linkText: 'How it works',
-					navFunction: this.props.onViewFaq
-				},
+				// TODO: this causes the app to crash due to this.state.blogPosts.value is undefined
+				// maybe the URL format is unexpected?
+				// {
+				// 	screenKey: ScreenKey.Home,
+				// 	linkText: 'How it works',
+				// 	navFunction: () => { window.location.href = "/#how-it-works" }
+				// },
 				{
 					screenKey: ScreenKey.Mission,
 					linkText: 'Our Mission',
@@ -136,7 +137,7 @@ export default class extends React.PureComponent<Props, State> {
 								{menuLinks.map(link =>
 									<a
 										key={link.linkText}
-										className={this.state.activeScreen === link.screenKey ? 'active' : ''}
+										className={(this.props.currentScreen && this.props.currentScreen.key) === link.screenKey ? 'active' : ''}
 										onClick={this.pageNavigation.bind(this, link.navFunction)}
 									>{link.linkText}</a>)
 								}

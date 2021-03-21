@@ -1141,6 +1141,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 						onViewHome={this._viewHome}
 						onViewFaq={this._viewFaq}
 						onViewNotifications={this._viewNotifications}
+						currentScreen={this.state.screens[0]}
 						user={this.state.user}
 					/> :
 					null}
