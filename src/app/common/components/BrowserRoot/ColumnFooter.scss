@@ -8,8 +8,10 @@
 	// text-align: center;
 	// TODO: this is duplicated from .content elsewhere, code should be shared.
 
-	background-color: map-get($light-theme, $loud-background-color);
-	color: map-get($light-theme, $rating-seal-text-color);
+	// background-color: map-get($light-theme, $loud-background-color);
+	background: var(--app-background-alt-color);
+	border-top: 1px solid var(--box-shadow-color);
+	// color: map-get($light-theme, $rating-seal-text-color);
 
 	.content {
 		max-width: 980px;
@@ -21,8 +23,6 @@
 		.logo {
 			width: 110px;
 			align-self: flex-start;
-			// make white
-			filter: brightness(1.5);
 			margin-bottom: 22px;
 		}
 
@@ -106,5 +106,12 @@
 				"color": $text-muted-color
 			)
 		);
+	}
+}
+
+@include theme-only(dark) {
+	.column-footer_ltflpc .content .logo {
+		// make white
+		filter: brightness(1.5);
 	}
 }

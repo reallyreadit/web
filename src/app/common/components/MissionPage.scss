@@ -55,17 +55,20 @@
 		}
 
 		&__timeline-card {
-			padding: 20px;
-			background-color: var(--app-background-color);
-			border-radius: 2px;
-			width: max-content;
-			margin: auto;
+			@media screen and (min-width: 768px) {
+				padding: 30px 40px;
+				background-color: var(--app-background-color);
+				border-radius: 2px;
+				width: max-content;
+				margin: auto;
+			}
 		}
 
 		&__timeline {
 			table-layout: fixed;
 			border-collapse: collapse;
 			max-width: $table-width;
+			margin: auto;
 
 			tr > td:nth-child(1) {
 				width: 30%;
@@ -78,16 +81,20 @@
 			}
 
 			td {
-				padding-bottom: 6px;
+				padding-bottom: 14px;
 			}
 
 			@media screen and (min-width: 768px) {
+				min-width: 410px;
+				max-width: 620px;
+				width: 60vw;
+
 				tr > td:nth-child(2) {
 					padding-left: 16px;
 				}
 
 				td {
-					padding-bottom: 10px;
+					padding-bottom: 18px;
 				}
 			}
 		}

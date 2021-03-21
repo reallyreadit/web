@@ -154,7 +154,7 @@ const faqs: FaqCategory[] = [
 	}
 ];
 
-const mapToId = (text: string) => text.toLowerCase().replace(/\s/, '-').replace(/[?"'@*]/, '');
+const mapToId = (text: string) => text.toLowerCase().replace(/\s/g, '-').replace(/[?"'@*]/g, '');
 
 const renderFaq = (onOpenNewPlatformNotificationRequestDialog: () => void, {question, answer}: Faq) => {
 	const [isOpen, setOpen] = useState(false);
@@ -242,9 +242,7 @@ const FaqPage = (props: Props): JSX.Element => {
 		</div>
 	);
 }
-// TODO: Get Android notification button in the FAQ page
 export function createScreenFactory<TScreenKey>(key: TScreenKey, props: Props) {
-// export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Frequently Asked Questions' }),
 		render: () => <FaqPage {...props}></FaqPage>
