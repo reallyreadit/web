@@ -5,27 +5,15 @@ import HomePanel from './BrowserRoot/HomePanel';
 const missionPoints : {title: string, paragraph: string}[] = [
 	{
 		title: "Reading is time well spent.",
-		paragraph: `All screen time is not created equal. As we continue to spend more and more time \
-		 on our devices, it is increasingly important for us to differentiate between screen activities \
-		 that deplete us (aimlessly scrolling through feeds, for example) and those that enrich and inspire us.\
-		 Reading thought-provoking articles from beginning to end is one of very few screen-based activities that \
-		  is undeniably good for you and good for the world. (One more sentence about the positive benefits/virtues of reading.)`
+		paragraph: `All screen time is not created equal. As we continue to spend more and more time on our devices, it is increasingly important for us to differentiate between screen activities that deplete us (aimlessly scrolling through feeds, for example) and those that enrich and inspire us. Reading thought-provoking articles from beginning to end is one of very few screen-based activities that is undeniably good for you and good for the world. Reading makes you happy and healthy; it stimulates the brain and nourishes the soul.`
 	},
 	{
 		title: "Readup is humane technology.",
-		paragraph: `The media, news and journalism industries are all in shambles, dominated by a few organizations \
-			that manipulate you into trading your time and attention for their profit. These organizations have an incentive \
-			to prevent you from focusing on one article at a time, let alone the actual article text. The Readup community is \
-			catalyzing a paradigm shift within the technology industry towards a set of practices and principles that truly respect people’s time, \
-			attention and privacy.`
+		paragraph: `The media, news and journalism industries are all in shambles, dominated by a few organizations that manipulate you into trading your time and attention for their profit. These organizations have an incentive to prevent you from focusing on one article at a time, let alone the actual article text, and they control an unprecedented share of the world’s attention. The Readup community is catalyzing a paradigm shift within the technology industry towards a set of practices and principles that truly respect people’s time, attention and privacy.`
 	},
 	{
 		title: "Free-thinking is at stake.",
-		paragraph: `George Orwell warned of a world in which people lose their most human qualities and become soulless \
-			automatons without even realizing it. As fewer companies continue to control a larger share of the world’s \
-			time and attention, we inch closer to that reality. Readup is an engine of deep, critical, independent \
-			thought. Reading changes people. And we believe that it has the power to change the world.
-			`
+		paragraph: `Readup was built for reading, listening and thinking. It’s an engine of deep, critical, independent thought. George Orwell warned of a world in which people lose their most human qualities and become soulless automatons without even realizing it. We aim to prevent that from happening. Reading requires intention and discipline. That’s why it matters. Reading changes people. (It changed us!) And we believe that it has the power to change the world.`
 	}
 ]
 
