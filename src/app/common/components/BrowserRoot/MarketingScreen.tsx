@@ -228,6 +228,8 @@ export default class MarketingScreen extends React.Component<
 					className="quote-panel"
 				>
 					<h2 className="heading-regular">What our Readers say</h2>
+					<p className="home-section-intro">We're proud to improve the lives of our community members on a daily basis.<br/>
+						Consider these spontaneous testimonials from real humans!</p>
 					<div className="quote-grid">
 						{quotes.map(quote =>
 						<QuoteCard
@@ -242,7 +244,9 @@ export default class MarketingScreen extends React.Component<
 					className="blog"
 					noGoogleSnippet
 				>
-					<h2 className="heading-regular">From the Readup blog</h2>
+					<h2 className="heading-regular">From the blog</h2>
+					<p className="home-section-intro">Learn more about Readup and how we are changing the world of online reading through our blog.
+					Join the conversation in the comments!</p>
 					{this.state.blogPosts.isLoading ?
 						<LoadingOverlay position="static" /> :
 						<ArticleList>
@@ -283,8 +287,19 @@ export default class MarketingScreen extends React.Component<
 					data-nosnippet
 					className="closing-quote-panel"
 				>
-					<span className="preheading">Remember</span>
-					<cite className="closing-quote"><p>If you're not paying for the product, you are the product.</p><p>Join Readup today.</p></cite>
+					{/* <span className="preheading">Remember</span> */}
+					<cite className="closing-quote"><p>We're on a mission to fix digital reading.</p></cite>
+					<Button
+						className="mission-button"
+						iconRight="chevron-right"
+						intent="normal"
+						onClick={() => {
+							// TODO: make an internal link
+							window.location.href = '/mission'
+						}}
+						style="normal"
+						text="Learn more about our mission &amp; story"
+						/>
 				</HomePanel>
 				{/* <Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
