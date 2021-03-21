@@ -4,6 +4,8 @@
 */
 
 .quote-card_xa1vt {
+	box-shadow: 0px 0px 30px rgba(187, 187, 187, 0.25);
+
    p {
        font-size: 24px;
        font-family: 'Museo Sans (300)', sans-serif;
@@ -16,7 +18,7 @@
        padding-right: 4px;
    }
 
-   // quote signs    
+   // quote signs
    p::before, p::after {
        position: absolute;
        display: block;

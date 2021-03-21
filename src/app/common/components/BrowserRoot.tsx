@@ -247,7 +247,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				ShareChannel.Twitter
 			],
 			completionHandler: (data: ShareForm) => {
-				
+
 			}
 		};
 	};
@@ -334,7 +334,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 												break;
 										}
 										reject(new Error(errorMessage));
-									}	
+									}
 								}
 							};
 							this.props.browserApi.addListener('authServiceLinkCompleted', completionHandler);
@@ -530,6 +530,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
+				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
 			}),
@@ -660,7 +661,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 		const
 			queryStringParams = parseQueryString(props.initialLocation.queryString),
 			welcomeMessage = queryStringParams[messageQueryStringKey] as WelcomeMessage;
-		
+
 		// onboarding state
 		let onboardingState: OnboardingState;
 		if (authServiceTokenQueryStringKey in queryStringParams) {
@@ -1180,7 +1181,7 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 									// <Footer
 									// 	onViewPrivacyPolicy={this._viewPrivacyPolicy}
 									// /> :
-									<ColumnFooter onViewPrivacyPolicy={this._viewPrivacyPolicy} /> : 
+									<ColumnFooter onViewPrivacyPolicy={this._viewPrivacyPolicy} /> :
 									null}
 							</li>
 						))}

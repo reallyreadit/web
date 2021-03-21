@@ -31,55 +31,87 @@
 	margin-bottom: 20px;
 }
 
+.marketing-screen_n5a6wc > .blog .controls {
+	margin-top: 20px;
+	text-align: center;
+}
+
 // styles for the quotes flex grid
-.marketing-screen_n5a6wc .quote-grid {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 30px;
-	// justify-content: space-between;
-	// height: 900px;
+.marketing-screen_n5a6wc  {
 
-	.quote-card_xa1vt  {
-		width: 100%;
-		margin: 14px 0;
-		min-height: 80px;
-		box-sizing: border-box;
-		max-width: 600px;
-
-		&__inner {
-			margin: auto;
-			max-width: 480px;
+	$collapse-point: 1024px;
+	.quote-panel > .content {
+		@media screen and (min-width: $collapse-point) {
+			max-width: unset;
+			margin: 0 0 0 10vw;
 		}
 	}
 
-	// larger sizes & up: collapse
-	@media screen and (min-width: 1024px) {
+	.quote-grid {
 		display: flex;
-		flex-wrap: wrap;
 		flex-direction: column;
-		justify-content: space-between;
-		height: 960px;
+		align-items: center;
+		$box-shadow-length: 30px;
+		padding-top: 30px;
+		// margin-top: 30px;
+
+		// justify-content: space-between;
+		// height: 900px;
 
 		.quote-card_xa1vt  {
-			width: 45%;
-			margin: 0 32px 32px 0;
+			width: 100%;
+			margin: 14px 0;
+			min-height: 80px;
+			box-sizing: border-box;
+			max-width: 600px;
+
+			&__inner {
+				margin: auto;
+				max-width: 480px;
+			}
+		}
+
+		// larger sizes & up: collapse
+		@media screen and (min-width: $collapse-point) {
+			display: flex;
+			flex-wrap: wrap;
+			flex-direction: column;
+			justify-content: space-between;
+			height: 960px;
+
+			overflow-x: scroll;
+			$fade-perc: 5%;
+			padding-left: $fade-perc;
+			left: -$fade-perc;
+			mask-image: linear-gradient(to left,
+				 rgba(0, 0, 0, 0),
+				 rgba(0, 0, 0, 0.73) $fade-perc,
+				 rgb(0, 0, 0, 1) $fade-perc*1.5,
+				 rgb(0, 0, 0, 1) 100%-$fade-perc,
+				 rgba( 0, 0, 0, 0) 100%);
+			position: relative;
+			padding: $box-shadow-length 0 $box-shadow-length $fade-perc;
+
+			.quote-card_xa1vt  {
+				width: 45%;
+				margin: 0 32px 32px 0;
+			}
 		}
 	}
 }
 
-// styles for flex-panel
-.marketing-screen_n5a6wc .flex-panel {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	min-height: 240px;
-	flex-wrap: wrap;
+// styles for flex-panel -- unused
+// .marketing-screen_n5a6wc .flex-panel {
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: space-between;
+// 	min-height: 240px;
+// 	flex-wrap: wrap;
 
-	// & > div {
-	// 	width: 100%;
-	// }
-}
+// 	// & > div {
+// 	// 	width: 100%;
+// 	// }
+// }
 
 // styles for closing quote section
 .marketing-screen_n5a6wc .closing-quote-panel .content {
@@ -184,35 +216,35 @@
 }
 
 
-@media screen and (min-width: 768px) {
+// @media screen and (min-width: 768px) {
 
-	// styles for flex-panel
-	.marketing-screen_n5a6wc .flex-panel {
-		display: flex;
-		flex-wrap: nowrap;
-		flex-direction: row;
-		justify-content: space-between;
-		min-height: 240px;
+// 	// styles for flex-panel
+// 	.marketing-screen_n5a6wc .flex-panel {
+// 		display: flex;
+// 		flex-wrap: nowrap;
+// 		flex-direction: row;
+// 		justify-content: space-between;
+// 		min-height: 240px;
 
-		.card_d4pcqo {
-			min-height: 180px;
-			margin: 10px 0;
-		}
+// 		.card_d4pcqo {
+// 			min-height: 180px;
+// 			margin: 10px 0;
+// 		}
 
-		@media screen and (min-width: 768px) {
-			.card_d4pcqo {
-				margin: 20px 10px;
-				&:first-child {
-					margin-left: 0;
-				}
-				&:last-child {
-					margin-right: 0;
-				}
-			}
-		}
-	}
+// 		@media screen and (min-width: 768px) {
+// 			.card_d4pcqo {
+// 				margin: 20px 10px;
+// 				&:first-child {
+// 					margin-left: 0;
+// 				}
+// 				&:last-child {
+// 					margin-right: 0;
+// 				}
+// 			}
+// 		}
+// 	}
 
-}
+// }
 
 @include theme using ($root, $scheme) {
 	#{$root} .marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(even) {
