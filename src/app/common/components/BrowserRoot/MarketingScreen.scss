@@ -36,6 +36,14 @@
 	text-align: center;
 }
 
+// intro text on home panels
+.marketing-screen_n5a6wc > .home-panel_w65z7c > .content > .home-section-intro {
+	max-width: 651px;
+	font-size: 17.33px;
+	font-family: 'Museo Sans (300)', sans-serif;
+	line-height: 1.6;
+}
+
 // styles for the quotes flex grid
 .marketing-screen_n5a6wc  {
 
@@ -46,6 +54,8 @@
 			margin: 0 0 0 10vw;
 		}
 	}
+
+
 
 	.quote-grid {
 		display: flex;
@@ -129,6 +139,10 @@
 		font-style: normal;
 		max-width: 420px;
 		margin-top: 0.2em;
+	}
+
+	.mission-button {
+		margin-top: 18px;
 	}
 
 
