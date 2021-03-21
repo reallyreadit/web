@@ -152,7 +152,7 @@
 			transform: translateX(8px);
 			object-position: top;
 			object-fit: contain;
-			max-width: calc(min(95vw, 530px));
+			max-width: min(95vw, 530px);
 
 			@media screen and (max-width: 375px) {
 				// min-height: 230px;
