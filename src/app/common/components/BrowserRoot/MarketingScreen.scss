@@ -160,6 +160,42 @@
 	}
 }
 
+// inspired on web/src/app/common/components/HeaderSelector.scss mobile-only
+// TODO: might be interseting to extract this as a component
+.marketing-screen_n5a6wc > #how-it-works {
+	.how-it-works__selector {
+		display: flex;
+		justify-content: left;
+		> button {
+			margin-top: 16px;
+			position: relative;
+			background-color: transparent;
+			padding: 5px 10px;
+			font-size: 14pt;
+			border-color: var(--control-border-color);
+			border-style: solid;
+			border-width: 1px;
+			font-family: 'Museo Sans (500)';
+			background-color: var(--control-background-color);
+		}
+		> button:first-child {
+			border-radius: 3px 0 0 3px;
+		}
+		> button:last-child {
+			border-radius: 0 3px 3px 0;
+		}
+		> button.selected {
+			font-family: 'Museo Sans (500)';
+			background-color: var(--button-selected-background-color);
+			color: var(--button-selected-text-color);
+		}
+		> button + button {
+			margin-left: 0;
+			border-left: none;
+		}
+	}
+}
+
 .marketing-screen_n5a6wc .home-hero-image > .content {
 	display: flex;
 
