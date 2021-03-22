@@ -27,6 +27,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorLeaderboards: FetchFunctionWithParams<AuthorLeaderboardsRequest, AuthorRanking[]>,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onGetReaderLeaderboards: FetchFunction<Leaderboards>,
@@ -230,6 +231,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 										location={this.props.location}
 										onBeginOnboarding={this.props.onBeginOnboarding}
 										onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+										onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 										onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 									/>
 								</div>
@@ -288,6 +290,7 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 				onCopyAppReferrerTextToClipboard={services.onCopyAppReferrerTextToClipboard}
 				onCloseDialog={services.onCloseDialog}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
+				onCreateStaticContentUrl={services.onCreateStaticContentUrl}
 				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
 				onGetAuthorLeaderboards={services.onGetAuthorLeaderboards}
 				onGetReaderLeaderboards={services.onGetReaderLeaderboards}

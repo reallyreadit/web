@@ -6,7 +6,8 @@ const
 const
 	project = require('../project'),
 	createBuild = require('../createBuild'),
-	authServiceLinkHandler = require('./client/authServiceLinkHandler');
+	authServiceLinkHandler = require('./client/authServiceLinkHandler'),
+	appConfigPath = path.posix.join(project.srcDir, 'app/server/config.{env}.json');
 
 const package = JSON.parse(
 	fs
@@ -16,9 +17,14 @@ const package = JSON.parse(
 
 const app = createBuild({
 	webpack: {
-		entry: path.posix.join(project.srcDir, 'app/client/main.ts')
+		entry: path.posix.join(project.srcDir, 'app/client/main.ts'),
+		fileName: `bundle-${package['it.reallyread'].version.app}.js`
 	},
 	scss: {
+		appConfig: {
+			path: appConfigPath
+		},
+		fileName: `bundle-${package['it.reallyread'].version.app}.css`,
 		files: [
 			`${project.srcDir}/app/**/*.{css,scss}`,
 			`${project.srcDir}/common/components/**/*.{css,scss}`,
@@ -26,9 +32,7 @@ const app = createBuild({
 		]
 	},
 	staticAssets: [
-		`${project.srcDir}/app/client/.well-known/**/*`,
-		`${project.srcDir}/app/client/fonts/**/*`,
-		`${project.srcDir}/app/client/images/**/*`
+		`${project.srcDir}/app/client/.well-known/**/*`
 	],
 	templates: {
 		data: env => {
@@ -57,7 +61,7 @@ const app = createBuild({
 });
 
 function clean(env) {
-	return del(project.getOutPath('app/client', env) + '/*');
+	return del(project.getOutPath('app/client', env));
 }
 function build(env) {
 	return Promise.all([

@@ -73,13 +73,11 @@ export default class extends React.PureComponent<Props> {
 							null}
 					</div>
 					<AuthServiceButton
-						imageBasePath="/images/"
 						onClick={this.props.onSignInWithTwitter}
 						provider={AuthServiceProvider.Twitter}
 					/>
 					<div className="twitter-notice">Recommended. We'll never tweet without your permission.</div>
 					<AuthServiceButton
-						imageBasePath="/images/"
 						onClick={this.props.onSignInWithApple}
 						provider={AuthServiceProvider.Apple}
 					/>

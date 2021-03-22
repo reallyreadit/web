@@ -39,6 +39,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
@@ -158,6 +159,7 @@ class AuthorScreen extends React.Component<Props, State> {
 											location={this.props.location}
 											onBeginOnboarding={this.props.onBeginOnboarding}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</div>
@@ -279,6 +281,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onCopyAppReferrerTextToClipboard={deps.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={deps.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
+				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetAuthorArticles={deps.onGetAuthorArticles}
 				onOpenNewPlatformNotificationRequestDialog={deps.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={deps.onPostArticle}

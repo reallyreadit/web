@@ -16,7 +16,6 @@ export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> &
 interface Props {
 	analyticsAction: string,
 	authServiceToken?: string,
-	imageBasePath: string,
 	onCreateAccount?: () => void,
 	onRequestPasswordReset: (authServiceToken?: string) => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
@@ -205,12 +204,10 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 					<>
 						<FormPartition />
 						<AuthServiceButton
-							imageBasePath={this.props.imageBasePath}
 							onClick={this._signInWithAuthService}
 							provider={AuthServiceProvider.Apple}
 						/>
 						<AuthServiceButton
-							imageBasePath={this.props.imageBasePath}
 							onClick={this._signInWithAuthService}
 							provider={AuthServiceProvider.Twitter}
 						/>

@@ -21,7 +21,6 @@ enum Step {
 interface Props extends BaseProps {
 	analyticsAction: string,
 	captcha: CaptchaBase,
-	imageBasePath: string,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
 	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
@@ -91,7 +90,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			<CreateAccountStep
 				analyticsAction={this.props.analyticsAction}
 				captcha={this.props.captcha}
-				imageBasePath={this.props.imageBasePath}
 				onCreateAccount={this._createAccount}
 				onShowToast={this.props.onShowToast}
 				onSignIn={this._goToSignInStep}
@@ -101,7 +99,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.SignIn]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
-				imageBasePath={this.props.imageBasePath}
 				onCreateAccount={this._goToCreateAccountStep}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onShowToast={this.props.onShowToast}
@@ -121,7 +118,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
 				authServiceToken={this._authServiceToken}
-				imageBasePath={this.props.imageBasePath}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}

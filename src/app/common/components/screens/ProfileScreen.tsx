@@ -52,6 +52,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
@@ -375,6 +376,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 											location={this.props.location}
 											onBeginOnboarding={this.props.onBeginOnboarding}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</h3>

@@ -6,6 +6,7 @@ import ExtensionButtonImage from './ExtensionButtonImage';
 export default (
 	props: {
 		deviceType: DeviceType,
+		onCreateStaticContentUrl: (path: string) => string,
 		onSubmit: () => Promise<void>
 	}
 ) => (
@@ -18,6 +19,9 @@ export default (
 		title="Don't Forget"
 	>
 		<p>Click the Readup button to turn on Reader-mode. Otherwise you won't get credit.</p>
-		<ExtensionButtonImage deviceType={props.deviceType} />
+		<ExtensionButtonImage
+			deviceType={props.deviceType}
+			onCreateStaticContentUrl={props.onCreateStaticContentUrl}
+		/>
 	</FormDialog>
 );

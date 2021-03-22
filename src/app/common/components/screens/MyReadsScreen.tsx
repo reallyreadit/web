@@ -36,6 +36,7 @@ interface Props {
 	list: List,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string
 	onGetStarredArticles: ArticleFetchFunction,
 	onGetUserArticleHistory: ArticleFetchFunction,
 	onOpenDialog: (element: React.ReactNode) => void,
@@ -102,7 +103,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 				size="small"
 				title="Import Articles to Readup"
 			>
-				<img src="/images/import-screenshot.png" alt="Import Screenshot" style={{ maxWidth: '100%' }} />
+				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Import Screenshot" style={{ maxWidth: '100%' }} />
 			</FormDialog>
 		);
 	};

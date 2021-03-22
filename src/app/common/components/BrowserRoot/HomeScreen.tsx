@@ -35,6 +35,7 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
@@ -302,6 +303,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onGetUserCount={this.props.onGetUserCount}
 				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}

@@ -572,6 +572,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
@@ -591,6 +592,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onDeleteComment: this._deleteComment,
 				onGetArticle: this.props.serverApi.getArticle,
 				onGetComments: this.props.serverApi.getComments,
@@ -673,6 +675,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyAppReferrerTextToClipboard: this._noop,
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
@@ -696,6 +699,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 				onOpenDialog: this._dialog.openDialog,
@@ -715,6 +719,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
@@ -1286,6 +1291,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							<OrientationWizard
 								onComplete={this._completeOrientation}
 								onCreateAbsoluteUrl={this._createAbsoluteUrl}
+								onCreateStaticContentUrl={this._createStaticContentUrl}
 								onRequestNotificationAuthorization={this._requestNotificationAuthorization}
 								onShare={this._handleShareRequestWithCompletion}
 								user={this.state.user}

@@ -33,7 +33,6 @@ export interface Props {
 	dialogs: KeyValuePair<number, DialogState>[],
 	dialogService: DialogService<{}>,
 	error: string | null,
-	imageBasePath: string,
 	onboardingAnalyticsAction: string | null,
 	onCloseOnboarding: (reason: ExitReason) => void,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
@@ -55,7 +54,6 @@ export default (props: Props) => (
 			<OnboardingFlow
 				analyticsAction={props.onboardingAnalyticsAction}
 				captcha={props.captcha}
-				imageBasePath={props.imageBasePath}
 				onClose={props.onCloseOnboarding}
 				onCreateAccount={props.onCreateAccount}
 				onCreateAuthServiceAccount={props.onCreateAuthServiceAccount}

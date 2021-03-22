@@ -15,57 +15,31 @@
 ### App
 1. Configure the web server. Optionally set the value for `stripePublishableKey` if you want to enable subscription purchases through Stripe.
 
-        src/app/server/config.ts
-    ```typescript
-    import HttpEndpoint from '../../common/HttpEndpoint';
-
-    let config: {
-    	apiServer: HttpEndpoint,
-    	chromeExtensionId: string,
-    	contentRootPath: string,
-    	cookieDomain: string,
-    	cookieName: string,
-    	logStream?: {
-    		type: string,
-    		path: string,
-    		period: string,
-    		count: number,
-    		level: number
+        src/app/server/config.dev.json
+    ```json
+    {
+    	"apiServer": {
+    		"protocol": "https",
+    		"host": "api.dev.readup.com"
     	},
-    	packageFilePath: string,
-    	port: number | string,
-    	secureCookie: boolean,
-    	serveStaticContent: boolean,
-    	staticServer: HttpEndpoint,
-    	stripePublishableKey: string,
-    	webServer: HttpEndpoint
-	 };
-
-    config = {
-    	apiServer: {
-    		protocol: 'https',
-    		host: 'api.dev.readup.com'
+    	"chromeExtensionId": "",
+    	"contentRootPath": "bin/dev/app/client",
+    	"cookieDomain": ".dev.readup.com",
+    	"cookieName": "devSessionKey",
+    	"packageFilePath": "package.json",
+    	"port": 5001,
+    	"secureCookie": true,
+    	"serveStaticContent": true,
+    	"staticServer": {
+    		"protocol": "https",
+    		"host": "static.dev.readup.com"
     	},
-    	chromeExtensionId: '',
-    	contentRootPath: 'bin/dev/app/client',
-    	cookieDomain: '.dev.readup.com',
-    	cookieName: 'devSessionKey',
-    	packageFilePath: 'package.json',
-    	port: 5001,
-    	secureCookie: true,
-    	serveStaticContent: true,
-    	staticServer: {
-    		protocol: 'https',
-    		host: 'static.dev.readup.com'
-    	},
-    	stripePublishableKey: '',
-    	webServer: {
-    		protocol: 'https',
-    		host: 'dev.readup.com'
+		"stripePublishableKey": "",
+    	"webServer": {
+    		"protocol": "https",
+    		"host": "dev.readup.com"
     	}
-	 };
-
-    export default config;
+	 }
     ```
 2. Start the server
 

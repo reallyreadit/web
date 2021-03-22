@@ -24,7 +24,7 @@ import { ClassValue } from 'classnames/types';
 import RootErrorBoundary from './RootErrorBoundary';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
-import HttpEndpoint from '../../../common/HttpEndpoint';
+import HttpEndpoint, { createUrl } from '../../../common/HttpEndpoint';
 import ClipboardService from '../../../common/services/ClipboardService';
 import CommentThread from '../../../common/models/CommentThread';
 import SemanticVersion from '../../../common/SemanticVersion';
@@ -339,6 +339,7 @@ export default abstract class Root<
 
 	// routing
 	protected readonly _createAbsoluteUrl: (path: string) => string;
+	protected readonly _createStaticContentUrl = (path: string) => createUrl(this.props.staticServerEndpoint, path);
 
 	// screens
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;

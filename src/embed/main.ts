@@ -316,7 +316,6 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			),
 			clipboardService,
 			dialogService,
-			imageBasePath: createUrl(window.reallyreadit.embed.config.staticServer, '/common/images/'),
 			onCloseOnboarding: reason => {
 				setState({
 						onboardingAnalyticsAction: null

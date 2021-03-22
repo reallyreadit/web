@@ -4,7 +4,7 @@ import * as ReactDOMServer from 'react-dom/server';
 import ServerApi from './ServerApi';
 import renderHtml from '../common/templates/html';
 import UserAccountRole from '../../common/models/UserAccountRole';
-import config from './config';
+import { Config } from './Config';
 import routes from '../../common/routing/routes';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
@@ -23,6 +23,7 @@ import AppApi from './AppApi';
 import ExtensionApi from './ExtensionApi';
 import ScreenKey from '../../common/routing/ScreenKey';
 import * as fs from 'fs';
+import * as path from 'path';
 import VerificationTokenData from '../../common/models/VerificationTokenData';
 import SemanticVersion from '../../common/SemanticVersion';
 import * as crypto from 'crypto';
@@ -35,6 +36,34 @@ import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfil
 import PackageVersionInfo from '../../common/PackageVersionInfo';
 import Lazy from '../../common/Lazy';
 import { Stripe } from '@stripe/stripe-js';
+
+// read configuration
+let
+	configFileName: string,
+	envPort: string;
+switch (process.env.NODE_ENV) {
+	case 'development':
+		configFileName = 'config.dev.json';
+		break;
+	case 'production':
+		configFileName = 'config.prod.json';
+		envPort = process.env.PORT;
+		break;
+	default:
+		throw new Error('Unexpected value for process.env.NODE_ENV');
+}
+const config = JSON
+	.parse(
+		fs.readFileSync(
+			path.join(__dirname, configFileName),
+			{
+				encoding: 'utf8'
+			}
+		)
+	) as Config;
+if (envPort != null) {
+	config.port = envPort;
+}
 
 // route helper function
 function findRouteByRequest(req: express.Request) {
@@ -122,7 +151,7 @@ server.get('/apple-app-site-association', (req, res) => {
 });
 // version check
 server.get('/version', (req, res) => {
-	res.status(200).send(version.app);
+	res.status(200).send(version.appPublic);
 });
 // authenticate
 server.use((req, res, next) => {
@@ -510,8 +539,10 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 				req.matchedRoute.authLevel != null ||
 				(req.matchedRoute.noIndex && req.matchedRoute.noIndex(req.path))
 			),
+			staticServer: config.staticServer,
 			title: browserApi.getTitle(),
-			twitterCard
+			twitterCard,
+			version: version.app
 		}));
 	};
 	// check if we need to render a twitter card

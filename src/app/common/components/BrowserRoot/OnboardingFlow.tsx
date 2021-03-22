@@ -44,6 +44,7 @@ export interface Props extends BaseProps {
 	onCreateAbsoluteUrl: (userName: string) => string,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
 	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
+	onCreateStaticContentUrl: (path: string) => string,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
 	onShare: (data: ShareData) => ShareResponse,
@@ -105,7 +106,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			this.goToStep(Step.ExtensionInstalled);
 		}
 	};
-	private readonly _imageBasePath = '/images/';
 	private readonly _resetPassword = (token: string, email: string) => {
 		return this.props
 			.onResetPassword(token, email)
@@ -129,7 +129,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			<CreateAccountStep
 				analyticsAction={this.props.analyticsAction}
 				captcha={this.props.captcha}
-				imageBasePath={this._imageBasePath}
 				onCreateAccount={this._createAccount}
 				onShowToast={this.props.onShowToast}
 				onSignIn={this._goToSignInStep}
@@ -139,7 +138,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.SignIn]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
-				imageBasePath={this._imageBasePath}
 				onCreateAccount={this._goToCreateAccountStep}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onShowToast={this.props.onShowToast}
@@ -159,7 +157,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
 				authServiceToken={this.props.authServiceToken}
-				imageBasePath={this._imageBasePath}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}
@@ -182,12 +179,14 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.InstallExtension]: (_: UserAccount) => (
 			<InstallExtensionStep
 				deviceType={this.props.deviceType}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 			/>
 		),
 		[Step.ExtensionInstalled]: (_: UserAccount) => (
 			<ExtensionInstalledStep
 				deviceType={this.props.deviceType}
 				onContinue={this._goToButtonTutorialStep}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 			/>
 		),
 		[Step.ButtonTutorial]: (_: UserAccount) => (

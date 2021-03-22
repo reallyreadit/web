@@ -7,6 +7,16 @@ const
 	TscWatchClient = require('tsc-watch/client'),
 	targetPath = 'app/server';
 
+function copyConfigFiles(env) {
+	return new Promise(
+		resolve => buildStaticAssets({
+			src: `${project.srcDir}/app/server/config.*.json`,
+			dest: project.getOutPath('app/server/app/server', env),
+			onComplete: resolve
+		})
+	);
+}
+
 class Server {
 	constructor() {
 		this.clean = this.clean.bind(this);
@@ -47,7 +57,8 @@ class Server {
 						)
 						.on('exit', resolve);
 				}
-			)
+			),
+			copyConfigFiles(env)
 		];
 		if (env === project.env.prod) {
 			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
@@ -57,12 +68,10 @@ class Server {
 				onComplete: resolve
 			})));
 			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-				src: 'package-lock.json',
-				dest: project.getOutPath('app', env),
-				onComplete: resolve
-			})));
-			tasks.push(new Promise((resolve, reject) => buildStaticAssets({
-				src: 'package.json',
+				src: [
+					'package.json',
+					'package-lock.json'
+				],
 				dest: project.getOutPath('app', env),
 				onComplete: resolve
 			})));
@@ -84,6 +93,14 @@ class Server {
 		return Promise.resolve();
 	}
 	watch() {
+		return copyConfigFiles(project.env.dev)
+			.then(
+				() => {
+					this.watchTsc();
+				}
+			);
+	}
+	watchTsc() {
 		const watcher = new TscWatchClient();
 		watcher.on(
 			'success',

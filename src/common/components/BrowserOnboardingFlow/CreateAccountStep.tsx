@@ -18,7 +18,6 @@ export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captch
 interface Props {
 	analyticsAction: string,
 	captcha: CaptchaBase,
-	imageBasePath: string,
 	onCreateAccount: (form: Form) => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: () => void,
@@ -106,7 +105,7 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 								}
 								if (errors.includes('InvalidCaptcha')) {
 									nextState.globalError = GlobalError.InvalidCaptcha;
-								}	
+								}
 							} else {
 								nextState.globalError = GlobalError.Unknown;
 							}
@@ -214,12 +213,10 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 				/>
 				<FormPartition />
 				<AuthServiceButton
-					imageBasePath={this.props.imageBasePath}
 					onClick={this._signInWithAuthService}
 					provider={AuthServiceProvider.Apple}
 				/>
 				<AuthServiceButton
-					imageBasePath={this.props.imageBasePath}
 					onClick={this._signInWithAuthService}
 					provider={AuthServiceProvider.Twitter}
 				/>
