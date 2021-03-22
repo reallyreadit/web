@@ -126,7 +126,7 @@ export default class MarketingScreen extends React.Component<
 			},
 			{
 				heading: "Algorithms you can trust",
-				paragraph: "Readup doesn't have liking or upvoting. Instead, Readers \"vote\" with their time and attention. All algorithms are 100% transparent and Reader-powered. (No mods!) ",
+				paragraph: "Readup doesn't have likes or upvotes. Instead, Readers \"vote\" with their time and attention. All algorithms are fully transparent and Reader privacy is always respected.",
 				imageName: "good-algorithms.png",
 				imageAlt: "Transparent recommendation mechanism"
 			},
@@ -237,7 +237,7 @@ export default class MarketingScreen extends React.Component<
 				>
 					<h2 className="heading-regular">What our Readers say</h2>
 					<p className="home-section-intro">We're proud to improve the lives of our Readers on a daily basis.<br/>
-						Consider these spontaneous testimonials from real humans!</p>
+						Check out these spontaneous testimonials from real humans beings.</p>
 					<div className="quote-grid">
 						{quotes.map(quote =>
 							<QuoteCard
@@ -253,7 +253,7 @@ export default class MarketingScreen extends React.Component<
 					noGoogleSnippet
 				>
 					<h2 className="heading-regular">From the blog</h2>
-					<p className="home-section-intro">Learn more about how Readup is changing the future of digital reading. Add your thoughts and ideas in the comments.</p>
+					<p className="home-section-intro">Read about how Readup is changing the future of digital reading. Add your thoughts in the comments.</p>
 					{this.state.blogPosts.isLoading ?
 						<LoadingOverlay position="static" /> :
 						<ArticleList>
