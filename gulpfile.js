@@ -30,10 +30,7 @@ function cleanProdServer() {
 	return server.clean(project.env.prod);
 }
 function buildProdServer() {
-	return cleanProdServer()
-		.then(
-			server.build(project.env.prod)
-		);
+	return server.build(project.env.prod);
 }
 
 function cleanDevBrowser() {
@@ -54,10 +51,7 @@ function cleanProdBrowser() {
 	return client.clean(project.env.prod);
 }
 function buildProdBrowser() {
-	return cleanProdBrowser()
-		.then(
-			client.build(project.env.prod)
-		);
+	return client.build(project.env.prod);
 }
 
 /**
