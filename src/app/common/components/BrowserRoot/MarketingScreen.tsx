@@ -196,7 +196,7 @@ export default class MarketingScreen extends React.Component<
 				<HomePanel className="home-hero-image">
 					<div className="home-hero-image__intro-text">
 						<h1 className="heading-regular">The internet broke reading.<br />We fixed it.</h1>
-						<p>Readup is a social reading network for articles.<br/>We help you find, read and share the best articles online.</p>
+						<p>Readup is an article-based social reading network.<br />Find, read and share the best articles and stories online.</p>
 						<GetStartedButton
 							analyticsAction="HomeScreenHeader"
 							deviceType={this.props.deviceType}
