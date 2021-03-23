@@ -2,6 +2,8 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 
+type ImageAndTextType = "wide" | "contained" | "vertical";
+
 export default (
 	props: {
 		// TODO: probably I don't want children here, but rather some data props?
@@ -14,14 +16,14 @@ export default (
 		paragraph: string,
 		imageName: string,
 		imageAlt: string,
-		type: "wide" | "contained"
+		type: ImageAndTextType[]
 	}
 ) => (
 	<div
 		className={classNames(
 			'image-and-text_54dk3j',
 			props.imageRight ? "image-and-text_54dk3j--image-right" : "",
-			`image-and-text_54dk3j--${props.type}`,
+			...props.type.map(t => `image-and-text_54dk3j--${t}`),
 			props.className)}
 		data-nosnippet={props.noGoogleSnippet ? '' : null}
 	>

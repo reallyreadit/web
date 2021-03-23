@@ -160,14 +160,23 @@
 	}
 }
 
+// quick non-mobile first override uptil widest iPhone
+@media screen and (max-width: 414px) {
+	.content h2.heading-regular {
+		text-align: center;
+	}
+}
+
 // inspired on web/src/app/common/components/HeaderSelector.scss mobile-only
 // TODO: might be interseting to extract this as a component
-.marketing-screen_n5a6wc > #how-it-works {
+.marketing-screen_n5a6wc > #how-it-works > .content {
 	.how-it-works__selector {
+
 		display: flex;
-		justify-content: left;
+		justify-content: center;
 		> button {
-			margin-top: 16px;
+			// margin-top: 16px;
+			margin-top: 36px;
 			position: relative;
 			background-color: transparent;
 			padding: 5px 10px;
@@ -193,7 +202,16 @@
 			margin-left: 0;
 			border-left: none;
 		}
+
+		@media screen and (min-width: 768px) {
+			margin-right: 50%;
+		}
 	}
+
+	.image-and-text_54dk3j--wide:first-child {
+		margin-top: 34px;
+	}
+
 }
 
 .marketing-screen_n5a6wc .home-hero-image > .content {

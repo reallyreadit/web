@@ -59,10 +59,16 @@ export interface Quote {
 	reader: string,
 	source: string,
 }
+
+enum HowItWorksType {
+	iOS,
+	DesktopBrowser
+}
 export default class MarketingScreen extends React.Component<
 	Props,
 	{
 		blogPosts: Fetchable<PageResult<UserArticle>>,
+		howItWorksType: HowItWorksType;
 		// menuState: MenuState
 	}
 > {
@@ -104,6 +110,9 @@ export default class MarketingScreen extends React.Component<
 					}
 				)
 			),
+			howItWorksType: props.deviceType === DeviceType.Ios ?
+				HowItWorksType.iOS :
+				HowItWorksType.DesktopBrowser
 			// menuState: MenuState.Closed
 		};
 	}
@@ -141,22 +150,51 @@ export default class MarketingScreen extends React.Component<
 
 		const howItWorksDesktop = [
 			{
-				heading: "Step 1: Click the button",
-				paragraph: "lalaland",
+				heading: "Step 1: Click the extension button",
+				paragraph: "After installing the browser extension for your browser, click the Readup button when \
+							you're on an article you want to read. Any article you can access online works!",
 				imageName: 'click-button.png',
 				imageAlt: 'Click the Readup extension button in the right-top of the screen.'
 			},
 			{
 				heading: "Step 2: Enjoy reading",
-				paragraph: "lalala",
+				paragraph: "Read without distraction in Reader mode. After finishing the article, share it with the \
+							community (post) or join the article conversation with other verified readers!\n\
+							Don't have time to finish? Check back later in your History and continue where you left off!",
 				imageName: 'read-article.png',
 				imageAlt: 'Read the article'
 			},
 			{
 				heading: "Step 3: Discover socially",
-				paragraph: "lalala",
+				paragraph: "What makes Readup unique is its transparent, community-based article curation. Discover \
+				the best articles read by the community today, or find articles by writer, publication or article length (in beta).",
 				imageName: 'discover-socially.png',
 				imageAlt: 'Discover Socially'
+			}
+		];
+
+		const howItWorksiOS = [
+			{
+				heading: "Step 1: Share the article with Readup",
+				paragraph: "After installing the browser extension for your browser, click the Readup button when \
+							you're on an article you want to read. Any article you can access online works!",
+				imageName: 'share-with-readup-ios.png',
+				imageAlt: 'A share sheet with the Readup app'
+			},
+			{
+				heading: "Step 2: Enjoy reading",
+				paragraph: "Find the article in My Reads, and read without distraction in Reader mode. After finishing the article, share it with the \
+							community (post) or join the article conversation with other verified readers!\n\
+							Don't have time to finish? Check back later in your History and continue where you left off!",
+				imageName: 'read-ios.png',
+				imageAlt: 'A Readup app in Reader mode'
+			},
+			{
+				heading: "Step 3: Discover socially",
+				paragraph:  "What makes Readup unique is its transparent, community-based article curation. Discover \
+				the best articles read by the community today, or find articles by writer, publication or article length (in beta).",
+				imageName: 'discover-ios.png',
+				imageAlt: 'Readup\'s Article of the Day listing view'
 			}
 		];
 
@@ -245,7 +283,7 @@ export default class MarketingScreen extends React.Component<
 						{...pointData}
 						key={pointData.imageName}
 						imageRight={!(i % 2 == 0)}
-						type="contained" />) }
+						type={['contained']} />) }
 				</HomePanel>
 				{/* <HomePanel
 					data-nosnippet
@@ -258,32 +296,33 @@ export default class MarketingScreen extends React.Component<
 				<HomePanel id='how-it-works'>
 					<h2 className="heading-regular">How it works</h2>
 					<div className="how-it-works__selector">
-						{[{value: 'Desktop'}, {value: 'iOS'}].map(
-							(item, i) => (
+						{[
+							{name: 'Browser', value: HowItWorksType.DesktopBrowser},
+							{name: 'iPad/iPhone', value: HowItWorksType.iOS}
+						].map(
+							({name, value}, i) => (
 								<button
-									className={classNames({ 'selected': i % 2 == 0 })}
+									className={classNames({ 'selected': this.state.howItWorksType === value })}
 									disabled={false}
-									key={item.value}
-									// onClick={this._change}
-									onClick={() => {}}
-									value={item.value}
+									key={value}
+									onClick={() => this.setState({howItWorksType: value})}
 								>
-									{item.value}
+									{name}
 									{/* <AlertBadge count={item.badge} /> */}
 								</button>
 							)
 						)}
 					</div>
-					{/* <div> */}
-						{howItWorksDesktop.map(props =>
+					<div>
+						{(this.state.howItWorksType === HowItWorksType.iOS ? howItWorksiOS : howItWorksDesktop)
+							.map(props =>
 							<ImageAndText
 								{...props}
 								key={props.heading}
-								type='wide'
+								type={['wide', this.state.howItWorksType === HowItWorksType.iOS ? 'vertical' : undefined]}
 							/>
 						)}
-					{/* </div> */}
-
+					</div>
 				</HomePanel>
 				<HomePanel
 					data-nosnippet

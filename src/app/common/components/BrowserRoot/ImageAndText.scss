@@ -6,7 +6,8 @@
 @import '../../../../common/styles/fonts';
 
 // TODO: might need css-id
-.image-and-text_54dk3j {
+$image-and-text: '.image-and-text_54dk3j';
+#{$image-and-text} {
 	display: flex;
 	flex-direction: column;
 	margin: 28px auto;
@@ -31,6 +32,7 @@
 
 		 & p {
 			 text-align: center;
+			 line-height: 1.25;
 		 }
 	}
 
@@ -38,18 +40,30 @@
 		// TODO: how do I get standard font sizes?
 		font-size: 24px;
 		margin-bottom: 24px;
+		text-align: center;
 	}
 
 	&__image {
 		width: 100%;
 		max-width: 600px;
+
+	}
+
+	&--vertical {
+		// this repetition is needed because the classes were BEM structured like
+		// .image-and-text_54dk3j__text
+		#{$image-and-text} {
+			&__image {
+				max-height: 440px;
+				object-fit: contain;
+			}
+		}
 	}
 }
 
 // TODO: probably best define standard breakpoints
 @media screen and (min-width: 768px) {
 	$image-text__image-margin: 60px;
-	$image-and-text: '.image-and-text_54dk3j';
 	#{$image-and-text} {
 		flex-direction: row;
 		margin: 84px auto;
@@ -69,6 +83,7 @@
 
 			& p {
 				text-align: left;
+				line-height: 1.45;
 			}
 		}
 
@@ -85,21 +100,39 @@
 			margin-right: $image-text__image-margin;
 		}
 
-		&--wide {
+		&--wide,
+		&--vertical {
+			// this repetition is needed because the classes were BEM structured like
+			// .image-and-text_54dk3j__text
 			#{$image-and-text} {
 				&__text {
 					align-self: flex-start;
 					position: relative;
-					left: -2vw;
+					// left: -2vw;
 				}
 
 				&__image {
 					max-width: 520px;
 					margin-right: 20px;
-					position: relative;
-					left: -2vw;
+					// position: relative;
+					// left: -2vw;
 					width: 50vw;;
 				}
+			}
+		}
+	}
+
+	// for wides that are not verticals
+	// TODO: probably should share common properties in another way (wide OR vertical -> ...)
+	#{$image-and-text}--wide:not(#{$image-and-text}--vertical) {
+		#{$image-and-text} {
+			&__text {
+				left: -2vw;
+			}
+
+			&__image {
+				position: relative;
+				left: -3vw;
 			}
 		}
 	}
