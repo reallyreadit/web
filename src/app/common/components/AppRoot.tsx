@@ -1081,7 +1081,7 @@ export default class extends Root<
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string) {
+	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {

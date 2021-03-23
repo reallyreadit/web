@@ -16,6 +16,8 @@ import createAdminPageScreenFactory from './AdminPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
+import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
+import { createScreenFactory as createMissionScreenFactory } from './MissionPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
@@ -57,6 +59,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
+import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -197,11 +200,10 @@ export default abstract class Root<
 			);
 	};
 	protected readonly _viewComments: (article: UserArticle) => void;
-	protected readonly _viewThread = (comment: CommentThread) => {
+	protected readonly _viewThread = (comment: Pick<CommentThread, 'articleSlug' | 'id'>) => {
 		this.viewComments(
 			{
-				slug: comment.articleSlug,
-				title: comment.articleTitle
+				slug: comment.articleSlug
 			},
 			comment.id
 		);
@@ -240,6 +242,18 @@ export default abstract class Root<
 			/>
 		);
 	};
+
+	// dialogs
+	protected readonly _openNewPlatformNotificationRequestDialog = () => {
+		this._dialog.openDialog(
+			<NewPlatformNotificationRequestDialog
+				onCloseDialog={this._dialog.closeDialog}
+				onShowToast={this._toaster.addToast}
+				onSubmitRequest={this.props.serverApi.logNewPlatformNotificationRequest}
+			/>
+		);
+	};
+
 	protected readonly _openPostDialog = (article: UserArticle) => {
 		this._dialog.openDialog(
 			<PostDialog
@@ -592,6 +606,10 @@ export default abstract class Root<
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
+			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
+			}),
+			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
@@ -752,7 +770,7 @@ export default abstract class Root<
 	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
-	protected abstract viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string): void;
+	protected abstract viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string): void;
 	protected abstract viewProfile(userName?: string): void;
 	public componentDidMount() {
 		if (this.props.initialUserProfile) {

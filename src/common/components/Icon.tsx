@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import AlertBadge from './AlertBadge';
 
-export type IconName = 'article-details-star' | 'at-sign' | 'backward' | 'bell' | 'binoculars' | 'bookmark' | 'box' | 'cancel' | 'checkmark' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'comments' | 'earth' | 'email' | 'equalizer' | 'exclamation' | 'fire' | 'flag' | 'forbid' | 'graduation' | 'group-circle' | 'link' | 'locked' | 'medal' | 'megaphone' | 'padlock' | 'paper-plane' | 'plus' | 'podium' | 'power' | 'question-circle' | 'quill' | 'rating-seal' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'trophy' | 'twitter' | 'user' | 'warning' | 'write';
+export type IconName = 'article-details-star' | 'at-sign' | 'backward' | 'bell' | 'binoculars' | 'bookmark' | 'box' | 'cancel' | 'checkmark' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up' | 'clock' | 'comments' | 'cross' | 'earth' | 'email' | 'equalizer' | 'exclamation' | 'fire' | 'flag' | 'forbid' | 'graduation' | 'group-circle' | 'link' | 'locked' | 'medal' | 'megaphone' | 'menu' | 'padlock' | 'paper-plane' | 'plus' | 'podium' | 'power' | 'question-circle' | 'quill' | 'rating-seal' | 'refresh' | 'refresh2' | 'share' | 'spinner' | 'star' | 'trophy' | 'twitter' | 'user' | 'warning' | 'write';
 export default (props: {
 	badge?: number | false,
 	display?: 'inline' | 'block',

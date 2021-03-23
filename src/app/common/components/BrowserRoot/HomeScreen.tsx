@@ -48,6 +48,7 @@ interface Props {
 	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
+	onViewAuthor: (slug: string, name: string) => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
@@ -313,6 +314,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onShare={this.props.onShare}
 				onToggleArticleStar={this.props.onToggleArticleStar}
 				onViewAotdHistory={this.props.onViewAotdHistory}
+				onViewAuthor={this.props.onViewAuthor}
 				onViewComments={this.props.onViewComments}
 				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}

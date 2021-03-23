@@ -30,6 +30,271 @@
 	margin-bottom: 20px;
 }
 
+.marketing-screen_n5a6wc > .blog .controls {
+	margin-top: 20px;
+	text-align: center;
+}
+
+// intro text on home panels
+.marketing-screen_n5a6wc > .home-panel_w65z7c > .content > .home-section-intro {
+	max-width: 651px;
+	font-size: 17.33px;
+	font-family: 'Museo Sans (300)', sans-serif;
+	line-height: 1.6;
+}
+
+// styles for the quotes flex grid
+.marketing-screen_n5a6wc  {
+
+	$collapse-point: 1024px;
+	.quote-panel > .content {
+		@media screen and (min-width: $collapse-point) {
+			max-width: unset;
+			margin: 0 0 0 10vw;
+		}
+	}
+
+
+
+	.quote-grid {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		$box-shadow-length: 30px;
+		padding-top: 30px;
+		// margin-top: 30px;
+
+		// justify-content: space-between;
+		// height: 900px;
+
+		.quote-card_xa1vt  {
+			width: 100%;
+			margin: 14px 0;
+			min-height: 80px;
+			box-sizing: border-box;
+			max-width: 600px;
+
+			&__inner {
+				margin: auto;
+				max-width: 480px;
+			}
+		}
+
+		// larger sizes & up: collapse
+		@media screen and (min-width: $collapse-point) {
+			display: flex;
+			flex-wrap: wrap;
+			flex-direction: column;
+			justify-content: space-between;
+			height: 960px;
+
+			overflow-x: scroll;
+			$fade-perc: 5%;
+			padding-left: $fade-perc;
+			left: -$fade-perc;
+			mask-image: linear-gradient(to left,
+				 rgba(0, 0, 0, 0),
+				 rgba(0, 0, 0, 0.73) $fade-perc,
+				 rgb(0, 0, 0, 1) $fade-perc*1.5,
+				 rgb(0, 0, 0, 1) 100%-$fade-perc,
+				 rgba( 0, 0, 0, 0) 100%);
+			position: relative;
+			padding: $box-shadow-length 0 $box-shadow-length $fade-perc;
+
+			.quote-card_xa1vt  {
+				width: 45%;
+				margin: 0 32px 32px 0;
+			}
+		}
+	}
+}
+
+// styles for flex-panel -- unused
+// .marketing-screen_n5a6wc .flex-panel {
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: space-between;
+// 	min-height: 240px;
+// 	flex-wrap: wrap;
+
+// 	// & > div {
+// 	// 	width: 100%;
+// 	// }
+// }
+
+// styles for closing quote section
+.marketing-screen_n5a6wc .closing-quote-panel .content {
+	// .content overrides
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 58px 20px;
+
+	.closing-quote {
+		font-family: 'Cambria (Bold)', serif;
+		line-height: 1.3;
+		font-size: 24px;
+		font-style: normal;
+		max-width: 420px;
+		margin-top: 0.2em;
+	}
+
+	.mission-button {
+		margin-top: 18px;
+	}
+
+
+	@media screen and (min-width: 768px) {
+		padding: 104px 20px;
+
+		.closing-quote {
+			max-width: 940px;
+			font-size: 36px;
+
+			> p:not(:last-child) {
+				margin-bottom: 0.2em;
+			}
+		}
+	}
+}
+
+// inspired on web/src/app/common/components/HeaderSelector.scss mobile-only
+// TODO: might be interseting to extract this as a component
+.marketing-screen_n5a6wc > #how-it-works {
+	.how-it-works__selector {
+		display: flex;
+		justify-content: left;
+		> button {
+			margin-top: 16px;
+			position: relative;
+			background-color: transparent;
+			padding: 5px 10px;
+			font-size: 14pt;
+			border-color: var(--control-border-color);
+			border-style: solid;
+			border-width: 1px;
+			font-family: 'Museo Sans (500)';
+			background-color: var(--control-background-color);
+		}
+		> button:first-child {
+			border-radius: 3px 0 0 3px;
+		}
+		> button:last-child {
+			border-radius: 0 3px 3px 0;
+		}
+		> button.selected {
+			font-family: 'Museo Sans (500)';
+			background-color: var(--button-selected-background-color);
+			color: var(--button-selected-text-color);
+		}
+		> button + button {
+			margin-left: 0;
+			border-left: none;
+		}
+	}
+}
+
+.marketing-screen_n5a6wc .home-hero-image > .content {
+	display: flex;
+
+	// mobile
+	margin: 0 auto 48px auto;
+	padding: 0 10px 10px 10px;
+	text-align: center;
+	min-height: 230px;
+
+	// from medium iPhone upwards
+	@media screen and (min-width: 375px){
+		// box-sizing: border-box;
+		// content-box is useful here! so the max-width includes the padding
+		// max-width: 475px;
+		max-width: 90vw;
+	}
+
+	// box-sizing: border-box;
+	// content-box is useful here! so the max-width includes the padding
+	// max-width: 475px;
+
+	flex-direction: column-reverse;
+	justify-content: center;
+	align-items: center;
+
+	& p {
+		margin: 24px 0;
+	}
+
+	.home-hero-image {
+		&__intro-text {
+		}
+
+		&__image {
+			margin-bottom: 20px;
+			transform: translateX(8px);
+			object-position: top;
+			object-fit: contain;
+			max-width: min(95vw, 530px);
+
+			@media screen and (max-width: 375px) {
+				// min-height: 230px;
+				max-height: 36vh;
+			}
+
+		}
+	}
+
+	@media screen and (min-width: 900px) {
+		flex-direction: row;
+		max-width: unset;
+		margin: auto;
+		padding: 0 10px;
+		margin-bottom: 20px;
+		text-align: left;
+
+		.home-hero-image {
+			&__intro-text {
+				margin-left: 40px;
+			}
+		}
+
+		.heading-regular {
+			line-height: 44px;
+		}
+
+	}
+}
+
+
+// @media screen and (min-width: 768px) {
+
+// 	// styles for flex-panel
+// 	.marketing-screen_n5a6wc .flex-panel {
+// 		display: flex;
+// 		flex-wrap: nowrap;
+// 		flex-direction: row;
+// 		justify-content: space-between;
+// 		min-height: 240px;
+
+// 		.card_d4pcqo {
+// 			min-height: 180px;
+// 			margin: 10px 0;
+// 		}
+
+// 		@media screen and (min-width: 768px) {
+// 			.card_d4pcqo {
+// 				margin: 20px 10px;
+// 				&:first-child {
+// 					margin-left: 0;
+// 				}
+// 				&:last-child {
+// 					margin-right: 0;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// }
+
 @include theme using ($root, $scheme) {
 	#{$root} .marketing-screen_n5a6wc > .panel_zd0n2d:nth-child(even) {
 		@include theme-colors(
