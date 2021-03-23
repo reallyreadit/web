@@ -84,10 +84,10 @@ const faqs: FaqCategory[] = [
 			{
 				question: "What if a specific article doesn’t work?",
 				answer: <p>Please flag any article errors by clicking the small flag in the top right corner of Reader Mode.</p>
-			}
+			},
 			{
 				question: "Who chooses the Article of the Day?",
-				answer: <p>Everybody! The Article of the Day (AOTD) is "crowdsourced." At midnight (Pacific Time) the #1 top ranked article becomes the Article of the Day (AOTD) for the following day.</p>
+				answer: <p>Everybody! The Article of the Day (AOTD) is "crowdsourced." At midnight (Pacific Time) the #1 top ranked article becomes the AOTD for the following day.</p>
 			}
 		]
 	},
@@ -228,7 +228,7 @@ const FaqPage = (props: Props): JSX.Element => {
 		<div className="faq-page_35vamf">
 			<HomeHero
 				title="Frequently Asked Questions"
-				description="If your question isn't answered below, send us an email: support@readup.com"
+				description="If your question isn't answered below, please send us an email."
 			/>
 			<HomePanel className="faq-content">
 				<div className="sidebar">
