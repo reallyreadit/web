@@ -1,6 +1,33 @@
 @import '../../../common/styles/colors';
-@import '../../../common/styles/fonts.scss';
 
+@font-face {
+	font-family: 'Cambria (Bold)';
+	src: url('/fonts/cambria-bold.ttf');
+}
+@font-face {
+	font-family: 'Cambria (Regular)';
+	src: url('/fonts/cambria-regular.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (100)';
+	src: url('/fonts/museo-sans-100.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (300)';
+	src: url('/fonts/museo-sans-300.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (500)';
+	src: url('/fonts/museo-sans-500.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (700)';
+	src: url('/fonts/museo-sans-700.ttf');
+}
+@font-face {
+	font-family: 'Museo Sans (900)';
+	src: url('/fonts/museo-sans-900.ttf');
+}
 
 #com_readup_embed {
 	max-width: 640px;
