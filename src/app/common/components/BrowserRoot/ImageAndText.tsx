@@ -13,11 +13,16 @@ export default (
 		heading: string,
 		paragraph: string,
 		imageName: string,
-		imageAlt: string
+		imageAlt: string,
+		type: "wide" | "contained"
 	}
 ) => (
 	<div
-		className={classNames('image-and-text_54dk3j', props.imageRight ? "image-and-text_54dk3j--image-right" : "", props.className)}
+		className={classNames(
+			'image-and-text_54dk3j',
+			props.imageRight ? "image-and-text_54dk3j--image-right" : "",
+			`image-and-text_54dk3j--${props.type}`,
+			props.className)}
 		data-nosnippet={props.noGoogleSnippet ? '' : null}
 	>
 		<img className="image-and-text_54dk3j__image" src={`/images/${props.imageName}`} alt={props.imageAlt}/>

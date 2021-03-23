@@ -30,6 +30,7 @@ import ImageAndText from './ImageAndText';
 // import Card from './Card';
 import QuoteCard from './QuoteCard';
 import Button from '../../../../common/components/Button';
+import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
 interface Props {
@@ -138,6 +139,27 @@ export default class MarketingScreen extends React.Component<
 			},
 		];
 
+		const howItWorksDesktop = [
+			{
+				heading: "Step 1: Click the button",
+				paragraph: "lalaland",
+				imageName: 'click-button.png',
+				imageAlt: 'Click the Readup extension button in the right-top of the screen.'
+			},
+			{
+				heading: "Step 2: Enjoy reading",
+				paragraph: "lalala",
+				imageName: 'read-article.png',
+				imageAlt: 'Read the article'
+			},
+			{
+				heading: "Step 3: Discover socially",
+				paragraph: "lalala",
+				imageName: 'discover-socially.png',
+				imageAlt: 'Discover Socially'
+			}
+		];
+
 		const quotes: Quote[] = [
 			{
 				quote: "There is something inherently decent and civil about reading on Readup. It will be an important experiment to see if it can stay a healthy community.",
@@ -218,7 +240,12 @@ export default class MarketingScreen extends React.Component<
 				<HomePanel
 					data-nosnippet
 				>
-					{valuePoints.map((pointData, i) => <ImageAndText key={pointData.imageName} {...pointData} imageRight={!(i % 2 == 0)} />) }
+					{valuePoints.map((pointData, i) =>
+					<ImageAndText
+						{...pointData}
+						key={pointData.imageName}
+						imageRight={!(i % 2 == 0)}
+						type="contained" />) }
 				</HomePanel>
 				{/* <HomePanel
 					data-nosnippet
@@ -229,6 +256,33 @@ export default class MarketingScreen extends React.Component<
 					</div>
 				</HomePanel> */}
 				<HomePanel id='how-it-works'>
+					<h2 className="heading-regular">How it works</h2>
+					<div className="how-it-works__selector">
+						{[{value: 'Desktop'}, {value: 'iOS'}].map(
+							(item, i) => (
+								<button
+									className={classNames({ 'selected': i % 2 == 0 })}
+									disabled={false}
+									key={item.value}
+									// onClick={this._change}
+									onClick={() => {}}
+									value={item.value}
+								>
+									{item.value}
+									{/* <AlertBadge count={item.badge} /> */}
+								</button>
+							)
+						)}
+					</div>
+					{/* <div> */}
+						{howItWorksDesktop.map(props =>
+							<ImageAndText
+								{...props}
+								key={props.heading}
+								type='wide'
+							/>
+						)}
+					{/* </div> */}
 
 				</HomePanel>
 				<HomePanel
@@ -281,9 +335,7 @@ export default class MarketingScreen extends React.Component<
 							iconRight="chevron-right"
 							intent="normal"
 							onClick={() => {
-								// TODO: this doesn't work
-								this.props.onViewAuthor('bill-loundy', 'Bill Loundy');
-								// window.location.href = 'https://blog.readup.com'
+								window.location.href = 'https://blog.readup.com'
 							}}
 							style="preferred"
 							text="See more articles"

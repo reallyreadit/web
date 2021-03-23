@@ -49,7 +49,8 @@
 // TODO: probably best define standard breakpoints
 @media screen and (min-width: 768px) {
 	$image-text__image-margin: 60px;
-	.image-and-text_54dk3j {
+	$image-and-text: '.image-and-text_54dk3j';
+	#{$image-and-text} {
 		flex-direction: row;
 		margin: 84px auto;
 
@@ -57,7 +58,7 @@
 		&--image-right {
 			flex-direction: row-reverse;
 
-			.image-and-text_54dk3j__image {
+			#{$image-and-text}__image {
 				margin-left: $image-text__image-margin;
 			}
 		}
@@ -82,6 +83,24 @@
 			max-width: 600px;
 
 			margin-right: $image-text__image-margin;
+		}
+
+		&--wide {
+			#{$image-and-text} {
+				&__text {
+					align-self: flex-start;
+					position: relative;
+					left: -2vw;
+				}
+
+				&__image {
+					max-width: 520px;
+					margin-right: 20px;
+					position: relative;
+					left: -2vw;
+					width: 50vw;;
+				}
+			}
 		}
 	}
 }
