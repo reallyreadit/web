@@ -1,0 +1,165 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/HomeHeader
+        cssComponentId: home-header_2afwll
+*/
+@import '../../../../common/styles/colors';
+
+.home-header_2afwll {
+	padding: 10px;
+	position: relative;
+}
+.home-header_2afwll:not(.menu) > .menu-container {
+	margin-top: 10px;
+}
+
+.home-header_2afwll {
+	display: flex;
+	flex-direction: column;
+	// justify-content: space-between;
+	padding: 18px 18px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.home-header_2afwll:not(.menu) {
+	justify-content: center;
+}
+
+// mobile menu container
+.home-header_2afwll > .menu-container {
+	flex-direction: column;
+	// align-items: flex-start;
+	align-items: center;
+
+	display: none;
+	&.open {
+		display: flex;
+		@media screen and (max-width: 767px) {
+			font-size: 24px;
+
+			> *:not(:last-child) {
+				margin-bottom: 12px;
+			}
+
+			position: absolute;
+			width: 100%;
+			box-sizing: border-box;
+			z-index: 2;
+			background: var(--nav-background-color);
+			height: calc(100vh - 78px);
+			top: 100%;
+			left: 0;
+			margin-top: 0;
+			padding-top: 20px;
+		}
+	}
+}
+
+.home-header_2afwll a {
+	cursor: pointer;
+
+	&:hover, &.active {
+		font-family: 'Museo Sans (700)';
+	}
+}
+
+.home-header_2afwll > .menu-controls-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.home-header_2afwll > .menu-controls-container > .logo {
+	display: block;
+	width: 74px;
+	height: 41px;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.home-header_2afwll > .menu-controls-container > .mobile-menu-toggle {
+	display: block;
+	width: 74px;
+	height: 41px;
+}
+
+// icon styles
+.home-header_2afwll > .menu-container > .icon_rour3d {
+	display: block;
+	font-size: 26px;
+	cursor: pointer;
+}
+.home-header_2afwll > .menu-container > .icon_rour3d + .icon_rour3d {
+	margin-left: 20px;
+}
+
+.home-header_2afwll > .menu-container > .button_ovrlmi + .button_ovrlmi {
+	margin-left: 10px;
+}
+
+// desktop styles
+@media screen and (min-width: 768px) {
+	// reset mobile change
+	// TODO: test this if replacing Header.tsx
+	.home-header_2afwll:not(.menu) > .menu-container {
+		margin-top: 0;
+	}
+
+	.home-header_2afwll > .menu-controls-container > .logo {
+		width: 114px;
+		height: 60px;
+		background-size: contain;
+		background-repeat: no-repeat;
+	}
+
+	.home-header_2afwll > .menu-controls-container > .mobile-menu-toggle {
+		display: none;
+	}
+
+
+	.home-header_2afwll {
+		flex: 0 0 auto;
+		flex-direction: row;
+		display: flex;
+		justify-content: space-between;
+		padding: 20px 30px;
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+	}
+
+	.home-header_2afwll > .menu-container {
+		display: flex;
+		flex-direction: row;
+		// align-items: center; // vertical center here
+
+		> a:not(:first-child) {
+			margin-left: 32px;
+		}
+
+		> button:nth-of-type(1) {
+			margin-left: 18px;
+		}
+	}
+
+}
+
+
+
+@include theme using ($root, $scheme) {
+	#{$root} .home-header_2afwll {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $nav-border-color,
+				"background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .home-header_2afwll > .menu-controls-container > .logo {
+		@if $scheme == light {
+			background-image: url(/images/logo.svg);
+		} @else {
+			background-image: url(/images/logo-white.svg);
+		}
+	}
+}

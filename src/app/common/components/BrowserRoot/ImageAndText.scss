@@ -1,0 +1,126 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/ImageAndText
+        cssComponentId: image-and-text_54dk3j
+*/
+@import '../../../../common/styles/colors';
+@import '../../../../common/styles/fonts';
+
+// TODO: might need css-id
+.image-and-text_54dk3j {
+	display: flex;
+	flex-direction: column;
+	margin: 28px auto;
+	align-items: center;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		max-width: 440px;
+
+		margin: 28px auto;
+
+		 & p {
+			 text-align: center;
+		 }
+	}
+
+	&__heading {
+		// TODO: how do I get standard font sizes?
+		font-size: 24px;
+		margin-bottom: 24px;
+	}
+
+	&__image {
+		width: 100%;
+		max-width: 600px;
+	}
+}
+
+// TODO: probably best define standard breakpoints
+@media screen and (min-width: 768px) {
+	$image-text__image-margin: 60px;
+	$image-and-text: '.image-and-text_54dk3j';
+	#{$image-and-text} {
+		flex-direction: row;
+		margin: 84px auto;
+
+		// for the other direction
+		&--image-right {
+			flex-direction: row-reverse;
+
+			#{$image-and-text}__image {
+				margin-left: $image-text__image-margin;
+			}
+		}
+
+		&__text {
+			align-items: flex-start;
+			max-width: 440px;
+
+			& p {
+				text-align: left;
+			}
+		}
+
+		&__heading {
+			// TODO: how do I get standard font sizes?
+			font-size: 24px;
+			margin-bottom: 24px;
+		}
+
+		&__image {
+			width: 45%;
+			max-width: 600px;
+
+			margin-right: $image-text__image-margin;
+		}
+
+		&--wide {
+			#{$image-and-text} {
+				&__text {
+					align-self: flex-start;
+					position: relative;
+					left: -2vw;
+				}
+
+				&__image {
+					max-width: 520px;
+					margin-right: 20px;
+					position: relative;
+					left: -2vw;
+					width: 50vw;;
+				}
+			}
+		}
+	}
+}
+
+
+@include theme using ($root, $scheme) {
+	#{$root} .marketing-screen_n5a6wc > .home-panel_w65z7c:nth-child(even) {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $app-background-alt-color
+			)
+		);
+	}
+	#{$root} .marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color
+			)
+		);
+	}
+}

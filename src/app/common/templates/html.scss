@@ -36,6 +36,8 @@
 html {
 	font-family: 'Museo Sans (300)';
 	font-size: 13pt;
+	background-color: var(--app-background-color);
+	color: var(--text-color);
 }
 html[data-client-type="App"] {
 	height: 100vh;
@@ -95,8 +97,77 @@ html > body.hide-captcha > div:not(#root) {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $app-background-color,
-				"color": $text-color,
+				"--app-background-color": $app-background-color,
+				"--app-background-alt-color": $app-background-alt-color,
+
+				"--apple-button-background-color": $apple-button-background-color,
+				"--apple-button-text-color": $apple-button-text-color,
+
+				"--box-shadow-color": $box-shadow-color,
+
+				"--button-selected-background-color": $button-selected-background-color,
+				"--button-selected-text-color": $button-selected-text-color,
+
+				"--callout-arrow-color": $callout-arrow-color,
+
+				"--chart-1-background-color": $chart-1-background-color,
+				"--chart-1-border-color": $chart-1-border-color,
+				"--chart-2-background-color": $chart-2-background-color,
+				"--chart-2-border-color": $chart-2-border-color,
+
+				"--content-background-color": $content-background-color,
+				"--content-border-color": $content-border-color,
+				"--content-divider-color": $content-divider-color,
+				"--content-highlight-color": $content-highlight-color,
+
+				"--control-background-color": $control-background-color,
+				"--control-border-color": $control-border-color,
+				"--control-disabled-color": $control-disabled-color,
+
+				"--embed-progress-background-color": $embed-progress-background-color,
+				"--embed-progress-complete-color": $embed-progress-complete-color,
+				"--embed-progress-fill-color": $embed-progress-fill-color,
+
+				"--intent-alert-color": $intent-alert-color,
+				"--intent-danger-color": $intent-danger-color,
+				"--intent-neutral-color": $intent-neutral-color,
+				"--intent-primary-color": $intent-primary-color,
+				"--intent-success-color": $intent-success-color,
+				"--intent-text-color": $intent-text-color,
+				"--intent-warning-color": $intent-warning-color,
+
+				"--loud-background-color": $loud-background-color,
+				"--loud-text-color": $loud-text-color,
+
+				"--markdown-block-background-color": $markdown-block-background-color,
+				"--markdown-block-border-color": $markdown-block-border-color,
+
+				"--nav-background-color": $nav-background-color,
+				"--nav-border-color": $nav-border-color,
+
+				"--overlay-color": $overlay-color,
+
+				"--progress-complete-color": $progress-complete-color,
+				"--progress-incomplete-color": $progress-incomplete-color,
+
+				"--rating-seal-text-color": $rating-seal-text-color,
+
+				"--reader-header-background-color": $reader-header-background-color,
+				"--reader-header-border-color": $reader-header-border-color,
+				"--reader-header-text-color": $reader-header-text-color,
+
+				"--star-starred-background-color": $star-starred-background-color,
+				"--star-starred-border-color": $star-starred-border-color,
+
+				"--sticky-note-gradient-start-color": $sticky-note-gradient-start-color,
+				"--sticky-note-gradient-stop-color": $sticky-note-gradient-stop-color,
+				"--sticky-note-text-color": $sticky-note-text-color,
+
+				"--text-color": $text-color,
+				"--text-muted-color": $text-muted-color,
+
+				"--twitter-button-background-color": $twitter-button-background-color,
+				"--twitter-button-text-color": $twitter-button-text-color
 			)
 		);
 	}

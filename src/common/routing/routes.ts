@@ -88,6 +88,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
+		createUrl: () => '/faq',
+		pathRegExp: /^\/faq$/,
+		screenKey: ScreenKey.Faq
+	},
+	{
 		createUrl: () => '/leaderboards',
 		pathRegExp: /^\/leaderboards$/,
 		screenKey: ScreenKey.Leaderboards
@@ -97,6 +102,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/notifications',
 		pathRegExp: /^\/notifications$/,
 		screenKey: ScreenKey.Notifications
+	},
+	{
+		createUrl: () => '/mission',
+		pathRegExp: /^\/mission|about$/,
+		screenKey: ScreenKey.Mission
 	},
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;

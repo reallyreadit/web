@@ -1,0 +1,68 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/QuoteCard
+        cssComponentId: quote-card_xa1fvt
+*/
+
+@import '../../../../common/styles/colors';
+
+.quote-card_xa1vt {
+
+   p {
+       font-size: 24px;
+       font-family: 'Museo Sans (300)', sans-serif;
+       line-height: 1.55;
+       position: relative;
+       margin-top: 36px;
+    //    font-style: italic;
+	   text-decoration: underline;
+	   cursor: pointer;
+
+       padding-left: 12px;
+       padding-right: 4px;
+   }
+
+   // quote signs
+   p::before, p::after {
+       position: absolute;
+       display: block;
+       font-size: 124px;
+       display: inline-block;
+       font-family: 'Cambria (bold)';
+       color: var(--box-shadow-color);
+       line-height: 1;
+   }
+
+   p::before {
+       content: "“";
+       // left: -12px;
+       left: -18px;
+       top: -56px;
+   }
+
+   p::after {
+       content: "”";
+       right: 12px;
+       bottom: -118px;
+   }
+
+   // reader
+   &__reader {
+       margin-top: 13px;
+       display: block;
+       font-size: 1.1rem;
+       font-style: italic;
+   }
+
+//    @media screen and (min-width: 768px) {
+//        p {
+//            font-size: 26.67px;
+//        }
+//    }
+}
+
+// light mode only
+@include theme-only(light) {
+	.quote-card_xa1vt {
+		box-shadow: 0px 0px 30px rgba(187, 187, 187, 0.25);
+	}
+}

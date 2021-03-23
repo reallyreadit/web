@@ -1,0 +1,13 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/Card
+        cssComponentId: card_d4pcqo
+*/
+
+@import '../../../../common/styles/colors';
+
+.card_d4pcqo {
+    border-radius: 20px;
+    padding: 32px;
+    background-color: var(--content-background-color);
+    flex-grow: 1;
+}

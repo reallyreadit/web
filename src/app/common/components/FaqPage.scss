@@ -1,0 +1,137 @@
+/*
+        componentPath: src/app/common/components/FaqPage
+        cssComponentId: faq-page_35vamf
+*/
+
+.faq-page_35vamf {
+
+	.faq-android-notify {
+		margin-top: 14px;
+	}
+
+	.home-panel_w65z7c:nth-child(odd) {
+		background-color: var(--app-background-alt-color);
+	}
+
+	.faq-content > .content {
+		display: grid;
+		grid-template-columns: 200px auto;
+		grid-template-rows: auto auto;
+		grid-template-areas:
+			"sidebar sidebar"
+			"questions questions";
+
+		// > .hero {
+		// 	grid-area: hero;
+		// 	display: flex;
+		// 	flex-direction: column;
+		// 	justify-content: center;
+		// 	align-items: center;
+		// 	h1 {
+		// 		text-align: center;
+		// 	}
+		// }
+
+		> .sidebar {
+			grid-area: sidebar;
+			margin-top: 6px;
+			margin-bottom: 6px;
+
+			h3 {
+				font-family: 'Museo Sans (300)';
+				font-size: 24px;
+				margin-bottom: 4px;
+			}
+
+			ol {
+				line-height: 2;
+				display: flex;
+				flex-wrap: wrap;
+				width: 100%;
+				> li {
+					margin-right: 1.5em;
+					text-decoration: underline;
+					cursor: pointer;
+				}
+			}
+
+			@media screen and (min-width: 768px) {
+				margin-left: 30px;
+				ol {
+					display: block;
+				}
+			}
+		}
+
+		> .questions {
+			grid-area: questions;
+
+			.question-section {
+				margin-top: 12px;
+				&:not(:last-child) {
+					margin-bottom: 28px;
+				}
+			}
+
+			.question {
+				font-size: 20px;
+				margin: 16px auto;
+				cursor: pointer;
+				> span.icon_rour3d {
+					margin-right: 8px;
+					vertical-align: middle;
+					transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+					&.open {
+						transform: rotate(90deg);
+						transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+					}
+				}
+			}
+
+			.answer {
+				display: none;
+				&.open {
+					display: block;
+				}
+				line-height: 1.5;
+
+				> * {
+					padding-left: 26px;
+				}
+			}
+		}
+
+		@media screen and (min-width: 500px) {
+			.sidebar, .questions {
+				width: 440px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		}
+
+		@media screen and (min-width: 768px) {
+			grid-template-columns: 0.9fr 2fr;
+			grid-template-areas:
+				"sidebar questions";
+
+			.sidebar, .questions {
+				width: unset;
+				margin: unset;
+			}
+			.sidebar {
+				margin-left: 30px;
+			}
+
+			.questions .question-section {
+				margin-top: 	42px;
+				&:first-child {
+					margin-top: 0;
+				}
+			}
+		}
+
+		@media screen and (min-width: 1024px) {
+			grid-template-columns: 0.8fr 2fr;
+		}
+	}
+}

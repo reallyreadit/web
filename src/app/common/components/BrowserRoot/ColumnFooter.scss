@@ -1,0 +1,117 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/ColumnFooter
+        cssComponentId: column-footer_ltflpc
+*/
+@import '../../../../common/styles/colors';
+
+.column-footer_ltflpc {
+	// text-align: center;
+	// TODO: this is duplicated from .content elsewhere, code should be shared.
+
+	// background-color: map-get($light-theme, $loud-background-color);
+	background: var(--app-background-alt-color);
+	border-top: 1px solid var(--box-shadow-color);
+	// color: map-get($light-theme, $rating-seal-text-color);
+
+	.content {
+		max-width: 980px;
+		// padding: 40px 20px;
+		padding: 40px 20px;
+		margin: 0 auto;
+
+		// & > .logo {
+		.logo {
+			width: 110px;
+			align-self: flex-start;
+			margin-bottom: 22px;
+		}
+
+		display: flex;
+		flex-direction: row;
+
+		@media screen and (min-width: 900px) {
+			padding: 72px 20px;
+		}
+	}
+
+	&__links {
+		display: flex;
+		flex-direction: column;
+		flex-basis: 100%;
+
+		// iPad & up
+		@media screen and (min-width: 768px) {
+			flex-direction: row;
+			width: 100%;
+			max-width: 708px;
+			justify-content: space-evenly;
+		}
+
+		// desktop & up
+		@media screen and (min-width: 900px) {
+			width: 100%;
+			max-width: 740px;
+			justify-content: space-between;
+		}
+	}
+
+	&__link-set {
+		margin-bottom: 22px;
+
+		&__title, & > ul > li {
+			margin-bottom: 8px;
+			display: block;
+		}
+
+		&__title {
+			font-size: 22.7px;
+			font-family: 'Museo Sans (700)';
+		}
+
+		a {
+			text-decoration: none;
+		}
+
+		.ios_button {
+			width: 140px;
+		}
+
+		// iPad & up
+		@media screen and (min-width: 768px) {
+			margin-bottom: 0;
+			max-width: 160px;
+
+			&__title, & > ul > li {
+				margin-bottom: 12px;
+			}
+		}
+	}
+
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .column-footer_ltflpc {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-top-color": $nav-border-color,
+				// "background-color": $nav-background-color
+			)
+		);
+	}
+	#{$root} .column-footer_ltflpc > .corp {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}
+
+@include theme-only(dark) {
+	.column-footer_ltflpc .content .logo {
+		// make white
+		filter: brightness(1.5);
+	}
+}
