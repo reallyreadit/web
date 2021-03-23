@@ -5,6 +5,7 @@ export default class extends React.PureComponent<{
 	deviceType: DeviceType,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onViewFaq: () => void,
 	onViewHome: () => void,
@@ -122,7 +123,7 @@ export default class extends React.PureComponent<{
 			>
 				<div className="content">
 					<div className="column-footer_ltflpc__links">
-						<img className="logo" alt="Readup Logo" src={`/images/logo-white.svg`} onClick={this.props.onViewHome} />
+						<img className="logo" alt="Readup Logo" src={this.props.onCreateStaticContentUrl('/app/images/logo-white.svg')} onClick={this.props.onViewHome} />
 						{links.map((linkSet, i) =>
 							<div className="column-footer_ltflpc__link-set" key={linkSet.toString() + i}>
 								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>

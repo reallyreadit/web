@@ -3,6 +3,7 @@
         cssComponentId: home-header_2afwll
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/config';
 
 .home-header_2afwll {
 	padding: 10px;
@@ -157,9 +158,9 @@
 	}
 	#{$root} .home-header_2afwll > .menu-controls-container > .logo {
 		@if $scheme == light {
-			background-image: url(/images/logo.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
 		} @else {
-			background-image: url(/images/logo-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
 		}
 	}
 }

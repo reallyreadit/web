@@ -9,7 +9,8 @@ export default (
 		className?: ClassValue,
 		// image on the right instead of the left
 		imageRight?: boolean,
-		noGoogleSnippet?: boolean
+		noGoogleSnippet?: boolean,
+		onCreateStaticContentUrl: (path: string) => string,
 		heading: string,
 		paragraph: string,
 		imageName: string,
@@ -25,7 +26,7 @@ export default (
 			props.className)}
 		data-nosnippet={props.noGoogleSnippet ? '' : null}
 	>
-		<img className="image-and-text_54dk3j__image" src={`/images/${props.imageName}`} alt={props.imageAlt}/>
+		<img className="image-and-text_54dk3j__image" src={props.onCreateStaticContentUrl(`/app/images/home/${props.imageName}`)} alt={props.imageAlt}/>
 		<div className="image-and-text_54dk3j__text">
 			<h2 className={classNames("image-and-text_54dk3j__heading", "heading-small")}>{props.heading}</h2>
 			<p>{props.paragraph}</p>

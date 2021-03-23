@@ -22,7 +22,6 @@ import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
-// import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
@@ -31,7 +30,6 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-// import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
@@ -1176,19 +1174,17 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 										!this.state.user
 									)
 								) ?
-									// <Footer
-									// 	onViewPrivacyPolicy={this._viewPrivacyPolicy}
-									// /> :
 									<ColumnFooter
 										deviceType={this.props.deviceType}
 										onBeginOnboarding={this._beginOnboarding}
 										onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+										onCreateStaticContentUrl={this._createStaticContentUrl}
 										onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
 										onViewFaq={this._viewFaq}
 										onViewHome={this._viewHome}
 										onViewMission={this._viewMission}
 										onViewPrivacyPolicy={this._viewPrivacyPolicy}
-										/> :
+									/> :
 									null}
 							</li>
 						))}

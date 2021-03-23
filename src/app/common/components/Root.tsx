@@ -244,7 +244,6 @@ export default abstract class Root<
 	};
 
 	// dialogs
-	// TODO: moved from BrowserRoot.tsx; is that OK?
 	protected readonly _openNewPlatformNotificationRequestDialog = () => {
 		this._dialog.openDialog(
 			<NewPlatformNotificationRequestDialog
