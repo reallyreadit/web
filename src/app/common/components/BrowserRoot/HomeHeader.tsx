@@ -27,7 +27,7 @@ type State = {
 	menuOpen: boolean
 }
 
-export default class extends React.PureComponent<Props, State> {
+export default class HomeHeader extends React.PureComponent<Props, State> {
 	state: State = {
 		menuOpen: false,
 	}
