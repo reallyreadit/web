@@ -61,18 +61,6 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 	}
 
 	public render() {
-
-		const
-			showLoginButtons = (
-				!this.props.user
-				// removed these because we always want login buttons (= home menu too),
-				// even on mobile on the marketing site.
-				// TODO: maybe this file should replace Header.tsx at some point
-				// &&
-				// !isMobileDevice(this.props.deviceType)
-			),
-			showMenu = !!this.props.user;
-
 		const menuLinks = [
 				// TODO: this causes the app to crash due to this.state.blogPosts.value is undefined
 				// maybe the URL format is unexpected?
@@ -113,14 +101,12 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 						onClick={this._toggleMenu.bind(this)}
 					/>
 				</div>
-				{showLoginButtons || showMenu ?
 					<div className={
 						classNames(
 							"menu-container",
 							{ open: this.state.menuOpen }
 						)}>
-						{showMenu ?
-						// TODO: these are not used here now, legacy from the Header.tsx copy
+					{this.props.user ?
 							<>
 								<Icon
 									badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
@@ -133,8 +119,6 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									onClick={this.props.onOpenMenu}
 								/>
 							</> :
-							null}
-						{showLoginButtons ?
 							<>
 								{menuLinks.map(link =>
 									<a
@@ -154,10 +138,8 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									size="large"
 									onClick={this.pageNavigation.bind(this, this._beginOnboarding)}
 								/>
-							</> :
-							null}
-					</div> :
-					null}
+						</>}
+				</div>
 			</header>
 		);
 	}
