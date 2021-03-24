@@ -7,7 +7,7 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
 import { Screen }  from '../../../common/components/Root'
-import { DeviceType } from '../../../../common/DeviceType';
+import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
 import GetStartedButton from './GetStartedButton';
 
 interface Props {
@@ -129,11 +129,13 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									onClick={this.pageNavigation.bind(this, link.navFunction)}
 								>{link.linkText}</a>)
 							}
-							<Button
-								text="Log In"
-								size="large"
-								onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
-							/>
+							{!isMobileDevice(this.props.deviceType) ?
+								<Button
+									text="Log In"
+									size="large"
+									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
+								/> :
+								null}
 							<GetStartedButton
 								analyticsAction={analyticsAction}
 								deviceType={this.props.deviceType}
