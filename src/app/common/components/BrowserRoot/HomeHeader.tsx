@@ -97,7 +97,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 			<header className={
 				classNames(
 					'home-header_2afwll',
-					{ 'menu': showLoginButtons || showMenu }
+					{ 'responsive': !this.props.user }
 				)
 			}>
 				<div className="menu-controls-container">

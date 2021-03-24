@@ -9,9 +9,6 @@
 	padding: 10px;
 	position: relative;
 }
-.home-header_2afwll:not(.menu) > .menu-container {
-	margin-top: 10px;
-}
 
 .home-header_2afwll {
 	display: flex;
@@ -20,10 +17,6 @@
 	padding: 18px 18px;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
-}
-
-.home-header_2afwll:not(.menu) {
-	justify-content: center;
 }
 
 // mobile menu container
@@ -35,7 +28,11 @@
 	display: none;
 	&.open {
 		display: flex;
+	}
+}
+.home-header_2afwll.responsive > .menu-container {
 		@media screen and (max-width: 767px) {
+		&.open {
 			font-size: 24px;
 
 			> *:not(:last-child) {
@@ -99,26 +96,26 @@
 }
 
 // desktop styles
-@media screen and (min-width: 768px) {
+@mixin desktop-styles($qualifier: '') {
 	// reset mobile change
 	// TODO: test this if replacing Header.tsx
-	.home-header_2afwll:not(.menu) > .menu-container {
-		margin-top: 0;
-	}
+	// .home-header_2afwll:not(.menu) > .menu-container {
+	// 	margin-top: 0;
+	// }
 
-	.home-header_2afwll > .menu-controls-container > .logo {
+	.home-header_2afwll#{$qualifier} > .menu-controls-container > .logo {
 		width: 114px;
 		height: 60px;
 		background-size: contain;
 		background-repeat: no-repeat;
 	}
 
-	.home-header_2afwll > .menu-controls-container > .mobile-menu-toggle {
+	.home-header_2afwll#{$qualifier} > .menu-controls-container > .mobile-menu-toggle {
 		display: none;
 	}
 
 
-	.home-header_2afwll {
+	.home-header_2afwll#{$qualifier} {
 		flex: 0 0 auto;
 		flex-direction: row;
 		display: flex;
@@ -128,7 +125,7 @@
 		border-bottom-style: solid;
 	}
 
-	.home-header_2afwll > .menu-container {
+	.home-header_2afwll#{$qualifier} > .menu-container {
 		display: flex;
 		flex-direction: row;
 		// align-items: center; // vertical center here
@@ -141,10 +138,13 @@
 			margin-left: 18px;
 		}
 	}
-
 }
 
+@media screen and (min-width: 768px) {
+	@include desktop-styles()
+}
 
+@include desktop-styles(':not(.responsive)');
 
 @include theme using ($root, $scheme) {
 	#{$root} .home-header_2afwll {
