@@ -49,7 +49,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 	// capture the page navigation and close the mobile menu
 	private pageNavigation(navFunction: (e: React.MouseEvent) => void, event?: React.MouseEvent) {
 		// prevent default navigation synchronously
-		event.preventDefault();
+		event?.preventDefault();
 		this.setState({menuOpen: false}, () => {
 			// perform navigation asynchrounsly
 			navFunction(event);
