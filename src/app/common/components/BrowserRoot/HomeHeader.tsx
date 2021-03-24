@@ -103,37 +103,37 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 						onClick={this._toggleMenu.bind(this)}
 					/>
 				</div>
-					<div className={
-						classNames(
-							"menu-container",
-							{ open: this.state.menuOpen }
-						)}>
+				<div className={
+					classNames(
+						"menu-container",
+						{ open: this.state.menuOpen }
+					)}>
 					{this.props.user ?
-							<>
-								<Icon
-									badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
-									name="bell"
-									onClick={this.props.onViewNotifications}
-								/>
-								<Icon
-									badge={this.props.user.followerAlertCount}
-									name="user"
-									onClick={this.props.onOpenMenu}
-								/>
-							</> :
-							<>
-								{menuLinks.map(link =>
-									<a
-										key={link.linkText}
-										className={(this.props.currentScreen && this.props.currentScreen.key) === link.screenKey ? 'active' : ''}
-										onClick={this.pageNavigation.bind(this, link.navFunction)}
-									>{link.linkText}</a>)
-								}
-								<Button
-									text="Log In"
-									size="large"
-									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
-								/>
+						<>
+							<Icon
+								badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
+								name="bell"
+								onClick={this.props.onViewNotifications}
+							/>
+							<Icon
+								badge={this.props.user.followerAlertCount}
+								name="user"
+								onClick={this.props.onOpenMenu}
+							/>
+						</> :
+						<>
+							{menuLinks.map(link =>
+								<a
+									key={link.linkText}
+									className={(this.props.currentScreen && this.props.currentScreen.key) === link.screenKey ? 'active' : ''}
+									onClick={this.pageNavigation.bind(this, link.navFunction)}
+								>{link.linkText}</a>)
+							}
+							<Button
+								text="Log In"
+								size="large"
+								onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
+							/>
 							<GetStartedButton
 								analyticsAction={analyticsAction}
 								deviceType={this.props.deviceType}
@@ -142,8 +142,8 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 								onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-									size="large"
-								/>
+								size="large"
+							/>
 						</>}
 				</div>
 			</header>
