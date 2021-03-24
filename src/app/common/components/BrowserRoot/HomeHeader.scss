@@ -31,9 +31,11 @@
 	}
 }
 .home-header_2afwll.responsive > .menu-container {
-		@media screen and (max-width: 767px) {
+	@media screen and (max-width: 767px) {
 		&.open {
-			font-size: 24px;
+			> a {
+				font-size: 24px;
+			}
 
 			> *:not(:last-child) {
 				margin-bottom: 12px;

@@ -1130,7 +1130,10 @@ export default class extends Root<Props, State, SharedState, SharedEvents> {
 					<HomeHeader
 						deviceType={this.props.deviceType}
 						onBeginOnboarding={this._beginOnboarding}
+						onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+						onCreateStaticContentUrl={this._createStaticContentUrl}
 						onOpenMenu={this._openMenu}
+						onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
 						onViewMission={this._viewMission}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}

@@ -7,14 +7,17 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
 import { Screen }  from '../../../common/components/Root'
-// import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
 import { DeviceType } from '../../../../common/DeviceType';
+import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	currentScreen: Screen,
 	deviceType: DeviceType,
 	onBeginOnboarding: (analyticsAction: string) => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onOpenMenu: () => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onOpenSignInPrompt: (analyticsAction: string) => void,
 	onViewFaq: () => void,
 	onViewHome: () => void,
@@ -27,19 +30,18 @@ type State = {
 	menuOpen: boolean
 }
 
+const analyticsAction = 'Header';
+
 export default class HomeHeader extends React.PureComponent<Props, State> {
 	state: State = {
 		menuOpen: false,
 	}
 
-	private readonly _beginOnboarding = () => {
-		this.props.onBeginOnboarding('Header');
-	};
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		this.props.onViewHome();
 	};
 	private readonly _openSignInPrompt = () => {
-		this.props.onOpenSignInPrompt('Header');
+		this.props.onOpenSignInPrompt(analyticsAction);
 	};
 
 	private _toggleMenu() {
@@ -132,11 +134,15 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									size="large"
 									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
 								/>
-								<Button
-									intent="loud"
-									text="Get Started"
+							<GetStartedButton
+								analyticsAction={analyticsAction}
+								deviceType={this.props.deviceType}
+								location={this.props.currentScreen.location}
+								onBeginOnboarding={analyticsAction => this.pageNavigation(() => this.props.onBeginOnboarding(analyticsAction))}
+								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+								onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 									size="large"
-									onClick={this.pageNavigation.bind(this, this._beginOnboarding)}
 								/>
 						</>}
 				</div>
