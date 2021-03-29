@@ -4,8 +4,6 @@ import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker
 import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
 import Button from '../../../../common/components/Button';
 import { DisplayTheme, getClientPreferredColorScheme } from '../../../../common/models/userAccounts/DisplayPreference';
-import { getPromiseErrorMessage } from '../../../../common/format';
-import { Intent } from '../../../../common/components/Toaster';
 import { SubscriptionPriceSelection } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../../common/models/subscriptions/StripePaymentResponse';
 import { PriceSelectionSummary } from '../subscriptionsDialogs/PriceSelectionSummary';
@@ -14,10 +12,10 @@ interface Props {
 	displayTheme: DisplayTheme | null,
 	onChangePrice?: () => void,
 	onCreateStaticContentUrl: (path: string) => string,
-	onShowToast: (content: string, intent: Intent) => void,
-	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
+	onSubmit: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
 	selectedPrice: SubscriptionPriceSelection,
-	stripe: Promise<Stripe> | null
+	stripe: Promise<Stripe> | null,
+	submitButtonText: string
 }
 enum StripeStatus {
 	Initial,
@@ -56,18 +54,12 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 				});
 				this._asyncTracker
 					.addPromise(
-						this.props.onSubscribe(this._stripeCardElement, this.props.selectedPrice)
+						this.props.onSubmit(this._stripeCardElement, this.props.selectedPrice)
 					)
 					.then(
 						response => {
 							switch (response.type) {
-								case StripePaymentResponseType.Succeeded:
-									this.props.onShowToast('Purchase completed.', Intent.Success);
-									// leave form in Submitting state. the global subscription status change
-									// will override the local state.
-									break;
 								case StripePaymentResponseType.Failed:
-									this.props.onShowToast(`Purchase failed: ${response.errorMessage ?? 'Your card was declined.'}`, Intent.Danger);
 									this._stripeCardElement.update({
 										disabled: false
 									});
@@ -86,7 +78,6 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 							if ((reason as CancellationToken)?.isCancelled) {
 								return;
 							}
-							this.props.onShowToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
 							this._stripeCardElement.update({
 								disabled: false
 							});
@@ -286,7 +277,7 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 												'disabled'
 									}
 									style="preferred"
-									text="Subscribe"
+									text={this.props.submitButtonText}
 								/>
 							</div> :
 							null}

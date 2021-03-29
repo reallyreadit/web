@@ -13,12 +13,13 @@ import { SubscriptionStatusResponse } from '../../../common/models/subscriptions
 import { SubscriptionPriceLevelsResponse, SubscriptionPriceLevelsRequest } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionPriceSelection, StandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
-import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
+import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
 import StatusCheckStep from './subscriptionsDialogs/StatusCheckStep';
 import PriceLevelsCheckStep from './subscriptionsDialogs/PriceLevelsCheckStep';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import PriceSelectionStep from './subscriptionsDialogs/PriceSelectionStep';
 import { Require } from '../../../common/Require';
+import { getPromiseErrorMessage } from '../../../common/format';
 
 interface Props {
 	article: UserArticle | null,
@@ -167,6 +168,14 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			)
 			.then(
 				response => {
+					switch (response.type) {
+						case StripePaymentResponseType.Succeeded:
+							this.props.onShowToast('Purchase completed.', Intent.Success);
+							break;
+						case StripePaymentResponseType.Failed:
+							this.props.onShowToast(`Purchase failed: ${response.errorMessage ?? 'Your card was declined.'}`, Intent.Danger);
+							break;
+					}
 					this.setState({
 						step: Step.PaymentEntry,
 						isDismissable: true
@@ -177,6 +186,7 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 			.catch(
 				reason => {
 					if (!(reason as CancellationToken)?.isCancelled) {
+						this.props.onShowToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
 						this.setState({
 							step: Step.PaymentEntry,
 							isDismissable: true
@@ -223,10 +233,10 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 						displayTheme={this.props.displayTheme}
 						onChangePrice={this._goToPriceSelectionStep}
 						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-						onShowToast={this.props.onShowToast}
-						onSubscribe={this._subscribe}
+						onSubmit={this._subscribe}
 						selectedPrice={this.state.selectedPrice}
 						stripe={this.props.stripe}
+						submitButtonText="Subscribe"
 					/>
 				);
 			case Step.Continue:
