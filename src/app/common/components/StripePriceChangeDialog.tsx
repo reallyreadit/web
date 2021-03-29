@@ -125,7 +125,7 @@ export default class StripePriceChangeDialog extends React.Component<Props, Stat
 			.catch(
 				reason => {
 					if (!(reason as CancellationToken)?.isCancelled) {
-						this.props.onShowToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
+						this.props.onShowToast(`Price change failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
 						this.setState({
 							step: Step.Confirmation,
 							isDismissable: true
