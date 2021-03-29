@@ -2,7 +2,7 @@ import * as React from 'react';
 import Dialog from '../../../common/components/Dialog';
 import UserArticle from '../../../common/models/UserArticle';
 import TransitionContainer from '../../../common/components/TransitionContainer';
-import PaymentEntryStep from './StripeSubscriptionPrompt/PaymentEntryStep';
+import PaymentEntryStep from './subscriptionsDialogs/PaymentEntryStep';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 import HttpEndpoint from '../../../common/HttpEndpoint';
 import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';

@@ -1,37 +1,37 @@
 /*
-	componentPath: src/app/common/components/StripeSubscriptionPrompt/PaymentEntryStep
-	cssComponentId: payment-entry-step_utsg1r
+	componentPath: src/app/common/components/subscriptionsDialogs/PaymentEntryStep
+	cssComponentId: payment-entry-step_w0p5nn
 */
 @import '../../../../common/styles/colors';
 
-.payment-entry-step_utsg1r > .price-selection-summary_8w3t0z {
+.payment-entry-step_w0p5nn > .price-selection-summary_8w3t0z {
 	margin-bottom: 20px;
 }
-.payment-entry-step_utsg1r > .form {
+.payment-entry-step_w0p5nn > .form {
 	text-align: center;
 }
-.payment-entry-step_utsg1r > .form > .label {
+.payment-entry-step_w0p5nn > .form > .label {
 	text-align: left;
 	font-family: 'Museo Sans (700)';
 	margin-bottom: 10px
 }
-.payment-entry-step_utsg1r > .form > .card-element {
+.payment-entry-step_w0p5nn > .form > .card-element {
 	padding: 10px;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
 	width: 336px;
 }
-.payment-entry-step_utsg1r > .form > .card-element-error {
+.payment-entry-step_w0p5nn > .form > .card-element-error {
 	margin-top: 10px;
 	font-size: 11pt;
 }
-.payment-entry-step_utsg1r > .form > .button_ovrlmi {
+.payment-entry-step_w0p5nn > .form > .button_ovrlmi {
 	margin-top: 25px;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .payment-entry-step_utsg1r > .form > .card-element {
+	#{$root} .payment-entry-step_w0p5nn > .form > .card-element {
 		@include theme-colors(
 			$scheme,
 			(
@@ -40,7 +40,7 @@
 			)
 		);
 	}
-	#{$root} .payment-entry-step_utsg1r > .form > .card-element-error {
+	#{$root} .payment-entry-step_w0p5nn > .form > .card-element-error {
 		@include theme-colors(
 			$scheme,
 			(

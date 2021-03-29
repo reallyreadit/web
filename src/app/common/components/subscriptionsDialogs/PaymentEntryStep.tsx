@@ -253,7 +253,7 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<div className="payment-entry-step_utsg1r">
+			<div className="payment-entry-step_w0p5nn">
 				<PriceSelectionSummary
 					disabled={this.state.formState.status === FormStatus.Submitting}
 					onChangePrice={this.props.onChangePrice}
