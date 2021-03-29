@@ -117,6 +117,10 @@ export default class StripePriceChangeDialog extends React.Component<Props, Stat
 							break;
 						case StripePaymentResponseType.Failed:
 							this.props.onShowToast(`Price change failed: ${response.errorMessage ?? 'Your card was declined.'}`, Intent.Danger);
+							this.setState({
+								step: Step.Confirmation,
+								isDismissable: true
+							});
 							break;
 					}
 					return response;
