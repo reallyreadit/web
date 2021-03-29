@@ -5,7 +5,7 @@ import ActionLink from '../../../../common/components/ActionLink';
 
 interface Props {
 	disabled?: boolean,
-	onChangePrice: () => void,
+	onChangePrice?: () => void,
 	selectedPrice: SubscriptionPriceSelection
 }
 export const PriceSelectionSummary: React.SFC<Props> = (props: Props) => (
@@ -13,15 +13,17 @@ export const PriceSelectionSummary: React.SFC<Props> = (props: Props) => (
 		<div className="title">Selected Subscription</div>
 		<div className="name">{formatSubscriptionPriceName(props.selectedPrice)}</div>
 		<div className="price">{formatSubscriptionPriceAmount(props.selectedPrice.amount)} / month</div>
-		<ActionLink
-			iconLeft="arrow-left"
-			onClick={props.onChangePrice}
-			state={
-				props.disabled ?
-					'disabled' :
-					'normal'
-			}
-			text="Change"
-		/>
+		{props.onChangePrice ?
+			<ActionLink
+				iconLeft="arrow-left"
+				onClick={props.onChangePrice}
+				state={
+					props.disabled ?
+						'disabled' :
+						'normal'
+				}
+				text="Change"
+			/> :
+			null}
 	</ContentBox>
 );

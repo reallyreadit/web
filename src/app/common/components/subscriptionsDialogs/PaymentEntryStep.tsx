@@ -12,7 +12,7 @@ import { PriceSelectionSummary } from '../subscriptionsDialogs/PriceSelectionSum
 
 interface Props {
 	displayTheme: DisplayTheme | null,
-	onChangePrice: () => void,
+	onChangePrice?: () => void,
 	onCreateStaticContentUrl: (path: string) => string,
 	onShowToast: (content: string, intent: Intent) => void,
 	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
