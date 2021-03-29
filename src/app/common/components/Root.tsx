@@ -554,12 +554,12 @@ export default abstract class Root<
 					article={article}
 					displayTheme={sharedState.displayTheme}
 					onClose={this._dialog.closeDialog}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
 					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
 					onGetSubscriptionStatus={this._getSubscriptionStatus}
 					onReadArticle={this._readArticle}
 					onShowToast={this._toaster.addToast}
 					onSubscribe={this._createStripeSubscription}
-					staticServerEndpoint={this.props.staticServerEndpoint}
 					stripe={this.props.stripeLoader.value}
 					subscriptionStatus={sharedState.subscriptionStatus}
 				/>

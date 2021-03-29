@@ -4,7 +4,6 @@ import UserArticle from '../../../common/models/UserArticle';
 import TransitionContainer from '../../../common/components/TransitionContainer';
 import PaymentEntryStep from './subscriptionsDialogs/PaymentEntryStep';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import HttpEndpoint from '../../../common/HttpEndpoint';
 import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import AsyncTracker, { CancellationToken } from '../../../common/AsyncTracker';
 import { Intent } from '../../../common/components/Toaster';
@@ -25,12 +24,12 @@ interface Props {
 	article: UserArticle | null,
 	displayTheme: DisplayTheme | null,
 	onClose: () => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
 	onGetSubscriptionStatus: FetchFunction<SubscriptionStatusResponse>,
 	onReadArticle: (article: UserArticle) => void,
 	onShowToast: (content: string, intent: Intent) => void,
 	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
-	staticServerEndpoint: HttpEndpoint,
 	stripe: Promise<Stripe> | null,
 	subscriptionStatus: SubscriptionStatus
 }
@@ -223,10 +222,10 @@ export default class StripeSubscriptionPrompt extends React.Component<Props, Sta
 					<PaymentEntryStep
 						displayTheme={this.props.displayTheme}
 						onChangePrice={this._goToPriceSelectionStep}
+						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 						onShowToast={this.props.onShowToast}
 						onSubscribe={this._subscribe}
 						selectedPrice={this.state.selectedPrice}
-						staticServerEndpoint={this.props.staticServerEndpoint}
 						stripe={this.props.stripe}
 					/>
 				);

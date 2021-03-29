@@ -3,7 +3,6 @@ import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
 import Button from '../../../../common/components/Button';
-import HttpEndpoint, { createUrl } from '../../../../common/HttpEndpoint';
 import { DisplayTheme, getClientPreferredColorScheme } from '../../../../common/models/userAccounts/DisplayPreference';
 import { getPromiseErrorMessage } from '../../../../common/format';
 import { Intent } from '../../../../common/components/Toaster';
@@ -14,10 +13,10 @@ import { PriceSelectionSummary } from '../subscriptionsDialogs/PriceSelectionSum
 interface Props {
 	displayTheme: DisplayTheme | null,
 	onChangePrice: () => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onShowToast: (content: string, intent: Intent) => void,
 	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
 	selectedPrice: SubscriptionPriceSelection,
-	staticServerEndpoint: HttpEndpoint,
 	stripe: Promise<Stripe> | null
 }
 enum StripeStatus {
@@ -181,7 +180,7 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 		return [
 			{
 				family: 'museo-sans-300',
-				src: `url(${createUrl(this.props.staticServerEndpoint, '/common/fonts/museo-sans-300.ttf')})`
+				src: `url(${this.props.onCreateStaticContentUrl('/common/fonts/museo-sans-300.ttf')})`
 			}
 		];
 	}
