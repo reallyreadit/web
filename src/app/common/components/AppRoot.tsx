@@ -255,6 +255,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
 			this._openStripePriceChangeDialog(this.state.subscriptionStatus);
+			return;
 		}
 		this._openAppStoreSubscriptionPromptDialog(null, this.state.subscriptionStatus);
 	};
