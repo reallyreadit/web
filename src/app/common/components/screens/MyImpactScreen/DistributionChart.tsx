@@ -232,30 +232,18 @@ interface Props {
 }
 interface State {
 	activeIndex: number,
-	hasAnyAuthorDistributions: boolean
+	segmentCount: number
 }
 export default class DistributionChart extends React.Component<Props, State> {
 	public static getDerivedStateFromProps(props: Props, state: State): State {
 		// if we need to change the activeIndex in response to a distribution change it needs to happen
 		// before the next render. updating afterwards in componentDidUpdate cancels the recharts animation
-		const reportHasAuthorDistributions = hasAnyAuthorDistributions(props.report);
-		if (
-			!state.hasAnyAuthorDistributions && reportHasAuthorDistributions
-		) {
+		const points = createDataPoints(props.report, props.reportType);
+		if (points.length !== state.segmentCount) {
 			return {
-				activeIndex: getPreferredActiveIndex(
-					createDataPoints(props.report, props.reportType)
-				),
-				hasAnyAuthorDistributions: true
+				activeIndex: getPreferredActiveIndex(points),
+				segmentCount: points.length
 			}
-		}
-		if (
-			state.hasAnyAuthorDistributions && !reportHasAuthorDistributions
-		) {
-			return {
-				activeIndex: 0,
-				hasAnyAuthorDistributions: false
-			};
 		}
 		return null;
 	}
@@ -270,11 +258,10 @@ export default class DistributionChart extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
+		const points = createDataPoints(props.report, props.reportType);
 		this.state = {
-			activeIndex: getPreferredActiveIndex(
-				createDataPoints(props.report, props.reportType)
-			),
-			hasAnyAuthorDistributions: hasAnyAuthorDistributions(props.report)
+			activeIndex: getPreferredActiveIndex(points),
+			segmentCount: points.length
 		};
 	}
 	public render() {
