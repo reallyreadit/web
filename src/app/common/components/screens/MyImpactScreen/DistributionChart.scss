@@ -3,6 +3,7 @@
 	cssComponentId: distribution-chart_n97yi3
 */
 @import '../../../../../common/styles/colors.scss';
+@import '../../../../../common/styles/config.scss';
 
 .distribution-chart_n97yi3 {
 	position: relative;
@@ -55,23 +56,23 @@
 @include theme using ($root, $scheme) {
 	#{$root} .distribution-chart_n97yi3 > .active-info > .logo.readup {
 		@if $scheme == light {
-			background-image: url(/images/logo.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
 		} @else {
-			background-image: url(/images/logo-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
 		}
 	}
 	#{$root} .distribution-chart_n97yi3 > .active-info > .logo.apple {
 		@if $scheme == light {
-			background-image: url(/images/apple.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/apple.svg'));
 		} @else {
-			background-image: url(/images/apple-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/apple-white.svg'));
 		}
 	}
 	#{$root} .distribution-chart_n97yi3 > .active-info > .logo.stripe {
 		@if $scheme == light {
-			background-image: url(/images/stripe.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe.svg'));
 		} @else {
-			background-image: url(/images/stripe-white.svg);
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe-white.svg'));
 		}
 	}
 }
