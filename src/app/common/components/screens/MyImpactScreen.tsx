@@ -6,7 +6,7 @@ import { FetchFunction } from '../../serverApi/ServerApi';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import DistributionChart from './MyImpactScreen/DistributionChart';
+import DistributionChart, { ReportType } from './MyImpactScreen/DistributionChart';
 import { formatSubscriptionPriceAmount, formatSubscriptionPriceName, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { formatCountable, formatIsoDateAsUtc } from '../../../../common/format';
 import { DateTime } from 'luxon';
@@ -50,10 +50,7 @@ function renderSubscriptionDetails(price: SubscriptionPriceLevel) {
 	);
 }
 
-enum ReportType {
-	CurrentPeriod,
-	CompletedPeriods
-}
+
 
 const headerSelectorItems = [
 	{
@@ -142,6 +139,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 					<div className="spacer"></div>
 					<DistributionChart
 						report={summary.completedPeriods}
+						reportType={this.state.selectedReportType}
 						onViewAuthor={this.props.onViewAuthor}
 					/>
 				</>
@@ -222,6 +220,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						<div className="spacer"></div>
 						<DistributionChart
 							report={summary.currentPeriod}
+							reportType={this.state.selectedReportType}
 							onViewAuthor={this.props.onViewAuthor}
 						/>
 						<div className="spacer"></div>

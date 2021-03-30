@@ -80,10 +80,11 @@ function generateColors(count: number) {
 	)
 }
 
-function createDataPoints(report: SubscriptionDistributionReport) {
+function createDataPoints(report: SubscriptionDistributionReport, reportType: ReportType) {
 	// check for author distributions
 	if (
-		!hasAnyAuthorDistributions(report)
+		!hasAnyAuthorDistributions(report) &&
+		reportType === ReportType.CurrentPeriod
 	) {
 		return [{
 			type: DataPointType.Placeholder as DataPointType.Placeholder,
@@ -219,8 +220,14 @@ function hasAnyAuthorDistributions(report: SubscriptionDistributionReport) {
 	return report.unknownAuthorAmount > 0 || report.authorDistributions.length > 0;
 }
 
+export enum ReportType {
+	CurrentPeriod,
+	CompletedPeriods
+}
+
 interface Props {
 	report: SubscriptionDistributionReport,
+	reportType: ReportType,
 	onViewAuthor: (slug: string, name: string) => void
 }
 interface State {
@@ -237,7 +244,7 @@ export default class DistributionChart extends React.Component<Props, State> {
 		) {
 			return {
 				activeIndex: getPreferredActiveIndex(
-					createDataPoints(props.report)
+					createDataPoints(props.report, props.reportType)
 				),
 				hasAnyAuthorDistributions: true
 			}
@@ -265,14 +272,14 @@ export default class DistributionChart extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			activeIndex: getPreferredActiveIndex(
-				createDataPoints(props.report)
+				createDataPoints(props.report, props.reportType)
 			),
 			hasAnyAuthorDistributions: hasAnyAuthorDistributions(props.report)
 		};
 	}
 	public render() {
 		const
-			points = createDataPoints(this.props.report),
+			points = createDataPoints(this.props.report, this.props.reportType),
 			active = points[this.state.activeIndex];
 		return (
 			<div className="distribution-chart_n97yi3">
