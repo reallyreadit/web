@@ -31,6 +31,7 @@ export type ActiveSubscriptionStatus = {
 		price: SubscriptionPriceLevel,
 		currentPeriodBeginDate: string,
 		currentPeriodEndDate: string,
+		currentPeriodRenewalGracePeriodEndDate: string,
 		isUserFreeForLife: boolean
 	} & (
 		{
@@ -45,6 +46,7 @@ export type LapsedSubscriptionStatus = {
 	provider: SubscriptionProvider,
 	price: SubscriptionPriceLevel,
 	lastPeriodEndDate: string,
+	lastPeriodRenewalGracePeriodEndDate: string,
 	isUserFreeForLife: boolean
 };
 export type SubscriptionStatus =
