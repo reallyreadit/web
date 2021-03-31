@@ -67,7 +67,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType, isMobileDevice } from '../../../common/DeviceType';
 import { AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
-import { StripeSubscriptionCreationRequest } from '../../../common/models/subscriptions/StripeSubscriptionCreationRequest';
+import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { StripePaymentConfirmationRequest } from '../../../common/models/subscriptions/StripePaymentConfirmationRequest';
@@ -225,7 +225,7 @@ export default abstract class {
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
 	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
-	public readonly createStripeSubscription = (request: StripeSubscriptionCreationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
+	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
 	public readonly requestAppleSubscriptionStatusUpdate = () => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/AppleSubscriptionStatusUpdateRequest' });
 	public readonly setStripeSubscriptionAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/StripeAutoRenewStatus', data: request });
 	public readonly validateAppleSubscription = (request: AppleSubscriptionValidationRequest) => this.post<AppleSubscriptionValidationResponse>({ path: '/Subscriptions/AppleSubscriptionValidation', data: request });

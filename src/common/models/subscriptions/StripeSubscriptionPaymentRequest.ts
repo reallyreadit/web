@@ -1,4 +1,4 @@
-export type StripeSubscriptionCreationRequest = {
+export type StripeSubscriptionPaymentRequest = {
 		paymentMethodId: string,
 		priceLevelId: string
 	} | {
