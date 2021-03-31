@@ -185,9 +185,8 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 							<div className="message">Loading payment method...</div> :
 						<div className="message">Billed through Apple.</div>}
 					<div className="message">{renewalMessage}</div>
-					<div className="actions">
-						{this.props.status.provider === SubscriptionProvider.Stripe || this.props.deviceType === DeviceType.Ios ?
-							<>
+					{this.props.status.provider === SubscriptionProvider.Stripe || this.props.deviceType === DeviceType.Ios ?
+						<div className="actions">
 								<ActionLink
 									onClick={this.props.onOpenPriceChangeDialog}
 									state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
@@ -198,11 +197,10 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 									state={this.state.isChangingAutoRenewStatus ? 'busy' : 'normal'}
 									text={this.props.status.autoRenewEnabled ? 'Cancel' : 'Resume'}
 								/>
-							</> :
-							<>
-								Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.
-							</>}
-					</div>
+						</div> :
+						<div className="message">
+							Manage your subscription on your Apple device or in <a href="https://apps.apple.com/account/subscriptions" target="_blank">iTunes</a>.
+						</div>}
 				</>
 			);
 		}
