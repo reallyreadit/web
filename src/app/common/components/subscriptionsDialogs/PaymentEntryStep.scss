@@ -20,7 +20,6 @@
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
-	width: 336px;
 }
 .payment-entry-step_w0p5nn > .form > .card-element-error {
 	margin-top: 10px;
@@ -28,6 +27,12 @@
 }
 .payment-entry-step_w0p5nn > .form > .button_ovrlmi {
 	margin-top: 25px;
+}
+
+@media (min-width: 396px) {
+	.payment-entry-step_w0p5nn > .form > .card-element {
+		width: 336px;
+	}
 }
 
 @include theme using ($root, $scheme) {
