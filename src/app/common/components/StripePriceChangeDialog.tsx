@@ -16,21 +16,29 @@ import PriceSelectionStep from './subscriptionsDialogs/PriceSelectionStep';
 import { ConfirmationStep } from './StripePriceChangeDialog/ConfirmationStep';
 import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { getPromiseErrorMessage } from '../../../common/format';
+import PaymentEntryStep from './subscriptionsDialogs/PaymentEntryStep';
+import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
+import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 
 interface Props {
 	activeSubscription: ActiveSubscriptionStatus,
+	displayTheme: DisplayTheme | null,
 	onChangePrice: (price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
 	onClose: () => void,
+	onCompleteUpgrade: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
 	onGetSubscriptionStatus: FetchFunction<SubscriptionStatusResponse>,
 	onOpenStripeSubscriptionPrompt: () => void,
-	onShowToast: (content: string, intent: Intent) => void
+	onShowToast: (content: string, intent: Intent) => void,
+	stripe: Promise<Stripe> | null
 }
 enum Step {
 	SubscriptionStatusCheck,
 	PriceLevelsCheck,
 	PriceSelection,
-	Confirmation
+	Confirmation,
+	PaymentEntry
 }
 type SubscriptionStatusCheckState = {
 	step: Step.SubscriptionStatusCheck,
@@ -50,7 +58,13 @@ type ConfirmationState = {
 	isDismissable: boolean,
 	priceLevels: StandardSubscriptionPriceLevel[],
 	selectedPrice: SubscriptionPriceSelection,
-	nextState?: PriceSelectionState
+	nextState?: PriceSelectionState | PaymentEntryState
+}
+type PaymentEntryState = {
+	step: Step.PaymentEntry,
+	isDismissible: boolean,
+	priceLevels: StandardSubscriptionPriceLevel[],
+	selectedPrice: SubscriptionPriceSelection,
 }
 type TransitioningState = (
 	Require<SubscriptionStatusCheckState, 'nextState'> |
@@ -62,10 +76,11 @@ type State = (
 	SubscriptionStatusCheckState |
 	PriceLevelsCheckState |
 	PriceSelectionState |
-	ConfirmationState
+	ConfirmationState |
+	PaymentEntryState
 );
 function isTransitioning(state: State): state is TransitioningState {
-	return state.nextState != null;
+	return state.step !== Step.PaymentEntry && state.nextState != null;
 }
 export default class StripePriceChangeDialog extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -94,50 +109,15 @@ export default class StripePriceChangeDialog extends React.Component<Props, Stat
 			});
 		}
 	};
+	private readonly _completeUpgrade = (card: StripeCardElement, price: SubscriptionPriceSelection) => {
+		return this.handlePaymentRequest(
+			this.props.onCompleteUpgrade(card, price)
+		);
+	};
 	private readonly _confirmPriceChange = (price: SubscriptionPriceSelection) => {
-		if (this.state.step !== Step.Confirmation) {
-			return Promise.reject(
-				new Error('Invalid step state.')
-			);
-		}
-		this.setState({
-			step: this.state.step,
-			isDismissable: false
-		});
-		return this._asyncTracker
-			.addPromise(
-				this.props.onChangePrice(price)
-			)
-			.then(
-				response => {
-					switch (response.type) {
-						case StripePaymentResponseType.Succeeded:
-							this.props.onShowToast('Price change completed.', Intent.Success);
-							this.props.onClose();
-							break;
-						case StripePaymentResponseType.Failed:
-							this.props.onShowToast(`Price change failed: ${response.errorMessage ?? 'Your card was declined.'}`, Intent.Danger);
-							this.setState({
-								step: Step.Confirmation,
-								isDismissable: true
-							});
-							break;
-					}
-					return response;
-				}
-			)
-			.catch(
-				reason => {
-					if (!(reason as CancellationToken)?.isCancelled) {
-						this.props.onShowToast(`Price change failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
-						this.setState({
-							step: Step.Confirmation,
-							isDismissable: true
-						});
-					}
-					throw reason;
-				}
-			);
+		return this.handlePaymentRequest(
+			this.props.onChangePrice(price)
+		);
 	};
 	private readonly _goToPriceSelectionStep = () => {
 		if (this.state.step !== Step.Confirmation) {
@@ -148,6 +128,20 @@ export default class StripePriceChangeDialog extends React.Component<Props, Stat
 			nextState: {
 				step: Step.PriceSelection,
 				priceLevels: this.state.priceLevels
+			}
+		});
+	};
+	private readonly _goToPaymentEntryStep = () => {
+		if (this.state.step !== Step.Confirmation) {
+			return;
+		}
+		this.setState({
+			step: this.state.step,
+			nextState: {
+				step: Step.PaymentEntry,
+				isDismissible: true,
+				priceLevels: this.state.priceLevels,
+				selectedPrice: this.state.selectedPrice
 			}
 		});
 	};
@@ -183,6 +177,66 @@ export default class StripePriceChangeDialog extends React.Component<Props, Stat
 			step: Step.SubscriptionStatusCheck
 		};
 	}
+	private handlePaymentRequest(request: Promise<StripePaymentResponse>) {
+		const step = this.state.step;
+		let makeDismissable: () => void;
+		switch (step) {
+			case Step.Confirmation:
+				this.setState({
+					step,
+					isDismissable: false
+				});
+				makeDismissable = () => {
+					this.setState({
+						step,
+						isDismissable: true
+					});
+				};
+				break;
+			case Step.PaymentEntry:
+				this.setState({
+					step,
+					isDismissable: false
+				});
+				makeDismissable = () => {
+					this.setState({
+						step,
+						isDismissable: true
+					});
+				};
+				break;
+			default:
+				return Promise.reject(
+					new Error('Invalid step state.')
+				);
+		}
+		return this._asyncTracker
+			.addPromise(request)
+			.then(
+				response => {
+					switch (response.type) {
+						case StripePaymentResponseType.Succeeded:
+							this.props.onShowToast('Price change completed.', Intent.Success);
+							this.props.onClose();
+							break;
+						case StripePaymentResponseType.Failed:
+							this.props.onShowToast(`Price change failed: ${response.errorMessage ?? 'Your card was declined.'}`, Intent.Danger);
+							makeDismissable();
+							break;
+					}
+					return response;
+				}
+			)
+			.catch(
+				reason => {
+					if (!(reason as CancellationToken)?.isCancelled) {
+						this.props.onShowToast(`Price change failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
+						makeDismissable();
+					}
+					throw reason;
+				}
+			);
+	}
 	private renderStep() {
 		switch (this.state.step) {
 			case Step.SubscriptionStatusCheck:
@@ -215,7 +269,19 @@ export default class StripePriceChangeDialog extends React.Component<Props, Stat
 						activeSubscription={this.props.activeSubscription}
 						onChangePrice={this._goToPriceSelectionStep}
 						onConfirm={this._confirmPriceChange}
+						onUpdatePaymentMethod={this._goToPaymentEntryStep}
 						selectedPrice={this.state.selectedPrice}
+					/>
+				);
+			case Step.PaymentEntry:
+				return (
+					<PaymentEntryStep
+						displayTheme={this.props.displayTheme}
+						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+						onSubmit={this._completeUpgrade}
+						selectedPrice={this.state.selectedPrice}
+						stripe={this.props.stripe}
+						submitButtonText="Complete Upgrade"
 					/>
 				);
 		}

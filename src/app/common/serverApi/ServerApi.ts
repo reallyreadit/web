@@ -222,6 +222,7 @@ export default abstract class {
 	// Subscriptions
 	public readonly changeStripeSubscriptionPrice = (request: StripePriceChangeRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePriceChange', data: request });
 	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
+	public readonly completeStripeSubscriptionUpgrade = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeUpgradePayment', data: request });
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
 	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
