@@ -93,13 +93,14 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 		}];
 	}
 	// start by creating points for the platform and payment providers
-	const points: ChartDataPoint[] = [
-		{
+	const points: ChartDataPoint[] = [];
+	if (report.platformAmount > 0) {
+		points.push({
 			type: DataPointType.Platform,
 			value: report.platformAmount,
 			color: 'hsl(0, 0%, 25%)'
-		}
-	];
+		});
+	}
 	if (report.appleAmount > 0) {
 		points.push({
 			type: DataPointType.PaymentProvider,
@@ -130,6 +131,9 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 	points.push(
 		...report.authorDistributions
 			.slice()
+			.filter(
+				author => author.amount > 0
+			)
 			.sort(
 				(a, b) => a.amount - b.amount
 			)
