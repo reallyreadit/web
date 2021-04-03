@@ -27,7 +27,7 @@ function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDis
 				.utc()
 				.until(
 					DateTime.fromISO(
-						formatIsoDateAsUtc(status.currentPeriodEndDate)
+						formatIsoDateAsUtc(status.currentPeriodRenewalGracePeriodEndDate)
 					)
 				)
 				.length('days')
@@ -236,7 +236,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
 						<div className="spacer"></div>
 						<div className="content-block">
-							Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodEndDate)).toLocaleString(DateTime.DATE_MED)}
+							Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodRenewalGracePeriodEndDate)).toLocaleString(DateTime.DATE_MED)}
 						</div>
 						<div className="spacer"></div>
 						<div className="content-block">
