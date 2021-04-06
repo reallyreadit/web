@@ -82,7 +82,7 @@ export default class ServerApi {
 			chrome.notifications.onClicked.addListener(
 				id => {
 					chrome.tabs.create({
-						url: createUrl(window.reallyreadit.extension.config.api, '/Extension/Notification/' + id)
+						url: createUrl(window.reallyreadit.extension.config.apiServer, '/Extension/Notification/' + id)
 					});
 				}
 			);
@@ -200,7 +200,7 @@ export default class ServerApi {
 		return new Promise<T>((resolve, reject) => {
 			const
 				req = new XMLHttpRequest(),
-				url = createUrl(window.reallyreadit.extension.config.api, request.path);
+				url = createUrl(window.reallyreadit.extension.config.apiServer, request.path);
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
 				if (this.status === 200 || this.status === 400) {

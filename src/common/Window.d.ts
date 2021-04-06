@@ -18,11 +18,11 @@ declare global {
 			readerContentScript?: ReaderContentScriptWindow,
 			extension?: {
 				config?: {
-					api: HttpEndpoint,
+					apiServer: HttpEndpoint,
 					cookieName: string,
 					cookieDomain: string,
-					static: HttpEndpoint,
-					web: HttpEndpoint,
+					staticServer: HttpEndpoint,
+					webServer: HttpEndpoint,
 					version: PackageVersionInfo
 				}
 			},

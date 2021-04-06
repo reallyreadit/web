@@ -249,13 +249,13 @@ chrome.runtime.onInstalled.addListener(details => {
 		cookieName => {
 			chrome.cookies.get(
 				{
-					url: createUrl(window.reallyreadit.extension.config.web),
+					url: createUrl(window.reallyreadit.extension.config.webServer),
 					name: cookieName
 				},
 				cookie => {
 					if (cookie?.sameSite === 'unspecified') {
 						chrome.cookies.set({
-							url: createUrl(window.reallyreadit.extension.config.web),
+							url: createUrl(window.reallyreadit.extension.config.webServer),
 							domain: cookie.domain,
 							expirationDate: cookie.expirationDate,
 							httpOnly: cookie.httpOnly,
@@ -310,7 +310,7 @@ chrome.runtime.onInstalled.addListener(details => {
 						if (details.reason === 'install') {
 							chrome.tabs.create({
 								url: createUrl(
-									window.reallyreadit.extension.config.web,
+									window.reallyreadit.extension.config.webServer,
 									response.redirectPath,
 									{
 										[extensionInstalledQueryStringKey]: null
@@ -323,7 +323,7 @@ chrome.runtime.onInstalled.addListener(details => {
 						}
 						chrome.runtime.setUninstallURL(
 							createUrl(
-								window.reallyreadit.extension.config.web,
+								window.reallyreadit.extension.config.webServer,
 								'/extension/uninstall',
 								{
 									installationId: response.installationId
@@ -394,7 +394,7 @@ chrome.browserAction.onClicked.addListener(
 		if (!serverApi.isAuthenticated()) {
 			chrome.tabs.create({
 				url: createUrl(
-					window.reallyreadit.extension.config.web,
+					window.reallyreadit.extension.config.webServer,
 					null,
 					{
 						[extensionAuthQueryStringKey]: null
@@ -408,7 +408,7 @@ chrome.browserAction.onClicked.addListener(
 			return;
 		}
 		// web app
-		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.web))) {
+		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.webServer))) {
 			chrome.tabs.executeScript(
 				tab.id,
 				{
@@ -478,7 +478,7 @@ chrome.alarms.onAlarm.addListener(
 				.map(versionString => new SemanticVersion(versionString))
 			);
 			console.log(`chrome.alarms.onAlarm (updateContentParser: checking for new version. current version: ${currentVersion.toString()})`);
-			fetch(createUrl(window.reallyreadit.extension.config.static, '/extension/content-parser.txt'))
+			fetch(createUrl(window.reallyreadit.extension.config.staticServer, '/extension/content-parser.txt'))
 				.then(res => res.text())
 				.then(text => {
 					const newVersionInfo = text
@@ -493,7 +493,7 @@ chrome.alarms.onAlarm.addListener(
 						.find(versionInfo => currentVersion.canUpgradeTo(versionInfo.version));
 					if (newVersionInfo) {
 						console.log(`chrome.alarms.onAlarm (updateContentParser: updating to version: ${newVersionInfo.version.toString()})`);
-						fetch(createUrl(window.reallyreadit.extension.config.static, '/extension/content-parser/' + newVersionInfo.fileName))
+						fetch(createUrl(window.reallyreadit.extension.config.staticServer, '/extension/content-parser/' + newVersionInfo.fileName))
 							.then(res => res.text())
 							.then(text => {
 								localStorage.setItem('contentParserScript', text);

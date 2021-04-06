@@ -33,7 +33,7 @@ const
 						.readFileSync(path.posix.join(project.srcDir, `extension/common/config.${buildInfo.env}.json`))
 						.toString()
 				),
-				webUrlPattern = config.web.protocol + '://' + config.web.host + '/*';
+				webUrlPattern = config.webServer.protocol + '://' + config.webServer.host + '/*';
 			manifest.version = package['it.reallyread'].version.extension.package.toString().padEnd(4, '0');
 			manifest.content_scripts[0].matches.push(webUrlPattern);
 			manifest.permissions.push(webUrlPattern);

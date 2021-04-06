@@ -134,7 +134,7 @@ export default class WebAppApi {
 	}
 	public injectContentScripts() {
 		// some browsers do not allow querying whitelisted urls without 'tabs' permission
-		const webAppBaseUrl = window.reallyreadit.extension.config.web.protocol + '://' + window.reallyreadit.extension.config.web.host + '/';
+		const webAppBaseUrl = window.reallyreadit.extension.config.webServer.protocol + '://' + window.reallyreadit.extension.config.webServer.host + '/';
 		chrome.tabs.query(
 			{
 				url: webAppBaseUrl + '*',

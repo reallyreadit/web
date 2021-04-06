@@ -61,7 +61,7 @@ export default class GlobalComponentHost extends ExtensionComponentHost<Services
 		});
 		return this;
 	}
-	public readonly createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.web, path);
+	public readonly createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.webServer, path);
 	public readonly handleShareRequest = () => {
 		return {
 			channels: [
