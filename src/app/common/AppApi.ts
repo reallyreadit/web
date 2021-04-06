@@ -36,6 +36,7 @@ export default abstract class extends EventEmitter<{
 	'didBecomeActive': AppActivationEvent,
 	'displayPreferenceChanged': DisplayPreference,
 	'loadUrl': string,
+	'openSubscriptionPrompt': void,
 	'subscriptionPurchaseCompleted': Result<AppleSubscriptionValidationResponse, ErrorResponse<TransactionError>>
 }> {
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;

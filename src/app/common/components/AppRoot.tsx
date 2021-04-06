@@ -954,6 +954,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			)
 			.addListener(
+				'openSubscriptionPrompt',
+				() => {
+					this._openAppStoreSubscriptionPromptDialog();
+				}
+			)
+			.addListener(
 				'subscriptionPurchaseCompleted',
 				result => {
 					// this event can fire at any time. for example a purchased or failed

@@ -66,6 +66,9 @@ export default class extends AppApi {
 				case 'loadUrl':
 					this.emitEvent('loadUrl', message.data);
 					break;
+				case 'openSubscriptionPrompt':
+					this.emitEvent('openSubscriptionPrompt');
+					break;
 				case 'subscriptionPurchaseCompleted':
 					this.emitEvent('subscriptionPurchaseCompleted', message.data);
 					break;
