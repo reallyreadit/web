@@ -96,7 +96,7 @@ export class ConfirmationStep extends React.Component<Props, State> {
 										<p>Your new price will go in to effect with the start of your next billing cycle.</p> :
 										<>
 											<p>Your new price will go in to effect immediately and start a new billing cycle.</p>
-											<p>The remaining portion of your current billing cycle will be applied as a discount to your first payment.</p>
+											<p>The remainder of your current cycle will be discounted.</p>
 										</>}
 							</div>
 							<Button
