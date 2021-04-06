@@ -39,7 +39,7 @@ const htmlTemplateBuild = createBuild({
 			const template = path.join(buildInfo.outPath, 'html.js');
 			// the output of the htmlTemplate bundle is assigned to the variable 'html' when executed
 			eval(fs.readFileSync(template).toString());
-			fs.writeFileSync(path.join(buildInfo.outPath, 'index.html'), html.default);
+			fs.writeFileSync(path.join(buildInfo.outPath, 'index.html'), html.svgTemplates.default);
 			fs.unlinkSync(template);
 			if (resolve) {
 				resolve();

@@ -1,1 +1,1 @@
-export * from '../../../common/svg/icons';
+export * as svgTemplates from '../../../common/svg/icons';
