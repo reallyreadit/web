@@ -5,7 +5,8 @@ const
 
 const
 	project = require('../../project'),
-	createBuild = require('../../createBuild');
+	createBuild = require('../../createBuild'),
+	appConfigPath = path.posix.join(project.srcDir, 'native-client/reader/config.{env}.json');
 
 const package = JSON.parse(
 	fs
@@ -38,7 +39,7 @@ const htmlTemplateBuild = createBuild({
 			const template = path.join(buildInfo.outPath, 'html.js');
 			// the output of the htmlTemplate bundle is assigned to the variable 'html' when executed
 			eval(fs.readFileSync(template).toString());
-			fs.writeFileSync(path.join(buildInfo.outPath, 'index.html'), html.default);
+			fs.writeFileSync(path.join(buildInfo.outPath, 'index.html'), html.svgTemplates.default);
 			fs.unlinkSync(template);
 			if (resolve) {
 				resolve();
@@ -119,6 +120,9 @@ const build = createBuild({
 	}()),
 	path: 'native-client/reader',
 	scss: {
+		appConfig: {
+			path: appConfigPath
+		},
 		files: [
 			`${project.srcDir}/common/components/**/*.{css,scss}`,
 			`${project.srcDir}/common/styles/reset.css`,
@@ -130,7 +134,7 @@ const build = createBuild({
 	],
 	webpack: {
 		appConfig: {
-			path: path.posix.join(project.srcDir, 'native-client/reader/config.{env}.json'),
+			path: appConfigPath,
 			key: 'window.reallyreadit.nativeClient.reader.config'
 		},
 		entry: path.posix.join(project.srcDir, 'native-client/reader/main.ts'),

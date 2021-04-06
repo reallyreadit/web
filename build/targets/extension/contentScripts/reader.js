@@ -5,12 +5,16 @@ const
 const
 	project = require('../../../project'),
 	createBuild = require('../../../createBuild'),
-	contentParserBuild = require('./reader/contentParser');
+	contentParserBuild = require('./reader/contentParser'),
+	appConfigPath = path.posix.join(project.srcDir, 'extension/common/config.{env}.json');
 
 const
 	targetPath = 'extension/content-scripts/reader',
 	contentScriptBuild = createBuild({
 		scss: {
+			appConfig: {
+				path: appConfigPath
+			},
 			files: [
 				`${project.srcDir}/common/components/**/*.{css,scss}`,
 				`${project.srcDir}/common/styles/reset.css`,
@@ -27,7 +31,7 @@ const
 		],
 		webpack: {
 			appConfig: {
-				path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
+				path: appConfigPath,
 				key: 'window.reallyreadit.extension.config'
 			},
 			entry: path.posix.join(project.srcDir, 'extension/content-scripts/reader/main.ts')

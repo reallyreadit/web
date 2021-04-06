@@ -1,20 +1,25 @@
 import * as React from 'react';
 import { DeviceType, getStoreUrl } from '../../../../common/DeviceType';
-import Button from '../../../../common/components/Button';
+import Button, { ButtonSize } from '../../../../common/components/Button';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 
-export default class GetStartedButton extends React.PureComponent<{
+interface Props {
 	analyticsAction: string,
 	deviceType: DeviceType,
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCreateStaticContentUrl: (path: string) => string,
-	onOpenNewPlatformNotificationRequestDialog: () => void
-}> {
+	onOpenNewPlatformNotificationRequestDialog: () => void,
+	size?: ButtonSize
+}
+export default class GetStartedButton extends React.Component<Props> {
+	public static defaultProps: Partial<Props> = {
+		size: 'x-large'
+	};
 	private readonly _beginOnboarding = () => {
 		this.props.onBeginOnboarding(this.props.analyticsAction);
 	};
@@ -36,7 +41,7 @@ export default class GetStartedButton extends React.PureComponent<{
 						</a> :
 						<Button
 							text="Open In App"
-							size="x-large"
+							size={this.props.size}
 							intent="loud"
 							href={'https://reallyread.it' + this.props.location.path}
 							hrefPreventDefault={false}
@@ -46,7 +51,7 @@ export default class GetStartedButton extends React.PureComponent<{
 							<div className="coming-soon">Coming soon to Android!</div>
 							<Button
 								text="Get Notified"
-								size="x-large"
+								size={this.props.size}
 								intent="loud"
 								onClick={this.props.onOpenNewPlatformNotificationRequestDialog}
 							/>
@@ -56,7 +61,7 @@ export default class GetStartedButton extends React.PureComponent<{
 						</div> :
 						<Button
 							text="Get Started"
-							size="x-large"
+							size={this.props.size}
 							intent="loud"
 							onClick={this._beginOnboarding}
 						/>}

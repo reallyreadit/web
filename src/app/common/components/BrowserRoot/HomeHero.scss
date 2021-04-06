@@ -1,0 +1,35 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/HomeHero
+        cssComponentId: home-hero_527aw5
+*/
+
+
+.home-hero_527aw5 > .content {
+	box-sizing: border-box;
+	max-width: 475px;
+	margin: 48px auto;
+	padding: 10px 10px;
+	text-align: center;
+	min-height: 230px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	& p {
+		margin: 24px 0;
+	}
+}
+
+// styles for the hero section on top
+@media screen and (min-width: 768px) {
+	.home-hero_527aw5 > .content {
+		max-width: 475px;
+		margin: auto;
+		padding: 110px 10px;
+		text-align: center;
+
+		.heading-regular {
+			line-height: 44px;
+		}
+	}
+}

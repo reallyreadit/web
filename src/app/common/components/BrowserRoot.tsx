@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Header from './BrowserRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events } from './Root';
+import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -22,7 +22,6 @@ import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
-import Footer from './BrowserRoot/Footer';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
@@ -31,7 +30,6 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
@@ -55,6 +53,7 @@ import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPop
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import ColumnFooter from './BrowserRoot/ColumnFooter';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -105,17 +104,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					})
 				}
 			)
-		);
-	};
-
-	// dialogs
-	private readonly _openNewPlatformNotificationRequestDialog = () => {
-		this._dialog.openDialog(
-			<NewPlatformNotificationRequestDialog
-				onCloseDialog={this._dialog.closeDialog}
-				onShowToast={this._toaster.addToast}
-				onSubmitRequest={this.props.serverApi.logNewPlatformNotificationRequest}
-			/>
 		);
 	};
 
@@ -186,6 +174,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'replace'
 		});
 	};
+	private readonly _viewFaq = () => {
+		this.setScreenState({
+			key: ScreenKey.Faq,
+			method: 'replace'
+		});
+	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
@@ -207,6 +201,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewMyImpact = () => {
 		this.setScreenState({
 			key: ScreenKey.MyImpact,
+			method: 'replace'
+		});
+	};
+	private readonly _viewMission = () => {
+		this.setScreenState({
+			key: ScreenKey.Mission,
 			method: 'replace'
 		});
 	};
@@ -560,6 +560,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
+				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
 			}),
@@ -1204,13 +1205,19 @@ export default class extends Root<Props, State, SharedState, Events> {
 					topScreen.templateSection == null ||
 					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
-					<Header
+					<HomeHeader
 						deviceType={this.props.deviceType}
 						onBeginOnboarding={this._beginOnboarding}
+						onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+						onCreateStaticContentUrl={this._createStaticContentUrl}
 						onOpenMenu={this._openMenu}
+						onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
+						onViewMission={this._viewMission}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
+						onViewFaq={this._viewFaq}
 						onViewNotifications={this._viewNotifications}
+						currentScreen={this.state.screens[0]}
 						user={this.state.user}
 					/> :
 					null}
@@ -1247,7 +1254,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 										!this.state.user
 									)
 								) ?
-									<Footer
+									<ColumnFooter
+										deviceType={this.props.deviceType}
+										onBeginOnboarding={this._beginOnboarding}
+										onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
+										onCreateStaticContentUrl={this._createStaticContentUrl}
+										onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
+										onViewFaq={this._viewFaq}
+										onViewHome={this._viewHome}
+										onViewMission={this._viewMission}
 										onViewPrivacyPolicy={this._viewPrivacyPolicy}
 									/> :
 									null}
@@ -1310,7 +1325,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug' | 'title'>, highlightedCommentId?: string) {
+	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {
@@ -1323,7 +1338,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setScreenState({
 			key: ScreenKey.Comments,
 			method: 'push',
-			title: article.title,
 			urlParams
 		});
 	}
@@ -1331,7 +1345,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setScreenState({
 			key: ScreenKey.Profile,
 			method: userName ? 'push' : 'replace',
-			title: '@' + (userName || this.state.user.name),
 			urlParams: { userName: userName || this.state.user.name }
 		});
 	}

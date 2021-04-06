@@ -73,17 +73,17 @@
         src/extension/common/config.dev.json
     ```json
     {
-    	"api": {
+    	"apiServer": {
     		"protocol": "https",
     		"host": "api.dev.readup.com"
     	},
     	"cookieDomain": "dev.readup.com",
     	"cookieName": "devSessionKey",
-    	"static": {
+    	"staticServer": {
     		"protocol": "https",
     		"host": "static.dev.readup.com"
     	},
-    	"web": {
+    	"webServer": {
     		"protocol": "https",
     		"host": "dev.readup.com"
     	}
@@ -106,6 +106,10 @@
         src/native-client/reader/config.dev.json
     ```json
     {
+    	"staticServer": {
+    		"protocol": "https",
+    		"host": "static.dev.readup.com"
+    	},
     	"webServer": {
     		"protocol": "https",
     		"host": "dev.readup.com"
