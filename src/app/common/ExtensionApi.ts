@@ -9,6 +9,7 @@ import SemanticVersion from '../../common/SemanticVersion';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 export interface Params {
 	installedVersion: SemanticVersion | null,
@@ -47,6 +48,7 @@ export default abstract class ExtensionApi extends EventEmitter<{
 	public abstract commentUpdated(comment: CommentThread): void;
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract extensionInstallationEventReceived(event: ExtensionInstallationEvent): void;
+	public abstract subscriptionStatusChanged(status: SubscriptionStatus): void;
 	public abstract userSignedIn(profile: WebAppUserProfile): void;
 	public abstract userSignedOut(): void;
 	public abstract userUpdated(user: UserAccount): void;

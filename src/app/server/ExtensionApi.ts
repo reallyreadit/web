@@ -6,6 +6,7 @@ import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent'
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 export default class extends ExtensionApi {
     public articleUpdated(event: ArticleUpdatedEvent) {
@@ -26,6 +27,9 @@ export default class extends ExtensionApi {
     public extensionInstallationEventReceived(event: ExtensionInstallationEvent) {
         throw new Error('Operation not supported in server environment');
     }
+	public subscriptionStatusChanged(status: SubscriptionStatus) {
+		throw new Error('Operation not supported in server environment');
+	}
     public userSignedIn(profile: WebAppUserProfile) {
         throw new Error('Operation not supported in server environment');
     }

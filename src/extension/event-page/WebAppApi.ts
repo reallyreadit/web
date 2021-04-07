@@ -7,6 +7,7 @@ import { Message } from '../../common/MessagingContext';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 export default class WebAppApi {
 	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
@@ -17,6 +18,7 @@ export default class WebAppApi {
 			onCommentPosted: (comment: CommentThread) => void,
 			onCommentUpdated: (comment: CommentThread) => void,
 			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
+			onSubscriptionStatusChanged: (status: SubscriptionStatus) => void,
 			onUserSignedIn: (profile: WebAppUserProfile) => void,
 			onUserSignedOut: () => void,
 			onUserUpdated: (user: UserAccount) => void
@@ -45,6 +47,9 @@ export default class WebAppApi {
 							break;
 						case 'registerPage':
 							this.addTab(sender.tab.id);
+							break;
+						case 'subscriptionStatusChanged':
+							handlers.onSubscriptionStatusChanged(message.data);
 							break;
 						case 'unregisterPage':
 							// sender.tab.id is undefined in Firefox

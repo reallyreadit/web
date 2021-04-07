@@ -22,6 +22,7 @@ import UserAccount from '../../common/models/UserAccount';
 import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 interface ReaderContentScriptTab {
 	articleId: number | null,
@@ -349,6 +350,14 @@ export default class ReaderContentScriptApi {
 			}
 		)
 	};
+	public subscriptionStatusChanged(status: SubscriptionStatus) {
+		this.sendMessageToAllTabs(
+			{
+				type: 'subscriptionStatusChanged',
+				data: status
+			}
+		);
+	}
 	public userSignedOut() {
 		this.sendMessageToAllTabs(
 			{

@@ -217,6 +217,10 @@ const webAppApi = new WebAppApi({
 		// update readers
 		readerContentScriptApi.commentUpdated(comment);
 	},
+	onSubscriptionStatusChanged: status => {
+		// update readers
+		readerContentScriptApi.subscriptionStatusChanged(status);
+	},
 	onUserSignedIn: profile => {
 		setIcon({
 			user: profile.userAccount
