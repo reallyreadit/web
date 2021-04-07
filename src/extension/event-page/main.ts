@@ -334,7 +334,7 @@ chrome.runtime.onInstalled.addListener(details => {
 								}
 							)
 						);
-						localStorage.setItem('installationId', response.installationId);	
+						localStorage.setItem('installationId', response.installationId);
 					}
 				)
 				.catch(
@@ -507,7 +507,7 @@ chrome.alarms.onAlarm.addListener(
 								console.log('chrome.alarms.onAlarm (updateContentParser: error updating to new version)');
 							});
 					} else {
-						console.log('chrome.alarms.onAlarm (updateContentParser: no new version)');	
+						console.log('chrome.alarms.onAlarm (updateContentParser: no new version)');
 					}
 				})
 				.catch(() => {
