@@ -20,7 +20,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey, subscribeQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
@@ -1351,6 +1351,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	public componentDidMount() {
 		super.componentDidMount();
+		// parse query string
+		const queryStringParams = parseQueryString(this.props.initialLocation.queryString);
 		// clear query string used to set initial state
 		window.history.replaceState(
 			null,
@@ -1391,7 +1393,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				type: 'uninstalled'
 			});
 		} else if (
-			extensionInstalledQueryStringKey in parseQueryString(this.props.initialLocation.queryString) &&
+			extensionInstalledQueryStringKey in queryStringParams &&
 			this.props.extensionApi.isInstalled
 		) {
 			this.props.browserApi.extensionInstallationChanged({
@@ -1408,6 +1410,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 				secure: this.props.webServerEndpoint.protocol === 'https'
 			}
 		);
+		// open subscription dialog if query string key is present
+		// ugly hack since the dialog doesn't support server-side rendering
+		if (subscribeQueryStringKey in queryStringParams) {
+			window.setTimeout(
+				() => {
+					this._openStripeSubscriptionPromptDialog();
+				},
+				0
+			);
+		}
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();

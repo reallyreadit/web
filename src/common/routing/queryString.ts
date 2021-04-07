@@ -52,6 +52,7 @@ export const clientTypeQueryStringKey = 'clientType';
 export const extensionAuthQueryStringKey = 'extensionAuth';
 export const extensionInstalledQueryStringKey = 'extensionInstalled';
 export const messageQueryStringKey = 'message';
+export const subscribeQueryStringKey = 'subscribe';
 // legacy
 export const marketingScreenVariantQueryStringKey = 'marketingScreenVariant';
 export const marketingVariantQueryStringKey = 'marketingVariant';
@@ -63,6 +64,7 @@ export const unroutableQueryStringKeys = [
 	extensionAuthQueryStringKey,
 	extensionInstalledQueryStringKey,
 	messageQueryStringKey,
+	subscribeQueryStringKey,
 	// legacy
 	marketingScreenVariantQueryStringKey,
 	marketingVariantQueryStringKey,
