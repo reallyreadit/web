@@ -1,6 +1,6 @@
 import { CancellationToken } from "./AsyncTracker";
 import Fetchable from "./Fetchable";
-import { isProblemResponse } from "./ProblemResponse";
+import { isProblemDetails, ProblemDetails } from "./ProblemDetails";
 import { FailureResult, ResultType } from "./Result";
 
 export function formatIsoDateAsDotNet(isoDate: string) {
@@ -31,6 +31,9 @@ export function formatList<T>(list: T[]) {
 		return list[0];
 	}
 	return `${list.slice(0, list.length - 1).join(', ')} & ${list[list.length - 1]}`;
+}
+export function formatProblemDetails(problem: ProblemDetails) {
+	return problem.detail ?? problem.title;
 }
 export function formatTimestamp(timestamp: string) {
 	if (!timestamp || timestamp.length < 10) {
@@ -77,9 +80,9 @@ export function generateRandomString(byteCount: number) {
 export function getPromiseErrorMessage(reason: any) {
 	let message: string;
 	if (
-		isProblemResponse(reason)
+		isProblemDetails(reason)
 	) {
-		message = reason.detail ?? reason.status.toString();
+		message = formatProblemDetails(reason);
 	} else if (
 		Array.isArray(reason) &&
 		typeof reason[0] === 'string'

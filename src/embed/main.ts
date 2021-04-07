@@ -31,7 +31,7 @@ import ApiServer from './ApiServer';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import GlobalComponentHost from './GlobalComponentHost';
 import BrowserApiRelayMessenger from './BrowserApiRelayMessenger';
-import { isProblemResponse } from '../common/ProblemResponse';
+import { isHttpProblemDetails } from '../common/ProblemDetails';
 import AuthServiceBrowserPopup from '../common/AuthServiceBrowserPopup';
 import KeyValuePair from '../common/KeyValuePair';
 
@@ -436,7 +436,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 									.catch(
 										reason => {
 											if (
-												isProblemResponse(reason) &&
+												isHttpProblemDetails(reason) &&
 												reason.status === 404
 											) {
 												return {
@@ -566,7 +566,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 									.catch(
 										reason => {
 											if (
-												isProblemResponse(reason) &&
+												isHttpProblemDetails(reason) &&
 												reason.status === 404
 											) {
 												throw new Error('Cancelled');
