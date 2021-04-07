@@ -44,17 +44,17 @@ import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet, getPromiseErrorMessage } from '../../../common/format';
+import { formatIsoDateAsDotNet, getPromiseErrorMessage, formatProblemDetails } from '../../../common/format';
 import AppStoreSubscriptionPrompt from './AppRoot/AppStoreSubscriptionPrompt';
 import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { PurchaseError, TransactionError } from '../../../common/models/app/Errors';
-import { ErrorResponse, reduceAppErrorResponse } from '../../../common/models/app/AppResult';
 import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import { ProblemDetails } from '../../../common/ProblemDetails';
+import { AppStoreErrorType } from '../../../common/Errors';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -79,7 +79,7 @@ interface State extends RootState {
 type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
 interface Events extends RootEvents {
 	'newStars': number,
-	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ErrorResponse<TransactionError>>
+	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
 }
 export default class extends Root<Props, State, SharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
@@ -92,7 +92,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
 		return this._eventManager.addListener('newStars', handler);
 	};
-	private readonly _registerPurchaseCompletedEventHandler = (handler: (result: Result<AppleSubscriptionValidationResponse, ErrorResponse<TransactionError>>) => void) => {
+	private readonly _registerPurchaseCompletedEventHandler = (handler: (result: Result<AppleSubscriptionValidationResponse, ProblemDetails>) => void) => {
 		return this._eventManager.addListener('purchaseCompleted', handler);
 	}
 
@@ -310,12 +310,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							// payment completion event
 							if (result.type === ResultType.Failure) {
 								this._toaster.addToast(
-									reduceAppErrorResponse(
-										result.error,
-										{
-											[PurchaseError.ProductNotFound]: 'Product not found.'
-										}
-									),
+									formatProblemDetails(result.error),
 									Intent.Danger
 								);
 								this.setState({
@@ -1011,15 +1006,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 						case ResultType.Failure:
 							if (this.state.isProcessingPayment) {
 								this._toaster.addToast(
-									reduceAppErrorResponse(
-										result.error,
-										{
-											[TransactionError.Cancelled]: 'Purchase cancelled.',
-											[TransactionError.ReceiptRequestFailed]: 'Purchase failed: Could not retrieve receipt.',
-											[TransactionError.SubscriptionValidationFailed]: 'Purchase failed: Could not validate subscription.'
-										}
-									),
-									result.error.value === TransactionError.Cancelled ?
+									formatProblemDetails(result.error),
+									result.error.type === AppStoreErrorType.PurchaseCancelled ?
 										Intent.Neutral :
 										Intent.Danger
 								);

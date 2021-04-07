@@ -12,12 +12,11 @@ import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
-import { ErrorResponse } from '../../common/models/app/AppResult';
-import { ProductsRequestError, PurchaseError, ReceiptRequestError } from '../../common/models/app/Errors';
 import { Result } from '../../common/Result';
 import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
 import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
+import { ProblemDetails } from '../../common/ProblemDetails';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -176,7 +175,7 @@ export default class extends AppApi {
 		);
 	}
 	public requestSubscriptionProducts(request: SubscriptionProductsRequest) {
-		return new Promise<Result<SubscriptionProductsResponse, ErrorResponse<ProductsRequestError>>>(
+		return new Promise<Result<SubscriptionProductsResponse, ProblemDetails>>(
 			resolve => {
 				this._messagingContext.sendMessage(
 					{
@@ -189,7 +188,7 @@ export default class extends AppApi {
 		);
 	}
 	public requestSubscriptionPurchase(request: SubscriptionPurchaseRequest) {
-		return new Promise<Result<SubscriptionPurchaseResponse, ErrorResponse<PurchaseError>>>(
+		return new Promise<Result<SubscriptionPurchaseResponse, ProblemDetails>>(
 			resolve => {
 				this._messagingContext.sendMessage(
 					{
@@ -202,7 +201,7 @@ export default class extends AppApi {
 		);
 	}
 	public requestSubscriptionReceipt() {
-		return new Promise<Result<SubscriptionReceiptResponse, ErrorResponse<ReceiptRequestError>>>(
+		return new Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>(
 			resolve => {
 				this._messagingContext.sendMessage(
 					{

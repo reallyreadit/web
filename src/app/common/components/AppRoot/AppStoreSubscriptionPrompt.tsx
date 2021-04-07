@@ -2,9 +2,8 @@ import * as React from 'react';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import Button from '../../../../common/components/Button';
 import Dialog from '../../../../common/components/Dialog';
-import { mapPromiseErrorToResultIfNotCancelled } from '../../../../common/format';
-import { mapAppResult, ErrorResponse, mapAppSuccessResult } from '../../../../common/models/app/AppResult';
-import { ProductsRequestError, ReceiptRequestError, TransactionError } from '../../../../common/models/app/Errors';
+import { mapPromiseErrorToResultIfNotCancelled, formatProblemDetails } from '../../../../common/format';
+import { mapAppResult, mapAppSuccessResult } from '../../../../common/models/app/AppResult';
 import { SubscriptionProductsRequest, SubscriptionProductsResponse, SubscriptionProduct } from '../../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../../common/models/app/SubscriptionPurchase';
 import { SubscriptionReceiptResponse } from '../../../../common/models/app/SubscriptionReceipt';
@@ -18,6 +17,8 @@ import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from 
 import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import { StandardSubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
+import { ProblemDetails } from '../../../../common/ProblemDetails';
+import { AppStoreErrorType } from '../../../../common/Errors';
 
 interface Props {
 	activeSubscription?: ActiveSubscriptionStatus,
@@ -26,10 +27,10 @@ interface Props {
 	onClose: () => void,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
 	onReadArticle: (article: UserArticle) => void,
-	onRegisterPurchaseCompletedEventHandler: (handler: (result: Result<AppleSubscriptionValidationResponse, ErrorResponse<TransactionError>>) => void) => Function,
-	onRequestSubscriptionProducts: (request: SubscriptionProductsRequest) => Promise<Result<SubscriptionProductsResponse, ErrorResponse<ProductsRequestError>>>,
+	onRegisterPurchaseCompletedEventHandler: (handler: (result: Result<AppleSubscriptionValidationResponse, ProblemDetails>) => void) => Function,
+	onRequestSubscriptionProducts: (request: SubscriptionProductsRequest) => Promise<Result<SubscriptionProductsResponse, ProblemDetails>>,
 	onRequestSubscriptionPurchase: (request: SubscriptionPurchaseRequest) => void,
-	onRequestSubscriptionReceipt: () => Promise<Result<SubscriptionReceiptResponse, ErrorResponse<ReceiptRequestError>>>,
+	onRequestSubscriptionReceipt: () => Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>,
 	onValidateSubscription: (request: AppleSubscriptionValidationRequest) => Promise<AppleSubscriptionValidationResponse>
 }
 interface State {
@@ -78,7 +79,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 				result => {
 					if (
 						result.type === ResultType.Failure &&
-						result.error.value === TransactionError.Cancelled
+						result.error.type === AppStoreErrorType.PurchaseCancelled
 					) {
 						return;
 					}
@@ -155,9 +156,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 						productsResult: mapAppResult(
 							result,
 							value => value.products,
-							{
-								[ProductsRequestError.CannotMakePayments]: 'The account that is signed in to the App Store cannot make payments.'
-							}
+							error => formatProblemDetails(error)
 						)
 					});
 				}
@@ -288,9 +287,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 						receiptResult: mapAppResult(
 							result,
 							response => response,
-							{
-								[ReceiptRequestError.FileUrlNotFound]: 'Receipt file URL not found.'
-							}
+							error => formatProblemDetails(error)
 						)
 					});
 					if (result.type === ResultType.Success) {
