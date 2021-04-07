@@ -203,20 +203,19 @@ export default class ServerApi {
 				url = createUrl(window.reallyreadit.extension.config.apiServer, request.path);
 			req.withCredentials = true;
 			req.addEventListener('load', function () {
-				if (this.status === 200 || this.status === 400) {
-					const contentType = this.getResponseHeader('Content-Type');
-					let object: any;
-					if (contentType && contentType.startsWith('application/json')) {
-						object = JSON.parse(this.responseText);
-					}
-					if (this.status === 200) {
-						if (object) {
-							resolve(object);
-						} else {
-							resolve();
-						}
+				const contentType = this.getResponseHeader('Content-Type');
+				let object: any;
+				if (
+					contentType?.startsWith('application/json') ||
+					contentType?.startsWith('application/problem+json')
+				) {
+					object = JSON.parse(this.responseText);
+				}
+				if (this.status === 200) {
+					if (object) {
+						resolve(object);
 					} else {
-						reject(object || ['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
+						resolve();
 					}
 				} else {
 					if (this.status === 401) {
@@ -224,7 +223,7 @@ export default class ServerApi {
 						_this.userSignedOut();
 						_this._onUserSignedOut();
 					}
-					reject(['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
+					reject(object || ['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
 				}
 			});
 			req.addEventListener('error', function () {
