@@ -83,14 +83,13 @@ function isTransitioning(state: State): state is TransitioningState {
 export default class StripeSubscriptionPrompt extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _checkSubscriptionStatus = (status: SubscriptionStatus) => {
-		if (
-			this.state.step === Step.SubscriptionStatusCheck &&
-			status.type !== SubscriptionStatusType.Active
-		) {
+		if (this.state.step === Step.SubscriptionStatusCheck) {
 			this.setState({
 				step: this.state.step,
 				nextState: {
-					step: Step.PriceLevelsCheck
+					step: status.type !== SubscriptionStatusType.Active ?
+						Step.PriceLevelsCheck :
+						Step.Continue
 				}
 			});
 		}
