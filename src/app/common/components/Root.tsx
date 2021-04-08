@@ -477,7 +477,7 @@ export default abstract class Root<
 			}
 		);
 	}
-	private readonly _getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
+	protected readonly _getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
 		response => {
 			if (response.value) {
 				this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);

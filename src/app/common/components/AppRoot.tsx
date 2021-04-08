@@ -239,6 +239,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					isPaymentProcessing={sharedState.isProcessingPayment}
 					onClose={this._dialog.closeDialog}
 					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onGetSubscriptionStatus={this._getSubscriptionStatus}
 					onReadArticle={this._readArticle}
 					onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
 					onRequestSubscriptionProducts={this._requestSubscriptionProducts}
