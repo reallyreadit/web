@@ -37,6 +37,10 @@ import DisplayPreference from '../../common/models/userAccounts/DisplayPreferenc
 import { Message } from '../../common/MessagingContext';
 import { parseUrlForRoute } from '../../common/routing/Route';
 import ScreenKey from '../../common/routing/ScreenKey';
+import { ProblemDetails } from '../../common/ProblemDetails';
+import { Result, ResultType } from '../../common/Result';
+import { ReadingErrorType } from '../../common/Errors';
+import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscriptionPrompt';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -61,7 +65,8 @@ let
 	displayPreference: DisplayPreference,
 	page: Page,
 	userPage: UserPage,
-	user: UserAccount;
+	user: UserAccount,
+	isWaitingForSubscription = false;
 
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
@@ -112,12 +117,34 @@ const reader = new Reader(
 					isCompletionCommit: event.isCompletionCommit
 				}
 			},
-			(updatedArticle: UserArticle) => {
-				article = updatedArticle;
-				if (article.isRead && !embedProps.comments) {
-					loadComments();
-				} else {
-					render();
+			(result: Result<UserArticle, ProblemDetails>) => {
+				switch (result.type) {
+					case ResultType.Success:
+						article = result.value;
+						if (article.isRead && !embedProps.comments) {
+							loadComments();
+						} else {
+							render();
+						}
+						break;
+					case ResultType.Failure:
+						if (result.error.type === ReadingErrorType.SubscriptionRequired && !isWaitingForSubscription) {
+							reader.unloadPage();
+							dialogService.openDialog(
+								React.createElement(
+									ReaderSubscriptionPrompt,
+									{
+										onSubscribe: () => {
+											messagingContext.sendMessage({
+												type: 'openSubscriptionPrompt'
+											});
+										}
+									}
+								)
+							);
+							isWaitingForSubscription = true;
+						}
+						break;
 				}
 			}
 		)
