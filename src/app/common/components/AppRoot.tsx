@@ -231,24 +231,34 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// subscriptions
 	private readonly _openAppStoreSubscriptionPromptDialog = (article?: UserArticle, activeSubscription?: ActiveSubscriptionStatus) => {
-		this._dialog.openDialog(
-			sharedState => (
-				<AppStoreSubscriptionPrompt
-					activeSubscription={activeSubscription}
-					article={article}
-					isPaymentProcessing={sharedState.isProcessingPayment}
-					onClose={this._dialog.closeDialog}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onReadArticle={this._readArticle}
-					onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
-					onRequestSubscriptionProducts={this._requestSubscriptionProducts}
-					onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
-					onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
-					onValidateSubscription={this._validateSubscription}
-				/>
-			)
-		);
+		this.props.appApi
+			.getDeviceInfo()
+			.then(
+				deviceInfo => {
+					if (deviceInfo.appVersion.compareTo(new SemanticVersion('7.0.0')) >= 0) {
+						this._dialog.openDialog(
+							sharedState => (
+								<AppStoreSubscriptionPrompt
+									activeSubscription={activeSubscription}
+									article={article}
+									isPaymentProcessing={sharedState.isProcessingPayment}
+									onClose={this._dialog.closeDialog}
+									onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+									onGetSubscriptionStatus={this._getSubscriptionStatus}
+									onReadArticle={this._readArticle}
+									onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
+									onRequestSubscriptionProducts={this._requestSubscriptionProducts}
+									onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
+									onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
+									onValidateSubscription={this._validateSubscription}
+								/>
+							)
+						);
+					} else {
+						this.openAppUpdateRequiredDialog('7.0');
+					}
+				}
+			);
 	};
 	private readonly _openPriceChangeDialog = () => {
 		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
