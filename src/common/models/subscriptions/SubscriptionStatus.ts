@@ -47,6 +47,7 @@ export type LapsedSubscriptionStatus = {
 	price: SubscriptionPriceLevel,
 	lastPeriodEndDate: string,
 	lastPeriodRenewalGracePeriodEndDate: string,
+	lastPeriodDateRefunded: string | null,
 	isUserFreeForLife: boolean
 };
 export type SubscriptionStatus =
