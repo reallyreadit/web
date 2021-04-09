@@ -27,8 +27,14 @@
 .subscription-control_ryw1sb > .payment-info > .last-four {
 	margin: 0 10px;
 }
-.subscription-control_ryw1sb > .payment-info > .action-link_ftamt8 {
+.subscription-control_ryw1sb > .payment-info > .popover_r7v81v {
 	margin-left: 10px;
+}
+.subscription-control_ryw1sb > .payment-info > .popover_r7v81v > .menu > .content {
+	display: block;
+	position: relative;
+	padding: 5px;
+	background: var(--content-background-color);
 }
 .subscription-control_ryw1sb > .message  > .nowrap {
 	white-space: nowrap;

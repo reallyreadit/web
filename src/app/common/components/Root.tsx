@@ -73,6 +73,7 @@ import StripeAutoRenewDialog from './StripeAutoRenewDialog';
 import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
 import StripePriceChangeDialog from './StripePriceChangeDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
+import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -597,6 +598,8 @@ export default abstract class Root<
 					.then(this._handleSubscriptionPaymentResponse);
 			}
 		);
+	protected readonly _updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) =>
+		this.props.serverApi.updateSubscriptionPaymentMethod(request);
 
 	// toasts
 	protected readonly _toaster = new ToasterService({

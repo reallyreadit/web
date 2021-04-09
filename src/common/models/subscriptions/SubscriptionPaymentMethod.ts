@@ -18,9 +18,18 @@ export enum SubscriptionPaymentMethodBrand {
 	Visa = 7
 }
 export interface SubscriptionPaymentMethod {
+	id: string,
 	wallet: SubscriptionPaymentMethodWallet,
 	brand: SubscriptionPaymentMethodBrand,
 	lastFourDigits: string,
 	expirationMonth: number,
 	expirationYear: number
+}
+export interface SubscriptionPaymentMethodUpdateRequest {
+	id: string,
+	expirationMonth: number,
+	expirationYear: number
+}
+export interface SubscriptionPaymentMethodUpdateResponse {
+	paymentMethod: SubscriptionPaymentMethod
 }

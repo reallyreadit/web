@@ -11,6 +11,8 @@ import SubscriptionProvider from '../../../../common/models/subscriptions/Subscr
 import UserArticle from '../../../../common/models/UserArticle';
 import { DeviceType } from '../../../../common/DeviceType';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
+import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
+import Button from '../../../../common/components/Button';
 
 interface Props {
 	deviceType: DeviceType,
@@ -18,14 +20,31 @@ interface Props {
 	onOpenPriceChangeDialog: () => void,
 	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
+	onOpenUpdatePaymentMethodDialog: () => void,
 	paymentMethod: SubscriptionPaymentMethod | null
 	status: SubscriptionStatus
 }
 interface State {
+	changeCardMenuState: MenuState,
 	isChangingAutoRenewStatus: boolean
 }
 export default class SubscriptionControl extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _beginClosingChangeCardMenu = () => {
+		this.setState({
+			changeCardMenuState: MenuState.Closing
+		});
+	};
+	private readonly _closeChangeCardMenu = () => {
+		this.setState({
+			changeCardMenuState: MenuState.Closed
+		});
+	};
+	private readonly _openChangeCardMenu = () => {
+		this.setState({
+			changeCardMenuState: MenuState.Opened
+		});
+	};
 	private readonly _openPaymentConfirmationDialog = () => {
 		if (this.props.status.type === SubscriptionStatusType.PaymentConfirmationRequired) {
 			this.props.onOpenPaymentConfirmationDialog(this.props.status.invoiceId);
@@ -60,9 +79,14 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 	private readonly _openSubscriptionPromptDialog = () => {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
+	private readonly _openUpdatePaymentMethodDialog = () => {
+		this.props.onOpenUpdatePaymentMethodDialog();
+		this._beginClosingChangeCardMenu();
+	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
+			changeCardMenuState: MenuState.Closed,
 			isChangingAutoRenewStatus: false
 		};
 	}
@@ -177,10 +201,35 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 								/>
 								<span className="last-four">…{this.props.paymentMethod.lastFourDigits}</span>
 								<span className="expiration">{this.props.paymentMethod.expirationMonth}/{this.props.paymentMethod.expirationYear.toString().substring(2)}</span>
-								<ActionLink
-									state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
-									text="Change Card"
-								/>
+								<Popover
+									menuChildren={
+										<span className="content">
+											<Button
+												align="center"
+												display="block"
+												onClick={this._openUpdatePaymentMethodDialog}
+												text="Update Exp. Date"
+											/>
+											<Button
+												align="center"
+												display="block"
+												onClick={() => {}}
+												text="Use Another Card"
+											/>
+										</span>
+									}
+									menuPosition={MenuPosition.BottomRight}
+									menuState={this.state.changeCardMenuState}
+									onBeginClosing={this._beginClosingChangeCardMenu}
+									onClose={this._closeChangeCardMenu}
+									onOpen={this._openChangeCardMenu}
+								>
+									<ActionLink
+										onClick={this._openChangeCardMenu}
+										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
+										text="Change Card"
+									/>
+								</Popover>
 							</div> :
 							<div className="message">Loading payment method...</div> :
 						<div className="message">Billed through Apple.</div>}

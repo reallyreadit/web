@@ -33,6 +33,8 @@ import { SubscriptionStatus } from '../../../common/models/subscriptions/Subscri
 import UserArticle from '../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { DeviceType } from '../../../common/DeviceType';
+import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodUpdateResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
+import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDialog';
 
 interface Props {
 	deviceType: DeviceType,
@@ -55,6 +57,7 @@ interface Props {
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
+	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodUpdateResponse>,
 	subscriptionStatus: SubscriptionStatus,
 	user: UserAccount
 }
@@ -167,6 +170,34 @@ class SettingsPage extends React.PureComponent<
 				onShowToast={this.props.onShowToast}
 			/>
 		)
+	};
+	private readonly _openUpdatePaymentMethodDialog = () => {
+		this.props.onOpenDialog(
+			<UpdatePaymentMethodDialog
+				paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
+				onCloseDialog={this.props.onCloseDialog}
+				onShowToast={this.props.onShowToast}
+				onUpdatePaymentMethod={this._updatePaymentMethod}
+			/>
+		);
+	};
+	private readonly _updatePaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => {
+		return this.props
+			.onUpdatePaymentMethod(request)
+			.then(
+				response => {
+					this.setState({
+						settings: {
+							...this.state.settings,
+							value: {
+								...this.state.settings.value,
+								subscriptionPaymentMethod: response.paymentMethod
+							}
+						}
+					});
+					return response;
+				}
+			);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -290,6 +321,7 @@ class SettingsPage extends React.PureComponent<
 									onOpenPriceChangeDialog={this.props.onOpenPriceChangeDialog}
 									onOpenSubscriptionAutoRenewDialog={this.props.onOpenSubscriptionAutoRenewDialog}
 									onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
+									onOpenUpdatePaymentMethodDialog={this._openUpdatePaymentMethodDialog}
 									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
 									status={this.props.subscriptionStatus}
 								/>
@@ -396,6 +428,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}
+				onUpdatePaymentMethod={deps.onUpdatePaymentMethod}
 				subscriptionStatus={sharedState.subscriptionStatus}
 				user={sharedState.user}
 			/>

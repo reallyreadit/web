@@ -696,7 +696,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
-					onShowToast: this._toaster.addToast
+					onShowToast: this._toaster.addToast,
+					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod
 				}
 			)
 		};

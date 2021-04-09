@@ -75,6 +75,7 @@ import { StripePaymentResponse } from '../../../common/models/subscriptions/Stri
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
 import { StripePriceChangeRequest } from '../../../common/models/subscriptions/StripePriceChangeRequest';
+import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodUpdateResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -229,6 +230,7 @@ export default abstract class {
 	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
 	public readonly requestAppleSubscriptionStatusUpdate = () => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/AppleSubscriptionStatusUpdateRequest' });
 	public readonly setStripeSubscriptionAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/StripeAutoRenewStatus', data: request });
+	public readonly updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => this.post<SubscriptionPaymentMethodUpdateResponse>({ path: '/Subscriptions/StripePaymentMethodUpdate', data: request });
 	public readonly validateAppleSubscription = (request: AppleSubscriptionValidationRequest) => this.post<AppleSubscriptionValidationResponse>({ path: '/Subscriptions/AppleSubscriptionValidation', data: request });
 
 	// UserAccounts
