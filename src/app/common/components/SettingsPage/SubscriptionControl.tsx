@@ -208,7 +208,11 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 			<>
 				<div className="title">Subscription Inactive</div>
 				{this.renderSubscriptionDetails(this.props.status.price)}
-				<div className="message">Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodRenewalGracePeriodEndDate)).toLocaleString(DateTime.DATE_MED)}.</div>
+				<div className="message">
+					{this.props.status.lastPeriodDateRefunded ?
+						`Refunded on ${DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodDateRefunded)).toLocaleString(DateTime.DATE_MED)}.` :
+						`Ended on ${DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodRenewalGracePeriodEndDate)).toLocaleString(DateTime.DATE_MED)}.`}
+				</div>
 				<div className="actions">
 					<ActionLink
 						onClick={this._openSubscriptionPromptDialog}

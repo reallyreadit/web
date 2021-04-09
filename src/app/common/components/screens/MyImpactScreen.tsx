@@ -236,7 +236,9 @@ class MyImpactScreen extends React.Component<Props, State> {
 						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
 						<div className="spacer"></div>
 						<div className="content-block">
-							Ended on {DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodRenewalGracePeriodEndDate)).toLocaleString(DateTime.DATE_MED)}
+							{this.props.subscriptionStatus.lastPeriodDateRefunded ?
+								`Refunded on ${DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodDateRefunded)).toLocaleString(DateTime.DATE_MED)}.` :
+								`Ended on ${DateTime.fromISO(formatIsoDateAsUtc(this.props.subscriptionStatus.lastPeriodRenewalGracePeriodEndDate)).toLocaleString(DateTime.DATE_MED)}.`}
 						</div>
 						<div className="spacer"></div>
 						<div className="content-block">
