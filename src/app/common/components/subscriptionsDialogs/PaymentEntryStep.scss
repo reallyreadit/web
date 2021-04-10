@@ -2,55 +2,7 @@
 	componentPath: src/app/common/components/subscriptionsDialogs/PaymentEntryStep
 	cssComponentId: payment-entry-step_w0p5nn
 */
-@import '../../../../common/styles/colors';
 
 .payment-entry-step_w0p5nn > .price-selection-summary_8w3t0z {
 	margin-bottom: 20px;
-}
-.payment-entry-step_w0p5nn > .form {
-	text-align: center;
-}
-.payment-entry-step_w0p5nn > .form > .label {
-	text-align: left;
-	font-family: 'Museo Sans (700)';
-	margin-bottom: 10px
-}
-.payment-entry-step_w0p5nn > .form > .card-element {
-	padding: 10px;
-	border-width: 1px;
-	border-style: solid;
-	border-radius: 3px;
-}
-.payment-entry-step_w0p5nn > .form > .card-element-error {
-	margin-top: 10px;
-	font-size: 11pt;
-}
-.payment-entry-step_w0p5nn > .form > .button_ovrlmi {
-	margin-top: 25px;
-}
-
-@media (min-width: 396px) {
-	.payment-entry-step_w0p5nn > .form > .card-element {
-		width: 336px;
-	}
-}
-
-@include theme using ($root, $scheme) {
-	#{$root} .payment-entry-step_w0p5nn > .form > .card-element {
-		@include theme-colors(
-			$scheme,
-			(
-				"background-color": $control-background-color,
-				"border-color": $control-border-color
-			)
-		);
-	}
-	#{$root} .payment-entry-step_w0p5nn > .form > .card-element-error {
-		@include theme-colors(
-			$scheme,
-			(
-				"color": $text-muted-color
-			)
-		);
-	}
 }

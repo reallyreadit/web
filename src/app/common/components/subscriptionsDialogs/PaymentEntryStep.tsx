@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
-import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
-import Button from '../../../../common/components/Button';
-import { DisplayTheme, getClientPreferredColorScheme } from '../../../../common/models/userAccounts/DisplayPreference';
+import { DisplayTheme } from '../../../../common/models/userAccounts/DisplayPreference';
 import { SubscriptionPriceSelection } from '../../../../common/models/subscriptions/SubscriptionPrice';
-import { StripePaymentResponse, StripePaymentResponseType } from '../../../../common/models/subscriptions/StripePaymentResponse';
+import { StripePaymentResponse } from '../../../../common/models/subscriptions/StripePaymentResponse';
 import { PriceSelectionSummary } from '../subscriptionsDialogs/PriceSelectionSummary';
+import { StripeCreditCardForm } from './StripeCreditCardForm';
+import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 
 interface Props {
 	displayTheme: DisplayTheme | null,
@@ -17,270 +16,63 @@ interface Props {
 	stripe: Promise<Stripe> | null,
 	submitButtonText: string
 }
-enum StripeStatus {
-	Initial,
-	Loading,
-	Loaded,
-	Error
-}
-enum FormStatus {
-	Incomplete,
-	Error,
-	Complete,
-	Submitting
-}
-type FormState = {
-	status: FormStatus.Incomplete | FormStatus.Complete | FormStatus.Submitting
-} | {
-	status: FormStatus.Error,
-	message: string
-};
 interface State {
-	formState: FormState,
-	stripeStatus: StripeStatus
+	isSubmitting: boolean
 }
 export default class PaymentEntryStep extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _cardElementRef: React.RefObject<HTMLDivElement>;
-	private readonly _submit = () => {
-		this.setState(
-			prevState => {
-				// only allow a single submission when complete
-				if (prevState.formState.status !== FormStatus.Complete) {
-					return null;
-				}
-				this._stripeCardElement.update({
-					disabled: true
-				});
-				this._asyncTracker
-					.addPromise(
-						this.props.onSubmit(this._stripeCardElement, this.props.selectedPrice)
-					)
-					.then(
-						response => {
-							switch (response.type) {
-								case StripePaymentResponseType.Failed:
-									this._stripeCardElement.update({
-										disabled: false
-									});
-									this.setState({
-										formState: {
-											status: FormStatus.Error,
-											message: 'Please check your card details and try again.'
-										}
-									});
-									break;
-							}
-						}
-					)
-					.catch(
-						reason => {
-							if ((reason as CancellationToken)?.isCancelled) {
-								return;
-							}
-							this._stripeCardElement.update({
-								disabled: false
-							});
-							this.setState({
-								formState: {
-									status: FormStatus.Error,
-									message: 'Please check your card details and try again.'
-								}
-							});
-						}
-					);
-				return {
-					formState: {
-						status: FormStatus.Submitting
+	private readonly _submit = (card: StripeCardElement) => {
+		this.setState({
+			isSubmitting: true
+		});
+		return this._asyncTracker.addPromise(
+			this.props
+				.onSubmit(card, this.props.selectedPrice)
+				.then(
+					() => {
+						this.setState({
+							isSubmitting: false
+						});
 					}
-				};
-			}
+				)
+				.catch(
+					reason => {
+						if (!(reason as CancellationToken)?.isCancelled) {
+							this.setState({
+								isSubmitting: false
+							});
+						}
+						throw reason;
+					}
+				)
 		);
-	};
-	private _stripe: Stripe | null;
-	private _stripeCardElement: StripeCardElement | null;
+	}
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			formState: {
-				status: FormStatus.Incomplete
-			},
-			stripeStatus: StripeStatus.Initial
+			isSubmitting: false
 		};
-		this._cardElementRef = React.createRef();
-	}
-	private createStripeElements() {
-		const elements = this._stripe.elements({
-			fonts: this.createStripeFontsSource()
-		});
-		this._stripeCardElement = elements.create(
-			'card',
-			{
-				style: this.createStripeElementStyle()
-			}
-		);
-		this._stripeCardElement.on(
-			'change',
-			event => {
-				let formState: FormState;
-				if (event.error) {
-					formState = {
-						status: FormStatus.Error,
-						message: event.error.message
-					};
-				} else {
-					formState = {
-						status: event.complete ?
-							FormStatus.Complete :
-							FormStatus.Incomplete
-					};
-				}
-				this.setState({
-					formState
-				});
-			}
-		);
-		this._stripeCardElement.mount(this._cardElementRef.current);
-	}
-	private createStripeElementStyle() {
-		let
-			color: string,     // $text-color
-			iconColor: string; // $text-muted-color
-		switch (
-			this.props.displayTheme ?? getClientPreferredColorScheme()
-		) {
-			case DisplayTheme.Dark:
-				color = '#c7c6c5';
-				iconColor = '#888888';
-				break;
-			case DisplayTheme.Light:
-				color = '#2a2326';
-				iconColor = '#666666';
-				break;
-		}
-		return {
-			base: {
-				color,
-				fontFamily: 'museo-sans-300',
-				fontSize: '17.33px',
-				iconColor
-			}
-		};
-	}
-	private createStripeFontsSource() {
-		return [
-			{
-				family: 'museo-sans-300',
-				src: `url(${this.props.onCreateStaticContentUrl('/common/fonts/museo-sans-300.ttf')})`
-			}
-		];
-	}
-	public componentDidMount() {
-		if (!this.props.stripe) {
-			this.setState({
-				stripeStatus: StripeStatus.Error
-			});
-			return;
-		}
-		this._asyncTracker
-			.addPromise(this.props.stripe)
-			.then(
-				stripe => {
-					this._stripe = stripe;
-					this.setState(
-						{
-							stripeStatus: StripeStatus.Loaded
-						},
-						() => {
-							this.createStripeElements();
-						}
-					);
-				}
-			)
-			.catch(
-				reason => {
-					if ((reason as CancellationToken)?.isCancelled) {
-						return;
-					}
-					this.setState({
-						stripeStatus: StripeStatus.Error
-					});
-				}
-			);
-		// stripe should already be loaded
-		// delay the loading state to give the promise time to complete
-		this._asyncTracker.addTimeout(
-			window.setTimeout(
-				() => {
-					this.setState(
-						prevState => {
-							if (prevState.stripeStatus === StripeStatus.Initial) {
-								return {
-									stripeStatus: StripeStatus.Loading
-								};
-							}
-							return null;
-						}
-					);
-				},
-				0
-			)
-		);
-	}
-	public componentDidUpdate(prevProps: Props) {
-		if (
-			this.props.displayTheme !== prevProps.displayTheme &&
-			this._stripeCardElement
-		) {
-			this._stripeCardElement.update({
-				style: this.createStripeElementStyle()
-			});
-		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
-		this._stripeCardElement?.unmount();
 	}
 	public render() {
 		return (
 			<div className="payment-entry-step_w0p5nn">
-				<PriceSelectionSummary
-					disabled={this.state.formState.status === FormStatus.Submitting}
-					onChangePrice={this.props.onChangePrice}
-					selectedPrice={this.props.selectedPrice}
-				/>
-				{this.state.stripeStatus === StripeStatus.Loading ?
-					<DialogSpinner message="Loading Stripe." /> :
-					this.state.stripeStatus === StripeStatus.Error ?
-						<div className="stripe-error">Failed to load Stripe.</div> :
-						this.state.stripeStatus === StripeStatus.Loaded ?
-							<div className="form">
-								<div className="label">Payment Method</div>
-								<div
-									className="card-element"
-									ref={this._cardElementRef}
-								></div>
-								{this.state.formState.status === FormStatus.Error ?
-									<div className="card-element-error">
-										{this.state.formState.message}
-									</div> :
-									null}
-								<Button
-									intent="loud"
-									onClick={this._submit}
-									size="large"
-									state={
-										this.state.formState.status === FormStatus.Complete ?
-											'normal' :
-											this.state.formState.status === FormStatus.Submitting ?
-												'busy' :
-												'disabled'
-									}
-									style="preferred"
-									text={this.props.submitButtonText}
-								/>
-							</div> :
-							null}
+				<StripeCreditCardForm
+					displayTheme={this.props.displayTheme}
+					label="Payment Method"
+					onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+					onSubmit={this._submit}
+					stripe={this.props.stripe}
+					submitButtonText={this.props.submitButtonText}
+				>
+					<PriceSelectionSummary
+						disabled={this.state.isSubmitting}
+						onChangePrice={this.props.onChangePrice}
+						selectedPrice={this.props.selectedPrice}
+					/>
+				</StripeCreditCardForm>
 			</div>
 		);
 	}
