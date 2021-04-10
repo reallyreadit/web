@@ -30,6 +30,6 @@ export interface SubscriptionPaymentMethodUpdateRequest {
 	expirationMonth: number,
 	expirationYear: number
 }
-export interface SubscriptionPaymentMethodUpdateResponse {
+export interface SubscriptionPaymentMethodResponse {
 	paymentMethod: SubscriptionPaymentMethod
 }

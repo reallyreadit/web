@@ -33,7 +33,7 @@ import { SubscriptionStatus } from '../../../common/models/subscriptions/Subscri
 import UserArticle from '../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { DeviceType } from '../../../common/DeviceType';
-import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodUpdateResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
+import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDialog';
 
 interface Props {
@@ -57,7 +57,7 @@ interface Props {
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodUpdateResponse>,
+	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>,
 	subscriptionStatus: SubscriptionStatus,
 	user: UserAccount
 }

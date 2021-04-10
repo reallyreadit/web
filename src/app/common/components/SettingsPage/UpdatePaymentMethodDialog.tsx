@@ -1,7 +1,7 @@
 import * as React from 'react';
 import FormField from '../../../../common/components/controls/FormField';
 import SelectList from '../../../../common/components/SelectList';
-import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodUpdateResponse, SubscriptionPaymentMethod } from '../../../../common/models/subscriptions/SubscriptionPaymentMethod';
+import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse, SubscriptionPaymentMethod } from '../../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { Intent } from '../../../../common/components/Toaster';
 import FieldsetDialog, { State as FieldsetDialogState } from '../controls/FieldsetDialog';
 
@@ -9,7 +9,7 @@ interface Props {
 	paymentMethod: SubscriptionPaymentMethod,
 	onCloseDialog: () => void,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodUpdateResponse>
+	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>
 }
 interface State extends FieldsetDialogState {
 	month: number,
@@ -39,7 +39,7 @@ const
 				};
 			}
 		);
-export class UpdatePaymentMethodDialog extends FieldsetDialog<SubscriptionPaymentMethodUpdateResponse, Props, State> {
+export class UpdatePaymentMethodDialog extends FieldsetDialog<SubscriptionPaymentMethodResponse, Props, State> {
 	private readonly _changeMonth = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		this.setState({
 			month: parseInt(event.currentTarget.value)
@@ -56,7 +56,7 @@ export class UpdatePaymentMethodDialog extends FieldsetDialog<SubscriptionPaymen
 				className: 'update-payment-method-dialog_pa287t',
 				title: 'Update Card',
 				submitButtonText: 'Save Changes',
-				successMessage: 'Card Updated'
+				successMessage: 'Card updated.'
 			},
 			props
 		);
