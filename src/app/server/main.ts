@@ -467,8 +467,10 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 		serverApi: req.api,
 		staticServerEndpoint: config.staticServer,
 		stripeLoader: new Lazy<Promise<Stripe>>(
-			() => Promise.reject(
-				new Error('Operation not supported in server environment.')
+			() => new Promise<Stripe>(
+				() => {
+					// Never resolves in server environment.
+				}
 			)
 		),
 		version: new SemanticVersion(version.app),
