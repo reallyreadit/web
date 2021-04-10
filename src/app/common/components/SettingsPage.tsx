@@ -27,7 +27,7 @@ import LinkAccountDialog from './SettingsPage/LinkAccountDialog';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import ContentBox from '../../../common/components/ContentBox';
 import DisplayPreferencesControl from './SettingsPage/DisplayPreferencesControl';
-import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import SubscriptionControl from './SettingsPage/SubscriptionControl';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import UserArticle from '../../../common/models/UserArticle';
@@ -38,6 +38,7 @@ import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDia
 
 interface Props {
 	deviceType: DeviceType,
+	displayTheme: DisplayTheme | null,
 	onCloseDialog: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onChangeEmailAddress: (email: string) => Promise<void>,
@@ -52,7 +53,6 @@ interface Props {
 	onOpenPriceChangeDialog: () => void,
 	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
-	onRegisterDisplayPreferenceChangedEventHandler: (handler: (preference: DisplayPreference) => void) => () => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
@@ -212,19 +212,6 @@ class SettingsPage extends React.PureComponent<
 			)
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterDisplayPreferenceChangedEventHandler(
-				displayPreference => {
-					this.setState({
-						settings: {
-							...this.state.settings,
-							value: {
-								...this.state.settings.value,
-								displayPreference
-							}
-						}
-					});
-				}
-			),
 			props.onRegisterNotificationPreferenceChangedEventHandler(
 				notificationPreference => {
 					this.setState({
@@ -334,7 +321,10 @@ class SettingsPage extends React.PureComponent<
 							<div className="section">
 								<DisplayPreferencesControl
 									onChangeDisplayPreference={this.props.onChangeDisplayPreference}
-									preference={this.state.settings.value.displayPreference}
+									preference={{
+										...this.state.settings.value.displayPreference,
+										theme: this.props.displayTheme
+									}}
 								/>
 							</div>
 						</div>
@@ -403,12 +393,13 @@ class SettingsPage extends React.PureComponent<
 		);
 	}
 }
-export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'subscriptionStatus' | 'user'>>) {
+export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'displayTheme' | 'subscriptionStatus' | 'user'>>) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
 				deviceType={deps.deviceType}
+				displayTheme={sharedState.displayTheme}
 				onCloseDialog={deps.onCloseDialog}
 				onChangeDisplayPreference={deps.onChangeDisplayPreference}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
@@ -422,7 +413,6 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}
-				onRegisterDisplayPreferenceChangedEventHandler={deps.onRegisterDisplayPreferenceChangedEventHandler}
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
 				onLinkAuthServiceAccount={deps.onLinkAuthServiceAccount}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}

@@ -767,7 +767,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenPriceChangeDialog: this._openPriceChangeDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
-					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,

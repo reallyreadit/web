@@ -122,7 +122,6 @@ export type Events = {
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
-	'displayPreferenceChanged': DisplayPreference,
 	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
@@ -312,9 +311,6 @@ export default abstract class Root<
 	};
 	protected readonly _registerCommentUpdatedEventHandler = (handler: (comment: CommentThread) => void) => {
 		return this._eventManager.addListener('commentUpdated', handler);
-	};
-	protected readonly _registerDisplayPreferenceChangedEventHandler = (handler: (preference: DisplayPreference) => void) => {
-		return this._eventManager.addListener('displayPreferenceChanged', handler);
 	};
 	protected readonly _registerFolloweeCountChangedEventHandler = (handler: (change: FolloweeCountChange) => void) => {
 		return this._eventManager.addListener('followeeCountChanged', handler);
@@ -940,7 +936,6 @@ export default abstract class Root<
 		this.setState({
 			displayTheme: preference.theme
 		});
-		this._eventManager.triggerEvent('displayPreferenceChanged', preference);
 	}
 	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
