@@ -78,28 +78,31 @@ export function generateRandomString(byteCount: number) {
 	);
 }
 export function getPromiseErrorMessage(reason: any) {
-	let message: string;
+	if (!reason) {
+		return 'An unknown error occurred.';
+	}
 	if (
 		isProblemDetails(reason)
 	) {
-		message = formatProblemDetails(reason);
-	} else if (
+		return formatProblemDetails(reason);
+	}
+	if (
 		Array.isArray(reason) &&
 		typeof reason[0] === 'string'
 	) {
-		message = reason[0];
-	} else if (
+		return reason[0];
+	}
+	if (
 		'message' in reason
 	) {
-		message = reason.message;
-	} else if (
+		return reason.message;
+	}
+	if (
 		typeof reason === 'string'
 	) {
-		message = reason;
-	} else {
-		message = 'An Unknown Error Occurred';
+		return reason;
 	}
-	return message;
+	return 'An unknown error occurred.';
 }
 export function mapPromiseErrorToResultIfNotCancelled(reason: any, handler: (result: FailureResult<string>) => void) {
 	if ((reason as CancellationToken)?.isCancelled) {
