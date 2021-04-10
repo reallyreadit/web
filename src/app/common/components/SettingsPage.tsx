@@ -35,6 +35,8 @@ import SubscriptionProvider from '../../../common/models/subscriptions/Subscript
 import { DeviceType } from '../../../common/DeviceType';
 import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDialog';
+import { ChangePaymentMethodDialog } from './SettingsPage/ChangePaymentMethodDialog';
+import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 
 interface Props {
 	deviceType: DeviceType,
@@ -44,7 +46,9 @@ interface Props {
 	onChangeEmailAddress: (email: string) => Promise<void>,
 	onChangeNotificationPreference: (data: NotificationPreference) => Promise<NotificationPreference>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
+	onChangePaymentMethod: (card: StripeCardElement) => Promise<SubscriptionPaymentMethodResponse>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
+	onCreateStaticContentUrl: (path: string) => string,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
@@ -59,6 +63,7 @@ interface Props {
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>,
 	subscriptionStatus: SubscriptionStatus,
+	stripe: Promise<Stripe> | null
 	user: UserAccount
 }
 class SettingsPage extends React.PureComponent<
@@ -69,6 +74,24 @@ class SettingsPage extends React.PureComponent<
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changePaymentMethod = (card: StripeCardElement) => {
+		return this.props
+			.onChangePaymentMethod(card)
+			.then(
+				response => {
+					this.setState({
+						settings: {
+							...this.state.settings,
+							value: {
+								...this.state.settings.value,
+								subscriptionPaymentMethod: response.paymentMethod
+							}
+						}
+					});
+					return response;
+				}
+			);
+	};
 	private readonly _changeTimeZone = (id: number, timeZoneDisplayName: string) => {
 		return this.props
 			.onChangeTimeZone({ id })
@@ -138,6 +161,18 @@ class SettingsPage extends React.PureComponent<
 				onCloseDialog={this.props.onCloseDialog}
 				onChangeEmailAddress={this.props.onChangeEmailAddress}
 				onShowToast={this.props.onShowToast}
+			/>
+		);
+	};
+	private readonly _openChangePaymentMethodDialog = () => {
+		this.props.onOpenDialog(
+			<ChangePaymentMethodDialog
+				displayTheme={this.props.displayTheme}
+				onCloseDialog={this.props.onCloseDialog}
+				onChangePaymentMethod={this._changePaymentMethod}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+				onShowToast={this.props.onShowToast}
+				stripe={this.props.stripe}
 			/>
 		);
 	};
@@ -304,6 +339,7 @@ class SettingsPage extends React.PureComponent<
 							<div className="section">
 								<SubscriptionControl
 									deviceType={this.props.deviceType}
+									onOpenChangePaymentMethodDialog={this._openChangePaymentMethodDialog}
 									onOpenPaymentConfirmationDialog={this.props.onOpenPaymentConfirmationDialog}
 									onOpenPriceChangeDialog={this.props.onOpenPriceChangeDialog}
 									onOpenSubscriptionAutoRenewDialog={this.props.onOpenSubscriptionAutoRenewDialog}
@@ -405,7 +441,9 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onChangeEmailAddress={deps.onChangeEmailAddress}
 				onChangeNotificationPreference={deps.onChangeNotificationPreference}
 				onChangePassword={deps.onChangePassword}
+				onChangePaymentMethod={deps.onChangePaymentMethod}
 				onChangeTimeZone={deps.onChangeTimeZone}
+				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onOpenDialog={deps.onOpenDialog}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenPriceChangeDialog={deps.onOpenPriceChangeDialog}
@@ -419,6 +457,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}
 				onUpdatePaymentMethod={deps.onUpdatePaymentMethod}
+				stripe={deps.stripe}
 				subscriptionStatus={sharedState.subscriptionStatus}
 				user={sharedState.user}
 			/>

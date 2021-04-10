@@ -430,6 +430,30 @@ export default abstract class Root<
 				})
 		)
 		.then(this._handleSubscriptionPaymentResponse);
+	protected readonly _changeSubscriptionPaymentMethod = (card: StripeCardElement) => this.props.serverApi
+		.createStripeSetupIntent()
+		.then(
+			response => this.props.stripeLoader.value.then(
+				stripe => stripe.confirmCardSetup(
+					response.clientSecret,
+					{
+						payment_method: {
+							card
+						}
+					}
+				)
+			)
+		)
+		.then(
+			result => {
+				if (!result.setupIntent) {
+					throw result.error;
+				}
+				return this.props.serverApi.changeSubscriptionPaymentMethod({
+					paymentMethodId: result.setupIntent.payment_method
+				});
+			}
+		);
 	private readonly _completeStripeSubscriptionUpgrade = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
 		card,
 		price,

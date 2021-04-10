@@ -683,7 +683,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
+					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
@@ -696,7 +698,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,
-					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod
+					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
+					stripe: this.props.stripeLoader.value
 				}
 			)
 		};

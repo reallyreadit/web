@@ -25,6 +25,9 @@ export interface SubscriptionPaymentMethod {
 	expirationMonth: number,
 	expirationYear: number
 }
+export interface SubscriptionPaymentMethodChangeRequest {
+	paymentMethodId: string
+}
 export interface SubscriptionPaymentMethodUpdateRequest {
 	id: string,
 	expirationMonth: number,

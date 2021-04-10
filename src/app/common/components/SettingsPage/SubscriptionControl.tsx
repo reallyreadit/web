@@ -16,6 +16,7 @@ import Button from '../../../../common/components/Button';
 
 interface Props {
 	deviceType: DeviceType,
+	onOpenChangePaymentMethodDialog: () => void,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenPriceChangeDialog: () => void,
 	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
@@ -44,6 +45,10 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 		this.setState({
 			changeCardMenuState: MenuState.Opened
 		});
+	};
+	private readonly _openChangePaymentMethodDialog = () => {
+		this.props.onOpenChangePaymentMethodDialog();
+		this._beginClosingChangeCardMenu();
 	};
 	private readonly _openPaymentConfirmationDialog = () => {
 		if (this.props.status.type === SubscriptionStatusType.PaymentConfirmationRequired) {
@@ -213,7 +218,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 											<Button
 												align="center"
 												display="block"
-												onClick={() => {}}
+												onClick={this._openChangePaymentMethodDialog}
 												text="Use Another Card"
 											/>
 										</span>
