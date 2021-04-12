@@ -48,6 +48,7 @@ interface State {
 	sources: string[],
 	tags: string[]
 }
+const searchPromiseTag = 'search';
 
 class DiscoverScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -98,7 +99,7 @@ class DiscoverScreen extends React.Component<Props, State> {
 			});
 			return;
 		}
-		this._asyncTracker.cancelAll();
+		this._asyncTracker.cancelAll(searchPromiseTag);
 		this.setState(
 			{
 				articles: {
@@ -114,7 +115,8 @@ class DiscoverScreen extends React.Component<Props, State> {
 							minLength: this.state.minLength,
 							sources: this.state.sources,
 							tags: this.state.tags
-						})
+						}),
+						searchPromiseTag
 					)
 					.then(
 						articles => {
