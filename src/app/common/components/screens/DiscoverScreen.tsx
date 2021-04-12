@@ -151,6 +151,35 @@ class DiscoverScreen extends React.Component<Props, State> {
 			sources: [],
 			tags: []
 		};
+		this._asyncTracker.addCancellationDelegate(
+			this.props.onRegisterArticleChangeHandler(
+				event => {
+					const articles = this.state.articles.value?.items;
+					if (
+						!articles?.some(
+							article => article.id === event.article.id
+						)
+					) {
+						return;
+					}
+					this.setState({
+						articles: {
+							isLoading: false,
+							value: {
+								...this.state.articles.value,
+								items: articles
+									.slice()
+									.map(
+										article => event.article.id === article.id ?
+											event.article :
+											article
+									)
+							}
+						}
+					});
+				}
+			)
+		);
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
