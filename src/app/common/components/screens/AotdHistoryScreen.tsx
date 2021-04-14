@@ -21,7 +21,7 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 
-enum List {
+enum View {
 	Recent = 'Recent',
 	BestEver = 'Best Ever'
 }
@@ -44,22 +44,22 @@ export interface Props {
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
 	isScreenLoading: boolean,
-	list: List,
+	view: View,
 	maxLength: number | null,
 	minLength: number | null
 }
 export default class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeList = (value: string) => {
-		const list = value as List;
-		if (list !== this.state.list) {
+		const view = value as View;
+		if (view !== this.state.view) {
 			this.setState({
 				articles: {
 					isLoading: true
 				},
-				list
+				view: view
 			});
-			this.fetchArticles(list, 1, this.state.minLength, this.state.maxLength);
+			this.fetchArticles(view, 1, this.state.minLength, this.state.maxLength);
 		}
 	};
 	private readonly _changePageNumber = (pageNumber: number) => {
@@ -68,26 +68,26 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 				isLoading: true
 			}
 		});
-		this.fetchArticles(this.state.list, pageNumber, this.state.minLength, this.state.maxLength);
+		this.fetchArticles(this.state.view, pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	private readonly _headerSelectorItems = [
 		{
-			value: List.Recent
+			value: View.Recent
 		},
 		{
-			value: List.BestEver
+			value: View.BestEver
 		}
 	];
 	constructor(props: Props) {
 		super(props);
 		const
-			list = List.Recent,
+			view = View.Recent,
 			minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(list, 1, minLength, maxLength);
+			articles = this.fetchArticles(view, 1, minLength, maxLength);
 		this.state = {
 			articles: articles as Fetchable<PageResult<UserArticle>>,
-			list,
+			view: view,
 			isScreenLoading: articles.isLoading,
 			maxLength,
 			minLength
@@ -120,13 +120,13 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		);
 	}
 	private fetchArticles(
-		list: List,
+		view: View,
 		pageNumber: number,
 		minLength: number | null,
 		maxLength: number | null
 	) {
-		switch (list) {
-			case List.Recent:
+		switch (view) {
+			case View.Recent:
 				return this.props.onGetAotdHistory(
 					{
 						maxLength,
@@ -142,7 +142,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 						}
 					)
 				);
-			case List.BestEver:
+			case View.BestEver:
 				return this.props.onGetCommunityReads(
 					{
 						maxLength,
@@ -182,7 +182,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 								disabled={this.state.articles.isLoading}
 								items={this._headerSelectorItems}
 								onChange={this._changeList}
-								value={this.state.list}
+								value={this.state.view}
 							/>
 						</div>
 						{this.state.articles.isLoading ?

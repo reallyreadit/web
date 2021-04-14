@@ -27,13 +27,13 @@ import CenteringContainer from '../../../../common/components/CenteringContainer
 import StickyNote from '../../../../common/components/StickyNote';
 import FormDialog from '../../../../common/components/FormDialog';
 
-enum List {
+enum View {
 	History = 'History',
 	Starred = 'Starred'
 }
 type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>;
 interface Props {
-	list: List,
+	view: View,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string
@@ -63,14 +63,14 @@ interface State {
 	newStarsCount: number
 }
 const headerSelectorItems = [
-	{ value: List.Starred },
-	{ value: List.History }
+	{ value: View.Starred },
+	{ value: View.History }
 ];
 class MyReadsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeList = (value: string) => {
-		const list = value as List;
-		if (list !== this.props.list) {
+		const view = value as View;
+		if (view !== this.props.view) {
 			this.setState({
 				articles: {
 					isLoading: true
@@ -81,20 +81,20 @@ class MyReadsScreen extends React.Component<Props, State> {
 				this.props.screenId,
 				() => ({
 					location: {
-						path: list === List.Starred ?
+						path: view === View.Starred ?
 							'/starred' :
 							'/history'
 					}
 				})
 			);
-			this.fetchArticles(list, 1, this.state.minLength, this.state.maxLength);
+			this.fetchArticles(view, 1, this.state.minLength, this.state.maxLength);
 		}
 	};
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
 			articles: { isLoading: true }
 		});
-		this.fetchArticles(this.props.list, pageNumber, this.state.minLength, this.state.maxLength);
+		this.fetchArticles(this.props.view, pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	private readonly _openImportDialog = () => {
 		this.props.onOpenDialog(
@@ -112,7 +112,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 		const
 			minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(props.list, 1, minLength, maxLength);
+			articles = this.fetchArticles(props.view, 1, minLength, maxLength);
 		this.state = {
 			articles,
 			isChangingList: false,
@@ -150,30 +150,30 @@ class MyReadsScreen extends React.Component<Props, State> {
 		if (props.onRegisterNewStarsHandler) {
 			props.onRegisterNewStarsHandler(
 				newStarsCount => {
-					if (this.props.list === List.Starred) {
+					if (this.props.view === View.Starred) {
 						this.setState({
 							minLength: null,
 							maxLength: null,
 							newStarsCount
 						});
-						this.fetchArticles(this.props.list, 1, null, null);
+						this.fetchArticles(this.props.view, 1, null, null);
 					}
 				}
 			)
 		}
 	}
 	private fetchArticles(
-		list: List,
+		view: View,
 		pageNumber: number,
 		minLength: number | null,
 		maxLength: number | null
 	) {
 		let fetchFunction: ArticleFetchFunction;
-		switch (list) {
-			case List.History:
+		switch (view) {
+			case View.History:
 				fetchFunction = this.props.onGetUserArticleHistory;
 				break;
-			case List.Starred:
+			case View.Starred:
 				fetchFunction = this.props.onGetStarredArticles;
 				break;
 		}
@@ -194,7 +194,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 	private renderStickyNote() {
 		return (
 			<StickyNote>
-				{this.props.list === List.Starred ?
+				{this.props.view === View.Starred ?
 					<>
 						<strong>Star the articles you want to read.</strong>
 						<span>Pro tip: Import articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span>
@@ -226,7 +226,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 								disabled={this.state.articles.isLoading}
 								items={headerSelectorItems}
 								onChange={this._changeList}
-								value={this.props.list}
+								value={this.props.view}
 							/>
 						</div>
 						{this.state.articles.isLoading ?
@@ -273,7 +273,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'list' | 'screenId' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'screenId' | 'user' | 'view'>>
 ) {
 	const route = findRouteByKey(routes, ScreenKey.MyReads);
 	return {
@@ -282,9 +282,9 @@ export default function createScreenFactory<TScreenKey>(
 			<MyReadsScreen {
 				...{
 					...deps,
-					list: route.getPathParams(screen.location.path)['view'] === 'starred' ?
-						List.Starred :
-						List.History,
+					view: route.getPathParams(screen.location.path)['view'] === 'starred' ?
+						View.Starred :
+						View.History,
 					screenId: screen.id,
 					user: sharedState.user
 				}
