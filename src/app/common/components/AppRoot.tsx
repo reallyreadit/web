@@ -1348,14 +1348,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (userName) {
 			this.pushScreen(
 				ScreenKey.Profile,
-				{ userName },
-				'@' + userName
+				{ userName }
 			);
 		} else {
 			this.replaceScreen(
 				ScreenKey.Profile,
-				{ userName: this.state.user.name },
-				'@' + this.state.user.name
+				{ userName: this.state.user.name }
 			);
 		}
 	}

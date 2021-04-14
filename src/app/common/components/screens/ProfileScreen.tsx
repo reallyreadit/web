@@ -57,7 +57,7 @@ interface Props {
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
-	onReloadProfile: (screenId: number, userName: string) => Promise<Profile>,
+	onReloadProfile: (screenId: number, userName: string, user: UserAccount | null) => Promise<Profile>,
 	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -338,7 +338,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 					!!prevProps.userAccount
 			)
 		) {
-			this.props.onReloadProfile(this.props.screenId, this.props.userName);
+			this.props.onReloadProfile(this.props.screenId, this.props.userName, this.props.userAccount);
 			this.fetchPosts(1);
 		}
 	}
