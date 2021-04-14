@@ -29,6 +29,7 @@ import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
+import { formatCurrency } from '../../../../common/format';
 
 interface Props {
 	authorSlug: string,
@@ -167,6 +168,20 @@ class AuthorScreen extends React.Component<Props, State> {
 							<Panel className="main">
 								<div className="profile">
 									<h1>{this.props.profile.value.name}</h1>
+									<InfoBox
+										position="static"
+										style="normal"
+									>
+										<div className="earnings">
+											Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
+										</div>
+										<div className="message">
+											Are you {this.props.profile.value.name}?
+											{this.props.profile.value.totalEarnings > 0 ?
+												<> <a href="mailto:support@readup.com">Contact us</a> to get verified and collect your earnings.</> :
+												<> <a href="mailto:support@readup.com">Contact us</a> to get verified.</>}
+										</div>
+									</InfoBox>
 								</div>
 								{this.state.articles.isLoading ?
 									<LoadingOverlay position="static" /> :
