@@ -10,7 +10,7 @@ import Post from '../../../../common/models/social/Post';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import LeaderboardBadges from '../../../../common/components/LeaderboardBadges';
-import { formatCountable } from '../../../../common/format';
+import { formatCountable, formatCurrency } from '../../../../common/format';
 import ArticleList from '../controls/articles/ArticleList';
 import UserArticle from '../../../../common/models/UserArticle';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
@@ -40,6 +40,8 @@ import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
+import Icon from '../../../../common/components/Icon';
+import * as classNames from 'classnames';
 
 interface Props {
 	deviceType: DeviceType,
@@ -368,7 +370,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 						<>
 							{!this.props.userAccount ?
 								<Panel className="header">
-									<h1>Join Readup to read with {this.props.profile.value.userName}.</h1>
+									<h1>Join Readup to read with @{this.props.profile.value.userName}.</h1>
 									<h3>
 										<GetStartedButton
 											analyticsAction="ProfileScreenCreateAccount"
@@ -384,12 +386,22 @@ export class ProfileScreen extends React.Component<Props, State> {
 								null}
 							<Panel className="main">
 								<div className="profile" data-nosnippet>
-									<div className="user-name">
-										<span className="name">{this.props.profile.value.userName}</span>
+									{this.props.profile.value.authorProfile ?
+										<div className="author">
+											{this.props.profile.value.authorProfile.name}<Icon name="verified-user" />
+										</div> :
+										null}
+									<div className={classNames('user-name', { 'small': !!this.props.profile.value.authorProfile })}>
+										<span className="name">@{this.props.profile.value.userName}</span>
 										{this.props.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
 											<LeaderboardBadges badge={this.props.profile.value.leaderboardBadge} /> :
 											null}
 									</div>
+									{this.props.profile.value.authorProfile ?
+										<div className="earnings">
+											Total Readup earnings: {formatCurrency(this.props.profile.value.authorProfile.totalEarnings)}
+										</div> :
+										null}
 									{isOwnProfile ?
 										<>
 											{this.props.profile.value.followeeCount ?
