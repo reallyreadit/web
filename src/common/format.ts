@@ -3,6 +3,16 @@ import Fetchable from "./Fetchable";
 import { isProblemDetails, ProblemDetails } from "./ProblemDetails";
 import { FailureResult, ResultType } from "./Result";
 
+export function formatCurrency(amount: number) {
+	return (amount / 100)
+		.toLocaleString(
+			'en-US',
+			{
+				style: 'currency',
+				currency: 'usd'
+			}
+		);
+}
 export function formatIsoDateAsDotNet(isoDate: string) {
 	return isoDate.replace(/z$/i, '');
 }

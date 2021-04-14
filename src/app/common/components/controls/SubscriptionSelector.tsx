@@ -186,7 +186,7 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 				) ?
 					this.renderButton({
 						name: formatSubscriptionPriceName(nextPrice),
-						formattedAmount: formatSubscriptionPriceAmount(nextPrice.amount),
+						formattedAmount: formatSubscriptionPriceAmount(nextPrice),
 						isSelected: true
 					}) :
 					null}

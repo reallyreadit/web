@@ -2,11 +2,11 @@ import * as React from 'react';
 import { SubscriptionDistributionReport } from '../../../../../common/models/subscriptions/SubscriptionDistributionReport';
 import { Sector, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import SubscriptionProvider from '../../../../../common/models/subscriptions/SubscriptionProvider';
-import { formatSubscriptionPriceAmount } from '../../../../../common/models/subscriptions/SubscriptionPrice';
 import { findRouteByKey } from '../../../../../common/routing/Route';
 import routes from '../../../../../common/routing/routes';
 import ScreenKey from '../../../../../common/routing/ScreenKey';
 import * as classNames from 'classnames';
+import { formatCurrency } from '../../../../../common/format';
 
 const
 	chartMargin = 12,
@@ -342,7 +342,7 @@ export default class DistributionChart extends React.Component<Props, State> {
 						null}
 					{active.type === DataPointType.Placeholder ?
 						<div className="message">You haven't read anything yet.</div> :
-						<div className="amount">{formatSubscriptionPriceAmount(active.value)}</div>}
+						<div className="amount">{formatCurrency(active.value)}</div>}
 				</div>
 			</div>
 		)

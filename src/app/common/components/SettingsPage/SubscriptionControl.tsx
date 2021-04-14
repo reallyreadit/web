@@ -117,7 +117,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 		return (
 			<>
 				<div className="price-name">{formatSubscriptionPriceName(price)}</div>
-				<div className="price-amount">{formatSubscriptionPriceAmount(price.amount)} / month</div>
+				<div className="price-amount">{formatSubscriptionPriceAmount(price)} / month</div>
 			</>
 		);
 	}
@@ -189,7 +189,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 				if (this.props.status.autoRenewPrice.amount === this.props.status.price.amount) {
 					renewalMessage = `Will renew on ${formattedEndDate}.`;
 				} else {
-					renewalMessage = <>Will renew on {formattedEndDate} at <span className="nowrap">{formatSubscriptionPriceAmount(this.props.status.autoRenewPrice.amount)} / month.</span></>
+					renewalMessage = <>Will renew on {formattedEndDate} at <span className="nowrap">{formatSubscriptionPriceAmount(this.props.status.autoRenewPrice)} / month.</span></>
 				}
 			} else {
 				renewalMessage = `Will end on ${formattedEndDate}.`;

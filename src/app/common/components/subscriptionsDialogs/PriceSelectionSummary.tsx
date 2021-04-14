@@ -12,7 +12,7 @@ export const PriceSelectionSummary: React.SFC<Props> = (props: Props) => (
 	<ContentBox className="price-selection-summary_8w3t0z">
 		<div className="title">Selected Subscription</div>
 		<div className="name">{formatSubscriptionPriceName(props.selectedPrice)}</div>
-		<div className="price">{formatSubscriptionPriceAmount(props.selectedPrice.amount)} / month</div>
+		<div className="price">{formatSubscriptionPriceAmount(props.selectedPrice)} / month</div>
 		{props.onChangePrice ?
 			<ActionLink
 				iconLeft="arrow-left"

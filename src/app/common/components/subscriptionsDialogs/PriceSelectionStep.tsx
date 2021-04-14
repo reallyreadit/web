@@ -30,7 +30,7 @@ export default class PriceSelectionStep extends React.Component<Props, State> {
 						this.props.priceLevels.map(
 							priceLevel => ({
 								...priceLevel,
-								formattedAmount: formatSubscriptionPriceAmount(priceLevel.amount)
+								formattedAmount: formatSubscriptionPriceAmount(priceLevel)
 							})
 						)
 					}

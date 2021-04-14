@@ -8,7 +8,7 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import DistributionChart, { ReportType } from './MyImpactScreen/DistributionChart';
 import { formatSubscriptionPriceAmount, formatSubscriptionPriceName, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
-import { formatCountable, formatIsoDateAsUtc } from '../../../../common/format';
+import { formatCountable, formatIsoDateAsUtc, formatCurrency } from '../../../../common/format';
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
@@ -45,7 +45,7 @@ function renderSubscriptionDetails(price: SubscriptionPriceLevel) {
 	return (
 		<div className="content-block">
 			{formatSubscriptionPriceName(price)}<br />
-			{formatSubscriptionPriceAmount(price.amount)} / month
+			{formatSubscriptionPriceAmount(price)} / month
 		</div>
 	);
 }
@@ -135,7 +135,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 			return (
 				<>
 					{this.renderViewToggle()}
-					<div className="content-block title">Total contributions: {formatSubscriptionPriceAmount(summary.completedPeriods.subscriptionAmount)}</div>
+					<div className="content-block title">Total contributions: {formatCurrency(summary.completedPeriods.subscriptionAmount)}</div>
 					<div className="spacer"></div>
 					<DistributionChart
 						report={summary.completedPeriods}
@@ -216,7 +216,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 				return (
 					<>
 						{this.renderViewToggle()}
-						<div className="content-block title">Monthly contribution: {formatSubscriptionPriceAmount(this.props.subscriptionStatus.price.amount)}</div>
+						<div className="content-block title">Monthly contribution: {formatSubscriptionPriceAmount(this.props.subscriptionStatus.price)}</div>
 						<div className="spacer"></div>
 						<DistributionChart
 							report={summary.currentPeriod}

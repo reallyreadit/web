@@ -1,3 +1,5 @@
+import { formatCurrency } from "../../format";
+
 export type StandardSubscriptionPriceLevel = {
 	id: string,
 	name: string,
@@ -9,15 +11,8 @@ export type SubscriptionPriceSelection = (
 	StandardSubscriptionPriceLevel |
 	Pick<CustomSubscriptionPriceLevel, 'amount'>
 );
-export function formatSubscriptionPriceAmount(amount: number) {
-	return (amount / 100)
-		.toLocaleString(
-			'en-US',
-			{
-				style: 'currency',
-				currency: 'usd'
-			}
-		);
+export function formatSubscriptionPriceAmount(price: Pick<StandardSubscriptionPriceLevel, 'amount'>) {
+	return formatCurrency(price.amount);
 }
 export function formatSubscriptionPriceName(price: SubscriptionPriceLevel | SubscriptionPriceSelection) {
 	if (
