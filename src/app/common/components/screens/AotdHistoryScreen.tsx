@@ -9,7 +9,7 @@ import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
@@ -188,7 +188,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 						{this.state.articles.isLoading ?
 							<LoadingOverlay position="static" /> :
 							<>
-								<ArticleList>
+								<List>
 									{this.state.articles.value.items.map(
 										article => (
 											<li key={article.id}>
@@ -208,7 +208,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 											</li>
 										)
 									)}
-								</ArticleList>
+								</List>
 								<PageSelector
 									pageNumber={this.state.articles.value.pageNumber}
 									pageCount={this.state.articles.value.pageCount}

@@ -19,7 +19,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import MultiSelectFilter from './DiscoverScreen/MultiSelectFilter';
 import ContentBox from '../../../../common/components/ContentBox';
 import ArticleLengthFilter from './DiscoverScreen/ArticleLengthFilter';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 
 interface Props {
@@ -221,7 +221,7 @@ class DiscoverScreen extends React.Component<Props, State> {
 							<LoadingOverlay position="static" /> :
 							this.state.articles.value ?
 								this.state.articles.value.items.length ?
-									<ArticleList>
+									<List>
 										{this.state.articles.value.items.map(
 											article => (
 												<li key={article.id}>
@@ -241,7 +241,7 @@ class DiscoverScreen extends React.Component<Props, State> {
 												</li>
 											)
 										)}
-									</ArticleList> :
+									</List> :
 									<div className="no-results">No articles found.</div> :
 								null}
 					</>}

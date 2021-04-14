@@ -11,7 +11,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import HeaderSelector from '../HeaderSelector';
@@ -233,7 +233,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 							<LoadingOverlay position="static" /> :
 							this.state.articles.value.items.length ?
 								<>
-									<ArticleList>
+									<List>
 										{this.state.articles.value.items.map(
 											article => (
 												<li key={article.id}>
@@ -253,7 +253,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 												</li>
 											)
 										)}
-									</ArticleList>
+									</List>
 									{this.state.articles.value.pageNumber < 2 ?
 										this.renderStickyNote() :
 										null}

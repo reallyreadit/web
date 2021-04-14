@@ -7,7 +7,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import { formatCountable } from '../../../../common/format';
 import PageResult from '../../../../common/models/PageResult';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import PostDetails from '../../../../common/components/PostDetails';
 import PageSelector from '../controls/PageSelector';
 import CenteringContainer from '../../../../common/components/CenteringContainer';
@@ -235,7 +235,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 							<LoadingOverlay position="static" /> :
 							this.state.posts.value.items.length ?
 								<>
-									<ArticleList>
+									<List>
 										{this.state.posts.value.items.map(
 											post => (
 												<li key={post.date}>
@@ -259,7 +259,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 												</li>
 											)
 										)}
-									</ArticleList>
+									</List>
 									<PageSelector
 										pageNumber={this.state.posts.value.pageNumber}
 										pageCount={this.state.posts.value.pageCount}

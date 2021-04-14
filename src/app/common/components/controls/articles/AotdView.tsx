@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ArticleDetails from '../../../../../common/components/ArticleDetails';
-import ArticleList from './ArticleList';
+import List from '../List';
 import UserArticle from '../../../../../common/models/UserArticle';
 import Rating from '../../../../../common/models/Rating';
 import ShareData from '../../../../../common/sharing/ShareData';
@@ -93,7 +93,7 @@ export default class AotdView extends React.Component<{
 				</div>
 				{this.props.isLoading ?
 					<LoadingOverlay position="static" /> :
-					<ArticleList>
+					<List>
 						{this.props.articles.items.map(
 							(article, index) => (
 								<li key={article.id}>
@@ -118,7 +118,7 @@ export default class AotdView extends React.Component<{
 								</li>
 							)
 						)}
-					</ArticleList>}
+					</List>}
 			</div>
 		);
 	}

@@ -21,7 +21,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import ShareData from '../../../../common/sharing/ShareData';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 // import Panel from './Panel';
 import GetStartedButton from './GetStartedButton';
@@ -317,7 +317,7 @@ export default class MarketingScreen extends React.Component<
 					<p className="home-section-intro">Read about how Readup is changing the future of digital reading. Add your thoughts in the comments.</p>
 					{this.state.blogPosts.isLoading ?
 						<LoadingOverlay position="static" /> :
-						<ArticleList>
+						<List>
 							{this.state.blogPosts.value.items.map(
 								article => (
 									<li key={article.id}>
@@ -336,7 +336,7 @@ export default class MarketingScreen extends React.Component<
 									</li>
 								)
 							)}
-						</ArticleList>}
+						</List>}
 						<div className="controls">
 							<Button
 							iconRight="chevron-right"

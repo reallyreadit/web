@@ -9,7 +9,7 @@ import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
@@ -200,7 +200,7 @@ class AuthorScreen extends React.Component<Props, State> {
 												<p>No articles found.</p>
 											</InfoBox> :
 											<>
-												<ArticleList>
+												<List>
 													{this.state.articles.value.items.map(
 														article => (
 															<li key={article.id}>
@@ -220,7 +220,7 @@ class AuthorScreen extends React.Component<Props, State> {
 															</li>
 														)
 													)}
-												</ArticleList>
+												</List>
 												<PageSelector
 													pageNumber={this.state.articles.value.pageNumber}
 													pageCount={this.state.articles.value.pageCount}
