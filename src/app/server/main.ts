@@ -511,12 +511,26 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 			res.status(400).send('Invalid clientType');
 			return;
 	}
-	// call renderToString first to capture all the api requests
-	ReactDOMServer.renderToString(rootElement);
+	// call renderToString as many times as needed in order to capture and process all the api requests
+	const render: () => Promise<string> = () => req.api
+		.processRequests()
+		.then(
+			() => {
+				const content = ReactDOMServer.renderToString(rootElement);
+				if (
+					req.api.exchanges.some(
+						exchange => !exchange.processed
+					)
+				) {
+					return render();
+				}
+				return content;
+			}
+		);
+
+
 	// create response delegate
-	const sendResponse = (twitterCard?: TwitterCard) => {
-		// call renderToString again to render with api request results
-		const content = ReactDOMServer.renderToString(rootElement);
+	const sendResponse = (content: string, twitterCard?: TwitterCard) => {
 		// set the cache header
 		res.setHeader('Cache-Control', 'no-store');
 		// return the content and init data
@@ -550,13 +564,15 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 	// check if we need to render a twitter card
 	switch (req.matchedRoute.screenKey) {
 		case ScreenKey.Home:
-			req.api
-				.processRequests()
+			render()
 				.then(
-					() => {
-						sendResponse({
-							type: TwitterCardType.App
-						});
+					content => {
+						sendResponse(
+							content,
+							{
+								type: TwitterCardType.App
+							}
+						);
 					}
 				);
 			break;
@@ -580,34 +596,36 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 								return null as TwitterCardMetadata;
 							}
 						),
-					req.api.processRequests()
+					render()
 				])
 				.then(
 					results => {
 						if (results[0]) {
-							sendResponse({
-								type: TwitterCardType.Summary,
-								title: results[0].title,
-								description: results[0].description,
-								imageUrl: results[0].imageUrl
-							});
+							sendResponse(
+								results[1],
+								{
+									type: TwitterCardType.Summary,
+									title: results[0].title,
+									description: results[0].description,
+									imageUrl: results[0].imageUrl
+								}
+							);
 						} else {
-							sendResponse();
+							sendResponse(results[1]);
 						}
 					}
 				)
 				.catch(
 					() => {
-						sendResponse();
+						sendResponse('Failed to process request.');
 					}
 				);
 			break;
 		default:
-			req.api
-				.processRequests()
+			render()
 				.then(
-					() => {
-						sendResponse();
+					content => {
+						sendResponse(content);
 					}
 				);
 	}

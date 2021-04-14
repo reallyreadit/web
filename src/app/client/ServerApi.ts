@@ -9,6 +9,7 @@ import ClientType from '../common/ClientType';
 import { DeviceType } from '../../common/DeviceType';
 
 export default class extends ServerApi {
+	private _isInitialized = false;
 	constructor(
 		endpoint: HttpEndpoint,
 		clientType: ClientType,

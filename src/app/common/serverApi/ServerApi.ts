@@ -86,7 +86,6 @@ export default abstract class {
 	protected readonly _clientType: ClientType;
 	protected readonly _clientVersion: string;
 	protected readonly _shouldIncludeCredentials: boolean;
-	protected _isInitialized = false;
 	constructor(
 		endpoint: HttpEndpoint,
 		requestStore: RequestStore,

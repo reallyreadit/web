@@ -11,7 +11,10 @@ export default class RequestStore {
 	}
 	public addRequest(request: Request) {
 		if (!this.getExchange(request)) {
-			this.exchanges.push({ request });
+			this.exchanges.push({
+				request,
+				processed: false
+			});
 		}
 	}
 	public get exchanges() {

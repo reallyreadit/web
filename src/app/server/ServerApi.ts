@@ -70,8 +70,8 @@ export default class extends ServerApi {
 		return `web/app/server#${this._clientType}@${this._clientVersion}`;
 	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
-		if (this._isInitialized) {
-			const exchange = this._reqStore.getExchange(request);
+		const exchange = this._reqStore.getExchange(request);
+		if (exchange?.processed) {
 			if (exchange.responseData) {
 				return {
 					isLoading: false,
@@ -83,10 +83,10 @@ export default class extends ServerApi {
 					errors: exchange.responseErrors
 				};
 			}
-		} else {
+		} else if (!exchange) {
 			this._reqStore.addRequest(request);
-			return { isLoading: true };
 		}
+		return { isLoading: true };
 	}
 	protected post<T>(request: Request) : Promise<T> {
 		return this.fetchJson<T>('POST', request);
@@ -107,12 +107,12 @@ export default class extends ServerApi {
 								exchange.responseErrors = errors;
 							}
 						)
+						.finally(
+							() => {
+								exchange.processed = true;
+							}
+						)
 				)
-			)
-			.then(
-				() => {
-					this._isInitialized = true;
-				}
 			);
 	}
 	public hasAuthCookie() {
