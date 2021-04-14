@@ -1,3 +1,4 @@
 export default interface AuthorProfile {
-	name: string
+	name: string,
+	totalEarnings: number
 }
