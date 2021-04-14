@@ -73,7 +73,7 @@ export default class extends ServerApi {
 				req.send();
 			}
 		});
-	} 
+	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (!this._isInitialized) {
 			const exchange = this._reqStore.getExchange(request);
