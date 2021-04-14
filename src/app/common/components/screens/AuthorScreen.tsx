@@ -25,7 +25,6 @@ import { Screen, SharedState } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import { formatFetchable } from '../../../../common/format';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { DeviceType } from '../../../../common/DeviceType';
@@ -228,7 +227,7 @@ class AuthorScreen extends React.Component<Props, State> {
 	}
 }
 type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'authorSlug' | 'location' | 'profile' | 'user'>> & {
-	onCreateTitle: (profile: AuthorProfile) => string,
+	onCreateTitle: (profile: Fetchable<AuthorProfile>) => string,
 	onGetAuthorProfile: FetchFunctionWithParams<AuthorProfileRequest, AuthorProfile>,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<AuthorProfile>>>) => Partial<Screen<Fetchable<AuthorProfile>>>) => void
 };
@@ -249,11 +248,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 						produce(
 							(currentState: Screen<Fetchable<AuthorProfile>>) => {
 								currentState.componentState = profile;
-								if (profile.value) {
-									currentState.title = deps.onCreateTitle(profile.value);
-								} else {
-									currentState.title = 'Author not found';
-								}
+								currentState.title = deps.onCreateTitle(profile);
 							}
 						)
 					);
@@ -264,12 +259,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				componentState: profile,
 				key,
 				location,
-				title: formatFetchable(
-					profile,
-					profile => deps.onCreateTitle(profile),
-					'Loading...',
-					'Author not found'
-				)
+				title: deps.onCreateTitle(profile)
 			};
 		},
 		render: (state: Screen<Fetchable<AuthorProfile>>, sharedState: SharedState) => (

@@ -158,7 +158,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private readonly _createAuthorScreenTitle = (name: string) => name;
+	private readonly _createAuthorScreenTitle = () => 'Writer';
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -184,10 +184,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			ScreenKey.Author,
 			{
 				slug
-			},
-			name ?
-				this._createAuthorScreenTitle(name) :
-				null
+			}
 		);
 	};
 	private readonly _viewDiscover = () => {
@@ -580,7 +577,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
+					onCreateTitle: _ => this._createAuthorScreenTitle(),
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,

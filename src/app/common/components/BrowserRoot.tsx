@@ -47,13 +47,15 @@ import createNotificationsScreenFactory from './screens/NotificationsScreen';
 import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet } from '../../../common/format';
+import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
+import AuthorProfile from '../../../common/models/authors/AuthorProfile';
+import Fetchable from '../../../common/Fetchable';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -143,7 +145,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 
 	// screens
-	private readonly _createAuthorScreenTitle = (name: string) => `${name} • Readup`;
+	private readonly _createAuthorScreenTitle = (profile: Fetchable<AuthorProfile>) => formatFetchable(
+		profile,
+		profile => `${profile.name} • Readup`,
+		'Loading...',
+		'Author not found'
+	);
 	private readonly _viewAdminPage = () => {
 		this.setScreenState({
 			key: ScreenKey.Admin,
@@ -162,10 +169,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: 'push',
 			urlParams: {
 				slug
-			},
-			title: name ?
-				this._createAuthorScreenTitle(name) :
-				null
+			}
 		});
 	};
 	private readonly _viewDiscover = () => {
@@ -477,7 +481,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
+					onCreateTitle: profile => this._createAuthorScreenTitle(profile),
 					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
