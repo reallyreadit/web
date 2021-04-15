@@ -44,7 +44,7 @@ import createDiscoverScreenFactory from './screens/DiscoverScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet, getPromiseErrorMessage, formatProblemDetails } from '../../../common/format';
+import { formatIsoDateAsDotNet, getPromiseErrorMessage, formatProblemDetails, formatFetchable } from '../../../common/format';
 import AppStoreSubscriptionPrompt from './AppRoot/AppStoreSubscriptionPrompt';
 import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
@@ -55,6 +55,8 @@ import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
 import { AppStoreErrorType } from '../../../common/Errors';
+import AuthorProfile from '../../../common/models/authors/AuthorProfile';
+import Fetchable from '../../../common/Fetchable';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -158,7 +160,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private readonly _createAuthorScreenTitle = () => 'Writer';
+	private readonly _createAuthorScreenTitle = (profile: Fetchable<AuthorProfile>) => formatFetchable(
+		profile,
+		_ => 'Writer',
+		'Loading...',
+		'Author not found'
+	);
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -577,7 +584,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onCreateTitle: _ => this._createAuthorScreenTitle(),
+					onCreateTitle: this._createAuthorScreenTitle,
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
