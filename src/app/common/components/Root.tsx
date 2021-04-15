@@ -91,6 +91,20 @@ export enum TemplateSection {
 	Navigation = 2,
 	Footer = 4
 }
+export enum NavMethod {
+	Pop,
+	Push,
+	Replace,
+	ReplaceAll
+}
+export type NavOptions = {
+		method: NavMethod.Push
+	} | {
+		method: NavMethod.Replace,
+		screenId: number
+	} | {
+		method: NavMethod.ReplaceAll
+	};
 export interface Screen<T = any> {
 	id: number,
 	componentState?: T,
@@ -98,7 +112,8 @@ export interface Screen<T = any> {
 	location: RouteLocation,
 	templateSection?: TemplateSection,
 	title?: string,
-	titleContent?: React.ReactNode
+	titleContent?: React.ReactNode,
+	isReplacement?: boolean
 }
 export interface ScreenFactory<TSharedState> {
 	create: (id: number, location: RouteLocation, sharedState: TSharedState) => Screen,
@@ -389,7 +404,7 @@ export default abstract class Root<
 				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Decrement);
 			}
 		);
-	protected readonly _viewProfile: (userName?: string) => void;
+	protected readonly _viewProfile: (userName?: string, options?: NavOptions) => void;
 
 	// state
 	private _screenId = 0;
@@ -918,14 +933,13 @@ export default abstract class Root<
 		}
 		return Promise.resolve({ isAvailable: false });
 	}
-	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
-		const
-			[path, queryString] = findRouteByKey(routes, key)
-				.createUrl(urlParams)
-				.split('?'),
-			screen = this._screenFactoryMap[key].create(this._screenId++, { path, queryString }, this.getSharedState());
-		if (title) {
-			screen.title = title;
+	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, options?: Pick<Screen, 'isReplacement'>) {
+		const [path, queryString] = findRouteByKey(routes, key)
+			.createUrl(urlParams)
+			.split('?');
+		const screen = this._screenFactoryMap[key].create(this._screenId++, { path, queryString }, this.getSharedState());
+		if (options) {
+			screen.isReplacement = options.isReplacement;
 		}
 		return screen;
 	}
@@ -993,7 +1007,7 @@ export default abstract class Root<
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
 	protected abstract viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string): void;
-	protected abstract viewProfile(userName?: string): void;
+	protected abstract viewProfile(userName?: string, options?: NavOptions): void;
 	public componentDidMount() {
 		if (this.props.initialUserProfile) {
 			this.checkProfileForUnsetValues(this.props.initialUserProfile);

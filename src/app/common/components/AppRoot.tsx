@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod } from './Root';
 import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -181,7 +181,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setState({ isPoppingScreen: true });
 	};
 	private readonly _viewAdminPage = () => {
-		this.replaceScreen(ScreenKey.Admin);
+		this.replaceAllScreens(ScreenKey.Admin);
 	};
 	private readonly _viewAotdHistory = () => {
 		this.pushScreen(ScreenKey.AotdHistory);
@@ -195,31 +195,31 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 	private readonly _viewDiscover = () => {
-		this.replaceScreen(ScreenKey.Discover);
+		this.replaceAllScreens(ScreenKey.Discover);
 	};
 	private readonly _viewHome = () => {
-		this.replaceScreen(ScreenKey.Home);
+		this.replaceAllScreens(ScreenKey.Home);
 	};
 	private readonly _viewNotifications = () => {
-		this.replaceScreen(ScreenKey.Notifications);
+		this.replaceAllScreens(ScreenKey.Notifications);
 	};
 	private readonly _viewLeaderboards = () => {
-		this.replaceScreen(ScreenKey.Leaderboards);
+		this.replaceAllScreens(ScreenKey.Leaderboards);
 	};
 	private readonly _viewMyImpact = () => {
-		this.replaceScreen(ScreenKey.MyImpact);
+		this.replaceAllScreens(ScreenKey.MyImpact);
 	};
 	private readonly _viewMyReads = () => {
-		this.replaceScreen(ScreenKey.MyReads);
+		this.replaceAllScreens(ScreenKey.MyReads);
 	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
 	private readonly _viewSettings = () => {
-		this.replaceScreen(ScreenKey.Settings);
+		this.replaceAllScreens(ScreenKey.Settings);
 	};
 	private readonly _viewStats = () => {
-		this.replaceScreen(ScreenKey.Stats);
+		this.replaceAllScreens(ScreenKey.Stats);
 	};
 
 	// sharing
@@ -1096,20 +1096,41 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		return { screens, dialog };
 	}
-	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
 		// create the new screen
-		const screen = this.createScreen(key, urlParams, title);
+		const screen = this.createScreen(key, urlParams);
 		// push the screen
 		this.setScreenState([
 			...this.state.screens,
 			screen
 		]);
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+	private replaceAllScreens(key: ScreenKey, urlParams?: { [key: string]: string }) {
 		// create the new screen
-		const screen = this.createScreen(key, urlParams, title);
-		// replace the screen
+		const screen = this.createScreen(key, urlParams);
+		// replace all the screens
 		this.setScreenState([screen]);
+	}
+	private replaceScreen(screenId: number, key: ScreenKey, urlParams?: { [key: string]: string }) {
+		// verify that the replacement target exists
+		const screenIndex = this.state.screens.findIndex(
+			screen => screen.id === screenId
+		);
+		if (screenIndex === -1) {
+			return;
+		}
+		// create the new screen
+		const screen = this.createScreen(
+			key,
+			urlParams,
+			{
+				isReplacement: true
+			}
+		);
+		// replace the target screen
+		const screens = this.state.screens.slice();
+		screens.splice(screenIndex, 1, screen);
+		this.setScreenState(screens);
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
@@ -1352,17 +1373,27 @@ export default class extends Root<Props, State, SharedState, Events> {
 			urlParams
 		);
 	}
-	protected viewProfile(userName?: string) {
-		if (userName) {
-			this.pushScreen(
-				ScreenKey.Profile,
-				{ userName }
-			);
+	protected viewProfile(userName?: string, options?: NavOptions) {
+		const
+			screenKey = ScreenKey.Profile,
+			urlParams = {
+				userName: userName ?? this.state.user.name
+			};
+		if (options?.method === NavMethod.Replace) {
+			this.replaceScreen(options.screenId, screenKey, urlParams);
 		} else {
-			this.replaceScreen(
-				ScreenKey.Profile,
-				{ userName: this.state.user.name }
-			);
+			const method = options?.method ??
+				userName ?
+					NavMethod.Push :
+					NavMethod.ReplaceAll;
+			switch (method) {
+				case NavMethod.Push:
+					this.pushScreen(screenKey, urlParams);
+					break;
+				case NavMethod.ReplaceAll:
+					this.replaceAllScreens(screenKey, urlParams);
+					break;
+			}
 		}
 	}
 	public componentDidMount() {

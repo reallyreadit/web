@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
@@ -131,10 +131,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (result.isInternal && result.route) {
 			this.setScreenState({
 				key: result.route.screenKey,
-				method: 'push',
 				urlParams: result.route.getPathParams ?
 					result.route.getPathParams(result.url.pathname) :
-					null
+					null,
+				method: NavMethod.Push
 			});
 			return true;
 		} else if (!result.isInternal && result.url) {
@@ -154,88 +154,88 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewAdminPage = () => {
 		this.setScreenState({
 			key: ScreenKey.Admin,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewAotdHistory = () => {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
-			method: 'push'
+			method: NavMethod.Push
 		});
 	};
 	private readonly _viewAuthor = (slug: string, name?: string) => {
 		this.setScreenState({
 			key: ScreenKey.Author,
-			method: 'push',
 			urlParams: {
 				slug
-			}
+			},
+			method: NavMethod.Push
 		});
 	};
 	private readonly _viewDiscover = () => {
 		this.setScreenState({
 			key: ScreenKey.Discover,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewFaq = () => {
 		this.setScreenState({
 			key: ScreenKey.Faq,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewNotifications = () => {
 		this.setScreenState({
 			key: ScreenKey.Notifications,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewLeaderboards = () => {
 		this.setScreenState({
 			key: ScreenKey.Leaderboards,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewMyImpact = () => {
 		this.setScreenState({
 			key: ScreenKey.MyImpact,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewMission = () => {
 		this.setScreenState({
 			key: ScreenKey.Mission,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewMyReads = () => {
 		this.setScreenState({
 			key: ScreenKey.MyReads,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewSettings = () => {
 		this.setScreenState({
 			key: ScreenKey.Settings,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 	private readonly _viewStats = () => {
 		this.setScreenState({
 			key: ScreenKey.Stats,
-			method: 'replace'
+			method: NavMethod.ReplaceAll
 		});
 	};
 
@@ -438,7 +438,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// window
 	private readonly _handleHistoryPopState = () => {
-		this.setScreenState({ method: 'pop' });
+		this.setScreenState({ method: NavMethod.Pop });
 	};
 	private readonly _handleVisibilityChange = () => {
 		if (!window.document.hidden) {
@@ -895,21 +895,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 			(
 				{
 					key: ScreenKey,
-					method: 'push' | 'replace',
-					title?: string,
-					urlParams?: { [key: string]: string }
+					urlParams?: { [key: string]: string },
+					method: NavMethod.Push | NavMethod.ReplaceAll
 				} | {
-					method: 'pop'
+					key: ScreenKey,
+					urlParams?: { [key: string]: string },
+					method: NavMethod.Replace,
+					screenIndex: number
+				} | {
+					method: NavMethod.Pop
 				}
 			)
 		)
 	) {
 		let screens: Screen[];
-		let title: string;
-		if (options.method === 'pop') {
+		if (options.method === NavMethod.Pop) {
 			if (this.state.screens.length > 1) {
 				screens = this.state.screens.slice(0, this.state.screens.length - 1);
-				title = this.state.screens[this.state.screens.length - 1].title;
 			} else {
 				const
 					route = findRouteByLocation(routes, { path: window.location.pathname }),
@@ -922,27 +924,38 @@ export default class extends Root<Props, State, SharedState, Events> {
 						)
 					);
 				screens = [screen];
-				title = screen.title;
 			}
 		} else {
-			const screen = this.createScreen(
-				options.key,
-				options.urlParams,
-				options.title
-			);
-			screens = (
-				options.method === 'push' ?
-					[...this.state.screens, screen] :
-					[screen]
-			);
-			title = screen.title;
-			window.history.pushState(
-				null,
-				screen.title,
-				screen.location.path + (screen.location.queryString || '')
-			);
+			const
+				screen = this.createScreen(
+					options.key,
+					options.urlParams,
+					{
+						isReplacement: options.method === NavMethod.Replace
+					}
+				),
+				historyUrl = screen.location.path + (screen.location.queryString || '');
+			switch (options.method) {
+				case NavMethod.Push:
+					screens = [...this.state.screens, screen];
+					window.history.pushState(null, screen.title, historyUrl);
+					break;
+				case NavMethod.Replace:
+					screens = this.state.screens.slice();
+					screens.splice(options.screenIndex, 1, screen);
+					if (options.screenIndex === screens.length - 1) {
+						window.history.replaceState(null, screen.title, historyUrl);
+					}
+					break;
+				case NavMethod.ReplaceAll:
+					screens = [screen];
+					window.history.pushState(null, screen.title, historyUrl);
+					break;
+			}
 		}
-		this.props.browserApi.setTitle(title);
+		this.props.browserApi.setTitle(
+			screens[screens.length - 1].title
+		);
 		// return the new state object
 		return {
 			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
@@ -964,18 +977,39 @@ export default class extends Root<Props, State, SharedState, Events> {
 			(
 				{
 					key: ScreenKey,
-					method: 'push' | 'replace',
-					title?: string,
-					urlParams?: { [key: string]: string }
+					urlParams?: { [key: string]: string },
+					method: NavMethod.Push | NavMethod.ReplaceAll
 				} | {
-					method: 'pop'
+					key: ScreenKey,
+					urlParams?: { [key: string]: string },
+					method: NavMethod.Replace,
+					screenId: number
+				} | {
+					method: NavMethod.Pop
 				}
 			)
 		)
 	) {
-		this.setState(
-			this.changeScreen(options)
-		);
+		if (options.method === NavMethod.Replace) {
+			const screenIndex = this.state.screens.findIndex(
+				screen => screen.id === options.screenId
+			);
+			if (screenIndex === -1) {
+				return;
+			}
+			this.setState(
+				this.changeScreen({
+					key: options.key,
+					urlParams: options.urlParams,
+					method: options.method,
+					screenIndex
+				})
+			);
+		} else {
+			this.setState(
+				this.changeScreen(options)
+			);
+		}
 	}
 	private setUpdateAvailable() {
 		this._isUpdateAvailable = true;
@@ -1093,7 +1127,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (screenAuthLevel != null && profile.userAccount.role !== screenAuthLevel) {
 			supplementaryState = this.changeScreen({
 				key: ScreenKey.Home,
-				method: 'replace'
+				method: NavMethod.ReplaceAll
 			});
 		}
 		// if we're signed in from another tab and onboarding is not null
@@ -1117,7 +1151,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (screenAuthLevel != null) {
 			supplementaryState = this.changeScreen({
 				key: ScreenKey.Home,
-				method: 'replace'
+				method: NavMethod.ReplaceAll
 			});
 		}
 		return super.onUserSignedOut(supplementaryState);
@@ -1164,7 +1198,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			ev?.preventDefault();
 			this.setScreenState({
 				key: ScreenKey.Read,
-				method: 'replace',
+				method: NavMethod.ReplaceAll,
 				urlParams: { sourceSlug, articleSlug }
 			});
 		} else if (
@@ -1346,15 +1380,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		this.setScreenState({
 			key: ScreenKey.Comments,
-			method: 'push',
+			method: NavMethod.Push,
 			urlParams
 		});
 	}
-	protected viewProfile(userName?: string) {
+	protected viewProfile(userName?: string, options?: NavOptions) {
 		this.setScreenState({
 			key: ScreenKey.Profile,
-			method: userName ? 'push' : 'replace',
-			urlParams: { userName: userName || this.state.user.name }
+			urlParams: { userName: userName || this.state.user.name },
+			...(
+				options ??
+				{
+					method: userName ?
+						NavMethod.Push :
+						NavMethod.ReplaceAll
+				}
+			)
 		});
 	}
 	public componentDidMount() {
