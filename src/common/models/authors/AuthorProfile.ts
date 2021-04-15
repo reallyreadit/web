@@ -1,5 +1,6 @@
 export default interface AuthorProfile {
 	name: string,
 	slug: string,
-	totalEarnings: number
+	totalEarnings: number,
+	userName: string | null
 }
