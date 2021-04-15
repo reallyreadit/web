@@ -35,21 +35,32 @@ export default function createScreenFactory<TScreenKey>(
 				currentState.title = createTitle(result, user);
 			}
 		),
-		reloadProfile = (screenId: number, userName: string, user: UserAccount | null) => new Promise<Profile>(
-			(resolve, reject) => {
-				deps.onGetProfile(
-					{ userName },
-					result => {
-						deps.onSetScreenState(screenId, createScreenUpdater(result, user));
-						if (result.value) {
-							resolve(result.value);
-						} else {
-							reject(result.errors);
+		reloadProfile = (screenId: number, userName: string, user: UserAccount | null) => {
+			deps.onSetScreenState(
+				screenId,
+				createScreenUpdater(
+					{
+						isLoading: true
+					},
+					user
+				)
+			);
+			return new Promise<Profile>(
+				(resolve, reject) => {
+					deps.onGetProfile(
+						{ userName },
+						result => {
+							deps.onSetScreenState(screenId, createScreenUpdater(result, user));
+							if (result.value) {
+								resolve(result.value);
+							} else {
+								reject(result.errors);
+							}
 						}
-					}
-				);
-			}
-		),
+					);
+				}
+			);
+		},
 		updateProfile = (screenId: number, newValues: Partial<Profile>) => {
 			deps.onSetScreenState(
 				screenId,
