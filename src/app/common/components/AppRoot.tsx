@@ -1288,6 +1288,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								{this.state.screens.map((screen, index, screens) => (
 									<li
 										className={classNames('screen', {
+											'slide-in': !screen.isReplacement,
 											'slide-out': this.state.isPoppingScreen && index === screens.length - 1
 										})}
 										key={screen.id}
