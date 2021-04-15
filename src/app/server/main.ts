@@ -394,6 +394,44 @@ server.get('/mailLink/:id', (req, res) => {
 			}
 		);
 });
+server.get(
+	'/writers/:slug',
+	(req, res, next) => {
+		// Create a query delegate that uses the API server request cache.
+		const getAuthorProfile = () => req.api.getAuthorProfile(
+			{
+				slug: req.params['slug']
+			},
+			() => {
+				// Callbacks aren't used in the server environment.
+			}
+		);
+		// Capture the request.
+		getAuthorProfile();
+		// Process the request.
+		req.api
+			.processRequests()
+			.then(
+				() => {
+					// Check the result.
+					const response = getAuthorProfile();
+					if (response.value?.userName) {
+						redirect(
+							req,
+							res,
+							findRouteByKey(routes, ScreenKey.Profile)
+								.createUrl({
+									'userName': response.value?.userName
+								}),
+							301
+						);
+					} else {
+						next();
+					}
+				}
+			);
+	}
+);
 // render matched route or return 404
 server.use((req, res, next) => {
 	const route = findRouteByRequest(req);
