@@ -94,25 +94,29 @@ export default class extends ServerApi {
 	public processRequests() {
 		return Promise
 			.all(
-				this._reqStore.exchanges.map(
-					exchange => this
-						.fetchJson('GET', exchange.request)
-						.then(
-							value => {
-								exchange.responseData = value;
-							}
-						)
-						.catch(
-							errors => {
-								exchange.responseErrors = errors;
-							}
-						)
-						.finally(
-							() => {
-								exchange.processed = true;
-							}
-						)
-				)
+				this._reqStore.exchanges
+					.filter(
+						exchange => !exchange.processed
+					)
+					.map(
+						exchange => this
+							.fetchJson('GET', exchange.request)
+							.then(
+								value => {
+									exchange.responseData = value;
+								}
+							)
+							.catch(
+								errors => {
+									exchange.responseErrors = errors;
+								}
+							)
+							.finally(
+								() => {
+									exchange.processed = true;
+								}
+							)
+					)
 			);
 	}
 	public hasAuthCookie() {
