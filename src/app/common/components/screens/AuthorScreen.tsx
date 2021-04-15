@@ -21,7 +21,7 @@ import { JsonLd } from 'react-schemaorg';
 import { ProfilePage } from 'schema-dts';
 import AuthorProfileRequest from '../../../../common/models/authors/AuthorProfileRequest';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, SharedState } from '../Root';
+import { Screen, SharedState, NavMethod, NavOptions } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -49,7 +49,7 @@ interface Props {
 	onShare: (data: ShareData) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
+	onViewProfile: (userName: string, options?: NavOptions) => void,
 	profile: Fetchable<AuthorProfile>,
 	user: UserAccount | null
 }
@@ -258,15 +258,25 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 					slug: getSlug(location)
 				},
 				profile => {
-					deps.onSetScreenState(
-						id,
-						produce(
-							(currentState: Screen<Fetchable<AuthorProfile>>) => {
-								currentState.componentState = profile;
-								currentState.title = deps.onCreateTitle(profile);
+					if (profile.value?.userName) {
+						deps.onViewProfile(
+							profile.value?.userName,
+							{
+								method: NavMethod.Replace,
+								screenId: id
 							}
-						)
-					);
+						);
+					} else {
+						deps.onSetScreenState(
+							id,
+							produce(
+								(currentState: Screen<Fetchable<AuthorProfile>>) => {
+									currentState.componentState = profile;
+									currentState.title = deps.onCreateTitle(profile);
+								}
+							)
+						);
+					}
 				}
 			);
 			return {
