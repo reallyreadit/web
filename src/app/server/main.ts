@@ -79,7 +79,7 @@ function findRouteByRequest(req: express.Request) {
 
 // redirect helper functions
 const nodeUrl = url;
-function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey]?: string, [key: string]: any }>, res: express.Response, url: string) {
+function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey]?: string, [key: string]: any }>, res: express.Response, url: string, status: 301 | 302 = 302) {
 	if (clientTypeQueryStringKey in req.query) {
 		const redirectUrl = nodeUrl.parse(url, true);
 		url = nodeUrl.format({
@@ -90,7 +90,7 @@ function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey
 			}
 		})
 	}
-	res.redirect(url);
+	res.redirect(status, url);
 }
 // TODO: support adding an (error) message!
 function redirectToHomeScreen(req: express.Request, res: express.Response) {
