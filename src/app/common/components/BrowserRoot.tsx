@@ -1052,7 +1052,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onDisplayPreferenceChanged(preference, eventSource);
 	}
 	protected onLocationChanged(path: string, title?: string) {
-		window.history.pushState(
+		window.history.replaceState(
 			null,
 			title || window.document.title,
 			path
