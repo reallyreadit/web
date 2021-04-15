@@ -732,6 +732,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
+				onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,

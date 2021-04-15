@@ -11,7 +11,6 @@ import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import LeaderboardBadges from '../../../../common/components/LeaderboardBadges';
 import { formatCountable, formatCurrency } from '../../../../common/format';
-import ArticleList from '../controls/articles/ArticleList';
 import UserArticle from '../../../../common/models/UserArticle';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import ShareData from '../../../../common/sharing/ShareData';
@@ -20,7 +19,6 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import PostDetails from '../../../../common/components/PostDetails';
 import ActionLink from '../../../../common/components/ActionLink';
 import GetFollowersDialog from './ProfileScreen/GetFollowersDialog';
 import CommentThread from '../../../../common/models/CommentThread';
@@ -29,7 +27,6 @@ import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
 import FollowingListDialog from '../FollowingListDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
-import PageSelector from '../controls/PageSelector';
 import InfoBox from '../../../../common/components/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
@@ -40,8 +37,12 @@ import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
+import AuthorArticleQuery from '../../../../common/models/articles/AuthorArticleQuery';
 import Icon from '../../../../common/components/Icon';
 import * as classNames from 'classnames';
+import { PostList } from '../PostList';
+import HeaderSelector from '../HeaderSelector';
+import { ArticleList } from '../ArticleList';
 
 interface Props {
 	deviceType: DeviceType,
@@ -56,6 +57,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
+	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
 	onGetFollowees: FetchFunction<Following[]>,
 	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
@@ -83,18 +85,96 @@ interface Props {
 	userName: string
 }
 export type Deps = Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'userAccount' | 'userName'>>;
-interface State {
-	isFollowingButtonBusy: boolean,
-	posts: Fetchable<PageResult<Post>>
+enum View {
+	Articles = 'Articles',
+	Indeterminate = 'Indeterminate',
+	Posts = 'Posts'
 }
-const postsPageSize = 40;
+type BaseState = {
+	isFollowingButtonBusy: boolean
+};
+type ArticlesState = BaseState & {
+	view: View.Articles,
+	articles: Fetchable<PageResult<UserArticle>>
+};
+type IndeterminateState = BaseState & {
+	view: View.Indeterminate
+};
+type PostsState = BaseState & {
+	view: View.Posts,
+	posts: Fetchable<PageResult<Post>>
+};
+type State = IndeterminateState | ArticlesState | PostsState;
+const
+	listPageSize = 40,
+	headerSelectorItems = [
+		{
+			value: View.Articles
+		},
+		{
+			value: View.Posts
+		}
+	];
+
 export class ProfileScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changePageNumber = (pageNumber: number) => {
+	private readonly _changeArticles = (articles: Fetchable<PageResult<UserArticle>>) => {
 		this.setState({
+			view: View.Articles,
+			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+			articles
+		});
+	};
+	private readonly _changeArticlesPageNumber = (_: number) => {
+		this.setState({
+			view: View.Articles,
+			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+			articles: { isLoading: true }
+		});
+		this.fetchArticles();
+	};
+	private readonly _changePosts = (posts: Fetchable<PageResult<Post>>) => {
+		this.setState({
+			view: View.Posts,
+			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+			posts
+		});
+	};
+	private readonly _changePostsPageNumber = (pageNumber: number) => {
+		this.setState({
+			view: View.Posts,
+			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
 			posts: { isLoading: true }
 		});
 		this.fetchPosts(pageNumber);
+	};
+	private readonly _changeView = (value: string) => {
+		const view = value as View;
+		if (view === this.state.view) {
+			return;
+		}
+		switch (view) {
+			case View.Articles:
+				this.setState({
+					view,
+					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+					articles: {
+						isLoading: true
+					}
+				});
+				this.fetchArticles();
+				break;
+			case View.Posts:
+				this.setState({
+					view,
+					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+					posts: {
+						isLoading: true
+					}
+				});
+				this.fetchPosts(1);
+				break;
+		}
 	};
 	private readonly _followUser = (form: UserNameForm) => {
 		return this.props
@@ -175,114 +255,28 @@ export class ProfileScreen extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
-		this.state = {
-			isFollowingButtonBusy: false,
-			posts: this.fetchPosts(1)
-		};
-		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(
-				event => {
-					if (
-						this.state.posts.value &&
-						this.state.posts.value.items.some(post => post.article.id === event.article.id)
-					) {
-						const postItems = this.state.posts.value.items.slice();
-						postItems.forEach(
-							(post, index, posts) => {
-								if (post.article.id === event.article.id) {
-									// merge objects in case the new object is missing properties due to outdated iOS client
-									posts.splice(
-										index,
-										1,
-										{
-											...post,
-											article: {
-												...post.article,
-												...event.article
-											}
-										}
-									);
-								}
-							}
-						);
-						this.setState({
-							...this.state,
-							posts: {
-								...this.state.posts,
-								value: {
-									...this.state.posts.value,
-									items: postItems
-								}
-							}
-						});
-					}
-				}
-			)
-		);
-		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticlePostedHandler(
-				post => {
-					if (this.state.posts.value) {
-						this.setState({
-							...this.state,
-							posts: {
-								...this.state.posts,
-								value: {
-									...this.state.posts.value,
-									items: [
-										post,
-										...this.state.posts.value.items.slice(
-											0,
-											this.state.posts.value.items.length < postsPageSize ?
-												this.state.posts.value.items.length :
-												postsPageSize - 1
-										)
-									]
-								}
-							}
-						});
-					}
-				}
-			),
-			props.onRegisterCommentUpdatedHandler(
-				comment => {
-					if (this.state.posts.value) {
-						const post = this.state.posts.value.items.find(post => post.comment && post.comment.id === comment.id);
-						if (post) {
-							const items = this.state.posts.value.items.slice();
-							if (comment.dateDeleted) {
-								items.splice(
-									items.indexOf(post),
-									1
-								);
-							} else {
-								items.splice(
-									items.indexOf(post),
-									1,
-									{
-										...post,
-										comment: {
-											...post.comment,
-											text: comment.text,
-											addenda: comment.addenda
-										}
-									}
-								);
-							}
-							this.setState({
-								posts: {
-									...this.state.posts,
-									value: {
-										...this.state.posts.value,
-										items
-									}
-								}
-							});
-						}
-					}
-				}
-			)
-		);
+		if (props.profile.isLoading || !props.profile.value) {
+			this.state = {
+				view: View.Indeterminate,
+				isFollowingButtonBusy: false
+			};
+		} else if (
+			props.profile.value.authorProfile &&
+			!props.highlightedCommentId &&
+			!props.highlightedPostId
+		) {
+			this.state = {
+				view: View.Articles,
+				isFollowingButtonBusy: false,
+				articles: this.fetchArticles()
+			};
+		} else {
+			this.state = {
+				view: View.Posts,
+				isFollowingButtonBusy: false,
+				posts: this.fetchPosts(1)
+			};
+		}
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterFolloweeCountChangedHandler(
 				change => {
@@ -305,22 +299,107 @@ export class ProfileScreen extends React.Component<Props, State> {
 			)
 		);
 	}
+	private fetchArticles() {
+		return this.props.onGetAuthorArticles(
+			{
+				maxLength: null,
+				minLength: null,
+				pageNumber: 1,
+				pageSize: listPageSize,
+				slug: this.props.profile.value.authorProfile.slug
+			},
+			this._asyncTracker.addCallback(
+				articles => {
+					this.setState({
+						view: View.Articles,
+						isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+						articles
+					});
+				}
+			)
+		);
+	}
 	private fetchPosts(pageNumber: number) {
 		return this.props.onGetPosts(
 			{
 				userName: this.props.userName,
 				pageNumber,
-				pageSize: postsPageSize
+				pageSize: listPageSize
 			},
 			this._asyncTracker.addCallback(
 				posts => {
-					this.setState({ posts });
+					this.setState({
+						view: View.Posts,
+						isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+						posts
+					});
 				}
 			)
 		);
 	}
 	private isOwnProfile() {
 		return this.props.userAccount && this.props.userAccount.name === this.props.userName;
+	}
+	private renderList() {
+		switch (this.state.view) {
+			case View.Indeterminate:
+				return null;
+			case View.Articles:
+				return (
+					<ArticleList
+						articles={this.state.articles}
+						emptyListMessage="No articles found."
+						onChangeArticles={this._changeArticles}
+						onChangePageNumber={this._changeArticlesPageNumber}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onPostArticle={this.props.onPostArticle}
+						onRateArticle={this.props.onRateArticle}
+						onReadArticle={this.props.onReadArticle}
+						onRegisterArticleChangeHandler={this.props.onRegisterArticleChangeHandler}
+						onShare={this.props.onShare}
+						onToggleArticleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
+						onViewProfile={this.props.onViewProfile}
+						paginate={false}
+						userAccount={this.props.userAccount}
+					/>
+				);
+			case View.Posts:
+				return (
+					<PostList
+						addNewPosts={this.isOwnProfile()}
+						emptyListMessage={
+							this.isOwnProfile() ?
+								'You haven\'t posted anything yet.' :
+								`${this.props.userName} hasn't posted anything yet.`
+						}
+						highlightedCommentId={this.props.highlightedCommentId}
+						highlightedPostId={this.props.highlightedPostId}
+						onChangePageNumber={this._changePostsPageNumber}
+						onChangePosts={this._changePosts}
+						onCloseDialog={this.props.onCloseDialog}
+						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
+						onOpenDialog={this.props.onOpenDialog}
+						onPostArticle={this.props.onPostArticle}
+						onRateArticle={this.props.onRateArticle}
+						onReadArticle={this.props.onReadArticle}
+						onRegisterArticleChangeHandler={this.props.onRegisterArticleChangeHandler}
+						onRegisterArticlePostedHandler={this.props.onRegisterArticlePostedHandler}
+						onRegisterCommentUpdatedHandler={this.props.onRegisterCommentUpdatedHandler}
+						onShare={this.props.onShare}
+						onToggleArticleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
+						onViewProfile={this.props.onViewProfile}
+						onViewThread={this.props.onViewThread}
+						paginate={!!this.props.userAccount}
+						posts={this.state.posts}
+						userAccount={this.props.userAccount}
+					/>
+				);
+		}
 	}
 	private setIsFollowed() {
 		this.props.onUpdateProfile(
@@ -332,6 +411,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 		);
 	}
 	public componentDidUpdate(prevProps: Props) {
+		// reload the profile if the profile user has changed or the user has signed in or out
 		if (
 			this.props.userName !== prevProps.userName ||
 			(
@@ -340,8 +420,35 @@ export class ProfileScreen extends React.Component<Props, State> {
 					!!prevProps.userAccount
 			)
 		) {
-			this.props.onReloadProfile(this.props.screenId, this.props.userName, this.props.userAccount);
-			this.fetchPosts(1);
+			this.setState(
+				{
+					view: View.Indeterminate,
+					isFollowingButtonBusy: false
+				},
+				() => {
+					this.props.onReloadProfile(this.props.screenId, this.props.userName, this.props.userAccount);
+				}
+			);
+		}
+		// set the view when the profile has loaded
+		if (this.props.profile.value && prevProps.profile.isLoading) {
+			if (
+				this.props.profile.value.authorProfile &&
+				!this.props.highlightedCommentId &&
+				!this.props.highlightedPostId
+			) {
+				this.setState({
+					view: View.Articles,
+					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+					articles: this.fetchArticles()
+				});
+			} else {
+				this.setState({
+					view: View.Posts,
+					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+					posts: this.fetchPosts(1)
+				});
+			}
 		}
 	}
 	public componentWillUnmount() {
@@ -356,11 +463,23 @@ export class ProfileScreen extends React.Component<Props, State> {
 			followeesText = `Following ${this.props.profile.value.followeeCount}`;
 			followersText = this.props.profile.value.followerCount + ' ' + formatCountable(this.props.profile.value.followerCount, 'follower');
 		}
+		let isListLoading: boolean;
+		switch (this.state.view) {
+			case View.Articles:
+				isListLoading = this.state.articles.isLoading;
+				break;
+			case View.Indeterminate:
+				isListLoading = true;
+				break;
+			case View.Posts:
+				isListLoading = this.state.posts.isLoading;
+				break;
+		}
 		return (
 			<div className="profile-screen_1u1j1e">
-				{this.props.profile.isLoading || this.state.posts.isLoading ?
+				{this.props.profile.isLoading ?
 					<LoadingOverlay position="absolute" /> :
-					!this.props.profile.value || !this.state.posts.value ?
+					!this.props.profile.value ?
 						<InfoBox
 							position="absolute"
 							style="normal"
@@ -388,7 +507,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 								<div className="profile" data-nosnippet>
 									{this.props.profile.value.authorProfile ?
 										<div className="author">
-											{this.props.profile.value.authorProfile.name}<Icon name="verified-user" />
+											{this.props.profile.value.authorProfile.name}<Icon name="verified-user" title="Verified" />
 										</div> :
 										null}
 									<div className={classNames('user-name', { 'small': !!this.props.profile.value.authorProfile })}>
@@ -434,44 +553,18 @@ export class ProfileScreen extends React.Component<Props, State> {
 										/> :
 										<span className="following-count">{followersText}</span>}
 								</div>
-								{this.state.posts.value.items.length ?
-									<>
-										<ArticleList>
-											{this.state.posts.value.items.map(
-												post => (
-													<li key={post.date}>
-														<PostDetails
-															highlightedCommentId={this.props.highlightedCommentId}
-															highlightedPostId={this.props.highlightedPostId}
-															onCloseDialog={this.props.onCloseDialog}
-															onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-															onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-															onNavTo={this.props.onNavTo}
-															onOpenDialog={this.props.onOpenDialog}
-															onRateArticle={this.props.onRateArticle}
-															onRead={this.props.onReadArticle}
-															onPost={this.props.onPostArticle}
-															onShare={this.props.onShare}
-															onToggleStar={this.props.onToggleArticleStar}
-															onViewComments={this.props.onViewComments}
-															onViewProfile={this.props.onViewProfile}
-															onViewThread={this.props.onViewThread}
-															post={post}
-															user={this.props.userAccount}
-														/>
-													</li>
-												)
-											)}
-										</ArticleList>
-										{this.props.userAccount ?
-											<PageSelector
-												pageNumber={this.state.posts.value.pageNumber}
-												pageCount={this.state.posts.value.pageCount}
-												onChange={this._changePageNumber}
-											/> :
-											null}
-									</> :
+								{this.props.profile.value.authorProfile ?
+									<div className="controls" data-nosnippet>
+										<HeaderSelector
+											disabled={isListLoading}
+											items={headerSelectorItems}
+											onChange={this._changeView}
+											style="compact"
+											value={this.state.view}
+										/>
+									</div> :
 									null}
+								{this.renderList()}
 							</Panel>
 							<JsonLd<ProfilePage>
 								item={{

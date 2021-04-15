@@ -2,7 +2,6 @@
 	componentPath: src/app/common/components/screens/ProfileScreen
 	cssComponentId: profile-screen_1u1j1e
 */
-@import '../../../../common/styles/colors';
 
 .profile-screen_1u1j1e {
 	min-height: 100%;
@@ -12,6 +11,7 @@
 .profile-screen_1u1j1e > .header {
 	flex: 0 0 auto;
 	text-align: center;
+	background-color: var(--app-background-alt-color);
 }
 .profile-screen_1u1j1e > .main {
 	flex: 1 1 auto;
@@ -32,18 +32,33 @@
 	align-items: center;
 	margin-bottom: 20px;
 }
+.profile-screen_1u1j1e > .main > .content > .profile > .author {
+	font-family: 'Museo Sans (700)';
+	font-size: 22pt;
+	margin-bottom: 15px;
+}
+.profile-screen_1u1j1e > .main > .content > .profile > .author > .icon_rour3d {
+	font-size: 0.75em;
+	margin-left: 0.5em;
+}
 .profile-screen_1u1j1e > .main > .content > .profile > .user-name {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-}
-.profile-screen_1u1j1e > .main > .content > .profile > .user-name > .name {
 	font-family: 'Museo Sans (700)';
 	font-size: 22pt;
 }
+.profile-screen_1u1j1e > .main > .content > .profile > .user-name.small {
+	font-family: 'Museo Sans (500)';
+	font-size: 18pt;
+}
 .profile-screen_1u1j1e > .main > .content > .profile > .user-name > .leaderboard-badges_s4o6nj {
-	font-size: 16pt;
-	margin-left: 15px;
+	font-size: 0.75em;
+	margin-left: 0.5em;
+}
+.profile-screen_1u1j1e > .main > .content > .profile > .earnings {
+	margin-top: 15px;
+	font-family: 'Museo Sans (700)';
 }
 .profile-screen_1u1j1e > .main > .content > .profile > .following-count {
 	font-family: 'Museo Sans (500)';
@@ -60,18 +75,11 @@
 .profile-screen_1u1j1e > .main > .content > .profile > .button_ovrlmi {
 	margin-top: 20px;
 }
-.profile-screen_1u1j1e > .main > .content > .article-list_o9uw1n,
-.profile-screen_1u1j1e > .main > .content > .page-selector_a8tbpb {
+.profile-screen_1u1j1e > .main > .content > .controls {
 	flex: 0 0 auto;
+	margin-bottom: 20px;
 }
-
-@include theme using ($root, $scheme) {
-	#{$root} .profile-screen_1u1j1e > .header {
-		@include theme-colors(
-			$scheme,
-			(
-				"background-color": $app-background-alt-color
-			)
-		);
-	}
+.profile-screen_1u1j1e > .main > .content > .article-list_ya0vz5,
+.profile-screen_1u1j1e > .main > .content > .post-list_eij9bc {
+	flex: 0 0 auto;
 }
