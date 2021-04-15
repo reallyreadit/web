@@ -19,16 +19,19 @@ export default (props: {
 		badge?: number,
 		iconName: IconName
 	};
-	if (props.titles.length > 1 && !props.isTransitioningBack) {
-		leftButton = {
-			action: props.onBack,
-			iconName: 'chevron-left'
-		};
-	} else {
+	if (
+		props.titles.length === 1 ||
+		(props.titles.length === 2 && props.isTransitioningBack)
+	) {
 		leftButton = {
 			action: props.onViewNotifications,
 			badge: props.user.replyAlertCount + props.user.postAlertCount + props.user.loopbackAlertCount,
 			iconName: 'bell'
+		};
+	} else {
+		leftButton = {
+			action: props.onBack,
+			iconName: 'chevron-left'
 		};
 	}
 	return (
