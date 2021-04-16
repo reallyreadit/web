@@ -139,7 +139,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								href={findRouteByKey(routes, ScreenKey.Stats).createUrl()}
 								onClick={this.props.onViewStats}
 								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
-								text="Stats"
+								text="My Stats"
 								size="x-large"
 								display="block"
 							/>

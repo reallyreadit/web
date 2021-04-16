@@ -131,7 +131,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<Button
 								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
 								onClick={this.props.onViewStats}
-								text="Stats"
+								text="My Stats"
 								size="large"
 								display="block"
 							/>
