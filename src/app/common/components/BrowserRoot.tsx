@@ -709,6 +709,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,
+					onSignOut: this._signOut,
 					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
 					stripe: this.props.stripeLoader.value
 				}
@@ -1324,7 +1325,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						isClosing={this.state.menuState === 'closing'}
 						onClose={this._closeMenu}
 						onClosed={this._hideMenu}
-						onSignOut={this._signOut}
 						onViewAdminPage={this._viewAdminPage}
 						onViewFaq={this._viewFaq}
 						onViewLeaderboards={this._viewLeaderboards}

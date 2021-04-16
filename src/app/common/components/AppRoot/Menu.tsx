@@ -13,7 +13,6 @@ interface Props {
 	isClosing: boolean,
 	onClose: () => void,
 	onClosed: () => void,
-	onSignOut: () => void,
 	onViewAdminPage: () => void,
 	onViewFaq: () => void,
 	onViewLeaderboards: () => void,
@@ -25,15 +24,11 @@ interface Props {
 	selectedScreen: Screen,
 	userAccount: UserAccount | null
 }
-export default class extends React.PureComponent<Props, { isSigningOut: boolean }> {
+export default class extends React.PureComponent<Props> {
 	private readonly _handleAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'menu_fk9ujy-drawer-close') {
 			this.props.onClosed();
 		}
-	};
-	private readonly _signOut = () => {
-		this.setState({ isSigningOut: true });
-		this.props.onSignOut();
 	};
 	private readonly _stopPropagation = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -45,21 +40,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 	private readonly _viewProfile = () => {
 		this.props.onViewProfile();
 	};
-	private _cachedUser: UserAccount | undefined;
 	constructor(props: Props) {
 		super(props);
 		this.state = { isSigningOut: false };
 	}
 	public render() {
-		// cache the user account so that we can animate
-		// the menu closing even after the user has signed out
-		let user: UserAccount;
-		if (this.props.userAccount) {
-			user = this.props.userAccount;
-			this._cachedUser = this.props.userAccount;
-		} else {
-			user = this._cachedUser;
-		}
 		return (
 			<div
 				className={classNames('menu_fk9ujy', { 'closing': this.props.isClosing })}
@@ -71,7 +56,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					onClick={this._stopPropagation}
 				>
 					<div className="header">
-						<label>{user.name}</label>
+						<label>{this.props.userAccount.name}</label>
 						<div
 							className="close-button"
 							onClick={this.props.onClose}
@@ -80,7 +65,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						</div>
 					</div>
 					<ol>
-						{user.role === UserAccountRole.Admin ?
+						{this.props.userAccount.role === UserAccountRole.Admin ?
 							<li>
 								<Button
 									state={this.props.selectedScreen.key === ScreenKey.Admin ? 'selected' : 'normal'}
@@ -151,15 +136,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								state={this.props.selectedScreen.key === ScreenKey.Settings ? 'selected' : 'normal'}
 								onClick={this.props.onViewSettings}
 								text="Settings"
-								size="large"
-								display="block"
-							/>
-						</li>
-						<li>
-							<Button
-								state={this.state.isSigningOut ? 'busy' : 'normal'}
-								onClick={this._signOut}
-								text="Log Out"
 								size="large"
 								display="block"
 							/>

@@ -14,7 +14,6 @@ interface Props {
 	isClosing: boolean,
 	onClose: () => void,
 	onClosed: () => void,
-	onSignOut: () => Promise<void>,
 	onViewAdminPage: () => void,
 	onViewFaq: () => void,
 	onViewLeaderboards: () => void,
@@ -30,18 +29,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 		if (ev.animationName === 'menu_v25ec5-drawer-close') {
 			this.props.onClosed();
 		}
-	};
-	private readonly _signOut = () => {
-		this.setState({ isSigningOut: true });
-		this.props
-			.onSignOut()
-			.then(() => {
-				this.setState({ isSigningOut: false });
-				this.props.onClose();
-			})
-			.catch(() => {
-				this.setState({ isSigningOut: false });
-			});
 	};
 	private readonly _stopPropagation = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -161,15 +148,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								onClick={this.props.onViewSettings}
 								state={this.props.selectedScreen.key === ScreenKey.Settings ? 'selected' : 'normal'}
 								text="Settings"
-								size="x-large"
-								display="block"
-							/>
-						</li>
-						<li>
-							<Button
-								onClick={this._signOut}
-								state={this.state.isSigningOut ? 'busy': 'normal'}
-								text="Log Out"
 								size="x-large"
 								display="block"
 							/>

@@ -14,7 +14,7 @@ import AsyncActionLink from './controls/AsyncActionLink';
 import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import Fetchable from '../../../common/Fetchable';
-import AsyncTracker from '../../../common/AsyncTracker';
+import AsyncTracker, { CancellationToken } from '../../../common/AsyncTracker';
 import Settings from '../../../common/models/Settings';
 import LoadingOverlay from './controls/LoadingOverlay';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
@@ -37,6 +37,7 @@ import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodRespon
 import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDialog';
 import { ChangePaymentMethodDialog } from './SettingsPage/ChangePaymentMethodDialog';
 import { StripeCardElement, Stripe } from '@stripe/stripe-js';
+import Button from '../../../common/components/Button';
 
 interface Props {
 	deviceType: DeviceType,
@@ -61,6 +62,7 @@ interface Props {
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
+	onSignOut: () => Promise<void>,
 	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>,
 	subscriptionStatus: SubscriptionStatus,
 	stripe: Promise<Stripe> | null
@@ -70,6 +72,7 @@ class SettingsPage extends React.PureComponent<
 	Props,
 	{
 		highlightedAuthServiceAccountId: number,
+		isSigningOut: boolean,
 		settings: Fetchable<Settings>
 	}
 > {
@@ -216,6 +219,39 @@ class SettingsPage extends React.PureComponent<
 			/>
 		);
 	};
+	private readonly _signOut = () => {
+		this.setState(
+			prevState => {
+				if (prevState.isSigningOut) {
+					return null;
+				}
+				this._asyncTracker
+					.addPromise(
+						this.props.onSignOut()
+					)
+					.then(
+						() => {
+							this.setState({
+								isSigningOut: false
+							});
+						}
+					)
+					.catch(
+						reason => {
+							if ((reason as CancellationToken)?.isCancelled) {
+								return;
+							}
+							this.setState({
+								isSigningOut: false
+							});
+						}
+					);
+				return {
+					isSigningOut: true
+				};
+			}
+		);
+	};
 	private readonly _updatePaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => {
 		return this.props
 			.onUpdatePaymentMethod(request)
@@ -238,6 +274,7 @@ class SettingsPage extends React.PureComponent<
 		super(props);
 		this.state = {
 			highlightedAuthServiceAccountId: 0,
+			isSigningOut: false,
 			settings: props.onGetSettings(
 				this._asyncTracker.addCallback(
 					settings => {
@@ -424,6 +461,24 @@ class SettingsPage extends React.PureComponent<
 									'No linked accounts found.'}
 							</div>
 						</div>
+						<div className="setting">
+							<div className="header">
+								<span className="label">Current Session</span>
+							</div>
+							<div className="section">
+								<Button
+									intent="loud"
+									onClick={this._signOut}
+									state={
+										this.state.isSigningOut ?
+											'busy' :
+											'normal'
+									}
+									style="preferred"
+									text="Log Out"
+								/>
+							</div>
+						</div>
 					</>}
 			</ScreenContainer>
 		);
@@ -456,6 +511,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}
+				onSignOut={deps.onSignOut}
 				onUpdatePaymentMethod={deps.onUpdatePaymentMethod}
 				stripe={deps.stripe}
 				subscriptionStatus={sharedState.subscriptionStatus}
