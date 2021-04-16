@@ -194,6 +194,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
+	private readonly _viewFaq = () => {
+		this.replaceAllScreens(ScreenKey.Faq);
+	};
 	private readonly _viewHome = () => {
 		this.replaceAllScreens(ScreenKey.Home);
 	};
@@ -1313,6 +1316,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								onClosed={this._hideMenu}
 								onSignOut={this._signOut}
 								onViewAdminPage={this._viewAdminPage}
+								onViewFaq={this._viewFaq}
 								onViewLeaderboards={this._viewLeaderboards}
 								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 								onViewProfile={this._viewProfile}

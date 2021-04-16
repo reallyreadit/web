@@ -15,6 +15,7 @@ interface Props {
 	onClosed: () => void,
 	onSignOut: () => void,
 	onViewAdminPage: () => void,
+	onViewFaq: () => void,
 	onViewLeaderboards: () => void,
 	onViewPrivacyPolicy: () => void,
 	onViewProfile: () => void,
@@ -132,6 +133,15 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
 								onClick={this.props.onViewLeaderboards}
 								text="Leaderboards"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Faq ? 'selected' : 'normal'}
+								onClick={this.props.onViewFaq}
+								text="Help"
 								size="large"
 								display="block"
 							/>

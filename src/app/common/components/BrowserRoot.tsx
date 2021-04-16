@@ -1320,6 +1320,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onClosed={this._hideMenu}
 						onSignOut={this._signOut}
 						onViewAdminPage={this._viewAdminPage}
+						onViewFaq={this._viewFaq}
 						onViewLeaderboards={this._viewLeaderboards}
 						onViewProfile={this._viewProfile}
 						onViewSearch={this._viewSearch}

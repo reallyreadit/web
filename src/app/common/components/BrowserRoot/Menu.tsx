@@ -16,6 +16,7 @@ interface Props {
 	onClosed: () => void,
 	onSignOut: () => Promise<void>,
 	onViewAdminPage: () => void,
+	onViewFaq: () => void,
 	onViewLeaderboards: () => void,
 	onViewProfile: () => void,
 	onViewSearch: () => void,
@@ -140,6 +141,16 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								onClick={this.props.onViewLeaderboards}
 								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
 								text="Leaderboards"
+								size="x-large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								href={findRouteByKey(routes, ScreenKey.Faq).createUrl()}
+								onClick={this.props.onViewFaq}
+								state={this.props.selectedScreen.key === ScreenKey.Faq ? 'selected' : 'normal'}
+								text="Help"
 								size="x-large"
 								display="block"
 							/>
