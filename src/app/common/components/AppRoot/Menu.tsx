@@ -109,6 +109,15 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						</li>
 						<li>
 							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
+								onClick={this.props.onViewStats}
+								text="My Stats"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
 								badge="beta"
 								state={this.props.selectedScreen.key === ScreenKey.Discover ? 'selected' : 'normal'}
 								onClick={this.props.onViewDiscover}
@@ -123,15 +132,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
 								onClick={this.props.onViewLeaderboards}
 								text="Leaderboards"
-								size="large"
-								display="block"
-							/>
-						</li>
-						<li>
-							<Button
-								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
-								onClick={this.props.onViewStats}
-								text="My Stats"
 								size="large"
 								display="block"
 							/>
