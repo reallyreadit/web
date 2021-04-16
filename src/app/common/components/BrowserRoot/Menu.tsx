@@ -107,7 +107,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 										'selected' :
 										'normal'
 								}
-								text="Profile"
+								text="My Profile"
 								size="x-large"
 								display="block"
 							/>

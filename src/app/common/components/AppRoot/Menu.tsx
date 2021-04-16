@@ -102,7 +102,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 										'normal'
 								}
 								onClick={this._viewProfile}
-								text="Profile"
+								text="My Profile"
 								size="large"
 								display="block"
 							/>
