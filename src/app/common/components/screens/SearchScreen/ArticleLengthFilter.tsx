@@ -81,7 +81,7 @@ export default class ArticleLengthFilter extends React.Component<Props, State> {
 	public render() {
 		return (
 			<Filter
-				className="article-length-filter_hnsrky"
+				className="article-length-filter_fx9wpo"
 				contentHeight={this.state.contentHeight}
 				contentRef={this._contentRef}
 				onSetContentHeight={this._setContentHeight}

@@ -40,7 +40,7 @@ import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialo
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import { DeviceType } from '../../../common/DeviceType';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
-import createDiscoverScreenFactory from './screens/DiscoverScreen';
+import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
@@ -194,9 +194,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private readonly _viewDiscover = () => {
-		this.replaceAllScreens(ScreenKey.Discover);
-	};
 	private readonly _viewHome = () => {
 		this.replaceAllScreens(ScreenKey.Home);
 	};
@@ -214,6 +211,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
+	};
+	private readonly _viewSearch = () => {
+		this.replaceAllScreens(ScreenKey.Search);
 	};
 	private readonly _viewSettings = () => {
 		this.replaceAllScreens(ScreenKey.Settings);
@@ -622,25 +622,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
-			[ScreenKey.Discover]: createDiscoverScreenFactory(
-				ScreenKey.Discover,
-				{
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
-					onNavTo: this._navTo,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onSearchArticles: this.props.serverApi.searchArticles,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
-				}
-			),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -754,6 +735,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
+			[ScreenKey.Search]: createSearchScreenFactory(
+				ScreenKey.Search,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
+					onNavTo: this._navTo,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSearchArticles: this.props.serverApi.searchArticles,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
@@ -1313,10 +1313,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 								onClosed={this._hideMenu}
 								onSignOut={this._signOut}
 								onViewAdminPage={this._viewAdminPage}
-								onViewDiscover={this._viewDiscover}
 								onViewLeaderboards={this._viewLeaderboards}
 								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 								onViewProfile={this._viewProfile}
+								onViewSearch={this._viewSearch}
 								onViewSettings={this._viewSettings}
 								onViewStats={this._viewStats}
 								selectedScreen={this.state.screens[0]}

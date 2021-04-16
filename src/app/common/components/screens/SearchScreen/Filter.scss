@@ -1,0 +1,41 @@
+/*
+	componentPath: src/app/common/components/screens/SearchScreen/Filter
+	cssComponentId: filter_fn98x9
+*/
+
+.filter_fn98x9 {
+	position: relative;
+}
+.filter_fn98x9 > .header {
+	padding: 5px 0 10px 0;
+}
+.filter_fn98x9 > .header > .title {
+	display: flex;
+	align-items: center;
+	cursor: default;
+}
+.filter_fn98x9 > .header > .title > .text {
+	flex: 1 1 auto;
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+}
+.filter_fn98x9 > .header > .title > .icon_rour3d {
+	flex: 0 0 auto;
+}
+.filter_fn98x9 > .header > .subtitle {
+	margin-top: 3px;
+	font-size: 11pt;
+}
+.filter_fn98x9 > .header > .subtitle.hidden {
+	display: none;
+}
+.filter_fn98x9 > .content {
+	height: 0;
+	overflow: hidden;
+	transition: height 250ms;
+}
+.filter_fn98x9 > .content.measuring {
+	position: absolute;
+	height: auto;
+	visibility: hidden;
+}

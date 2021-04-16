@@ -3,7 +3,6 @@ enum ScreenKey {
 	AotdHistory,
 	Author,
 	Comments,
-	Discover,
 	EmailConfirmation,
 	EmailSubscriptions,
 	ExtensionRemoval,
@@ -18,6 +17,7 @@ enum ScreenKey {
 	PrivacyPolicy,
 	Profile,
 	Read,
+	Search,
 	Settings,
 	Stats
 }

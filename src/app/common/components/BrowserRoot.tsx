@@ -44,7 +44,7 @@ import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
-import createDiscoverScreenFactory from './screens/DiscoverScreen';
+import createSearchScreenFactory from './screens/SearchScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
@@ -172,12 +172,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.Push
 		});
 	};
-	private readonly _viewDiscover = () => {
-		this.setScreenState({
-			key: ScreenKey.Discover,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewFaq = () => {
 		this.setScreenState({
 			key: ScreenKey.Faq,
@@ -223,6 +217,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
+			method: NavMethod.ReplaceAll
+		});
+	};
+	private readonly _viewSearch = () => {
+		this.setScreenState({
+			key: ScreenKey.Search,
 			method: NavMethod.ReplaceAll
 		});
 	};
@@ -525,25 +525,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
-			[ScreenKey.Discover]: createDiscoverScreenFactory(
-				ScreenKey.Discover,
-				{
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
-					onNavTo: this._navTo,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onSearchArticles: this.props.serverApi.searchArticles,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
-				}
-			),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
 				onBeginOnboarding: this._beginOnboarding,
@@ -679,6 +660,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
+			[ScreenKey.Search]: createSearchScreenFactory(
+				ScreenKey.Search,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
+					onNavTo: this._navTo,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSearchArticles: this.props.serverApi.searchArticles,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
@@ -1320,9 +1320,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onClosed={this._hideMenu}
 						onSignOut={this._signOut}
 						onViewAdminPage={this._viewAdminPage}
-						onViewDiscover={this._viewDiscover}
 						onViewLeaderboards={this._viewLeaderboards}
 						onViewProfile={this._viewProfile}
+						onViewSearch={this._viewSearch}
 						onViewSettings={this._viewSettings}
 						onViewStats={this._viewStats}
 						selectedScreen={this.state.screens[0]}

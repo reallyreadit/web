@@ -16,9 +16,9 @@ import PageResult from '../../../../common/models/PageResult';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import MultiSelectFilter from './DiscoverScreen/MultiSelectFilter';
+import MultiSelectFilter from './SearchScreen/MultiSelectFilter';
 import ContentBox from '../../../../common/components/ContentBox';
-import ArticleLengthFilter from './DiscoverScreen/ArticleLengthFilter';
+import ArticleLengthFilter from './SearchScreen/ArticleLengthFilter';
 import List from '../controls/List';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 
@@ -50,7 +50,7 @@ interface State {
 }
 const searchPromiseTag = 'search';
 
-class DiscoverScreen extends React.Component<Props, State> {
+class SearchScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeAuthors = (authors: string[]) => {
 		this.setState(
@@ -188,7 +188,7 @@ class DiscoverScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		return (
-			<ScreenContainer className="discover-screen_esmkvy">
+			<ScreenContainer className="search-screen_cdqndl">
 				{this.state.options.isLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
@@ -250,7 +250,7 @@ class DiscoverScreen extends React.Component<Props, State> {
 	}
 }
 
-export default function createDiscoverScreenFactory<TScreenKey>(
+export default function createSearchScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	services: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
@@ -259,10 +259,10 @@ export default function createDiscoverScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Discover'
+			title: 'Search'
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
-			<DiscoverScreen
+			<SearchScreen
 				onCopyTextToClipboard={services.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
 				onGetSearchOptions={services.onGetSearchOptions}

@@ -1,10 +1,10 @@
 /*
-	componentPath: src/app/common/components/screens/DiscoverScreen/MultiSelectFilter
-	cssComponentId: multi-select-filter_xw30j8
+	componentPath: src/app/common/components/screens/SearchScreen/MultiSelectFilter
+	cssComponentId: multi-select-filter_vnqq6p
 */
 @import '../../../../../common/styles/colors';
 
-.multi-select-filter_xw30j8 > .content > .option {
+.multi-select-filter_vnqq6p > .content > .option {
 	padding: 5px;
 	margin: 0 5px 5px 0;
 	border-radius: 3px;
@@ -12,12 +12,12 @@
 	border-style: solid;
 	outline: none;
 }
-.multi-select-filter_xw30j8 > .content > .option.show-more {
+.multi-select-filter_vnqq6p > .content > .option.show-more {
 	border-color: transparent;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .multi-select-filter_xw30j8 > .content > .option {
+	#{$root} .multi-select-filter_vnqq6p > .content > .option {
 		@include theme-colors(
 			$scheme,
 			(
@@ -26,7 +26,7 @@
 			)
 		);
 	}
-	#{$root} .multi-select-filter_xw30j8 > .content > .option.selected {
+	#{$root} .multi-select-filter_vnqq6p > .content > .option.selected {
 		@include theme-colors(
 			$scheme,
 			(

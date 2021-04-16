@@ -56,12 +56,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/discover',
-		pathRegExp: /^\/discover$/,
-		screenKey: ScreenKey.Discover
-	},
-	{
 		createUrl: params => `/email/confirm/${params['result']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,
@@ -203,6 +197,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Read
 		} as Route<DialogKey, ScreenKey>;
 	})(),
+	{
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/search',
+		pathRegExp: /^\/search$/,
+		screenKey: ScreenKey.Search
+	},
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',

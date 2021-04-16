@@ -34,7 +34,7 @@ export default class Filter extends React.Component<Props> {
 	public render() {
 		const isOpen = this.props.contentHeight > 0;
 		return (
-			<div className={classNames('filter_45a9os', this.props.className)}>
+			<div className={classNames('filter_fn98x9', this.props.className)}>
 				<div
 					className="header"
 					onClick={this._toggle}
@@ -50,7 +50,7 @@ export default class Filter extends React.Component<Props> {
 									'chevron-down'
 							}
 						/>
-					</div>	
+					</div>
 					<div
 						className={
 							classNames(

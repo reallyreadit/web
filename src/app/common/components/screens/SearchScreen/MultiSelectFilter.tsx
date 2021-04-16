@@ -56,7 +56,7 @@ export default class MultiSelectFilter extends React.Component<Props, State> {
 	public render() {
 		return (
 			<Filter
-				className="multi-select-filter_xw30j8"
+				className="multi-select-filter_vnqq6p"
 				contentHeight={this.state.contentHeight}
 				contentRef={this._contentRef}
 				hideSubtitleWhenOpen
