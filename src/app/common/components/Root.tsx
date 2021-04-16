@@ -16,7 +16,6 @@ import createAdminPageScreenFactory from './AdminPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
-import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import { createScreenFactory as createMissionScreenFactory } from './MissionPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import { DateTime } from 'luxon';
@@ -837,9 +836,6 @@ export default abstract class Root<
 			}),
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
-			}),
-			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
 			}),
 			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),

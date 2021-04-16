@@ -56,6 +56,7 @@ import SubscriptionProvider from '../../../common/models/subscriptions/Subscript
 import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
+import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -151,6 +152,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		'Loading...',
 		'Author not found'
 	);
+	private readonly _createFaqScreenTitle = () => 'Frequently Asked Questions';
 	private readonly _viewAdminPage = () => {
 		this.setScreenState({
 			key: ScreenKey.Admin,
@@ -524,6 +526,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
+			}),
+			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
+				onCreateTitle: this._createFaqScreenTitle,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,

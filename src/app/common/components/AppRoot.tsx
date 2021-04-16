@@ -57,6 +57,7 @@ import { ProblemDetails } from '../../../common/ProblemDetails';
 import { AppStoreErrorType } from '../../../common/Errors';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
+import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -166,6 +167,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		'Loading...',
 		'Author not found'
 	);
+	private readonly _createFaqScreenTitle = () => 'Help';
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -624,6 +626,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
+			}),
+			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
+				onCreateTitle: this._createFaqScreenTitle,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,

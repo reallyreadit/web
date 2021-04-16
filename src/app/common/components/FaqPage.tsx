@@ -188,6 +188,10 @@ interface Props {
 	onOpenNewPlatformNotificationRequestDialog: () => void
 }
 
+interface Services extends Props {
+	onCreateTitle: () => string
+}
+
 const FaqPage = (props: Props): JSX.Element => {
 	// transforms the questions to this mapped format: { "category title 1": {"question 1": true, "question 2": false}}
 	// const [openState, setOpen] = useState(
@@ -246,10 +250,10 @@ const FaqPage = (props: Props): JSX.Element => {
 		</div>
 	);
 }
-export function createScreenFactory<TScreenKey>(key: TScreenKey, props: Props) {
+export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Services) {
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Frequently Asked Questions' }),
-		render: () => <FaqPage {...props}></FaqPage>
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: services.onCreateTitle() }),
+		render: () => <FaqPage {...services}></FaqPage>
 		// render: () => <FaqPage onOpenNewPlatformNotificationRequestDialog={() => {}}></FaqPage>
 	};
 }
