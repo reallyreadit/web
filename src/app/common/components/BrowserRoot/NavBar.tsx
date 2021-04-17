@@ -6,7 +6,6 @@ import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount
 import { Screen } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
-import Separator from '../../../../common/components/Separator';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
@@ -17,15 +16,10 @@ interface Props {
 	onViewHome: () => void,
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
-	onViewPrivacyPolicy: () => void,
 	selectedScreen: Screen,
 	user: UserAccount
 }
 export default class NavBar extends React.PureComponent<Props> {
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewPrivacyPolicy();
-	};
 	public render() {
 		return (
 			<div className="nav-bar_yh8orf">
@@ -71,13 +65,6 @@ export default class NavBar extends React.PureComponent<Props> {
 						target="_blank"
 					>
 						Blog
-					</a>
-					<Separator />
-					<a
-						href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
-						onClick={this._viewPrivacyPolicy}
-					>
-						Privacy Policy
 					</a>
 					<br />
 					<a href="mailto:support@readup.com">support@readup.com</a>

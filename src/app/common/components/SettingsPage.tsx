@@ -38,6 +38,9 @@ import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDia
 import { ChangePaymentMethodDialog } from './SettingsPage/ChangePaymentMethodDialog';
 import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import Button from '../../../common/components/Button';
+import { findRouteByKey } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
+import ScreenKey from '../../../common/routing/ScreenKey';
 
 interface Props {
 	deviceType: DeviceType,
@@ -64,6 +67,7 @@ interface Props {
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignOut: () => Promise<void>,
 	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>,
+	onViewPrivacyPolicy: () => void,
 	subscriptionStatus: SubscriptionStatus,
 	stripe: Promise<Stripe> | null
 	user: UserAccount
@@ -479,6 +483,21 @@ class SettingsPage extends React.PureComponent<
 								/>
 							</div>
 						</div>
+						<div className="setting">
+							<div className="header">
+								<span className="label">Legal</span>
+							</div>
+							<div className="section">
+								<ActionLink
+									href={
+										findRouteByKey(routes, ScreenKey.PrivacyPolicy)
+											.createUrl()
+									}
+									onClick={this.props.onViewPrivacyPolicy}
+									text="Privacy Policy and Terms of Use"
+								/>
+							</div>
+						</div>
 					</>}
 			</ScreenContainer>
 		);
@@ -513,6 +532,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onShowToast={deps.onShowToast}
 				onSignOut={deps.onSignOut}
 				onUpdatePaymentMethod={deps.onUpdatePaymentMethod}
+				onViewPrivacyPolicy={deps.onViewPrivacyPolicy}
 				stripe={deps.stripe}
 				subscriptionStatus={sharedState.subscriptionStatus}
 				user={sharedState.user}

@@ -16,7 +16,6 @@ interface Props {
 	onViewAdminPage: () => void,
 	onViewFaq: () => void,
 	onViewLeaderboards: () => void,
-	onViewPrivacyPolicy: () => void,
 	onViewProfile: () => void,
 	onViewSearch: () => void,
 	onViewSettings: () => void,
@@ -32,10 +31,6 @@ export default class extends React.PureComponent<Props> {
 	};
 	private readonly _stopPropagation = (e: React.MouseEvent) => {
 		e.stopPropagation();
-	};
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewPrivacyPolicy();
 	};
 	private readonly _viewProfile = () => {
 		this.props.onViewProfile();
@@ -145,12 +140,6 @@ export default class extends React.PureComponent<Props> {
 						Need help? Got feedback?<br />
 						<strong>Send us an email!</strong><br />
 						<a href="mailto:support@readup.com">support@readup.com</a>
-						<a
-							href="#"
-							onClick={this._viewPrivacyPolicy}
-						>
-							Privacy Policy
-						</a>
 					</div>
 				</div>
 			</div>

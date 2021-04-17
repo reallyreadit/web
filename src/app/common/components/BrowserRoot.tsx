@@ -711,6 +711,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
 					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
+					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value
 				}
 			)
@@ -1283,7 +1284,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewHome={this._viewHome}
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
-							onViewPrivacyPolicy={this._viewPrivacyPolicy}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 						/> :

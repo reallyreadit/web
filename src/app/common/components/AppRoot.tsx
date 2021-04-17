@@ -789,6 +789,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
 					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
+					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value
 				}
 			)
@@ -1324,7 +1325,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 								onViewAdminPage={this._viewAdminPage}
 								onViewFaq={this._viewFaq}
 								onViewLeaderboards={this._viewLeaderboards}
-								onViewPrivacyPolicy={this._viewPrivacyPolicy}
 								onViewProfile={this._viewProfile}
 								onViewSearch={this._viewSearch}
 								onViewSettings={this._viewSettings}
