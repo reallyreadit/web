@@ -636,6 +636,7 @@ export default abstract class Root<
 		);
 	protected readonly _updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) =>
 		this.props.serverApi.updateSubscriptionPaymentMethod(request);
+	private _revenueReportTimestamp = Date.now();
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
@@ -907,6 +908,24 @@ export default abstract class Root<
 				);
 			}
 		);
+	}
+	protected checkRevenueReportExpiration() {
+		const now = Date.now();
+		if (now - this._revenueReportTimestamp >= 1 * 60 * 60 * 1000) {
+			// Don't request the cached value if the revenue report timestamp has been invalidated.
+			this.props.serverApi.getSubscriptionRevenueReport(
+				{
+					useCache: this._revenueReportTimestamp !== 0
+				},
+				response => {
+					this.setState({
+						revenueReport: response
+					});
+				}
+			);
+			// Reset the revenue report timestamp.
+			this._revenueReportTimestamp = now;
+		}
 	}
 	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: SemanticVersion }> {
 		const

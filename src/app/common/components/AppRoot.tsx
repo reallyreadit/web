@@ -107,6 +107,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setState({ menuState: 'closed' });
 	};
 	private readonly _openMenu = () => {
+		this.checkRevenueReportExpiration();
 		this.setState({ menuState: 'opened' });
 	};
 
