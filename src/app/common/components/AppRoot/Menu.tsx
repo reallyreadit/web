@@ -136,11 +136,7 @@ export default class extends React.PureComponent<Props> {
 							/>
 						</li>
 					</ol>
-					<div className="footer">
-						Need help? Got feedback?<br />
-						<strong>Send us an email!</strong><br />
-						<a href="mailto:support@readup.com">support@readup.com</a>
-					</div>
+					<div className="footer"></div>
 				</div>
 			</div>
 		);

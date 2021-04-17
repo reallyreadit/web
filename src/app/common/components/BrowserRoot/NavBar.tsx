@@ -66,8 +66,6 @@ export default class NavBar extends React.PureComponent<Props> {
 					>
 						Blog
 					</a>
-					<br />
-					<a href="mailto:support@readup.com">support@readup.com</a>
 				</div>
 			</div>
 		);
