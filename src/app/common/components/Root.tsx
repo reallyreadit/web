@@ -58,7 +58,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionStatus, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatus, ActiveSubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import Lazy from '../../../common/Lazy';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
@@ -1007,6 +1007,19 @@ export default abstract class Root<
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
 	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
+		// Invalidate the revenue report timestamp if the subscription has changed.
+		const currentStatus = this.state.subscriptionStatus as SubscriptionStatus;
+		if (
+			status.type === SubscriptionStatusType.Active &&
+			(
+				!currentStatus ||
+				currentStatus.type !== SubscriptionStatusType.Active ||
+				currentStatus.price.amount !== status.price.amount
+			)
+		) {
+			this._revenueReportTimestamp = 0;
+		}
+		// Update the state.
 		this.setState({
 			subscriptionStatus: status
 		});
