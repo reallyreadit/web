@@ -64,7 +64,7 @@ export default class NavBar extends React.PureComponent<Props> {
 						href="https://blog.readup.com/"
 						target="_blank"
 					>
-						Blog
+						Readup Blog
 					</a>
 				</div>
 			</div>
