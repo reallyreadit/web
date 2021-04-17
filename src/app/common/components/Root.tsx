@@ -73,6 +73,7 @@ import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptio
 import StripePriceChangeDialog from './StripePriceChangeDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
+import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -122,6 +123,7 @@ export interface ScreenFactory<TSharedState> {
 export type State = (
 	{
 		displayTheme: DisplayTheme | null,
+		revenueReport: Fetchable<RevenueReportResponse>,
 		screens: Screen[],
 		subscriptionStatus: SubscriptionStatus,
 		user: UserAccount | null
@@ -793,6 +795,16 @@ export default abstract class Root<
 		// state
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
+			revenueReport: props.serverApi.getSubscriptionRevenueReport(
+				{
+					useCache: true
+				},
+				response => {
+					this.setState({
+						revenueReport: response
+					});
+				}
+			),
 			toasts: [],
 			subscriptionStatus: props.initialUserProfile?.subscriptionStatus,
 			user: props.initialUserProfile?.userAccount

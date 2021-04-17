@@ -8,6 +8,9 @@ import Button from '../../../../common/components/Button';
 import { Screen } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
+import { RevenueMeter } from '../RevenueMeter';
+import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
+import Fetchable from '../../../../common/Fetchable';
 
 interface Props {
 	isClosing: boolean,
@@ -20,6 +23,7 @@ interface Props {
 	onViewSearch: () => void,
 	onViewSettings: () => void,
 	onViewStats: () => void,
+	revenueReport: Fetchable<RevenueReportResponse>,
 	selectedScreen: Screen,
 	userAccount: UserAccount | null
 }
@@ -136,7 +140,7 @@ export default class extends React.PureComponent<Props> {
 							/>
 						</li>
 					</ol>
-					<div className="footer"></div>
+					<RevenueMeter report={this.props.revenueReport} />
 				</div>
 			</div>
 		);

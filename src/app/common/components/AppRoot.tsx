@@ -1329,6 +1329,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								onViewSearch={this._viewSearch}
 								onViewSettings={this._viewSettings}
 								onViewStats={this._viewStats}
+								revenueReport={this.state.revenueReport}
 								selectedScreen={this.state.screens[0]}
 								userAccount={this.state.user}
 							/> :

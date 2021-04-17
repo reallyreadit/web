@@ -8,6 +8,9 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Button from '../../../../common/components/Button';
 import { Screen } from '../Root';
+import Fetchable from '../../../../common/Fetchable';
+import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
+import { RevenueMeter } from '../RevenueMeter';
 
 interface Props {
 	isClosing: boolean,
@@ -20,6 +23,7 @@ interface Props {
 	onViewSearch: () => void,
 	onViewSettings: () => void,
 	onViewStats: () => void,
+	revenueReport: Fetchable<RevenueReportResponse>,
 	selectedScreen: Screen,
 	userAccount: UserAccount | null
 }
@@ -142,6 +146,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							/>
 						</li>
 					</ol>
+					<RevenueMeter report={this.props.revenueReport} />
 				</div>
 			</div>
 		);

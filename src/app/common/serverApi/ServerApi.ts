@@ -77,6 +77,7 @@ import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptio
 import { StripePriceChangeRequest } from '../../../common/models/subscriptions/StripePriceChangeRequest';
 import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse, SubscriptionPaymentMethodChangeRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/StripeSetupIntentResponse';
+import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -227,6 +228,7 @@ export default abstract class {
 	public readonly completeStripeSubscriptionUpgrade = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeUpgradePayment', data: request });
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
+	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
 	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
 	public readonly createStripeSetupIntent = () => this.post<StripeSetupIntentResponse>({ path: '/Subscriptions/StripeSetupIntentRequest' });
 	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
