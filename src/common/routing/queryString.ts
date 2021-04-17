@@ -26,7 +26,8 @@ export function createQueryString(kvps: { [key: string]: string | Array<string> 
 						qsKvps.push(qsKey);
 					} else if (
 						typeof value === 'string' ||
-						typeof value === 'number'
+						typeof value === 'number' ||
+						typeof value === 'boolean'
 					) {
 						qsKvps.push(qsKey + '=' + encodeURIComponent(value));
 					} else if (Array.isArray(value)) {
