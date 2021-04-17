@@ -7,7 +7,6 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Button from '../../../../common/components/Button';
-import StoreLinks from '../StoreLinks';
 import { Screen } from '../Root';
 
 interface Props {
@@ -143,7 +142,6 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							/>
 						</li>
 					</ol>
-					<StoreLinks />
 				</div>
 			</div>
 		);
