@@ -36,21 +36,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 	private readonly _viewProfile = () => {
 		this.props.onViewProfile();
 	};
-	private _cachedUser: UserAccount | undefined;
 	constructor(props: Props) {
 		super(props);
 		this.state = { isSigningOut: false };
 	}
 	public render() {
-		// cache the user account so that we can animate
-		// the menu closing even after the user has signed out
-		let user: UserAccount;
-		if (this.props.userAccount) {
-			user = this.props.userAccount;
-			this._cachedUser = this.props.userAccount;
-		} else {
-			user = this._cachedUser;
-		}
 		const profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 		return (
 			<div
@@ -63,14 +53,14 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					onClick={this._stopPropagation}
 				>
 					<div className="header">
-						<label>{user.name}</label>
+						<label>{this.props.userAccount.name}</label>
 						<Icon
 							name="cancel"
 							onClick={this.props.onClose}
 						/>
 					</div>
 					<ol>
-						{user.role === UserAccountRole.Admin ?
+						{this.props.userAccount.role === UserAccountRole.Admin ?
 							<li>
 								<Button
 									href={findRouteByKey(routes, ScreenKey.Admin).createUrl()}
@@ -84,13 +74,13 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							null}
 						<li>
 							<Button
-								badge={user.followerAlertCount}
-								href={profileRoute.createUrl({ userName: user.name })}
+								badge={this.props.userAccount.followerAlertCount}
+								href={profileRoute.createUrl({ userName: this.props.userAccount.name })}
 								onClick={this._viewProfile}
 								state={
 									(
 										this.props.selectedScreen.key === ScreenKey.Profile &&
-										profileRoute.getPathParams(this.props.selectedScreen.location.path)['userName'].toLowerCase() === user.name.toLowerCase()
+										profileRoute.getPathParams(this.props.selectedScreen.location.path)['userName'].toLowerCase() === this.props.userAccount.name.toLowerCase()
 									) ?
 										'selected' :
 										'normal'
