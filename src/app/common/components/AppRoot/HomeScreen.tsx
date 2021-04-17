@@ -244,7 +244,7 @@ export default function <TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Article of the Day'
+			title: 'Discover'
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen {

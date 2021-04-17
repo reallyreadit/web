@@ -30,8 +30,8 @@ export default class NavBar extends React.PureComponent<Props> {
 							href={homeUrl}
 							onClick={this.props.onViewHome}
 							state={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
-							iconLeft="trophy"
-							text="AOTD"
+							iconLeft="earth"
+							text="Discover"
 							size="x-large"
 							display="block"
 						/>
