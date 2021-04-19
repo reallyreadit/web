@@ -94,8 +94,8 @@ export default class extends React.PureComponent<{
 					// 		// ></GetStartedButton>
 					// },
 					{
-						key: 'iOS & iPadOS',
-						component: <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" target="_blank">iOS &amp; iPadOS</a>
+						key: 'iPhone and iPad',
+						component: <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" target="_blank">iPhone and iPad</a>
 					},
 					{
 						key: "Chrome",
