@@ -3,10 +3,14 @@
 	cssComponentId: subscription-selector_nuri7o
 */
 
-.subscription-selector_nuri7o > label {
-	display: block;
-	margin-bottom: 15px;
+.subscription-selector_nuri7o > .title {
 	text-align: center;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 10px;
+}
+.subscription-selector_nuri7o > .subtitle {
+	text-align: center;
+	margin-bottom: 20px;
 }
 .subscription-selector_nuri7o > button {
 	display: block;
