@@ -1,0 +1,33 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/MarketingScreen/PriceList
+	cssComponentId: price-list_eorvmi
+*/
+
+.price-list_eorvmi {
+	display: flex;
+}
+.price-list_eorvmi > .price-list-item_7j8olx {
+	margin: 0 2%;
+}
+.price-list_eorvmi > .price-list-item_7j8olx:first-child {
+	margin-left: 0;
+}
+.price-list_eorvmi > .price-list-item_7j8olx:last-child {
+	margin-right: 0;
+}
+
+@media (max-width: 499px) {
+	.price-list_eorvmi {
+		flex-flow: column;
+		text-align: center;
+	}
+	.price-list_eorvmi > .price-list-item_7j8olx {
+		margin: 1em 0;
+	}
+	.price-list_eorvmi > .price-list-item_7j8olx:first-child {
+		margin-top: 0;
+	}
+	.price-list_eorvmi > .price-list-item_7j8olx:last-child {
+		margin-bottom: 0;
+	}
+}

@@ -42,6 +42,20 @@
 	font-family: 'Museo Sans (300)', sans-serif;
 	line-height: 1.6;
 }
+.marketing-screen_n5a6wc > .home-panel_w65z7c > .content > .home-section-intro strong {
+	font-family: 'Museo Sans (500)', sans-serif;
+}
+
+// styles for the pricing section
+.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content {
+	max-width: 600px;
+}
+.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > h2 {
+	text-align: center;
+}
+.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > .price-list_eorvmi {
+	margin-top: 1.5em;
+}
 
 // styles for the quotes flex grid
 .marketing-screen_n5a6wc  {

@@ -31,6 +31,7 @@ import ImageAndText from './ImageAndText';
 // import Card from './Card';
 import QuoteCard from './QuoteCard';
 import Button from '../../../../common/components/Button';
+import { PriceList } from './MarketingScreen/PriceList';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -63,6 +64,26 @@ export interface Quote {
 	reader: string,
 	source: string,
 }
+
+const prices = [
+	{
+		amount: 499,
+		title: 'Budget option.',
+		description: 'Individual Writer payouts will be small.'
+	},
+	{
+		amount: 1499,
+		title: 'Recommended',
+		description: 'A meaningful investment in journalism.',
+		selected: true
+	},
+	{
+		amount: 2499,
+		title: 'Super Reader!',
+		description: 'Bigger tips for the Writers you read.'
+	}
+];
+
 export default class MarketingScreen extends React.Component<
 	Props,
 	{
@@ -293,6 +314,20 @@ export default class MarketingScreen extends React.Component<
 					{/* </div> */}
 
 				{/*</HomePanel>*/}
+				<HomePanel
+					data-nosnippet
+					className="pricing-panel"
+				>
+					<h2 className="heading-regular">Pricing: Pay what you want</h2>
+					<p className="home-section-intro">
+						You can pay any amount you want to read on Readup.<br />
+						<strong>All Readers at all levels get full access to all features.</strong>
+					</p>
+					<p className="home-section-intro">
+						Readup takes a small cut (5%) of your payment and distributes the rest to the Writers you read -- transparently, down to the penny.
+					</p>
+					<PriceList prices={prices} />
+				</HomePanel>
 				<HomePanel
 					data-nosnippet
 					className="quote-panel"
