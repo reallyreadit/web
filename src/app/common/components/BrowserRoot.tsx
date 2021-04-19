@@ -554,6 +554,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
+				onViewMission: this._viewMission,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(

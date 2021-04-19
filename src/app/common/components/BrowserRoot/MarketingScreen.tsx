@@ -55,6 +55,7 @@ interface Props {
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewAuthor: (slug: string, name: string) => void,
+	onViewMission: () => void,
 	user: UserAccount | null
 }
 export interface Quote {
@@ -359,10 +360,7 @@ export default class MarketingScreen extends React.Component<
 						className="mission-button"
 						iconRight="chevron-right"
 						intent="normal"
-						onClick={() => {
-							// TODO: make an internal link
-							window.location.href = '/mission'
-						}}
+						onClick={this.props.onViewMission}
 						style="normal"
 						text="Learn more about our mission &amp; story"
 						/>

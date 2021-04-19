@@ -50,6 +50,7 @@ interface Props {
 	onViewAotdHistory: () => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	onViewComments: (article: UserArticle) => void,
+	onViewMission: () => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }
@@ -316,6 +317,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onViewAotdHistory={this.props.onViewAotdHistory}
 				onViewAuthor={this.props.onViewAuthor}
 				onViewComments={this.props.onViewComments}
+				onViewMission={this.props.onViewMission}
 				onViewProfile={this.props.onViewProfile}
 				user={this.props.user}
 			/>
