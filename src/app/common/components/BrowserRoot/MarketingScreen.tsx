@@ -32,6 +32,8 @@ import ImageAndText from './ImageAndText';
 import QuoteCard from './QuoteCard';
 import Button from '../../../../common/components/Button';
 import { PriceList } from './MarketingScreen/PriceList';
+import { RevenueMeter } from '../RevenueMeter';
+import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -57,6 +59,7 @@ interface Props {
 	onViewProfile: (userName: string) => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	onViewMission: () => void,
+	revenueReport: Fetchable<RevenueReportResponse>,
 	user: UserAccount | null
 }
 export interface Quote {
@@ -328,6 +331,14 @@ export default class MarketingScreen extends React.Component<
 					</p>
 					<PriceList prices={prices} />
 				</HomePanel>
+				{this.props.revenueReport.value?.report.totalRevenue > 0 ?
+					<HomePanel
+						data-nosnippet
+						className="revenue-panel"
+					>
+						<RevenueMeter report={this.props.revenueReport} />
+					</HomePanel> :
+					null}
 				<HomePanel
 					data-nosnippet
 					className="quote-panel"
