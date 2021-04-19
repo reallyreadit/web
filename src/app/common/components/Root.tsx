@@ -131,7 +131,7 @@ export type State = (
 	ToasterState &
 	DialogServiceState
 );
-export type SharedState = Pick<State, 'displayTheme' | 'subscriptionStatus' | 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'subscriptionStatus' | 'user'>;
 export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,

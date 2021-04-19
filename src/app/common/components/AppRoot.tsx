@@ -1161,6 +1161,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			isProcessingPayment: this.state.isProcessingPayment,
+			revenueReport: this.state.revenueReport,
 			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
