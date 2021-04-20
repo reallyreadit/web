@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
 import { DisplayTheme } from '../../../../common/models/userAccounts/DisplayPreference';
 import { SubscriptionPriceSelection } from '../../../../common/models/subscriptions/SubscriptionPrice';
-import { StripePaymentResponse } from '../../../../common/models/subscriptions/StripePaymentResponse';
+import { StripePaymentResponse, StripePaymentResponseType } from '../../../../common/models/subscriptions/StripePaymentResponse';
 import { PriceSelectionSummary } from '../subscriptionsDialogs/PriceSelectionSummary';
 import { StripeCreditCardForm } from './StripeCreditCardForm';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
@@ -30,10 +30,10 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 				this.props.onSubmit(card, this.props.selectedPrice)
 			)
 			.then(
-				() => {
-					this.setState({
-						isSubmitting: false
-					});
+				response => {
+					if (response.type === StripePaymentResponseType.Failed) {
+						throw new Error('Purchase failed.');
+					}
 				}
 			)
 			.catch(
