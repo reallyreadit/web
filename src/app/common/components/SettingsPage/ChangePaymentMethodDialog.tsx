@@ -25,30 +25,30 @@ export class ChangePaymentMethodDialog extends React.Component<Props, State> {
 		this.setState({
 			isSubmitting: true
 		});
-		return this._asyncTracker.addPromise(
-			this.props
-				.onChangePaymentMethod(card)
-				.then(
-					() => {
-						this.props.onShowToast('Card changed.', Intent.Success);
-						this.props.onCloseDialog();
+		return this._asyncTracker
+			.addPromise(
+				this.props.onChangePaymentMethod(card)
+			)
+			.then(
+				() => {
+					this.props.onShowToast('Card changed.', Intent.Success);
+					this.props.onCloseDialog();
+				}
+			)
+			.catch(
+				reason => {
+					this.props.onShowToast(
+						getPromiseErrorMessage(reason),
+						Intent.Danger
+					);
+					if (!(reason as CancellationToken)?.isCancelled) {
+						this.setState({
+							isSubmitting: false
+						});
 					}
-				)
-				.catch(
-					reason => {
-						this.props.onShowToast(
-							getPromiseErrorMessage(reason),
-							Intent.Danger
-						);
-						if (!(reason as CancellationToken)?.isCancelled) {
-							this.setState({
-								isSubmitting: false
-							});
-						}
-						throw reason;
-					}
-				)
-		);
+					throw reason;
+				}
+			);
 	}
 	constructor(props: Props) {
 		super(props);

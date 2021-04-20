@@ -25,27 +25,27 @@ export default class PaymentEntryStep extends React.Component<Props, State> {
 		this.setState({
 			isSubmitting: true
 		});
-		return this._asyncTracker.addPromise(
-			this.props
-				.onSubmit(card, this.props.selectedPrice)
-				.then(
-					() => {
+		return this._asyncTracker
+			.addPromise(
+				this.props.onSubmit(card, this.props.selectedPrice)
+			)
+			.then(
+				() => {
+					this.setState({
+						isSubmitting: false
+					});
+				}
+			)
+			.catch(
+				reason => {
+					if (!(reason as CancellationToken)?.isCancelled) {
 						this.setState({
 							isSubmitting: false
 						});
 					}
-				)
-				.catch(
-					reason => {
-						if (!(reason as CancellationToken)?.isCancelled) {
-							this.setState({
-								isSubmitting: false
-							});
-						}
-						throw reason;
-					}
-				)
-		);
+					throw reason;
+				}
+			);
 	}
 	constructor(props: Props) {
 		super(props);
