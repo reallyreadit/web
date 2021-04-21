@@ -17,8 +17,10 @@ export default class extends React.PureComponent<{
 	text: string,
 }, {}> {
 	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
-		if ((this.props.state === 'normal' || !this.props.state) && !!this.props.onClick) {
+		if (this.props.onClick) {
 			e.preventDefault();
+		}
+		if (this.props.state === 'normal' || !this.props.state) {
 			this.props.onClick(e, this.props.href);
 		}
 	};
