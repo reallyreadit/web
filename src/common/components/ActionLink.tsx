@@ -5,7 +5,7 @@ import Icon, { IconName } from './Icon';
 import SpinnerIcon from './SpinnerIcon';
 import AlertBadge from './AlertBadge';
 
-export default class extends React.PureComponent<{
+type BaseProps = {
 	badge?: number,
 	className?: ClassValue,
 	href?: string,
@@ -13,9 +13,16 @@ export default class extends React.PureComponent<{
 	iconRight?: IconName,
 	onAnimationEnd?: (event: React.AnimationEvent) => void,
 	onClick?: (e: React.MouseEvent<HTMLElement>, href?: string) => void,
-	state?: 'normal' | 'disabled' | 'busy',
-	text: string,
-}, {}> {
+	state?: 'normal' | 'disabled' | 'busy'
+};
+type AttrContentProps = BaseProps & {
+	text: string
+};
+type ChildContentProps = BaseProps & {
+	children: string
+};
+
+export default class extends React.PureComponent<AttrContentProps | ChildContentProps> {
 	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
 		if (this.props.onClick) {
 			e.preventDefault();
@@ -46,7 +53,7 @@ export default class extends React.PureComponent<{
 								name={this.props.iconLeft}
 							/> :
 							null}
-					<span key="text">{this.props.text}</span>
+					<span key="text">{(this.props as AttrContentProps).text ?? (this.props as ChildContentProps).children}</span>
 					{this.props.iconRight ?
 						<Icon
 							className="icon-right"
@@ -79,4 +86,4 @@ export default class extends React.PureComponent<{
 				</span>
 		);
 	}
-} 
+}
