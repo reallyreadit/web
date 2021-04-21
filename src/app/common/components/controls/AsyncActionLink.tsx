@@ -1,6 +1,6 @@
 import * as React from 'react';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 import { IconName } from '../../../../common/components/Icon';
 
 interface Props {
@@ -45,7 +45,7 @@ export default class extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<ActionLink
+			<Link
 				text={this.props.text}
 				iconLeft={this.props.icon}
 				state={this.state.isBusy ? 'busy' : 'normal'}

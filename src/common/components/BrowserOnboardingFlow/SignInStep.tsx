@@ -2,7 +2,7 @@ import * as React from 'react';
 import EmailAddressField from '../controls/authentication/EmailAddressField';
 import PasswordField from '../controls/authentication/PasswordField';
 import Button from '../Button';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 import SignInForm from '../../models/userAccounts/SignInForm';
 import FormPartition from '../controls/FormPartition';
 import AuthServiceButton from '../AuthServiceButton';
@@ -213,7 +213,7 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 						/>
 					</> :
 					null}
-				<ActionLink
+				<Link
 					onClick={this._requestPasswordReset}
 					state={
 						this.state.isSubmitting ?
@@ -225,7 +225,7 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 				{this.props.onCreateAccount ?
 					<>
 						<br />
-						<ActionLink
+						<Link
 							onClick={this.props.onCreateAccount}
 							state={
 								this.state.isSubmitting ?

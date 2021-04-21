@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ActionLink from './ActionLink';
+import Link from './Link';
 import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import { findRouteByKey } from '../routing/Route';
@@ -19,7 +19,7 @@ export default class ProfileLink extends React.PureComponent<{
 	};
 	public render() {
 		return (
-			<ActionLink
+			<Link
 				className={classNames('profile-link_7fs028', this.props.className)}
 				href={this.props.onCreateAbsoluteUrl(
 					profileRoute.createUrl({ 'userName': this.props.userName })

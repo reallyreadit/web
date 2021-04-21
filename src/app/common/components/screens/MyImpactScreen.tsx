@@ -19,7 +19,7 @@ import * as classNames from 'classnames';
 import { Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -185,7 +185,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 						</div>
 						<div className="spacer"></div>
 						<div className="content-block">
-							<ActionLink
+							<Link
 								onClick={this._openSubscriptionPromptDialog}
 								text="Start New Subscription"
 							/>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import FieldsetDialog, { Props as FieldsetDialogProps, State } from '../controls/FieldsetDialog';
 import Fetchable from '../../../../common/Fetchable';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 import { Intent } from '../../../../common/components/Toaster';
 import SelectList, { SelectListOption } from '../../../../common/components/SelectList';
 
@@ -105,7 +105,7 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 						<th>Test Email</th>
 						<td>
 							<input type="text" value={this.state.testAddress} onChange={this._changeTestAddress} />
-							<ActionLink
+							<Link
 								iconLeft="checkmark"
 								text="Send Test"
 								onClick={this._sendTestEmail}

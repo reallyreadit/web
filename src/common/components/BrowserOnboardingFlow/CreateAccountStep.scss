@@ -27,7 +27,7 @@
 .create-account-step_wf72jc > .auth-service-button_bj12nx {
 	margin-top: 15px;
 }
-.create-account-step_wf72jc > .action-link_ftamt8 {
+.create-account-step_wf72jc > .link_ke15oa {
 	display: inline-block;
 	margin-top: 25px;
 	font-size: 11pt;
@@ -42,7 +42,7 @@
 			)
 		);
 	}
-	#{$root} .create-account-step_wf72jc > .action-link_ftamt8 {
+	#{$root} .create-account-step_wf72jc > .link_ke15oa {
 		@include theme-colors(
 			$scheme,
 			(

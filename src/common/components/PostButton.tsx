@@ -3,7 +3,7 @@ import Popover, { MenuPosition, MenuState } from './Popover';
 import Button from './Button';
 import UserArticle from '../models/UserArticle';
 import { formatTimestamp } from '../format';
-import ActionLink from './ActionLink';
+import Link from './Link';
 
 interface Props {
 	article: UserArticle,
@@ -47,7 +47,7 @@ export default class PostButton extends React.PureComponent<
 									)
 								)}
 							</ol>
-							<ActionLink
+							<Link
 								text="Post again"
 								onClick={this._post}
 							/>

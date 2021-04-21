@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ActionLink from '../../../common/components/ActionLink';
+import Link from '../../../common/components/Link';
 
 interface Props {
 	onReloadWindow: () => void
@@ -20,7 +20,7 @@ export default class UpdateToast extends React.PureComponent<Props, { isReloadin
 			<>
 				<p>A new version of Readup is available</p>
 				<p>
-					<ActionLink
+					<Link
 						iconLeft="refresh2"
 						onClick={this._reload}
 						state={this.state.isReloading ? 'busy' : 'normal'}

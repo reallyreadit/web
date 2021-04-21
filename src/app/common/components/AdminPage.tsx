@@ -2,7 +2,7 @@
 import * as React from 'react';
 import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../../../common/Fetchable';
-import ActionLink from '../../../common/components/ActionLink';
+import Link from '../../../common/components/Link';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserAccount from '../../../common/models/UserAccount';
@@ -628,7 +628,7 @@ class AdminPage extends React.Component<
 						<caption>
 							<div className="content">
 								<strong>Bulk Mailings</strong>
-								<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
+								<Link iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
 							</div>
 						</caption>
 						<thead>

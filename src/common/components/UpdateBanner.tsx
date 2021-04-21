@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ActionLink from './ActionLink';
+import Link from './Link';
 
 export default (
 	props: {
@@ -9,7 +9,7 @@ export default (
 	}
 ) => (
 	<div className="update-banner_7zu7hd">
-		<ActionLink
+		<Link
 			onClick={props.onClick}
 			state={props.isBusy ? 'busy' : 'normal'}
 			text={props.text}

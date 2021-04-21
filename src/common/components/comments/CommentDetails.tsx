@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CommentThread from '../../models/CommentThread';
 import CommentComposer from './CommentComposer';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 import classNames from 'classnames';
 import { findRouteByKey } from '../../routing/Route';
 import routes from '../../routing/routes';
@@ -283,7 +283,7 @@ export default class CommentDetails extends React.Component<
 						onPostAddendum={this._postCommentAddendum}
 					/> :
 					null}
-				{this.state.compositionState === CompositionState.Reply ? 
+				{this.state.compositionState === CompositionState.Reply ?
 					<CommentComposer
 						articleId={this.props.comment.articleId}
 						onCancel={this._closeComposer}
@@ -298,24 +298,24 @@ export default class CommentDetails extends React.Component<
 						{this.props.onPostComment ?
 							this.props.user?.name === this.props.comment.userAccount ?
 								<>
-									<ActionLink
+									<Link
 										text="Edit"
 										onClick={this._openEditComposer}
 									/>
-									<ActionLink
+									<Link
 										text="Delete"
 										onClick={this._openDeleteDialog}
 									/>
 								</> :
-								<ActionLink
+								<Link
 									text="Reply"
 									onClick={this._openReplyComposer}
 								/> :
 							this.props.onViewThread ?
-								<ActionLink
+								<Link
 									href={this.getCommentAbsoluteUrl()}
 									text="View Thread"
-									onClick={this._viewThread} 
+									onClick={this._viewThread}
 								/> :
 								null}
 					</div> :

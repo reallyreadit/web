@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ContentBox from '../../../../common/components/ContentBox';
 import { formatSubscriptionPriceName, formatSubscriptionPriceAmount, SubscriptionPriceSelection } from '../../../../common/models/subscriptions/SubscriptionPrice';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 
 interface Props {
 	disabled?: boolean,
@@ -14,7 +14,7 @@ export const PriceSelectionSummary: React.SFC<Props> = (props: Props) => (
 		<div className="name">{formatSubscriptionPriceName(props.selectedPrice)}</div>
 		<div className="price">{formatSubscriptionPriceAmount(props.selectedPrice)} / month</div>
 		{props.onChangePrice ?
-			<ActionLink
+			<Link
 				iconLeft="arrow-left"
 				onClick={props.onChangePrice}
 				state={

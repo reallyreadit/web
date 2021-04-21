@@ -5,7 +5,7 @@ import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
 import { Intent } from './Toaster';
 import UserArticle from '../models/UserArticle';
-import ActionLink from './ActionLink';
+import Link from './Link';
 import MarkdownDialog from './MarkdownDialog';
 import ToggleSwitchInput from './ToggleSwitchInput';
 import UserAccount from '../models/UserAccount';
@@ -155,7 +155,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 					placeholder="Optional: Share your thoughts or ask a question."
 					value={this.state.commentText}
 				/>
-				<ActionLink
+				<Link
 					iconLeft="question-circle"
 					onClick={this._openMarkdownDialog}
 					state={

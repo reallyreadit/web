@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionPaymentMethod, SubscriptionPaymentMethodBrand } from '../../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import ContentBox from '../../../../common/components/ContentBox';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 import { formatSubscriptionPriceName, formatSubscriptionPriceAmount, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
 import { DateTime } from 'luxon';
 import { formatIsoDateAsUtc } from '../../../../common/format';
@@ -135,7 +135,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 							<div className="message">Subscribe to Start Reading.</div>
 						</>}
 					<div className="actions">
-						<ActionLink
+						<Link
 							onClick={this._openSubscriptionPromptDialog}
 							text="See Options"
 						/>
@@ -150,11 +150,11 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 					{this.renderSubscriptionDetails(this.props.status.price)}
 					<div className="message">Payment confirmation required.</div>
 					<div className="actions">
-						<ActionLink
+						<Link
 							onClick={this._openPaymentConfirmationDialog}
 							text="Confirm Payment"
 						/>
-						<ActionLink
+						<Link
 							onClick={this._openSubscriptionPromptDialog}
 							text="Start New Subscription"
 						/>
@@ -169,7 +169,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 					{this.renderSubscriptionDetails(this.props.status.price)}
 					<div className="message">Initial payment failed.</div>
 					<div className="actions">
-						<ActionLink
+						<Link
 							onClick={this._openSubscriptionPromptDialog}
 							text="Start New Subscription"
 						/>
@@ -229,7 +229,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 									onClose={this._closeChangeCardMenu}
 									onOpen={this._openChangeCardMenu}
 								>
-									<ActionLink
+									<Link
 										onClick={this._openChangeCardMenu}
 										state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
 										text="Change Card"
@@ -241,12 +241,12 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 					<div className="message">{renewalMessage}</div>
 					{this.props.status.provider === SubscriptionProvider.Stripe || this.props.deviceType === DeviceType.Ios ?
 						<div className="actions">
-								<ActionLink
+								<Link
 									onClick={this.props.onOpenPriceChangeDialog}
 									state={this.state.isChangingAutoRenewStatus ? 'disabled' : 'normal'}
 									text="Change Price"
 								/>
-								<ActionLink
+								<Link
 									onClick={this._openSubscriptionAutoRenewDialog}
 									state={this.state.isChangingAutoRenewStatus ? 'busy' : 'normal'}
 									text={this.props.status.autoRenewEnabled ? 'Cancel' : 'Resume'}
@@ -268,7 +268,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 						`Ended on ${DateTime.fromISO(formatIsoDateAsUtc(this.props.status.lastPeriodRenewalGracePeriodEndDate)).toLocaleString(DateTime.DATE_MED)}.`}
 				</div>
 				<div className="actions">
-					<ActionLink
+					<Link
 						onClick={this._openSubscriptionPromptDialog}
 						text="See Options"
 					/>

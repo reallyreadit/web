@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Separator from '../../../common/components/Separator';
-import ActionLink from '../../../common/components/ActionLink';
+import Link from '../../../common/components/Link';
 import Icon from '../../../common/components/Icon';
 import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
@@ -332,8 +332,8 @@ class SettingsPage extends React.PureComponent<
 								<span className="label">Username</span>
 								<Separator />
 								{user.isPasswordSet ?
-									<ActionLink text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} /> :
-									<ActionLink
+									<Link text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} /> :
+									<Link
 										iconLeft="locked"
 										onClick={this._openSetPasswordDialog}
 										text="Set Password"
@@ -347,7 +347,7 @@ class SettingsPage extends React.PureComponent<
 							<div className="header">
 								<span className="label">Email Address</span>
 								<Separator />
-								<ActionLink text="Change" iconLeft="write" onClick={this._openChangeEmailAddressDialog} />
+								<Link text="Change" iconLeft="write" onClick={this._openChangeEmailAddressDialog} />
 							</div>
 							<div className="section">
 								{user.email}
@@ -420,7 +420,7 @@ class SettingsPage extends React.PureComponent<
 							<div className="header">
 								<span className="label">Time Zone</span>
 								<Separator />
-								<ActionLink text="Change" iconLeft="write" onClick={this._openChangeTimeZoneDialog} />
+								<Link text="Change" iconLeft="write" onClick={this._openChangeTimeZoneDialog} />
 							</div>
 							<div className="section">
 								{this.state.settings.value.timeZoneDisplayName}
@@ -430,7 +430,7 @@ class SettingsPage extends React.PureComponent<
 							<div className="header">
 								<span className="label">Linked Accounts</span>
 								<Separator />
-								<ActionLink text="Add" iconLeft="plus" onClick={this._openLinkAccountDialog} />
+								<Link text="Add" iconLeft="plus" onClick={this._openLinkAccountDialog} />
 							</div>
 							<div className="section">
 								{this.state.settings.value.authServiceAccounts.length ?
@@ -488,7 +488,7 @@ class SettingsPage extends React.PureComponent<
 								<span className="label">Legal</span>
 							</div>
 							<div className="section">
-								<ActionLink
+								<Link
 									href={
 										findRouteByKey(routes, ScreenKey.PrivacyPolicy)
 											.createUrl()

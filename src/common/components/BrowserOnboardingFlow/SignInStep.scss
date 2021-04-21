@@ -27,12 +27,12 @@
 .sign-in-step_cg2uy5 > .auth-service-button_bj12nx {
 	margin-top: 15px;
 }
-.sign-in-step_cg2uy5 > .action-link_ftamt8 {
+.sign-in-step_cg2uy5 > .link_ke15oa {
 	display: inline-block;
 	margin-top: 25px;
 	font-size: 11pt;
 }
-.sign-in-step_cg2uy5 > .action-link_ftamt8 + .action-link_ftamt8 {
+.sign-in-step_cg2uy5 > .link_ke15oa + .link_ke15oa {
 	margin-top: 15px;
 }
 
@@ -45,7 +45,7 @@
 			)
 		);
 	}
-	#{$root} .sign-in-step_cg2uy5 > .action-link_ftamt8 {
+	#{$root} .sign-in-step_cg2uy5 > .link_ke15oa {
 		@include theme-colors(
 			$scheme,
 			(

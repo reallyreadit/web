@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Icon from '../../../../../common/components/Icon';
 import Button from '../../../../../common/components/Button';
-import ActionLink from '../../../../../common/components/ActionLink';
+import Link from '../../../../../common/components/Link';
 
 interface Props {
 	onRequestAuthorization: () => void,
@@ -20,7 +20,7 @@ export default class NotificationsStep extends React.PureComponent<Props> {
 					size="large"
 					text="Enable Notifications"
 				/>
-				<ActionLink
+				<Link
 					onClick={this.props.onSkip}
 					text="Maybe Later"
 				/>

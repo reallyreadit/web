@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ActionLink from './ActionLink';
+import Link from './Link';
 import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import { findRouteByKey } from '../routing/Route';
@@ -20,7 +20,7 @@ export default class AuthorLink extends React.PureComponent<{
 	};
 	public render() {
 		return (
-			<ActionLink
+			<Link
 				className={classNames('author-link_34t3vc', this.props.className)}
 				href={this.props.onCreateAbsoluteUrl(
 					profileRoute.createUrl({ 'slug': this.props.slug })

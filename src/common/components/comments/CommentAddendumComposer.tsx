@@ -3,7 +3,7 @@ import CommentAddendumForm from '../../models/social/CommentAddendumForm';
 import CommentThread from '../../models/CommentThread';
 import Button from '../Button';
 import { DateTime } from 'luxon';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
@@ -56,7 +56,7 @@ export default class CommentAddendumComposer extends React.PureComponent<
 					value={this.state.text}
 				/>
 				<div className="controls">
-					<ActionLink
+					<Link
 						iconLeft="question-circle"
 						onClick={this._openMarkdownDialog}
 						text="Formatting Guide"
@@ -86,6 +86,6 @@ export default class CommentAddendumComposer extends React.PureComponent<
 					</div>
 				</div>
 			</div>
-		);	
+		);
 	}
 }

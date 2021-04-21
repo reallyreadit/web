@@ -19,7 +19,7 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 import GetFollowersDialog from './ProfileScreen/GetFollowersDialog';
 import CommentThread from '../../../../common/models/CommentThread';
 import UserNameForm from '../../../../common/models/social/UserNameForm';
@@ -524,7 +524,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 									{isOwnProfile ?
 										<>
 											{this.props.profile.value.followeeCount ?
-												<ActionLink
+												<Link
 													className="following-count"
 													onClick={this._showFollowees}
 													text={followeesText}
@@ -545,7 +545,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 											/> :
 											null}
 									{this.props.profile.value.followerCount ?
-										<ActionLink
+										<Link
 											badge={isOwnProfile && this.props.userAccount.followerAlertCount}
 											className="following-count"
 											onClick={this._showFollowers}

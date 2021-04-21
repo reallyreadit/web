@@ -34,7 +34,7 @@ export default class extends React.Component<AttrContentProps | ChildContentProp
 	public render() {
 		const
 			cssClass = classNames(
-				'action-link_ftamt8',
+				'link_ke15oa',
 				this.props.className,
 				{
 					disabled: this.props.state === 'disabled',

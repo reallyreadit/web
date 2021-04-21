@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '../Button';
 import AuthServiceAccountForm from '../../models/userAccounts/AuthServiceAccountForm';
 import UsernameField from '../controls/authentication/UsernameField';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 
 export type Form = Pick<AuthServiceAccountForm, 'token' | 'name'> & {
 	analyticsAction: string
@@ -138,7 +138,7 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 					}
 					text="Create Account"
 				/>
-				<ActionLink
+				<Link
 					onClick={this.props.onLinkExistingAccount}
 					state={
 						this.state.isSubmitting ?

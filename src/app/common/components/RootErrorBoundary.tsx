@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
 import InfoBox from '../../../common/components/InfoBox';
-import ActionLink from '../../../common/components/ActionLink';
+import Link from '../../../common/components/Link';
 
 interface Props {
 	children: React.ReactNode,
@@ -29,7 +29,7 @@ export default class RootErrorBoundary extends React.PureComponent<Props, { isRe
 						<p>An error occurred and caused the app to crash.</p>
 						<p>If this keeps happening please <a href="mailto:support@readup.com?subject=App%20Crash">let us know.</a></p>
 						<p>
-							<ActionLink
+							<Link
 								iconLeft="refresh2"
 								onClick={this._reload}
 								state={this.state.isReloading ? 'busy' : 'normal'}
