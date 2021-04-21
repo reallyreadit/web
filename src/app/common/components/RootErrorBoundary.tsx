@@ -5,6 +5,7 @@ import Link from '../../../common/components/Link';
 
 interface Props {
 	children: React.ReactNode,
+	onNavTo: (url: string) => void,
 	onReloadWindow: () => void
 }
 export default class RootErrorBoundary extends React.PureComponent<Props, { isReloading: boolean }> {
@@ -27,7 +28,7 @@ export default class RootErrorBoundary extends React.PureComponent<Props, { isRe
 						style="warning"
 					>
 						<p>An error occurred and caused the app to crash.</p>
-						<p>If this keeps happening please <a href="mailto:support@readup.com?subject=App%20Crash">let us know.</a></p>
+						<p>If this keeps happening please <Link href="mailto:support@readup.com?subject=App%20Crash" onClick={this.props.onNavTo}>let us know.</Link></p>
 						<p>
 							<Link
 								iconLeft="refresh2"

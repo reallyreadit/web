@@ -1,8 +1,12 @@
 import * as React from 'react';
 import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import Link from '../../../common/components/Link';
 
-const privacyPolicyPage = () => (
+interface Props {
+	onNavTo: (url: string) => void
+}
+const PrivacyPolicyPage: React.SFC<Props> = props => (
 	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
 			<h2>Privacy Policy and Terms of Use</h2>
@@ -18,7 +22,7 @@ const privacyPolicyPage = () => (
 					<li>The technology platform (readup.com, Readup apps and extensions, etc.)</li>
 					<li>The community of readers (real human beings) who use the platform</li>
 					<li>The corporation, reallyread.it, inc., which owns and operates the platform</li>
-					<li>The two-person team, <a href="https://billloundy.com" target="_blank">Bill Loundy</a> and <a href="https://jeffcamera.com" target="_blank">Jeff Camera</a>, who co-own and co-operate the corporation and platform.</li>
+					<li>The two-person team, <Link href="https://billloundy.com" onClick={props.onNavTo}>Bill Loundy</Link> and <Link href="https://jeffcamera.com" onClick={props.onNavTo}>Jeff Camera</Link>, who co-own and co-operate the corporation and platform.</li>
 				</ul>
 				<p>Currently, Bill and Jeff each own 50% of reallyread.it, inc. As new employees and investors acquire ownership stakes in Readup, we promise to always disclose this information to our community of readers.</p>
 			</section>
@@ -26,7 +30,7 @@ const privacyPolicyPage = () => (
 				<p><strong>When you read on Readup, you create data.</strong> Sometimes you finish reading articles and sometimes you don’t. Readup keeps track. It needs to, in order to function. For example:</p>
 				<ul>
 					<li>On Readup, if you want to comment on an article you need to read the whole thing.</li>
-					<li>Anonymized, aggregate reading data powers <a href="https://github.com/reallyreadit/aotd-algorithms" target="_blank">the algorithm</a> that curates content and selects the Article of the Day (AOTD). Readup is able to identify the best reading material because Readup “knows” the articles and stories that real humans are really reading to completion. <em>Note: As far as we know, Readup is the only social media platform with a [100% transparent algorithm].</em></li>
+					<li>Anonymized, aggregate reading data powers <Link href="https://github.com/reallyreadit/aotd-algorithms" onClick={props.onNavTo}>the algorithm</Link> that curates content and selects the Article of the Day (AOTD). Readup is able to identify the best reading material because Readup “knows” the articles and stories that real humans are really reading to completion. <em>Note: As far as we know, Readup is the only social media platform with a [100% transparent algorithm].</em></li>
 				</ul>
 				<p><strong>Your reading data is strictly private by default.</strong> The only way that other readers can see what you have read is if you explicitly choose to post or comment on an article after you have read it. There is no “bulk post” or “default public” option; the choice is yours to make on an article by article basis.</p>
 				<p>If you want, you can use Readup anonymously or pseudonymously, but once you choose a username you can’t change it.</p>
@@ -102,18 +106,20 @@ const privacyPolicyPage = () => (
 				</ul>
 			</section>
 			<section>
-				<p><strong>COOKIES:</strong> Sometimes we use cookies, but never for marketing purposes. And since we only use “<a href="https://gdpr.eu/cookies/#:~:text=Strictly%20necessary%20cookies%20%E2%80%94%20These%20cookies,example%20of%20strictly%20necessary%20cookies." target="_blank">strictly necessary cookies</a>,” we’re not required to make you click “I agree” when we use them.</p>
+				<p><strong>COOKIES:</strong> Sometimes we use cookies, but never for marketing purposes. And since we only use “<Link href="https://gdpr.eu/cookies/#:~:text=Strictly%20necessary%20cookies%20%E2%80%94%20These%20cookies,example%20of%20strictly%20necessary%20cookies." onClick={props.onNavTo}>strictly necessary cookies</Link>,” we’re not required to make you click “I agree” when we use them.</p>
 				<p><strong>CANARY:</strong> Readup has never received a government request for information.</p>
-				<p><strong>FEEDBACK:</strong> This contract will continue to evolve. Please share your suggestions <a href="https://github.com/reallyreadit/privacy-policy" target="_blank">on GitHub</a>.</p>
-				<p><strong>CONTACT:</strong> Email us. You will always get a reply from a human: <a href="mailto:support@readup.com" target="_blank"><strong>support@readup.com</strong></a></p>
+				<p><strong>FEEDBACK:</strong> This contract will continue to evolve. Please share your suggestions <Link href="https://github.com/reallyreadit/privacy-policy" onClick={props.onNavTo}>on GitHub</Link>.</p>
+				<p><strong>CONTACT:</strong> Email us. You will always get a reply from a human: <strong><Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></strong></p>
 			</section>
 		</div>
 	</ScreenContainer>
 );
-export function createScreenFactory<TScreenKey>(key: TScreenKey) {
+export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Props) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Privacy Policy' }),
-		render: () => React.createElement(privacyPolicyPage)
+		render: () => (
+			<PrivacyPolicyPage onNavTo={services.onNavTo} />
+		)
 	};
 }
-export default privacyPolicyPage;
+export default PrivacyPolicyPage;

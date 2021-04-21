@@ -466,6 +466,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile),
+					onNavTo: this._navTo,
 					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
@@ -511,6 +512,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
 				onCreateTitle: this._createFaqScreenTitle,
+				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {

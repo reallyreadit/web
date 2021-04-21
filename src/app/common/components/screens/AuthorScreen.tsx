@@ -30,6 +30,7 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { formatCurrency } from '../../../../common/format';
+import Link from '../../../../common/components/Link';
 
 interface Props {
 	authorSlug: string,
@@ -41,6 +42,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
+	onNavTo: (url: string) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -178,8 +180,8 @@ class AuthorScreen extends React.Component<Props, State> {
 										<div className="message">
 											Are you {this.props.profile.value.name}?
 											{this.props.profile.value.totalEarnings > 0 ?
-												<> <a href="mailto:support@readup.com">Contact us</a> to get verified and collect your earnings.</> :
-												<> <a href="mailto:support@readup.com">Contact us</a> to get verified.</>}
+												<> <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.</> :
+												<> <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified.</>}
 										</div>
 									</InfoBox>
 								</div>
@@ -298,6 +300,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetAuthorArticles={deps.onGetAuthorArticles}
+				onNavTo={deps.onNavTo}
 				onOpenNewPlatformNotificationRequestDialog={deps.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={deps.onPostArticle}
 				onRateArticle={deps.onRateArticle}

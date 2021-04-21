@@ -874,7 +874,11 @@ export default abstract class Root<
 			}),
 			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
-			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
+			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(
+				ScreenKey.PrivacyPolicy, {
+					onNavTo: this._navTo
+				}
+			),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
@@ -1082,7 +1086,10 @@ export default abstract class Root<
 	public render() {
 		return (
 			<div className={classNames('root_9rc2fv', this._concreteClassName)}>
-				<RootErrorBoundary onReloadWindow={this._reloadWindow}>
+				<RootErrorBoundary
+					onNavTo={this._navTo}
+					onReloadWindow={this._reloadWindow}
+				>
 					{this.renderBody()}
 					<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
 				</RootErrorBoundary>
