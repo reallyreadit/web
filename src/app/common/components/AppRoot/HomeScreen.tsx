@@ -8,7 +8,7 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen, SharedState } from '../Root';
-import AsyncActionLink from '../controls/AsyncActionLink';
+import AsyncLink from '../controls/AsyncLink';
 import produce from 'immer';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
@@ -224,7 +224,7 @@ class HomeScreen extends React.Component<Props, State> {
 						/>
 						{!this.state.isLoading ?
 							<div className="show-more">
-								<AsyncActionLink
+								<AsyncLink
 									text="Show more"
 									onClick={this._loadMore}
 								/>

@@ -10,7 +10,7 @@ import { Screen, SharedState } from './Root';
 import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
-import AsyncActionLink from './controls/AsyncActionLink';
+import AsyncLink from './controls/AsyncLink';
 import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import Fetchable from '../../../common/Fetchable';
@@ -363,7 +363,7 @@ class SettingsPage extends React.PureComponent<
 												Not Confirmed
 											</div>
 											<div className="status">
-												<AsyncActionLink
+												<AsyncLink
 													icon="email"
 													onClick={this.props.onResendConfirmationEmail}
 													text="Resend confirmation email"

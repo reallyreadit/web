@@ -8,7 +8,7 @@ interface Props {
 	onClick: () => Promise<void>,
 	text: string
 }
-export default class extends React.PureComponent<
+export default class extends React.Component<
 	Props,
 	{ isBusy: boolean }
 > {
