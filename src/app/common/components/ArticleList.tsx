@@ -12,6 +12,7 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import LoadingOverlay from './controls/LoadingOverlay';
 import InfoBox from '../../../common/components/InfoBox';
 import ArticleDetails from '../../../common/components/ArticleDetails';
+import ShareData from '../../../common/sharing/ShareData';
 
 interface Props {
 	articles: Fetchable<PageResult<UserArticle>>,
