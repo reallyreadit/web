@@ -7,7 +7,7 @@ import routes from '../routing/routes';
 import ScreenKey from '../routing/ScreenKey';
 
 const profileRoute = findRouteByKey(routes, ScreenKey.Author);
-export default class AuthorLink extends React.PureComponent<{
+export default class AuthorLink extends React.Component<{
 	className?: ClassValue,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onViewAuthor: (slug: string, name: string) => void,
