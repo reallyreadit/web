@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod, NavReference } from './Root';
 import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -117,8 +117,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// routing
-	private readonly _navTo = (url: string) => {
-		const result = parseUrlForRoute(url);
+	private readonly _navTo = (ref: NavReference) => {
+		const
+			url = typeof ref === 'string' ?
+				ref :
+				ref.currentTarget.href,
+			result = parseUrlForRoute(url);
 		if (result.isInternal && result.route) {
 			if (result.route.screenKey === ScreenKey.Read) {
 				const params = result.route.getPathParams(result.url.pathname);

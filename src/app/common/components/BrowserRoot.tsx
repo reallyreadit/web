@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
@@ -128,8 +128,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// routing
-	private readonly _navTo = (url: string) => {
-		const result = parseUrlForRoute(url);
+	private readonly _navTo = (ref: NavReference) => {
+		const
+			url = typeof ref === 'string' ?
+				ref :
+				ref.currentTarget.href,
+			result = parseUrlForRoute(url);
 		if (result.isInternal && result.route) {
 			this.setScreenState({
 				key: result.route.screenKey,

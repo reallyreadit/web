@@ -105,6 +105,7 @@ export type NavOptions = {
 	} | {
 		method: NavMethod.ReplaceAll
 	};
+export type NavReference = string | React.MouseEvent<HTMLAnchorElement>;
 export interface Screen<T = any> {
 	id: number,
 	componentState?: T,
