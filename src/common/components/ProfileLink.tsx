@@ -13,8 +13,7 @@ export default class ProfileLink extends React.Component<{
 	onViewProfile: (userName: string) => void,
 	userName: string
 }> {
-	private readonly _viewProfile = (event: React.MouseEvent<HTMLElement>) => {
-		event.preventDefault();
+	private readonly _viewProfile = () => {
 		this.props.onViewProfile(this.props.userName);
 	};
 	public render() {

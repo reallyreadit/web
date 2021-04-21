@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference, parseNavReference } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
@@ -13,7 +13,7 @@ import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
-import { findRouteByKey, findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
+import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
 import UpdateToast from './UpdateToast';
@@ -1045,22 +1045,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 		};
 	}
 	protected navTo(ref: NavReference) {
-		const
-			url = typeof ref === 'string' ?
-				ref :
-				ref.currentTarget.href,
-			result = parseUrlForRoute(url);
-		if (result.isInternal && result.route) {
+		const result = parseNavReference(ref);
+		if (result.isInternal && result.screenKey != null) {
 			this.setScreenState({
-				key: result.route.screenKey,
-				urlParams: result.route.getPathParams ?
-					result.route.getPathParams(result.url.pathname) :
-					null,
+				key: result.screenKey,
+				urlParams: result.screenParams,
 				method: NavMethod.Push
 			});
 			return true;
 		} else if (!result.isInternal && result.url) {
-			window.open(result.url.href, '_blank');
+			window.open(result.url, '_blank');
 			return true;
 		}
 		return false;

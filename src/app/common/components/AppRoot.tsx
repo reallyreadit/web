@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod, NavReference } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod, NavReference, parseNavReference } from './Root';
 import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -18,7 +18,7 @@ import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys 
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
-import { findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
+import { findRouteByLocation } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import ShareData from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
@@ -1152,26 +1152,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 		};
 	}
 	protected navTo(ref: NavReference) {
-		const
-			url = typeof ref === 'string' ?
-				ref :
-				ref.currentTarget.href,
-			result = parseUrlForRoute(url);
-		if (result.isInternal && result.route) {
-			if (result.route.screenKey === ScreenKey.Read) {
-				const params = result.route.getPathParams(result.url.pathname);
-				this.props.appApi.readArticle({ slug: params['sourceSlug'] + '_' + params['articleSlug'] });
+		const result = parseNavReference(ref);
+		if (result.isInternal && result.screenKey != null) {
+			if (result.screenKey === ScreenKey.Read) {
+				this.props.appApi.readArticle({ slug: result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'] });
 			} else {
-				this.pushScreen(
-					result.route.screenKey,
-					result.route.getPathParams ?
-						result.route.getPathParams(result.url.pathname) :
-						null
-				);
+				this.pushScreen(result.screenKey, result.screenParams);
 			}
 			return true;
 		} else if (!result.isInternal && result.url) {
-			this.props.appApi.openExternalUrl(result.url.href);
+			if (
+				/^https?:/.test(result.url)
+			) {
+				this.props.appApi.openExternalUrl(result.url);
+			} else {
+				this.props.appApi.openExternalUrlUsingSystem(result.url)
+			}
 			return true;
 		}
 		return false;

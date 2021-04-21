@@ -22,3 +22,10 @@ enum ScreenKey {
 	Stats
 }
 export default ScreenKey;
+export type ScreenParams = {
+	[key: string]: string
+};
+export type ScreenKeyNavParams = {
+	key: ScreenKey,
+	params?: ScreenParams
+};

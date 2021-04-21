@@ -14,8 +14,7 @@ export default class AuthorLink extends React.Component<{
 	name: string,
 	slug: string
 }> {
-	private readonly _viewAuthor = (event: React.MouseEvent<HTMLElement>) => {
-		event.preventDefault();
+	private readonly _viewAuthor = () => {
 		this.props.onViewAuthor(this.props.slug, this.props.name);
 	};
 	public render() {

@@ -7,9 +7,9 @@ import UserArticle from '../../../common/models/UserArticle';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, unroutableQueryStringKeys } from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import ScreenKey from '../../../common/routing/ScreenKey';
+import ScreenKey, { ScreenKeyNavParams } from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
-import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
+import { findRouteByLocation, findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
@@ -105,7 +105,26 @@ export type NavOptions = {
 	} | {
 		method: NavMethod.ReplaceAll
 	};
-export type NavReference = string | React.MouseEvent<HTMLAnchorElement>;
+export type NavReference = string | ScreenKeyNavParams;
+export function parseNavReference(ref: NavReference) {
+	if (typeof ref === 'string') {
+		const result = parseUrlForRoute(ref);
+		return {
+			isInternal: result.isInternal,
+			screenKey: result.route?.screenKey,
+			screenParams: result.route?.getPathParams ?
+				result.route.getPathParams(result.url.pathname) :
+				null,
+			url: result.url?.href
+		};
+	}
+	return {
+		isInternal: true,
+		screenKey: ref.key,
+		screenParams: ref.params,
+		url: null
+	};
+}
 export interface Screen<T = any> {
 	id: number,
 	componentState?: T,
