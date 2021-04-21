@@ -22,7 +22,7 @@ type ChildContentProps = BaseProps & {
 	children: string
 };
 
-export default class extends React.PureComponent<AttrContentProps | ChildContentProps> {
+export default class extends React.Component<AttrContentProps | ChildContentProps> {
 	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
 		if (this.props.onClick) {
 			e.preventDefault();
