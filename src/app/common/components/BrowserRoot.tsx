@@ -127,29 +127,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setState({ welcomeMessage: null });
 	};
 
-	// routing
-	private readonly _navTo = (ref: NavReference) => {
-		const
-			url = typeof ref === 'string' ?
-				ref :
-				ref.currentTarget.href,
-			result = parseUrlForRoute(url);
-		if (result.isInternal && result.route) {
-			this.setScreenState({
-				key: result.route.screenKey,
-				urlParams: result.route.getPathParams ?
-					result.route.getPathParams(result.url.pathname) :
-					null,
-				method: NavMethod.Push
-			});
-			return true;
-		} else if (!result.isInternal && result.url) {
-			window.open(result.url.href, '_blank');
-			return true;
-		}
-		return false;
-	}
-
 	// screens
 	private readonly _createAuthorScreenTitle = (profile: Fetchable<AuthorProfile>) => formatFetchable(
 		profile,
@@ -1066,6 +1043,27 @@ export default class extends Root<Props, State, SharedState, Events> {
 			initialPath: this.props.initialLocation.path,
 			referrerUrl: window.document.referrer
 		};
+	}
+	protected navTo(ref: NavReference) {
+		const
+			url = typeof ref === 'string' ?
+				ref :
+				ref.currentTarget.href,
+			result = parseUrlForRoute(url);
+		if (result.isInternal && result.route) {
+			this.setScreenState({
+				key: result.route.screenKey,
+				urlParams: result.route.getPathParams ?
+					result.route.getPathParams(result.url.pathname) :
+					null,
+				method: NavMethod.Push
+			});
+			return true;
+		} else if (!result.isInternal && result.url) {
+			window.open(result.url.href, '_blank');
+			return true;
+		}
+		return false;
 	}
 	protected onArticleUpdated(event: ArticleUpdatedEvent, eventSource: EventSource = EventSource.Local) {
 		if (eventSource === EventSource.Local) {

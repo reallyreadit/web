@@ -116,33 +116,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return this.props.appApi.requestNotificationAuthorization();
 	};
 
-	// routing
-	private readonly _navTo = (ref: NavReference) => {
-		const
-			url = typeof ref === 'string' ?
-				ref :
-				ref.currentTarget.href,
-			result = parseUrlForRoute(url);
-		if (result.isInternal && result.route) {
-			if (result.route.screenKey === ScreenKey.Read) {
-				const params = result.route.getPathParams(result.url.pathname);
-				this.props.appApi.readArticle({ slug: params['sourceSlug'] + '_' + params['articleSlug'] });
-			} else {
-				this.pushScreen(
-					result.route.screenKey,
-					result.route.getPathParams ?
-						result.route.getPathParams(result.url.pathname) :
-						null
-				);
-			}
-			return true;
-		} else if (!result.isInternal && result.url) {
-			this.props.appApi.openExternalUrl(result.url.href);
-			return true;
-		}
-		return false;
-	}
-
 	// screens
 	private readonly _completeOrientation = () => {
 		this.props.serverApi
@@ -1177,6 +1150,31 @@ export default class extends Root<Props, State, SharedState, Events> {
 			initialPath: this.props.appReferral.initialPath,
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
+	}
+	protected navTo(ref: NavReference) {
+		const
+			url = typeof ref === 'string' ?
+				ref :
+				ref.currentTarget.href,
+			result = parseUrlForRoute(url);
+		if (result.isInternal && result.route) {
+			if (result.route.screenKey === ScreenKey.Read) {
+				const params = result.route.getPathParams(result.url.pathname);
+				this.props.appApi.readArticle({ slug: params['sourceSlug'] + '_' + params['articleSlug'] });
+			} else {
+				this.pushScreen(
+					result.route.screenKey,
+					result.route.getPathParams ?
+						result.route.getPathParams(result.url.pathname) :
+						null
+				);
+			}
+			return true;
+		} else if (!result.isInternal && result.url) {
+			this.props.appApi.openExternalUrl(result.url.href);
+			return true;
+		}
+		return false;
 	}
 	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
 		if (eventSource === EventSource.Local) {

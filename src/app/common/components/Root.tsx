@@ -368,6 +368,7 @@ export default abstract class Root<
 	// routing
 	protected readonly _createAbsoluteUrl: (path: string) => string;
 	protected readonly _createStaticContentUrl = (path: string) => createUrl(this.props.staticServerEndpoint, path);
+	protected readonly _navTo: (ref: NavReference) => boolean;
 
 	// screens
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
@@ -820,6 +821,7 @@ export default abstract class Root<
 		);
 
 		// delegates
+		this._navTo = this.navTo.bind(this);
 		this._readArticle = this.readArticle.bind(this);
 		this._viewComments = this.viewComments.bind(this);
 		this._viewProfile = this.viewProfile.bind(this);
@@ -985,6 +987,7 @@ export default abstract class Root<
 	protected abstract getPushDeviceForm(): PushDeviceForm | null;
 	protected abstract getSharedState(): TSharedState;
 	protected abstract getSignUpAnalyticsForm(action: string): SignUpAnalyticsForm;
+	protected abstract navTo(ref: NavReference): boolean;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);
 	}
