@@ -9,6 +9,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 interface Props {
 	analyticsAction: string,
 	deviceType: DeviceType,
+	iosPromptType?: 'auto' | 'download',
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -18,6 +19,7 @@ interface Props {
 }
 export default class GetStartedButton extends React.Component<Props> {
 	public static defaultProps: Partial<Props> = {
+		iosPromptType: 'auto',
 		size: 'x-large'
 	};
 	private readonly _beginOnboarding = () => {
@@ -31,7 +33,7 @@ export default class GetStartedButton extends React.Component<Props> {
 		return (
 			<div className="get-started-button_z950ea">
 				{this.props.deviceType === DeviceType.Ios ?
-					route.screenKey === ScreenKey.Home ?
+					route.screenKey === ScreenKey.Home || this.props.iosPromptType === 'download' ?
 						<a
 							className="ios"
 							href={getStoreUrl(DeviceType.Ios)}

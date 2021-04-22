@@ -140,6 +140,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 								<GetStartedButton
 									analyticsAction={analyticsAction}
 									deviceType={this.props.deviceType}
+									iosPromptType="download"
 									location={this.props.currentScreen.location}
 									onBeginOnboarding={analyticsAction => this.pageNavigation(() => this.props.onBeginOnboarding(analyticsAction))}
 									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
