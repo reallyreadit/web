@@ -13,8 +13,24 @@ import * as smoothscroll from 'smoothscroll-polyfill';
 import SemanticVersion from '../../common/SemanticVersion';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import Lazy from '../../common/Lazy';
+import { DeviceType } from '../../common/DeviceType';
 
 const initData = window.reallyreadit.app.initData;
+
+// Track whether we can reuse the server-rendered HTML or not.
+let canHydrateDom = true;
+
+// Check for iPadOS which is undetectable via the user-agent header.
+if (
+	initData.deviceType !== DeviceType.Ios &&
+	navigator.platform === 'MacIntel' &&
+	navigator.maxTouchPoints > 0
+) {
+	// Update the DeviceType.
+	initData.deviceType = DeviceType.Ios;
+	// Signal that we need to re-render instead of hydrate.
+	canHydrateDom = false;
+}
 
 const serverApi = new ServerApi(
 	initData.apiServerEndpoint,
@@ -87,10 +103,16 @@ switch (initData.clientType) {
 		throw new Error('Invalid clientType');
 }
 
-ReactDOM.hydrate(
-	rootElement,
-	document.getElementById('root')
-);
+// Hydrate or render the root element.
+const rootContainer = document.getElementById('root');
+if (canHydrateDom) {
+	ReactDOM.hydrate(rootElement, rootContainer);
+} else {
+	const emptyRootContainer = document.createElement('div');
+	emptyRootContainer.id = 'root';
+	rootContainer.replaceWith(emptyRootContainer);
+	ReactDOM.render(rootElement, emptyRootContainer);
+}
 
 serverApi.initialize();
 
