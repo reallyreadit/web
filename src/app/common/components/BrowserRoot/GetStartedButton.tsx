@@ -45,7 +45,7 @@ export default class GetStartedButton extends React.Component<Props> {
 							text="Open In App"
 							size={this.props.size}
 							intent="loud"
-							href={'https://reallyread.it' + this.props.location.path}
+							href={'https://reallyread.it' + this.props.location.path + '?deviceType=iOS'}
 							hrefPreventDefault={false}
 						/> :
 					this.props.deviceType === DeviceType.Android ?
