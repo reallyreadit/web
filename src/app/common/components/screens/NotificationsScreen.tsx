@@ -26,7 +26,7 @@ import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { Screen, SharedState } from '../Root';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 
 interface Props {
 	onClearAlerts: (alert: Alert) => void,
@@ -41,7 +41,7 @@ interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

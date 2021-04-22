@@ -12,7 +12,7 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import LoadingOverlay from './controls/LoadingOverlay';
 import InfoBox from '../../../common/components/InfoBox';
 import ArticleDetails from '../../../common/components/ArticleDetails';
-import ShareData from '../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../common/sharing/ShareEvent';
 
 interface Props {
 	articles: Fetchable<PageResult<UserArticle>>,
@@ -25,7 +25,7 @@ interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

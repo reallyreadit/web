@@ -5,7 +5,7 @@ import Fetchable from '../../../../../common/Fetchable';
 import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
-import ShareData from '../../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../../common/sharing/ShareEvent';
 import Post from '../../../../../common/models/social/Post';
 import UserAccount from '../../../../../common/models/UserAccount';
 import Rating from '../../../../../common/models/Rating';
@@ -65,7 +65,7 @@ export default class extends React.PureComponent<{
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,

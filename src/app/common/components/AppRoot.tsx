@@ -20,7 +20,7 @@ import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
 import { findRouteByLocation } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import ShareData from '../../../common/sharing/ShareData';
+import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
@@ -206,14 +206,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// sharing
-	private readonly _handleShareRequest = (data: ShareData) => {
-		this.props.appApi.share(data);
+	private readonly _handleShareRequest = (data: ShareEvent) => {
+		this._handleShareRequestWithCompletion(data);
 		return {
 			channels: [] as ShareChannel[]
 		};
 	};
-	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
-		return this.props.appApi.share(data);
+	private readonly _handleShareRequestWithCompletion = (data: ShareEvent) => {
+		return this.props.appApi.share({
+			...data,
+			selection: createRelativeShareSelection(data.selection, window)
+		});
 	};
 
 	// subscriptions

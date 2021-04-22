@@ -18,7 +18,7 @@ import PageResult from '../../../../common/models/PageResult';
 import Rating from '../../../../common/models/Rating';
 import UserAccount from '../../../../common/models/UserAccount';
 import UserArticle from '../../../../common/models/UserArticle';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import List from '../controls/List';
@@ -52,7 +52,7 @@ interface Props {
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,

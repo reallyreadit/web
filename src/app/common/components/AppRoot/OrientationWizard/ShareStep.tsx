@@ -4,7 +4,7 @@ import Button from '../../../../../common/components/Button';
 import Link from '../../../../../common/components/Link';
 
 interface Props {
-	onShare: () => void,
+	onShare: (event: React.MouseEvent<HTMLElement>) => void,
 	onSkip: () => void
 }
 export default class ShareStep extends React.PureComponent<Props> {

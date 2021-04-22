@@ -1,7 +1,7 @@
 import AppApi, { ArticleReference } from '../common/AppApi';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import SemanticVersion from '../../common/SemanticVersion';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import SerializedDeviceInfo from '../../common/models/app/SerializedDeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
@@ -225,7 +225,7 @@ export default class extends AppApi {
 			}
 		);
 	}
-	public share(data: ShareData) {
+	public share(data: ShareEvent) {
 		return new Promise<ShareResult>(
 			resolve => {
 				this._messagingContext.sendMessage(

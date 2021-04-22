@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import * as  React from 'react';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment, updateComment } from '../../common/comments';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
@@ -575,7 +575,7 @@ function setStatusBarVisibility(isVisible: boolean) {
 }
 
 
-function share(data: ShareData) {
+function share(data: ShareEvent) {
 	messagingContext.sendMessage({
 		type: 'share',
 		data

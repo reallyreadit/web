@@ -11,7 +11,7 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import Rating from '../../../../common/models/Rating';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import CommentsSection from '../../../../common/components/comments/CommentsSection';
 import CommentForm from '../../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../../common/models/social/CommentDeletionForm';
@@ -60,7 +60,7 @@ export interface Props {
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null

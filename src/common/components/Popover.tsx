@@ -30,7 +30,7 @@ interface Props {
 	menuState: MenuState,
 	onBeginClosing: () => void,
 	onClose: () => void,
-	onOpen: () => void
+	onOpen: (event: React.MouseEvent<HTMLElement>) => void
 }
 export default class Popover extends React.PureComponent<Props> {
 	private _childElementWillReceiveFocus = false;
@@ -48,11 +48,11 @@ export default class Popover extends React.PureComponent<Props> {
 			this._childElementWillReceiveFocus = false;
 		}
 	};
-	private readonly _handleChildrenClick = () => {
+	private readonly _handleChildrenClick = (event: React.MouseEvent<HTMLElement>) => {
 		if (this.props.menuState === MenuState.Opened) {
 			this.props.onBeginClosing();
 		} else {
-			this.props.onOpen();
+			this.props.onOpen(event);
 		}
 	};
 	private readonly _registerImpendingChildFocusTransition = () => {

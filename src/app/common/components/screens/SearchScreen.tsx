@@ -8,7 +8,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { SharedState, Screen } from '../Root';
 import ScreenContainer from '../ScreenContainer';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import SearchOptions from '../../../../common/models/articles/SearchOptions';
 import { FetchFunction } from '../../serverApi/ServerApi';
 import SearchQuery from '../../../../common/models/articles/SearchQuery';
@@ -32,7 +32,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onSearchArticles: (query: SearchQuery) => Promise<PageResult<UserArticle>>,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,

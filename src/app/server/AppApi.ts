@@ -1,5 +1,5 @@
 import AppApi, { ArticleReference } from '../common/AppApi';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
 import SignInEventType from '../../common/models/userAccounts/SignInEventType';
@@ -45,7 +45,7 @@ export default class extends AppApi {
 	public requestWebAuthentication(request: WebAuthRequest) {
 		return Promise.reject('Operation not supported in server environment');
 	}
-	public share(data: ShareData) {
+	public share(data: ShareEvent) {
 		return Promise.reject('Operation not supported in server environment');
 	}
 	public signIn(user: UserAccount, eventType: SignInEventType) {

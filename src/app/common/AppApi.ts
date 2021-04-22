@@ -1,5 +1,5 @@
 import EventEmitter from '../../common/EventEmitter';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
@@ -50,7 +50,7 @@ export default abstract class extends EventEmitter<{
 	public abstract requestSubscriptionPurchase(request: SubscriptionPurchaseRequest): Promise<Result<SubscriptionPurchaseResponse, ProblemDetails>>;
 	public abstract requestSubscriptionReceipt(): Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>;
 	public abstract requestWebAuthentication(request: WebAuthRequest): Promise<WebAuthResponse>;
-	public abstract share(data: ShareData): Promise<ShareResult>;
+	public abstract share(data: ShareEvent): Promise<ShareResult>;
 	public abstract signIn(user: UserAccount, eventType: SignInEventType): Promise<SignInEventResponse>;
 	public abstract signOut(): void;
 	public abstract syncAuthCookie(user?: UserAccount): void;

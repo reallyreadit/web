@@ -3,7 +3,7 @@ import ArticleDetails from '../../../../../common/components/ArticleDetails';
 import List from '../List';
 import UserArticle from '../../../../../common/models/UserArticle';
 import Rating from '../../../../../common/models/Rating';
-import ShareData from '../../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import PageResult from '../../../../../common/models/PageResult';
 import UserAccount from '../../../../../common/models/UserAccount';
@@ -25,7 +25,7 @@ export default class AotdView extends React.Component<{
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,

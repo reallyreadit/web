@@ -8,6 +8,7 @@ import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ProfileLink from './ProfileLink';
 import UserAccount from '../models/UserAccount';
+import { ShareEvent } from '../sharing/ShareEvent';
 
 export default (
 	props: {
@@ -17,7 +18,7 @@ export default (
 		onCopyTextToClipboard?: (text: string, successMessage: string) => void,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onGetShareData?: () => ShareData,
-		onShare?: (data: ShareData) => ShareResponse,
+		onShare?: (data: ShareEvent) => ShareResponse,
 		onViewProfile: (userName: string) => void,
 		user?: UserAccount
 	}

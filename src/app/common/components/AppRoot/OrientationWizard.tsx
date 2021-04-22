@@ -3,7 +3,7 @@ import TrackingStep from './OrientationWizard/TrackingStep';
 import * as classNames from 'classnames';
 import NotificationsStep from './OrientationWizard/NotificationsStep';
 import NotificationAuthorizationRequestResult from '../../../../common/models/app/NotificationAuthorizationRequestResult';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import UserAccount from '../../../../common/models/UserAccount';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
@@ -17,7 +17,7 @@ interface Props {
 	onCreateAbsoluteUrl: (userName: string) => string,
 	onCreateStaticContentUrl: (path: string) => string
 	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>,
-	onShare: (data: ShareData) => Promise<ShareResult>,
+	onShare: (data: ShareEvent) => Promise<ShareResult>,
 	user: UserAccount
 }
 enum Step {
@@ -90,13 +90,14 @@ export default class OrientationWizard extends React.PureComponent<
 			.then(this._continue)
 			.catch(this._continue);
 	};
-	private readonly _share = () => {
+	private readonly _share = (event: React.MouseEvent<HTMLElement>) => {
 		const
 			url = this.props.onCreateAbsoluteUrl(
 				findRouteByKey(routes, ScreenKey.Profile)
 					.createUrl({ userName: this.props.user.name })
 			),
-			text = 'I\'m reading on Readup! Follow me to see what I\'m reading.';
+			text = 'I\'m reading on Readup! Follow me to see what I\'m reading.',
+			targetRect = event.currentTarget.getBoundingClientRect();
 		this.props
 			.onShare({
 				action: 'OrientationShare',
@@ -105,7 +106,13 @@ export default class OrientationWizard extends React.PureComponent<
 					subject: 'Follow me on Readup'
 				},
 				text,
-				url
+				url,
+				selection: {
+					x: targetRect.x,
+					y: targetRect.y,
+					width: targetRect.width,
+					height: targetRect.height
+				}
 			})
 			.then(this._handleShareCompletion)
 			.catch(this._handleShareCompletion);

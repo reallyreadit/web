@@ -7,7 +7,7 @@ import { findRouteByKey } from '../../routing/Route';
 import routes from '../../routing/routes';
 import ScreenKey from '../../routing/ScreenKey';
 import ShareResponse from '../../sharing/ShareResponse';
-import ShareData from '../../sharing/ShareData';
+import { ShareEvent } from '../../sharing/ShareEvent';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
 import { formatPossessive, formatIsoDateAsUtc } from '../../format';
@@ -42,7 +42,7 @@ interface Props {
 	onPostComment?: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum?: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision?: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,

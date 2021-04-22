@@ -15,7 +15,7 @@ import DialogManager from '../../../common/components/DialogManager';
 import CommentsSection from '../../../common/components/comments/CommentsSection';
 import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
-import ShareData from '../../../common/sharing/ShareData';
+import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
 import PostPrompt from '../../../common/components/PostPrompt';
 import CommentForm from '../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
@@ -48,7 +48,7 @@ export interface Props extends DialogServiceState {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
-	onShare: (data: ShareData) => void,
+	onShare: (data: ShareEvent) => void,
 	user: UserAccount | null
 }
 export default class App extends React.Component<
@@ -94,8 +94,11 @@ export default class App extends React.Component<
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
 
 	// sharing
-	private readonly _handleShareRequest = (data: ShareData) => {
-		this.props.onShare(data);
+	private readonly _handleShareRequest = (data: ShareEvent) => {
+		this.props.onShare({
+			...data,
+			selection: createRelativeShareSelection(data.selection, window)
+		});
 		return {
 			channels: [] as ShareChannel[]
 		};

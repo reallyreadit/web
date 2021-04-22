@@ -14,7 +14,7 @@ import ButtonTutorialStep from './OnboardingFlow/ButtonTutorialStep';
 import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
 import ShareStep from './OnboardingFlow/ShareStep';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import BrowserOnboardingFlow, { BaseProps, ExitReason } from '../../../../common/components/BrowserOnboardingFlow';
 import { Intent } from '../../../../common/components/Toaster';
 import BrowserPopupResponseResponse from '../../../../common/models/auth/BrowserPopupResponseResponse';
@@ -47,7 +47,7 @@ export interface Props extends BaseProps {
 	onCreateStaticContentUrl: (path: string) => string,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: SignInForm) => Promise<void>,
 	onSignInWithApple: (analyticsAction: string) => Promise<BrowserPopupResponseResponse>,
