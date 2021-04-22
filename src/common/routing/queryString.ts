@@ -50,6 +50,7 @@ export function createQueryString(kvps: { [key: string]: string | Array<string> 
 export const appReferralQueryStringKey = 'appReferral';
 export const authServiceTokenQueryStringKey = 'authServiceToken';
 export const clientTypeQueryStringKey = 'clientType';
+export const deviceTypeQueryStringKey = 'deviceType';
 export const extensionAuthQueryStringKey = 'extensionAuth';
 export const extensionInstalledQueryStringKey = 'extensionInstalled';
 export const messageQueryStringKey = 'message';
@@ -62,6 +63,7 @@ export const unroutableQueryStringKeys = [
 	appReferralQueryStringKey,
 	authServiceTokenQueryStringKey,
 	clientTypeQueryStringKey,
+	deviceTypeQueryStringKey,
 	extensionAuthQueryStringKey,
 	extensionInstalledQueryStringKey,
 	messageQueryStringKey,

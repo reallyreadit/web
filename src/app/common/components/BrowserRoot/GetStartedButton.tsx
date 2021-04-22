@@ -5,6 +5,8 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import { createUrl } from '../../../../common/HttpEndpoint';
+import { deviceTypeQueryStringKey } from '../../../../common/routing/queryString';
 
 interface Props {
 	analyticsAction: string,
@@ -45,7 +47,18 @@ export default class GetStartedButton extends React.Component<Props> {
 							text="Open In App"
 							size={this.props.size}
 							intent="loud"
-							href={'https://reallyread.it' + this.props.location.path + '?deviceType=iOS'}
+							href={
+								createUrl(
+									{
+										host: 'reallyread.it',
+										protocol: 'https'
+									},
+									this.props.location.path,
+									{
+										[deviceTypeQueryStringKey]: DeviceType.Ios
+									}
+								)
+							}
 							hrefPreventDefault={false}
 						/> :
 					this.props.deviceType === DeviceType.Android ?
