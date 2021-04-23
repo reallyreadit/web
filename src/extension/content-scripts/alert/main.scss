@@ -41,6 +41,8 @@
 	text-decoration: none;
 	display: inline-flex;
 	justify-content: flex-start;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .alert > .button-container > button:focus {
 	outline-width: 1px;

@@ -24,6 +24,8 @@
 	cursor: pointer;
 	border-color: var(--control-border-color);
 	background-color: var(--control-background-color);
+	-webkit-user-select: none;
+	user-select: none;
 }
 .subscription-selector_nuri7o > button:focus {
 	border-color: var(--intent-primary-color);

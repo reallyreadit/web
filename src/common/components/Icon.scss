@@ -7,6 +7,8 @@
 	position: relative;
 	height: 1em;
 	width: 1em;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .icon_rour3d.block {
 	display: block;

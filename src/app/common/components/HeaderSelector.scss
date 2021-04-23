@@ -64,6 +64,8 @@
 	font-size: 22pt;
 	margin: 0;
 	padding: 0 10px;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .header-selector_9li9z5 > button.selected {
 	font-family: 'Museo Sans (700)';
