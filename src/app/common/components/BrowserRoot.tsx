@@ -1046,13 +1046,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 			referrerUrl: window.document.referrer
 		};
 	}
-	protected navTo(ref: NavReference) {
+	protected navTo(ref: NavReference, options?: NavOptions) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
 			this.setScreenState({
 				key: result.screenKey,
 				urlParams: result.screenParams,
-				method: NavMethod.Push
+				...(
+					options ?? {
+						method: NavMethod.Push
+					}
+				)
 			});
 			return true;
 		} else if (!result.isInternal && result.url) {

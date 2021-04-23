@@ -1156,13 +1156,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
 	}
-	protected navTo(ref: NavReference) {
+	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
 			if (result.screenKey === ScreenKey.Read) {
 				this.props.appApi.readArticle({ slug: result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'] });
 			} else {
-				this.pushScreen(result.screenKey, result.screenParams);
+				switch (options.method) {
+					case NavMethod.Push:
+						this.pushScreen(result.screenKey, result.screenParams);
+						break;
+					case NavMethod.Replace:
+						this.replaceScreen(options.screenId, result.screenKey, result.screenParams);
+						break;
+					case NavMethod.ReplaceAll:
+						this.replaceAllScreens(result.screenKey, result.screenParams);
+						break;
+				}
 			}
 			return true;
 		} else if (!result.isInternal && result.url) {

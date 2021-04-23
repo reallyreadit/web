@@ -387,7 +387,7 @@ export default abstract class Root<
 	// routing
 	protected readonly _createAbsoluteUrl: (path: string) => string;
 	protected readonly _createStaticContentUrl = (path: string) => createUrl(this.props.staticServerEndpoint, path);
-	protected readonly _navTo: (ref: NavReference) => boolean;
+	protected readonly _navTo: (ref: NavReference, options?: NavOptions) => boolean;
 
 	// screens
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
@@ -1010,7 +1010,7 @@ export default abstract class Root<
 	protected abstract getPushDeviceForm(): PushDeviceForm | null;
 	protected abstract getSharedState(): TSharedState;
 	protected abstract getSignUpAnalyticsForm(action: string): SignUpAnalyticsForm;
-	protected abstract navTo(ref: NavReference): boolean;
+	protected abstract navTo(ref: NavReference, options?: NavOptions): boolean;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);
 	}
