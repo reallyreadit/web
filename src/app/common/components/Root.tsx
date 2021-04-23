@@ -250,9 +250,28 @@ export default abstract class Root<
 				}
 			);
 	};
-	protected readonly _viewComments: (article: UserArticle) => void;
+	protected readonly _viewComments = (article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) => {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			urlParams: { [key: string]: string } = {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			};
+		if (highlightedCommentId != null) {
+			urlParams['commentId'] = highlightedCommentId;
+		}
+		this.navTo(
+			{
+				key: ScreenKey.Comments,
+				params: urlParams
+			},
+			{
+				method: NavMethod.Push
+			}
+		);
+	};
 	protected readonly _viewThread = (comment: Pick<CommentThread, 'articleSlug' | 'id'>) => {
-		this.viewComments(
+		this._viewComments(
 			{
 				slug: comment.articleSlug
 			},
@@ -426,7 +445,21 @@ export default abstract class Root<
 				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Decrement);
 			}
 		);
-	protected readonly _viewProfile: (userName?: string, options?: NavOptions) => void;
+	protected readonly _viewProfile = (userName?: string, options?: NavOptions) => {
+		this.navTo(
+			{
+				key: ScreenKey.Profile,
+				params: {
+					userName: userName || this.state.user.name
+				}
+			},
+			options ?? {
+				method: userName ?
+					NavMethod.Push :
+					NavMethod.ReplaceAll
+			}
+		);
+	};
 
 	// state
 	private _screenId = 0;
@@ -842,8 +875,6 @@ export default abstract class Root<
 		// delegates
 		this._navTo = this.navTo.bind(this);
 		this._readArticle = this.readArticle.bind(this);
-		this._viewComments = this.viewComments.bind(this);
-		this._viewProfile = this.viewProfile.bind(this);
 
 		// routing
 		this._createAbsoluteUrl = path => `${props.webServerEndpoint.protocol}://${props.webServerEndpoint.host}${path}`;
@@ -1073,8 +1104,6 @@ export default abstract class Root<
 	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
-	protected abstract viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string): void;
-	protected abstract viewProfile(userName?: string, options?: NavOptions): void;
 	public componentDidMount() {
 		if (this.props.initialUserProfile) {
 			this.checkProfileForUnsetValues(this.props.initialUserProfile);

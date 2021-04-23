@@ -1377,36 +1377,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
-			urlParams: { [key: string]: string } = {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			};
-		if (highlightedCommentId != null) {
-			urlParams['commentId'] = highlightedCommentId;
-		}
-		this.setScreenState({
-			key: ScreenKey.Comments,
-			method: NavMethod.Push,
-			urlParams
-		});
-	}
-	protected viewProfile(userName?: string, options?: NavOptions) {
-		this.setScreenState({
-			key: ScreenKey.Profile,
-			urlParams: { userName: userName || this.state.user.name },
-			...(
-				options ??
-				{
-					method: userName ?
-						NavMethod.Push :
-						NavMethod.ReplaceAll
-				}
-			)
-		});
-	}
 	public componentDidMount() {
 		super.componentDidMount();
 		// parse query string

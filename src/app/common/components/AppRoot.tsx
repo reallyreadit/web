@@ -1385,44 +1385,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			</>
 		);
 	}
-	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
-			urlParams: { [key: string]: string } = {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			};
-		if (highlightedCommentId != null) {
-			urlParams['commentId'] = highlightedCommentId;
-		}
-		this.pushScreen(
-			ScreenKey.Comments,
-			urlParams
-		);
-	}
-	protected viewProfile(userName?: string, options?: NavOptions) {
-		const
-			screenKey = ScreenKey.Profile,
-			urlParams = {
-				userName: userName ?? this.state.user.name
-			};
-		if (options?.method === NavMethod.Replace) {
-			this.replaceScreen(options.screenId, screenKey, urlParams);
-		} else {
-			const method = options?.method ??
-				userName ?
-					NavMethod.Push :
-					NavMethod.ReplaceAll;
-			switch (method) {
-				case NavMethod.Push:
-					this.pushScreen(screenKey, urlParams);
-					break;
-				case NavMethod.ReplaceAll:
-					this.replaceAllScreens(screenKey, urlParams);
-					break;
-			}
-		}
-	}
 	public componentDidMount() {
 		// sync auth state with app
 		this.props.appApi
