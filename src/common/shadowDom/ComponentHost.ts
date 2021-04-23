@@ -40,18 +40,6 @@ export default abstract class ComponentHost<Services, State> {
 		this._shadowRoot = this._shadowHost.attachShadow({
 			mode: 'open'
 		});
-
-		// apply react compatibility hack to container (https://github.com/facebook/react/issues/9242)
-		Object.defineProperty(
-			this._reactContainer,
-			'ownerDocument',
-			{
-				value: this._shadowRoot
-			}
-		);
-		(this._shadowRoot as any).createElement = (...args: any[]) => (document as any).createElement(...args);
-		(this._shadowRoot as any).createElementNS = (...args: any[]) => (document as any).createElementNS(...args);
-		(this._shadowRoot as any).createTextNode = (...args: any[]) => (document as any).createTextNode(...args);
 	}
 	private setTheme() {
 		this._shadowHost.dataset['com_readup_theme'] = document.documentElement.dataset['com_readup_theme'];
