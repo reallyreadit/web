@@ -2,13 +2,13 @@ import * as React from 'react';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import classNames = require('classnames');
 import Icon from '../../../common/components/Icon';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HomeHero from './BrowserRoot/HomeHero';
 import HomePanel from './BrowserRoot/HomePanel';
 import Button from '../../../common/components/Button';
 import Link from '../../../common/components/Link';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import { NavReference } from './Root';
+import { NavReference, Screen } from './Root';
 
 interface Faq {
 	question: string;
@@ -186,13 +186,14 @@ const renderFaqCategory = (props: Props, createFaqCategory: FaqCategory) => {
 }
 
 interface Props {
+	location: RouteLocation,
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void
 }
 
-interface Services extends Props {
+type Services = Pick<Props, Exclude<keyof Props, 'location'>> & {
 	onCreateTitle: () => string
-}
+};
 
 function jumpTo(url: string) {
 	document
@@ -241,6 +242,16 @@ const FaqPage = (props: Props): JSX.Element => {
 	// 	}
 	// }, []);
 
+	// Chrome doesn't scroll to the fragment for some reason so jumpTo manually on initial load.
+	useEffect(
+		() => {
+			if (props.location.fragment) {
+				jumpTo(props.location.fragment);
+			}
+		},
+		[]
+	);
+
 	return (
 		<div className="faq-page_35vamf">
 			<HomeHero
@@ -273,8 +284,9 @@ const FaqPage = (props: Props): JSX.Element => {
 export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Services) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: services.onCreateTitle() }),
-		render: () => (
+		render: (screen: Screen) => (
 			<FaqPage
+				location={screen.location}
 				onNavTo={services.onNavTo}
 				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
 			/>
