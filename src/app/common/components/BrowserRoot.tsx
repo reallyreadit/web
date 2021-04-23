@@ -1311,10 +1311,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								) ?
 									<ColumnFooter
 										onCreateStaticContentUrl={this._createStaticContentUrl}
-										onViewFaq={this._viewFaq}
-										onViewHome={this._viewHome}
-										onViewMission={this._viewMission}
-										onViewPrivacyPolicy={this._viewPrivacyPolicy}
+										onNavTo={this._navTo}
 									/> :
 									null}
 							</li>
