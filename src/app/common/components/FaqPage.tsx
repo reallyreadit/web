@@ -195,7 +195,6 @@ interface Services extends Props {
 }
 
 function jumpTo(url: string) {
-	event.preventDefault();
 	document
 		.getElementById(
 			url.split('#')[1]
