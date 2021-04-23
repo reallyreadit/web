@@ -1,12 +1,7 @@
 import * as React from 'react';
-import { DeviceType } from '../../../../common/DeviceType';
 // import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
-	deviceType: DeviceType,
-	onBeginOnboarding: (analyticsAction: string) => void,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCreateStaticContentUrl: (path: string) => string,
-	onOpenNewPlatformNotificationRequestDialog: () => void,
+		onCreateStaticContentUrl: (path: string) => string,
 	onViewFaq: () => void,
 	onViewHome: () => void,
 	onViewMission: () => void,

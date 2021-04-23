@@ -1306,11 +1306,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 									)
 								) ?
 									<ColumnFooter
-										deviceType={this.props.deviceType}
-										onBeginOnboarding={this._beginOnboarding}
-										onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
 										onCreateStaticContentUrl={this._createStaticContentUrl}
-										onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
 										onViewFaq={this._viewFaq}
 										onViewHome={this._viewHome}
 										onViewMission={this._viewMission}
