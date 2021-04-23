@@ -1310,7 +1310,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 									)
 								) ?
 									<ColumnFooter
-										onCreateStaticContentUrl={this._createStaticContentUrl}
 										onNavTo={this._navTo}
 									/> :
 									null}

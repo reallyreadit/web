@@ -4,7 +4,6 @@ import Link, { Props as LinkProps } from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 // import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
-		onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options: NavOptions) => void
 }> {
 	public render() {
@@ -71,7 +70,11 @@ export default class extends React.PureComponent<{
 			>
 				<div className="content">
 					<div className="column-footer_ltflpc__links">
-						<img className="logo" alt="Readup Logo" src={this.props.onCreateStaticContentUrl('/app/images/logo-white.svg')} onClick={e => { e.preventDefault(); navTo({ key: ScreenKey.Home }); }} />
+						<Link
+							className="logo"
+							screen={ScreenKey.Home}
+							onClick={navTo}
+						/>
 						{links.map((linkSet, i) =>
 							<div className="column-footer_ltflpc__link-set" key={linkSet.toString() + i}>
 								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>

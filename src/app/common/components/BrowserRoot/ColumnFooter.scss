@@ -3,6 +3,7 @@
         cssComponentId: column-footer_ltflpc
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/config';
 
 .column-footer_ltflpc {
 	// text-align: center;
@@ -22,8 +23,11 @@
 		// & > .logo {
 		.logo {
 			width: 110px;
+			height: 58px;
 			align-self: flex-start;
 			margin-bottom: 22px;
+			background-size: contain;
+			background-repeat: no-repeat;
 		}
 
 		display: flex;
@@ -107,11 +111,11 @@
 			)
 		);
 	}
-}
-
-@include theme-only(dark) {
-	.column-footer_ltflpc .content .logo {
-		// make white
-		filter: brightness(1.5);
+	#{$root} .column-footer_ltflpc .content .logo {
+		@if $scheme == light {
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
+		} @else {
+			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
+		}
 	}
 }
