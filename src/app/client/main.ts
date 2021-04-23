@@ -49,7 +49,10 @@ const rootProps = {
 			};
 		}
 	),
-	initialLocation: initData.initialLocation,
+	initialLocation: {
+		...initData.initialLocation,
+		fragment: location.hash
+	},
 	initialUserProfile: initData.userProfile,
 	serverApi,
 	staticServerEndpoint: initData.staticServerEndpoint,

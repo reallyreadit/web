@@ -1,4 +1,5 @@
 export default interface RouteLocation {
 	path: string,
-	queryString?: string
+	queryString?: string,
+	fragment?: string
 }
