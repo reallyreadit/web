@@ -34,6 +34,7 @@ type AttrContentProps = BaseProps & {
 type ChildContentProps = BaseProps & {
 	children: string
 };
+export type Props = (NoHrefProps | StringHrefProps | ScreenHrefProps) & (AttrContentProps | ChildContentProps);
 
 function isStringHrefProps(props: NoHrefProps | StringHrefProps | ScreenHrefProps): props is StringHrefProps {
 	return typeof (props as StringHrefProps).href === 'string';
@@ -42,7 +43,7 @@ function isScreenHrefProps(props: NoHrefProps | StringHrefProps | ScreenHrefProp
 	return typeof (props as ScreenHrefProps).screen === 'number';
 }
 
-export default class extends React.Component<(NoHrefProps | StringHrefProps | ScreenHrefProps) & (AttrContentProps | ChildContentProps)> {
+export default class extends React.Component<Props> {
 	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
 		e.preventDefault();
 		if (this.props.state === 'busy' || this.props.state === 'disabled') {
