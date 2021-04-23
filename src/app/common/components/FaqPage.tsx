@@ -196,14 +196,13 @@ type Services = Pick<Props, Exclude<keyof Props, 'location'>> & {
 };
 
 function jumpTo(url: string) {
-	document
-		.getElementById(
-			url.split('#')[1]
-		)
-		.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start'
-		});
+	const target = document.getElementById(
+		url.split('#')[1]
+	);
+	target?.scrollIntoView({
+		behavior: 'smooth',
+		block: 'start'
+	});
 }
 
 const FaqPage = (props: Props): JSX.Element => {
