@@ -32,7 +32,7 @@ type AttrContentProps = BaseProps & {
 	text: string
 };
 type ChildContentProps = BaseProps & {
-	children: string
+	children?: React.ReactNode
 };
 export type Props = (NoHrefProps | StringHrefProps | ScreenHrefProps) & (AttrContentProps | ChildContentProps);
 
@@ -74,6 +74,7 @@ export default class extends React.Component<Props> {
 					busy: this.props.state === 'busy'
 				}
 			),
+			childContent = (this.props as AttrContentProps).text ?? (this.props as ChildContentProps).children,
 			content = (
 				<>
 					{this.props.state === 'busy' ?
@@ -86,7 +87,9 @@ export default class extends React.Component<Props> {
 								name={this.props.iconLeft}
 							/> :
 							null}
-					<span key="text">{(this.props as AttrContentProps).text ?? (this.props as ChildContentProps).children}</span>
+					{childContent ?
+						<span>{childContent}</span> :
+						null}
 					{this.props.iconRight ?
 						<Icon
 							className="icon-right"
