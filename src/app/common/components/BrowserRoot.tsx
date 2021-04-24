@@ -285,7 +285,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 		});
 	};
 	private readonly _endOnboarding = (reason: OnboardingExitReason) => {
-		if (reason === OnboardingExitReason.Completed) {
+		// Register the orientation and update the user if this is the first completion.
+		if (
+			reason === OnboardingExitReason.Completed &&
+			!this.state.user.dateOrientationCompleted
+		) {
 			this.props.serverApi
 				.registerOrientationCompletion()
 				.catch(
@@ -293,6 +297,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						// ignore. non-critical error path. orientation will just be repeated
 					}
 				);
+			// Onboarding will be closed in onUserUpdated when dateOrientationCompleted is first assigned a value.
 			this.onUserUpdated(
 				{
 					...this.state.user,
@@ -304,6 +309,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				EventSource.Local
 			);
 		} else {
+			// Close onboarding directly.
 			this.setState({
 				onboarding: null
 			});
