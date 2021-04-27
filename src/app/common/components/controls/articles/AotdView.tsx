@@ -12,6 +12,7 @@ import Button from '../../../../../common/components/Button';
 import SelectList from '../../../../../common/components/SelectList';
 import LoadingOverlay from '../LoadingOverlay';
 import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
+import { NavReference } from '../../Root';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
 export default class AotdView extends React.Component<{
@@ -22,6 +23,7 @@ export default class AotdView extends React.Component<{
 	onChangeSort?: (sort: Sort) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -60,6 +62,7 @@ export default class AotdView extends React.Component<{
 						highlight={this.props.aotdHasAlert}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
 						onPost={this.props.onPostArticle}
 						onRateArticle={this.props.onRateArticle}
 						onRead={this.props.onReadArticle}
@@ -101,6 +104,7 @@ export default class AotdView extends React.Component<{
 										article={article}
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
 										onPost={this.props.onPostArticle}
 										onRateArticle={this.props.onRateArticle}
 										onRead={this.props.onReadArticle}

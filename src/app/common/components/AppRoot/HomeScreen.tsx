@@ -7,7 +7,7 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen, SharedState } from '../Root';
+import { Screen, SharedState, NavReference } from '../Root';
 import AsyncLink from '../controls/AsyncLink';
 import produce from 'immer';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
@@ -28,6 +28,7 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -211,6 +212,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onChangeSort={this._changeSort}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onNavTo={this.props.onNavTo}
 							onRateArticle={this.props.onRateArticle}
 							onPostArticle={this.props.onPostArticle}
 							onReadArticle={this.props.onReadArticle}

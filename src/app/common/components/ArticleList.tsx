@@ -13,6 +13,7 @@ import LoadingOverlay from './controls/LoadingOverlay';
 import InfoBox from '../../../common/components/InfoBox';
 import ArticleDetails from '../../../common/components/ArticleDetails';
 import { ShareEvent } from '../../../common/sharing/ShareEvent';
+import { NavReference } from './Root';
 
 interface Props {
 	articles: Fetchable<PageResult<UserArticle>>,
@@ -21,6 +22,7 @@ interface Props {
 	onChangePageNumber: (pageNumber: number) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -97,6 +99,7 @@ export class ArticleList extends React.Component<Props> {
 									article={article}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onNavTo={this.props.onNavTo}
 									onPost={this.props.onPostArticle}
 									onRateArticle={this.props.onRateArticle}
 									onRead={this.props.onReadArticle}

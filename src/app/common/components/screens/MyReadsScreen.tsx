@@ -15,7 +15,7 @@ import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import HeaderSelector from '../HeaderSelector';
-import { Screen, SharedState } from '../Root';
+import { Screen, SharedState, NavReference } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -41,6 +41,7 @@ interface Props {
 	onGetUserArticleHistory: ArticleFetchFunction,
 	onOpenDialog: (element: React.ReactNode) => void,
 	onCloseDialog: () => void,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -241,6 +242,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 														article={article}
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+														onNavTo={this.props.onNavTo}
 														onPost={this.props.onPostArticle}
 														onRateArticle={this.props.onRateArticle}
 														onRead={this.props.onReadArticle}

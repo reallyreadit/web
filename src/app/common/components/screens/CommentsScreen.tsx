@@ -105,6 +105,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									article={this.props.article.value}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onNavTo={this.props.onNavTo}
 									onRateArticle={this.props.onRateArticle}
 									onPost={this.props.onPostArticle}
 									onRead={this.props.onReadArticle}

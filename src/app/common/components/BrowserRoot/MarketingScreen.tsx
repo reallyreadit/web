@@ -34,6 +34,7 @@ import Button from '../../../../common/components/Button';
 import { PriceList } from './MarketingScreen/PriceList';
 import { RevenueMeter } from '../RevenueMeter';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
+import { NavReference } from '../Root';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -48,6 +49,7 @@ interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -372,6 +374,7 @@ export default class MarketingScreen extends React.Component<
 											article={article}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
 											onPost={this.props.onPostArticle}
 											onRateArticle={this.props.onRateArticle}
 											onRead={this.props.onReadArticle}

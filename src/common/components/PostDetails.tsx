@@ -56,6 +56,7 @@ export default class PostDetails extends React.Component<Props> {
 						article={this.props.post.article}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
 						onRateArticle={this.props.onRateArticle}
 						onPost={this.props.onPost}
 						onRead={this.props.onRead}

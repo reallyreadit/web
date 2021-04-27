@@ -7,7 +7,7 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen } from '../Root';
+import { Screen, NavReference } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import { SharedState } from '../BrowserRoot';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
@@ -40,6 +40,7 @@ interface Props {
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -276,6 +277,7 @@ class HomeScreen extends React.Component<Props, State> {
 								onChangeSort={this._changeSort}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onNavTo={this.props.onNavTo}
 								onPostArticle={this.props.onPostArticle}
 								onRateArticle={this.props.onRateArticle}
 								onReadArticle={this.props.onReadArticle}
@@ -310,6 +312,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onGetUserCount={this.props.onGetUserCount}
+				onNavTo={this.props.onNavTo}
 				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}

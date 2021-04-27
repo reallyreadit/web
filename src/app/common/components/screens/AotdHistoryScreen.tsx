@@ -20,6 +20,7 @@ import HeaderSelector from '../HeaderSelector';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
+import { NavReference } from '../Root';
 
 enum View {
 	Recent = 'Recent',
@@ -30,6 +31,7 @@ export interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -196,6 +198,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 													article={article}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onNavTo={this.props.onNavTo}
 													onPost={this.props.onPostArticle}
 													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}

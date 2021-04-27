@@ -353,6 +353,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 						onChangePageNumber={this._changeArticlesPageNumber}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
 						onPostArticle={this.props.onPostArticle}
 						onRateArticle={this.props.onRateArticle}
 						onReadArticle={this.props.onReadArticle}

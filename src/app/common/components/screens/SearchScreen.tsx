@@ -229,6 +229,7 @@ class SearchScreen extends React.Component<Props, State> {
 														article={article}
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+														onNavTo={this.props.onNavTo}
 														onPost={this.props.onPostArticle}
 														onRateArticle={this.props.onRateArticle}
 														onRead={this.props.onReadArticle}
