@@ -77,9 +77,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
 		// publisher metadata
 		const publisherMetadata = [this.props.article.source];
-		if (this.props.article.authors.length) {
+		if (this.props.article.articleAuthors.length) {
 			publisherMetadata.push(
-				this.props.article.authors.join(', ')
+				this.props.article.articleAuthors.map(author => author.name).join(', ')
 			);
 		}
 		if (this.props.article.datePublished) {
@@ -177,12 +177,12 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.source}
 								</div>
 								<div className="author-date-length">
-									{this.props.article.authors.length ?
+									{this.props.article.articleAuthors.length ?
 										<span className="author">
-											{this.props.article.authors.join(', ')}
+											{this.props.article.articleAuthors.map(author => author.name).join(', ')}
 										</span> :
 										null}
-									{this.props.article.authors.length && this.props.article.datePublished ?
+									{this.props.article.articleAuthors.length && this.props.article.datePublished ?
 										<span className="spacer">|</span> :
 										null}
 									{this.props.article.datePublished ?
@@ -190,7 +190,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 											{formatTimestamp(this.props.article.datePublished)}
 										</span> :
 										null}
-									{this.props.article.authors.length || this.props.article.datePublished ?
+									{this.props.article.articleAuthors.length || this.props.article.datePublished ?
 										<span className="spacer">|</span> :
 										null}
 									<span className="length">

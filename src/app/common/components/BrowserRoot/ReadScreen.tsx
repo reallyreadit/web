@@ -59,14 +59,14 @@ class ReadScreen extends React.PureComponent<Props> {
 						</InfoBox> :
 						<>
 							<div className="article">
-								{this.props.article.value.source || this.props.article.value.authors.length ?
+								{this.props.article.value.source || this.props.article.value.articleAuthors.length ?
 									<div className="meta">
-										{this.props.article.value.authors.length ?
+										{this.props.article.value.articleAuthors.length ?
 											<span className="authors">
-												{formatList(this.props.article.value.authors)}
+												{formatList(this.props.article.value.articleAuthors.map(author => author.name))}
 											</span> :
 											null}
-										{this.props.article.value.authors.length && this.props.article.value.source ?
+										{this.props.article.value.articleAuthors.length && this.props.article.value.source ?
 											<span> in </span> :
 											null}
 										{this.props.article.value.source ?

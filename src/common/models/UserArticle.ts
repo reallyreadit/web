@@ -1,5 +1,9 @@
 import ArticleFlair from './ArticleFlair';
 
+export interface ArticleAuthor {
+	name: string,
+	slug: string
+}
 export default interface UserArticle {
 	id: number,
 	title: string,
@@ -10,7 +14,7 @@ export default interface UserArticle {
 	description: string,
 	aotdTimestamp: string | null,
 	url: string,
-	authors: string[],
+	articleAuthors: ArticleAuthor[],
 	tags: string[],
 	wordCount: number,
 	commentCount: number,
@@ -43,8 +47,8 @@ export function areEqual(a: UserArticle, b: UserArticle) {
 		a.description === b.description &&
 		a.aotdTimestamp === b.aotdTimestamp &&
 		a.url === b.url &&
-		a.authors.length === b.authors.length &&
-		a.authors.every(author => b.authors.includes(author)),
+		a.articleAuthors.length === b.articleAuthors.length &&
+		a.articleAuthors.every(author => b.articleAuthors.some(otherAuthor => otherAuthor.slug === author.slug)),
 		a.tags.length === b.tags.length &&
 		a.tags.every(tag => b.tags.includes(tag)) &&
 		a.wordCount === b.wordCount &&
