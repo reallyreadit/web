@@ -226,6 +226,7 @@ export default class CommentDetails extends React.Component<
 				<PostHeader
 					userName={this.props.comment.userAccount}
 					leaderboardBadge={this.props.comment.badge}
+					isAuthor={this.props.comment.isAuthor}
 					date={this.props.comment.dateCreated}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
