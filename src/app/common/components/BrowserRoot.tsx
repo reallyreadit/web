@@ -1320,6 +1320,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								) ?
 									<ColumnFooter
 										onNavTo={this._navTo}
+										showWhatIsReadup={topScreen.key !== ScreenKey.Home}
 									/> :
 									null}
 							</li>

@@ -4,7 +4,8 @@ import Link, { Props as LinkProps } from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 // import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
-	onNavTo: (ref: NavReference, options: NavOptions) => void
+	onNavTo: (ref: NavReference, options: NavOptions) => void,
+	showWhatIsReadup: boolean
 }> {
 	public render() {
 		const navTo = (ref: NavReference) => this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
@@ -27,6 +28,9 @@ export default class extends React.PureComponent<{
 			{
 				title: "Learn more",
 				sublinks: [
+					this.props.showWhatIsReadup ?
+						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>What is Readup?</Link> :
+						null,
 					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>FAQ</Link>,
 					<Link key="blog" href="https://blog.readup.com" onClick={navTo}>Blog</Link>
 				]
@@ -80,11 +84,15 @@ export default class extends React.PureComponent<{
 								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>
 								<ul>
 									{
-										linkSet.sublinks.map(
-											(link, i) => (
-												<li key={link.key}>{link}</li>
+										linkSet.sublinks
+											.filter(
+												link => !!link
 											)
-										)
+											.map(
+												(link, i) => (
+													<li key={link.key}>{link}</li>
+												)
+											)
 									}
 								</ul>
 							</div>
