@@ -7,7 +7,8 @@
 
 .quote-card_xa1vt {
 
-   p {
+   .quote-card_xa1vt__quote {
+	   display: block;
        font-size: 24px;
        font-family: 'Museo Sans (300)', sans-serif;
        line-height: 1.55;
@@ -21,8 +22,12 @@
        padding-right: 4px;
    }
 
+   .link_ke15oa.quote-card_xa1vt__quote {
+	   white-space: normal;
+   }
+
    // quote signs
-   p::before, p::after {
+   .quote-card_xa1vt__quote::before, .quote-card_xa1vt__quote::after {
        position: absolute;
        display: block;
        font-size: 124px;
@@ -32,14 +37,14 @@
        line-height: 1;
    }
 
-   p::before {
+   .quote-card_xa1vt__quote::before {
        content: "“";
        // left: -12px;
        left: -18px;
        top: -56px;
    }
 
-   p::after {
+   .quote-card_xa1vt__quote::after {
        content: "”";
        right: 12px;
        bottom: -118px;
