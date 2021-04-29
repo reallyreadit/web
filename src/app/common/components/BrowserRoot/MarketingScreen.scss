@@ -87,6 +87,23 @@
 		// justify-content: space-between;
 		// height: 900px;
 
+		/* Firefox scrollbar */
+		scrollbar-width: thin;
+		scrollbar-color: var(--control-background-color) var(--control-border-color);
+
+		/* Webkit scrollbar */
+		&::-webkit-scrollbar {
+			height: 10px;
+		}
+		&::-webkit-scrollbar-track {
+			background: var(--control-background-color);
+			border-radius: 10px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background: var(--control-border-color);
+			border-radius: 10px;
+		}
+
 		.quote-card_xa1vt  {
 			width: 100%;
 			margin: 14px 0;
