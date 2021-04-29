@@ -117,7 +117,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 							/>
 							<Icon
 								badge={this.props.user.followerAlertCount}
-								name="user"
+								name="menu2"
 								onClick={this.props.onOpenMenu}
 							/>
 						</> :
