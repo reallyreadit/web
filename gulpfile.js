@@ -6,7 +6,8 @@ const
 	embed = require('./build/targets/embed'),
 	extension = require('./build/targets/extension'),
 	nativeClientReader = require('./build/targets/nativeClient/reader'),
-	nativeClientShareExtension = require('./build/targets/nativeClient/shareExtension');
+	nativeClientShareExtension = require('./build/targets/nativeClient/shareExtension'),
+	metadataParser = require('./build/targets/metadataParser');
 
 /**
  * app
@@ -96,6 +97,16 @@ function buildProdExtension() {
 }
 
 /**
+ * metadataParser
+ */
+function cleanDevMetadataParser() {
+	return metadataParser.clean(project.env.dev);
+}
+function buildDevMetadataParser() {
+	return metadataParser.build(project.env.dev);
+}
+
+/**
  * native client reader
  */
 function cleanDevNativeClientReader() {
@@ -179,6 +190,9 @@ module.exports = {
 	'build:stage:extension': buildStageExtension,
 	'clean:prod:extension': cleanProdExtension,
 	'build:prod:extension': buildProdExtension,
+	'clean:dev:metadata-parser': cleanDevMetadataParser,
+	'build:dev:metadata-parser': buildDevMetadataParser,
+	'watch:dev:metadata-parser': metadataParser.watch,
 	'clean:dev:native-client-reader': cleanDevNativeClientReader,
 	'build:dev:native-client-reader': buildDevNativeClientReader,
 	'watch:dev:native-client-reader': nativeClientReader.watch,
