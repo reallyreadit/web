@@ -1,6 +1,31 @@
 import ParseResult from './ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
 
+function parseAuthors() {
+	const metaElements = document.querySelectorAll<HTMLMetaElement>('meta[name="author"]');
+	if (metaElements.length) {
+		return Array
+			.from(metaElements)
+			.map(
+				element => ({
+					name: element.content
+				})
+			);
+	}
+	// If the microdata structure is malformed it won't be parsed by the microdata parser so we should look for
+	// the individual elements here as well.
+	const microdataElements = document.querySelectorAll('[itemprop="author"]');
+	if (microdataElements.length) {
+		return Array
+			.from(microdataElements)
+			.map(
+				element => ({
+					name: element.textContent
+				})
+			);
+	}
+	return [];
+}
 export default function parseMiscMetadata(): ParseResult {
 	const articleTitleElements = document.querySelectorAll('article h1');
 	return {
@@ -23,7 +48,7 @@ export default function parseMiscMetadata(): ParseResult {
 				)
 			},
 			description: getElementAttribute<HTMLMetaElement>(document.querySelector('meta[name="description"]'), e => e.content),
-			authors: (Array.from(document.querySelectorAll('meta[name="author"]')) as HTMLMetaElement[]).map(e => ({ name: e.content })),
+			authors: parseAuthors(),
 			tags: [],
 			pageLinks: [],
 			imageUrl: getElementAttribute<HTMLMetaElement>(document.querySelector('meta[name="twitter:image"i]'), e => e.content),

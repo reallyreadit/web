@@ -7,7 +7,7 @@
       "app": "1.35.1",
 			"appPublic": "1.33.0",
 			"common": {
-				"metadataParser": "1.0.0"
+				"metadataParser": "1.0.1"
 			},
       "embed": "1.0.1",
       "embedIframe": "1.0.0",
