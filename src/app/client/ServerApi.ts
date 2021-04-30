@@ -36,28 +36,26 @@ export default class extends ServerApi {
 				req.withCredentials = true;
 			}
 			req.addEventListener('load', function () {
-				if (this.status === 200 || this.status === 400 || this.status === 500) {
-					const contentType = this.getResponseHeader('Content-Type');
-					let object: any;
-					if (
-						contentType?.startsWith('application/json') ||
-						contentType?.startsWith('application/problem+json')
-					) {
-						object = JSON.parse(this.responseText);
+				const contentType = this.getResponseHeader('Content-Type');
+				let object: any;
+				if (
+					contentType?.startsWith('application/json') ||
+					contentType?.startsWith('application/problem+json')
+				) {
+					object = JSON.parse(this.responseText);
+				}
+				if (this.status === 200) {
+					if (object) {
+						resolve(object);
+					} else {
+						resolve();
 					}
-					if (this.status === 200) {
-						if (object) {
-							resolve(object);
-						} else {
-							resolve();
-						}
+				} else {
+					if (this.status === 401) {
+						reject(['Unauthenticated']);
 					} else {
 						reject(object || []);
 					}
-				} else if (this.status === 401) {
-					reject(['Unauthenticated']);
-				} else {
-					reject([]);
 				}
 			});
 			req.addEventListener('error', function () {
