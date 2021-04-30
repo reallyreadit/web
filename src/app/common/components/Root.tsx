@@ -74,6 +74,7 @@ import StripePriceChangeDialog from './StripePriceChangeDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
+import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -172,6 +173,7 @@ export default abstract class Root<
 	private readonly _concreteClassName: ClassValue;
 
 	// articles
+	protected readonly _assignAuthorToArticle = (request: AuthorAssignmentRequest) => this.props.serverApi.assignAuthorToArticle(request);
 	protected readonly _rateArticle = (article: UserArticle, score: number) => {
 		return this.props.serverApi
 			.rateArticle(article.id, score)
@@ -201,6 +203,7 @@ export default abstract class Root<
 				);
 			});
 	};
+	protected readonly _unassignAuthorFromArticle = (request: AuthorUnassignmentRequest) => this.props.serverApi.unassignAuthorFromArticle(request);
 
 	// clipboard
 	protected readonly _clipboard: ClipboardService;
@@ -882,6 +885,7 @@ export default abstract class Root<
 		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
+				onAssignAuthorToArticle: this._assignAuthorToArticle,
 				onCloseDialog: this._dialog.closeDialog,
 				onGetArticleIssueReports: this.props.serverApi.getArticleIssueReportAnalytics,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
@@ -893,7 +897,8 @@ export default abstract class Root<
 				onOpenDialog: this._dialog.openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
-				onShowToast: this._toaster.addToast
+				onShowToast: this._toaster.addToast,
+				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle
 			}),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {

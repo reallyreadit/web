@@ -1,0 +1,35 @@
+/*
+	componentPath: src/app/common/components/AdminPage/ArticleAuthorControl
+	cssComponentId: article-author-control_r2vdzx
+*/
+
+.article-author-control_r2vdzx {
+	padding: 5px;
+	background-color: var(--control-background-color);
+	border: 1px solid var(--control-border-color);
+}
+.article-author-control_r2vdzx > fieldset > label {
+	display: flex;
+	align-items: center;
+	margin: 5px 0;
+}
+.article-author-control_r2vdzx > fieldset > label > input {
+	background-color: var(--control-background-color);
+	border: 1px solid var(--control-border-color);
+}
+.article-author-control_r2vdzx > fieldset > label > span + input {
+	flex: 1 1 auto;
+	max-width: 400px;
+	margin-left: 5px;
+}
+.article-author-control_r2vdzx > fieldset > label > input + span {
+	margin-left: 5px;
+}
+.article-author-control_r2vdzx > button {
+	padding: 5px;
+	background-color: var(--control-background-color);
+	border: 1px solid var(--control-border-color);
+}
+.article-author-control_r2vdzx > button[disabled] {
+	background-color: var(--control-disabled-color);
+}

@@ -78,6 +78,7 @@ import { StripePriceChangeRequest } from '../../../common/models/subscriptions/S
 import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse, SubscriptionPaymentMethodChangeRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/StripeSetupIntentResponse';
 import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
+import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -171,6 +172,7 @@ export default abstract class {
 	public readonly logNewPlatformNotificationRequest = (data: NewPlatformNotificationRequest) => this.post({ path: '/Analytics/NewPlatformNotificationRequest', data });
 
 	// Articles
+	public readonly assignAuthorToArticle = (request: AuthorAssignmentRequest) => this.post({ path: '/Articles/AuthorAssignment', data: request });
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
 	public readonly getArticleSearchOptions = this.createFetchFunction<SearchOptions>('/Articles/SearchOptions');
@@ -181,6 +183,7 @@ export default abstract class {
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });
 	public readonly searchArticles = (query: SearchQuery) => this.post<PageResult<UserArticle>>({ path: '/Articles/Search', data: query });
+	public readonly unassignAuthorFromArticle = (request: AuthorUnassignmentRequest) => this.post({ path: '/Articles/AuthorUnassignment', data: request });
 
 	// Auth
 	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
