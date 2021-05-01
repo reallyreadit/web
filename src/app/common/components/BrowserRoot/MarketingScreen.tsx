@@ -169,6 +169,12 @@ export default class MarketingScreen extends React.Component<
 				imageName: "civil-discourse.png",
 				imageAlt: "You must read the article before you can post or reply."
 			},
+			{
+				heading: "A brighter future for Writers",
+				paragraph: "You pay a monthly subscription to read on Readup. Readup keeps 5% and distributes the rest to the Writers you read. Everything is transparent, ethical, and humane.",
+				imageName: "watch-money.png",
+				imageAlt: "Readup distributes your money directly to writers"
+			}
 		];
 
 		/*const howItWorksDesktop = [
