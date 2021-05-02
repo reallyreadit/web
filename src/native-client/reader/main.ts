@@ -41,6 +41,7 @@ import { ProblemDetails } from '../../common/ProblemDetails';
 import { Result, ResultType } from '../../common/Result';
 import { ReadingErrorType } from '../../common/Errors';
 import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscriptionPrompt';
+import { createUrl } from '../../common/HttpEndpoint';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -134,6 +135,7 @@ const reader = new Reader(
 								React.createElement(
 									ReaderSubscriptionPrompt,
 									{
+										onCreateStaticContentUrl: path => createUrl(window.reallyreadit.nativeClient.reader.config.staticServer, path),
 										onSubscribe: () => {
 											messagingContext.sendMessage({
 												type: 'openSubscriptionPrompt'

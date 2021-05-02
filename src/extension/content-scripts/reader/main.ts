@@ -29,6 +29,7 @@ import { ReaderSubscriptionPrompt } from '../../../common/components/ReaderSubsc
 import { ReadingErrorType } from '../../../common/Errors';
 import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { getPromiseErrorMessage } from '../../../common/format';
+import { createUrl } from '../../../common/HttpEndpoint';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -418,6 +419,7 @@ const reader = new Reader(
 							React.createElement(
 								ReaderSubscriptionPrompt,
 								{
+									onCreateStaticContentUrl: path => createUrl(window.reallyreadit.extension.config.staticServer, path),
 									onSubscribe: () => {
 										window.open(
 											globalUi.createAbsoluteUrl(
