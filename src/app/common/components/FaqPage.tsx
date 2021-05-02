@@ -114,6 +114,52 @@ const faqs: FaqCategory[] = [
 		]
 	}),
 	props => ({
+		title: "Billing",
+		questions: [
+			{
+				question: "How much does Readup cost?",
+				answer: <p>If you create an account on iOS (iPhone or iPad) you have three choices: $4.99, $14.99 or $24.99. If you create an account on desktop, you can choose one of those three prices or choose any custom price.</p>
+			},
+			{
+				question: "Can I really pick ANY price?",
+				answer: <p>Yes, but only on desktop. On iOS you have three price choices.</p>
+			},
+			{
+				question: "Is there a minimum subscription price?",
+				answer: <p>Yes. $4.99.</p>
+			},
+			{
+				question: "Are some features only available at certain pricing levels?",
+				answer: <p>No. All Readers at all levels get full access to all features. The only difference is that when you pay more (or less) to read on Readup you are giving more (or less) to the writers you read.</p>
+			},
+			{
+				question: "Can I get a refund?",
+				answer: <p>Yes. Just send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+			}
+		]
+	}),
+	props => ({
+		title: "Writers",
+		questions: [
+			{
+				question: "What is verification?",
+				answer: <p>Verification proves that your account is real and connects your account to the articles you’ve written.</p>
+			},
+			{
+				question: "Why should I get verified?",
+				answer: <p>As a verified writer, you don’t have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Verified writers get special Writer Profiles. And verified Writers can cash out.</p>
+			},
+			{
+				question: "How do I get verified?",
+				answer: <p>Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>. A human will verify you.</p>
+			},
+			{
+				question: "I have a balance on Readup. How do I collect the money I’ve earned here?",
+				answer: <p>To cash out, you need to get verified. Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+			}
+		]
+	}),
+	props => ({
 		title: "Misc",
 		questions: [
 			{
@@ -142,8 +188,7 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "How does Readup make money? ",
-				answer: (<p>Currently, Readup doesn’t make money. And if you join now you’ll stay free for life.&nbsp;
-					But, soon, new Readers will have to pay to read on Readup.</p>)
+				answer: (<p>Readers pay to read on Readup. Readup takes 5% and gives the rest to writers.</p>)
 			},
 			{
 				question: "Are you hiring?",
