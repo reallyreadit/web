@@ -15,7 +15,7 @@ interface Props {
 	hrefPreventDefault?: boolean,
 	iconLeft?: IconName,
 	iconRight?: IconName,
-	intent?: 'normal' | 'default' | 'loud' | 'warning' | 'success',
+	intent?: 'normal' | 'default' | 'loud' | 'warning' | 'success' | 'primary',
 	onClick?: (event: React.MouseEvent) => void,
 	onMouseEnter?: () => void,
 	onMouseLeave?: () => void,

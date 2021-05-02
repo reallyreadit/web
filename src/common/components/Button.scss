@@ -150,6 +150,15 @@
 			)
 		);
 	}
+	#{$root} .button_ovrlmi.primary {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-primary-color,
+				"color": $intent-text-color
+			)
+		);
+	}
 	#{$root} .button_ovrlmi.busy,
 	#{$root} .button_ovrlmi.disabled {
 		@include theme-colors(
