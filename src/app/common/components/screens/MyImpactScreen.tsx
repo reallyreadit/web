@@ -151,6 +151,9 @@ class MyImpactScreen extends React.Component<Props, State> {
 			case SubscriptionStatusType.PaymentFailed:
 				return (
 					<>
+						{this.props.subscriptionStatus.type === SubscriptionStatusType.PaymentFailed ?
+							this.renderViewToggle() :
+							null}
 						<div className="content-block title">
 							{this.props.subscriptionStatus.isUserFreeForLife ?
 								'Buy a subscription. Watch your money go to the writers you read.' :
