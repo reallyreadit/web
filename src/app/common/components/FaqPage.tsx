@@ -188,8 +188,7 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "How does Readup make money? ",
-				answer: (<p>Currently, Readup doesn’t make money. And if you join now you’ll stay free for life.&nbsp;
-					But, soon, new Readers will have to pay to read on Readup.</p>)
+				answer: (<p>Readers pay to read on Readup. Readup takes 5% and gives the rest to writers.</p>)
 			},
 			{
 				question: "Are you hiring?",
