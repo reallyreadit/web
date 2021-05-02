@@ -1448,7 +1448,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 		// open subscription dialog if query string key is present
 		// ugly hack since the dialog doesn't support server-side rendering
-		if (subscribeQueryStringKey in queryStringParams) {
+		if (subscribeQueryStringKey in queryStringParams && !isMobileDevice(this.props.deviceType)) {
 			window.setTimeout(
 				() => {
 					this._openStripeSubscriptionPromptDialog();
