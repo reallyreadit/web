@@ -9,17 +9,12 @@
 
    .quote-card_xa1vt__quote {
 	   display: block;
-       font-size: 24px;
        font-family: 'Museo Sans (300)', sans-serif;
        line-height: 1.55;
        position: relative;
-       margin-top: 36px;
-    //    font-style: italic;
+       font-style: italic;
 	   text-decoration: underline;
 	   cursor: pointer;
-
-       padding-left: 12px;
-       padding-right: 4px;
    }
 
    .link_ke15oa.quote-card_xa1vt__quote {
@@ -30,7 +25,7 @@
    .quote-card_xa1vt__quote::before, .quote-card_xa1vt__quote::after {
        position: absolute;
        display: block;
-       font-size: 124px;
+       font-size: 100px;
        display: inline-block;
        font-family: 'Cambria (bold)';
        color: var(--box-shadow-color);
@@ -54,8 +49,7 @@
    &__reader {
        margin-top: 13px;
        display: block;
-       font-size: 1.1rem;
-       font-style: italic;
+	   text-align: center;
    }
 
 //    @media screen and (min-width: 768px) {
