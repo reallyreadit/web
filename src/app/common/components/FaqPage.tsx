@@ -300,7 +300,9 @@ const FaqPage = (props: Props): JSX.Element => {
 		<div className="faq-page_35vamf">
 			<HomeHero
 				title="Frequently Asked Questions"
-				description="If your question isn't answered below, please send us an email."
+				description={
+					<>If your question isn't answered below, please send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>.</>
+				}
 			/>
 			<HomePanel className="faq-content">
 				<div className="sidebar">
