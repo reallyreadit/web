@@ -11,7 +11,7 @@ export const RevenueMeter: React.SFC<Props> = (props: Props) => (
 	<div className="revenue-meter_56f8z4">
 		{props.report.value?.report.totalRevenue > 0 ?
 			<>
-				<div className="writer-allocation">Readup has earned {formatCurrency(props.report.value.report.authorAllocation)} for Writers.</div>
+				<div className="writer-allocation">Readup has earned {formatCurrency(props.report.value.report.authorAllocation)} for writers.</div>
 				<div className="meter">
 					<div
 						className="fill"

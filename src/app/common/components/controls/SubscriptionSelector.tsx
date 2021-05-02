@@ -168,7 +168,7 @@ export default class SubscriptionSelector extends React.Component<Props, State> 
 		return (
 			<div className="subscription-selector_nuri7o">
 				<div className="title">Pick your price.</div>
-				<div className="subtitle">Readup takes 5% and distributes the rest to the Writers you read.</div>
+				<div className="subtitle">Readup takes 5% and distributes the rest to the writers you read.</div>
 				{this.props.options.map(
 					product => this.renderButton({
 						id: product.id,

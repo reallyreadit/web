@@ -87,7 +87,7 @@ const prices = [
 	{
 		amount: 2499,
 		title: 'Super Reader!',
-		description: 'Bigger tips for the Writers you read.'
+		description: 'Bigger tips for the writers you read.'
 	}
 ];
 
@@ -170,8 +170,8 @@ export default class MarketingScreen extends React.Component<
 				imageAlt: "You must read the article before you can post or reply."
 			},
 			{
-				heading: "A brighter future for Writers",
-				paragraph: "You pay a monthly subscription to read on Readup. Readup keeps 5% and distributes the rest to the Writers you read. Everything is transparent, ethical, and humane.",
+				heading: "A brighter future for writers",
+				paragraph: "You pay a monthly subscription to read on Readup. Readup keeps 5% and distributes the rest to the writers you read. Everything is transparent, ethical, and humane.",
 				imageName: "watch-money.png",
 				imageAlt: "Readup distributes your money directly to writers"
 			}
@@ -357,7 +357,7 @@ export default class MarketingScreen extends React.Component<
 						<strong>All Readers at all levels get full access to all features.</strong>
 					</p>
 					<p className="home-section-intro">
-						Readup takes a small cut (5%) of your payment and distributes the rest to the Writers you read -- transparently, down to the penny.
+						Readup takes a small cut (5%) of your payment and distributes the rest to the writers you read -- transparently, down to the penny.
 					</p>
 					<PriceList prices={prices} />
 				</HomePanel>
