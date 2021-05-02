@@ -14,7 +14,7 @@ import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
-import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys, parseQueryString, subscribeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
@@ -958,6 +958,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 							menuState: 'closed',
 							screens
 						});
+						// open subscription dialog if query string key is present
+						const queryStringParams = parseQueryString(url.search);
+						if (subscribeQueryStringKey in queryStringParams && this.state.user) {
+							this._openAppStoreSubscriptionPromptDialog();
+						}
 					} else {
 						// must be a redirect url or broken link
 						// send to server for appropriate redirect
@@ -1428,6 +1433,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.appApi.readArticle({
 				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
 			});
+		}
+		// open subscription dialog if query string key is present
+		// ugly hack since the dialog doesn't support server-side rendering
+		const queryStringParams = parseQueryString(this.props.initialLocation.queryString);
+		if (subscribeQueryStringKey in queryStringParams && this.state.user) {
+			window.setTimeout(
+				() => {
+					this._openAppStoreSubscriptionPromptDialog();
+				},
+				0
+			);
 		}
 	}
 	public componentWillUnmount() {
