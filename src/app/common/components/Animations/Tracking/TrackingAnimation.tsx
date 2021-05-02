@@ -161,7 +161,7 @@ export default class TrackingAnimation extends React.PureComponent<
 							<div className="row">
 								<Reader
 									playState={this.state.playState}
-									position={4}	
+									position={4}
 								/>
 								<Reader
 									playState={this.state.playState}
@@ -173,7 +173,7 @@ export default class TrackingAnimation extends React.PureComponent<
 								/>
 							</div>
 							<div className="row">
-								<Reader 
+								<Reader
 									playState={this.state.playState}
 									position={7}
 								/>
