@@ -366,7 +366,7 @@ class SettingsPage extends React.PureComponent<
 												<AsyncLink
 													icon="email"
 													onClick={this.props.onResendConfirmationEmail}
-													text="Resend confirmation email"
+													text="Send confirmation email"
 												/>
 											</div>
 										</>}
