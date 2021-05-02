@@ -6,7 +6,7 @@ import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { createUrl } from '../../../../common/HttpEndpoint';
-import { deviceTypeQueryStringKey } from '../../../../common/routing/queryString';
+import { deviceTypeQueryStringKey, unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 
 interface Props {
 	analyticsAction: string,
@@ -31,7 +31,7 @@ export default class GetStartedButton extends React.Component<Props> {
 		this.props.onCopyAppReferrerTextToClipboard(this.props.analyticsAction);
 	};
 	public render() {
-		const route = findRouteByLocation(routes, this.props.location);
+		const route = findRouteByLocation(routes, this.props.location, unroutableQueryStringKeys);
 		return (
 			<div className="get-started-button_z950ea">
 				{this.props.deviceType === DeviceType.Ios ?
