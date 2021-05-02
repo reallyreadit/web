@@ -3,7 +3,7 @@ import Icon from './Icon';
 
 interface Props {
 	onClose?: () => void,
-	title: string
+	title?: string
 }
 export default class Dialog extends React.Component<Props> {
 	public render() {
@@ -21,7 +21,9 @@ export default class Dialog extends React.Component<Props> {
 					</div>
 				</div>
 				<div className="content">
-					<h1>{this.props.title}</h1>
+					{this.props.title ?
+						<h1>{this.props.title}</h1> :
+						null}
 					<div>
 						{this.props.children}
 					</div>
