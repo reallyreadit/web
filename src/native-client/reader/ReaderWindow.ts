@@ -6,6 +6,7 @@ declare global {
 	interface ReaderWindow extends IncomingMessageHandlers {
 		config?: {
 			version: PackageVersionInfo,
+			staticServer: HttpEndpoint,
 			webServer: HttpEndpoint
 		}
 	}
