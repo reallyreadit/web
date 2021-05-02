@@ -29,6 +29,10 @@ import { ReaderSubscriptionPrompt } from '../../../common/components/ReaderSubsc
 import { ReadingErrorType } from '../../../common/Errors';
 import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { getPromiseErrorMessage } from '../../../common/format';
+import { findRouteByKey } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import { subscribeQueryStringKey } from '../../../common/routing/queryString';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -416,7 +420,13 @@ const reader = new Reader(
 								{
 									onSubscribe: () => {
 										window.open(
-											globalUi.createAbsoluteUrl('/?subscribe'),
+											globalUi.createAbsoluteUrl(
+												findRouteByKey(routes, ScreenKey.MyImpact)
+													.createUrl(),
+												{
+													[subscribeQueryStringKey]: null
+												}
+											),
 											'_blank'
 										);
 									}
