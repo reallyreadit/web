@@ -674,6 +674,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
 				ScreenKey.MyImpact,
 				{
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,

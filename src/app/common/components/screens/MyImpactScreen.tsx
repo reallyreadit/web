@@ -64,6 +64,7 @@ const headerSelectorItems = [
 ];
 
 interface Props {
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
@@ -151,16 +152,20 @@ class MyImpactScreen extends React.Component<Props, State> {
 					<>
 						<div className="content-block title">
 							{this.props.subscriptionStatus.isUserFreeForLife ?
-								'Subscribe to Support Writers and Readup' :
-								'Subscribe to Start Reading'}
+								'Buy a subscription. Watch your money go to the writers you read.' :
+								'Subscribe to start reading. Watch your money go to the writers you read.'}
 						</div>
+						<div className="spacer"></div>
+						<img src={this.props.onCreateStaticContentUrl('/app/images/home/watch-money.png')} alt="My Impact illustration." />
+						<div className="spacer"></div>
+						<div className="content-block title">Pay what you want.</div>
 						<div className="spacer"></div>
 						<div className="content-block">
 							<Button
-								intent="loud"
+								intent="primary"
 								onClick={this._openSubscriptionPromptDialog}
 								size="large"
-								text="See Options"
+								text="Pick your price"
 							/>
 						</div>
 					</>
@@ -314,6 +319,7 @@ export function createMyImpactScreenFactory<TScreenKey>(
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyImpactScreen
+				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
