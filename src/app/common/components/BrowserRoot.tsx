@@ -747,7 +747,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				) &&
 				isCompatibleBrowser(props.deviceType) &&
 				route.screenKey !== ScreenKey.EmailSubscriptions &&
-				route.screenKey !== ScreenKey.ExtensionRemoval
+				route.screenKey !== ScreenKey.ExtensionRemoval &&
+				!(subscribeQueryStringKey in queryStringParams)
 			)
 		) {
 			onboardingState = { };
