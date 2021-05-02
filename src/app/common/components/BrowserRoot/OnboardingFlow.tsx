@@ -12,9 +12,6 @@ import { DeviceType, isCompatibleBrowser } from '../../../../common/DeviceType';
 import ExtensionInstalledStep from './OnboardingFlow/ExtensionInstalledStep';
 import ButtonTutorialStep from './OnboardingFlow/ButtonTutorialStep';
 import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
-import ShareStep from './OnboardingFlow/ShareStep';
-import ShareResponse from '../../../../common/sharing/ShareResponse';
-import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import BrowserOnboardingFlow, { BaseProps, ExitReason } from '../../../../common/components/BrowserOnboardingFlow';
 import { Intent } from '../../../../common/components/Toaster';
 import BrowserPopupResponseResponse from '../../../../common/models/auth/BrowserPopupResponseResponse';
@@ -30,8 +27,7 @@ export enum Step {
 	InstallExtension,
 	ExtensionInstalled,
 	ButtonTutorial,
-	TrackingAnimation,
-	Share
+	TrackingAnimation
 }
 export interface Props extends BaseProps {
 	analyticsAction?: string,
@@ -40,14 +36,11 @@ export interface Props extends BaseProps {
 	deviceType: DeviceType,
 	initialAuthenticationStep?: Step.CreateAccount | Step.SignIn,
 	isExtensionInstalled: boolean,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
-	onCreateAbsoluteUrl: (userName: string) => string,
 	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
 	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
 	onCreateStaticContentUrl: (path: string) => string,
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
 	onResetPassword: (token: string, email: string) => Promise<void>,
-	onShare: (data: ShareEvent) => ShareResponse,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignIn: (form: SignInForm) => Promise<void>,
 	onSignInWithApple: (analyticsAction: string) => Promise<BrowserPopupResponseResponse>,
@@ -77,9 +70,6 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	};
 	private readonly _goToPasswordResetRequestStep = () => {
 		this.goToStep(Step.RequestPasswordReset);
-	};
-	private readonly _goToShareStep = () => {
-		this.goToStep(Step.Share);
 	};
 	private readonly _goToSignInStep = () => {
 		this.goToStep(Step.SignIn);
@@ -196,16 +186,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		),
 		[Step.TrackingAnimation]: (_: UserAccount) => (
 			<TrackingAnimationStep
-				onContinue={this._goToShareStep}
-			/>
-		),
-		[Step.Share]: (user: UserAccount) => (
-			<ShareStep
 				onContinue={this._complete}
-				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onShare={this.props.onShare}
-				user={user}
 			/>
 		)
 	};

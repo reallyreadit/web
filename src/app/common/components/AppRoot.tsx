@@ -1356,11 +1356,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 						{this.state.isInOrientation ?
 							<OrientationWizard
 								onComplete={this._completeOrientation}
-								onCreateAbsoluteUrl={this._createAbsoluteUrl}
 								onCreateStaticContentUrl={this._createStaticContentUrl}
 								onRequestNotificationAuthorization={this._requestNotificationAuthorization}
-								onShare={this._handleShareRequestWithCompletion}
-								user={this.state.user}
 							/> :
 							null}
 					</> :

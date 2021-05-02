@@ -1360,15 +1360,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 						initialAuthenticationStep={this.state.onboarding.initialAuthenticationStep}
 						isExtensionInstalled={this.state.isExtensionInstalled}
 						onClose={this._endOnboarding}
-						onCopyTextToClipboard={this._clipboard.copyText}
-						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onCreateAccount={this._createAccount}
 						onCreateAuthServiceAccount={this._createAuthServiceAccount}
 						onCreateStaticContentUrl={this._createStaticContentUrl}
 						onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
 						onResetPassword={this._resetPassword}
 						onShowToast={this._toaster.addToast}
-						onShare={this._handleShareRequest}
 						onSignIn={this._signIn}
 						onSignInWithApple={this._signInWithApple}
 						onSignInWithTwitter={this._signInWithTwitter}
