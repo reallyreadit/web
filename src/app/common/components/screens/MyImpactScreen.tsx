@@ -148,6 +148,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 		}
 		switch (this.props.subscriptionStatus.type) {
 			case SubscriptionStatusType.NeverSubscribed:
+			case SubscriptionStatusType.PaymentFailed:
 				return (
 					<>
 						<div className="content-block title">
@@ -192,26 +193,6 @@ class MyImpactScreen extends React.Component<Props, State> {
 						<div className="content-block">
 							<Link
 								onClick={this._openSubscriptionPromptDialog}
-								text="Start New Subscription"
-							/>
-						</div>
-					</>
-				);
-			case SubscriptionStatusType.PaymentFailed:
-				return (
-					<>
-						{this.renderViewToggle()}
-						<div className="content-block title">Subscription Incomplete</div>
-						<div className="spacer"></div>
-						{renderSubscriptionDetails(this.props.subscriptionStatus.price)}
-						<div className="spacer"></div>
-						<div className="content-block">Initial payment failed.</div>
-						<div className="spacer"></div>
-						<div className="content-block">
-							<Button
-								intent="loud"
-								onClick={this._openSubscriptionPromptDialog}
-								size="large"
 								text="Start New Subscription"
 							/>
 						</div>
