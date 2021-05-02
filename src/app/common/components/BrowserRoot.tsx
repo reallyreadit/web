@@ -1201,22 +1201,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			isBlogPost = sourceSlug === 'blogreadupcom';
 		if (
 			this.state.user &&
 			!this.state.subscriptionStatus.isUserFreeForLife &&
-			this.state.subscriptionStatus.type !== SubscriptionStatusType.Active
+			this.state.subscriptionStatus.type !== SubscriptionStatusType.Active &&
+			!isBlogPost
 		) {
 			ev?.preventDefault();
 			this._openSubscriptionPromptDialog(article);
 			return;
 		}
-		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
 			(
 				!this.state.user ||
 				!this.props.extensionApi.isInstalled
 			) &&
-			sourceSlug !== 'blogreadupcom'
+			!isBlogPost
 		) {
 			ev?.preventDefault();
 			this.setScreenState({

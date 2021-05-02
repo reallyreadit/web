@@ -1281,7 +1281,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 			(
 				this.state.subscriptionStatus.type !== SubscriptionStatusType.Active ||
 				this.state.isProcessingPayment
-			)
+			) &&
+			article.slug.split('_')[0] !== 'blogreadupcom'
 		) {
 			this._openSubscriptionPromptDialog(article);
 		} else {

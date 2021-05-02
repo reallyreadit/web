@@ -37,10 +37,15 @@ class ReadScreen extends React.PureComponent<Props> {
 	};
 	public componentDidMount() {
 		if (
-			this.props.user &&
-			this.props.isExtensionInstalled &&
-			this.props.article.value &&
-			localStorage.getItem('extensionReminderAcknowledged')
+			(
+				this.props.user &&
+				this.props.isExtensionInstalled &&
+				this.props.article.value &&
+				localStorage.getItem('extensionReminderAcknowledged')
+			) ||
+			(
+				this.props.article.value?.slug.split('_')[0] === 'blogreadupcom'
+			)
 		) {
 			window.location.href = this.props.article.value.url;
 		}
