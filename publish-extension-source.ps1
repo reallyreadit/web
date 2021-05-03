@@ -13,7 +13,7 @@ Robocopy.exe src/common $(Join-Path $targetDir 'src/common') /MIR
 Robocopy.exe src/extension $(Join-Path $targetDir 'src/extension') /MIR
 
 Write-Host 'Copying root files...'
-Copy-Item npm-shrinkwrap.json $targetDir
+Copy-Item package-lock.json $targetDir
 Copy-Item package.json $targetDir
 Copy-Item tsconfig.json $targetDir
 
@@ -23,6 +23,6 @@ npm ci
 node node_modules/gulp/bin/gulp.js build:prod:extension
 
 Write-Host 'Creating zip file...'
-Compress-Archive -Path build,src,gulpfile.js,npm-shrinkwrap.json,package.json,readme.md,tsconfig.json -DestinationPath archive.zip
+Compress-Archive -Path build,src,gulpfile.js,package-lock.json,package.json,readme.md,tsconfig.json -DestinationPath archive.zip
 
 Pop-Location
