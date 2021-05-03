@@ -18,33 +18,16 @@ export function createMessageResponseHandler<T>(promise: Promise<T>, sendRespons
 			}
 		)
 		.catch(
-			error => {
-				let errorText: string;
-				if (error != null) {
-					if (typeof error === 'string' || typeof error === 'number') {
-						errorText = error.toString();
-					} else if (
-						'name' in error ||
-						'message' in error ||
-						'stack' in error
-					) {
-						errorText = JSON.stringify({
-							name: error.name,
-							message: error.message,
-							stack: error.stack
-						});
-					} else {
-						try {
-							errorText = JSON.stringify(error);
-						} catch {
-							errorText = 'Failed to stringify error.';
-						}
-					}
-				} else {
-					errorText = 'No error provided.';
+			reason => {
+				// Error properties are non-enumerable
+				if (reason instanceof Error) {
+					reason = {
+						message: reason.message,
+						name: reason.name
+					};
 				}
 				sendResponse({
-					error: errorText
+					error: reason
 				});
 			}
 		);

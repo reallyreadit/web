@@ -15,10 +15,32 @@
 	border-radius: 8px;
 	font-size: 8pt;
 	font-family: 'Museo Sans (700)';
-	transition: transform 500ms;
+}
+.alert-badge_ejzklr.visible {
+	animation: alert-badge_ejzklr-scale-up 500ms forwards;
+}
+.alert-badge_ejzklr.hiding {
+	animation: alert-badge_ejzklr-scale-down 500ms forwards;
 }
 .alert-badge_ejzklr.hidden {
 	transform: scale(0);
+}
+
+@keyframes alert-badge_ejzklr-scale-up {
+	from {
+		transform: scale(0);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+@keyframes alert-badge_ejzklr-scale-down {
+	from {
+		transform: scale(1);
+	}
+	to {
+		transform: scale(0);
+	}
 }
 
 @include theme using ($root, $scheme) {

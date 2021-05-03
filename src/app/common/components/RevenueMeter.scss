@@ -1,0 +1,26 @@
+/*
+	componentPath: src/app/common/components/RevenueMeter
+	cssComponentId: revenue-meter_56f8z4
+*/
+
+.revenue-meter_56f8z4 {
+	text-align: center;
+}
+.revenue-meter_56f8z4 > .writer-allocation {
+	font-family: 'Museo Sans (500)';
+}
+.revenue-meter_56f8z4 > .meter {
+	height: 1.5em;
+	margin: 0.65em auto;
+	width: 90%;
+	background-color: var(--chart-1-background-color);
+	border-radius: 0.75em;
+}
+.revenue-meter_56f8z4 > .meter > .fill {
+	height: 100%;
+	border-radius: 0.75em;
+	background-color: var(--chart-2-background-color);
+}
+.revenue-meter_56f8z4 > .total-revenue {
+	font-size: 0.9em;
+}

@@ -117,7 +117,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 							/>
 							<Icon
 								badge={this.props.user.followerAlertCount}
-								name="user"
+								name="menu2"
 								onClick={this.props.onOpenMenu}
 							/>
 						</> :
@@ -136,16 +136,19 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
 								/> :
 								null}
-							<GetStartedButton
-								analyticsAction={analyticsAction}
-								deviceType={this.props.deviceType}
-								location={this.props.currentScreen.location}
-								onBeginOnboarding={analyticsAction => this.pageNavigation(() => this.props.onBeginOnboarding(analyticsAction))}
-								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-								onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-								size="large"
-							/>
+							{this.props.deviceType !== DeviceType.Android ?
+								<GetStartedButton
+									analyticsAction={analyticsAction}
+									deviceType={this.props.deviceType}
+									iosPromptType="download"
+									location={this.props.currentScreen.location}
+									onBeginOnboarding={analyticsAction => this.pageNavigation(() => this.props.onBeginOnboarding(analyticsAction))}
+									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+									onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+									size="large"
+								/> :
+								null}
 						</>}
 				</div>
 			</header>

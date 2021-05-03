@@ -13,7 +13,7 @@
 
         alias gulp="node node_modules/gulp/bin/gulp.js"
 ### App
-1. Configure the web server.
+1. Configure the web server. Optionally set the value for `stripePublishableKey` if you want to enable subscription purchases through Stripe.
 
         src/app/server/config.dev.json
     ```json
@@ -34,6 +34,7 @@
     		"protocol": "https",
     		"host": "static.dev.readup.com"
     	},
+		"stripePublishableKey": "",
     	"webServer": {
     		"protocol": "https",
     		"host": "dev.readup.com"

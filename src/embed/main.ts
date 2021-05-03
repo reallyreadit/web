@@ -23,7 +23,7 @@ import routes from '../common/routing/routes';
 import ScreenKey from '../common/routing/ScreenKey';
 import SemanticVersion from '../common/SemanticVersion';
 import ClipboardService from '../common/services/ClipboardService';
-import DialogService, { Dialog } from '../common/services/DialogService';
+import DialogService, { DialogState } from '../common/services/DialogService';
 import ToasterService from '../common/services/ToasterService';
 import insertFontStyleElement from '../common/shadowDom/insertFontStyleElement';
 import ShareChannel from '../common/sharing/ShareChannel';
@@ -31,12 +31,13 @@ import ApiServer from './ApiServer';
 import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import GlobalComponentHost from './GlobalComponentHost';
 import BrowserApiRelayMessenger from './BrowserApiRelayMessenger';
-import { isProblemResponse } from '../common/ProblemResponse';
+import { isHttpProblemDetails } from '../common/ProblemDetails';
 import AuthServiceBrowserPopup from '../common/AuthServiceBrowserPopup';
+import KeyValuePair from '../common/KeyValuePair';
 
 interface State {
 	article: UserArticle,
-	dialogs: Dialog[],
+	dialogs: KeyValuePair<number, DialogState>[],
 	error: string | null,
 	onboardingAnalyticsAction: string | null,
 	toasts: Toast[],
@@ -202,10 +203,11 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			return createUrl(window.reallyreadit.embed.config.webServer, path)
 		},
 		dialogService = new DialogService({
-			setState: nextState => {
+			setState: (nextState, callback) => {
 				setState(
-					nextState(state)
-				);
+						nextState(state)
+					)
+					.then(callback);
 			}
 		}),
 		eventManager = new EventManager<{
@@ -434,7 +436,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 									.catch(
 										reason => {
 											if (
-												isProblemResponse(reason) &&
+												isHttpProblemDetails(reason) &&
 												reason.status === 404
 											) {
 												return {
@@ -564,7 +566,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 									.catch(
 										reason => {
 											if (
-												isProblemResponse(reason) &&
+												isHttpProblemDetails(reason) &&
 												reason.status === 404
 											) {
 												throw new Error('Cancelled');

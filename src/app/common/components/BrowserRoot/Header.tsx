@@ -59,7 +59,7 @@ export default class extends React.PureComponent<Props> {
 								/>
 								<Icon
 									badge={this.props.user.followerAlertCount}
-									name="user"
+									name="menu2"
 									onClick={this.props.onOpenMenu}
 								/>
 							</> :

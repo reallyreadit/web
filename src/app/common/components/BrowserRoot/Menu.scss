@@ -23,7 +23,7 @@
 .menu_v25ec5 > .drawer {
 	display: flex;
 	flex-flow: column;
-	width: 250px;
+	max-width: 290px;
 	border-left-width: 1px;
 	border-left-style: solid;
 	font-size: 16px;
@@ -46,6 +46,7 @@
 	font-weight: bold;
 }
 .menu_v25ec5 > .drawer > .header > .icon_rour3d {
+	flex: 0 0 auto;
 	cursor: pointer;
 }
 .menu_v25ec5 > .drawer > ol {
@@ -53,9 +54,10 @@
 	display: flex;
 	flex-flow: column;
 }
-.menu_v25ec5 > .drawer > .store-links_gbmsih {
+.menu_v25ec5 > .drawer > .revenue-meter_56f8z4 {
 	flex: 0 0 auto;
-	margin: 20px 0;
+	margin: 0 20px 20px 20px;
+	font-size: 0.75em;
 }
 
 @keyframes menu_v25ec5-overlay-fade-in-light {

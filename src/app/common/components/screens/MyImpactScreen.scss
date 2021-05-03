@@ -1,0 +1,53 @@
+/*
+	componentPath: src/app/common/components/screens/MyImpactScreen
+	cssComponentId: my-impact-screen_n8wfkf
+*/
+
+.my-impact-screen_n8wfkf {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+}
+.my-impact-screen_n8wfkf::before,
+.my-impact-screen_n8wfkf::after {
+	content: "";
+	display: block;
+	flex: 1 1 auto;
+}
+.my-impact-screen_n8wfkf > .content-block {
+	text-align: center;
+}
+.my-impact-screen_n8wfkf.fade-in > .content-block {
+	opacity: 0;
+	animation: my-impact-screen_n8wfkf-fade-in 750ms 750ms forwards;
+}
+.my-impact-screen_n8wfkf > .content-block.toggle {
+	margin-bottom: 10px;
+}
+.my-impact-screen_n8wfkf > .content-block.title {
+	font-family: 'Museo Sans (500)';
+	font-size: 15pt;
+}
+.my-impact-screen_n8wfkf > .spacer {
+	flex: 1 1 auto;
+	max-height: 30px;
+}
+.my-impact-screen_n8wfkf > img {
+	width: 100%;
+	max-width: 400px;
+}
+.my-impact-screen_n8wfkf > .distribution-chart_n97yi3 {
+	margin: 10px 0;
+	width: 100%;
+	max-width: 300px;
+}
+
+@keyframes my-impact-screen_n8wfkf-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

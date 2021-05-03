@@ -1,6 +1,18 @@
+import { CancellationToken } from "./AsyncTracker";
 import Fetchable from "./Fetchable";
-import { isProblemResponse } from "./ProblemResponse";
+import { isProblemDetails, ProblemDetails } from "./ProblemDetails";
+import { FailureResult, ResultType } from "./Result";
 
+export function formatCurrency(amount: number) {
+	return (amount / 100)
+		.toLocaleString(
+			'en-US',
+			{
+				style: 'currency',
+				currency: 'usd'
+			}
+		);
+}
 export function formatIsoDateAsDotNet(isoDate: string) {
 	return isoDate.replace(/z$/i, '');
 }
@@ -29,6 +41,9 @@ export function formatList<T>(list: T[]) {
 		return list[0];
 	}
 	return `${list.slice(0, list.length - 1).join(', ')} & ${list[list.length - 1]}`;
+}
+export function formatProblemDetails(problem: ProblemDetails) {
+	return problem.detail ?? problem.title;
 }
 export function formatTimestamp(timestamp: string) {
 	if (!timestamp || timestamp.length < 10) {
@@ -73,26 +88,38 @@ export function generateRandomString(byteCount: number) {
 	);
 }
 export function getPromiseErrorMessage(reason: any) {
-	let message: string;
+	if (!reason) {
+		return 'An unknown error occurred.';
+	}
 	if (
-		isProblemResponse(reason)
+		isProblemDetails(reason)
 	) {
-		message = reason.detail ?? reason.status.toString();
-	} else if (
+		return formatProblemDetails(reason);
+	}
+	if (
 		Array.isArray(reason) &&
 		typeof reason[0] === 'string'
 	) {
-		message = reason[0];
-	} else if (
+		return reason[0];
+	}
+	if (
 		'message' in reason
 	) {
-		message = reason.message;
-	} else if (
+		return reason.message;
+	}
+	if (
 		typeof reason === 'string'
 	) {
-		message = reason;
-	} else {
-		message = 'An Unknown Error Occurred';
+		return reason;
 	}
-	return message;
+	return 'An unknown error occurred.';
+}
+export function mapPromiseErrorToResultIfNotCancelled(reason: any, handler: (result: FailureResult<string>) => void) {
+	if ((reason as CancellationToken)?.isCancelled) {
+		return;
+	}
+	handler({
+		type: ResultType.Failure,
+		error: getPromiseErrorMessage(reason)
+	});
 }

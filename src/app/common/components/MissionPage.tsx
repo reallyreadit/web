@@ -62,8 +62,8 @@ const timeLinePoints = [
 	},
 	{
 		timeString: "2021",
-		description: "Readup 2.0 is the world's first direct reader-writer marketplace, an ethical alternative to Facebook, Twitter and Reddit for people who want a healthier, more humane way to read. Readers pay to read on Readup and watch their money go to the Writers. Journalists around the world rejoice. To be continued…"
-	
+		description: "Readup 2.0 is the world's first direct reader-writer marketplace, an ethical alternative to Facebook, Twitter and Reddit for people who want a healthier, more humane way to read. Readers pay to read on Readup and watch their money go to the writers. Journalists around the world rejoice. To be continued…"
+
 	},
 ];
 const missionPage = () => (

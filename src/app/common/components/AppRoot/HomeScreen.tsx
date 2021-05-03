@@ -7,12 +7,12 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen, SharedState } from '../Root';
-import AsyncActionLink from '../controls/AsyncActionLink';
+import { Screen, SharedState, NavReference } from '../Root';
+import AsyncLink from '../controls/AsyncLink';
 import produce from 'immer';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
@@ -28,11 +28,12 @@ interface Props {
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
@@ -211,6 +212,7 @@ class HomeScreen extends React.Component<Props, State> {
 							onChangeSort={this._changeSort}
 							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onNavTo={this.props.onNavTo}
 							onRateArticle={this.props.onRateArticle}
 							onPostArticle={this.props.onPostArticle}
 							onReadArticle={this.props.onReadArticle}
@@ -224,7 +226,7 @@ class HomeScreen extends React.Component<Props, State> {
 						/>
 						{!this.state.isLoading ?
 							<div className="show-more">
-								<AsyncActionLink
+								<AsyncLink
 									text="Show more"
 									onClick={this._loadMore}
 								/>
@@ -244,7 +246,7 @@ export default function <TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Article of the Day'
+			title: 'Discover'
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen {

@@ -1,0 +1,74 @@
+/*
+	componentPath: src/app/common/components/screens/SearchScreen/ArticleLengthFilter
+	cssComponentId: article-length-filter_fx9wpo
+*/
+@import '../../../../../common/styles/colors';
+
+.article-length-filter_fx9wpo > .content {
+	max-width: 400px;
+}
+.article-length-filter_fx9wpo > .content > .inputs {
+	position: relative;
+	background-size: 100% 2px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.article-length-filter_fx9wpo > .content > .inputs > input {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	outline: none;
+	background: transparent;
+	pointer-events: none;
+}
+.article-length-filter_fx9wpo > .content > .inputs > input::-moz-range-thumb,
+.article-length-filter_fx9wpo > .content > .inputs > input::-webkit-slider-thumb {
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	position: relative;
+	z-index: 1;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	border-width: 1px;
+	border-style: solid;
+	pointer-events: auto;
+}
+.article-length-filter_fx9wpo > .content > .inputs > input:first-child {
+	position: absolute;
+}
+.article-length-filter_fx9wpo > .content > .scale {
+	display: flex;
+	justify-content: space-between;
+	font-size: 10pt;
+	align-items: center;
+	margin-top: 5px;
+	pointer-events: none;
+}
+.article-length-filter_fx9wpo > .content > .scale > .number {
+	font-family: 'Museo Sans (700)';
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .article-length-filter_fx9wpo > .content > .inputs {
+		@if $scheme == light {
+			background-image: linear-gradient(map-get($light-theme, $control-border-color), map-get($light-theme, $control-border-color));
+		} @else {
+			background-image: linear-gradient(map-get($dark-theme, $control-border-color), map-get($dark-theme, $control-border-color));
+		}
+	}
+	#{$root} .article-length-filter_fx9wpo > .content > .inputs > input::-moz-range-thumb,
+	#{$root} .article-length-filter_fx9wpo > .content > .inputs > input::-webkit-slider-thumb {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $control-background-color,
+				"border-color": $control-border-color
+			)
+		);
+	}
+}

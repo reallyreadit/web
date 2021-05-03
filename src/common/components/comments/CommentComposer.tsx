@@ -3,7 +3,7 @@ import Button from '../Button';
 import classNames from 'classnames';
 import AsyncTracker from '../../AsyncTracker';
 import CommentForm from '../../models/social/CommentForm';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
@@ -123,7 +123,7 @@ export default class CommentComposer extends React.PureComponent<Props, {
 					style={textareaStyle}
 				/>
 				<div className="controls">
-					<ActionLink
+					<Link
 						iconLeft="question-circle"
 						onClick={this._openMarkdownDialog}
 						text="Formatting Guide"

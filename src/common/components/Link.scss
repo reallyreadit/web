@@ -1,0 +1,44 @@
+/*
+	componentPath: src/common/components/Link
+	cssComponentId: link_ke15oa
+*/
+@import '../styles/colors';
+
+.link_ke15oa {
+	position: relative;
+	text-decoration: underline;
+	cursor: pointer;
+	color: inherit;
+	white-space: nowrap;
+}
+.link_ke15oa.busy {
+	text-decoration: none;
+	cursor: default;
+}
+.link_ke15oa.disabled {
+	cursor: default;
+}
+.link_ke15oa > .icon_rour3d {
+	vertical-align: text-top;
+}
+.link_ke15oa > .spinner-icon_6s5uk2,
+.link_ke15oa > .icon-left {
+	margin-right: 0.3em;
+}
+.link_ke15oa > .icon-right {
+	margin-left: 0.3em;
+}
+.link_ke15oa > .alert-badge_ejzklr {
+	right: -16px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .link_ke15oa.disabled {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $control-disabled-color
+			)
+		);
+	}
+}

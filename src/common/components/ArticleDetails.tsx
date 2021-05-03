@@ -7,7 +7,7 @@ import routes from '../routing/routes';
 import { findRouteByKey } from '../routing/Route';
 import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
-import ShareData from '../sharing/ShareData';
+import { ShareEvent } from '../sharing/ShareEvent';
 import ShareResponse from '../sharing/ShareResponse';
 import { calculateEstimatedReadTime } from '../calculate';
 import getShareData from '../sharing/getShareData';
@@ -17,16 +17,19 @@ import RatingControl from './RatingControl';
 import Rating from '../models/Rating';
 import AotdMetadata from './AotdMetadata';
 import UserAccount from '../models/UserAccount';
+import Link from './Link';
+import { NavReference } from '../../app/common/components/Root';
 
 interface Props {
 	article: UserArticle,
 	highlight?: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onNavTo: (ref: NavReference) => void,
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -75,19 +78,17 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				['sourceSlug']: sourceSlug
 			},
 			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
-		// publisher metadata
-		const publisherMetadata = [this.props.article.source];
-		if (this.props.article.authors.length) {
-			publisherMetadata.push(
-				this.props.article.authors.join(', ')
-			);
-		}
-		if (this.props.article.datePublished) {
-			publisherMetadata.push(
-				formatTimestamp(this.props.article.datePublished)
-			);
-		}
-		publisherMetadata.push(estimatedReadTime);
+		// author links
+		const authorLinks = this.props.article.articleAuthors.map(
+			(author, index, authors) => (
+				<React.Fragment key={author.slug}>
+					<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} />
+					{index !== authors.length - 1 ?
+						<span>, </span> :
+						null}
+				</React.Fragment>
+			)
+		);
 		// comments link
 		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
 			.createUrl(articleUrlParams);
@@ -156,7 +157,19 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 					<div className="columns">
 						<div className="article">
 							<div className="meta">
-								{publisherMetadata.join(' | ')}
+								<span>{this.props.article.source}</span>
+								<i className="spacer"></i>
+								{authorLinks}
+								{authorLinks.length ?
+									<i className="spacer"></i> :
+									null}
+								{this.props.article.datePublished ?
+									<>
+										<span>{formatTimestamp(this.props.article.datePublished)}</span>
+										<i className="spacer"></i>
+									</> :
+									null}
+								<span>{estimatedReadTime}</span>
 							</div>
 							<div className="stats">
 								<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
@@ -177,21 +190,21 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.source}
 								</div>
 								<div className="author-date-length">
-									{this.props.article.authors.length ?
+									{authorLinks.length ?
 										<span className="author">
-											{this.props.article.authors.join(', ')}
+											{authorLinks}
 										</span> :
 										null}
-									{this.props.article.authors.length && this.props.article.datePublished ?
-										<span className="spacer">|</span> :
+									{authorLinks.length && this.props.article.datePublished ?
+										<span className="spacer"></span> :
 										null}
 									{this.props.article.datePublished ?
 										<span className="date">
 											{formatTimestamp(this.props.article.datePublished)}
 										</span> :
 										null}
-									{this.props.article.authors.length || this.props.article.datePublished ?
-										<span className="spacer">|</span> :
+									{authorLinks.length || this.props.article.datePublished ?
+										<span className="spacer"></span> :
 										null}
 									<span className="length">
 										{estimatedReadTime}

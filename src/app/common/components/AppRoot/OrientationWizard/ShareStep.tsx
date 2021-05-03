@@ -1,10 +1,10 @@
 import * as React from 'react';
 import Icon from '../../../../../common/components/Icon';
 import Button from '../../../../../common/components/Button';
-import ActionLink from '../../../../../common/components/ActionLink';
+import Link from '../../../../../common/components/Link';
 
 interface Props {
-	onShare: () => void,
+	onShare: (event: React.MouseEvent<HTMLElement>) => void,
 	onSkip: () => void
 }
 export default class ShareStep extends React.PureComponent<Props> {
@@ -20,7 +20,7 @@ export default class ShareStep extends React.PureComponent<Props> {
 					size="large"
 					text="Share"
 				/>
-				<ActionLink
+				<Link
 					onClick={this.props.onSkip}
 					text="Maybe Later"
 				/>

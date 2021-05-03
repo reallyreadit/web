@@ -26,7 +26,8 @@ export function createQueryString(kvps: { [key: string]: string | Array<string> 
 						qsKvps.push(qsKey);
 					} else if (
 						typeof value === 'string' ||
-						typeof value === 'number'
+						typeof value === 'number' ||
+						typeof value === 'boolean'
 					) {
 						qsKvps.push(qsKey + '=' + encodeURIComponent(value));
 					} else if (Array.isArray(value)) {
@@ -49,9 +50,11 @@ export function createQueryString(kvps: { [key: string]: string | Array<string> 
 export const appReferralQueryStringKey = 'appReferral';
 export const authServiceTokenQueryStringKey = 'authServiceToken';
 export const clientTypeQueryStringKey = 'clientType';
+export const deviceTypeQueryStringKey = 'deviceType';
 export const extensionAuthQueryStringKey = 'extensionAuth';
 export const extensionInstalledQueryStringKey = 'extensionInstalled';
 export const messageQueryStringKey = 'message';
+export const subscribeQueryStringKey = 'subscribe';
 // legacy
 export const marketingScreenVariantQueryStringKey = 'marketingScreenVariant';
 export const marketingVariantQueryStringKey = 'marketingVariant';
@@ -60,9 +63,11 @@ export const unroutableQueryStringKeys = [
 	appReferralQueryStringKey,
 	authServiceTokenQueryStringKey,
 	clientTypeQueryStringKey,
+	deviceTypeQueryStringKey,
 	extensionAuthQueryStringKey,
 	extensionInstalledQueryStringKey,
 	messageQueryStringKey,
+	subscribeQueryStringKey,
 	// legacy
 	marketingScreenVariantQueryStringKey,
 	marketingVariantQueryStringKey,

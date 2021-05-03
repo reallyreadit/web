@@ -25,7 +25,9 @@ export default class TitleComponentHost extends ExtensionComponentHost<Services,
 				isLoading: false,
 				value: article
 			},
-			authors: article.authors,
+			authors: article.articleAuthors.map(
+				author => author.name
+			),
 			title: article.title,
 			wordCount: article.wordCount
 		});

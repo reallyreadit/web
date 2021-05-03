@@ -1,0 +1,28 @@
+/*
+	componentPath: src/app/common/components/AppRoot/AppStoreSubscriptionPrompt
+	cssComponentId: app-store-subscription-prompt_7y5k2n
+*/
+@import '../../../../common/styles/colors';
+
+.app-store-subscription-prompt_7y5k2n {
+	text-align: center;
+	max-width: 360px;
+}
+.app-store-subscription-prompt_7y5k2n > .message {
+	margin-bottom: 10pt;
+}
+.app-store-subscription-prompt_7y5k2n > .subtitle {
+	margin-top: 10pt;
+	font-size: 11pt;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .app-store-subscription-prompt_7y5k2n > .subtitle {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}

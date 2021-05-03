@@ -6,9 +6,8 @@ import { Screen } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
 
 interface Props {
-	onViewDiscover: () => void,
 	onViewHome: () => void,
-	onViewLeaderboards: () => void,
+	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
 	user: UserAccount
@@ -24,17 +23,8 @@ export default class NavTray extends React.PureComponent<Props>{
 					>
 						<Icon
 							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
-							name="trophy"
+							name="earth"
 						/>
-						<label>AOTD</label>
-					</button>
-				</li>
-				<li>
-					<button
-						className={this.props.selectedScreen.key === ScreenKey.Discover ? 'selected' : null}
-						onClick={this.props.onViewDiscover}
-					>
-						<Icon name="earth" />
 						<label>Discover</label>
 					</button>
 				</li>
@@ -49,11 +39,11 @@ export default class NavTray extends React.PureComponent<Props>{
 				</li>
 				<li>
 					<button
-						className={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : null}
-						onClick={this.props.onViewLeaderboards}
+						className={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : null}
+						onClick={this.props.onViewMyImpact}
 					>
-						<Icon name="podium" />
-						<label>Leaderboards</label>
+						<Icon name="dollar" />
+						<label>My Impact</label>
 					</button>
 				</li>
 			</ol>

@@ -27,6 +27,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/aotd\/history$/,
 		screenKey: ScreenKey.AotdHistory
 	},
+	{
+		createUrl: () => '/blog',
+		noIndex: () => true,
+		pathRegExp: /^\/blog$/,
+		screenKey: ScreenKey.Blog
+	},
 	(function () {
 		const
 			pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/,
@@ -55,12 +61,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Comments
 		} as Route<DialogKey, ScreenKey>;
 	})(),
-	{
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/discover',
-		pathRegExp: /^\/discover$/,
-		screenKey: ScreenKey.Discover
-	},
 	{
 		createUrl: params => `/email/confirm/${params['result']}`,
 		noIndex: () => true,
@@ -91,6 +91,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/faq',
 		pathRegExp: /^\/faq$/,
 		screenKey: ScreenKey.Faq
+	},
+	{
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/impact',
+		pathRegExp: /^\/impact$/,
+		screenKey: ScreenKey.MyImpact
 	},
 	{
 		createUrl: () => '/leaderboards',
@@ -197,6 +203,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Read
 		} as Route<DialogKey, ScreenKey>;
 	})(),
+	{
+		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/search',
+		pathRegExp: /^\/search$/,
+		screenKey: ScreenKey.Search
+	},
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',

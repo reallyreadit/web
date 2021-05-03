@@ -1,0 +1,28 @@
+/*
+	componentPath: src/common/components/TransitionContainer
+	cssComponentId: transition-container_ko0vbz
+*/
+
+.transition-container_ko0vbz.changing {
+	animation: transition-container_ko0vbz-fade-out 250ms forwards;
+}
+.transition-container_ko0vbz.changed {
+	animation: transition-container_ko0vbz-fade-in 250ms forwards;
+}
+
+@keyframes transition-container_ko0vbz-fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes transition-container_ko0vbz-fade-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

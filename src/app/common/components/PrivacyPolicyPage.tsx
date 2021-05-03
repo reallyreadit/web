@@ -1,12 +1,16 @@
 import * as React from 'react';
 import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import Link from '../../../common/components/Link';
 
-const privacyPolicyPage = () => (
+interface Props {
+	onNavTo: (url: string) => void
+}
+const PrivacyPolicyPage: React.SFC<Props> = props => (
 	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
 			<h2>Privacy Policy and Terms of Use</h2>
-			<h3>Updated: Wednesday, October 14, 2020</h3>
+			<h3>Updated: Sunday, May 2, 2020</h3>
 			<section>
 				<p>AS A GENERAL RULE, technology companies — and especially social media companies — don’t want you to read contracts like the one you’re reading right now. They don’t want you to fully understand how they work and what they do with your personal information because they know that it’s unsettling and unethical. So they hide the truth in contracts that are so long, boring and confusing they’re virtually impossible to read.</p>
 				<p>As a result, we keep clicking “I agree” to legally binding documents without much of a clue what we’re even agreeing to. It’s a huge problem.</p>
@@ -18,7 +22,7 @@ const privacyPolicyPage = () => (
 					<li>The technology platform (readup.com, Readup apps and extensions, etc.)</li>
 					<li>The community of readers (real human beings) who use the platform</li>
 					<li>The corporation, reallyread.it, inc., which owns and operates the platform</li>
-					<li>The two-person team, <a href="https://billloundy.com" target="_blank">Bill Loundy</a> and <a href="https://jeffcamera.com" target="_blank">Jeff Camera</a>, who co-own and co-operate the corporation and platform.</li>
+					<li>The two-person team, <Link href="https://billloundy.com" onClick={props.onNavTo}>Bill Loundy</Link> and <Link href="https://jeffcamera.com" onClick={props.onNavTo}>Jeff Camera</Link>, who co-own and co-operate the corporation and platform.</li>
 				</ul>
 				<p>Currently, Bill and Jeff each own 50% of reallyread.it, inc. As new employees and investors acquire ownership stakes in Readup, we promise to always disclose this information to our community of readers.</p>
 			</section>
@@ -26,7 +30,7 @@ const privacyPolicyPage = () => (
 				<p><strong>When you read on Readup, you create data.</strong> Sometimes you finish reading articles and sometimes you don’t. Readup keeps track. It needs to, in order to function. For example:</p>
 				<ul>
 					<li>On Readup, if you want to comment on an article you need to read the whole thing.</li>
-					<li>Anonymized, aggregate reading data powers <a href="https://github.com/reallyreadit/aotd-algorithms" target="_blank">the algorithm</a> that curates content and selects the Article of the Day (AOTD). Readup is able to identify the best reading material because Readup “knows” the articles and stories that real humans are really reading to completion. <em>Note: As far as we know, Readup is the only social media platform with a [100% transparent algorithm].</em></li>
+					<li>Anonymized, aggregate reading data powers <Link href="https://github.com/reallyreadit/aotd-algorithms" onClick={props.onNavTo}>the algorithm</Link> that curates content and selects the Article of the Day (AOTD). Readup is able to identify the best reading material because Readup “knows” the articles and stories that real humans are really reading to completion. <em>As far as we know, Readup is the only social media platform with a 100% transparent algorithm.</em></li>
 				</ul>
 				<p><strong>Your reading data is strictly private by default.</strong> The only way that other readers can see what you have read is if you explicitly choose to post or comment on an article after you have read it. There is no “bulk post” or “default public” option; the choice is yours to make on an article by article basis.</p>
 				<p>If you want, you can use Readup anonymously or pseudonymously, but once you choose a username you can’t change it.</p>
@@ -37,7 +41,7 @@ const privacyPolicyPage = () => (
 					<li>You own the rights to the comments you make on Readup.</li>
 					<li>At any time, you can request a complete copy of your personal data and we will send it to you. We do this manually, so it might take a few days.</li>
 					<li>You can delete your account whenever you want. This is also a manual process. We delete all of your comments from our database and erase your identity, entirely, from our system.</li>
-					<li><strong className="underline"><em>We never share any of your information with any third parties.</em></strong> We don’t even use common services like Google Analytics or Hotjar which monitor everything you do in the background.</li>
+					<li><strong className="underline"><em>We never share your reading data with any third parties under any circumstances.</em></strong> We don’t even use common services like Google Analytics or Hotjar which monitor everything you do in the background. The <em>only</em> third party script that runs on Readup is Stripe.js (for fraud detection) during checkout, which Stripe requires us to do.</li>
 				</ol>
 			</section>
 			<section>
@@ -89,11 +93,21 @@ const privacyPolicyPage = () => (
 				<ul>
 					<li>We detect <b>email opens</b> using a tracking pixel image and <b>link clicks</b> with tracking URLs. (This helps us improve the quality of our emails.)</li>
 				</ul>
+				<p><strong className="underline">When you subscribe</strong></p>
+				<ul>
+					<li>You can subscribe to Readup using Apple (iOS only) or Stripe (browser only). These companies give us the following data:</li>
+					<ul>
+						<li>An <strong>identifier</strong>, your <strong>subscription price</strong>, <strong>start and end dates</strong>, <strong>payment status</strong>, <strong>refund status</strong>, <strong>auto-renew preference</strong>, and any <strong>pending upgrades or downgrades</strong>.</li>
+					</ul>
+					<li>Stripe also provides us with a <strong>random ID</strong> to reference your payment method, your <strong>wallet</strong> (if you pay using a wallet service), your <strong>credit card brand</strong>, and the <strong>last four digits</strong> and <strong>expiration date</strong> of your credit card.</li> 
+					<li>Your credit card number is never transmitted to (or stored on) any Readup servers.</li>
+				</ul>
 				<p><strong className="underline">When you read on Readup</strong></p>
 				<ul>
 					<li>We store your <b>complete reading history</b> in our database. This is absolutely essential in order for Readup to work.</li>
 					<li>We also store your <b>stars</b>, <b>ratings</b>, <b>posts</b> and <b>comments</b>. (Comments can be easily deleted at any time.)</li>
 					<li>We store any <b>article issues</b> that you report.</li>
+					<li>We keep a record of how your subscription payments get distributed to (1) Apple and/or Stripe (2) Readup and (3) the writers you read.</li>
 				</ul>
 				<p><strong className="underline">When you update your preferences</strong></p>
 				<ul>
@@ -102,18 +116,20 @@ const privacyPolicyPage = () => (
 				</ul>
 			</section>
 			<section>
-				<p><strong>COOKIES:</strong> Sometimes we use cookies, but never for marketing purposes. And since we only use “<a href="https://gdpr.eu/cookies/#:~:text=Strictly%20necessary%20cookies%20%E2%80%94%20These%20cookies,example%20of%20strictly%20necessary%20cookies." target="_blank">strictly necessary cookies</a>,” we’re not required to make you click “I agree” when we use them.</p>
+				<p><strong>COOKIES:</strong> Sometimes we use cookies, but never for marketing purposes. And since we only use “<Link href="https://gdpr.eu/cookies/#:~:text=Strictly%20necessary%20cookies%20%E2%80%94%20These%20cookies,example%20of%20strictly%20necessary%20cookies." onClick={props.onNavTo}>strictly necessary cookies</Link>,” we’re not required to make you click “I agree” when we use them.</p>
 				<p><strong>CANARY:</strong> Readup has never received a government request for information.</p>
-				<p><strong>FEEDBACK:</strong> This contract will continue to evolve. Please share your suggestions <a href="https://github.com/reallyreadit/privacy-policy" target="_blank">on GitHub</a>.</p>
-				<p><strong>CONTACT:</strong> Email us. You will always get a reply from a human: <a href="mailto:support@readup.com" target="_blank"><strong>support@readup.com</strong></a></p>
+				<p><strong>FEEDBACK:</strong> This contract will continue to evolve. Please share your suggestions <Link href="https://github.com/reallyreadit/privacy-policy" onClick={props.onNavTo}>on GitHub</Link>.</p>
+				<p><strong>CONTACT:</strong> Email us. You will always get a reply from a human: <strong><Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></strong></p>
 			</section>
 		</div>
 	</ScreenContainer>
 );
-export function createScreenFactory<TScreenKey>(key: TScreenKey) {
+export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Props) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Privacy Policy' }),
-		render: () => React.createElement(privacyPolicyPage)
+		render: () => (
+			<PrivacyPolicyPage onNavTo={services.onNavTo} />
+		)
 	};
 }
-export default privacyPolicyPage;
+export default PrivacyPolicyPage;

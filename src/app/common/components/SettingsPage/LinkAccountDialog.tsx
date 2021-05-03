@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 import FormField from '../../../../common/components/controls/FormField';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 import { Intent } from '../../../../common/components/Toaster';
@@ -56,7 +56,7 @@ export default class LinkAccountDialog extends React.PureComponent<Props, State>
 	}
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				className="link-account-dialog_q2jc4k"
 				onClose={this.props.onCloseDialog}
 				onSubmit={this._submit}
@@ -76,7 +76,7 @@ export default class LinkAccountDialog extends React.PureComponent<Props, State>
 					/>
 				</FormField>
 				<div className="notice">We'll never post without your permission.</div>
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

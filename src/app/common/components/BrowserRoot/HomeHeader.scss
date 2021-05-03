@@ -136,7 +136,8 @@
 			margin-left: 32px;
 		}
 
-		> button:nth-of-type(1) {
+		> button:nth-of-type(1),
+		> a + .get-started-button_z950ea {
 			margin-left: 18px;
 		}
 	}

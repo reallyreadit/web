@@ -1,0 +1,24 @@
+/*
+	componentPath: src/app/common/components/screens/BlogScreen
+	cssComponentId: blog-screen_61pk1b
+*/
+
+.blog-screen_61pk1b {
+	display: flex;
+	flex-flow: column;
+}
+.blog-screen_61pk1b > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}
+.blog-screen_61pk1b > .list_prxe9g,
+.blog-screen_61pk1b > .page-selector_a8tbpb {
+	flex: 0 0 auto;
+}
+.blog-screen_61pk1b > .controls {
+	flex: 0 0 auto;
+	margin-bottom: 20px;
+}
+.blog-screen_61pk1b > .controls > h1 {
+	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+}

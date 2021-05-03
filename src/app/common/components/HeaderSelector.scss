@@ -4,6 +4,53 @@
 */
 @import '../../../common/styles/colors';
 
+@mixin compact-styles($component) {
+	#{$component} {
+		justify-content: center;
+	}
+	#{$component} > button {
+		padding: 5px 10px;
+		font-size: 14pt;
+		border-width: 1px;
+		border-style: solid;
+		font-family: 'Museo Sans (500)';
+	}
+	#{$component} > button:first-child {
+		border-radius: 3px 0 0 3px;
+	}
+	#{$component} > button:last-child {
+		border-radius: 0 3px 3px 0;
+	}
+	#{$component} > button.selected {
+		font-family: 'Museo Sans (500)';
+	}
+	#{$component} > button + button {
+		margin-left: 0;
+		border-left: none;
+	}
+
+	@include theme using ($root, $scheme) {
+		#{$root} #{$component} > button {
+			@include theme-colors(
+				$scheme,
+				(
+					"background-color": $control-background-color,
+					"border-color": $control-border-color
+				)
+			);
+		}
+		#{$root} #{$component} > button.selected {
+			@include theme-colors(
+				$scheme,
+				(
+					"background-color": $button-selected-background-color,
+					"color": $button-selected-text-color
+				)
+			);
+		}
+	}
+}
+
 .header-selector_9li9z5 {
 	display: flex;
 }
@@ -17,6 +64,8 @@
 	font-size: 22pt;
 	margin: 0;
 	padding: 0 10px;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .header-selector_9li9z5 > button.selected {
 	font-family: 'Museo Sans (700)';
@@ -25,49 +74,8 @@
 	margin-left: 10px;
 }
 
-@media (max-width: 870px) {
-	.header-selector_9li9z5 {
-		justify-content: center;
-	}
-	.header-selector_9li9z5 > button {
-		padding: 5px 10px;
-		font-size: 14pt;
-		border-width: 1px;
-		border-style: solid;
-		font-family: 'Museo Sans (500)';
-	}
-	.header-selector_9li9z5 > button:first-child {
-		border-radius: 3px 0 0 3px;
-	}
-	.header-selector_9li9z5 > button:last-child {
-		border-radius: 0 3px 3px 0;
-	}
-	.header-selector_9li9z5 > button.selected {
-		font-family: 'Museo Sans (500)';
-	}
-	.header-selector_9li9z5 > button + button {
-		margin-left: 0;
-		border-left: none;
-	}
+@include compact-styles('.header-selector_9li9z5.compact');
 
-	@include theme using ($root, $scheme) {
-		#{$root} .header-selector_9li9z5 > button {
-			@include theme-colors(
-				$scheme,
-				(
-					"background-color": $control-background-color,
-					"border-color": $control-border-color
-				)
-			);
-		}
-		#{$root} .header-selector_9li9z5 > button.selected {
-			@include theme-colors(
-				$scheme,
-				(
-					"background-color": $button-selected-background-color,
-					"color": $button-selected-text-color
-				)
-			);
-		}
-	}
+@media (max-width: 870px) {
+	@include compact-styles('.header-selector_9li9z5:not(.extended)');
 }

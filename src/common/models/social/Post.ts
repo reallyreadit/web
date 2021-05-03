@@ -24,6 +24,7 @@ export function createCommentThread(post: Post): CommentThread {
 		articleSlug: post.article.slug,
 		userAccount: post.userName,
 		badge: post.badge,
+		isAuthor: false,
 		parentCommentId: null,
 		dateDeleted: post.dateDeleted,
 		children: []

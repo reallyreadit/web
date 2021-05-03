@@ -1,13 +1,13 @@
 import * as React from 'react';
 import CommentThread from '../../models/CommentThread';
 import CommentComposer from './CommentComposer';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 import classNames from 'classnames';
 import { findRouteByKey } from '../../routing/Route';
 import routes from '../../routing/routes';
 import ScreenKey from '../../routing/ScreenKey';
 import ShareResponse from '../../sharing/ShareResponse';
-import ShareData from '../../sharing/ShareData';
+import { ShareEvent } from '../../sharing/ShareEvent';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
 import { formatPossessive, formatIsoDateAsUtc } from '../../format';
@@ -18,7 +18,7 @@ import CommentRevisionForm from '../../models/social/CommentRevisionForm';
 import CommentAddendumForm from '../../models/social/CommentAddendumForm';
 import CommentDeletionForm from '../../models/social/CommentDeletionForm';
 import CommentRevisionComposer from './CommentRevisionComposer';
-import Dialog from '../Dialog';
+import FormDialog from '../FormDialog';
 import CommentAddendumComposer from './CommentAddendumComposer';
 import { DateTime } from 'luxon';
 import MarkdownContent from './MarkdownContent';
@@ -42,7 +42,7 @@ interface Props {
 	onPostComment?: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum?: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision?: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,
@@ -88,7 +88,7 @@ export default class CommentDetails extends React.Component<
 	};
 	private readonly _openDeleteDialog = () => {
 		this.props.onOpenDialog(
-			<Dialog
+			<FormDialog
 				closeButtonText="Cancel"
 				onClose={this.props.onCloseDialog}
 				onSubmit={
@@ -100,14 +100,14 @@ export default class CommentDetails extends React.Component<
 			>
 				<p>Are you sure?</p>
 				<p>Comment deletion is permanant. You can't undo this action.</p>
-			</Dialog>
+			</FormDialog>
 		);
 	};
 	private readonly _navTo = (url: string) => {
 		const result = this.props.onNavTo(url);
 		if (!result) {
 			this.props.onOpenDialog(
-				<Dialog
+				<FormDialog
 					closeButtonText="Ok"
 					onClose={this.props.onCloseDialog}
 					size="small"
@@ -115,7 +115,7 @@ export default class CommentDetails extends React.Component<
 					title="Navigation Error"
 				>
 					<p>This link is invalid.</p>
-				</Dialog>
+				</FormDialog>
 			);
 		}
 		return result;
@@ -226,6 +226,7 @@ export default class CommentDetails extends React.Component<
 				<PostHeader
 					userName={this.props.comment.userAccount}
 					leaderboardBadge={this.props.comment.badge}
+					isAuthor={this.props.comment.isAuthor}
 					date={this.props.comment.dateCreated}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -283,7 +284,7 @@ export default class CommentDetails extends React.Component<
 						onPostAddendum={this._postCommentAddendum}
 					/> :
 					null}
-				{this.state.compositionState === CompositionState.Reply ? 
+				{this.state.compositionState === CompositionState.Reply ?
 					<CommentComposer
 						articleId={this.props.comment.articleId}
 						onCancel={this._closeComposer}
@@ -298,24 +299,24 @@ export default class CommentDetails extends React.Component<
 						{this.props.onPostComment ?
 							this.props.user?.name === this.props.comment.userAccount ?
 								<>
-									<ActionLink
+									<Link
 										text="Edit"
 										onClick={this._openEditComposer}
 									/>
-									<ActionLink
+									<Link
 										text="Delete"
 										onClick={this._openDeleteDialog}
 									/>
 								</> :
-								<ActionLink
+								<Link
 									text="Reply"
 									onClick={this._openReplyComposer}
 								/> :
 							this.props.onViewThread ?
-								<ActionLink
+								<Link
 									href={this.getCommentAbsoluteUrl()}
 									text="View Thread"
-									onClick={this._viewThread} 
+									onClick={this._viewThread}
 								/> :
 								null}
 					</div> :

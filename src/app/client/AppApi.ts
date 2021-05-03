@@ -1,7 +1,7 @@
 import AppApi, { ArticleReference } from '../common/AppApi';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import SemanticVersion from '../../common/SemanticVersion';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import DeviceInfo from '../../common/models/app/DeviceInfo';
 import SerializedDeviceInfo from '../../common/models/app/SerializedDeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
@@ -12,6 +12,11 @@ import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { Result } from '../../common/Result';
+import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../../common/models/app/SubscriptionProducts';
+import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
+import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
+import { ProblemDetails } from '../../common/ProblemDetails';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -55,10 +60,16 @@ export default class extends AppApi {
 					this.emitEvent('displayPreferenceChanged', message.data);
 					break;
 				case 'deviceInfoUpdated':
-					this.setDeviceInfo(message.data);	
+					this.setDeviceInfo(message.data);
 					break;
 				case 'loadUrl':
 					this.emitEvent('loadUrl', message.data);
+					break;
+				case 'openSubscriptionPrompt':
+					this.emitEvent('openSubscriptionPrompt');
+					break;
+				case 'subscriptionPurchaseCompleted':
+					this.emitEvent('subscriptionPurchaseCompleted', message.data);
 					break;
 			}
 		});
@@ -134,6 +145,12 @@ export default class extends AppApi {
 			data: url
 		});
 	}
+	public openExternalUrlUsingSystem(url: string) {
+		this._messagingContext.sendMessage({
+			type: 'openExternalUrlUsingSystem',
+			data: url
+		});
+	}
 	public readArticle(reference: ArticleReference) {
 		this._messagingContext.sendMessage({
 			type: 'readArticle',
@@ -157,6 +174,44 @@ export default class extends AppApi {
 			}
 		);
 	}
+	public requestSubscriptionProducts(request: SubscriptionProductsRequest) {
+		return new Promise<Result<SubscriptionProductsResponse, ProblemDetails>>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestSubscriptionProducts',
+						data: request
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public requestSubscriptionPurchase(request: SubscriptionPurchaseRequest) {
+		return new Promise<Result<SubscriptionPurchaseResponse, ProblemDetails>>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestSubscriptionPurchase',
+						data: request
+					},
+					resolve
+				);
+			}
+		);
+	}
+	public requestSubscriptionReceipt() {
+		return new Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'requestSubscriptionReceipt'
+					},
+					resolve
+				);
+			}
+		);
+	}
 	public requestWebAuthentication(request: WebAuthRequest) {
 		return new Promise<WebAuthResponse>(
 			resolve => {
@@ -170,7 +225,7 @@ export default class extends AppApi {
 			}
 		);
 	}
-	public share(data: ShareData) {
+	public share(data: ShareEvent) {
 		return new Promise<ShareResult>(
 			resolve => {
 				this._messagingContext.sendMessage(

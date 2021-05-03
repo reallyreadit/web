@@ -3,28 +3,17 @@ import TrackingStep from './OrientationWizard/TrackingStep';
 import * as classNames from 'classnames';
 import NotificationsStep from './OrientationWizard/NotificationsStep';
 import NotificationAuthorizationRequestResult from '../../../../common/models/app/NotificationAuthorizationRequestResult';
-import ShareData from '../../../../common/sharing/ShareData';
-import UserAccount from '../../../../common/models/UserAccount';
-import { findRouteByKey } from '../../../../common/routing/Route';
-import routes from '../../../../common/routing/routes';
-import ScreenKey from '../../../../common/routing/ScreenKey';
-import ShareStep from './OrientationWizard/ShareStep';
-import ShareResult from '../../../../common/models/app/ShareResult';
 import ImportStep from './OrientationWizard/ImportStep';
 
 interface Props {
 	onComplete: () => void,
-	onCreateAbsoluteUrl: (userName: string) => string,
 	onCreateStaticContentUrl: (path: string) => string
-	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>,
-	onShare: (data: ShareData) => Promise<ShareResult>,
-	user: UserAccount
+	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>
 }
 enum Step {
 	Tracking,
 	Import,
-	Notifications,
-	Share
+	Notifications
 }
 export default class OrientationWizard extends React.PureComponent<
 	Props,
@@ -54,9 +43,6 @@ export default class OrientationWizard extends React.PureComponent<
 					nextStep = Step.Notifications;
 					break;
 				case Step.Notifications:
-					nextStep = Step.Share;
-					break;
-				case Step.Share:
 					nextStep = null;
 					break;
 			}
@@ -72,46 +58,11 @@ export default class OrientationWizard extends React.PureComponent<
 			}
 		}
 	};
-	private readonly _handleShareCompletion = (result?: ShareResult) => {
-		if (result) {
-			if (
-				!result.completed ||
-				result.activityType === 'it.reallyread.mobile.share-extension'
-			) {
-				// ignore a cancelled activity or a share to our own extension
-				return;
-			}
-		}
-		this.advance();
-	};
 	private readonly _requestNotificationAuthorization = () => {
 		this.props
 			.onRequestNotificationAuthorization()
 			.then(this._continue)
 			.catch(this._continue);
-	};
-	private readonly _share = () => {
-		const
-			url = this.props.onCreateAbsoluteUrl(
-				findRouteByKey(routes, ScreenKey.Profile)
-					.createUrl({ userName: this.props.user.name })
-			),
-			text = 'I\'m reading on Readup! Follow me to see what I\'m reading.';
-		this.props
-			.onShare({
-				action: 'OrientationShare',
-				email: {
-					body: text + '\n\n' + url,
-					subject: 'Follow me on Readup'
-				},
-				text,
-				url
-			})
-			.then(this._handleShareCompletion)
-			.catch(this._handleShareCompletion);
-	};
-	private readonly _skipShare = () => {
-		this._handleShareCompletion();
 	};
 	private readonly _stepMap = {
 		[Step.Tracking]: (
@@ -130,12 +81,6 @@ export default class OrientationWizard extends React.PureComponent<
 			<NotificationsStep
 				onRequestAuthorization={this._requestNotificationAuthorization}
 				onSkip={this._continue}
-			/>
-		),
-		[Step.Share]: (
-			<ShareStep
-				onShare={this._share}
-				onSkip={this._skipShare}
 			/>
 		)
 	};

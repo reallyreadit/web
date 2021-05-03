@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import * as  React from 'react';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment, updateComment } from '../../common/comments';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
@@ -37,6 +37,11 @@ import DisplayPreference from '../../common/models/userAccounts/DisplayPreferenc
 import { Message } from '../../common/MessagingContext';
 import { parseUrlForRoute } from '../../common/routing/Route';
 import ScreenKey from '../../common/routing/ScreenKey';
+import { ProblemDetails } from '../../common/ProblemDetails';
+import { Result, ResultType } from '../../common/Result';
+import { ReadingErrorType } from '../../common/Errors';
+import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscriptionPrompt';
+import { createUrl } from '../../common/HttpEndpoint';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -61,7 +66,8 @@ let
 	displayPreference: DisplayPreference,
 	page: Page,
 	userPage: UserPage,
-	user: UserAccount;
+	user: UserAccount,
+	isWaitingForSubscription = false;
 
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
@@ -112,12 +118,35 @@ const reader = new Reader(
 					isCompletionCommit: event.isCompletionCommit
 				}
 			},
-			(updatedArticle: UserArticle) => {
-				article = updatedArticle;
-				if (article.isRead && !embedProps.comments) {
-					loadComments();
-				} else {
-					render();
+			(result: Result<UserArticle, ProblemDetails>) => {
+				switch (result.type) {
+					case ResultType.Success:
+						article = result.value;
+						if (article.isRead && !embedProps.comments) {
+							loadComments();
+						} else {
+							render();
+						}
+						break;
+					case ResultType.Failure:
+						if (result.error.type === ReadingErrorType.SubscriptionRequired && !isWaitingForSubscription) {
+							reader.unloadPage();
+							dialogService.openDialog(
+								React.createElement(
+									ReaderSubscriptionPrompt,
+									{
+										onCreateStaticContentUrl: path => createUrl(window.reallyreadit.nativeClient.reader.config.staticServer, path),
+										onSubscribe: () => {
+											messagingContext.sendMessage({
+												type: 'openSubscriptionPrompt'
+											});
+										}
+									}
+								)
+							);
+							isWaitingForSubscription = true;
+						}
+						break;
 				}
 			}
 		)
@@ -186,8 +215,11 @@ Array
 
 // user interface
 const dialogService = new DialogService({
-	setState: delegate => {
-		render(delegate(embedProps));
+	setState: (delegate, callback) => {
+		render(
+			delegate(embedProps),
+			callback
+		);
 	}
 });
 let
@@ -241,7 +273,7 @@ function insertEmbed() {
 		}
 	);
 }
-function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>) {
+function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>, callback?: () => void) {
 	ReactDOM.render(
 		React.createElement(
 			App,
@@ -260,7 +292,8 @@ function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'arti
 				user
 			}
 		),
-		embedRootElement
+		embedRootElement,
+		callback
 	);
 }
 
@@ -544,7 +577,7 @@ function setStatusBarVisibility(isVisible: boolean) {
 }
 
 
-function share(data: ShareData) {
+function share(data: ShareEvent) {
 	messagingContext.sendMessage({
 		type: 'share',
 		data

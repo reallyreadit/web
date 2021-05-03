@@ -7,6 +7,7 @@ import { truncateText } from '../format';
 import Popover, { MenuPosition, MenuState } from './Popover';
 import ShareForm from '../models/analytics/ShareForm';
 import ShareResponse from '../sharing/ShareResponse';
+import { ShareEvent } from '../sharing/ShareEvent';
 
 export { MenuPosition } from './Popover';
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
 	onComplete?: (form: ShareForm) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetData: () => ShareData,
-	onShare: (data: ShareData) => ShareResponse
+	onShare: (data: ShareEvent) => ShareResponse
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
@@ -49,10 +50,19 @@ export default class ShareControl extends React.PureComponent<
 	private readonly _handleEmailLinkClick = () => {
 		this.completeWithActivityType('Email');
 	};
-	private readonly _openMenu = () => {
+	private readonly _openMenu = (event: React.MouseEvent<HTMLElement>) => {
 		const
 			data = this.props.onGetData(),
-			response = this.props.onShare(data);
+			targetRect = event.currentTarget.getBoundingClientRect(),
+			response = this.props.onShare({
+				...data,
+				selection: {
+					x: targetRect.x,
+					y: targetRect.y,
+					width: targetRect.width,
+					height: targetRect.height
+				}
+			});
 		if (response.channels.length) {
 			this.setState({
 				data,

@@ -15,7 +15,7 @@ export default function getShareData(
 			['sourceSlug']: sourceSlug
 		},
 		shareUrl = onCreateAbsoluteUrl(
-			findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
+			findRouteByKey(routes, ScreenKey.Comments).createUrl(articleUrlParams)
 		);
 	return {
 		action,

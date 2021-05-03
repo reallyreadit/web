@@ -5,10 +5,13 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import { createUrl } from '../../../../common/HttpEndpoint';
+import { deviceTypeQueryStringKey, unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 
 interface Props {
 	analyticsAction: string,
 	deviceType: DeviceType,
+	iosPromptType?: 'auto' | 'download',
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -18,6 +21,7 @@ interface Props {
 }
 export default class GetStartedButton extends React.Component<Props> {
 	public static defaultProps: Partial<Props> = {
+		iosPromptType: 'auto',
 		size: 'x-large'
 	};
 	private readonly _beginOnboarding = () => {
@@ -27,11 +31,11 @@ export default class GetStartedButton extends React.Component<Props> {
 		this.props.onCopyAppReferrerTextToClipboard(this.props.analyticsAction);
 	};
 	public render() {
-		const route = findRouteByLocation(routes, this.props.location);
+		const route = findRouteByLocation(routes, this.props.location, unroutableQueryStringKeys);
 		return (
 			<div className="get-started-button_z950ea">
 				{this.props.deviceType === DeviceType.Ios ?
-					route.screenKey === ScreenKey.Home ?
+					route.screenKey === ScreenKey.Home || this.props.iosPromptType === 'download' ?
 						<a
 							className="ios"
 							href={getStoreUrl(DeviceType.Ios)}
@@ -43,7 +47,18 @@ export default class GetStartedButton extends React.Component<Props> {
 							text="Open In App"
 							size={this.props.size}
 							intent="loud"
-							href={'https://reallyread.it' + this.props.location.path}
+							href={
+								createUrl(
+									{
+										host: 'reallyread.it',
+										protocol: 'https'
+									},
+									this.props.location.path,
+									{
+										[deviceTypeQueryStringKey]: DeviceType.Ios
+									}
+								)
+							}
 							hrefPreventDefault={false}
 						/> :
 					this.props.deviceType === DeviceType.Android ?

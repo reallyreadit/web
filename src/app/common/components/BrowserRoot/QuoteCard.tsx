@@ -1,25 +1,31 @@
 import * as React from 'react';
 import Card from './Card';
 import { Quote } from './MarketingScreen'
-import ProfileLink from '../../../../common/components/ProfileLink';
+import { NavReference } from '../Root';
+import Link from '../../../../common/components/Link';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 export default (
 	props: {
 		quote: Quote,
-        onCreateAbsoluteUrl: (path: string) => string,
-        onViewProfile: (userName: string) => void
+        onNavTo: (ref: NavReference) => void
 	}
 ) => (
     <Card className="quote-card_xa1vt">
         <div className="quote-card_xa1vt__inner">
-            <p onClick={() => window.open(props.quote.source, '_blank')}>
+            <Link
+				className="quote-card_xa1vt__quote"
+				screen={ScreenKey.Comments}
+				params={{
+					'sourceSlug': props.quote.sourceSlug,
+					'articleSlug': props.quote.articleSlug,
+					'commentId': props.quote.commentId
+				}}
+				onClick={props.onNavTo}
+			>
                 {props.quote.quote}
-            </p>
-            <div className="quote-card_xa1vt__reader">— <ProfileLink
-                onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
-                onViewProfile={props.onViewProfile}
-                userName={props.quote.reader}
-            /></div>
+			</Link>
+            <div className="quote-card_xa1vt__reader">— <Link screen={ScreenKey.Profile} params={{ 'userName': props.quote.reader }} onClick={props.onNavTo}>{props.quote.reader}</Link></div>
         </div>
     </Card>
 );

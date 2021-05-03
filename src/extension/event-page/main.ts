@@ -217,6 +217,10 @@ const webAppApi = new WebAppApi({
 		// update readers
 		readerContentScriptApi.commentUpdated(comment);
 	},
+	onSubscriptionStatusChanged: status => {
+		// update readers
+		readerContentScriptApi.subscriptionStatusChanged(status);
+	},
 	onUserSignedIn: profile => {
 		setIcon({
 			user: profile.userAccount
@@ -330,7 +334,7 @@ chrome.runtime.onInstalled.addListener(details => {
 								}
 							)
 						);
-						localStorage.setItem('installationId', response.installationId);	
+						localStorage.setItem('installationId', response.installationId);
 					}
 				)
 				.catch(
@@ -503,7 +507,7 @@ chrome.alarms.onAlarm.addListener(
 								console.log('chrome.alarms.onAlarm (updateContentParser: error updating to new version)');
 							});
 					} else {
-						console.log('chrome.alarms.onAlarm (updateContentParser: no new version)');	
+						console.log('chrome.alarms.onAlarm (updateContentParser: no new version)');
 					}
 				})
 				.catch(() => {

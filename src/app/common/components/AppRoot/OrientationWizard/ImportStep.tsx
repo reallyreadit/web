@@ -10,7 +10,6 @@ export default class ImportStep extends React.PureComponent<Props> {
 		return (
 			<div className="import-step_jg2xdw">
 				<h1>Import articles.</h1>
-				<h2>If you don't see the Readup button, tap "More" first to enable it.</h2>
 				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Import Screenshot" />
 				<Button
 					intent="loud"

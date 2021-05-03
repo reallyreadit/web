@@ -8,55 +8,43 @@ import Button from '../../../../common/components/Button';
 import { Screen } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
+import { RevenueMeter } from '../RevenueMeter';
+import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
+import Fetchable from '../../../../common/Fetchable';
 
 interface Props {
 	isClosing: boolean,
 	onClose: () => void,
 	onClosed: () => void,
-	onSignOut: () => void,
 	onViewAdminPage: () => void,
-	onViewPrivacyPolicy: () => void,
+	onViewBlog: () => void,
+	onViewFaq: () => void,
+	onViewLeaderboards: () => void,
 	onViewProfile: () => void,
+	onViewSearch: () => void,
 	onViewSettings: () => void,
 	onViewStats: () => void,
+	revenueReport: Fetchable<RevenueReportResponse>,
 	selectedScreen: Screen,
 	userAccount: UserAccount | null
 }
-export default class extends React.PureComponent<Props, { isSigningOut: boolean }> {
+export default class extends React.PureComponent<Props> {
 	private readonly _handleAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'menu_fk9ujy-drawer-close') {
 			this.props.onClosed();
 		}
 	};
-	private readonly _signOut = () => {
-		this.setState({ isSigningOut: true });
-		this.props.onSignOut();
-	};
 	private readonly _stopPropagation = (e: React.MouseEvent) => {
 		e.stopPropagation();
-	};
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewPrivacyPolicy();
 	};
 	private readonly _viewProfile = () => {
 		this.props.onViewProfile();
 	};
-	private _cachedUser: UserAccount | undefined;
 	constructor(props: Props) {
 		super(props);
 		this.state = { isSigningOut: false };
 	}
 	public render() {
-		// cache the user account so that we can animate
-		// the menu closing even after the user has signed out
-		let user: UserAccount;
-		if (this.props.userAccount) {
-			user = this.props.userAccount;
-			this._cachedUser = this.props.userAccount;
-		} else {
-			user = this._cachedUser;
-		}
 		return (
 			<div
 				className={classNames('menu_fk9ujy', { 'closing': this.props.isClosing })}
@@ -68,7 +56,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 					onClick={this._stopPropagation}
 				>
 					<div className="header">
-						<label>{user.name}</label>
+						<label>{this.props.userAccount.name}</label>
 						<div
 							className="close-button"
 							onClick={this.props.onClose}
@@ -77,7 +65,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 						</div>
 					</div>
 					<ol>
-						{user.role === UserAccountRole.Admin ?
+						{this.props.userAccount.role === UserAccountRole.Admin ?
 							<li>
 								<Button
 									state={this.props.selectedScreen.key === ScreenKey.Admin ? 'selected' : 'normal'}
@@ -100,7 +88,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 										'normal'
 								}
 								onClick={this._viewProfile}
-								text="Profile"
+								text="My Profile"
 								size="large"
 								display="block"
 							/>
@@ -109,7 +97,45 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<Button
 								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
 								onClick={this.props.onViewStats}
-								text="Stats"
+								text="My Stats"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								badge="beta"
+								state={this.props.selectedScreen.key === ScreenKey.Search ? 'selected' : 'normal'}
+								onClick={this.props.onViewSearch}
+								text="Search"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								badge="beta"
+								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
+								onClick={this.props.onViewLeaderboards}
+								text="Leaderboards"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Blog ? 'selected' : 'normal'}
+								onClick={this.props.onViewBlog}
+								text="Blog"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Faq ? 'selected' : 'normal'}
+								onClick={this.props.onViewFaq}
+								text="Help"
 								size="large"
 								display="block"
 							/>
@@ -123,27 +149,8 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								display="block"
 							/>
 						</li>
-						<li>
-							<Button
-								state={this.state.isSigningOut ? 'busy' : 'normal'}
-								onClick={this._signOut}
-								text="Log Out"
-								size="large"
-								display="block"
-							/>
-						</li>
 					</ol>
-					<div className="footer">
-						Need help? Got feedback?<br />
-						<strong>Send us an email!</strong><br />
-						<a href="mailto:support@readup.com">support@readup.com</a>
-						<a
-							href="#"
-							onClick={this._viewPrivacyPolicy}
-						>
-							Privacy Policy
-						</a>
-					</div>
+					<RevenueMeter report={this.props.revenueReport} />
 				</div>
 			</div>
 		);

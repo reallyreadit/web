@@ -42,6 +42,26 @@
 	font-family: 'Museo Sans (300)', sans-serif;
 	line-height: 1.6;
 }
+.marketing-screen_n5a6wc > .home-panel_w65z7c > .content > .home-section-intro strong {
+	font-family: 'Museo Sans (500)', sans-serif;
+}
+
+// styles for the pricing section
+.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content {
+	max-width: 600px;
+}
+.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > h2 {
+	text-align: center;
+}
+.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > .price-list_eorvmi {
+	margin-top: 1.5em;
+}
+
+// styles for the revenue section
+.marketing-screen_n5a6wc > .home-panel_w65z7c.revenue-panel > .content {
+	max-width: 500px;
+	font-size: 1.15em;
+}
 
 // styles for the quotes flex grid
 .marketing-screen_n5a6wc  {
@@ -67,6 +87,23 @@
 		// justify-content: space-between;
 		// height: 900px;
 
+		/* Firefox scrollbar */
+		scrollbar-width: thin;
+		scrollbar-color: var(--control-background-color) var(--control-border-color);
+
+		/* Webkit scrollbar */
+		&::-webkit-scrollbar {
+			height: 10px;
+		}
+		&::-webkit-scrollbar-track {
+			background: var(--control-background-color);
+			border-radius: 10px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background: var(--control-border-color);
+			border-radius: 10px;
+		}
+
 		.quote-card_xa1vt  {
 			width: 100%;
 			margin: 14px 0;
@@ -85,7 +122,6 @@
 			display: flex;
 			flex-wrap: wrap;
 			flex-direction: column;
-			justify-content: space-between;
 			height: 960px;
 
 			overflow-x: scroll;

@@ -9,6 +9,7 @@ import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent'
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 export default class BrowserApiPlaceholder extends BrowserApiBase {
 	private _title: string;
@@ -40,6 +41,9 @@ export default class BrowserApiPlaceholder extends BrowserApiBase {
 		return this._title;
 	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
+		throw new Error('Operation not supported in server environment');
+	}
+	public subscriptionStatusChanged(status: SubscriptionStatus) {
 		throw new Error('Operation not supported in server environment');
 	}
 	public updateAvailable(version: SemanticVersion) {

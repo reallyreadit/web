@@ -1,5 +1,5 @@
 import EventEmitter from '../../common/EventEmitter';
-import ShareData from '../../common/sharing/ShareData';
+import { ShareEvent } from '../../common/sharing/ShareEvent';
 import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
@@ -16,6 +16,12 @@ import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { Result } from '../../common/Result';
+import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../../common/models/app/SubscriptionProducts';
+import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
+import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
+import { AppleSubscriptionValidationResponse } from '../../common/models/subscriptions/AppleSubscriptionValidation';
+import { ProblemDetails } from '../../common/ProblemDetails';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -28,17 +34,23 @@ export default abstract class extends EventEmitter<{
 	'commentUpdated': CommentThread,
 	'didBecomeActive': AppActivationEvent,
 	'displayPreferenceChanged': DisplayPreference,
-	'loadUrl': string
+	'loadUrl': string,
+	'openSubscriptionPrompt': void,
+	'subscriptionPurchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
 }> {
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract getDeviceInfo(): Promise<DeviceInfo>;
 	public abstract initialize(user?: UserAccount): Promise<DeviceInfo>;
 	public abstract openExternalUrl(url: string): void;
+	public abstract openExternalUrlUsingSystem(url: string): void;
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract requestAppleIdCredential(): void;
 	public abstract requestNotificationAuthorization(): Promise<NotificationAuthorizationRequestResult>;
+	public abstract requestSubscriptionProducts(request: SubscriptionProductsRequest): Promise<Result<SubscriptionProductsResponse, ProblemDetails>>;
+	public abstract requestSubscriptionPurchase(request: SubscriptionPurchaseRequest): Promise<Result<SubscriptionPurchaseResponse, ProblemDetails>>;
+	public abstract requestSubscriptionReceipt(): Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>;
 	public abstract requestWebAuthentication(request: WebAuthRequest): Promise<WebAuthResponse>;
-	public abstract share(data: ShareData): Promise<ShareResult>;
+	public abstract share(data: ShareEvent): Promise<ShareResult>;
 	public abstract signIn(user: UserAccount, eventType: SignInEventType): Promise<SignInEventResponse>;
 	public abstract signOut(): void;
 	public abstract syncAuthCookie(user?: UserAccount): void;

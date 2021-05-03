@@ -4,7 +4,7 @@ import ShareChannel from '../../../common/sharing/ShareChannel';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import { createUrl } from '../../../common/HttpEndpoint';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
 import AsyncTracker from '../../../common/AsyncTracker';
 import UserArticle from '../../../common/models/UserArticle';
 import Fetchable from '../../../common/Fetchable';
@@ -15,7 +15,7 @@ import DialogManager from '../../../common/components/DialogManager';
 import CommentsSection from '../../../common/components/comments/CommentsSection';
 import PostForm from '../../../common/models/social/PostForm';
 import Post from '../../../common/models/social/Post';
-import ShareData from '../../../common/sharing/ShareData';
+import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
 import PostPrompt from '../../../common/components/PostPrompt';
 import CommentForm from '../../../common/models/social/CommentForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
@@ -32,10 +32,10 @@ import ReaderHeader from '../../../common/components/ReaderHeader';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
 
-export interface Props extends DialogState {
+export interface Props extends DialogServiceState {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	displayPreference: DisplayPreference | null,
 	isHeaderHidden: boolean,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
@@ -48,7 +48,7 @@ export interface Props extends DialogState {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
-	onShare: (data: ShareData) => void,
+	onShare: (data: ShareEvent) => void,
 	user: UserAccount | null
 }
 export default class App extends React.Component<
@@ -94,8 +94,11 @@ export default class App extends React.Component<
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
 
 	// sharing
-	private readonly _handleShareRequest = (data: ShareData) => {
-		this.props.onShare(data);
+	private readonly _handleShareRequest = (data: ShareEvent) => {
+		this.props.onShare({
+			...data,
+			selection: createRelativeShareSelection(data.selection, window)
+		});
 		return {
 			channels: [] as ShareChannel[]
 		};
@@ -170,7 +173,9 @@ export default class App extends React.Component<
 				</div>
 				<DialogManager
 					dialogs={this.props.dialogs}
+					onGetDialogRenderer={this.props.dialogService.getDialogRenderer}
 					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}
+					sharedState={{}}
 				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}

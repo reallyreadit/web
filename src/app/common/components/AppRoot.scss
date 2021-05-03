@@ -30,10 +30,10 @@
 	box-sizing: border-box;
 	z-index: 1;
 }
-.app-root_vc3j5h > .content > .screens > .screen + .screen {
+.app-root_vc3j5h > .content > .screens > .screen + .screen.slide-in {
 	animation: app-root_vc3j5h-screen-slide-in 250ms forwards;
 }
-.app-root_vc3j5h > .content > .screens > .screen.slide-out {
+.app-root_vc3j5h > .content > .screens > .screen + .screen.slide-out {
 	animation: app-root_vc3j5h-screen-slide-out 250ms forwards;
 }
 

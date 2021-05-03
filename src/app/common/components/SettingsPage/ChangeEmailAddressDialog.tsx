@@ -1,12 +1,12 @@
 import * as React from 'react';
 import InputField from '../../../../common/components/controls/InputField';
-import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
+import FieldsetDialog, { Props as FormDialogProps, State } from '../controls/FieldsetDialog';
 
 interface Props {
 	currentEmailAddress: string,
 	onChangeEmailAddress: (email: string) => Promise<void>
 }
-export default class ChangeEmailAddressDialog extends FormDialog<void, Props, Partial<State> & {
+export default class ChangeEmailAddressDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	email?: string,
 	emailError?: string
 }> {

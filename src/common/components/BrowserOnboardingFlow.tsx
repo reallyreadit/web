@@ -2,6 +2,7 @@ import * as React from 'react';
 import UserAccount from '../models/UserAccount';
 import * as classNames from 'classnames';
 import Icon from '../components/Icon';
+import TransitionContainer from './TransitionContainer';
 
 export enum ExitReason {
 	Aborted,
@@ -14,11 +15,16 @@ export interface BaseProps {
 }
 interface State {
 	exitReason: ExitReason | null,
-	goingToStep: number | null,
-	isInitialStep: boolean,
+	goingToStep: number | null
 	step: number
 }
 export default abstract class BrowserOnboardingFlow<Props extends BaseProps> extends React.Component<Props, State> {
+	private readonly _completeStepTransition = () => {
+		this.setState({
+			goingToStep: null,
+			step: this.state.goingToStep
+		});
+	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
 		if (event.animationName === 'browser-onboarding-flow_74077a-steps-slide-out') {
 			this.props.onClose(
@@ -26,15 +32,6 @@ export default abstract class BrowserOnboardingFlow<Props extends BaseProps> ext
 					this.state.exitReason :
 					ExitReason.Aborted
 			);
-		}
-	};
-	private readonly _handleStepAnimationEnd = (event: React.AnimationEvent) => {
-		if (event.animationName === 'browser-onboarding-flow_74077a-container-fade-out') {
-			this.setState({
-				goingToStep: null,
-				isInitialStep: false,
-				step: this.state.goingToStep
-			});
 		}
 	};
 	protected readonly _abort = () => {
@@ -53,7 +50,6 @@ export default abstract class BrowserOnboardingFlow<Props extends BaseProps> ext
 		this.state = {
 			exitReason: null,
 			goingToStep: null,
-			isInitialStep: true,
 			step: null
 		};
 	}
@@ -82,20 +78,14 @@ export default abstract class BrowserOnboardingFlow<Props extends BaseProps> ext
 								null}
 						</div>
 					</div>
-					<div
-						className={
-							classNames(
-								'content',
-								{
-									'changing': this.state.goingToStep != null,
-									'changed': this.state.goingToStep == null && !this.state.isInitialStep
-								}
-							)
-						}
-						onAnimationEnd={this._handleStepAnimationEnd}
+					<TransitionContainer
+						isTransitioning={this.state.goingToStep != null}
+						onTransitionComplete={this._completeStepTransition}
 					>
-						{this.getStepRenderer(this.state.step)(this.props.user)}
-					</div>
+						<div className="content">
+							{this.getStepRenderer(this.state.step)(this.props.user)}
+						</div>
+					</TransitionContainer>
 				</div>
 			</div>
 		);

@@ -7,12 +7,12 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen } from '../Root';
+import { Screen, NavReference } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import { SharedState } from '../BrowserRoot';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
@@ -26,6 +26,7 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
 import { Sort } from '../controls/articles/AotdView';
+import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 
 interface Props {
 	deviceType: DeviceType,
@@ -39,18 +40,21 @@ interface Props {
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	onViewComments: (article: UserArticle) => void,
+	onViewMission: () => void,
 	onViewProfile: (userName: string) => void,
+	revenueReport: Fetchable<RevenueReportResponse>,
 	user: UserAccount | null
 }
 interface State {
@@ -273,6 +277,7 @@ class HomeScreen extends React.Component<Props, State> {
 								onChangeSort={this._changeSort}
 								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+								onNavTo={this.props.onNavTo}
 								onPostArticle={this.props.onPostArticle}
 								onRateArticle={this.props.onRateArticle}
 								onReadArticle={this.props.onReadArticle}
@@ -307,6 +312,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onGetUserCount={this.props.onGetUserCount}
+				onNavTo={this.props.onNavTo}
 				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}
@@ -316,7 +322,9 @@ class HomeScreen extends React.Component<Props, State> {
 				onViewAotdHistory={this.props.onViewAotdHistory}
 				onViewAuthor={this.props.onViewAuthor}
 				onViewComments={this.props.onViewComments}
+				onViewMission={this.props.onViewMission}
 				onViewProfile={this.props.onViewProfile}
+				revenueReport={this.props.revenueReport}
 				user={this.props.user}
 			/>
 		);
@@ -324,7 +332,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'revenueReport' | 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({

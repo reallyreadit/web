@@ -18,10 +18,10 @@ import PageResult from '../../../../common/models/PageResult';
 import Rating from '../../../../common/models/Rating';
 import UserAccount from '../../../../common/models/UserAccount';
 import UserArticle from '../../../../common/models/UserArticle';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 // import Panel from './Panel';
 import GetStartedButton from './GetStartedButton';
@@ -31,6 +31,10 @@ import ImageAndText from './ImageAndText';
 // import Card from './Card';
 import QuoteCard from './QuoteCard';
 import Button from '../../../../common/components/Button';
+import { PriceList } from './MarketingScreen/PriceList';
+import { RevenueMeter } from '../RevenueMeter';
+import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
+import { NavReference } from '../Root';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -45,23 +49,48 @@ interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewAuthor: (slug: string, name: string) => void,
+	onViewMission: () => void,
+	revenueReport: Fetchable<RevenueReportResponse>,
 	user: UserAccount | null
 }
 export interface Quote {
 	quote: string,
 	reader: string,
-	source: string,
+	articleSlug: string,
+	sourceSlug: string,
+	commentId: string
 }
+
+const prices = [
+	{
+		amount: 499,
+		title: 'Budget option.',
+		description: 'Individual Writer payouts will be small.'
+	},
+	{
+		amount: 1499,
+		title: 'Recommended',
+		description: 'A meaningful investment in journalism.',
+		selected: true
+	},
+	{
+		amount: 2499,
+		title: 'Super Reader!',
+		description: 'Bigger tips for the writers you read.'
+	}
+];
+
 export default class MarketingScreen extends React.Component<
 	Props,
 	{
@@ -140,6 +169,12 @@ export default class MarketingScreen extends React.Component<
 				imageName: "civil-discourse.png",
 				imageAlt: "You must read the article before you can post or reply."
 			},
+			{
+				heading: "A brighter future for writers",
+				paragraph: "You pay a monthly subscription to read on Readup. Readup keeps 5% and distributes the rest to the writers you read. Everything is transparent, ethical, and humane.",
+				imageName: "watch-money.png",
+				imageAlt: "Readup distributes your money directly to writers"
+			}
 		];
 
 		/*const howItWorksDesktop = [
@@ -167,52 +202,72 @@ export default class MarketingScreen extends React.Component<
 			{
 				quote: "There is something inherently decent and civil about reading on Readup. It will be an important experiment to see if it can stay a healthy community.",
 				reader: "Plum",
-				source: "https://readup.com/comments/getrevueco/-trump-ban-referred-readups-reluctance-and-taking-down-tiktok/DBvX0D"
+				sourceSlug: 'getrevueco',
+				articleSlug: '-trump-ban-referred-readups-reluctance-and-taking-down-tiktok',
+				commentId: 'DBvX0D'
 			},
 			{
 				quote: "My best online reading experiences have happened here.",
 				reader: "EZ1969",
-				source: "https://readup.com/comments/blogreadupcom/the-readup-manifesto/Vy6xgz"
+				sourceSlug: 'blogreadupcom',
+				articleSlug: 'the-readup-manifesto',
+				commentId: 'Vy6xgz'
 			},
 			{
 				quote: "I’m so grateful to have Readup in my life.",
 				reader: "KaylaLola",
-				source: "https://readup.com/comments/blogreadupcom/the-readup-manifesto/V6Qbl5"
+				sourceSlug: 'blogreadupcom',
+				articleSlug: 'the-readup-manifesto',
+				commentId: 'V6Qbl5'
 			},
 			{
 				quote: "Readup gave me my brain back!",
 				reader: "Karenz",
-				source: "https://readup.com/comments/the-new-york-review-of-books/how-the-awful-stuff-won/VXwN75"
+				sourceSlug: 'the-new-york-review-of-books',
+				articleSlug: 'how-the-awful-stuff-won',
+				commentId: 'VXwN75'
 			},
 			{
 				quote: "It’s fascinating to see (and super exciting to be part of) Readup’s growth. Here’s to so much more 🥂❤️✨",
 				reader: "chrissetiana",
-				source: "https://readup.com/comments/washingtonpost/serious-reading-takes-a-hit-from-online-scanning-and-skimming-researchers-say/D9BoO5"
+				sourceSlug: 'washingtonpost',
+				articleSlug: 'serious-reading-takes-a-hit-from-online-scanning-and-skimming-researchers-say',
+				commentId: 'D9BoO5'
 			},
 			{
 				quote: "I cherish Readup as a safe place for productive and empathic conversation.",
 				reader: "thorgalle",
-				source: "https://readup.com/comments/slack-filescom/readups-purpose--slack/DBvMoD"
+				sourceSlug: 'slack-filescom',
+				articleSlug: 'readups-purpose--slack',
+				commentId: 'DBvMoD'
 			},
 			{
 				quote: "Readup has fundamentally changed the way I read online.",
 				reader: "bartadamley",
-				source: "https://readup.com/comments/ribbonfarm/a-text-renaissance/54vELz",
+				sourceSlug: 'ribbonfarm',
+				articleSlug: 'a-text-renaissance',
+				commentId: '54vELz'
 			},
 			{
 				quote: "I used to have several magazine subscriptions and now I have all of it at Readup. ",
 				reader: "Pegeen",
-				source: "https://readup.com/comments/organizer-sandbox/7-overlooked-signs-youre-living-an-extraordinary-life/Vy6Onz"
+				sourceSlug: 'organizer-sandbox',
+				articleSlug: '7-overlooked-signs-youre-living-an-extraordinary-life',
+				commentId: 'Vy6Onz'
 			},
 			{
 				quote: "I’m a believer in this project and eager to see what the market will say.",
 				reader: "Raven",
-				source: "https://readup.com/comments/blogreadupcom/check-out-the-new-readup-homepage/zvgpvD"
+				sourceSlug: 'blogreadupcom',
+				articleSlug: 'check-out-the-new-readup-homepage',
+				commentId: 'zvgpvD'
 			},
 			{
 				quote: "Love Readup and love recommending it to my friends and family.",
 				reader: "skrt",
-				source: "https://readup.com/comments/blogreadupcom/2020---the-readup-year-in-review/zjy4mV"
+				sourceSlug: 'blogreadupcom',
+				articleSlug: '2020---the-readup-year-in-review',
+				commentId: 'zjy4mV'
 			}
 		];
 
@@ -294,6 +349,28 @@ export default class MarketingScreen extends React.Component<
 				{/*</HomePanel>*/}
 				<HomePanel
 					data-nosnippet
+					className="pricing-panel"
+				>
+					<h2 className="heading-regular">Pricing: Pay what you want</h2>
+					<p className="home-section-intro">
+						You can pay any amount you want to read on Readup.<br />
+						<strong>All Readers at all levels get full access to all features.</strong>
+					</p>
+					<p className="home-section-intro">
+						Readup takes a small cut (5%) of your payment and distributes the rest to the writers you read -- transparently, down to the penny.
+					</p>
+					<PriceList prices={prices} />
+				</HomePanel>
+				{this.props.revenueReport.value?.report.totalRevenue > 0 ?
+					<HomePanel
+						data-nosnippet
+						className="revenue-panel"
+					>
+						<RevenueMeter report={this.props.revenueReport} />
+					</HomePanel> :
+					null}
+				<HomePanel
+					data-nosnippet
 					className="quote-panel"
 				>
 					<h2 className="heading-regular">What our Readers say</h2>
@@ -303,8 +380,7 @@ export default class MarketingScreen extends React.Component<
 						{quotes.map(quote =>
 							<QuoteCard
 								key={quote.quote}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onViewProfile={this.props.onViewProfile}
+								onNavTo={this.props.onNavTo}
 								quote={quote} />
 						)}
 					</div>
@@ -317,7 +393,7 @@ export default class MarketingScreen extends React.Component<
 					<p className="home-section-intro">Read about how Readup is changing the future of digital reading. Add your thoughts in the comments.</p>
 					{this.state.blogPosts.isLoading ?
 						<LoadingOverlay position="static" /> :
-						<ArticleList>
+						<List>
 							{this.state.blogPosts.value.items.map(
 								article => (
 									<li key={article.id}>
@@ -325,6 +401,7 @@ export default class MarketingScreen extends React.Component<
 											article={article}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
 											onPost={this.props.onPostArticle}
 											onRateArticle={this.props.onRateArticle}
 											onRead={this.props.onReadArticle}
@@ -336,7 +413,7 @@ export default class MarketingScreen extends React.Component<
 									</li>
 								)
 							)}
-						</ArticleList>}
+						</List>}
 						<div className="controls">
 							<Button
 							iconRight="chevron-right"
@@ -359,10 +436,7 @@ export default class MarketingScreen extends React.Component<
 						className="mission-button"
 						iconRight="chevron-right"
 						intent="normal"
-						onClick={() => {
-							// TODO: make an internal link
-							window.location.href = '/mission'
-						}}
+						onClick={this.props.onViewMission}
 						style="normal"
 						text="Learn more about our mission &amp; story"
 						/>

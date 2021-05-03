@@ -2,7 +2,7 @@ import * as React from 'react';
 import DialogManager from '../../common/components/DialogManager';
 import Toaster, { Intent, Toast } from '../../common/components/Toaster';
 import ClipboardTextInput from '../../common/components/ClipboardTextInput';
-import DialogService, { Dialog } from '../../common/services/DialogService';
+import DialogService, { DialogState } from '../../common/services/DialogService';
 import ToasterService from '../../common/services/ToasterService';
 import ClipboardService from '../../common/services/ClipboardService';
 import InfoBox from '../../common/components/InfoBox';
@@ -19,6 +19,7 @@ import PasswordResetRequestForm from '../../common/models/userAccounts/PasswordR
 import { ExitReason } from '../../common/components/BrowserOnboardingFlow';
 import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
 import BrowserPopupResponseResponse from '../../common/models/auth/BrowserPopupResponseResponse';
+import KeyValuePair from '../../common/KeyValuePair';
 
 export enum GlobalError {
 	None,
@@ -29,8 +30,8 @@ export interface Props {
 	article: UserArticle,
 	captcha: CaptchaBase,
 	clipboardService: ClipboardService,
-	dialogs: Dialog[],
-	dialogService: DialogService,
+	dialogs: KeyValuePair<number, DialogState>[],
+	dialogService: DialogService<{}>,
 	error: string | null,
 	onboardingAnalyticsAction: string | null,
 	onCloseOnboarding: (reason: ExitReason) => void,
@@ -65,7 +66,9 @@ export default (props: Props) => (
 			null}
 		<DialogManager
 			dialogs={props.dialogs}
+			onGetDialogRenderer={props.dialogService.getDialogRenderer}
 			onTransitionComplete={props.dialogService.handleTransitionCompletion}
+			sharedState={{}}
 		/>
 		<Toaster
 			onRemoveToast={props.toasterService.removeToast}

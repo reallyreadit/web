@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
+import FieldsetDialog, { Props as FieldsetDialogProps, State } from './controls/FieldsetDialog';
 import EmailAddressField from '../../../common/components/controls/authentication/EmailAddressField';
 import PasswordField from '../../../common/components/controls/authentication/PasswordField';
 import UsernameField from '../../../common/components/controls/authentication/UsernameField';
@@ -16,7 +16,7 @@ interface Props {
 	title?: string
 }
 export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
-export default class CreateAccountDialog extends FormDialog<void, Props, Partial<State> & {
+export default class CreateAccountDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	name?: string,
 	nameError?: string,
 	email?: string,
@@ -30,7 +30,7 @@ export default class CreateAccountDialog extends FormDialog<void, Props, Partial
 	private readonly _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
 	private readonly _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
 	private readonly _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
-	constructor(props: Props & FormDialogProps) {
+	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				title: props.title || 'Sign Up',

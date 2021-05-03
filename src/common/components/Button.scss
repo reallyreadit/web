@@ -16,6 +16,8 @@
 	font-family: 'Museo Sans (500)';
 	position: relative;
 	text-decoration: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .button_ovrlmi > .icon_rour3d + .text,
 .button_ovrlmi > .text + .icon_rour3d {
@@ -26,6 +28,14 @@
 }
 .button_ovrlmi > .text > .alert-badge_ejzklr {
 	right: -16px;
+}
+.button_ovrlmi > .text > .beta-badge {
+	font-size: 11pt;
+	font-family: 'Museo Sans (300)';
+	padding: 1px 3px;
+	border-radius: 3px;
+	margin-left: 10px;
+	vertical-align: middle;
 }
 /* display */
 .button_ovrlmi.inline {
@@ -140,6 +150,15 @@
 			)
 		);
 	}
+	#{$root} .button_ovrlmi.primary {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-primary-color,
+				"color": $intent-text-color
+			)
+		);
+	}
 	#{$root} .button_ovrlmi.busy,
 	#{$root} .button_ovrlmi.disabled {
 		@include theme-colors(
@@ -164,6 +183,15 @@
 			(
 				"border-top-color": $intent-alert-color,
 				"border-right-color": $intent-alert-color
+			)
+		);
+	}
+	#{$root} .button_ovrlmi > .text > .beta-badge {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $intent-neutral-color,
+				"color": $intent-text-color
 			)
 		);
 	}

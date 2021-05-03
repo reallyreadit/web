@@ -1,0 +1,21 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/MarketingScreen/PriceList/PriceListItem
+	cssComponentId: price-list-item_7j8olx
+*/
+
+.price-list-item_7j8olx > .price {
+	font-family: 'Museo Sans (700)';
+	font-size: 1.75em;
+}
+.price-list-item_7j8olx > .title {
+	margin: 1em 0;
+}
+.price-list-item_7j8olx.selected > .title {
+	font-style: italic;
+}
+
+@media (max-width: 499px) {
+	.price-list-item_7j8olx > .title {
+		margin: 0.5em 0;
+	}
+}

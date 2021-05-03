@@ -66,6 +66,19 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType, isMobileDevice } from '../../../common/DeviceType';
+import { AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
+import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
+import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
+import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { StripePaymentConfirmationRequest } from '../../../common/models/subscriptions/StripePaymentConfirmationRequest';
+import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
+import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
+import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
+import { StripePriceChangeRequest } from '../../../common/models/subscriptions/StripePriceChangeRequest';
+import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse, SubscriptionPaymentMethodChangeRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
+import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/StripeSetupIntentResponse';
+import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
+import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -75,7 +88,6 @@ export default abstract class {
 	protected readonly _clientType: ClientType;
 	protected readonly _clientVersion: string;
 	protected readonly _shouldIncludeCredentials: boolean;
-	protected _isInitialized = false;
 	constructor(
 		endpoint: HttpEndpoint,
 		requestStore: RequestStore,
@@ -160,6 +172,7 @@ export default abstract class {
 	public readonly logNewPlatformNotificationRequest = (data: NewPlatformNotificationRequest) => this.post({ path: '/Analytics/NewPlatformNotificationRequest', data });
 
 	// Articles
+	public readonly assignAuthorToArticle = (request: AuthorAssignmentRequest) => this.post({ path: '/Articles/AuthorAssignment', data: request });
 	public readonly getAotdHistory = this.createFetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>('/Articles/AotdHistory');
 	public readonly getArticle = this.createFetchFunctionWithParams<{ slug: string }, UserArticle>('/Articles/Details');
 	public readonly getArticleSearchOptions = this.createFetchFunction<SearchOptions>('/Articles/SearchOptions');
@@ -170,6 +183,7 @@ export default abstract class {
 	public readonly getUserArticleHistory = this.createFetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>('/Articles/ListHistory');
 	public readonly rateArticle = (id: number, score: number) => this.post<{ article: UserArticle, rating: Rating }>({ path: '/Articles/Rate', data: { articleId: id, score } });
 	public readonly searchArticles = (query: SearchQuery) => this.post<PageResult<UserArticle>>({ path: '/Articles/Search', data: query });
+	public readonly unassignAuthorFromArticle = (request: AuthorUnassignmentRequest) => this.post({ path: '/Articles/AuthorUnassignment', data: request });
 
 	// Auth
 	public readonly authenticateAppleIdCredential = (data: AppleIdCredentialAuthForm) => this.post<AuthServiceCredentialAuthResponse>({ path: '/Auth/AppleIos', data });
@@ -209,6 +223,22 @@ export default abstract class {
 	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<{ timeWindow: ReadingTimeTotalsTimeWindow }, ReadingTimeStats>('/Stats/ReadingTime');
 	public readonly getLeaderboards = this.createFetchFunction<Leaderboards>('/Stats/Leaderboards');
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
+
+	// Subscriptions
+	public readonly changeStripeSubscriptionPrice = (request: StripePriceChangeRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePriceChange', data: request });
+	public readonly changeSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodChangeRequest) => this.post<SubscriptionPaymentMethodResponse>({ path: '/Subscriptions/StripePaymentMethodChange', data: request });
+	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
+	public readonly completeStripeSubscriptionUpgrade = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeUpgradePayment', data: request });
+	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
+	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
+	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
+	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
+	public readonly createStripeSetupIntent = () => this.post<StripeSetupIntentResponse>({ path: '/Subscriptions/StripeSetupIntentRequest' });
+	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
+	public readonly requestAppleSubscriptionStatusUpdate = () => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/AppleSubscriptionStatusUpdateRequest' });
+	public readonly setStripeSubscriptionAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/StripeAutoRenewStatus', data: request });
+	public readonly updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => this.post<SubscriptionPaymentMethodResponse>({ path: '/Subscriptions/StripePaymentMethodUpdate', data: request });
+	public readonly validateAppleSubscription = (request: AppleSubscriptionValidationRequest) => this.post<AppleSubscriptionValidationResponse>({ path: '/Subscriptions/AppleSubscriptionValidation', data: request });
 
 	// UserAccounts
 	public readonly changeDisplayPreference = (data: DisplayPreference) => this.post<DisplayPreference>({ path: '/UserAccounts/DisplayPreference', data });

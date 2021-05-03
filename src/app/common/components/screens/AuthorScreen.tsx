@@ -2,14 +2,14 @@ import * as React from 'react';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
@@ -21,15 +21,16 @@ import { JsonLd } from 'react-schemaorg';
 import { ProfilePage } from 'schema-dts';
 import AuthorProfileRequest from '../../../../common/models/authors/AuthorProfileRequest';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, SharedState } from '../Root';
+import { Screen, SharedState, NavMethod, NavOptions } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import { formatFetchable } from '../../../../common/format';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
+import { formatCurrency } from '../../../../common/format';
+import Link from '../../../../common/components/Link';
 
 interface Props {
 	authorSlug: string,
@@ -41,15 +42,16 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
+	onNavTo: (url: string) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
+	onViewProfile: (userName: string, options?: NavOptions) => void,
 	profile: Fetchable<AuthorProfile>,
 	user: UserAccount | null
 }
@@ -168,6 +170,20 @@ class AuthorScreen extends React.Component<Props, State> {
 							<Panel className="main">
 								<div className="profile">
 									<h1>{this.props.profile.value.name}</h1>
+									<InfoBox
+										position="static"
+										style="normal"
+									>
+										<div className="earnings">
+											Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
+										</div>
+										<div className="message">
+											Are you {this.props.profile.value.name}?
+											{this.props.profile.value.totalEarnings > 0 ?
+												<> <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.</> :
+												<> <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified.</>}
+										</div>
+									</InfoBox>
 								</div>
 								{this.state.articles.isLoading ?
 									<LoadingOverlay position="static" /> :
@@ -186,7 +202,7 @@ class AuthorScreen extends React.Component<Props, State> {
 												<p>No articles found.</p>
 											</InfoBox> :
 											<>
-												<ArticleList>
+												<List>
 													{this.state.articles.value.items.map(
 														article => (
 															<li key={article.id}>
@@ -194,6 +210,7 @@ class AuthorScreen extends React.Component<Props, State> {
 																	article={article}
 																	onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 																	onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+																	onNavTo={this.props.onNavTo}
 																	onPost={this.props.onPostArticle}
 																	onRateArticle={this.props.onRateArticle}
 																	onRead={this.props.onReadArticle}
@@ -206,7 +223,7 @@ class AuthorScreen extends React.Component<Props, State> {
 															</li>
 														)
 													)}
-												</ArticleList>
+												</List>
 												<PageSelector
 													pageNumber={this.state.articles.value.pageNumber}
 													pageCount={this.state.articles.value.pageCount}
@@ -228,7 +245,7 @@ class AuthorScreen extends React.Component<Props, State> {
 	}
 }
 type Dependencies<TScreenKey> = Pick<Props, Exclude<keyof Props, 'authorSlug' | 'location' | 'profile' | 'user'>> & {
-	onCreateTitle: (profile: AuthorProfile) => string,
+	onCreateTitle: (profile: Fetchable<AuthorProfile>) => string,
 	onGetAuthorProfile: FetchFunctionWithParams<AuthorProfileRequest, AuthorProfile>,
 	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<AuthorProfile>>>) => Partial<Screen<Fetchable<AuthorProfile>>>) => void
 };
@@ -244,19 +261,25 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 					slug: getSlug(location)
 				},
 				profile => {
-					deps.onSetScreenState(
-						id,
-						produce(
-							(currentState: Screen<Fetchable<AuthorProfile>>) => {
-								currentState.componentState = profile;
-								if (profile.value) {
-									currentState.title = deps.onCreateTitle(profile.value);
-								} else {
-									currentState.title = 'Author not found';
-								}
+					if (profile.value?.userName) {
+						deps.onViewProfile(
+							profile.value?.userName,
+							{
+								method: NavMethod.Replace,
+								screenId: id
 							}
-						)
-					);
+						);
+					} else {
+						deps.onSetScreenState(
+							id,
+							produce(
+								(currentState: Screen<Fetchable<AuthorProfile>>) => {
+									currentState.componentState = profile;
+									currentState.title = deps.onCreateTitle(profile);
+								}
+							)
+						);
+					}
 				}
 			);
 			return {
@@ -264,12 +287,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				componentState: profile,
 				key,
 				location,
-				title: formatFetchable(
-					profile,
-					profile => deps.onCreateTitle(profile),
-					'Loading...',
-					'Author not found'
-				)
+				title: deps.onCreateTitle(profile)
 			};
 		},
 		render: (state: Screen<Fetchable<AuthorProfile>>, sharedState: SharedState) => (
@@ -283,6 +301,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetAuthorArticles={deps.onGetAuthorArticles}
+				onNavTo={deps.onNavTo}
 				onOpenNewPlatformNotificationRequestDialog={deps.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={deps.onPostArticle}
 				onRateArticle={deps.onRateArticle}

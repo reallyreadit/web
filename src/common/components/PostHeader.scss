@@ -10,6 +10,9 @@
 	align-items: center;
 	font-size: 12pt;
 }
+.post-header_f4a846.has-flair {
+	padding: 3px 10px;
+}
 .post-header_f4a846 > .user-name {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -26,7 +29,17 @@
 }
 .post-header_f4a846 > .share-control_mnbspk {
 	flex: 0 0 auto;
-	margin-left: 10px;	
+	margin-left: 10px;
+}
+.post-header_f4a846 > .author {
+	display: flex;
+	align-items: center;
+	margin-left: 10px;
+	border-radius: 3px;
+	padding: 2px 5px;
+}
+.post-header_f4a846 > .author > .icon_rour3d {
+	margin-right: 3px;
 }
 
 @media (max-width: 449px) {
@@ -50,6 +63,15 @@
 			$scheme,
 			(
 				"color": $text-color
+			)
+		);
+	}
+	#{$root} .post-header_f4a846 > .author {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $chart-2-border-color,
+				"color": $twitter-button-text-color
 			)
 		);
 	}

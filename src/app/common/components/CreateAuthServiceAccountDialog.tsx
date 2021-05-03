@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FormDialog, { Props as FormDialogProps, State } from './controls/FormDialog';
+import FieldsetDialog, { Props as FieldsetDialogProps, State } from './controls/FieldsetDialog';
 import UsernameField from '../../../common/components/controls/authentication/UsernameField';
 import { Intent } from '../../../common/components/Toaster';
 import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
@@ -10,7 +10,7 @@ interface Props {
 	token: string
 }
 export type Form = Pick<AuthServiceAccountForm, 'token' | 'name'>;
-export default class CreateAuthServiceAccountDialog extends FormDialog<void, Props, Partial<State> & {
+export default class CreateAuthServiceAccountDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	name?: string,
 	nameError?: string
 }> {
@@ -18,7 +18,7 @@ export default class CreateAuthServiceAccountDialog extends FormDialog<void, Pro
 	private readonly _linkExistingAccount = () => {
 		this.props.onLinkExistingAccount(this.props.token);
 	};
-	constructor(props: Props & FormDialogProps) {
+	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				title: 'Choose a Username',

@@ -3,7 +3,7 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, SharedEvents } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod, NavReference, parseNavReference } from './Root';
 import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import UserArticle from '../../../common/models/UserArticle';
@@ -14,13 +14,13 @@ import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
-import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys, parseQueryString, subscribeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes from '../../../common/routing/routes';
-import { findRouteByLocation, parseUrlForRoute } from '../../../common/routing/Route';
+import { findRouteByLocation } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import ShareData from '../../../common/sharing/ShareData';
+import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
@@ -35,16 +35,30 @@ import SignInEventType from '../../../common/models/userAccounts/SignInEventType
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
-import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
+import AuthServiceCredentialAuthResponse, { isAuthServiceCredentialAuthTokenResponse } from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import UpdateRequiredDialog from '../../../common/components/UpdateRequiredDialog';
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import { DeviceType } from '../../../common/DeviceType';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
-import createDiscoverScreenFactory from './screens/DiscoverScreen';
+import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet } from '../../../common/format';
+import { formatIsoDateAsDotNet, getPromiseErrorMessage, formatProblemDetails, formatFetchable } from '../../../common/format';
+import AppStoreSubscriptionPrompt from './AppRoot/AppStoreSubscriptionPrompt';
+import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
+import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
+import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
+import { Result, ResultType } from '../../../common/Result';
+import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
+import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
+import { ProblemDetails } from '../../../common/ProblemDetails';
+import { AppStoreErrorType } from '../../../common/Errors';
+import AuthorProfile from '../../../common/models/authors/AuthorProfile';
+import Fetchable from '../../../common/Fetchable';
+import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
+import createBlogScreenFactory from './AppRoot/BlogScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -63,16 +77,15 @@ interface State extends RootState {
 	authStatus: AuthStatus | null,
 	isInOrientation: boolean,
 	isPoppingScreen: boolean,
+	isProcessingPayment: boolean,
 	menuState: MenuState,
 }
-export default class extends Root<
-	Props,
-	State,
-	Pick<State, 'displayTheme' | 'user'>,
-	SharedEvents & {
-		'newStars': number
-	}
-> {
+type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
+interface Events extends RootEvents {
+	'newStars': number,
+	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
+}
+export default class extends Root<Props, State, SharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
 	private _signInLocation: RouteLocation | null;
 	private readonly _noop = () => {
@@ -83,6 +96,9 @@ export default class extends Root<
 	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
 		return this._eventManager.addListener('newStars', handler);
 	};
+	private readonly _registerPurchaseCompletedEventHandler = (handler: (result: Result<AppleSubscriptionValidationResponse, ProblemDetails>) => void) => {
+		return this._eventManager.addListener('purchaseCompleted', handler);
+	}
 
 	// menu
 	private readonly _closeMenu = () => {
@@ -92,6 +108,7 @@ export default class extends Root<
 		this.setState({ menuState: 'closed' });
 	};
 	private readonly _openMenu = () => {
+		this.checkRevenueReportExpiration();
 		this.setState({ menuState: 'opened' });
 	};
 
@@ -99,29 +116,6 @@ export default class extends Root<
 	private readonly _requestNotificationAuthorization = () => {
 		return this.props.appApi.requestNotificationAuthorization();
 	};
-
-	// routing
-	private readonly _navTo = (url: string) => {
-		const result = parseUrlForRoute(url);
-		if (result.isInternal && result.route) {
-			if (result.route.screenKey === ScreenKey.Read) {
-				const params = result.route.getPathParams(result.url.pathname);
-				this.props.appApi.readArticle({ slug: params['sourceSlug'] + '_' + params['articleSlug'] });
-			} else {
-				this.pushScreen(
-					result.route.screenKey,
-					result.route.getPathParams ?
-						result.route.getPathParams(result.url.pathname) :
-						null
-				);
-			}
-			return true;
-		} else if (!result.isInternal && result.url) {
-			this.props.appApi.openExternalUrl(result.url.href);
-			return true;
-		}
-		return false;
-	}
 
 	// screens
 	private readonly _completeOrientation = () => {
@@ -146,7 +140,13 @@ export default class extends Root<
 			}
 		);
 	};
-	private readonly _createAuthorScreenTitle = (name: string) => name;
+	private readonly _createAuthorScreenTitle = (profile: Fetchable<AuthorProfile>) => formatFetchable(
+		profile,
+		_ => 'Writer',
+		'Loading...',
+		'Author not found'
+	);
+	private readonly _createFaqScreenTitle = () => 'Help';
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -162,7 +162,7 @@ export default class extends Root<
 		this.setState({ isPoppingScreen: true });
 	};
 	private readonly _viewAdminPage = () => {
-		this.replaceScreen(ScreenKey.Admin);
+		this.replaceAllScreens(ScreenKey.Admin);
 	};
 	private readonly _viewAotdHistory = () => {
 		this.pushScreen(ScreenKey.AotdHistory);
@@ -172,51 +172,189 @@ export default class extends Root<
 			ScreenKey.Author,
 			{
 				slug
-			},
-			name ?
-				this._createAuthorScreenTitle(name) :
-				null
+			}
 		);
 	};
-	private readonly _viewDiscover = () => {
-		this.replaceScreen(ScreenKey.Discover);
+	private readonly _viewBlog = () => {
+		this.replaceAllScreens(ScreenKey.Blog);
+	};
+	private readonly _viewFaq = () => {
+		this.replaceAllScreens(ScreenKey.Faq);
 	};
 	private readonly _viewHome = () => {
-		this.replaceScreen(ScreenKey.Home);
+		this.replaceAllScreens(ScreenKey.Home);
 	};
 	private readonly _viewNotifications = () => {
-		this.replaceScreen(ScreenKey.Notifications);
+		this.replaceAllScreens(ScreenKey.Notifications);
 	};
 	private readonly _viewLeaderboards = () => {
-		this.replaceScreen(ScreenKey.Leaderboards);
+		this.replaceAllScreens(ScreenKey.Leaderboards);
+	};
+	private readonly _viewMyImpact = () => {
+		this.replaceAllScreens(ScreenKey.MyImpact);
 	};
 	private readonly _viewMyReads = () => {
-		this.replaceScreen(ScreenKey.MyReads);
+		this.replaceAllScreens(ScreenKey.MyReads);
 	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
+	private readonly _viewSearch = () => {
+		this.replaceAllScreens(ScreenKey.Search);
+	};
 	private readonly _viewSettings = () => {
-		this.replaceScreen(ScreenKey.Settings);
+		this.replaceAllScreens(ScreenKey.Settings);
 	};
 	private readonly _viewStats = () => {
-		this.replaceScreen(ScreenKey.Stats);
+		this.replaceAllScreens(ScreenKey.Stats);
 	};
 
 	// sharing
-	private readonly _handleShareRequest = (data: ShareData) => {
-		this.props.appApi.share(data);
+	private readonly _handleShareRequest = (data: ShareEvent) => {
+		this._handleShareRequestWithCompletion(data);
 		return {
 			channels: [] as ShareChannel[]
 		};
 	};
-	private readonly _handleShareRequestWithCompletion = (data: ShareData) => {
-		return this.props.appApi.share(data);
+	private readonly _handleShareRequestWithCompletion = (data: ShareEvent) => {
+		return this.props.appApi.share({
+			...data,
+			selection: createRelativeShareSelection(data.selection, window)
+		});
 	};
+
+	// subscriptions
+	private readonly _openAppStoreSubscriptionPromptDialog = (article?: UserArticle, activeSubscription?: ActiveSubscriptionStatus) => {
+		this.props.appApi
+			.getDeviceInfo()
+			.then(
+				deviceInfo => {
+					if (deviceInfo.appVersion.compareTo(new SemanticVersion('7.0.0')) >= 0) {
+						this._dialog.openDialog(
+							sharedState => (
+								<AppStoreSubscriptionPrompt
+									activeSubscription={activeSubscription}
+									article={article}
+									isPaymentProcessing={sharedState.isProcessingPayment}
+									onClose={this._dialog.closeDialog}
+									onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+									onGetSubscriptionStatus={this._getSubscriptionStatus}
+									onReadArticle={this._readArticle}
+									onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
+									onRequestSubscriptionProducts={this._requestSubscriptionProducts}
+									onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
+									onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
+									onValidateSubscription={this._validateSubscription}
+								/>
+							)
+						);
+					} else {
+						this.openAppUpdateRequiredDialog('7.0');
+					}
+				}
+			);
+	};
+	private readonly _openPriceChangeDialog = () => {
+		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
+			throw new Error('Invalid subscription state.');
+		}
+		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
+			this._openStripePriceChangeDialog(this.state.subscriptionStatus);
+			return;
+		}
+		this._openAppStoreSubscriptionPromptDialog(null, this.state.subscriptionStatus);
+	};
+	private readonly _openSubscriptionAutoRenewDialog = () => {
+		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
+			return Promise.reject(
+				new Error('Invalid subscription state.')
+			);
+		}
+		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
+			return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
+		}
+		this.props.appApi.openExternalUrlUsingSystem('https://apps.apple.com/account/subscriptions');
+		return new Promise<void>(
+			(resolve, reject) => {
+				const refreshSubscriptionStatus = () => {
+					this.props.appApi.removeListener('didBecomeActive', refreshSubscriptionStatus);
+					this.props.serverApi
+						.requestAppleSubscriptionStatusUpdate()
+						.then(
+							response => {
+								this.onSubscriptionStatusChanged(response.status, EventSource.Local);
+								resolve();
+							}
+						)
+						.catch(reject);
+				};
+				this.props.appApi.addListener('didBecomeActive', refreshSubscriptionStatus);
+			}
+		);
+	};
+	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
+		if (provider === SubscriptionProvider.Stripe) {
+			this._openStripeSubscriptionPromptDialog(article);
+			return;
+		}
+		this._openAppStoreSubscriptionPromptDialog(article);
+	};
+	private readonly _requestSubscriptionProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request);
+	private readonly _requestSubscriptionPurchase = (request: SubscriptionPurchaseRequest) => {
+		this.setState(
+			prevState => {
+				if (prevState.isProcessingPayment) {
+					return null;
+				}
+				this.props.appApi
+					.requestSubscriptionPurchase(request)
+					.then(
+						result => {
+							// only process failures here. if the transaction was successfully added to the
+							// payment queue then we will remain in a processing state until we receive a
+							// payment completion event
+							if (result.type === ResultType.Failure) {
+								this._toaster.addToast(
+									formatProblemDetails(result.error),
+									Intent.Danger
+								);
+								this.setState({
+									isProcessingPayment: false
+								});
+							}
+						}
+					)
+					.catch(
+						reason => {
+							this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
+							this.setState({
+								isProcessingPayment: false
+							});
+						}
+					);
+				return {
+					isProcessingPayment: true
+				};
+			}
+		);
+	};
+	private readonly _requestSubscriptionReceipt = () => this.props.appApi.requestSubscriptionReceipt();
+	private readonly _validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
+		.validateAppleSubscription(request)
+		.then(
+			response => {
+				if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
+					this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
+				}
+				return response;
+			}
+		);
 
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
-		if (response.authServiceToken) {
+		if (
+			isAuthServiceCredentialAuthTokenResponse(response)
+		) {
 			this._dialog.openDialog(
 				<CreateAuthServiceAccountDialog
 					onCloseDialog={this._dialog.closeDialog}
@@ -230,6 +368,7 @@ export default class extends Root<
 			this.onUserSignedIn(
 				{
 					displayPreference: response.displayPreference,
+					subscriptionStatus: response.subscriptionStatus,
 					userAccount: response.user
 				},
 				SignInEventType.ExistingUser,
@@ -416,6 +555,7 @@ export default class extends Root<
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
 					onGetCommunityReads: this.props.serverApi.getCommunityReads,
+					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -435,7 +575,8 @@ export default class extends Root<
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onCreateTitle: profile => this._createAuthorScreenTitle(profile.name),
+					onCreateTitle: this._createAuthorScreenTitle,
+					onNavTo: this._navTo,
 					onOpenNewPlatformNotificationRequestDialog: this._noop,
 					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
@@ -444,6 +585,22 @@ export default class extends Root<
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.Blog]: createBlogScreenFactory(
+				ScreenKey.Blog,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
@@ -473,30 +630,17 @@ export default class extends Root<
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
-			[ScreenKey.Discover]: createDiscoverScreenFactory(
-				ScreenKey.Discover,
-				{
-					onCopyTextToClipboard: this._clipboard.copyText,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
-					onNavTo: this._navTo,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onSearchArticles: this.props.serverApi.searchArticles,
-					onShare: this._handleShareRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
-				}
-			),
+			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
+				onCreateTitle: this._createFaqScreenTitle,
+				onNavTo: this._navTo,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
+			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
+				onNavTo: this._navTo,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -547,6 +691,17 @@ export default class extends Root<
 					onViewProfile: this._viewProfile
 				}
 			),
+			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
+				ScreenKey.MyImpact,
+				{
+					onCreateStaticContentUrl: this._createStaticContentUrl,
+					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onViewAuthor: this._viewAuthor
+				}
+			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
@@ -554,6 +709,7 @@ export default class extends Root<
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
 				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
+				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
@@ -573,6 +729,7 @@ export default class extends Root<
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
+				onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
 				onGetFollowees: this.props.serverApi.getFollowees,
 				onGetFollowers: this.props.serverApi.getFollowers,
 				onGetPosts: this.props.serverApi.getPostsFromUser,
@@ -594,24 +751,53 @@ export default class extends Root<
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
+			[ScreenKey.Search]: createSearchScreenFactory(
+				ScreenKey.Search,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
+					onNavTo: this._navTo,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSearchArticles: this.props.serverApi.searchArticles,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
+				}
+			),
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
+					deviceType: DeviceType.Ios,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
+					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onOpenDialog: this._dialog.openDialog,
-					onRegisterDisplayPreferenceChangedEventHandler: this._registerDisplayPreferenceChangedEventHandler,
+					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
+					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
+					onOpenPriceChangeDialog: this._openPriceChangeDialog,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
-					onShowToast: this._toaster.addToast
+					onShowToast: this._toaster.addToast,
+					onSignOut: this._signOut,
+					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
+					onViewPrivacyPolicy: this._viewPrivacyPolicy,
+					stripe: this.props.stripeLoader.value
 				}
 			)
 		};
@@ -632,6 +818,7 @@ export default class extends Root<
 					false
 			),
 			isPoppingScreen: false,
+			isProcessingPayment: false,
 			menuState: 'closed',
 			screens
 		};
@@ -791,11 +978,88 @@ export default class extends Root<
 							menuState: 'closed',
 							screens
 						});
+						// open subscription dialog if query string key is present
+						const queryStringParams = parseQueryString(url.search);
+						if (subscribeQueryStringKey in queryStringParams && this.state.user) {
+							this._openAppStoreSubscriptionPromptDialog();
+						}
 					} else {
 						// must be a redirect url or broken link
 						// send to server for appropriate redirect
 						window.location.href = urlString;
 					}
+				}
+			)
+			.addListener(
+				'openSubscriptionPrompt',
+				() => {
+					this._openAppStoreSubscriptionPromptDialog();
+				}
+			)
+			.addListener(
+				'subscriptionPurchaseCompleted',
+				result => {
+					// this event can fire at any time. for example a purchased or failed
+					// transaction could have failed to register with the api server. in such
+					// a case the registration will be retried until completed, potentially on
+					// subsequent app launches. therefore only show a toast if we're currently
+					// processing a payment.
+					switch (result.type) {
+						case ResultType.Success:
+							if (result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
+								this.onSubscriptionStatusChanged(result.value.subscriptionStatus, EventSource.Local);
+							}
+							if (this.state.isProcessingPayment) {
+								this.setState({
+									isProcessingPayment: false
+								});
+								let toast: {
+									content: string,
+									intent: Intent
+								};
+								switch (result.value.type) {
+									case AppleSubscriptionValidationResponseType.AssociatedWithAnotherUser:
+										// this toast probably shouldn't disappear on its own but it's also very unlikely
+										// that a user will ever see this. subscriptions associated with another account
+										// should be caught during the status check when the SubscriptionPrompt opens.
+										toast = {
+											content: `Purchase failed: Subscription associated with another account: ${result.value.subscribedUsername}.`,
+											intent: Intent.Neutral
+										};
+										break;
+									case AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser:
+										// this or a failure is what we should see 99% of the time.
+										toast = {
+											content: 'Purchase completed.',
+											intent: Intent.Success
+										};
+										break;
+									case AppleSubscriptionValidationResponseType.EmptyReceipt:
+										// this should never happen
+										toast = {
+											content: 'Purchase failed: Subscription status inactive.',
+											intent: Intent.Danger
+										};
+										break;
+								}
+								this._toaster.addToast(toast.content, toast.intent);
+							}
+							break;
+						case ResultType.Failure:
+							if (this.state.isProcessingPayment) {
+								this._toaster.addToast(
+									formatProblemDetails(result.error),
+									result.error.type === AppStoreErrorType.PurchaseCancelled ?
+										Intent.Neutral :
+										Intent.Danger
+								);
+								this.setState({
+									isProcessingPayment: false
+								});
+							}
+							break;
+					}
+					this._eventManager.triggerEvent('purchaseCompleted', result);
 				}
 			);
 	}
@@ -855,20 +1119,41 @@ export default class extends Root<
 		}
 		return { screens, dialog };
 	}
-	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+	private pushScreen(key: ScreenKey, urlParams?: { [key: string]: string }) {
 		// create the new screen
-		const screen = this.createScreen(key, urlParams, title);
+		const screen = this.createScreen(key, urlParams);
 		// push the screen
 		this.setScreenState([
 			...this.state.screens,
 			screen
 		]);
 	}
-	private replaceScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
+	private replaceAllScreens(key: ScreenKey, urlParams?: { [key: string]: string }) {
 		// create the new screen
-		const screen = this.createScreen(key, urlParams, title);
-		// replace the screen
+		const screen = this.createScreen(key, urlParams);
+		// replace all the screens
 		this.setScreenState([screen]);
+	}
+	private replaceScreen(screenId: number, key: ScreenKey, urlParams?: { [key: string]: string }) {
+		// verify that the replacement target exists
+		const screenIndex = this.state.screens.findIndex(
+			screen => screen.id === screenId
+		);
+		if (screenIndex === -1) {
+			return;
+		}
+		// create the new screen
+		const screen = this.createScreen(
+			key,
+			urlParams,
+			{
+				isReplacement: true
+			}
+		);
+		// replace the target screen
+		const screens = this.state.screens.slice();
+		screens.splice(screenIndex, 1, screen);
+		this.setScreenState(screens);
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
@@ -886,6 +1171,9 @@ export default class extends Root<
 	protected getSharedState() {
 		return {
 			displayTheme: this.state.displayTheme,
+			isProcessingPayment: this.state.isProcessingPayment,
+			revenueReport: this.state.revenueReport,
+			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
 	}
@@ -896,6 +1184,37 @@ export default class extends Root<
 			initialPath: this.props.appReferral.initialPath,
 			referrerUrl: this.props.appReferral.referrerUrl
 		};
+	}
+	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
+		const result = parseNavReference(ref);
+		if (result.isInternal && result.screenKey != null) {
+			if (result.screenKey === ScreenKey.Read) {
+				this.props.appApi.readArticle({ slug: result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'] });
+			} else {
+				switch (options.method) {
+					case NavMethod.Push:
+						this.pushScreen(result.screenKey, result.screenParams);
+						break;
+					case NavMethod.Replace:
+						this.replaceScreen(options.screenId, result.screenKey, result.screenParams);
+						break;
+					case NavMethod.ReplaceAll:
+						this.replaceAllScreens(result.screenKey, result.screenParams);
+						break;
+				}
+			}
+			return true;
+		} else if (!result.isInternal && result.url) {
+			if (
+				/^https?:/.test(result.url)
+			) {
+				this.props.appApi.openExternalUrl(result.url);
+			} else {
+				this.props.appApi.openExternalUrlUsingSystem(result.url)
+			}
+			return true;
+		}
+		return false;
 	}
 	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
 		if (eventSource === EventSource.Local) {
@@ -982,7 +1301,18 @@ export default class extends Root<
 	}
 	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		ev?.preventDefault();
-		this.props.appApi.readArticle(article);
+		if (
+			!this.state.subscriptionStatus.isUserFreeForLife &&
+			(
+				this.state.subscriptionStatus.type !== SubscriptionStatusType.Active ||
+				this.state.isProcessingPayment
+			) &&
+			article.slug.split('_')[0] !== 'blogreadupcom'
+		) {
+			this._openSubscriptionPromptDialog(article);
+		} else {
+			this.props.appApi.readArticle(article);
+		}
 	}
 	protected reloadWindow() {
 		window.location.reload(true);
@@ -1014,6 +1344,7 @@ export default class extends Root<
 								{this.state.screens.map((screen, index, screens) => (
 									<li
 										className={classNames('screen', {
+											'slide-in': !screen.isReplacement,
 											'slide-out': this.state.isPoppingScreen && index === screens.length - 1
 										})}
 										key={screen.id}
@@ -1025,9 +1356,8 @@ export default class extends Root<
 							</ol>
 						</div>
 						<NavTray
-							onViewDiscover={this._viewDiscover}
 							onViewHome={this._viewHome}
-							onViewLeaderboards={this._viewLeaderboards}
+							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
@@ -1037,12 +1367,15 @@ export default class extends Root<
 								isClosing={this.state.menuState === 'closing'}
 								onClose={this._closeMenu}
 								onClosed={this._hideMenu}
-								onSignOut={this._signOut}
 								onViewAdminPage={this._viewAdminPage}
-								onViewPrivacyPolicy={this._viewPrivacyPolicy}
+								onViewBlog={this._viewBlog}
+								onViewFaq={this._viewFaq}
+								onViewLeaderboards={this._viewLeaderboards}
 								onViewProfile={this._viewProfile}
+								onViewSearch={this._viewSearch}
 								onViewSettings={this._viewSettings}
 								onViewStats={this._viewStats}
+								revenueReport={this.state.revenueReport}
 								selectedScreen={this.state.screens[0]}
 								userAccount={this.state.user}
 							/> :
@@ -1050,11 +1383,8 @@ export default class extends Root<
 						{this.state.isInOrientation ?
 							<OrientationWizard
 								onComplete={this._completeOrientation}
-								onCreateAbsoluteUrl={this._createAbsoluteUrl}
 								onCreateStaticContentUrl={this._createStaticContentUrl}
 								onRequestNotificationAuthorization={this._requestNotificationAuthorization}
-								onShare={this._handleShareRequestWithCompletion}
-								user={this.state.user}
 							/> :
 							null}
 					</> :
@@ -1072,7 +1402,9 @@ export default class extends Root<
 					/>}
 				<DialogManager
 					dialogs={this.state.dialogs}
+					onGetDialogRenderer={this._dialog.getDialogRenderer}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
+					sharedState={this.state}
 				/>
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
@@ -1080,36 +1412,6 @@ export default class extends Root<
 				/>
 			</>
 		);
-	}
-	protected viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
-			urlParams: { [key: string]: string } = {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			};
-		if (highlightedCommentId != null) {
-			urlParams['commentId'] = highlightedCommentId;
-		}
-		this.pushScreen(
-			ScreenKey.Comments,
-			urlParams
-		);
-	}
-	protected viewProfile(userName?: string) {
-		if (userName) {
-			this.pushScreen(
-				ScreenKey.Profile,
-				{ userName },
-				'@' + userName
-			);
-		} else {
-			this.replaceScreen(
-				ScreenKey.Profile,
-				{ userName: this.state.user.name },
-				'@' + this.state.user.name
-			);
-		}
 	}
 	public componentDidMount() {
 		// sync auth state with app
@@ -1152,6 +1454,17 @@ export default class extends Root<
 			this.props.appApi.readArticle({
 				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
 			});
+		}
+		// open subscription dialog if query string key is present
+		// ugly hack since the dialog doesn't support server-side rendering
+		const queryStringParams = parseQueryString(this.props.initialLocation.queryString);
+		if (subscribeQueryStringKey in queryStringParams && this.state.user) {
+			window.setTimeout(
+				() => {
+					this._openAppStoreSubscriptionPromptDialog();
+				},
+				0
+			);
 		}
 	}
 	public componentWillUnmount() {

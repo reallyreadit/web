@@ -37,10 +37,15 @@ class ReadScreen extends React.PureComponent<Props> {
 	};
 	public componentDidMount() {
 		if (
-			this.props.user &&
-			this.props.isExtensionInstalled &&
-			this.props.article.value &&
-			localStorage.getItem('extensionReminderAcknowledged')
+			(
+				this.props.user &&
+				this.props.isExtensionInstalled &&
+				this.props.article.value &&
+				localStorage.getItem('extensionReminderAcknowledged')
+			) ||
+			(
+				this.props.article.value?.slug.split('_')[0] === 'blogreadupcom'
+			)
 		) {
 			window.location.href = this.props.article.value.url;
 		}
@@ -59,14 +64,14 @@ class ReadScreen extends React.PureComponent<Props> {
 						</InfoBox> :
 						<>
 							<div className="article">
-								{this.props.article.value.source || this.props.article.value.authors.length ?
+								{this.props.article.value.source || this.props.article.value.articleAuthors.length ?
 									<div className="meta">
-										{this.props.article.value.authors.length ?
+										{this.props.article.value.articleAuthors.length ?
 											<span className="authors">
-												{formatList(this.props.article.value.authors)}
+												{formatList(this.props.article.value.articleAuthors.map(author => author.name))}
 											</span> :
 											null}
-										{this.props.article.value.authors.length && this.props.article.value.source ?
+										{this.props.article.value.articleAuthors.length && this.props.article.value.source ?
 											<span> in </span> :
 											null}
 										{this.props.article.value.source ?

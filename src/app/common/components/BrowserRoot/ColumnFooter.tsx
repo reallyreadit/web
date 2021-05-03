@@ -1,37 +1,18 @@
 import * as React from 'react';
-import { DeviceType } from '../../../../common/DeviceType';
+import { NavReference, NavOptions, NavMethod } from '../Root';
+import Link, { Props as LinkProps } from '../../../../common/components/Link';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 // import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
-	deviceType: DeviceType,
-	onBeginOnboarding: (analyticsAction: string) => void,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCreateStaticContentUrl: (path: string) => string,
-	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onViewFaq: () => void,
-	onViewHome: () => void,
-	onViewMission: () => void,
-	onViewPrivacyPolicy: () => void
+	onNavTo: (ref: NavReference, options: NavOptions) => void,
+	showWhatIsReadup: boolean
 }> {
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-		ev.preventDefault();
-		this.props.onViewPrivacyPolicy();
-	};
 	public render() {
-
-		interface Link  {
-			text: string,
-			slug: string,
-			action(event: React.MouseEvent): void,
-		}
-
-		interface ComponentLink {
-			component: JSX.Element,
-			key: string
-		}
+		const navTo = (ref: NavReference) => this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
 
 		interface LinkSet {
 			title: string,
-			sublinks: (Link|ComponentLink)[]
+			sublinks: React.CElement<LinkProps, Link>[]
 		}
 
 		const links:LinkSet[] = [
@@ -39,34 +20,19 @@ export default class extends React.PureComponent<{
 			{
 				title: "Company",
 				sublinks: [
-					{
-						text: "Our Mission",
-						slug: 'mission',
-						action: this.props.onViewMission
-					},
-					{
-						key: "Contact",
-						component: <a href="mailto:support@readup.com">Contact</a>
-					},
-					{
-						text: "Privacy Policy",
-						slug: 'privacy',
-						action: this._viewPrivacyPolicy
-					},
+					<Link key="mission" screen={ScreenKey.Mission} onClick={navTo}>Our Mission</Link>,
+					<Link key="contact" href="mailto:support@readup.com" onClick={navTo}>Contact</Link>,
+					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>Privacy Policy</Link>
 				]
 			},
 			{
 				title: "Learn more",
 				sublinks: [
-					{
-						text: "FAQ",
-						slug: 'faq',
-						action: this.props.onViewFaq
-					},
-					{
-						key: "Blog",
-						component: <a href="https://blog.readup.com/" target="_blank">Blog</a>
-					},
+					this.props.showWhatIsReadup ?
+						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>What is Readup?</Link> :
+						null,
+					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>FAQ</Link>,
+					<Link key="blog" screen={ScreenKey.Blog} onClick={navTo}>Blog</Link>
 				]
 			},
 			{
@@ -93,26 +59,11 @@ export default class extends React.PureComponent<{
 					// 		// 	onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 					// 		// ></GetStartedButton>
 					// },
-					{
-						key: 'iOS & iPadOS',
-						component: <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" target="_blank">iOS &amp; iPadOS</a>
-					},
-					{
-						key: "Chrome",
-						component: <a href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US" target="_blank">Chrome</a>
-					},
-					{
-						key: "Firefox",
-						component: <a href="https://addons.mozilla.org/en-US/firefox/addon/readup/" target="_blank">Firefox</a>
-					},
-					{
-						key: "Safari",
-						component: <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" target="_blank">Safari</a>
-					},
-					{
-						key: "Edge",
-						component: <a href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm" target="_blank">Edge</a>
-					}
+					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}>iPhone and iPad</Link>,
+					<Link key="chrome" href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US" onClick={navTo}>Chrome</Link>,
+					<Link key="firefox" href="https://addons.mozilla.org/en-US/firefox/addon/readup/" onClick={navTo}>Firefox</Link>,
+					<Link key="safari" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}>Safari</Link>,
+					<Link key="edge" href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm" onClick={navTo}>Edge</Link>
 				]
 			},
 		]
@@ -123,28 +74,25 @@ export default class extends React.PureComponent<{
 			>
 				<div className="content">
 					<div className="column-footer_ltflpc__links">
-						<img className="logo" alt="Readup Logo" src={this.props.onCreateStaticContentUrl('/app/images/logo-white.svg')} onClick={this.props.onViewHome} />
+						<Link
+							className="logo"
+							screen={ScreenKey.Home}
+							onClick={navTo}
+						/>
 						{links.map((linkSet, i) =>
 							<div className="column-footer_ltflpc__link-set" key={linkSet.toString() + i}>
 								<span className="column-footer_ltflpc__link-set__title">{linkSet.title}</span>
 								<ul>
 									{
-										linkSet.sublinks.map(
-											(link, i) =>
-											{
-												let simpleLink = link as Link;
-												let componentLink = link as ComponentLink;
-												if (simpleLink.text) {
-													return <li key={simpleLink.text}><a href={`/${simpleLink.slug}`} onClick={(e) => {
-														e.preventDefault();
-														simpleLink.action(e);
-													}}>{simpleLink.text}</a></li>
-												} else if (componentLink.component) {
-													return <li key={componentLink.key}>{componentLink.component}</li>
-												} else {
-													return null;
-												}
-											}).filter(e => e != null)
+										linkSet.sublinks
+											.filter(
+												link => !!link
+											)
+											.map(
+												(link, i) => (
+													<li key={link.key}>{link}</li>
+												)
+											)
 									}
 								</ul>
 							</div>

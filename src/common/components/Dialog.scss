@@ -1,56 +1,55 @@
 /*
-	componentPath: src/app/common/components/controls/Dialog
+	componentPath: src/common/components/Dialog
 	cssComponentId: dialog_1wfm87
 */
 @import '../styles/colors';
 
 .dialog_1wfm87 {
-	display: flex;
-	flex-flow: column;
-	margin: 0 10px;
-	z-index: 100;
-	max-width: calc(100vw - 20px);
-	max-height: calc(100vh - 20px);
-	box-sizing: border-box;
+	min-width: 300px;
 	border-radius: 5px;
 }
-.dialog_1wfm87.small {
-	max-width: 400px;
+.dialog_1wfm87::after {
+	content: "";
+	display: block;
+	height: 40px;
 }
-.dialog_1wfm87 > .header {
-	flex: 0 0 auto;
-	font-size: 16pt;
-	text-align: center;
-	font-family: 'Museo Sans (700)';
-	padding: 5px 10px;
-	line-height: 32px;
+.dialog_1wfm87 > .titlebar {
+	display: flex;
+	justify-content: flex-end;
 }
-.dialog_1wfm87 > .children {
-	padding: 15px;
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-	border-width: 1px 0 1px 0;
-	border-style: solid;
-}
-.dialog_1wfm87 > .children.center {
-	text-align: center;
-}
-.dialog_1wfm87 > .children.right {
-	text-align: right;
-}
-.dialog_1wfm87 > .children > p + p {
-	margin-top: 10px;
-}
-.dialog_1wfm87 > .buttons {
+.dialog_1wfm87 > .titlebar > .icon-right {
 	flex: 0 0 auto;
 	display: flex;
-	padding: 5px 10px;
-}
-.dialog_1wfm87 > .buttons.single {
 	justify-content: center;
+	align-items: center;
+	width: 40px;
+	height: 40px;
 }
-.dialog_1wfm87 > .buttons.double {
-	justify-content: space-between;
+.dialog_1wfm87 > .titlebar > .icon-right > .icon_rour3d {
+	font-size: 16px;
+	cursor: pointer;
+}
+.dialog_1wfm87 > .content {
+	padding: 0 15px;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.dialog_1wfm87 > .content > h1 {
+	font-size: 20pt;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 25px;
+	text-align: center;
+}
+
+@media (max-width: 499px) {
+	.dialog_1wfm87::after {
+		height: 0;
+	}
+	.dialog_1wfm87 > .content::after {
+		content: "";
+		display: block;
+		height: 40px;
+	}
 }
 
 @include theme using ($root, $scheme) {
@@ -63,12 +62,11 @@
 			)
 		);
 	}
-	#{$root} .dialog_1wfm87 > .children {
+	#{$root} .dialog_1wfm87 > .titlebar > .icon-right > .icon_rour3d {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color,
-				"border-color": $content-border-color
+				"color": $text-muted-color
 			)
 		);
 	}

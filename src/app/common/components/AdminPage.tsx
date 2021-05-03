@@ -2,7 +2,7 @@
 import * as React from 'react';
 import BulkMailing from '../../../common/models/BulkMailing';
 import Fetchable from '../../../common/Fetchable';
-import ActionLink from '../../../common/components/ActionLink';
+import Link from '../../../common/components/Link';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
 import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserAccount from '../../../common/models/UserAccount';
@@ -18,8 +18,11 @@ import SignupsReportRow from '../../../common/models/analytics/SignupsReportRow'
 import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
 import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
 import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssuesReportRow';
+import { ArticleAuthorControl } from './AdminPage/ArticleAuthorControl';
+import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 
 interface Props {
+	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>,
 	onCloseDialog: () => void,
 	onGetArticleIssueReports: FetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
@@ -32,6 +35,7 @@ interface Props {
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
 	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
+	onUnassignAuthorFromArticle: (request: AuthorUnassignmentRequest) => Promise<void>,
 	user: UserAccount
 }
 class AdminPage extends React.Component<
@@ -320,6 +324,11 @@ class AdminPage extends React.Component<
 		return (
 			<ScreenContainer>
 				<div className="admin-page_czkowo">
+					<ArticleAuthorControl
+						onAssignAuthorToArticle={this.props.onAssignAuthorToArticle}
+						onShowToast={this.props.onShowToast}
+						onUnassignAuthorFromArticle={this.props.onUnassignAuthorFromArticle}
+					/>
 					<table>
 						<caption>
 							<div className="content">
@@ -628,7 +637,7 @@ class AdminPage extends React.Component<
 						<caption>
 							<div className="content">
 								<strong>Bulk Mailings</strong>
-								<ActionLink iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
+								<Link iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
 							</div>
 						</caption>
 						<thead>
@@ -677,6 +686,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 		render: (screenState: Screen, sharedState: SharedState) => {
 			return (
 				<AdminPage
+					onAssignAuthorToArticle={deps.onAssignAuthorToArticle}
 					onCloseDialog={deps.onCloseDialog}
 					onGetArticleIssueReports={deps.onGetArticleIssueReports}
 					onGetBulkMailings={deps.onGetBulkMailings}
@@ -689,6 +699,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onSendBulkMailing={deps.onSendBulkMailing}
 					onSendTestBulkMailing={deps.onSendTestBulkMailing}
 					onShowToast={deps.onShowToast}
+					onUnassignAuthorFromArticle={deps.onUnassignAuthorFromArticle}
 					user={sharedState.user}
 				/>
 			);

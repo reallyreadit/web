@@ -25,6 +25,15 @@ import UserAccount from '../../../common/models/UserAccount';
 import { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
 import DisplayPreference, { DisplayTheme, getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
+import { ReaderSubscriptionPrompt } from '../../../common/components/ReaderSubscriptionPrompt';
+import { ReadingErrorType } from '../../../common/Errors';
+import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { getPromiseErrorMessage } from '../../../common/format';
+import { createUrl } from '../../../common/HttpEndpoint';
+import { findRouteByKey } from '../../../common/routing/Route';
+import routes from '../../../common/routing/routes';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import { subscribeQueryStringKey } from '../../../common/routing/queryString';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -45,7 +54,8 @@ let
 	lookupResult: ArticleLookupResult,
 	page: Page,
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void,
-	hasStyledArticleDocument = false;
+	hasStyledArticleDocument = false,
+	isWaitingForSubscription = false;
 
 function updateArticle(article: UserArticle) {
 	if (!lookupResult) {
@@ -143,6 +153,13 @@ const eventPageApi = new EventPageApi({
 			updateDisplayPreference(preference);
 		} else {
 			displayPreference = preference;
+		}
+	},
+	onSubscriptionStatusChanged: status => {
+		if (isWaitingForSubscription && status.type === SubscriptionStatusType.Active) {
+			globalUi.dialogs.closeDialog();
+			reader.loadPage(page);
+			isWaitingForSubscription = false;
 		}
 	},
 	onUserSignedOut: () => {
@@ -393,6 +410,34 @@ const reader = new Reader(
 				article => {
 					updateArticle(article);
 				}
+			)
+			.catch(
+				reason => {
+					if (reason?.type === ReadingErrorType.SubscriptionRequired && !isWaitingForSubscription) {
+						reader.unloadPage();
+						globalUi.dialogs.openDialog(
+							React.createElement(
+								ReaderSubscriptionPrompt,
+								{
+									onCreateStaticContentUrl: path => createUrl(window.reallyreadit.extension.config.staticServer, path),
+									onSubscribe: () => {
+										window.open(
+											globalUi.createAbsoluteUrl(
+												findRouteByKey(routes, ScreenKey.MyImpact)
+													.createUrl(),
+												{
+													[subscribeQueryStringKey]: null
+												}
+											),
+											'_blank'
+										);
+									}
+								}
+							)
+						);
+						isWaitingForSubscription = true;
+					}
+				}
 			);
 	}
 )
@@ -592,8 +637,10 @@ eventPageApi
 								}
 							)
 							.catch(
-								(error: string) => {
-									showError(error);
+								reason => {
+									showError(
+										getPromiseErrorMessage(reason)
+									);
 								}
 							);
 					}

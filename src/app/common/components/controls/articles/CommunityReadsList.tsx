@@ -5,11 +5,12 @@ import Fetchable from '../../../../../common/Fetchable';
 import CommunityReads from '../../../../../common/models/CommunityReads';
 import produce from 'immer';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
-import ShareData from '../../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../../common/sharing/ShareEvent';
 import Post from '../../../../../common/models/social/Post';
 import UserAccount from '../../../../../common/models/UserAccount';
 import Rating from '../../../../../common/models/Rating';
 import AotdView, { Sort } from './AotdView';
+import { NavReference } from '../../Root';
 
 interface State {
 	communityReads: Fetchable<CommunityReads>,
@@ -62,10 +63,11 @@ export default class extends React.PureComponent<{
 	onChangeSort: (sort: Sort) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
@@ -84,6 +86,7 @@ export default class extends React.PureComponent<{
 					onChangeSort={this.props.onChangeSort}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onNavTo={this.props.onNavTo}
 					onPostArticle={this.props.onPostArticle}
 					onRateArticle={this.props.onRateArticle}
 					onReadArticle={this.props.onReadArticle}

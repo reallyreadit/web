@@ -1,0 +1,74 @@
+/*
+	componentPath: src/common/components/FormDialog
+	cssComponentId: form-dialog_jnqz4n
+*/
+@import '../styles/colors';
+
+.form-dialog_jnqz4n {
+	display: flex;
+	flex-flow: column;
+	z-index: 100;
+	min-width: 300px;
+	max-height: calc(100vh - 20px);
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+.form-dialog_jnqz4n.small {
+	max-width: 400px;
+}
+.form-dialog_jnqz4n > .header {
+	flex: 0 0 auto;
+	font-size: 16pt;
+	text-align: center;
+	font-family: 'Museo Sans (700)';
+	padding: 5px 10px;
+	line-height: 32px;
+}
+.form-dialog_jnqz4n > .children {
+	padding: 15px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	border-width: 1px 0 1px 0;
+	border-style: solid;
+}
+.form-dialog_jnqz4n > .children.center {
+	text-align: center;
+}
+.form-dialog_jnqz4n > .children.right {
+	text-align: right;
+}
+.form-dialog_jnqz4n > .children > p + p {
+	margin-top: 10px;
+}
+.form-dialog_jnqz4n > .buttons {
+	flex: 0 0 auto;
+	display: flex;
+	padding: 5px 10px;
+}
+.form-dialog_jnqz4n > .buttons.single {
+	justify-content: center;
+}
+.form-dialog_jnqz4n > .buttons.double {
+	justify-content: space-between;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .form-dialog_jnqz4n {
+		@include theme-colors(
+			$scheme,
+			(
+				"background": $app-background-color,
+				"box-shadow": 0px 1px 3px 1px
+			)
+		);
+	}
+	#{$root} .form-dialog_jnqz4n > .children {
+		@include theme-colors(
+			$scheme,
+			(
+				"background-color": $content-background-color,
+				"border-color": $content-border-color
+			)
+		);
+	}
+}

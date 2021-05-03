@@ -1,7 +1,7 @@
 import * as React from 'react';
 import TrackingAnimation from '../../Animations/Tracking/TrackingAnimation';
 import Button from '../../../../../common/components/Button';
-import ActionLink from '../../../../../common/components/ActionLink';
+import Link from '../../../../../common/components/Link';
 import * as classNames from 'classnames';
 
 interface Props {
@@ -55,7 +55,7 @@ export default class TrackingStep extends React.PureComponent<
 							size="large"
 							text="Continue"
 						/> :
-						<ActionLink
+						<Link
 							onAnimationEnd={this._showContinueControl}
 							className={classNames('skip', { 'hidden': this.state.controlState === ControlState.HidingSkip })}
 							onClick={this.props.onSkip}

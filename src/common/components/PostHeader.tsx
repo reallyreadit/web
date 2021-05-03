@@ -8,21 +8,24 @@ import ShareControl, { MenuPosition } from './ShareControl';
 import Icon from './Icon';
 import ProfileLink from './ProfileLink';
 import UserAccount from '../models/UserAccount';
+import { ShareEvent } from '../sharing/ShareEvent';
+import * as classNames from 'classnames';
 
 export default (
 	props: {
 		userName: string,
 		leaderboardBadge: LeaderboardBadge,
+		isAuthor?: boolean,
 		date: string
 		onCopyTextToClipboard?: (text: string, successMessage: string) => void,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onGetShareData?: () => ShareData,
-		onShare?: (data: ShareData) => ShareResponse,
+		onShare?: (data: ShareEvent) => ShareResponse,
 		onViewProfile: (userName: string) => void,
 		user?: UserAccount
 	}
 ) => (
-	<div className="post-header_f4a846">
+	<div className={classNames('post-header_f4a846', { 'has-flair': props.isAuthor })}>
 		{!!props.userName && (!props.user || props.user.name !== props.userName) ?
 			<ProfileLink
 				className="user-name"
@@ -52,6 +55,12 @@ export default (
 					name="share"
 				/>
 			</ShareControl> :
+			null}
+		{props.isAuthor ?
+			<span className="author">
+				<Icon name="verified-user" />
+				<span>Writer</span>
+			</span> :
 			null}
 	</div>
 );

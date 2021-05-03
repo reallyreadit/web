@@ -5,7 +5,7 @@ import Button from '../Button';
 import { formatIsoDateAsUtc } from '../../format';
 import { DateTime, Duration } from 'luxon';
 import AsyncTracker from '../../AsyncTracker';
-import ActionLink from '../ActionLink';
+import Link from '../Link';
 import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
@@ -86,7 +86,7 @@ export default class CommentRevisionComposer extends React.PureComponent<
 				/>
 				<div className="controls">
 					<div className="left-group">
-						<ActionLink
+						<Link
 							iconLeft="question-circle"
 							onClick={this._openMarkdownDialog}
 							text="Formatting Guide"
@@ -98,7 +98,7 @@ export default class CommentRevisionComposer extends React.PureComponent<
 										<div>You have {this.state.timeRemaining.minutes > 0 ? <span>{this.state.timeRemaining.minutes}m </span> : null}{Math.floor(this.state.timeRemaining.seconds)}s remaining to fix typos. After that you can add updates.</div>
 									</> :
 									<>
-										<div>The typo timer ran out. Copy your work and <ActionLink text="add an update" onClick={this.props.onCreateAddendum} /> instead.</div>
+										<div>The typo timer ran out. Copy your work and <Link text="add an update" onClick={this.props.onCreateAddendum} /> instead.</div>
 									</> :
 									null}
 						</div>

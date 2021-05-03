@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Dialog from '../../../../../common/components/Dialog';
+import FormDialog from '../../../../../common/components/FormDialog';
 import ShareControl, { MenuPosition } from '../../../../../common/components/ShareControl';
 import Icon from '../../../../../common/components/Icon';
-import ShareData from '../../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import { findRouteByKey } from '../../../../../common/routing/Route';
 import routes from '../../../../../common/routing/routes';
@@ -12,7 +12,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (userName: string) => string,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	userName: string
 }> {
 	private readonly _getShareData = () => {
@@ -33,7 +33,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 	}
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				className="get-followers-dialog_woa1zs"
 				closeButtonText="Ok"
 				onClose={this.props.onCloseDialog}
@@ -51,7 +51,7 @@ export default class GetFollowersDialog extends React.PureComponent<{
 						<strong>{`readup.com${this.getProfilePath()}`}</strong> <Icon name="share" />
 					</ShareControl>
 				</div>
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

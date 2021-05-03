@@ -14,7 +14,7 @@
 	border-bottom-style: solid;
 }
 .nav-tray_2tc8 > li {
-	width: 25%;
+	width: 33.33%;
 	text-align: center;
 }
 .nav-tray_2tc8 > li > button {
@@ -23,6 +23,8 @@
 	background: none;
 	border: none;
 	outline: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .nav-tray_2tc8 > li > button.selected {
 	font-weight: bold;

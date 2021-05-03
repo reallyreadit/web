@@ -2,36 +2,39 @@ import * as React from 'react';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import classNames = require('classnames');
 import Icon from '../../../common/components/Icon';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HomeHero from './BrowserRoot/HomeHero';
 import HomePanel from './BrowserRoot/HomePanel';
 import Button from '../../../common/components/Button';
+import Link from '../../../common/components/Link';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import { NavReference, Screen } from './Root';
 
 interface Faq {
 	question: string;
 	answer: JSX.Element | ((arg: () => void) => JSX.Element);
 }
-interface FaqCategory {
+type FaqCategory = (props: Props) => {
     title: string;
     questions: Faq[];
-}[];
+};
 
 const faqs: FaqCategory[] = [
-	{
+	props => ({
 		title: "Getting Started",
 		questions: [
 			{
 				question: "How do I get started on my iPhone?",
-				answer: <p>Download <a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432">the app</a>&nbsp;
+				answer: <p>Download <Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>the app</Link>&nbsp;
 						from the app store.</p>
 			},
 			{
 				question: "How do I get started on my laptop or computer?",
 				answer: <p>First, add the Readup browser extension to your favorite web browser —&nbsp;
-					<a href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US">Chrome</a>,&nbsp;
-					<a href="https://addons.mozilla.org/en-US/firefox/addon/readup/">Firefox</a>,&nbsp;
-					<a href="https://apps.apple.com/us/app/readup-social-reading/id1441825432">Safari</a> or&nbsp;
-					<a href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm">Edge</a>.&nbsp;
+					<Link href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US" onClick={props.onNavTo}>Chrome</Link>,&nbsp;
+					<Link href="https://addons.mozilla.org/en-US/firefox/addon/readup/" onClick={props.onNavTo}>Firefox</Link>,&nbsp;
+					<Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>Safari</Link> or&nbsp;
+					<Link href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm" onClick={props.onNavTo}>Edge</Link>.&nbsp;
 					 Next, look for the Readup button in your browser window (near the URL bar) which enables you to activate Reader Mode&nbsp;
 					 on any article you wish to read with just one click.
 					 <br/>Finally, remember to visit Readup.com to explore articles, read comments, and manage your account.</p>
@@ -41,8 +44,8 @@ const faqs: FaqCategory[] = [
 				answer: <p>Yes. In addition to downloading the app and/or extensions, you will need to create an account on Readup.</p>
 			},
 		]
-	},
-	{
+	}),
+	_ => ({
 		title: "Importing articles",
 		questions: [
 			{
@@ -68,8 +71,8 @@ const faqs: FaqCategory[] = [
 					the History section of My Reads.</p>
 			},
 		]
-	},
-	{
+	}),
+	props => ({
 		title: "Reading on Readup",
 		questions: [
 			{
@@ -79,7 +82,7 @@ const faqs: FaqCategory[] = [
 			{
 				question: "Am I “reading” too fast?",
 				answer: <p>Maybe. Fast reading is okay, but Readup won’t give you credit for skimming or scanning. If you think that Readup isn’t&nbsp;
-					giving you credit for articles you’re really reading, please send us an email: <a href="mailto:support@readup.com">support@readup.com</a></p>
+					giving you credit for articles you’re really reading, please send us an email: <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			},
 			{
 				question: "What if a specific article doesn’t work?",
@@ -90,13 +93,13 @@ const faqs: FaqCategory[] = [
 				answer: <p>Everybody! The Article of the Day (AOTD) is "crowdsourced." At midnight (Pacific Time) the #1 top ranked article becomes the AOTD for the following day.</p>
 			}
 		]
-	},
-	{
+	}),
+	props => ({
 		title: "Privacy",
 		questions: [
 			{
 				question: "Does Readup track my reading?",
-				answer: <p>Yes. But it is completely secure and anonymous. Our <a href="https://readup.com/privacy">Privacy Policy</a> is short and sweet&nbsp;
+				answer: <p>Yes. But it is completely secure and anonymous. Our <Link screen={ScreenKey.PrivacyPolicy} onClick={props.onNavTo}>Privacy Policy</Link> is short and sweet&nbsp;
 				and we highly suggest you read it.</p>
 			},
 			{
@@ -106,11 +109,57 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "Can I delete my account?",
-				answer: <p>Yes. Just send an email to <a href="mailto:support@readup.com">support@readup.com</a></p>
+				answer: <p>Yes. Just send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			}
 		]
-	},
-	{
+	}),
+	props => ({
+		title: "Billing",
+		questions: [
+			{
+				question: "How much does Readup cost?",
+				answer: <p>If you create an account on iOS (iPhone or iPad) you have three choices: $4.99, $14.99 or $24.99. If you create an account on desktop, you can choose one of those three prices or choose any custom price.</p>
+			},
+			{
+				question: "Can I really pick ANY price?",
+				answer: <p>Yes, but only on desktop. On iOS you have three price choices.</p>
+			},
+			{
+				question: "Is there a minimum subscription price?",
+				answer: <p>Yes. $4.99.</p>
+			},
+			{
+				question: "Are some features only available at certain pricing levels?",
+				answer: <p>No. All Readers at all levels get full access to all features. The only difference is that when you pay more (or less) to read on Readup you are giving more (or less) to the writers you read.</p>
+			},
+			{
+				question: "Can I get a refund?",
+				answer: <p>Yes. Just send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+			}
+		]
+	}),
+	props => ({
+		title: "Writers",
+		questions: [
+			{
+				question: "What is verification?",
+				answer: <p>Verification proves that your account is real and connects your account to the articles you’ve written.</p>
+			},
+			{
+				question: "Why should I get verified?",
+				answer: <p>As a verified writer, you don’t have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Verified writers get special Writer Profiles. And verified Writers can cash out.</p>
+			},
+			{
+				question: "How do I get verified?",
+				answer: <p>Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>. A human will verify you.</p>
+			},
+			{
+				question: "I have a balance on Readup. How do I collect the money I’ve earned here?",
+				answer: <p>To cash out, you need to get verified. Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+			}
+		]
+	}),
+	props => ({
 		title: "Misc",
 		questions: [
 			{
@@ -134,28 +183,24 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "Who started Readup?",
-				// todo: make onViewProfile available in this page
-				answer: (<p>Two friends, <a href="https://billloundy.com/">Bill Loundy</a> and <a href="https://jeffcamera.com/">Jeff Camera</a>.&nbsp;
-					(We love reading and you’ll often see us in the comments. We’re <a href="/@bill">@bill</a> and <a href="/@jeff">@jeff</a>.)</p>)
+				answer: (<p>Two friends, <Link href="https://billloundy.com/" onClick={props.onNavTo}>Bill Loundy</Link> and <Link href="https://jeffcamera.com/" onClick={props.onNavTo}>Jeff Camera</Link>.&nbsp;
+					(We love reading and you’ll often see us in the comments. We’re <Link screen={ScreenKey.Profile} params={{ 'userName': 'bill' }} onClick={props.onNavTo}>@bill</Link> and <Link screen={ScreenKey.Profile} params={{ 'userName': 'jeff' }} onClick={props.onNavTo}>@jeff</Link>.)</p>)
 			},
 			{
 				question: "How does Readup make money? ",
-				// todo: make onViewProfile available in this page
-				answer: (<p>Currently, Readup doesn’t make money. And if you join now you’ll stay free for life.&nbsp;
-					But, soon, new Readers will have to pay to read on Readup.</p>)
+				answer: (<p>Readers pay to read on Readup. Readup takes 5% and gives the rest to writers.</p>)
 			},
 			{
 				question: "Are you hiring?",
-				// todo: make onViewProfile available in this page
-				answer: <p>Yes! Email us if you’re interested in joining the team: <a href="mailto:support@readup.com">support@readup.com</a></p>
+				answer: <p>Yes! Email us if you’re interested in joining the team: <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			},
 			{
 				question: "Does Readup work with publishers?",
 				answer: <p>Not yet, but we plan to. If you are a publisher and you’d like to have a conversation, don’t hesitate to reach out:&nbsp;
-					<a href="mailto:support@readup.com">support@readup.com</a></p>
+					<Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			}
 		]
-	}
+	})
 ];
 
 const mapToId = (text: string) => text.toLowerCase().replace(/\s/g, '-').replace(/[?"'@*]/g, '');
@@ -173,19 +218,36 @@ const renderFaq = (onOpenNewPlatformNotificationRequestDialog: () => void, {ques
 	</li>);
 }
 
-const renderFaqCategory = (onOpenNewPlatformNotificationRequestDialog: () => void, faqCategory: FaqCategory) => {
+const renderFaqCategory = (props: Props, createFaqCategory: FaqCategory) => {
+	const faqCategory = createFaqCategory(props);
 	return <div
 		key={faqCategory.title}
 		className="question-section">
 			<h2 className="heading-regular" id={mapToId(faqCategory.title)}>{ faqCategory.title }</h2>
 			<ul>
-				{faqCategory.questions.map(renderFaq.bind(null, onOpenNewPlatformNotificationRequestDialog))}
+				{faqCategory.questions.map(renderFaq.bind(null, props.onOpenNewPlatformNotificationRequestDialog))}
 			</ul>
 		</div>;
 }
 
 interface Props {
+	location: RouteLocation,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void
+}
+
+type Services = Pick<Props, Exclude<keyof Props, 'location'>> & {
+	onCreateTitle: () => string
+};
+
+function jumpTo(url: string) {
+	const target = document.getElementById(
+		url.split('#')[1]
+	);
+	target?.scrollIntoView({
+		behavior: 'smooth',
+		block: 'start'
+	});
 }
 
 const FaqPage = (props: Props): JSX.Element => {
@@ -224,33 +286,57 @@ const FaqPage = (props: Props): JSX.Element => {
 	// 	}
 	// }, []);
 
+	// Chrome doesn't scroll to the fragment for some reason so jumpTo manually on initial load.
+	useEffect(
+		() => {
+			if (props.location.fragment) {
+				jumpTo(props.location.fragment);
+			}
+		},
+		[]
+	);
+
 	return (
 		<div className="faq-page_35vamf">
 			<HomeHero
 				title="Frequently Asked Questions"
-				description="If your question isn't answered below, please send us an email."
+				description={
+					<>If your question isn't answered below, please send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>.</>
+				}
 			/>
 			<HomePanel className="faq-content">
 				<div className="sidebar">
 					<nav>
 						<h3>Jump to</h3>
 						<ol>
-							{faqs.map(faqCategory => <li key={faqCategory.title}><a href={`#${mapToId(faqCategory.title)}`} >{ faqCategory.title }</a></li>)}
+							{faqs.map(
+								createfaqCategory => {
+									const faqCategory = createfaqCategory(props);
+									return (
+										<li key={faqCategory.title}><Link href={`#${mapToId(faqCategory.title)}`} onClick={jumpTo}>{ faqCategory.title }</Link></li>
+									)
+								}
+							)}
 						</ol>
 					</nav>
 				</div>
 				<div className="questions">
-					{faqs.map(renderFaqCategory.bind(null, props.onOpenNewPlatformNotificationRequestDialog))}
+					{faqs.map(renderFaqCategory.bind(null, props))}
 				</div>
 			</HomePanel>
 		</div>
 	);
 }
-export function createScreenFactory<TScreenKey>(key: TScreenKey, props: Props) {
+export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Services) {
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Frequently Asked Questions' }),
-		render: () => <FaqPage {...props}></FaqPage>
-		// render: () => <FaqPage onOpenNewPlatformNotificationRequestDialog={() => {}}></FaqPage>
+		create: (id: number, location: RouteLocation) => ({ id, key, location, title: services.onCreateTitle() }),
+		render: (screen: Screen) => (
+			<FaqPage
+				location={screen.location}
+				onNavTo={services.onNavTo}
+				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
+			/>
+		)
 	};
 }
 export default FaqPage;

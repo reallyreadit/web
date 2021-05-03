@@ -1,0 +1,35 @@
+/*
+	componentPath: src/app/common/components/subscriptionsDialogs/StripeCreditCardForm
+	cssComponentId: stripe-credit-card-form_128q5i
+*/
+
+.stripe-credit-card-form_128q5i > .form {
+	text-align: center;
+}
+.stripe-credit-card-form_128q5i > .form > .label {
+	text-align: left;
+	font-family: 'Museo Sans (700)';
+	margin-bottom: 10px
+}
+.stripe-credit-card-form_128q5i > .form > .card-element {
+	padding: 10px;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 3px;
+	background-color: var(--control-background-color);
+	border-color: var(--control-border-color);
+}
+.stripe-credit-card-form_128q5i > .form > .card-element-error {
+	margin-top: 10px;
+	font-size: 11pt;
+	color: var(--text-muted-color);
+}
+.stripe-credit-card-form_128q5i > .form > .button_ovrlmi {
+	margin-top: 25px;
+}
+
+@media (min-width: 396px) {
+	.stripe-credit-card-form_128q5i > .form > .card-element {
+		width: 336px;
+	}
+}

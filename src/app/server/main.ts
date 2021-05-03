@@ -34,6 +34,8 @@ import TwitterCardMetadataRequest from '../../common/models/articles/TwitterCard
 import { TwitterCard, TwitterCardType } from './TwitterCard';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import PackageVersionInfo from '../../common/PackageVersionInfo';
+import Lazy from '../../common/Lazy';
+import { Stripe } from '@stripe/stripe-js';
 
 // read configuration
 let
@@ -77,7 +79,7 @@ function findRouteByRequest(req: express.Request) {
 
 // redirect helper functions
 const nodeUrl = url;
-function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey]?: string, [key: string]: any }>, res: express.Response, url: string) {
+function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey]?: string, [key: string]: any }>, res: express.Response, url: string, status: 301 | 302 = 302) {
 	if (clientTypeQueryStringKey in req.query) {
 		const redirectUrl = nodeUrl.parse(url, true);
 		url = nodeUrl.format({
@@ -88,7 +90,7 @@ function redirect(req: express.Request<{}, any, any, { [clientTypeQueryStringKey
 			}
 		})
 	}
-	res.redirect(url);
+	res.redirect(status, url);
 }
 // TODO: support adding an (error) message!
 function redirectToHomeScreen(req: express.Request, res: express.Response) {
@@ -276,17 +278,6 @@ server.get('/terms', (req, res) => {
 		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
 	);
 });
-server.get('/blog', (req, res) => {
-	if (req.clientType === ClientType.App) {
-		redirect(
-			req,
-			res,
-			findRouteByKey(routes, ScreenKey.Home).createUrl()
-		);
-	} else {
-		res.redirect(301, 'https://blog.readup.com/');
-	}
-});
 // handle redirects
 server.get<{}, any, any, { token: string }>('/confirmEmail', (req, res) => {
 	req.api
@@ -392,6 +383,44 @@ server.get('/mailLink/:id', (req, res) => {
 			}
 		);
 });
+server.get(
+	'/writers/:slug',
+	(req, res, next) => {
+		// Create a query delegate that uses the API server request cache.
+		const getAuthorProfile = () => req.api.getAuthorProfile(
+			{
+				slug: req.params['slug']
+			},
+			() => {
+				// Callbacks aren't used in the server environment.
+			}
+		);
+		// Capture the request.
+		getAuthorProfile();
+		// Process the request.
+		req.api
+			.processRequests()
+			.then(
+				() => {
+					// Check the result.
+					const response = getAuthorProfile();
+					if (response.value?.userName) {
+						redirect(
+							req,
+							res,
+							findRouteByKey(routes, ScreenKey.Profile)
+								.createUrl({
+									'userName': response.value?.userName
+								}),
+							301
+						);
+					} else {
+						next();
+					}
+				}
+			);
+	}
+);
 // render matched route or return 404
 server.use((req, res, next) => {
 	const route = findRouteByRequest(req);
@@ -464,6 +493,13 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 		initialUserProfile: req.userProfile,
 		serverApi: req.api,
 		staticServerEndpoint: config.staticServer,
+		stripeLoader: new Lazy<Promise<Stripe>>(
+			() => new Promise<Stripe>(
+				() => {
+					// Never resolves in server environment.
+				}
+			)
+		),
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
 	};
@@ -502,12 +538,26 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 			res.status(400).send('Invalid clientType');
 			return;
 	}
-	// call renderToString first to capture all the api requests
-	ReactDOMServer.renderToString(rootElement);
+	// call renderToString as many times as needed in order to capture and process all the api requests
+	const render: () => Promise<string> = () => req.api
+		.processRequests()
+		.then(
+			() => {
+				const content = ReactDOMServer.renderToString(rootElement);
+				if (
+					req.api.exchanges.some(
+						exchange => !exchange.processed
+					)
+				) {
+					return render();
+				}
+				return content;
+			}
+		);
+
+
 	// create response delegate
-	const sendResponse = (twitterCard?: TwitterCard) => {
-		// call renderToString again to render with api request results
-		const content = ReactDOMServer.renderToString(rootElement);
+	const sendResponse = (content: string, twitterCard?: TwitterCard) => {
 		// set the cache header
 		res.setHeader('Cache-Control', 'no-store');
 		// return the content and init data
@@ -523,6 +573,7 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 				extensionVersion: extensionVersionString,
 				initialLocation: rootProps.initialLocation,
 				staticServerEndpoint: config.staticServer,
+				stripePublishableKey: config.stripePublishableKey,
 				userProfile: req.userProfile,
 				version: version.app,
 				webServerEndpoint: config.webServer
@@ -540,13 +591,15 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 	// check if we need to render a twitter card
 	switch (req.matchedRoute.screenKey) {
 		case ScreenKey.Home:
-			req.api
-				.processRequests()
+			render()
 				.then(
-					() => {
-						sendResponse({
-							type: TwitterCardType.App
-						});
+					content => {
+						sendResponse(
+							content,
+							{
+								type: TwitterCardType.App
+							}
+						);
 					}
 				);
 			break;
@@ -570,34 +623,36 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 								return null as TwitterCardMetadata;
 							}
 						),
-					req.api.processRequests()
+					render()
 				])
 				.then(
 					results => {
 						if (results[0]) {
-							sendResponse({
-								type: TwitterCardType.Summary,
-								title: results[0].title,
-								description: results[0].description,
-								imageUrl: results[0].imageUrl
-							});
+							sendResponse(
+								results[1],
+								{
+									type: TwitterCardType.Summary,
+									title: results[0].title,
+									description: results[0].description,
+									imageUrl: results[0].imageUrl
+								}
+							);
 						} else {
-							sendResponse();
+							sendResponse(results[1]);
 						}
 					}
 				)
 				.catch(
 					() => {
-						sendResponse();
+						sendResponse('Failed to process request.');
 					}
 				);
 			break;
 		default:
-			req.api
-				.processRequests()
+			render()
 				.then(
-					() => {
-						sendResponse();
+					content => {
+						sendResponse(content);
 					}
 				);
 	}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 import { DeviceType } from '../../../../common/DeviceType';
 import ExtensionButtonImage from './ExtensionButtonImage';
 
@@ -10,7 +10,7 @@ export default (
 		onSubmit: () => Promise<void>
 	}
 ) => (
-	<Dialog
+	<FormDialog
 		className="extension-reminder-dialog_i546dx"
 		onSubmit={props.onSubmit}
 		size="small"
@@ -23,5 +23,5 @@ export default (
 			deviceType={props.deviceType}
 			onCreateStaticContentUrl={props.onCreateStaticContentUrl}
 		/>
-	</Dialog>
+	</FormDialog>
 );

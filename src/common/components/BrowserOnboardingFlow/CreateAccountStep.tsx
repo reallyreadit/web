@@ -5,7 +5,7 @@ import UsernameField from '../controls/authentication/UsernameField';
 import EmailAddressField from '../controls/authentication/EmailAddressField';
 import PasswordField from '../controls/authentication/PasswordField';
 import Button from '../../components/Button';
-import ActionLink from '../../components/ActionLink';
+import Link from '../Link';
 import FormPartition from '../controls/FormPartition';
 import AuthServiceButton from '../AuthServiceButton';
 import BrowserPopupResponseResponse from '../../models/auth/BrowserPopupResponseResponse';
@@ -220,7 +220,7 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 					onClick={this._signInWithAuthService}
 					provider={AuthServiceProvider.Twitter}
 				/>
-				<ActionLink
+				<Link
 					onClick={this.props.onSignIn}
 					state={
 						this.state.isSubmitting ?

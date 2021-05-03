@@ -1,12 +1,12 @@
 import * as React from 'react';
-import Dialog from './Dialog';
+import FormDialog from './FormDialog';
 
 export default (
 	props: {
 		onClose: () => void
 	}
 ) => (
-	<Dialog
+	<FormDialog
 		className="markdown-dialog_1fmodc"
 		closeButtonText="Ok"
 		onClose={props.onClose}
@@ -52,5 +52,5 @@ export default (
 				</tr>
 			</tbody>
 		</table>
-	</Dialog>
+	</FormDialog>
 );

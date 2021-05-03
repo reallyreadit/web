@@ -1,105 +1,33 @@
 import * as React from 'react';
-import classNames from 'classnames';
-import { ClassValue } from 'classnames/types';
-import Button from './Button';
+import Icon from './Icon';
 
 interface Props {
-	buttonsDisabled?: boolean,
-	children: React.ReactNode,
-	className?: ClassValue,
-	closeButtonText?: string,
-	footer?: React.ReactNode,
 	onClose?: () => void,
-	onSubmit?: () => Promise<any>,
-	size?: 'small',
-	submitButtonText?: string,
-	textAlign?: 'left' | 'center' | 'right',
-	title: string
+	title?: string
 }
-export default class Dialog extends React.PureComponent<
-	Props,
-	{
-		isSubmitting: boolean
-	}
-> {
-	private readonly _close = () => {
-		this.props.onClose();
-	};
-	private readonly _submit = () => {
-		this.setState({ isSubmitting: true });
-		this.props
-			.onSubmit()
-			.then(
-				() => {
-					if (this.props.onClose) {
-						this.props.onClose();
-					} else {
-						this.setState({ isSubmitting: false });
-					}
-				}
-			)
-			.catch(
-				() => {
-					this.setState({ isSubmitting: false });
-				}
-			);
-	};
-	constructor(props: Props) {
-		super(props);
-		this.state = {
-			isSubmitting: false
-		};
-	}
+export default class Dialog extends React.Component<Props> {
 	public render() {
 		return (
-			<div
-				className={
-					classNames(
-						'dialog_1wfm87',
-						this.props.className,
-						{
-							'small': this.props.size === 'small'
-						}
-					)
-				}
-			>
-				<div className="header">{this.props.title}</div>
-				<div className={classNames('children', this.props.textAlign || 'left')}>{this.props.children}</div>
-				<div className={
-					classNames(
-						'buttons',
-						this.props.onClose && this.props.onSubmit ?
-							'double' :
-							'single'
-					)
-				}>
-					{this.props.onClose ?
-						<Button
-							onClick={this._close}
-							state={
-								this.props.buttonsDisabled || this.state.isSubmitting ?
-									'disabled' :
-									'normal'
-							}
-							text={this.props.closeButtonText || 'Close'}
-						/> :
-						null}
-					{this.props.onSubmit ?
-						<Button
-							onClick={this._submit}
-							state={
-								this.state.isSubmitting ?
-									'busy' :
-									this.props.buttonsDisabled ?
-										'disabled' :
-										'normal'
-							}
-							style="preferred"
-							text={this.props.submitButtonText || 'Submit'}
-						/> :
-						null}
+			<div className="dialog_1wfm87">
+				<div className="titlebar">
+					<div className="icon-right">
+						{this.props.onClose ?
+							<Icon
+								display="block"
+								name="cancel"
+								onClick={this.props.onClose}
+							/> :
+							null}
+					</div>
 				</div>
-				{this.props.footer}
+				<div className="content">
+					{this.props.title ?
+						<h1>{this.props.title}</h1> :
+						null}
+					<div>
+						{this.props.children}
+					</div>
+				</div>
 			</div>
 		);
 	}

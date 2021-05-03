@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dialog from '../../../../common/components/Dialog';
+import FormDialog from '../../../../common/components/FormDialog';
 import { Intent } from '../../../../common/components/Toaster';
 
 interface Props {
@@ -32,7 +32,7 @@ export default class SetPasswordDialog extends React.PureComponent<Props> {
 	};
 	public render() {
 		return (
-			<Dialog
+			<FormDialog
 				className="set-password-dialog_oreurf"
 				closeButtonText="Cancel"
 				onClose={this.props.onCloseDialog}
@@ -44,7 +44,7 @@ export default class SetPasswordDialog extends React.PureComponent<Props> {
 			>
 				<p>An email with a link to set a password will be sent to the following address:</p>
 				<p>{this.props.email}</p>
-			</Dialog>
+			</FormDialog>
 		);
 	}
 }

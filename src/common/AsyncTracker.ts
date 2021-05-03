@@ -1,5 +1,6 @@
 export interface CancellationToken {
-	isCancelled: boolean
+	isCancelled: boolean,
+	tag?: string
 }
 export default class AsyncTracker {
 	private readonly _animationFrameHandles: number[] = [];
@@ -7,8 +8,11 @@ export default class AsyncTracker {
 	private readonly _cancellationDelegates: Function[] = [];
 	private readonly _intervalHandles: number[] = [];
 	private readonly _timeoutHandles: number[] = [];
-	private createCancellationToken() {
-		const token = { isCancelled: false };
+	private createCancellationToken(tag?: string) {
+		const token = {
+			isCancelled: false,
+			tag
+		};
 		this._cancellationTokens.push(token);
 		return token;
 	}
@@ -19,8 +23,8 @@ export default class AsyncTracker {
 		this._animationFrameHandles.push(handle);
 		return handle;
 	}
-	public addCallback<T>(callback: (value: T) => void) {
-		const token = this.createCancellationToken();
+	public addCallback<T>(callback: (value: T) => void, tag?: string) {
+		const token = this.createCancellationToken(tag);
 		return (arg: T) => {
 			this.removeCancellationToken(token);
 			if (!token.isCancelled) {
@@ -35,8 +39,8 @@ export default class AsyncTracker {
 		this._intervalHandles.push(handle);
 		return handle;
 	}
-	public addPromise<T>(promise: Promise<T>) {
-		const token = this.createCancellationToken();
+	public addPromise<T>(promise: Promise<T>, tag?: string) {
+		const token = this.createCancellationToken(tag);
 		return new Promise<T>(
 			(resolve, reject) => promise
 				.then(value => {
@@ -61,7 +65,17 @@ export default class AsyncTracker {
 		this._timeoutHandles.push(handle);
 		return handle;
 	}
-	public cancelAll() {
+	public cancelAll(tag?: string) {
+		if (tag) {
+			this._cancellationTokens.forEach(
+				token => {
+					if (token.tag === tag) {
+						token.isCancelled = true;
+					};
+				}
+			);
+			return;
+		}
 		while (this._animationFrameHandles.length) {
 			window.cancelAnimationFrame(this._animationFrameHandles.splice(0, 1)[0]);
 		}

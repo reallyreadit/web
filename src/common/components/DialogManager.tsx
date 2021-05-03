@@ -1,14 +1,17 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import { Dialog } from '../services/DialogService';
+import { DialogRenderer, DialogState } from '../services/DialogService';
+import KeyValuePair from '../KeyValuePair';
 
-interface Props {
-	dialogs: Dialog[],
+interface Props<SharedState> {
+	dialogs: KeyValuePair<number, DialogState>[],
+	onGetDialogRenderer: (key: number) => DialogRenderer<SharedState>,
 	onTransitionComplete: (key: number, transition: 'closing' | 'opening') => void,
+	sharedState: SharedState,
 	verticalAlignment?: 'auto' | 'top'
 }
-export default class DialogManager extends React.PureComponent<Props> {
-	public static defaultProps: Partial<Props> = {
+export default class DialogManager<SharedState> extends React.Component<Props<SharedState>> {
+	public static defaultProps: Pick<Props<unknown>, 'verticalAlignment'> = {
 		verticalAlignment: 'auto'
 	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
@@ -38,7 +41,7 @@ export default class DialogManager extends React.PureComponent<Props> {
 							(_, index, dialogs) => dialogs
 								.slice(0, index)
 								.every(
-									dialog => dialog.state !== 'closing'
+									dialog => dialog.value.stage !== 'closing'
 								)
 						)
 						.map(
@@ -52,17 +55,17 @@ export default class DialogManager extends React.PureComponent<Props> {
 													index !== 0 ||
 													(
 														dialog.key === 0 &&
-														dialog.state !== 'closing'
+														dialog.value.stage !== 'closing'
 													) ||
 													(
 														visibleDialogs.length === this.props.dialogs.length &&
-														dialog.state === 'closing'
+														dialog.value.stage === 'closing'
 													)
 												),
-												'closing': dialog.state === 'closing',
+												'closing': dialog.value.stage === 'closing',
 												'obscured': (
 													index < visibleDialogs.length - 1 &&
-													visibleDialogs[visibleDialogs.length - 1].state !== 'closing'
+													visibleDialogs[visibleDialogs.length - 1].value.stage !== 'closing'
 												)
 											}
 										)
@@ -74,14 +77,14 @@ export default class DialogManager extends React.PureComponent<Props> {
 											classNames(
 												'container',
 												{
-													'closing': dialog.state === 'closing'
+													'closing': dialog.value.stage === 'closing'
 												}
 											)
 										}
 										data-key={dialog.key}
 										onAnimationEnd={this._handleAnimationEnd}
 									>
-										{dialog.element}
+										{this.props.onGetDialogRenderer(dialog.key)(this.props.sharedState)}
 									</div>
 								</li>
 							)

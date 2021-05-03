@@ -9,9 +9,17 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import produce from 'immer';
 import Fetchable from '../../../../common/Fetchable';
 import { formatFetchable } from '../../../../common/format';
+import UserAccount from '../../../../common/models/UserAccount';
 
-function createTitle(userName: string) {
-	return `@${userName} • Readup`;
+function createTitle(profile: Fetchable<Profile>, user: UserAccount | null) {
+	return formatFetchable(
+		profile,
+		profile => profile.userName === user?.name ?
+			'My Profile' :
+			`@${profile.userName} • Readup`,
+		'Loading...',
+		'Profile not found'
+	);
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
@@ -21,31 +29,38 @@ export default function createScreenFactory<TScreenKey>(
 	}
 ) {
 	const
-		createScreenUpdater = (result: Fetchable<Profile>) => produce(
+		createScreenUpdater = (result: Fetchable<Profile>, user: UserAccount | null) => produce(
 			(currentState: Screen<Fetchable<Profile>>) => {
 				currentState.componentState = result;
-				if (result.value) {
-					currentState.title = createTitle(result.value.userName);
-				} else {
-					currentState.title = 'Profile not found';
-				}
+				currentState.title = createTitle(result, user);
 			}
 		),
-		reloadProfile = (screenId: number, userName: string) => new Promise<Profile>(
-			(resolve, reject) => {
-				deps.onGetProfile(
-					{ userName },
-					result => {
-						deps.onSetScreenState(screenId, createScreenUpdater(result));
-						if (result.value) {
-							resolve(result.value);
-						} else {
-							reject(result.errors);
+		reloadProfile = (screenId: number, userName: string, user: UserAccount | null) => {
+			deps.onSetScreenState(
+				screenId,
+				createScreenUpdater(
+					{
+						isLoading: true
+					},
+					user
+				)
+			);
+			return new Promise<Profile>(
+				(resolve, reject) => {
+					deps.onGetProfile(
+						{ userName },
+						result => {
+							deps.onSetScreenState(screenId, createScreenUpdater(result, user));
+							if (result.value) {
+								resolve(result.value);
+							} else {
+								reject(result.errors);
+							}
 						}
-					}
-				);
-			}
-		),
+					);
+				}
+			);
+		},
 		updateProfile = (screenId: number, newValues: Partial<Profile>) => {
 			deps.onSetScreenState(
 				screenId,
@@ -60,13 +75,13 @@ export default function createScreenFactory<TScreenKey>(
 			)
 		};
 	return {
-		create: (id: number, location: RouteLocation) => {
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => {
 			const profile = deps.onGetProfile(
 				{
 					userName: getPathParams(location).userName
 				},
 				result => {
-					deps.onSetScreenState(id, createScreenUpdater(result));
+					deps.onSetScreenState(id, createScreenUpdater(result, sharedState.user));
 				}
 			);
 			return {
@@ -74,12 +89,7 @@ export default function createScreenFactory<TScreenKey>(
 				componentState: profile,
 				key,
 				location,
-				title: formatFetchable(
-					profile,
-					profile => createTitle(profile.userName),
-					'Loading...',
-					'Profile not found'
-				)
+				title: createTitle(profile, sharedState.user)
 			};
 		},
 		render: (state: Screen, sharedState: SharedState) => {

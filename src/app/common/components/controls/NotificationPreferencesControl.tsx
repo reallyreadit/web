@@ -111,7 +111,7 @@ export default class NotificationPreferencesControl extends React.Component<Prop
 				<div>Digest emails are sent at 6 AM EST. Weekly digests go out on Tuesday.</div>
 				<AlertSelector
 					title="Company updates"
-					subtitle="The inside scroop on Readup, in your inbox every Monday."
+					subtitle="The inside scoop on Readup."
 					showChannels={false}
 					onChange={this._changeCompanyUpdate}
 					isEnabled={this.state.isCompanyUpdateEnabled}

@@ -2,14 +2,14 @@ import * as React from 'react';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import produce from 'immer';
-import ArticleList from '../controls/articles/ArticleList';
+import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
@@ -20,8 +20,9 @@ import HeaderSelector from '../HeaderSelector';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
+import { NavReference } from '../Root';
 
-enum List {
+enum View {
 	Recent = 'Recent',
 	BestEver = 'Best Ever'
 }
@@ -30,11 +31,12 @@ export interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -44,22 +46,22 @@ export interface Props {
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>,
 	isScreenLoading: boolean,
-	list: List,
+	view: View,
 	maxLength: number | null,
 	minLength: number | null
 }
 export default class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeList = (value: string) => {
-		const list = value as List;
-		if (list !== this.state.list) {
+		const view = value as View;
+		if (view !== this.state.view) {
 			this.setState({
 				articles: {
 					isLoading: true
 				},
-				list
+				view: view
 			});
-			this.fetchArticles(list, 1, this.state.minLength, this.state.maxLength);
+			this.fetchArticles(view, 1, this.state.minLength, this.state.maxLength);
 		}
 	};
 	private readonly _changePageNumber = (pageNumber: number) => {
@@ -68,26 +70,26 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 				isLoading: true
 			}
 		});
-		this.fetchArticles(this.state.list, pageNumber, this.state.minLength, this.state.maxLength);
+		this.fetchArticles(this.state.view, pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	private readonly _headerSelectorItems = [
 		{
-			value: List.Recent
+			value: View.Recent
 		},
 		{
-			value: List.BestEver
+			value: View.BestEver
 		}
 	];
 	constructor(props: Props) {
 		super(props);
 		const
-			list = List.Recent,
+			view = View.Recent,
 			minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(list, 1, minLength, maxLength);
+			articles = this.fetchArticles(view, 1, minLength, maxLength);
 		this.state = {
 			articles: articles as Fetchable<PageResult<UserArticle>>,
-			list,
+			view: view,
 			isScreenLoading: articles.isLoading,
 			maxLength,
 			minLength
@@ -120,13 +122,13 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		);
 	}
 	private fetchArticles(
-		list: List,
+		view: View,
 		pageNumber: number,
 		minLength: number | null,
 		maxLength: number | null
 	) {
-		switch (list) {
-			case List.Recent:
+		switch (view) {
+			case View.Recent:
 				return this.props.onGetAotdHistory(
 					{
 						maxLength,
@@ -142,7 +144,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 						}
 					)
 				);
-			case List.BestEver:
+			case View.BestEver:
 				return this.props.onGetCommunityReads(
 					{
 						maxLength,
@@ -182,13 +184,13 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 								disabled={this.state.articles.isLoading}
 								items={this._headerSelectorItems}
 								onChange={this._changeList}
-								value={this.state.list}
+								value={this.state.view}
 							/>
 						</div>
 						{this.state.articles.isLoading ?
 							<LoadingOverlay position="static" /> :
 							<>
-								<ArticleList>
+								<List>
 									{this.state.articles.value.items.map(
 										article => (
 											<li key={article.id}>
@@ -196,6 +198,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 													article={article}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onNavTo={this.props.onNavTo}
 													onPost={this.props.onPostArticle}
 													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}
@@ -208,7 +211,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 											</li>
 										)
 									)}
-								</ArticleList>
+								</List>
 								<PageSelector
 									pageNumber={this.state.articles.value.pageNumber}
 									pageCount={this.state.articles.value.pageCount}

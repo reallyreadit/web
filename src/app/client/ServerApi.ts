@@ -9,6 +9,7 @@ import ClientType from '../common/ClientType';
 import { DeviceType } from '../../common/DeviceType';
 
 export default class extends ServerApi {
+	private _isInitialized = false;
 	constructor(
 		endpoint: HttpEndpoint,
 		clientType: ClientType,
@@ -35,25 +36,26 @@ export default class extends ServerApi {
 				req.withCredentials = true;
 			}
 			req.addEventListener('load', function () {
-				if (this.status === 200 || this.status === 400) {
-					const contentType = this.getResponseHeader('Content-Type');
-					let object: any;
-					if (contentType && contentType.startsWith('application/json')) {
-						object = JSON.parse(this.responseText);
+				const contentType = this.getResponseHeader('Content-Type');
+				let object: any;
+				if (
+					contentType?.startsWith('application/json') ||
+					contentType?.startsWith('application/problem+json')
+				) {
+					object = JSON.parse(this.responseText);
+				}
+				if (this.status === 200) {
+					if (object) {
+						resolve(object);
+					} else {
+						resolve();
 					}
-					if (this.status === 200) {
-						if (object) {
-							resolve(object);
-						} else {
-							resolve();
-						}
+				} else {
+					if (this.status === 401) {
+						reject(['Unauthenticated']);
 					} else {
 						reject(object || []);
 					}
-				} else if (this.status === 401) {
-					reject(['Unauthenticated']);
-				} else {
-					reject([]);
 				}
 			});
 			req.addEventListener('error', function () {
@@ -70,7 +72,7 @@ export default class extends ServerApi {
 				req.send();
 			}
 		});
-	} 
+	}
 	protected get<T>(request: Request, callback: (data: Fetchable<T>) => void) {
 		if (!this._isInitialized) {
 			const exchange = this._reqStore.getExchange(request);

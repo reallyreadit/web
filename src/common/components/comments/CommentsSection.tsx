@@ -3,7 +3,7 @@ import UserAccount from '../../models/UserAccount';
 import UserArticle from '../../models/UserArticle';
 import CommentThread from '../../models/CommentThread';
 import ShareResponse from '../../sharing/ShareResponse';
-import ShareData from '../../sharing/ShareData';
+import { ShareEvent } from '../../sharing/ShareEvent';
 import CommentDetails from './CommentDetails';
 import ContentBox from '../ContentBox';
 import CommentForm from '../../models/social/CommentForm';
@@ -27,7 +27,7 @@ export default (props: {
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (data: ShareData) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }) => {

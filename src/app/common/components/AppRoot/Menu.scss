@@ -23,6 +23,7 @@
 .menu_fk9ujy > .drawer {
 	display: flex;
 	flex-flow: column;
+	max-width: 260px;
 	padding-top: env(safe-area-inset-top);
 	padding-bottom: env(safe-area-inset-bottom);
 	border-left-width: 1px;
@@ -35,17 +36,15 @@
 .menu_fk9ujy > .drawer > .header {
 	flex: 0 0 auto;
 	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 10px 0 20px;
 }
 .menu_fk9ujy > .drawer > .header > label {
-	flex: 1 1 auto;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-weight: bold;
-	display: flex;
-	align-items: center;
-	padding-left: 20px;
-	max-width: 155px;
 }
 .menu_fk9ujy > .drawer > .header > .close-button {
 	flex: 0 0 auto;
@@ -63,15 +62,10 @@
 	display: flex;
 	flex-flow: column;
 }
-.menu_fk9ujy > .drawer > .footer {
+.menu_fk9ujy > .drawer > .revenue-meter_56f8z4 {
 	flex: 0 0 auto;
-	text-align: center;
-	padding: 15px;
-	font-size: 11pt;
-}
-.menu_fk9ujy > .drawer > .footer > a:last-child {
-	display: block;
-	margin-top: 10px;
+	margin: 0 15px 15px 15px;
+	font-size: 0.75em;
 }
 
 @keyframes menu_fk9ujy-overlay-fade-in-light {

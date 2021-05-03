@@ -1,7 +1,7 @@
 import { DomAttachmentDelegate } from '../../../common/shadowDom/ComponentHost';
 import Global from './components/Global';
 import ClipboardService from '../../../common/services/ClipboardService';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
 import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
 import AsyncTracker from '../../../common/AsyncTracker';
 import ShareChannel from '../../../common/sharing/ShareChannel';
@@ -14,10 +14,10 @@ import ExtensionComponentHost from './ExtensionComponentHost';
 
 interface Services {
 	clipboardService: ClipboardService,
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	toasterService: ToasterService
 }
-type State = DialogState & ToasterState & {
+type State = DialogServiceState & ToasterState & {
 	error: string | null
 };
 export default class GlobalComponentHost extends ExtensionComponentHost<Services, State> {
@@ -38,8 +38,12 @@ export default class GlobalComponentHost extends ExtensionComponentHost<Services
 				}
 			),
 			dialogService: new DialogService({
-				setState: delegate => {
-					this.setState(delegate(this._state));
+				setState: (delegate, callback) => {
+					this
+						.setState(
+							delegate(this._state)
+						)
+						.then(callback);
 				}
 			}),
 			toasterService: new ToasterService({
@@ -61,7 +65,7 @@ export default class GlobalComponentHost extends ExtensionComponentHost<Services
 		});
 		return this;
 	}
-	public readonly createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.extension.config.webServer, path);
+	public readonly createAbsoluteUrl = (path: string, query?: { [key: string]: string }) => createUrl(window.reallyreadit.extension.config.webServer, path, query);
 	public readonly handleShareRequest = () => {
 		return {
 			channels: [

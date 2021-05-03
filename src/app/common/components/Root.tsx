@@ -7,16 +7,15 @@ import UserArticle from '../../../common/models/UserArticle';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { parseQueryString, unroutableQueryStringKeys } from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import ScreenKey from '../../../common/routing/ScreenKey';
+import ScreenKey, { ScreenKeyNavParams } from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
-import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
+import { findRouteByLocation, findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
-import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import { createScreenFactory as createMissionScreenFactory } from './MissionPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
 import { DateTime } from 'luxon';
@@ -38,7 +37,7 @@ import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
-import DialogService, { State as DialogState } from '../../../common/services/DialogService';
+import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import Alert from '../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
@@ -59,7 +58,23 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
+import { SubscriptionStatus, ActiveSubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
+import Lazy from '../../../common/Lazy';
+import { Stripe, StripeCardElement } from '@stripe/stripe-js';
+import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
+import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
+import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
+import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
+import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
+import StripeAutoRenewDialog from './StripeAutoRenewDialog';
+import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
+import StripePriceChangeDialog from './StripePriceChangeDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
+import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
+import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
+import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -67,6 +82,7 @@ export interface Props {
 	initialUserProfile: WebAppUserProfile | null,
 	serverApi: ServerApi,
 	staticServerEndpoint: HttpEndpoint,
+	stripeLoader: Lazy<Promise<Stripe>>,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
 }
@@ -76,6 +92,40 @@ export enum TemplateSection {
 	Navigation = 2,
 	Footer = 4
 }
+export enum NavMethod {
+	Pop,
+	Push,
+	Replace,
+	ReplaceAll
+}
+export type NavOptions = {
+		method: NavMethod.Push
+	} | {
+		method: NavMethod.Replace,
+		screenId: number
+	} | {
+		method: NavMethod.ReplaceAll
+	};
+export type NavReference = string | ScreenKeyNavParams;
+export function parseNavReference(ref: NavReference) {
+	if (typeof ref === 'string') {
+		const result = parseUrlForRoute(ref);
+		return {
+			isInternal: result.isInternal,
+			screenKey: result.route?.screenKey,
+			screenParams: result.route?.getPathParams ?
+				result.route.getPathParams(result.url.pathname) :
+				null,
+			url: result.url?.href
+		};
+	}
+	return {
+		isInternal: true,
+		screenKey: ref.key,
+		screenParams: ref.params,
+		url: null
+	};
+}
 export interface Screen<T = any> {
 	id: number,
 	componentState?: T,
@@ -83,7 +133,8 @@ export interface Screen<T = any> {
 	location: RouteLocation,
 	templateSection?: TemplateSection,
 	title?: string,
-	titleContent?: React.ReactNode
+	titleContent?: React.ReactNode,
+	isReplacement?: boolean
 }
 export interface ScreenFactory<TSharedState> {
 	create: (id: number, location: RouteLocation, sharedState: TSharedState) => Screen,
@@ -93,34 +144,36 @@ export interface ScreenFactory<TSharedState> {
 export type State = (
 	{
 		displayTheme: DisplayTheme | null,
+		revenueReport: Fetchable<RevenueReportResponse>,
 		screens: Screen[],
+		subscriptionStatus: SubscriptionStatus,
 		user: UserAccount | null
 	} &
 	ToasterState &
-	DialogState
+	DialogServiceState
 );
-export type SharedState = Pick<State, 'displayTheme' | 'user'>;
-export type SharedEvents = {
+export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'subscriptionStatus' | 'user'>;
+export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
-	'displayPreferenceChanged': DisplayPreference,
 	'followeeCountChanged': FolloweeCountChange,
 	'notificationPreferenceChanged': NotificationPreference
 };
 export default abstract class Root<
-	P extends Props,
-	S extends State,
+	TProps extends Props,
+	TState extends State,
 	TSharedState extends SharedState,
-	TEvents extends SharedEvents
-> extends React.Component<P, S> {
+	TEvents extends Events
+> extends React.Component<TProps, TState> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _autoFocusInputs: boolean;
 	private readonly _concreteClassName: ClassValue;
 
 	// articles
+	protected readonly _assignAuthorToArticle = (request: AuthorAssignmentRequest) => this.props.serverApi.assignAuthorToArticle(request);
 	protected readonly _rateArticle = (article: UserArticle, score: number) => {
 		return this.props.serverApi
 			.rateArticle(article.id, score)
@@ -150,6 +203,7 @@ export default abstract class Root<
 				);
 			});
 	};
+	protected readonly _unassignAuthorFromArticle = (request: AuthorUnassignmentRequest) => this.props.serverApi.unassignAuthorFromArticle(request);
 
 	// clipboard
 	protected readonly _clipboard: ClipboardService;
@@ -199,9 +253,28 @@ export default abstract class Root<
 				}
 			);
 	};
-	protected readonly _viewComments: (article: UserArticle) => void;
+	protected readonly _viewComments = (article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) => {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			urlParams: { [key: string]: string } = {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			};
+		if (highlightedCommentId != null) {
+			urlParams['commentId'] = highlightedCommentId;
+		}
+		this.navTo(
+			{
+				key: ScreenKey.Comments,
+				params: urlParams
+			},
+			{
+				method: NavMethod.Push
+			}
+		);
+	};
 	protected readonly _viewThread = (comment: Pick<CommentThread, 'articleSlug' | 'id'>) => {
-		this.viewComments(
+		this._viewComments(
 			{
 				slug: comment.articleSlug
 			},
@@ -210,9 +283,9 @@ export default abstract class Root<
 	};
 
 	// dialogs
-	protected readonly _dialog = new DialogService({
-		setState: delegate => {
-			this.setState(delegate);
+	protected readonly _dialog = new DialogService<TSharedState>({
+		setState: (delegate, callback) => {
+			this.setState(delegate, callback);
 		}
 	});
 	protected _dialogCreatorMap: Partial<{ [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode }> = {
@@ -297,9 +370,6 @@ export default abstract class Root<
 	protected readonly _registerCommentUpdatedEventHandler = (handler: (comment: CommentThread) => void) => {
 		return this._eventManager.addListener('commentUpdated', handler);
 	};
-	protected readonly _registerDisplayPreferenceChangedEventHandler = (handler: (preference: DisplayPreference) => void) => {
-		return this._eventManager.addListener('displayPreferenceChanged', handler);
-	};
 	protected readonly _registerFolloweeCountChangedEventHandler = (handler: (change: FolloweeCountChange) => void) => {
 		return this._eventManager.addListener('followeeCountChanged', handler);
 	};
@@ -339,6 +409,7 @@ export default abstract class Root<
 	// routing
 	protected readonly _createAbsoluteUrl: (path: string) => string;
 	protected readonly _createStaticContentUrl = (path: string) => createUrl(this.props.staticServerEndpoint, path);
+	protected readonly _navTo: (ref: NavReference, options?: NavOptions) => boolean;
 
 	// screens
 	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
@@ -377,7 +448,21 @@ export default abstract class Root<
 				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Decrement);
 			}
 		);
-	protected readonly _viewProfile: (userName?: string) => void;
+	protected readonly _viewProfile = (userName?: string, options?: NavOptions) => {
+		this.navTo(
+			{
+				key: ScreenKey.Profile,
+				params: {
+					userName: userName || this.state.user.name
+				}
+			},
+			options ?? {
+				method: userName ?
+					NavMethod.Push :
+					NavMethod.ReplaceAll
+			}
+		);
+	};
 
 	// state
 	private _screenId = 0;
@@ -405,6 +490,210 @@ export default abstract class Root<
 			}
 		}
 	};
+
+	// subscriptions
+	private readonly _changeStripeSubscriptionPrice = (price: SubscriptionPriceSelection) => this.props.serverApi
+		.changeStripeSubscriptionPrice(
+			isStandardSubscriptionPriceLevel(price) ?
+				({
+					priceLevelId: price.id
+				}) :
+				({
+					customPriceAmount: price.amount
+				})
+		)
+		.then(this._handleSubscriptionPaymentResponse);
+	protected readonly _changeSubscriptionPaymentMethod = (card: StripeCardElement) => this.props.serverApi
+		.createStripeSetupIntent()
+		.then(
+			response => this.props.stripeLoader.value.then(
+				stripe => stripe.confirmCardSetup(
+					response.clientSecret,
+					{
+						payment_method: {
+							card
+						}
+					}
+				)
+			)
+		)
+		.then(
+			result => {
+				if (!result.setupIntent) {
+					throw result.error;
+				}
+				return this.props.serverApi.changeSubscriptionPaymentMethod({
+					paymentMethodId: result.setupIntent.payment_method
+				});
+			}
+		);
+	private readonly _completeStripeSubscriptionUpgrade = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
+		card,
+		price,
+		request => this.props.serverApi.completeStripeSubscriptionUpgrade(request)
+	);
+	private readonly _confirmSubscriptionCardPayment: ((invoiceId: string, clientSecret?: string) => Promise<StripePaymentResponse>) = (invoiceId, clientSecret) => {
+		let clientConfirmation: Promise<any>;
+		if (clientSecret) {
+			clientConfirmation = this.props.stripeLoader.value.then(
+				stripe => stripe.confirmCardPayment(clientSecret)
+			);
+		} else {
+			clientConfirmation = Promise.resolve();
+		}
+		return clientConfirmation.then(
+			() => this.props.serverApi
+				.confirmStripeSubscriptionPayment({
+					invoiceId
+				})
+				.then(this._handleSubscriptionPaymentResponse)
+		);
+	};
+	private readonly _createStripeSubscription = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
+		card,
+		price,
+		request => this.props.serverApi.createStripeSubscription(request)
+	);
+	private readonly _handleSubscriptionPaymentResponse = (response: StripePaymentResponse) => {
+		this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
+		if (response.type === StripePaymentResponseType.RequiresConfirmation) {
+			return this._confirmSubscriptionCardPayment(response.invoiceId, response.clientSecret);
+		}
+		return response;
+	};
+	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => {
+		return this.props.serverApi.getSubscriptionDistributionSummary(
+			summary => {
+				if (summary.value) {
+					this.onSubscriptionStatusChanged(summary.value.subscriptionStatus, EventSource.Local);
+				}
+				callback(summary);
+			}
+		);
+	}
+	protected readonly _getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
+		response => {
+			if (response.value) {
+				this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
+			}
+			callback(response);
+		}
+	);
+	protected readonly _openStripeAutoRenewDialog = (currentStatus: ActiveSubscriptionStatus) => new Promise<void>(
+		resolve => {
+			const
+				close = () => {
+					this._dialog.closeDialog();
+					resolve();
+				},
+				setAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.props.serverApi
+					.setStripeSubscriptionAutoRenewStatus(request)
+					.then(
+						response => {
+							this.onSubscriptionStatusChanged(response.status, EventSource.Local);
+							return response;
+						}
+					);
+			this._dialog.openDialog(
+				() => (
+					<StripeAutoRenewDialog
+						currentStatus={currentStatus}
+						onClose={close}
+						onSetStripeSubscriptionAutoRenewStatus={setAutoRenewStatus}
+						onShowToast={this._toaster.addToast}
+					/>
+				)
+			);
+		}
+	);
+	protected readonly _openStripePaymentConfirmationDialog = (invoiceId: string) => {
+		this._dialog.openDialog(
+			() => (
+				<StripePaymentConfirmationDialog
+					invoiceId={invoiceId}
+					onClose={this._dialog.closeDialog}
+					onGetSubscriptionStatus={this._getSubscriptionStatus}
+					onShowToast={this._toaster.addToast}
+					onConfirmPayment={this._confirmSubscriptionCardPayment}
+				/>
+			)
+		);
+	};
+	protected readonly _openStripePriceChangeDialog = (activeSubscription: ActiveSubscriptionStatus) => {
+		this._dialog.openDialog(
+			sharedState => (
+				<StripePriceChangeDialog
+					activeSubscription={activeSubscription}
+					displayTheme={sharedState.displayTheme}
+					onChangePrice={this._changeStripeSubscriptionPrice}
+					onClose={this._dialog.closeDialog}
+					onCompleteUpgrade={this._completeStripeSubscriptionUpgrade}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onGetSubscriptionStatus={this._getSubscriptionStatus}
+					onOpenStripeSubscriptionPrompt={this._openStripeSubscriptionPromptDialog}
+					onShowToast={this._toaster.addToast}
+					stripe={this.props.stripeLoader.value}
+				/>
+			)
+		);
+	};
+	protected readonly _openStripeSubscriptionPromptDialog = (article?: UserArticle) => {
+		this._dialog.openDialog(
+			sharedState => (
+				<StripeSubscriptionPrompt
+					article={article}
+					displayTheme={sharedState.displayTheme}
+					onClose={this._dialog.closeDialog}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
+					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
+					onGetSubscriptionStatus={this._getSubscriptionStatus}
+					onReadArticle={this._readArticle}
+					onShowToast={this._toaster.addToast}
+					onSubscribe={this._createStripeSubscription}
+					stripe={this.props.stripeLoader.value}
+					subscriptionStatus={sharedState.subscriptionStatus}
+				/>
+			)
+		);
+	};
+	private readonly _processStripeSubscriptionPayment = (
+		card: StripeCardElement,
+		price: SubscriptionPriceSelection,
+		submit: (request: StripeSubscriptionPaymentRequest) => Promise<StripePaymentResponse>
+	) => this.props.stripeLoader.value
+		.then(
+			stripe => stripe.createPaymentMethod({
+				type: 'card',
+				card
+			})
+		)
+		.then(
+			result => {
+				if (result.error) {
+					throw new Error(result.error.message);
+				}
+				let request: StripeSubscriptionPaymentRequest;
+				if (
+					isStandardSubscriptionPriceLevel(price)
+				) {
+					request = {
+						paymentMethodId: result.paymentMethod.id,
+						priceLevelId: price.id
+					};
+				} else {
+					request = {
+						paymentMethodId: result.paymentMethod.id,
+						customPriceAmount: price.amount
+					};
+				}
+				return submit(request)
+					.then(this._handleSubscriptionPaymentResponse);
+			}
+		);
+	protected readonly _updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) =>
+		this.props.serverApi.updateSubscriptionPaymentMethod(request);
+	private _revenueReportTimestamp = Date.now();
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
@@ -483,6 +772,7 @@ export default abstract class Root<
 			settings => {
 				if (settings.value) {
 					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
+					this.onSubscriptionStatusChanged(settings.value.subscriptionStatus, EventSource.Local);
 				}
 				callback(settings);
 			}
@@ -555,7 +845,7 @@ export default abstract class Root<
 		this.reloadWindow();
 	};
 
-	constructor(className: ClassValue, autoFocusInputs: boolean, props: P) {
+	constructor(className: ClassValue, autoFocusInputs: boolean, props: TProps) {
 		super(props);
 		this._autoFocusInputs = autoFocusInputs;
 		this._concreteClassName = className;
@@ -563,9 +853,20 @@ export default abstract class Root<
 		// state
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
+			revenueReport: props.serverApi.getSubscriptionRevenueReport(
+				{
+					useCache: true
+				},
+				response => {
+					this.setState({
+						revenueReport: response
+					});
+				}
+			),
 			toasts: [],
+			subscriptionStatus: props.initialUserProfile?.subscriptionStatus,
 			user: props.initialUserProfile?.userAccount
-		} as S;
+		} as TState;
 
 		// clipboard
 		this._clipboard = new ClipboardService(
@@ -575,9 +876,8 @@ export default abstract class Root<
 		);
 
 		// delegates
+		this._navTo = this.navTo.bind(this);
 		this._readArticle = this.readArticle.bind(this);
-		this._viewComments = this.viewComments.bind(this);
-		this._viewProfile = this.viewProfile.bind(this);
 
 		// routing
 		this._createAbsoluteUrl = path => `${props.webServerEndpoint.protocol}://${props.webServerEndpoint.host}${path}`;
@@ -585,6 +885,7 @@ export default abstract class Root<
 		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
+				onAssignAuthorToArticle: this._assignAuthorToArticle,
 				onCloseDialog: this._dialog.closeDialog,
 				onGetArticleIssueReports: this.props.serverApi.getArticleIssueReportAnalytics,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
@@ -596,7 +897,8 @@ export default abstract class Root<
 				onOpenDialog: this._dialog.openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
-				onShowToast: this._toaster.addToast
+				onShowToast: this._toaster.addToast,
+				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle
 			}),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
@@ -606,12 +908,13 @@ export default abstract class Root<
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
-			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
-			}),
 			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
-			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(ScreenKey.PrivacyPolicy),
+			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(
+				ScreenKey.PrivacyPolicy, {
+					onNavTo: this._navTo
+				}
+			),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
@@ -649,7 +952,7 @@ export default abstract class Root<
 			)
 		);
 	}
-	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<S>) {
+	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<TState>) {
 		this.setThemeAttribute(userProfile?.displayPreference?.theme);
 		return new Promise<void>(
 			resolve => {
@@ -657,6 +960,7 @@ export default abstract class Root<
 					{
 						...supplementaryState as State,
 						displayTheme: userProfile?.displayPreference.theme,
+						subscriptionStatus: userProfile?.subscriptionStatus,
 						user: userProfile?.userAccount
 					},
 					() => {
@@ -666,6 +970,24 @@ export default abstract class Root<
 				);
 			}
 		);
+	}
+	protected checkRevenueReportExpiration() {
+		const now = Date.now();
+		if (now - this._revenueReportTimestamp >= 1 * 60 * 60 * 1000) {
+			// Don't request the cached value if the revenue report timestamp has been invalidated.
+			this.props.serverApi.getSubscriptionRevenueReport(
+				{
+					useCache: this._revenueReportTimestamp !== 0
+				},
+				response => {
+					this.setState({
+						revenueReport: response
+					});
+				}
+			);
+			// Reset the revenue report timestamp.
+			this._revenueReportTimestamp = now;
+		}
 	}
 	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: SemanticVersion }> {
 		const
@@ -700,14 +1022,13 @@ export default abstract class Root<
 		}
 		return Promise.resolve({ isAvailable: false });
 	}
-	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, title?: string) {
-		const
-			[path, queryString] = findRouteByKey(routes, key)
-				.createUrl(urlParams)
-				.split('?'),
-			screen = this._screenFactoryMap[key].create(this._screenId++, { path, queryString }, this.getSharedState());
-		if (title) {
-			screen.title = title;
+	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, options?: Pick<Screen, 'isReplacement'>) {
+		const [path, queryString] = findRouteByKey(routes, key)
+			.createUrl(urlParams)
+			.split('?');
+		const screen = this._screenFactoryMap[key].create(this._screenId++, { path, queryString }, this.getSharedState());
+		if (options) {
+			screen.isReplacement = options.isReplacement;
 		}
 		return screen;
 	}
@@ -725,6 +1046,7 @@ export default abstract class Root<
 	protected abstract getPushDeviceForm(): PushDeviceForm | null;
 	protected abstract getSharedState(): TSharedState;
 	protected abstract getSignUpAnalyticsForm(action: string): SignUpAnalyticsForm;
+	protected abstract navTo(ref: NavReference, options?: NavOptions): boolean;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);
 	}
@@ -742,14 +1064,31 @@ export default abstract class Root<
 		this.setState({
 			displayTheme: preference.theme
 		});
-		this._eventManager.triggerEvent('displayPreferenceChanged', preference);
 	}
 	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
+	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
+		// Invalidate the revenue report timestamp if the subscription has changed.
+		const currentStatus = this.state.subscriptionStatus as SubscriptionStatus;
+		if (
+			status.type === SubscriptionStatusType.Active &&
+			(
+				!currentStatus ||
+				currentStatus.type !== SubscriptionStatusType.Active ||
+				currentStatus.price.amount !== status.price.amount
+			)
+		) {
+			this._revenueReportTimestamp = 0;
+		}
+		// Update the state.
+		this.setState({
+			subscriptionStatus: status
+		});
+	}
 	protected onTitleChanged(title: string) { }
-	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<S>) {
+	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<TState>) {
 		if (
 			eventType === SignInEventType.ExistingUser &&
 			eventSource === EventSource.Local
@@ -758,10 +1097,10 @@ export default abstract class Root<
 		}
 		return this.setUserAuthChangedState(userProfile, supplementaryState);
 	}
-	protected onUserSignedOut(supplementaryState?: Partial<S>) {
+	protected onUserSignedOut(supplementaryState?: Partial<TState>) {
 		return this.setUserAuthChangedState(null, supplementaryState);
 	}
-	protected onUserUpdated(user: UserAccount, eventSource: EventSource, supplementaryState?: Partial<S>) {
+	protected onUserUpdated(user: UserAccount, eventSource: EventSource, supplementaryState?: Partial<TState>) {
 		this.setState({
 			...supplementaryState as State,
 			user
@@ -770,8 +1109,6 @@ export default abstract class Root<
 	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
-	protected abstract viewComments(article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string): void;
-	protected abstract viewProfile(userName?: string): void;
 	public componentDidMount() {
 		if (this.props.initialUserProfile) {
 			this.checkProfileForUnsetValues(this.props.initialUserProfile);
@@ -783,7 +1120,10 @@ export default abstract class Root<
 	public render() {
 		return (
 			<div className={classNames('root_9rc2fv', this._concreteClassName)}>
-				<RootErrorBoundary onReloadWindow={this._reloadWindow}>
+				<RootErrorBoundary
+					onNavTo={this._navTo}
+					onReloadWindow={this._reloadWindow}
+				>
 					{this.renderBody()}
 					<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
 				</RootErrorBoundary>

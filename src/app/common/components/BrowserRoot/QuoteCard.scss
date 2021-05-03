@@ -7,39 +7,39 @@
 
 .quote-card_xa1vt {
 
-   p {
-       font-size: 24px;
+   .quote-card_xa1vt__quote {
+	   display: block;
        font-family: 'Museo Sans (300)', sans-serif;
        line-height: 1.55;
        position: relative;
-       margin-top: 36px;
-    //    font-style: italic;
+       font-style: italic;
 	   text-decoration: underline;
 	   cursor: pointer;
+   }
 
-       padding-left: 12px;
-       padding-right: 4px;
+   .link_ke15oa.quote-card_xa1vt__quote {
+	   white-space: normal;
    }
 
    // quote signs
-   p::before, p::after {
+   .quote-card_xa1vt__quote::before, .quote-card_xa1vt__quote::after {
        position: absolute;
        display: block;
-       font-size: 124px;
+       font-size: 100px;
        display: inline-block;
        font-family: 'Cambria (bold)';
        color: var(--box-shadow-color);
        line-height: 1;
    }
 
-   p::before {
+   .quote-card_xa1vt__quote::before {
        content: "“";
        // left: -12px;
        left: -18px;
        top: -56px;
    }
 
-   p::after {
+   .quote-card_xa1vt__quote::after {
        content: "”";
        right: 12px;
        bottom: -118px;
@@ -49,8 +49,7 @@
    &__reader {
        margin-top: 13px;
        display: block;
-       font-size: 1.1rem;
-       font-style: italic;
+	   text-align: center;
    }
 
 //    @media screen and (min-width: 768px) {

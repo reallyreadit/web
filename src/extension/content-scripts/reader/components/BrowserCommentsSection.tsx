@@ -17,7 +17,7 @@ import CommentAddendumForm from '../../../../common/models/social/CommentAddendu
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import ContentBox from '../../../../common/components/ContentBox';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
-import ShareData from '../../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthServiceAccountAssociation';
@@ -26,7 +26,7 @@ export interface Props {
 	article: UserArticle
 	clipboardService: ClipboardService,
 	comments: Fetchable<CommentThread[]>,
-	dialogService: DialogService,
+	dialogService: DialogService<{}>,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>
@@ -35,7 +35,7 @@ export interface Props {
 	onPostComment: (form: CommentForm) => Promise<void>,
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (shareData: ShareData) => ShareResponse,
+	onShare: (shareData: ShareEvent) => ShareResponse,
 	onViewProfile: (userName: string) => void,
 	toasterService: ToasterService,
 	user: UserAccount

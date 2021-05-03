@@ -1,7 +1,7 @@
 import * as React from 'react';
-import FormDialog, { Props as FormDialogProps, State } from '../controls/FormDialog';
+import FieldsetDialog, { Props as FieldsetDialogProps, State } from '../controls/FieldsetDialog';
 import Fetchable from '../../../../common/Fetchable';
-import ActionLink from '../../../../common/components/ActionLink';
+import Link from '../../../../common/components/Link';
 import { Intent } from '../../../../common/components/Toaster';
 import SelectList, { SelectListOption } from '../../../../common/components/SelectList';
 
@@ -11,7 +11,7 @@ interface Props {
 	onSendTest: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
 	onSent: () => void
 }
-export default class CreateBulkMailingDialog extends FormDialog<void, Props, Partial<State> & {
+export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props, Partial<State> & {
 	lists: Fetchable<{ key: string, value: string }[]>,
 	list: string,
 	subject: string
@@ -43,7 +43,7 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 				this.setState({ sendingTestEmail: false });
 			});
 	};
-	constructor(props: Props & FormDialogProps) {
+	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				title: 'Create Bulk Mailing',
@@ -105,7 +105,7 @@ export default class CreateBulkMailingDialog extends FormDialog<void, Props, Par
 						<th>Test Email</th>
 						<td>
 							<input type="text" value={this.state.testAddress} onChange={this._changeTestAddress} />
-							<ActionLink
+							<Link
 								iconLeft="checkmark"
 								text="Send Test"
 								onClick={this._sendTestEmail}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import ContentBox from './ContentBox';
 import UserArticle from '../models/UserArticle';
 import { formatTimestamp, formatList } from '../format';
-import ActionLink from './ActionLink';
+import Link from './Link';
 import Button from './Button';
 
 export default class PostPrompt extends React.PureComponent<{
@@ -19,7 +19,7 @@ export default class PostPrompt extends React.PureComponent<{
 				{this.props.article.datesPosted.length ?
 					<>
 						<p>You posted this article on {formatList(this.props.article.datesPosted.map(formatTimestamp))}.</p>
-						<ActionLink
+						<Link
 							text="Post Again"
 							onClick={this._post}
 						/>
