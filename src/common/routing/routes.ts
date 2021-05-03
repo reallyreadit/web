@@ -27,6 +27,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/aotd\/history$/,
 		screenKey: ScreenKey.AotdHistory
 	},
+	{
+		createUrl: () => '/blog',
+		noIndex: () => true,
+		pathRegExp: /^\/blog$/,
+		screenKey: ScreenKey.Blog
+	},
 	(function () {
 		const
 			pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/,

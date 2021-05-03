@@ -3,9 +3,10 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
-import { Screen } from '../Root';
+import { Screen, NavReference, NavOptions, NavMethod } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
+import Link from '../../../../common/components/Link';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
@@ -13,6 +14,7 @@ const
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
+	onNavTo: (ref: NavReference, options: NavOptions) => void,
 	onViewHome: () => void,
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
@@ -20,6 +22,9 @@ interface Props {
 	user: UserAccount
 }
 export default class NavBar extends React.PureComponent<Props> {
+	private readonly _navTo = (ref: NavReference) => {
+		this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
+	};
 	public render() {
 		return (
 			<div className="nav-bar_yh8orf">
@@ -60,12 +65,7 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 				</ol>
 				<div className="footer">
-					<a
-						href="https://blog.readup.com/"
-						target="_blank"
-					>
-						Readup Blog
-					</a>
+					<Link screen={ScreenKey.Blog} onClick={this._navTo}>Readup Blog</Link>
 				</div>
 			</div>
 		);

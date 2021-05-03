@@ -58,6 +58,7 @@ import { AppStoreErrorType } from '../../../common/Errors';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
+import createBlogScreenFactory from './AppRoot/BlogScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -173,6 +174,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				slug
 			}
 		);
+	};
+	private readonly _viewBlog = () => {
+		this.replaceAllScreens(ScreenKey.Blog);
 	};
 	private readonly _viewFaq = () => {
 		this.replaceAllScreens(ScreenKey.Faq);
@@ -581,6 +585,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.Blog]: createBlogScreenFactory(
+				ScreenKey.Blog,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
@@ -1348,6 +1368,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								onClose={this._closeMenu}
 								onClosed={this._hideMenu}
 								onViewAdminPage={this._viewAdminPage}
+								onViewBlog={this._viewBlog}
 								onViewFaq={this._viewFaq}
 								onViewLeaderboards={this._viewLeaderboards}
 								onViewProfile={this._viewProfile}

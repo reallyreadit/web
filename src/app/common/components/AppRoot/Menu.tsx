@@ -17,6 +17,7 @@ interface Props {
 	onClose: () => void,
 	onClosed: () => void,
 	onViewAdminPage: () => void,
+	onViewBlog: () => void,
 	onViewFaq: () => void,
 	onViewLeaderboards: () => void,
 	onViewProfile: () => void,
@@ -117,6 +118,15 @@ export default class extends React.PureComponent<Props> {
 								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
 								onClick={this.props.onViewLeaderboards}
 								text="Leaderboards"
+								size="large"
+								display="block"
+							/>
+						</li>
+						<li>
+							<Button
+								state={this.props.selectedScreen.key === ScreenKey.Blog ? 'selected' : 'normal'}
+								onClick={this.props.onViewBlog}
+								text="Blog"
 								size="large"
 								display="block"
 							/>

@@ -32,7 +32,7 @@ export default class extends React.PureComponent<{
 						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>What is Readup?</Link> :
 						null,
 					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>FAQ</Link>,
-					<Link key="blog" href="https://blog.readup.com" onClick={navTo}>Blog</Link>
+					<Link key="blog" screen={ScreenKey.Blog} onClick={navTo}>Blog</Link>
 				]
 			},
 			{

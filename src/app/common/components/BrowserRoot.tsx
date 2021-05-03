@@ -57,6 +57,7 @@ import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
+import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -482,6 +483,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
+					onShare: this._handleShareRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.Blog]: createBlogScreenFactory(
+				ScreenKey.Blog,
+				{
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
@@ -1300,6 +1317,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						this.state.user
 					) ?
 						<NavBar
+							onNavTo={this._navTo}
 							onViewHome={this._viewHome}
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
