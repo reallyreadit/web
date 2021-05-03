@@ -14,6 +14,7 @@ import UserAccount from '../../../common/models/UserAccount';
 import AsyncTracker from '../../../common/AsyncTracker';
 import LoadingOverlay from './controls/LoadingOverlay';
 import InfoBox from '../../../common/components/InfoBox';
+import ShareData from '../../../common/sharing/ShareData';
 
 interface Props {
 	addNewPosts?: boolean,
