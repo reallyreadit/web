@@ -8,7 +8,7 @@
         export NODE_TLS_REJECT_UNAUTHORIZED=0
 3. Install packages
 
-        npm install
+        npm ci
 4. Gulp is included as a development dependency and is used to execute build actions. If you do not have Gulp installed globally or have an incompatible global version installed you can use a package runner like [npx](https://www.npmjs.com/package/npx) or create an alias to execute the version included in this repository.
 
         alias gulp="node node_modules/gulp/bin/gulp.js"

@@ -36,7 +36,7 @@ Move-Item -Path $publishDir/client/bundle-$Version.* -Destination $versionDir
 
 Write-Host 'Installing packages...'
 Push-Location $publishDir
-npm install --production
+npm ci --production
 Pop-Location
 
 Write-Host "Creating archive at $archivePath..."

@@ -19,7 +19,7 @@ Copy-Item tsconfig.json $targetDir
 
 Write-Host 'Running build...'
 Push-Location $targetDir
-npm install
+npm ci
 node node_modules/gulp/bin/gulp.js build:prod:extension
 
 Write-Host 'Creating zip file...'
