@@ -104,7 +104,6 @@ export default class extends React.PureComponent<Props> {
 						</li>
 						<li>
 							<Button
-								badge="beta"
 								state={this.props.selectedScreen.key === ScreenKey.Search ? 'selected' : 'normal'}
 								onClick={this.props.onViewSearch}
 								text="Search"
@@ -114,7 +113,6 @@ export default class extends React.PureComponent<Props> {
 						</li>
 						<li>
 							<Button
-								badge="beta"
 								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
 								onClick={this.props.onViewLeaderboards}
 								text="Leaderboards"
