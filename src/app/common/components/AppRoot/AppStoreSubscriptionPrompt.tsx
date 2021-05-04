@@ -296,7 +296,7 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			this._asyncTracker.addCallback(
 				response => {
 					if (response.value) {
-						if (response.value.status.type === SubscriptionStatusType.Active) {
+						if (response.value.status.type === SubscriptionStatusType.Active && !this.props.activeSubscription) {
 							this.setState({
 								subscriptionStatusResult: {
 									type: ResultType.Success,
