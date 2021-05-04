@@ -4,7 +4,7 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.36.1",
+      "app": "1.36.2",
 			"appPublic": "1.36.0",
 			"common": {
 				"metadataParser": "1.0.1"
