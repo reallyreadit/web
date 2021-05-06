@@ -150,12 +150,14 @@
 			)
 		);
 	}
+	// $intent-text-color looks too gray/disabled next to $intent-primary-color in dark theme.
+	// Using $apple-button-text-color for pure white instead. Need to fix at some point.
 	#{$root} .button_ovrlmi.primary {
 		@include theme-colors(
 			$scheme,
 			(
 				"background-color": $intent-primary-color,
-				"color": $intent-text-color
+				"color": $apple-button-text-color
 			)
 		);
 	}
