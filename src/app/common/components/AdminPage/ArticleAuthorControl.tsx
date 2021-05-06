@@ -3,6 +3,9 @@ import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../../
 import { Intent } from '../../../../common/components/Toaster';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import { getPromiseErrorMessage } from '../../../../common/format';
+import { findRouteByKey } from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 enum FormAction {
 	Assign = 'Assign',
@@ -15,7 +18,7 @@ interface Props {
 }
 interface State {
 	action: FormAction,
-	articleSlug: string,
+	articleReference: string,
 	authorReference: string,
 	isSubmitting: boolean
 }
@@ -26,9 +29,9 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 			action: event.target.value as FormAction
 		});
 	};
-	private readonly _changeArticleSlug = (event: React.ChangeEvent<HTMLInputElement>) => {
+	private readonly _changeArticleReference = (event: React.ChangeEvent<HTMLInputElement>) => {
 		this.setState({
-			articleSlug: event.target.value
+			articleReference: event.target.value
 		});
 	};
 	private readonly _changeAuthorReference = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,20 +42,42 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 	private readonly _submit = () => {
 		this.setState(
 			currentState => {
+				// Make sure we're not already submitting.
 				if (currentState.isSubmitting) {
 					return null;
 				}
+				// Validate article reference.
+				let articleSlug = currentState.articleReference;
+				if (
+					/^https?:/.test(articleSlug)
+				) {
+					try {
+						const
+							articleUrl = new URL(articleSlug),
+							params = findRouteByKey(routes, ScreenKey.Comments)
+								.getPathParams(articleUrl.pathname);
+						if (!params['sourceSlug'] || !params['articleSlug']) {
+							this.props.onShowToast('Invalid comments URL.', Intent.Danger);
+							return null;
+						}
+						articleSlug = params['sourceSlug'] + '_' + params['articleSlug'];
+					} catch {
+						this.props.onShowToast('Invalid URL.', Intent.Danger);
+						return null;
+					}
+				}
+				// Submit request.
 				let requestPromise: Promise<void>;
 				switch (currentState.action) {
 					case FormAction.Assign:
 						requestPromise = this.props.onAssignAuthorToArticle({
-							articleSlug: currentState.articleSlug,
+							articleSlug,
 							authorName: currentState.authorReference
 						});
 						break;
 					case FormAction.Unassign:
 						requestPromise = this.props.onUnassignAuthorFromArticle({
-							articleSlug: currentState.articleSlug,
+							articleSlug,
 							authorSlug: currentState.authorReference
 						});
 						break;
@@ -91,7 +116,7 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			action: FormAction.Assign,
-			articleSlug: '',
+			articleReference: '',
 			authorReference: '',
 			isSubmitting: false
 		};
@@ -141,15 +166,15 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 						<label>*** Warning: This action cannot be undone. ***</label> :
 						null}
 					<label>
-						<span>Article Slug</span>
+						<span>Article Slug OR URL</span>
 						<input
 							type="text"
-							value={this.state.articleSlug}
-							onChange={this._changeArticleSlug}
+							value={this.state.articleReference}
+							onChange={this._changeArticleReference}
 							disabled={this.state.isSubmitting}
 						/>
 					</label>
-					<label>Example: the-new-yorker_the-dead-zone</label>
+					<label>Example: the-new-yorker_the-dead-zone OR https://readup.com/comments/the-new-yorker/the-dead-zone</label>
 					<label>
 						<span>{authorReferenceLabelText}</span>
 						<input
@@ -162,7 +187,7 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 					<label>Example: {authorReferenceExampleText}</label>
 				</fieldset>
 				<button
-					disabled={!this.state.articleSlug || !this.state.authorReference || this.state.isSubmitting}
+					disabled={!this.state.articleReference || !this.state.authorReference || this.state.isSubmitting}
 					onClick={this._submit}
 				>
 					{this.state.isSubmitting ? 'Processing...' : 'Submit'}
