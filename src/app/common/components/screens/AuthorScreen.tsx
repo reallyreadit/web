@@ -170,20 +170,20 @@ class AuthorScreen extends React.Component<Props, State> {
 							<Panel className="main">
 								<div className="profile">
 									<h1>{this.props.profile.value.name}</h1>
-									<InfoBox
-										position="static"
-										style="normal"
-									>
-										<div className="earnings">
-											Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
-										</div>
-										<div className="message">
-											Are you {this.props.profile.value.name}?
-											{this.props.profile.value.totalEarnings > 0 ?
-												<> <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.</> :
-												<> <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified.</>}
-										</div>
-									</InfoBox>
+									{this.props.profile.value.totalEarnings ?
+										<InfoBox
+											position="static"
+											style="normal"
+										>
+											<div className="earnings">
+												Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
+											</div>
+											<div className="message">
+												Are you {this.props.profile.value.name}?
+												<Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.
+											</div>
+										</InfoBox> :
+										null}
 								</div>
 								{this.state.articles.isLoading ?
 									<LoadingOverlay position="static" /> :

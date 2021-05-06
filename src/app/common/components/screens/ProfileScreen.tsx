@@ -517,7 +517,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 											<LeaderboardBadges badge={this.props.profile.value.leaderboardBadge} /> :
 											null}
 									</div>
-									{this.props.profile.value.authorProfile ?
+									{this.props.profile.value.authorProfile && this.props.profile.value.authorProfile.totalEarnings ?
 										<div className="earnings">
 											Total Readup earnings: {formatCurrency(this.props.profile.value.authorProfile.totalEarnings)}
 										</div> :
