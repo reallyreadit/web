@@ -886,6 +886,7 @@ export default abstract class Root<
 		this._screenFactoryMap = {
 			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
 				onAssignAuthorToArticle: this._assignAuthorToArticle,
+				onGetAuthorMetadataAssignmentQueue: this.props.serverApi.getAuthorMetadataAssignmentQueue,
 				onCloseDialog: this._dialog.closeDialog,
 				onGetArticleIssueReports: this.props.serverApi.getArticleIssueReportAnalytics,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
@@ -894,6 +895,7 @@ export default abstract class Root<
 				onGetDailyTotals: this.props.serverApi.getDailyTotalAnalytics,
 				onGetSignups: this.props.serverApi.getSignupAnalytics,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
+				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,

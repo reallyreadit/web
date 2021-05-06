@@ -8,9 +8,9 @@ import UserAccountStats from '../../../common/models/UserAccountStats';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../../../common/components/Toaster';
 import AsyncTracker from '../../../common/AsyncTracker';
-import { Screen, SharedState } from './Root';
+import { Screen, SharedState, NavReference } from './Root';
 import ScreenContainer from './ScreenContainer';
-import { FetchFunctionWithParams } from '../serverApi/ServerApi';
+import { FetchFunctionWithParams, FetchFunction } from '../serverApi/ServerApi';
 import DailyTotalsReportRow from '../../../common/models/analytics/DailyTotalsReportRow';
 import { DateTime } from 'luxon';
 import RouteLocation from '../../../common/routing/RouteLocation';
@@ -20,17 +20,23 @@ import ConversionsReportRow from '../../../common/models/analytics/ConversionsRe
 import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssuesReportRow';
 import { ArticleAuthorControl } from './AdminPage/ArticleAuthorControl';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
+import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import { calculateEstimatedReadTime } from '../../../common/calculate';
+import { truncateText } from '../../../common/format';
 
 interface Props {
 	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>,
 	onCloseDialog: () => void,
 	onGetArticleIssueReports: FetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>,
+	onGetAuthorMetadataAssignmentQueue: FetchFunction<AuthorMetadataAssignmentQueueResponse>,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
 	onGetDailyTotals: FetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>,
 	onGetSignups: FetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>,
 	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
+	onNavTo: (ref: NavReference) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
 	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
@@ -46,6 +52,7 @@ class AdminPage extends React.Component<
 			endDate: string,
 			data: Fetchable<ArticleIssuesReportRow[]>
 		},
+		authorMetadataAssignmentQueueResponse: Fetchable<AuthorMetadataAssignmentQueueResponse> | null,
 		conversions: {
 			startDate: string,
 			endDate: string,
@@ -157,6 +164,19 @@ class AdminPage extends React.Component<
 			}
 		});
 	};
+	private readonly _fetchAuthorMetadataAssignmentQueue = () => {
+		this.setState({
+			authorMetadataAssignmentQueueResponse: this.props.onGetAuthorMetadataAssignmentQueue(
+				this._asyncTracker.addCallback(
+					authorMetadataAssignmentQueueResponse => {
+						this.setState({
+							authorMetadataAssignmentQueueResponse
+						});
+					}
+				)
+			)
+		});
+	};
 	private readonly _fetchConversions = () => {
 		this.setState({
 			conversions: {
@@ -233,6 +253,7 @@ class AdminPage extends React.Component<
 				endDate: articleIssueReportsEndDate,
 				data: this.fetchArticleIssueReports(articleIssueReportsStartDate, articleIssueReportsEndDate)
 			},
+			authorMetadataAssignmentQueueResponse: null,
 			conversions: {
 				startDate: conversionsStartDate,
 				endDate: conversionsEndDate,
@@ -329,6 +350,57 @@ class AdminPage extends React.Component<
 						onShowToast={this.props.onShowToast}
 						onUnassignAuthorFromArticle={this.props.onUnassignAuthorFromArticle}
 					/>
+					<table>
+						<caption>
+							<div className="content">
+								<strong>Article Author Assignment Queue</strong>
+								<div>
+									<button onClick={this._fetchAuthorMetadataAssignmentQueue}>Run Report</button>
+								</div>
+							</div>
+						</caption>
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Publisher URL</th>
+								<th>Length</th>
+							</tr>
+						</thead>
+						<tbody>
+							{this.state.authorMetadataAssignmentQueueResponse ?
+								this.state.authorMetadataAssignmentQueueResponse.isLoading ?
+									<tr>
+										<td colSpan={3}>Loading...</td>
+									</tr> :
+									this.state.authorMetadataAssignmentQueueResponse.value ?
+										this.state.authorMetadataAssignmentQueueResponse.value.articles.length ?
+											this.state.authorMetadataAssignmentQueueResponse.value.articles.map(
+												article => {
+													const [sourceSlug, articleSlug] = article.slug.split('_');
+													return (
+														<tr key={article.id}>
+															<td>
+																<Link screen={ScreenKey.Comments} params={{ sourceSlug, articleSlug }} onClick={this.props.onNavTo} text={truncateText(article.title, 30)} />
+															</td>
+															<td>
+																<Link href={article.url} onClick={this.props.onNavTo} text={truncateText(article.url, 30)} />
+															</td>
+															<td>{calculateEstimatedReadTime(article.wordCount)} min.</td>
+														</tr>
+													);
+												}
+											) :
+											<tr>
+												<td colSpan={3}>Queue is empty. Good job!</td>
+											</tr> :
+										<tr>
+											<td colSpan={3}>Error loading queue.</td>
+										</tr> :
+								<tr>
+									<td colSpan={3}>Click "Run Report" to load queue.</td>
+								</tr>}
+						</tbody>
+					</table>
 					<table>
 						<caption>
 							<div className="content">
@@ -689,12 +761,14 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onAssignAuthorToArticle={deps.onAssignAuthorToArticle}
 					onCloseDialog={deps.onCloseDialog}
 					onGetArticleIssueReports={deps.onGetArticleIssueReports}
+					onGetAuthorMetadataAssignmentQueue={deps.onGetAuthorMetadataAssignmentQueue}
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}
 					onGetConversions={deps.onGetConversions}
 					onGetDailyTotals={deps.onGetDailyTotals}
 					onGetSignups={deps.onGetSignups}
 					onGetUserStats={deps.onGetUserStats}
+					onNavTo={deps.onNavTo}
 					onOpenDialog={deps.onOpenDialog}
 					onSendBulkMailing={deps.onSendBulkMailing}
 					onSendTestBulkMailing={deps.onSendTestBulkMailing}

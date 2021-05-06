@@ -79,6 +79,7 @@ import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodRespon
 import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/StripeSetupIntentResponse';
 import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
+import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -164,6 +165,7 @@ export default abstract class {
 
 	// Analytics
 	public readonly getArticleIssueReportAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>('/Analytics/ArticleIssueReports');
+	public readonly getAuthorMetadataAssignmentQueue = this.createFetchFunction<AuthorMetadataAssignmentQueueResponse>('/Analytics/AuthorMetadataAssignmentQueue');
 	public readonly getConversionAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>('/Analytics/Conversions');
 	public readonly getDailyTotalAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>('/Analytics/DailyTotals');
 	public readonly getSignupAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>('/Analytics/Signups');
