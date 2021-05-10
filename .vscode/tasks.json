@@ -1,7 +1,6 @@
 {
-	"version": "0.1.0",
+	"version": "2.0.0",
 	"command": "powershell",
-	"isShellCommand": true,
 	"args": [
 		"-Command",
 		"node",
@@ -9,7 +8,16 @@
 	],
 	"tasks": [
 		{
-			"taskName": "build:dev:app"
+			"label": "build:dev:app",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"node",
+				"${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+				"build:dev:app"
+			],
+			"problemMatcher": []
 		}
 	]
 }
