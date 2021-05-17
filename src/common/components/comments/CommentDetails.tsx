@@ -99,7 +99,7 @@ export default class CommentDetails extends React.Component<
 				title="Delete Comment"
 			>
 				<p>Are you sure?</p>
-				<p>Comment deletion is permanant. You can't undo this action.</p>
+				<p>Comment deletion is permanent. You can't undo this action.</p>
 			</FormDialog>
 		);
 	};
