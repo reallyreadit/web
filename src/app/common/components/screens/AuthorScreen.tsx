@@ -179,8 +179,7 @@ class AuthorScreen extends React.Component<Props, State> {
 												Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
 											</div>
 											<div className="message">
-												Are you {this.props.profile.value.name}?
-												<Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.
+												Are you {this.props.profile.value.name}? <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.
 											</div>
 										</InfoBox> :
 										null}
