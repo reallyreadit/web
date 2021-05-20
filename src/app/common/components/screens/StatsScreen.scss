@@ -2,7 +2,6 @@
 	componentPath: src/app/common/components/screens/StatsScreen
 	cssComponentId: stats-screen_mqbxl8
 */
-@import '../../../../common/styles/colors';
 
 .stats-screen_mqbxl8 > .reading-time > form {
 	display: flex;
@@ -40,46 +39,4 @@
 .stats-screen_mqbxl8 > .reading-time > .chart > .placeholder > .padlock {
 	margin: 10px auto;
 	font-size: 48px;
-}
-.stats-screen_mqbxl8 > .reading-time > .key {
-	font-size: 12pt;
-}
-.stats-screen_mqbxl8 > .reading-time > .key > li {
-	text-align: center;
-}
-.stats-screen_mqbxl8 > .reading-time > .key > li:first-child {
-	margin-bottom: 5px;
-}
-.stats-screen_mqbxl8 > .reading-time > .key > li::before {
-	content: "";
-	width: 25px;
-	height: 10px;
-	margin-right: 10px;
-	display: inline-block;
-	vertical-align: middle;
-}
-.stats-screen_mqbxl8 > .reading-time > .key > li::before {
-	border-width: 1px;
-	border-style: solid;
-}
-
-@include theme using ($root, $scheme) {
-	#{$root} .stats-screen_mqbxl8 > .reading-time > .key > li:nth-child(1)::before {
-		@include theme-colors(
-			$scheme,
-			(
-				"background-color": $chart-1-background-color,
-				"border-color": $chart-1-border-color
-			)
-		);
-	}
-	#{$root} .stats-screen_mqbxl8 > .reading-time > .key > li:nth-child(2)::before {
-		@include theme-colors(
-			$scheme,
-			(
-				"background-color": $chart-2-background-color,
-				"border-color": $chart-2-border-color
-			)
-		);
-	}
 }

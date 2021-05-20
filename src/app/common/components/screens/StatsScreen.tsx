@@ -12,6 +12,7 @@ import ReadingTimeStats from '../../../../common/models/ReadingTimeStats';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import Icon from '../../../../common/components/Icon';
+import { ChartKey } from '../controls/ChartKey';
 
 interface ReadingTimeStatsData {
 	dataset: {
@@ -237,10 +238,10 @@ class StatsScreen extends React.Component<Props, State> {
 									</div> :
 									null}
 							</div>}
-						<ol className="key">
-							<li>Total</li>
-							<li>To Completion</li>
-						</ol>
+						<ChartKey
+							item1="Total"
+							item2="To Completion"
+						/>
 					</div>}
 			</ScreenContainer>
 		);
