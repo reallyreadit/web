@@ -24,6 +24,8 @@ import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/an
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { calculateEstimatedReadTime } from '../../../common/calculate';
 import { truncateText } from '../../../common/format';
+import { RevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
+import { RevenueReport } from './AdminPage/RevenueReport';
 
 interface Props {
 	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>,
@@ -34,6 +36,7 @@ interface Props {
 	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
 	onGetDailyTotals: FetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>,
+	onGetRevenueReport: FetchFunctionWithParams<DateRangeQuery, RevenueReportResponse>,
 	onGetSignups: FetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>,
 	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
 	onNavTo: (ref: NavReference) => void,
@@ -345,6 +348,9 @@ class AdminPage extends React.Component<
 		return (
 			<ScreenContainer>
 				<div className="admin-page_czkowo">
+					<RevenueReport
+						onGetRevenueReport={this.props.onGetRevenueReport}
+					/>
 					<ArticleAuthorControl
 						onAssignAuthorToArticle={this.props.onAssignAuthorToArticle}
 						onShowToast={this.props.onShowToast}
@@ -766,6 +772,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onGetBulkMailingLists={deps.onGetBulkMailingLists}
 					onGetConversions={deps.onGetConversions}
 					onGetDailyTotals={deps.onGetDailyTotals}
+					onGetRevenueReport={deps.onGetRevenueReport}
 					onGetSignups={deps.onGetSignups}
 					onGetUserStats={deps.onGetUserStats}
 					onNavTo={deps.onNavTo}

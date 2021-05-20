@@ -893,6 +893,7 @@ export default abstract class Root<
 				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetConversions: this.props.serverApi.getConversionAnalytics,
 				onGetDailyTotals: this.props.serverApi.getDailyTotalAnalytics,
+				onGetRevenueReport: this.props.serverApi.getAdminSubscriptionRevenueReport,
 				onGetSignups: this.props.serverApi.getSignupAnalytics,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
 				onNavTo: this._navTo,

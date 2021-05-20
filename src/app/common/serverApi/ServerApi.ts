@@ -80,6 +80,7 @@ import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/
 import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
+import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -164,6 +165,7 @@ export default abstract class {
 	};
 
 	// Analytics
+	public readonly getAdminSubscriptionRevenueReport = this.createFetchFunctionWithParams<DateRangeQuery, AdminRevenueReportResponse>('/Analytics/RevenueReport');
 	public readonly getArticleIssueReportAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>('/Analytics/ArticleIssueReports');
 	public readonly getAuthorMetadataAssignmentQueue = this.createFetchFunction<AuthorMetadataAssignmentQueueResponse>('/Analytics/AuthorMetadataAssignmentQueue');
 	public readonly getConversionAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>('/Analytics/Conversions');
