@@ -10,7 +10,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
 			<h2>Privacy Policy and Terms of Use</h2>
-			<h3>Updated: Friday, May 21, 2020</h3>
+			<h3>Updated: Friday, May 21, 2021</h3>
 			<section>
 				<p>AS A GENERAL RULE, technology companies — and especially social media companies — don’t want you to read contracts like the one you’re reading right now. They don’t want you to fully understand how they work and what they do with your personal information because they know that it’s unsettling and unethical. So they hide the truth in contracts that are so long, boring and confusing they’re virtually impossible to read.</p>
 				<p>As a result, we keep clicking “I agree” to legally binding documents without much of a clue what we’re even agreeing to. It’s a huge problem.</p>
@@ -99,7 +99,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 					<ul>
 						<li>An <strong>identifier</strong>, your <strong>subscription price</strong>, <strong>start and end dates</strong>, <strong>payment status</strong>, <strong>refund status</strong>, <strong>auto-renew preference</strong>, and any <strong>pending upgrades or downgrades</strong>.</li>
 					</ul>
-					<li>Stripe also provides us with a <strong>random ID</strong> to reference your payment method, your <strong>wallet</strong> (if you pay using a wallet service), your <strong>credit card brand</strong>, and the <strong>last four digits</strong> and <strong>expiration date</strong> of your credit card.</li> 
+					<li>Stripe also provides us with a <strong>random ID</strong> to reference your payment method, your <strong>wallet</strong> (if you pay using a wallet service), your <strong>credit card brand</strong>, and the <strong>last four digits</strong> and <strong>expiration date</strong> of your credit card.</li>
 					<li>Your credit card number is never transmitted to (or stored on) any Readup servers.</li>
 				</ul>
 				<p><strong className="underline">When you read on Readup</strong></p>
