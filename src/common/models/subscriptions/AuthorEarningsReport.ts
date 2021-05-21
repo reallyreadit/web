@@ -3,8 +3,7 @@ export interface AuthorEarningsReport {
 	authorSlug: string,
 	userAccountName: string | null,
 	minutesRead: number,
-	amountEarned: number,
-	amountPaid: number
+	amountEarned: number
 }
 export interface AuthorsEarningsReportResponse {
 	lineItems: AuthorEarningsReport[]

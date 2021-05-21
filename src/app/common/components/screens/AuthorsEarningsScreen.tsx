@@ -41,7 +41,7 @@ class AuthorsEarningsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		type ColumnName = 'writer' | 'minutesRead' | 'amountEarned' | 'amountPaid';
+		type ColumnName = 'writer' | 'minutesRead' | 'amountEarned';
 		const columns: { [key in ColumnName]: { class: string, header: string } } = {
 			writer: {
 				class: 'writer',
@@ -54,10 +54,6 @@ class AuthorsEarningsScreen extends React.Component<Props, State> {
 			amountEarned: {
 				class: 'amount-earned',
 				header: 'Amount Earned'
-			},
-			amountPaid: {
-				class: 'amount-paid',
-				header: 'Amount Paid'
 			}
 		};
 		return (
@@ -130,12 +126,6 @@ class AuthorsEarningsScreen extends React.Component<Props, State> {
 															data-header={columns.amountEarned.header}
 														>
 															{formatCurrency(item.amountEarned)}
-														</td>
-														<td
-															className={columns.amountPaid.class}
-															data-header={columns.amountPaid.header}
-														>
-															{formatCurrency(item.amountPaid)}
 														</td>
 													</tr>
 												)
