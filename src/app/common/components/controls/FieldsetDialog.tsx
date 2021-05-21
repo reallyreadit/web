@@ -12,7 +12,7 @@ export interface State {
 	showErrors: boolean,
 	isLoading: boolean
 }
-export default abstract class FieldsetDialog<T, P, S extends Partial<State>> extends React.PureComponent<P & Props, S> {
+export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Error = string[]> extends React.PureComponent<P & Props, S> {
 	private readonly _className: string;
 	private readonly _title: string;
 	private readonly _submitButtonText: string;
@@ -70,7 +70,7 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>> ext
 	};
 	protected abstract submitForm(): Promise<T>;
 	protected onSuccess(result: T) { }
-	protected onError(errors: string[]) { }
+	protected onError(errors: Error) { }
 	public render() {
 		return (
 			<FormDialog
