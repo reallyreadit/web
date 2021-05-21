@@ -10,7 +10,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
 			<h2>Privacy Policy and Terms of Use</h2>
-			<h3>Updated: Sunday, May 2, 2020</h3>
+			<h3>Updated: Friday, May 21, 2020</h3>
 			<section>
 				<p>AS A GENERAL RULE, technology companies — and especially social media companies — don’t want you to read contracts like the one you’re reading right now. They don’t want you to fully understand how they work and what they do with your personal information because they know that it’s unsettling and unethical. So they hide the truth in contracts that are so long, boring and confusing they’re virtually impossible to read.</p>
 				<p>As a result, we keep clicking “I agree” to legally binding documents without much of a clue what we’re even agreeing to. It’s a huge problem.</p>
@@ -40,7 +40,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 				<ol>
 					<li>You own the rights to the comments you make on Readup.</li>
 					<li>At any time, you can request a complete copy of your personal data and we will send it to you. We do this manually, so it might take a few days.</li>
-					<li>You can delete your account whenever you want. This is also a manual process. We delete all of your comments from our database and erase your identity, entirely, from our system.</li>
+					<li>You can delete your account whenever you want.</li>
 					<li><strong className="underline"><em>We never share your reading data with any third parties under any circumstances.</em></strong> We don’t even use common services like Google Analytics or Hotjar which monitor everything you do in the background. The <em>only</em> third party script that runs on Readup is Stripe.js (for fraud detection) during checkout, which Stripe requires us to do.</li>
 				</ol>
 			</section>
