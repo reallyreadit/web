@@ -98,6 +98,16 @@
 				> * {
 					padding-left: 26px;
 				}
+				> *:not(:last-child) {
+					margin-bottom: 0.5em;
+				}
+				> ol {
+					list-style: decimal;
+					padding-left: calc(26px + 1em);
+				}
+				> ol > li:not(:last-child) {
+					margin-bottom: 0.25em;
+				}
 			}
 		}
 
