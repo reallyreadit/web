@@ -69,12 +69,6 @@ class AuthorsEarningsScreen extends React.Component<Props, State> {
 							{this.props.title ?
 								<h1>{this.props.title}</h1> :
 								null}
-							<InfoBox
-								position="static"
-								style="normal"
-							>
-								These writers have earned money on Readup!
-							</InfoBox>
 							<table>
 								<thead>
 									<tr>
