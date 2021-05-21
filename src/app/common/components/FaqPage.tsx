@@ -106,10 +106,6 @@ const faqs: FaqCategory[] = [
 				question: "Will other people know what I’ve been reading?",
 				answer: <p>Not by default. After you finish an article, you can choose to post it publicly.&nbsp;
 					Otherwise, all of your reading stays totally private.</p>
-			},
-			{
-				question: "Can I delete my account?",
-				answer: <p>Yes. Just send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			}
 		]
 	}),
@@ -143,19 +139,35 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "What is verification?",
-				answer: <p>Verification proves that your account is real and connects your account to the articles you’ve written.</p>
+				answer: <p>Verification proves that your account is real and connects your account and identity to the articles you’ve written. As a verified writer, you don’t have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Verified writers get special Writer Profiles. And verified Writers can cash out.</p>
 			},
 			{
-				question: "Why should I get verified?",
-				answer: <p>As a verified writer, you don’t have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Verified writers get special Writer Profiles. And verified Writers can cash out.</p>
+				question: "How do writers get verified?",
+				answer: <p>To get verified, send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>. A human will verify you.</p>
 			},
 			{
-				question: "How do I get verified?",
-				answer: <p>Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>. A human will verify you.</p>
+				question: "How does Readup pay the writers?",
+				answer: (
+					<>
+						<p>Eventually we will have a "cash out" feature. For now, we will process payments to writers manually. It's a two step process.</p>
+						<ol>
+							<li>Get verified. Readup can't pay writers who aren't verified.</li>
+							<li>Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> and let us know your preferred payment method: Venmo or Paypal. A human will send you your money within a few business days and set up a payment schedule that works for you.</li>
+						</ol>
+					</>
+				)
 			},
 			{
-				question: "I have a balance on Readup. How do I collect the money I’ve earned here?",
-				answer: <p>To cash out, you need to get verified. Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+				question: "Is there a minimum to cash out?",
+				answer: <p>Yes. You must earn at least $10.00 on Readup in order to cash out. To hit the minimum, encourage your readers to read you on Readup and share the link to your profile page. Posting your own articles and participating in conversations about your own articles is another way to get more readers.</p>
+			},
+			{
+				question: "Is there a time limit to cash out?",
+				answer: <p>No. Writer earnings do not expire. Readup will hold the balance indefinitely, so you never have to worry about losing the money you have earned.</p>
+			},
+			{
+				question: "How much money has Readup earned for writers?",
+				answer: <p>Writer earnings and total Readup revenue are visible on the homepage and at the bottom of the menu. Individual, finalized distributions, broken down by writer, are visible <Link screen={ScreenKey.AuthorsEarnings} onClick={props.onNavTo}>here</Link>.</p>
 			}
 		]
 	}),

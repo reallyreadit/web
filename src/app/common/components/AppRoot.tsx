@@ -59,6 +59,7 @@ import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
+import { createAuthorsEarningsScreenFactory } from './screens/AuthorsEarningsScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -589,6 +590,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.AuthorsEarnings]: createAuthorsEarningsScreenFactory(
+				ScreenKey.AuthorsEarnings,
+				{
+					onGetAuthorsEarningsReport: this.props.serverApi.getAuthorsEarningsReport,
+					onNavTo: this._navTo
 				}
 			),
 			[ScreenKey.Blog]: createBlogScreenFactory(
