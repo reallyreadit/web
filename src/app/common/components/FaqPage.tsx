@@ -147,7 +147,15 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "How does Readup pay the writers?",
-				answer: <p>Eventually we will have a "cash out" feature. For now, we will process payments to writers manually. It's a three step process. <b>Step 1:</b> Get verified. Readup can't pay writers who aren't verified. <b>Step 2:</b> Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> and let us know your preferred payment method: Venmo or Paypal. A human will send you your money within a few business days and set up a payment schedule that works for you.</p>
+				answer: (
+					<>
+						<p>Eventually we will have a "cash out" feature. For now, we will process payments to writers manually. It's a two step process.</p>
+						<ol>
+							<li>Get verified. Readup can't pay writers who aren't verified.</li>
+							<li>Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> and let us know your preferred payment method: Venmo or Paypal. A human will send you your money within a few business days and set up a payment schedule that works for you.</li>
+						</ol>
+					</>
+				)
 			},
 			{
 				question: "Is there a minimum to cash out?",
