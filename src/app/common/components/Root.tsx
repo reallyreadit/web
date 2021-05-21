@@ -767,6 +767,16 @@ export default abstract class Root<
 				}
 			);
 	};
+	protected readonly _deleteAccount = () => {
+		const pushDeviceForm = this.getPushDeviceForm();
+		return this.props.serverApi
+			.deleteUserAccount({
+				installationId: pushDeviceForm && pushDeviceForm.installationId
+			})
+			.then(
+				() => this.onUserSignedOut()
+			);
+	};
 	protected readonly _getSettings = (callback: (result: Fetchable<Settings>) => void) => {
 		return this.props.serverApi.getSettings(
 			settings => {

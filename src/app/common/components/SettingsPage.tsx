@@ -41,6 +41,7 @@ import Button from '../../../common/components/Button';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
+import { AccountDeletionDialog } from './SettingsPage/AccountDeletionDialog';
 
 interface Props {
 	deviceType: DeviceType,
@@ -53,6 +54,7 @@ interface Props {
 	onChangePaymentMethod: (card: StripeCardElement) => Promise<SubscriptionPaymentMethodResponse>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onCreateStaticContentUrl: (path: string) => string,
+	onDeleteAccount: () => Promise<void>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
@@ -151,6 +153,15 @@ class SettingsPage extends React.PureComponent<
 				}
 			}
 		});
+	};
+	private readonly _openAccountDeletionDialog = () => {
+		this.props.onOpenDialog(
+			<AccountDeletionDialog
+				onCloseDialog={this.props.onCloseDialog}
+				onDeleteAccount={this.props.onDeleteAccount}
+				onShowToast={this.props.onShowToast}
+			/>
+		);
 	};
 	private readonly _openChangePasswordDialog = () => {
 		this.props.onOpenDialog(
@@ -498,6 +509,17 @@ class SettingsPage extends React.PureComponent<
 								/>
 							</div>
 						</div>
+						<div className="setting">
+							<div className="header">
+								<span className="label">Account Deletion</span>
+							</div>
+							<div className="section">
+								<Link
+									onClick={this._openAccountDeletionDialog}
+									text="Delete My Account"
+								/>
+							</div>
+						</div>
 					</>}
 			</ScreenContainer>
 		);
@@ -518,6 +540,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onChangePaymentMethod={deps.onChangePaymentMethod}
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
+				onDeleteAccount={deps.onDeleteAccount}
 				onOpenDialog={deps.onOpenDialog}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenPriceChangeDialog={deps.onOpenPriceChangeDialog}

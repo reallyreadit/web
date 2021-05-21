@@ -782,6 +782,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
+					onDeleteAccount: this._deleteAccount,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,

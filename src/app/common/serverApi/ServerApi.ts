@@ -250,6 +250,7 @@ export default abstract class {
 	public readonly changeTimeZone = (timeZone: { id?: number, name?: string }) => this.post<UserAccount>({ path: '/UserAccounts/ChangeTimeZone', data: timeZone });
 	public readonly createAuthServiceAccount = (data: AuthServiceAccountForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/AuthServiceAccount', data });
 	public readonly createUserAccount = (data: UserAccountForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/CreateAccount', data });
+	public readonly deleteUserAccount = (request: SignOutForm) => this.post({ path: '/UserAccounts/Deletion', data: request });
 	public readonly getDisplayPreference = this.createFetchFunction<DisplayPreference>('/UserAccounts/DisplayPreference');
 	public readonly getSettings = this.createFetchFunction<Settings>('/UserAccounts/Settings');
 	public readonly getTimeZones = this.createFetchFunction<TimeZoneSelectListItem[]>('/UserAccounts/TimeZones');
