@@ -162,10 +162,6 @@ const faqs: FaqCategory[] = [
 				answer: <p>Yes. You must earn at least $10.00 on Readup in order to cash out. To hit the minimum, encourage your readers to read you on Readup and share the link to your profile page. Posting your own articles and participating in conversations about your own articles is another way to get more readers.</p>
 			},
 			{
-				question: "Is there a minimum to cash out?",
-				answer: <p>Yes. You must earn at least $10.00 on Readup in order to cash out.</p>
-			},
-			{
 				question: "Is there a time limit to cash out?",
 				answer: <p>No. Writer earnings do not expire. Readup will hold the balance indefinitely, so you never have to worry about losing the money you have earned.</p>
 			},
