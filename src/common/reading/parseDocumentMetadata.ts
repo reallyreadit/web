@@ -93,12 +93,23 @@ export default function parseDocumentMetadata() {
 	// first check for an LD+JSON script
 	const script = document.querySelector('script[type="application/ld+json"]');
 	if (script && script.textContent) {
-		const cdataMatch = script.textContent.match(/^\s*\/\/<!\[CDATA\[([\s\S]*)\/\/\]\]>\s*$/);
+		const
+			cdataMatch = script.textContent.match(/^\s*\/\/<!\[CDATA\[([\s\S]*)\/\/\]\]>\s*$/),
+			graphKey = '@graph';
+		let schemaObject: any;
 		try {
 			if (cdataMatch) {
-				schema = parseSchema([JSON.parse(cdataMatch[1])]);
+				schemaObject = JSON.parse(cdataMatch[1]);
 			} else {
-				schema = parseSchema([JSON.parse(script.textContent)]);
+				schemaObject = JSON.parse(script.textContent);
+			}
+			if (
+				graphKey in schemaObject &&
+				Array.isArray(schemaObject[graphKey])
+			) {
+				schema = parseSchema(schemaObject[graphKey]);
+			} else {
+				schema = parseSchema([schemaObject]);
 			}
 		} catch (ex) {
 			// LD+JSON parse error
