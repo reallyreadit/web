@@ -174,6 +174,8 @@ server.use((req, res, next) => {
 			.then(
 				profile => {
 					req.userProfile = profile;
+					// this header is added to allow the hosting web server to log the id of an authenticated user
+					res.setHeader('X-Readup-User-Id', profile.userAccount.id);
 					next();
 				}
 			)
