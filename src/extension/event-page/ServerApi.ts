@@ -29,9 +29,6 @@ import CommentCreationResponse from '../../common/models/social/CommentCreationR
 
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension.package}`);
-	if (params.context) {
-		req.setRequestHeader('X-Readup-Context', params.context);
-	}
 }
 export default class ServerApi {
 	public static alarms = {
