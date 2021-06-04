@@ -125,6 +125,8 @@ if (config.logStream) {
 }
 // create server
 let server = express();
+// disable server header
+server.disable('x-powered-by');
 // configure request logging
 server.use((req, res, next) => {
 	log.info({ req });
