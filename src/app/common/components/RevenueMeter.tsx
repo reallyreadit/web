@@ -18,7 +18,13 @@ export const RevenueMeter: React.SFC<Props> = (props: Props) => (
 						style={{
 							width: ((props.report.value.report.authorAllocation / props.report.value.report.totalRevenue) * 100) + '%'
 						}}
-					></div>
+					>Writer's share</div>
+					<div
+						className="fill"
+						style={{
+							width:  (( 1 - (props.report.value.report.authorAllocation / props.report.value.report.totalRevenue)) * 100) + '%'
+						}}
+					>Fees</div>
 				</div>
 				<div className="total-revenue">Total Revenue: {formatCurrency(props.report.value.report.totalRevenue)}</div>
 			</> :
