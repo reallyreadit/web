@@ -35,6 +35,7 @@ import { PriceList } from './MarketingScreen/PriceList';
 import { RevenueMeter } from '../RevenueMeter';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 import { NavReference } from '../Root';
+import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -369,6 +370,14 @@ export default class MarketingScreen extends React.Component<
 						<RevenueMeter report={this.props.revenueReport} />
 					</HomePanel> :
 					null}
+				<HomePanel
+					data-nosnippet
+					className="how-it-works"
+				>
+					<h2 className="heading-regular">How it works</h2>
+					<p className="home-section-intro">Watch our CEO give a 3-minute demo of Readup.</p>
+					<HowItWorksVideo mode={VideoMode.Embed} />
+				</HomePanel>
 				<HomePanel
 					data-nosnippet
 					className="quote-panel"
