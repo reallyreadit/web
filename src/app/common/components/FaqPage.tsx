@@ -9,6 +9,7 @@ import Button from '../../../common/components/Button';
 import Link from '../../../common/components/Link';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { NavReference, Screen } from './Root';
+import { HowItWorksVideo, VideoMode } from './HowItWorksVideo';
 
 interface Faq {
 	question: string;
@@ -242,15 +243,23 @@ const renderFaqCategory = (props: Props, createFaqCategory: FaqCategory) => {
 		</div>;
 }
 
-interface Props {
+type CoreProps = {
 	location: RouteLocation,
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void
-}
-
-type Services = Pick<Props, Exclude<keyof Props, 'location'>> & {
-	onCreateTitle: () => string
 };
+type VideoProps = {
+	videoMode: VideoMode.Embed
+} | {
+	videoMode: VideoMode.Link,
+	onCreateStaticContentUrl: (path: string) => string
+};
+type Props = CoreProps & VideoProps;
+
+type Services = Pick<CoreProps, Exclude<keyof CoreProps, 'location'>> &
+	VideoProps & {
+		onCreateTitle: () => string
+	};
 
 function jumpTo(url: string) {
 	const target = document.getElementById(
@@ -313,7 +322,17 @@ const FaqPage = (props: Props): JSX.Element => {
 			<HomeHero
 				title="Frequently Asked Questions"
 				description={
-					<>If your question isn't answered below, please send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>.</>
+					<>
+						<span>If your question isn't answered below, please send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>.</span>
+						<span>For a general overview on Readup, watch this 3-minute demo video:</span>
+						{props.videoMode === VideoMode.Embed ?
+							<HowItWorksVideo mode={VideoMode.Embed} /> :
+							<HowItWorksVideo
+								mode={VideoMode.Link}
+								onCreateStaticContentUrl={props.onCreateStaticContentUrl}
+								onNavTo={props.onNavTo}
+							/>}
+					</>
 				}
 			/>
 			<HomePanel className="faq-content">
@@ -343,11 +362,20 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Servi
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: services.onCreateTitle() }),
 		render: (screen: Screen) => (
-			<FaqPage
-				location={screen.location}
-				onNavTo={services.onNavTo}
-				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
-			/>
+			services.videoMode === VideoMode.Embed ?
+				<FaqPage
+					location={screen.location}
+					onNavTo={services.onNavTo}
+					onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
+					videoMode={VideoMode.Embed}
+				/> :
+				<FaqPage
+					location={screen.location}
+					onCreateStaticContentUrl={services.onCreateStaticContentUrl}
+					onNavTo={services.onNavTo}
+					onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
+					videoMode={VideoMode.Link}
+				/>
 		)
 	};
 }

@@ -59,6 +59,7 @@ import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { createAuthorsEarningsScreenFactory } from './screens/AuthorsEarningsScreen';
+import { VideoMode } from './HowItWorksVideo';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -548,7 +549,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
 				onCreateTitle: this._createFaqScreenTitle,
 				onNavTo: this._navTo,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				videoMode: VideoMode.Embed
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,

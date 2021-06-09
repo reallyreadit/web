@@ -60,6 +60,7 @@ import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { createAuthorsEarningsScreenFactory } from './screens/AuthorsEarningsScreen';
+import { VideoMode } from './HowItWorksVideo';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -639,9 +640,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onCreateTitle: this._createFaqScreenTitle,
 				onNavTo: this._navTo,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				videoMode: VideoMode.Link
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				onClearAlerts: this._clearAlerts,
