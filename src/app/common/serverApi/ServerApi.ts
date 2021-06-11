@@ -82,6 +82,7 @@ import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../com
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
 import { AuthorsEarningsReportResponse } from '../../../common/models/subscriptions/AuthorEarningsReport';
 import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
+import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -261,4 +262,5 @@ export default abstract class {
 	public readonly resetPassword = (data: PasswordResetForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/ResetPassword', data });
 	public readonly sendPasswordCreationEmail = () => this.post({ path: '/UserAccounts/PasswordCreationEmailDispatch' });
 	public readonly signIn = (data: SignInForm) => this.post<WebAppUserProfile>({ path: '/UserAccounts/SignIn', data });
+	public readonly submitAuthorEmailVerificationRequest = (request: AuthorEmailVerificationRequest) => this.post({ path: '/UserAccounts/AuthorEmailVerificationRequest', data: request });
 }
