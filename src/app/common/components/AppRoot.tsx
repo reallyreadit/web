@@ -61,6 +61,7 @@ import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { createAuthorsEarningsScreenFactory } from './screens/AuthorsEarningsScreen';
 import { VideoMode } from './HowItWorksVideo';
+import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -223,6 +224,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			...data,
 			selection: createRelativeShareSelection(data.selection, window)
 		});
+	};
+	private readonly _openTweetComposer = (params: TweetWebIntentParams) => {
+		this.props.appApi.openExternalUrlUsingSystem(
+			createTweetWebIntentUrl(params)
+		);
 	};
 
 	// subscriptions
@@ -792,6 +798,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onChangePassword: this._changePassword,
 					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onDeleteAccount: this._deleteAccount,
 					onGetSettings: this._getSettings,
@@ -802,11 +809,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenPriceChangeDialog: this._openPriceChangeDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
+					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
 					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
 					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value

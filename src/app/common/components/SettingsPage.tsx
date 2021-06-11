@@ -42,6 +42,9 @@ import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { AccountDeletionDialog } from './SettingsPage/AccountDeletionDialog';
+import { WriterAccountControl } from './SettingsPage/WriterAccountControl';
+import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
+import { TweetWebIntentParams } from '../../../common/sharing/twitter';
 
 interface Props {
 	deviceType: DeviceType,
@@ -53,6 +56,7 @@ interface Props {
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
 	onChangePaymentMethod: (card: StripeCardElement) => Promise<SubscriptionPaymentMethodResponse>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onDeleteAccount: () => Promise<void>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
@@ -63,11 +67,13 @@ interface Props {
 	onOpenPriceChangeDialog: () => void,
 	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
+	onOpenTweetComposer: (params: TweetWebIntentParams) => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignOut: () => Promise<void>,
+	onSubmitAuthorEmailVerificationRequest: (request: AuthorEmailVerificationRequest) => Promise<void>,
 	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>,
 	onViewPrivacyPolicy: () => void,
 	subscriptionStatus: SubscriptionStatus,
@@ -478,6 +484,22 @@ class SettingsPage extends React.PureComponent<
 						</div>
 						<div className="setting">
 							<div className="header">
+								<span className="label">Writer Account</span>
+							</div>
+							<div className="section">
+								<WriterAccountControl
+									authorProfile={this.state.settings.value.authorProfile}
+									onCloseDialog={this.props.onCloseDialog}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onOpenDialog={this.props.onOpenDialog}
+									onOpenTweetComposer={this.props.onOpenTweetComposer}
+									onShowToast={this.props.onShowToast}
+									onSubmitAuthorEmailVerificationRequest={this.props.onSubmitAuthorEmailVerificationRequest}
+								/>
+							</div>
+						</div>
+						<div className="setting">
+							<div className="header">
 								<span className="label">Current Session</span>
 							</div>
 							<div className="section">
@@ -539,6 +561,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onChangePassword={deps.onChangePassword}
 				onChangePaymentMethod={deps.onChangePaymentMethod}
 				onChangeTimeZone={deps.onChangeTimeZone}
+				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onDeleteAccount={deps.onDeleteAccount}
 				onOpenDialog={deps.onOpenDialog}
@@ -546,6 +569,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onOpenPriceChangeDialog={deps.onOpenPriceChangeDialog}
 				onOpenSubscriptionAutoRenewDialog={deps.onOpenSubscriptionAutoRenewDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
+				onOpenTweetComposer={deps.onOpenTweetComposer}
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
@@ -554,6 +578,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}
 				onSignOut={deps.onSignOut}
+				onSubmitAuthorEmailVerificationRequest={deps.onSubmitAuthorEmailVerificationRequest}
 				onUpdatePaymentMethod={deps.onUpdatePaymentMethod}
 				onViewPrivacyPolicy={deps.onViewPrivacyPolicy}
 				stripe={deps.stripe}

@@ -75,6 +75,7 @@ import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotif
 import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
+import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -840,6 +841,7 @@ export default abstract class Root<
 			})
 			.then(() => this.onUserSignedOut());
 	};
+	protected readonly _submitAuthorEmailVerificationRequest = (request: AuthorEmailVerificationRequest) => this.props.serverApi.submitAuthorEmailVerificationRequest(request);
 	protected readonly _updateEmailSubscriptions = (token: string, preference: NotificationPreference) => {
 		return this.props.serverApi
 			.updateEmailSubscriptions(token, preference)
