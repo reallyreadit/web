@@ -8,6 +8,7 @@ import Popover, { MenuPosition, MenuState } from './Popover';
 import ShareForm from '../models/analytics/ShareForm';
 import ShareResponse from '../sharing/ShareResponse';
 import { ShareEvent } from '../sharing/ShareEvent';
+import { openTweetComposerBrowserWindow } from '../sharing/twitter';
 
 export { MenuPosition } from './Popover';
 interface Props {
@@ -75,17 +76,14 @@ export default class ShareControl extends React.PureComponent<
 		}
 	};
 	private readonly _openTweetComposer = () => {
-		const queryString = createQueryString({
-			'text': truncateText(this.state.data.text, 280 - 25),
-			'url': this.state.data.url,
-			'hashtags': 'ReadOnReadup',
-			'via': 'ReadupDotCom'
+		openTweetComposerBrowserWindow({
+			text: truncateText(this.state.data.text, 280 - 25),
+			url: this.state.data.url,
+			hashtags: [
+				'ReadOnReadup'
+			],
+			via: 'ReadupDotCom'
 		});
-		window.open(
-			`https://twitter.com/intent/tweet${queryString}`,
-			'_blank',
-			'height=300,location=0,menubar=0,toolbar=0,width=500'
-		);
 		this.completeWithActivityType('Twitter');
 	};
 	constructor(props: Props) {
