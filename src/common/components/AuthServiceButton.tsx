@@ -6,7 +6,8 @@ import * as classNames from 'classnames';
 
 interface Props {
 	onClick: (provider: AuthServiceProvider) => Promise<any> | void,
-	provider: AuthServiceProvider
+	provider: AuthServiceProvider,
+	text?: string
 }
 interface State {
 	isSubmitting: boolean
@@ -56,13 +57,13 @@ export default class AuthServiceButton extends React.PureComponent<Props, State>
 		switch (this.props.provider) {
 			case AuthServiceProvider.Apple:
 				content = (
-					<span className="content"> Sign in with Apple</span>
+					<span className="content"> {this.props.text ?? 'Sign in with Apple'}</span>
 				);
 				break;
 			case AuthServiceProvider.Twitter:
 				content = (
 					<span className="content">
-						<span className="icon"></span> Sign in with Twitter
+						<span className="icon"></span> {this.props.text ?? 'Sign in with Twitter'}
 					</span>
 				);
 				break;
