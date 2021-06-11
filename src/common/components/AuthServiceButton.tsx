@@ -11,7 +11,7 @@ interface Props {
 interface State {
 	isSubmitting: boolean
 }
-export default class TwitterAuthButton extends React.PureComponent<Props, State> {
+export default class AuthServiceButton extends React.PureComponent<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _submit = () => {
 		this.setState(
