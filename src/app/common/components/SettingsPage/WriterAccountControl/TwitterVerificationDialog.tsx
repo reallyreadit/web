@@ -3,9 +3,6 @@ import Dialog from '../../../../../common/components/Dialog';
 import AuthServiceButton from '../../../../../common/components/AuthServiceButton';
 import AuthServiceProvider from '../../../../../common/models/auth/AuthServiceProvider';
 import Link from '../../../../../common/components/Link';
-import { findRouteByKey } from '../../../../../common/routing/Route';
-import routes from '../../../../../common/routing/routes';
-import ScreenKey from '../../../../../common/routing/ScreenKey';
 import UserAccount from '../../../../../common/models/UserAccount';
 import { TweetWebIntentParams } from '../../../../../common/sharing/twitter';
 
@@ -19,14 +16,8 @@ interface Props {
 
 export class TwitterVerificationDialog extends React.Component<Props> {
 	private readonly _openTweetComposer = () => {
-		const profileUrl = this.props.onCreateAbsoluteUrl(
-			findRouteByKey(routes, ScreenKey.Profile)
-				.createUrl({
-					'userName': this.props.user.name
-				})
-		);
 		this.props.onOpenTweetComposer({
-			text: `I'm just getting started on Readup. Read me on Readup so that I make more money! ${profileUrl} @ReadupDotCom #Hashtag?`
+			text: `readup.com has a plan to fix reading on social media and I'm giving it a whirl. My reader name is ${this.props.user.name} @ReadupDotCom`
 		});
 	};
 	public render() {
