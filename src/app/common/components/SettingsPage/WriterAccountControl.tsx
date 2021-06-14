@@ -13,6 +13,7 @@ import ContentBox from '../../../../common/components/ContentBox';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountOnboardingLinkRequestResponseType, PayoutAccount } from '../../../../common/models/subscriptions/PayoutAccount';
 import Icon from '../../../../common/components/Icon';
 import AsyncLink from '../controls/AsyncLink';
+import { CancellationToken } from '../../../../common/AsyncTracker';
 
 interface Props {
 	authorProfile: AuthorProfile | null,
@@ -78,10 +79,12 @@ export class WriterAccountControl extends React.Component<Props> {
 		)
 		.catch(
 			reason => {
-				this.props.onShowToast(
-					getPromiseErrorMessage(reason),
-					Intent.Danger
-				);
+				if (!(reason as CancellationToken)?.isCancelled) {
+					this.props.onShowToast(
+						getPromiseErrorMessage(reason),
+						Intent.Danger
+					);
+				}
 				throw reason;
 			}
 		);
