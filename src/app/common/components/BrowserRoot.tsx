@@ -61,6 +61,7 @@ import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { createAuthorsEarningsScreenFactory } from './screens/AuthorsEarningsScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
+import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -80,6 +81,7 @@ enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
 	AppleIdInvalidSession = 'AppleInvalidSessionId',
 	Rebrand = 'rebrand',
+	StripeOnboardingFailed = 'StripeOnboardingFailed',
 	TwitterEmailAddressRequired = 'TwitterEmailAddressRequired',
 	TwitterVerificationFailed = 'TwitterInvalidAuthToken'
 }
@@ -87,6 +89,7 @@ const welcomeMessages = {
 	[WelcomeMessage.AppleIdInvalidJwt]: 'We were unable to validate the ID token.',
 	[WelcomeMessage.AppleIdInvalidSession]: 'We were unable to validate your session ID.',
 	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!',
+	[WelcomeMessage.StripeOnboardingFailed]: 'We were unable to connect your Stripe account. Please contact support.',
 	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
 	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.'
 };
@@ -273,6 +276,33 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		this._openStripeSubscriptionPromptDialog(article);
 	};
+	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
+		.requestPayoutAccountLoginLink()
+		.then(
+			response => {
+				window.location.href = response.loginUrl;
+				return new Promise<void>(
+					() => {
+						// leave the promise unresolved as the browser navigates
+					}
+				);
+			}
+		);
+	private readonly _requestPayoutAccountOnboarding = () => this.props.serverApi
+		.requestPayoutAccountOnboardingLink()
+		.then(
+			response => {
+				if (response.type === PayoutAccountOnboardingLinkRequestResponseType.ReadyForOnboarding) {
+					window.location.href = response.onboardingUrl;
+					return new Promise<PayoutAccountOnboardingLinkRequestResponse>(
+						() => {
+							// leave the promise unresolved as the browser navigates
+						}
+					);
+				}
+				return response;
+			}
+		);
 
 	// user account
 	private readonly _beginOnboarding = (analyticsAction: string) => {
@@ -738,6 +768,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
+					onRequestPayoutAccountLogin: this._requestPayoutAccountLogin,
+					onRequestPayoutAccountOnboarding: this._requestPayoutAccountOnboarding,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,

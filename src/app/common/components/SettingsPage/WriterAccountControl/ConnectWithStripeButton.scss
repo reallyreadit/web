@@ -1,0 +1,26 @@
+/*
+	componentPath: src/app/common/components/SettingsPage/WriterAccountControl/ConnectWithStripeButton
+	cssComponentId: connect-with-stripe-button_fn5k7h
+*/
+@import '../../../../../common/styles/config';
+
+.connect-with-stripe-button_fn5k7h {
+	width: 180px;
+	height: 38px;
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe-connect.svg'));
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.connect-with-stripe-button_fn5k7h:hover {
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe-connect-hover.svg'));
+}
+.connect-with-stripe-button_fn5k7h.busy {
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe-connect-blank.svg'));
+}
+.connect-with-stripe-button_fn5k7h.busy:hover {
+	background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe-connect-hover-blank.svg'));
+}

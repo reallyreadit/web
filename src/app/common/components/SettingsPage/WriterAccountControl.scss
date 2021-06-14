@@ -6,3 +6,47 @@
 .writer-account-control_yerlvh > p:not(:last-child) {
 	margin-bottom: 10px;
 }
+.writer-account-control_yerlvh > .content-box_kkp9lc {
+	display: inline-block;
+	max-width: 400px;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > :not(:last-child) {
+	margin-bottom: 5px;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > p > strong {
+	font-family: "Museo Sans (700)";
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr + tr > th,
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr + tr > td {
+	padding-top: 5px;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody:not(:last-child) > tr:last-child > th,
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody:not(:last-child) > tr:last-child > td {
+	padding-bottom: 5px;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr > th,
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tfoot > tr > th {
+	padding-right: 5px;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr > td,
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tfoot > tr > td {
+	padding-left: 5px;
+	text-align: right;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tfoot > tr > th,
+.writer-account-control_yerlvh > .content-box_kkp9lc > table > tfoot > tr > td {
+	padding-top: 5px;
+	border-top: 1px solid var(--content-divider-color);
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > .connect-with-stripe-button_fn5k7h {
+	margin-top: 10px;
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > .account-status {
+	display: flex;
+	align-items: center;
+	color: var(--intent-success-color);
+	font-family: 'Museo Sans (500)';
+}
+.writer-account-control_yerlvh > .content-box_kkp9lc > .account-status > .icon_rour3d {
+	margin-right: 5px;
+}
