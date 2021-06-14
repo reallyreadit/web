@@ -21,7 +21,7 @@ import { JsonLd } from 'react-schemaorg';
 import { ProfilePage } from 'schema-dts';
 import AuthorProfileRequest from '../../../../common/models/authors/AuthorProfileRequest';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, SharedState, NavMethod, NavOptions } from '../Root';
+import { Screen, SharedState, NavMethod, NavOptions, NavReference } from '../Root';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -42,7 +42,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
-	onNavTo: (url: string) => void,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -68,6 +68,15 @@ class AuthorScreen extends React.Component<Props, State> {
 			}
 		});
 		this.fetchArticles(pageNumber);
+	};
+	private readonly _verifyAccout = () => {
+		if (this.props.user) {
+			this.props.onNavTo({
+				key: ScreenKey.Settings
+			});
+		} else {
+			this.props.onBeginOnboarding('AuthorScreenVerification');
+		}
 	};
 	constructor(props: Props) {
 		super(props);
@@ -179,7 +188,7 @@ class AuthorScreen extends React.Component<Props, State> {
 												Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
 											</div>
 											<div className="message">
-												Are you {this.props.profile.value.name}? <Link href="mailto:support@readup.com" onClick={this.props.onNavTo}>Contact us</Link> to get verified and collect your earnings.
+												Are you {this.props.profile.value.name}? <Link onClick={this._verifyAccout}>Get verified</Link> to cash out.
 											</div>
 										</InfoBox> :
 										null}
