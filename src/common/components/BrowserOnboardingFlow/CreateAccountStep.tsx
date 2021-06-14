@@ -98,7 +98,7 @@ export default class CreateAccountStep extends React.PureComponent<Props, State>
 							};
 							if (Array.isArray(errors)) {
 								if (errors.includes('DuplicateName')) {
-									nextState.nameError = 'Username already in use.';
+									nextState.nameError = 'Reader name already in use.';
 								}
 								if (errors.includes('DuplicateEmail')) {
 									nextState.emailError = 'Email address already in use.';

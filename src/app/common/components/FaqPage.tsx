@@ -168,8 +168,8 @@ const faqs: FaqCategory[] = [
 		title: "Misc",
 		questions: [
 			{
-				question: "Can I change my username?",
-				answer: <p>No. If you want a new username, you need to create a new account.</p>
+				question: "Can I change my reader name?",
+				answer: <p>No. If you want a new reader name, you need to create a new account.</p>
 			},
 			{
 				question: "Do you have an Android app?",

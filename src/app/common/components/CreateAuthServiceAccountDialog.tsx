@@ -21,7 +21,7 @@ export default class CreateAuthServiceAccountDialog extends FieldsetDialog<void,
 	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
-				title: 'Choose a Username',
+				title: 'Choose a Reader Name',
 				submitButtonText: 'Sign Up'
 			},
 			props
@@ -57,7 +57,7 @@ export default class CreateAuthServiceAccountDialog extends FieldsetDialog<void,
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'DuplicateName')) {
-			this.setState({ nameError: 'Username already in use.' });
+			this.setState({ nameError: 'Reader name already in use.' });
 		}
 		if (errors.some(error => error === 'DuplicateEmail')) {
 			this.props.onShowToast('Email address already in use.', Intent.Danger);

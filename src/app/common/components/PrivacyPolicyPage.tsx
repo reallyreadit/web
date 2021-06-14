@@ -33,7 +33,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 					<li>Anonymized, aggregate reading data powers <Link href="https://github.com/reallyreadit/aotd-algorithms" onClick={props.onNavTo}>the algorithm</Link> that curates content and selects the Article of the Day (AOTD). Readup is able to identify the best reading material because Readup “knows” the articles and stories that real humans are really reading to completion. <em>As far as we know, Readup is the only social media platform with a 100% transparent algorithm.</em></li>
 				</ul>
 				<p><strong>Your reading data is strictly private by default.</strong> The only way that other readers can see what you have read is if you explicitly choose to post or comment on an article after you have read it. There is no “bulk post” or “default public” option; the choice is yours to make on an article by article basis.</p>
-				<p>If you want, you can use Readup anonymously or pseudonymously, but once you choose a username you can’t change it.</p>
+				<p>If you want, you can use Readup anonymously or pseudonymously, but once you choose a reader name you can’t change it.</p>
 			</section>
 			<section>
 				<p><strong>You own your data.</strong> We store and use your data, but you own it. That means:</p>
@@ -54,7 +54,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 				<p><strong className="underline">When you create an account on Readup</strong></p>
 				<ul>
 					<li>We require you to provide an <b>email address</b>. (If you confirm your email, we store that too.)</li>
-					<li>We require you to choose a <b>username</b> and <b>password</b>. Only the salted password hash is stored in our database.</li>
+					<li>We require you to choose a <b>reader name</b> and <b>password</b>. Only the salted password hash is stored in our database.</li>
 					<li>We automatically detect your <b>time zone</b> and preferred <b>color scheme</b> (light mode or dark mode) from your device.</li>
 					<li>
 						We also collect the following analytics to help us understand how new people find us. We need this information to improve the onboarding experience for new readers:

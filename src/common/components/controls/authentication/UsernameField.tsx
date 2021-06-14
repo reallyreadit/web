@@ -14,7 +14,7 @@ export default (props: {
 			autoCapitalize="none"
 			autoFocus={props.autoFocus}
 			error={props.error}
-			label="Username"
+			label="Reader Name"
 			labelPosition={props.labelPosition}
 			minLength={3}
 			maxLength={30}
@@ -22,7 +22,7 @@ export default (props: {
 			onEnterKeyPressed={props.onEnterKeyPressed}
 			required
 			showError={props.showError}
-			subtext="Your username will be public, but you can choose to be as anonymous as you wish. (ex: JenFox or Human123)"
+			subtext="Your reader name will be public, but you can choose to be as anonymous as you wish. (ex: JenFox or Human123)"
 			type="username"
 			value={props.value}
 		/>

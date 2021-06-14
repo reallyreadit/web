@@ -94,7 +94,7 @@ export default class CreateAccountDialog extends FieldsetDialog<void, Props, Par
 	}
 	protected onError(errors: string[]) {
 		if (errors.some(error => error === 'DuplicateName')) {
-			this.setState({ nameError: 'Username already in use.' });
+			this.setState({ nameError: 'Reader name already in use.' });
 		}
 		if (errors.some(error => error === 'DuplicateEmail')) {
 			this.setState({ emailError: 'Email address already in use.' });

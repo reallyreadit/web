@@ -27,7 +27,7 @@ export class TwitterVerificationDialog extends React.Component<Props> {
 				title="Are you on Twitter?"
 			>
 				<div className="twitter-verification-dialog_fy082z">
-					<p>Tweet your Readup username @ReadupDotCom and we'll take it from there.</p>
+					<p>Tweet your Readup reader name @ReadupDotCom and we'll take it from there.</p>
 					<AuthServiceButton
 						onClick={this._openTweetComposer}
 						provider={AuthServiceProvider.Twitter}

@@ -64,7 +64,7 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 							};
 							if (Array.isArray(errors)) {
 								if (errors.includes('DuplicateName')) {
-									nextState.nameError = 'Username already in use.'
+									nextState.nameError = 'Reader name already in use.'
 								}
 								if (errors.includes('DuplicateEmail')) {
 									nextState.globalError = GlobalError.DuplicateEmail;
@@ -112,7 +112,7 @@ export default class CreateAuthServiceAccountStep extends React.PureComponent<Pr
 		}
 		return (
 			<div className="create-auth-service-account-step_7minpy">
-				<h1>Choose a Username</h1>
+				<h1>Choose a Reader Name</h1>
 				<UsernameField
 					autoFocus
 					error={this.state.nameError}
