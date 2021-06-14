@@ -369,7 +369,7 @@ class SettingsPage extends React.PureComponent<
 					<>
 						<div className="setting">
 							<div className="header">
-								<span className="label">Username</span>
+								<span className="label">Reader Name</span>
 								<Separator />
 								{user.isPasswordSet ?
 									<Link text="Change Password" iconLeft="locked" onClick={this._openChangePasswordDialog} /> :
