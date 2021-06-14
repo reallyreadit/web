@@ -139,24 +139,16 @@ const faqs: FaqCategory[] = [
 		title: "Writers",
 		questions: [
 			{
-				question: "What is verification?",
-				answer: <p>Verification proves that your account is real and connects your account and identity to the articles you’ve written. As a verified writer, you don’t have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Verified writers get special Writer Profiles. And verified Writers can cash out.</p>
+				question: "What is writer verification?",
+				answer: <p>Verification on Readup is for writers only. Verification proves that your account is real and connects your account and identity to the articles you've written.</p>
 			},
 			{
-				question: "How do writers get verified?",
-				answer: <p>To get verified, send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>. A human will verify you.</p>
+				question: "Why should I get verified?",
+				answer: <p>As a verified writer, your articles will appear on your profile. Also, you won't have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Most importantly, verified writers can collect their earnings.</p>
 			},
 			{
-				question: "How does Readup pay the writers?",
-				answer: (
-					<>
-						<p>Eventually we will have a "cash out" feature. For now, we will process payments to writers manually. It's a two step process.</p>
-						<ol>
-							<li>Get verified. Readup can't pay writers who aren't verified.</li>
-							<li>Send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> and let us know your preferred payment method: Venmo or Paypal. A human will send you your money within a few business days and set up a payment schedule that works for you.</li>
-						</ol>
-					</>
-				)
+				question: "How do I get verified?",
+				answer: <p>Create an account on Readup. Go to Settings. Click "Get Verified."</p>
 			},
 			{
 				question: "Is there a minimum to cash out?",
