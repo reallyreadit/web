@@ -10,7 +10,7 @@ import Button from '../../../../common/components/Button';
 import { formatCurrency } from '../../../../common/format';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import * as classNames from 'classnames';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, Area, XAxis, YAxis, Tooltip, ComposedChart, Line } from 'recharts';
 import { ChartKey } from '../controls/ChartKey';
 
 interface Props {
@@ -93,6 +93,7 @@ function renderFooter(items: RevenueReportLineItem[]) {
 						{formatCurrency(grandTotal)}
 					</strong>
 				</td>
+				<td></td>
 			</tr>
 		</tfoot>
 	);
@@ -168,7 +169,7 @@ export class RevenueReport extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const columnCount = 9;
+		const columnCount = 10;
 		let
 			periodGroups: { period: string, items: RevenueReportLineItem[] }[] | null,
 			chartPoints: ChartDataPoint[] | null;
@@ -215,7 +216,12 @@ export class RevenueReport extends React.Component<Props, State> {
 							group.items.filter(
 								item => item.provider === SubscriptionProvider.Stripe
 							)
-						)
+						),
+						monthlyRecurringRevenue: this.state.response.value.monthlyRecurringRevenueLineItems
+							.find(
+								item => item.period === group.period
+							)
+							.amount
 					})
 				);
 		}
@@ -248,9 +254,9 @@ export class RevenueReport extends React.Component<Props, State> {
 							{chartPoints ?
 								<div className="chart">
 									<ResponsiveContainer aspect={2}>
-										<AreaChart
+										<ComposedChart
 											data={chartPoints}
-											margin={{ top: 10, right: 10, left: 10 }}
+											margin={{ top: 10, right: 20, left: 10 }}
 											onClick={this._showToolTip}
 										>
 											<Area
@@ -260,6 +266,7 @@ export class RevenueReport extends React.Component<Props, State> {
 												stackId="1"
 												stroke="#9bbde4"
 												type="monotone"
+												yAxisId="dailySalesTotal"
 											/>
 											<Area
 												dataKey="stripeAmount"
@@ -268,6 +275,16 @@ export class RevenueReport extends React.Component<Props, State> {
 												stackId="1"
 												stroke="#4b88ce"
 												type="monotone"
+												yAxisId="dailySalesTotal"
+											/>
+											<Line
+												dataKey="monthlyRecurringRevenue"
+												dot={false}
+												name="MRR"
+												stroke="#ff0000"
+												strokeWidth={3}
+												type="monotone"
+												yAxisId="monthlyRecurringRevenue"
 											/>
 											<XAxis
 												dataKey="xLabel"
@@ -275,10 +292,18 @@ export class RevenueReport extends React.Component<Props, State> {
 											/>
 											<YAxis
 												minTickGap={1}
+												orientation="left"
 												tickFormatter={formatCurrency}
+												yAxisId="dailySalesTotal"
+											/>
+											<YAxis
+												minTickGap={1}
+												orientation="right"
+												tickFormatter={formatCurrency}
+												yAxisId="monthlyRecurringRevenue"
 											/>
 											<Tooltip formatter={formatCurrency} />
-										</AreaChart>
+										</ComposedChart>
 									</ResponsiveContainer>
 									<ChartKey
 										item1="Apple"
@@ -296,6 +321,7 @@ export class RevenueReport extends React.Component<Props, State> {
 							<th colSpan={2}>Super Reader ($24.99)</th>
 							<th>Custom</th>
 							<th></th>
+							<th></th>
 						</tr>
 						<tr>
 							<th>Period</th>
@@ -307,6 +333,7 @@ export class RevenueReport extends React.Component<Props, State> {
 							<th>Stripe</th>
 							<th>Stripe</th>
 							<th>Total</th>
+							<th>MRR</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -319,6 +346,9 @@ export class RevenueReport extends React.Component<Props, State> {
 												groupTotal = sumNetAmount(group.items),
 												customTotal = sumNetAmount(
 													getCustomItems(group.items)
+												),
+												monthlyRecurringLineItem = this.state.response.value.monthlyRecurringRevenueLineItems.find(
+													item => item.period === group.period
 												);
 											return (
 												<tr>
@@ -333,6 +363,9 @@ export class RevenueReport extends React.Component<Props, State> {
 														<strong>
 															{formatCurrency(groupTotal)}
 														</strong>
+													</td>
+													<td className="align-right">
+														{formatCurrency(monthlyRecurringLineItem.amount)}
 													</td>
 												</tr>
 											);

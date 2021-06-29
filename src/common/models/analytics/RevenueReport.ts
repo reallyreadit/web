@@ -9,6 +9,12 @@ export interface RevenueReportLineItem {
 	quantityRefunded: number
 }
 
+export interface MonthlyRecurringRevenueReportLineItem {
+	period: string,
+	amount: number
+}
+
 export interface RevenueReportResponse {
-	lineItems: RevenueReportLineItem[]
+	lineItems: RevenueReportLineItem[],
+	monthlyRecurringRevenueLineItems: MonthlyRecurringRevenueReportLineItem[]
 }
