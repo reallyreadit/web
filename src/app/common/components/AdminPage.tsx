@@ -621,18 +621,21 @@ class AdminPage extends React.Component<
 						</caption>
 						<thead>
 							<tr>
+								<th></th>
+								<th></th>
+								<th colSpan={2}>Account Creations</th>
+								<th colSpan={2}>First Time Viewers</th>
+								<th colSpan={2}>First Time Readers</th>
+							</tr>
+							<tr>
 								<th>Week</th>
-								<th>Visits</th>
-								<th>Signups</th>
-								<th>Signup Conversion</th>
-								<th>Shares</th>
-								<th>Share Conversion</th>
-								<th>Article Views</th>
-								<th>Article View Conversion</th>
-								<th>Article Reads</th>
-								<th>Article Read Conversion</th>
-								<th>Post Tweets</th>
-								<th>Post Tweet Conversion</th>
+								<th>Visitors</th>
+								<th>Count</th>
+								<th>Conversion</th>
+								<th>Count</th>
+								<th>Conversion</th>
+								<th>Count</th>
+								<th>Conversion</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -641,24 +644,20 @@ class AdminPage extends React.Component<
 									this.state.conversions.data.value.map(row => (
 										<tr key={row.week}>
 											<td>{row.week}</td>
-											<td>{row.visitCount}</td>
+											<td>{row.visitorCount}</td>
 											<td>{row.signupCount}</td>
 											<td>{row.signupConversion.toFixed(2)}</td>
-											<td>{row.shareCount}</td>
-											<td>{row.shareConversion.toFixed(2)}</td>
-											<td>{row.articleViewCount}</td>
-											<td>{row.articleViewConversion.toFixed(2)}</td>
-											<td>{row.articleReadCount}</td>
-											<td>{row.articleReadConversion.toFixed(2)}</td>
-											<td>{row.postTweetCount}</td>
-											<td>{row.postTweetConversion.toFixed(2)}</td>
+											<td>{row.articleViewerCount}</td>
+											<td>{row.articleViewerConversion.toFixed(2)}</td>
+											<td>{row.articleReaderCount}</td>
+											<td>{row.articleReaderConversion.toFixed(2)}</td>
 										</tr>
 									)) :
 									<tr>
-										<td colSpan={12}>Error loading converions.</td>
+										<td colSpan={8}>Error loading converions.</td>
 									</tr> :
 								<tr>
-									<td colSpan={12}>Loading...</td>
+									<td colSpan={8}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>
