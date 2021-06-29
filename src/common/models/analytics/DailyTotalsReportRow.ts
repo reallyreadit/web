@@ -15,5 +15,7 @@ export default interface DailyTotalsReportRow {
 	postTweetAppCount: number,
 	postTweetBrowserCount: number
 	extensionInstallationCount: number,
-	extensionRemovalCount: number
+	extensionRemovalCount: number,
+	subscriptionsActiveCount: number,
+	subscriptionLapseCount: number
 }

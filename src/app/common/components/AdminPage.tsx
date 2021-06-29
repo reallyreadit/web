@@ -314,7 +314,7 @@ class AdminPage extends React.Component<
 			hasUnknownDailyTotalReads = false,
 			hasUnknownDailyTotalPosts = false,
 			hasUnknownDailyTotalReplies = false,
-			dailyTotalColumnCount = 13;
+			dailyTotalColumnCount = 15;
 		if (this.state.dailyTotals.data.value) {
 			if (
 				hasUnknownDailyTotalSignups = this.state.dailyTotals.data.value.some(
@@ -462,6 +462,7 @@ class AdminPage extends React.Component<
 								<th colSpan={hasUnknownDailyTotalReplies ? 3 : 2}>Replies</th>
 								<th colSpan={2}>Post Tweets</th>
 								<th colSpan={2}>Extensions</th>
+								<th colSpan={2}>Subscriptions</th>
 							</tr>
 							<tr>
 								<th>Date</th>
@@ -489,6 +490,8 @@ class AdminPage extends React.Component<
 								<th>Browser</th>
 								<th>Installed</th>
 								<th>Uninstalled</th>
+								<th>Active</th>
+								<th>Lapsed</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -521,6 +524,8 @@ class AdminPage extends React.Component<
 											<td>{row.postTweetBrowserCount}</td>
 											<td>{row.extensionInstallationCount}</td>
 											<td>{row.extensionRemovalCount}</td>
+											<td>{row.subscriptionsActiveCount}</td>
+											<td>{row.subscriptionLapseCount}</td>
 										</tr>
 									)) :
 									<tr>
