@@ -161,6 +161,15 @@ const faqs: FaqCategory[] = [
 			{
 				question: "How much money has Readup earned for writers?",
 				answer: <p>Writer earnings and total Readup revenue are visible on the homepage and at the bottom of the menu. Individual, finalized distributions, broken down by writer, are visible <Link screen={ScreenKey.AuthorsEarnings} onClick={props.onNavTo}>here</Link>.</p>
+			},
+			{
+				question: "Do I have to pay taxes on the money on earn on Readup?",
+				answer: (
+					<>
+						<p>USA residents: Maybe. If you earn less than $600 in one year, you don't have to worry about it. If you earn more than $600, Stripe will provide the necessary paperwork for you and the Readup team is here to help. For more information: <Link href="https://stripe.com/docs/connect/tax-reporting" onClick={props.onNavTo}>https://stripe.com/docs/connect/tax-reporting</Link></p>
+						<p>Non-USA residents: Maybe. Check with your local rules, and let us know if you have any questions. We're here to help!</p>
+					</>
+				)
 			}
 		]
 	}),
