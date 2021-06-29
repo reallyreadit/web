@@ -27,10 +27,10 @@ interface ChartDataPoint {
 	stripeAmount: number
 }
 
-const prices = {
-	budget: 499,
-	reader: 1499,
-	superReader: 2499
+enum Price {
+	Budget = 'Budget',
+	Reader = 'Reader',
+	SuperReader = 'Super Reader'
 }
 
 function getCustomItems(items: RevenueReportLineItem[]) {
@@ -38,10 +38,10 @@ function getCustomItems(items: RevenueReportLineItem[]) {
 		item => item.priceAmount > 0 && !item.priceName
 	);
 }
-function renderProviderPriceCells(items: RevenueReportLineItem[], priceAmount: number, format: 'normal' | 'total' = 'normal') {
+function renderProviderPriceCells(items: RevenueReportLineItem[], price: Price, format: 'normal' | 'total' = 'normal') {
 	const
 		priceItems = items.filter(
-			item => item.priceAmount === priceAmount
+			item => item.priceName === price
 		),
 		appleAmount = sumNetAmount(
 			priceItems.filter(
@@ -54,7 +54,7 @@ function renderProviderPriceCells(items: RevenueReportLineItem[], priceAmount: n
 			)
 		);
 	return (
-		<React.Fragment key={priceAmount}>
+		<React.Fragment key={price}>
 			<td className={classNames('align-right', { 'null': appleAmount === 0 })}>
 				{format === 'total' ?
 					<strong>{formatCurrency(appleAmount)}</strong> :
@@ -78,9 +78,9 @@ function renderFooter(items: RevenueReportLineItem[]) {
 		<tfoot>
 			<tr>
 				<th>Total</th>
-				{renderProviderPriceCells(items, prices.budget, 'total')}
-				{renderProviderPriceCells(items, prices.reader, 'total')}
-				{renderProviderPriceCells(items, prices.superReader, 'total')}
+				{renderProviderPriceCells(items, Price.Budget, 'total')}
+				{renderProviderPriceCells(items, Price.Reader, 'total')}
+				{renderProviderPriceCells(items, Price.SuperReader, 'total')}
 				<td
 					className={classNames('align-right', { 'null': customTotal === 0 })}
 				>
@@ -323,9 +323,9 @@ export class RevenueReport extends React.Component<Props, State> {
 											return (
 												<tr>
 													<td className="align-center">{group.period.replace(/T00:00:00$/, '')}</td>
-													{renderProviderPriceCells(group.items, prices.budget)}
-													{renderProviderPriceCells(group.items, prices.reader)}
-													{renderProviderPriceCells(group.items, prices.superReader)}
+													{renderProviderPriceCells(group.items, Price.Budget)}
+													{renderProviderPriceCells(group.items, Price.Reader)}
+													{renderProviderPriceCells(group.items, Price.SuperReader)}
 													<td className={classNames('align-right', { 'null': customTotal === 0 })}>
 														{formatCurrency(customTotal)}
 													</td>
