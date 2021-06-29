@@ -567,10 +567,9 @@ class AdminPage extends React.Component<
 								<th>Initial Path</th>
 								<th>Current Path</th>
 								<th>Action</th>
-								<th>Orientation Shares</th>
 								<th>Article Views</th>
 								<th>Article Reads</th>
-								<th>Post Tweets</th>
+								<th>Date Subscribed</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -588,17 +587,16 @@ class AdminPage extends React.Component<
 											<td>{row.initialPath}</td>
 											<td>{row.currentPath}</td>
 											<td>{row.action}</td>
-											<td>{row.orientationShareCount}</td>
 											<td>{row.articleViewCount}</td>
 											<td>{row.articleReadCount}</td>
-											<td>{row.postTweetCount}</td>
+											<td>{row.dateSubscribed}</td>
 										</tr>
 									)) :
 									<tr>
-										<td colSpan={15}>Error loading signups.</td>
+										<td colSpan={14}>Error loading signups.</td>
 									</tr> :
 								<tr>
-									<td colSpan={15}>Loading...</td>
+									<td colSpan={14}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>

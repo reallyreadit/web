@@ -9,8 +9,7 @@ export default interface SignupsReportRow {
 	initialPath: string | null,
 	currentPath: string | null,
 	action: string | null,
-	orientationShareCount: number,
 	articleViewCount: number,
 	articleReadCount: number,
-	postTweetCount: number
+	dateSubscribed: string | null
 }
