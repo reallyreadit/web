@@ -174,6 +174,10 @@ const faqs: FaqCategory[] = [
 						<p>Non-USA residents: Maybe. Check with your local rules, and let us know if you have any questions. We're here to help!</p>
 					</>
 				)
+			},
+			{
+				question: "What if a writer declines to get paid?",
+				answer: <p>We recognize that some writers will decline payment from Readup for legal, ethical, or personal reasons. In that case, we’re happy to donate the money to <Link href="https://www.eff.org/" onClick={props.onNavTo}>EFF: Electronic Frontier Foundation</Link> or any charity that the writer chooses.</p>
 			}
 		]
 	}),
