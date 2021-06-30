@@ -3,5 +3,11 @@ export default interface AuthorProfile {
 	slug: string,
 	totalEarnings: number,
 	totalPayouts: number,
-	userName: string | null
+	userName: string | null,
+	donationRecipient: DonationRecipient | null
+}
+
+export interface DonationRecipient {
+	name: string,
+	website: string
 }
