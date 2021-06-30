@@ -127,6 +127,7 @@ export function parseNavReference(ref: NavReference) {
 		url: null
 	};
 }
+export type ReadArticleReference = Pick<UserArticle, 'slug' | 'url'>;
 export interface Screen<T = any> {
 	id: number,
 	componentState?: T,
@@ -188,7 +189,7 @@ export default abstract class Root<
 				return result.rating;
 			});
 	};
-	protected readonly _readArticle: (article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) => void;
+	protected readonly _readArticle: (article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) => void;
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
 		return (
 			article.dateStarred ?
@@ -639,7 +640,7 @@ export default abstract class Root<
 			)
 		);
 	};
-	protected readonly _openStripeSubscriptionPromptDialog = (article?: UserArticle) => {
+	protected readonly _openStripeSubscriptionPromptDialog = (article?: ReadArticleReference) => {
 		this._dialog.openDialog(
 			sharedState => (
 				<StripeSubscriptionPrompt
@@ -1121,7 +1122,7 @@ export default abstract class Root<
 			user
 		});
 	}
-	protected abstract readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>): void;
+	protected abstract readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
 	public componentDidMount() {

@@ -1,13 +1,12 @@
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavBar from './BrowserRoot/NavBar';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference, parseNavReference } from './Root';
+import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference, parseNavReference, ReadArticleReference } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import Menu from './BrowserRoot/Menu';
-import UserArticle from '../../../common/models/UserArticle';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
@@ -270,7 +269,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
 	};
-	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
+	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
 		if (provider === SubscriptionProvider.Apple) {
 			throw new Error('Operation not supported in browser environment.');
 		}
@@ -1271,7 +1270,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
-	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		const
 			[sourceSlug, articleSlug] = article.slug.split('_'),
 			isBlogPost = sourceSlug === 'blogreadupcom';

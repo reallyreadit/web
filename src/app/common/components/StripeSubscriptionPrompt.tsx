@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Dialog from '../../../common/components/Dialog';
-import UserArticle from '../../../common/models/UserArticle';
 import TransitionContainer from '../../../common/components/TransitionContainer';
 import PaymentEntryStep from './subscriptionsDialogs/PaymentEntryStep';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
@@ -20,15 +19,16 @@ import SubscriptionProvider from '../../../common/models/subscriptions/Subscript
 import PriceSelectionStep from './subscriptionsDialogs/PriceSelectionStep';
 import { Require } from '../../../common/Require';
 import { getPromiseErrorMessage } from '../../../common/format';
+import { ReadArticleReference } from './Root';
 
 interface Props {
-	article: UserArticle | null,
+	article: ReadArticleReference | null,
 	displayTheme: DisplayTheme | null,
 	onClose: () => void,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
 	onGetSubscriptionStatus: FetchFunction<SubscriptionStatusResponse>,
-	onReadArticle: (article: UserArticle) => void,
+	onReadArticle: (article: ReadArticleReference) => void,
 	onShowToast: (content: string, intent: Intent) => void,
 	onSubscribe: (card: StripeCardElement, price: SubscriptionPriceSelection) => Promise<StripePaymentResponse>,
 	stripe: Promise<Stripe> | null,

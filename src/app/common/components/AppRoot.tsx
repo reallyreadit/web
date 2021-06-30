@@ -3,10 +3,9 @@ import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
-import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod, NavReference, parseNavReference } from './Root';
+import Root, { Screen, Props as RootProps, State as RootState, Events as RootEvents, SharedState as RootSharedState, NavOptions, NavMethod, NavReference, parseNavReference, ReadArticleReference } from './Root';
 import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
-import UserArticle from '../../../common/models/UserArticle';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
@@ -233,7 +232,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
-	private readonly _openAppStoreSubscriptionPromptDialog = (article?: UserArticle, activeSubscription?: ActiveSubscriptionStatus) => {
+	private readonly _openAppStoreSubscriptionPromptDialog = (article?: ReadArticleReference, activeSubscription?: ActiveSubscriptionStatus) => {
 		this.props.appApi
 			.getDeviceInfo()
 			.then(
@@ -301,7 +300,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private readonly _openSubscriptionPromptDialog = (article?: UserArticle, provider?: SubscriptionProvider) => {
+	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
 		if (provider === SubscriptionProvider.Stripe) {
 			this._openStripeSubscriptionPromptDialog(article);
 			return;
@@ -1359,7 +1358,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	}
-	protected readArticle(article: UserArticle, ev?: React.MouseEvent<HTMLAnchorElement>) {
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		ev?.preventDefault();
 		if (
 			!this.state.subscriptionStatus.isUserFreeForLife &&

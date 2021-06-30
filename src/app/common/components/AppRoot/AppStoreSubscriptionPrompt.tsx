@@ -8,7 +8,6 @@ import { SubscriptionProductsRequest, SubscriptionProductsResponse, Subscription
 import { SubscriptionPurchaseRequest } from '../../../../common/models/app/SubscriptionPurchase';
 import { SubscriptionReceiptResponse } from '../../../../common/models/app/SubscriptionReceipt';
 import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../../common/models/subscriptions/AppleSubscriptionValidation';
-import UserArticle from '../../../../common/models/UserArticle';
 import { AsyncResult, Result, ResultType } from '../../../../common/Result';
 import SubscriptionSelector from '../controls/SubscriptionSelector';
 import DialogSpinner from '../../../../common/components/Dialog/DialogSpinner';
@@ -20,15 +19,16 @@ import { StandardSubscriptionPriceLevel } from '../../../../common/models/subscr
 import { ProblemDetails } from '../../../../common/ProblemDetails';
 import { AppStoreErrorType } from '../../../../common/Errors';
 import { SubscriptionStatusResponse } from '../../../../common/models/subscriptions/SubscriptionStatusResponse';
+import { ReadArticleReference } from '../Root';
 
 interface Props {
 	activeSubscription?: ActiveSubscriptionStatus,
-	article: UserArticle | null,
+	article: ReadArticleReference | null,
 	isPaymentProcessing: boolean,
 	onClose: () => void,
 	onGetSubscriptionPriceLevels: FetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>,
 	onGetSubscriptionStatus: FetchFunction<SubscriptionStatusResponse>,
-	onReadArticle: (article: UserArticle) => void,
+	onReadArticle: (article: ReadArticleReference) => void,
 	onRegisterPurchaseCompletedEventHandler: (handler: (result: Result<AppleSubscriptionValidationResponse, ProblemDetails>) => void) => Function,
 	onRequestSubscriptionProducts: (request: SubscriptionProductsRequest) => Promise<Result<SubscriptionProductsResponse, ProblemDetails>>,
 	onRequestSubscriptionPurchase: (request: SubscriptionPurchaseRequest) => void,
