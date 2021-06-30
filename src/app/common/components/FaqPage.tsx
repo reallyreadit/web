@@ -163,6 +163,10 @@ const faqs: FaqCategory[] = [
 				answer: <p>Writer earnings and total Readup revenue are visible on the homepage and at the bottom of the menu. Individual, finalized distributions, broken down by writer, are visible <Link screen={ScreenKey.AuthorsEarnings} onClick={props.onNavTo}>here</Link>.</p>
 			},
 			{
+				question: "What do you do with money earned by deceased writers?",
+				answer: <p>Money earned by dead writers (Ernest Hemingway and Toni Morrison, for example) gets donated to <Link href="https://www.eff.org/" onClick={props.onNavTo}>EFF: Electronic Frontier Foundation</Link>. Readup’s mission aligns with the work that EFF does to defend digital privacy, free speech, and innovation.</p>
+			},
+			{
 				question: "Do I have to pay taxes on the money on earn on Readup?",
 				answer: (
 					<>
