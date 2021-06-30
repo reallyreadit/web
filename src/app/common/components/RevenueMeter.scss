@@ -7,7 +7,14 @@
 	text-align: center;
 }
 .revenue-meter_56f8z4 > .writer-allocation {
+	display: inline-flex;
+	align-items: center;
 	font-family: 'Museo Sans (500)';
+}
+.revenue-meter_56f8z4 > .writer-allocation > .icon_rour3d {
+	margin-left: 0.5em;
+	cursor: pointer;
+	color: var(--text-muted-color);
 }
 .revenue-meter_56f8z4 > .meter {
 	height: 1.5em;

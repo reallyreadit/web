@@ -51,6 +51,7 @@ interface Props {
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onNavTo: (ref: NavReference) => void,
+	onOpenEarningsExplainerDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -367,7 +368,10 @@ export default class MarketingScreen extends React.Component<
 						data-nosnippet
 						className="revenue-panel"
 					>
-						<RevenueMeter report={this.props.revenueReport} />
+						<RevenueMeter
+							onOpenEarningsExplainerDialog={this.props.onOpenEarningsExplainerDialog}
+							report={this.props.revenueReport}
+						/>
 					</HomePanel> :
 					null}
 				<HomePanel

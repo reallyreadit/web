@@ -597,6 +597,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
 				onNavTo: this._navTo,
+				onOpenEarningsExplainerDialog: this._openEarningsExplainerDialog,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
@@ -1407,6 +1408,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						isClosing={this.state.menuState === 'closing'}
 						onClose={this._closeMenu}
 						onClosed={this._hideMenu}
+						onOpenEarningsExplainerDialog={this._openEarningsExplainerDialog}
 						onViewAdminPage={this._viewAdminPage}
 						onViewFaq={this._viewFaq}
 						onViewLeaderboards={this._viewLeaderboards}

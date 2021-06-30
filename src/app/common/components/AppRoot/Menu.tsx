@@ -16,6 +16,7 @@ interface Props {
 	isClosing: boolean,
 	onClose: () => void,
 	onClosed: () => void,
+	onOpenEarningsExplainerDialog: () => void,
 	onViewAdminPage: () => void,
 	onViewBlog: () => void,
 	onViewFaq: () => void,
@@ -148,7 +149,10 @@ export default class extends React.PureComponent<Props> {
 							/>
 						</li>
 					</ol>
-					<RevenueMeter report={this.props.revenueReport} />
+					<RevenueMeter
+						onOpenEarningsExplainerDialog={this.props.onOpenEarningsExplainerDialog}
+						report={this.props.revenueReport}
+					/>
 				</div>
 			</div>
 		);

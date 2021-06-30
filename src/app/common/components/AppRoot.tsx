@@ -1426,6 +1426,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 								isClosing={this.state.menuState === 'closing'}
 								onClose={this._closeMenu}
 								onClosed={this._hideMenu}
+								onOpenEarningsExplainerDialog={this._openEarningsExplainerDialog}
 								onViewAdminPage={this._viewAdminPage}
 								onViewBlog={this._viewBlog}
 								onViewFaq={this._viewFaq}
