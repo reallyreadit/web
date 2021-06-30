@@ -16,6 +16,7 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 interface Props {
 	onGetAuthorsEarningsReport: FetchFunction<AuthorsEarningsReportResponse>,
 	onNavTo: (ref: NavReference) => void,
+	onOpenEarningsExplainerDialog: () => void,
 	title?: string
 }
 
@@ -63,7 +64,7 @@ class AuthorsEarningsScreen extends React.Component<Props, State> {
 					this.state.response.value ?
 						<>
 							{this.props.title ?
-								<h1>{this.props.title}</h1> :
+								<h1>{this.props.title} <Icon name="question-circle" onClick={this.props.onOpenEarningsExplainerDialog} /></h1> :
 								null}
 							<table>
 								<thead>
@@ -162,12 +163,18 @@ export function createAuthorsEarningsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title
+			title,
+			titleContent: !options?.renderTitle ?
+				<span className="authors-earnings-screen_7wh7km_header">
+					Writers' Earnings <Icon name="question-circle" onClick={services.onOpenEarningsExplainerDialog} />
+				</span> :
+				null
 		}),
 		render: () => (
 			<AuthorsEarningsScreen
 				onGetAuthorsEarningsReport={services.onGetAuthorsEarningsReport}
 				onNavTo={services.onNavTo}
+				onOpenEarningsExplainerDialog={services.onOpenEarningsExplainerDialog}
 				title={options?.renderTitle ? title : null}
 			/>
 		)

@@ -3,16 +3,31 @@
 	cssComponentId: authors-earnings-screen_7wh7km
 */
 
+.authors-earnings-screen_7wh7km_header {
+	display: inline-flex;
+	align-items: center;
+}
+.authors-earnings-screen_7wh7km_header > .icon_rour3d {
+	margin-left: 0.5em;
+	cursor: pointer;
+}
 .authors-earnings-screen_7wh7km > h1 {
+	display: flex;
+	align-items: center;
 	font-family: 'Museo Sans (700)';
 	font-size: 20pt;
-	margin-bottom: 20px;
+	margin-bottom: 40px;
+}
+.authors-earnings-screen_7wh7km > h1 > .icon_rour3d {
+	margin-left: 0.5em;
+	cursor: pointer;
+	color: var(--text-muted-color);
 }
 .authors-earnings-screen_7wh7km > table {
 	table-layout: fixed;
 	width: 100%;
 	max-width: 700px;
-	margin: 30px auto 0;
+	margin: 0 auto;
 }
 .authors-earnings-screen_7wh7km > table th,
 .authors-earnings-screen_7wh7km > table td {

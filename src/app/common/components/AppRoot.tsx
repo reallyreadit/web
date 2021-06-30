@@ -639,7 +639,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.AuthorsEarnings,
 				{
 					onGetAuthorsEarningsReport: this.props.serverApi.getAuthorsEarningsReport,
-					onNavTo: this._navTo
+					onNavTo: this._navTo,
+					onOpenEarningsExplainerDialog: this._openEarningsExplainerDialog
 				}
 			),
 			[ScreenKey.Blog]: createBlogScreenFactory(
