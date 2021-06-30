@@ -170,8 +170,9 @@ const faqs: FaqCategory[] = [
 				question: "Do I have to pay taxes on the money on earn on Readup?",
 				answer: (
 					<>
-						<p>USA residents: Maybe. If you earn less than $600 in one year, you don't have to worry about it. If you earn more than $600, Stripe will provide the necessary paperwork for you and the Readup team is here to help. For more information: <Link href="https://stripe.com/docs/connect/tax-reporting" onClick={props.onNavTo}>https://stripe.com/docs/connect/tax-reporting</Link></p>
-						<p>Non-USA residents: Maybe. Check with your local rules, and let us know if you have any questions. We're here to help!</p>
+						<p>USA residents: Maybe. If you earn less than $600 in one year, you don't have to worry about it. If you earn more than $600, Stripe will provide the necessary paperwork for you. For more information: <Link href="https://stripe.com/docs/connect/tax-reporting" onClick={props.onNavTo}>https://stripe.com/docs/connect/tax-reporting</Link></p>
+						<p>Non-USA residents: Maybe. Check with your local rules, and let us know if you have any questions.</p>
+						<p>No matter where you live, the Readup team is here to help!</p>
 					</>
 				)
 			},
