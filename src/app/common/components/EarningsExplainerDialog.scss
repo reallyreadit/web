@@ -1,0 +1,14 @@
+/*
+	componentPath: src/app/common/components/EarningsExplainerDialog
+	cssComponentId: earnings-explainer-dialog_fih6cj
+*/
+
+.earnings-explainer-dialog_fih6cj {
+	max-width: 500px;
+}
+.earnings-explainer-dialog_fih6cj > p + p {
+	margin-top: 10px;
+}
+.earnings-explainer-dialog_fih6cj > p > label {
+	font-family: 'Museo Sans (500)';
+}

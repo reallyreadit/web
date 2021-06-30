@@ -76,6 +76,7 @@ import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/s
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
+import { EarningsExplainerDialog } from './EarningsExplainerDialog';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -319,6 +320,17 @@ export default abstract class Root<
 	};
 
 	// dialogs
+	protected readonly _openEarningsExplainerDialog = () => {
+		this._dialog.openDialog(
+			sharedState => (
+				<EarningsExplainerDialog
+					onClose={this._dialog.closeDialog}
+					onReadArticle={this._readArticle}
+					revenueReport={sharedState.revenueReport}
+				/>
+			)
+		);
+	};
 	protected readonly _openNewPlatformNotificationRequestDialog = () => {
 		this._dialog.openDialog(
 			<NewPlatformNotificationRequestDialog
