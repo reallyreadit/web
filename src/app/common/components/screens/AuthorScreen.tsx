@@ -31,6 +31,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { formatCurrency } from '../../../../common/format';
 import Link from '../../../../common/components/Link';
+import Icon from '../../../../common/components/Icon';
 
 interface Props {
 	authorSlug: string,
@@ -180,17 +181,35 @@ class AuthorScreen extends React.Component<Props, State> {
 								<div className="profile">
 									<h1>{this.props.profile.value.name}</h1>
 									{this.props.profile.value.totalEarnings ?
-										<InfoBox
-											position="static"
-											style="normal"
-										>
-											<div className="earnings">
-												Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
-											</div>
-											<div className="message">
-												Are you {this.props.profile.value.name}? <Link onClick={this._verifyAccout}>Get verified</Link> to cash out.
-											</div>
-										</InfoBox> :
+										this.props.profile.value.donationRecipient ?
+											<InfoBox
+												className="donation"
+												position="static"
+												style="normal"
+											>
+												<div className="icon-container">
+													<Icon display="block" name="charity" />
+												</div>
+												<div className="text-container">
+													<p>
+														{this.props.profile.value.name} donates all Readup earnings to charity.
+													</p>
+													<p>
+														So far, {this.props.profile.value.name} has earned {formatCurrency(this.props.profile.value.totalEarnings)} for <Link href={this.props.profile.value.donationRecipient.website} text={this.props.profile.value.donationRecipient.name} onClick={this.props.onNavTo} />.
+													</p>
+												</div>
+											</InfoBox> :
+											<InfoBox
+												position="static"
+												style="normal"
+											>
+												<p className="heading">
+													Total Readup earnings: {formatCurrency(this.props.profile.value.totalEarnings)}
+												</p>
+												<p className="fine-print">
+													Are you {this.props.profile.value.name}? <Link onClick={this._verifyAccout}>Get verified</Link> to cash out.
+												</p>
+											</InfoBox> :
 										null}
 								</div>
 								{this.state.articles.isLoading ?

@@ -21,10 +21,42 @@
 .author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 {
 	margin-top: 20px;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > .earnings {
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > p + p {
+	margin-top: 20px;
+}
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > .heading {
 	font-family: 'Museo Sans (700)';
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > .message {
-	margin-top: 20px;
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > .fine-print {
 	font-size: 11pt;
+}
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content {
+	display: flex;
+	flex-flow: row;
+}
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .icon-container {
+	padding-right: 20px;
+	font-size: 40px;
+}
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container {
+	text-align: left;
+}
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container > p + p {
+	margin-top: 10px;
+}
+.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container > p > .link_ke15oa {
+	white-space: normal;
+}
+
+@media (max-width: 500px) {
+	.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content {
+		flex-flow: column;
+	}
+	.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .icon-container {
+		padding-right: 0;
+		padding-bottom: 10px;
+	}
+	.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container {
+		text-align: center;
+	}
 }
