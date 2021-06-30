@@ -11,7 +11,7 @@ import { ShareEvent } from '../../common/sharing/ShareEvent';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment, updateComment } from '../../common/comments';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
-import styleArticleDocument, { createByline, applyDisplayPreferenceToArticleDocument } from '../../common/reading/styleArticleDocument';
+import styleArticleDocument, { createByline, applyDisplayPreferenceToArticleDocument, updateArticleHeader } from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
 import procesLazyImages from '../../common/contentParsing/processLazyImages';
 import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
@@ -96,8 +96,10 @@ document.documentElement.style.transition = 'none';
 document.documentElement.style.opacity = '0';
 
 styleArticleDocument({
-	title: metadataParseResult.metadata.article.title,
-	byline: createByline(metadataParseResult.metadata.article.authors),
+	header: {
+		title: metadataParseResult.metadata.article.title,
+		byline: createByline(metadataParseResult.metadata.article.authors)
+	},
 	transitionElement: document.documentElement,
 	completeTransition: true
 });
@@ -608,6 +610,11 @@ messagingContext.sendMessage(
 				article = result.userArticle;
 				userPage = result.userPage;
 				user = result.user;
+				// update the title and byline
+				updateArticleHeader({
+					title: result.userArticle.title,
+					byline: createByline(result.userArticle.articleAuthors)
+				});
 				// set up the reader
 				page = new Page(contentParseResult.primaryTextContainers);
 				page.setReadState(result.userPage.readState);

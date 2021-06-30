@@ -3,6 +3,8 @@ import { formatList } from '../format';
 import DisplayPreference, { DisplayTheme, getClientPreferredColorScheme } from '../models/userAccounts/DisplayPreference';
 
 export const
+	articleBylineId = 'com_readup_article_byline',
+	articleTitleId = 'com_readup_article_title',
 	lightBackgroundColor = '#fdfdfd',
 	darkBackgroundColor = '#181818';
 
@@ -149,14 +151,18 @@ const styleContent = `
 	height: auto !important;
 	margin: 1em auto;
 }
-#com_readup_article_content #com_readup_article_title {
+#com_readup_article_content #${articleTitleId} {
 	font-family: sans-serif;
 	font-size: 1.5em;
 	margin-top: 120px;
 }
-#com_readup_article_content #com_readup_article_byline {
+#com_readup_article_content #${articleBylineId} {
 	font-size: 18pt;
 	font-style: italic;
+	transition: opacity 250ms;
+}
+#com_readup_article_content #${articleBylineId}.hidden {
+	opacity: 0;
 }
 #com_readup_article_content .com_readup_article_image_container:not(img) {
 	margin: 1em;
@@ -451,17 +457,19 @@ export function applyDisplayPreferenceToArticleDocument(preference: DisplayPrefe
 		);
 	}
 }
+interface HeaderMetadata {
+	title: string,
+	byline: string
+}
 export default function styleArticleDocument(
 	{
-		title,
-		byline,
+		header,
 		useScrollContainer,
 		transitionElement,
 		completeTransition
 	}:
 	{
-		title?: string,
-		byline?: string,
+		header?: HeaderMetadata,
 		useScrollContainer?: boolean,
 		transitionElement: HTMLElement,
 		completeTransition?: boolean
@@ -498,7 +506,7 @@ export default function styleArticleDocument(
 		.from(document.getElementsByTagName('style'))
 		.forEach(style => {
 			if (!isReadupElement(style)) {
-				style.remove();	
+				style.remove();
 			}
 		});
 	Array
@@ -567,17 +575,37 @@ export default function styleArticleDocument(
 	styleElement.textContent = styleContent + transitionCompletionStyleContent;
 	document.body.appendChild(styleElement);
 	// add title and byline
-	const contentRoot = document.getElementById('com_readup_article_content');
-	if (byline) {
+	if (header) {
+		const contentRoot = document.getElementById('com_readup_article_content');
+		// create byline header
 		const bylineElement = document.createElement('h2');
-		bylineElement.id = 'com_readup_article_byline';
-		bylineElement.textContent = byline;
+		bylineElement.id = articleBylineId;
+		bylineElement.classList.add('hidden');
+		if (header.byline) {
+			bylineElement.textContent = header.byline;
+		} else {
+			bylineElement.innerHTML = '&nbsp;';
+		}
 		contentRoot.prepend(bylineElement);
-	}
-	if (title) {
+		// create title header
 		const titleElement = document.createElement('h1');
-		titleElement.id = 'com_readup_article_title';
-		titleElement.textContent = title;
+		titleElement.id = articleTitleId;
+		titleElement.textContent = header.title;
 		contentRoot.prepend(titleElement);
+	}
+}
+export function updateArticleHeader(data: Partial<HeaderMetadata>) {
+	if (data.title) {
+		const titleElement = document.getElementById(articleTitleId);
+		if (titleElement) {
+			titleElement.textContent = data.title;
+		}
+	}
+	if (data.byline) {
+		const bylineElement = document.getElementById(articleBylineId);
+		if (bylineElement) {
+			bylineElement.textContent = data.byline;
+			bylineElement.classList.remove('hidden');
+		}
 	}
 }
