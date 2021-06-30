@@ -74,6 +74,16 @@
 	margin-left: 5px;
 	vertical-align: middle;
 }
+.authors-earnings-screen_7wh7km > table td.amount-earned > .content {
+	display: inline-flex;
+	align-items: center;
+}
+.authors-earnings-screen_7wh7km > table td.amount-earned > .content > .icon_rour3d {
+	margin-left: 5px;
+}
+.authors-earnings-screen_7wh7km > table td.amount-earned > .content > .icon_rour3d.hidden {
+	visibility: hidden;
+}
 .authors-earnings-screen_7wh7km > table td.minutes-read,
 .authors-earnings-screen_7wh7km > table td.amount-earned,
 .authors-earnings-screen_7wh7km > table td.amount-paid {
@@ -111,15 +121,20 @@
 		font-size: 1.15em;
 		font-family: 'Museo Sans (500)';
 	}
+	.authors-earnings-screen_7wh7km > table td.amount-earned > .content {
+		flex-flow: row-reverse;
+	}
+	.authors-earnings-screen_7wh7km > table td.amount-earned > .content > .icon_rour3d {
+		margin-left: 0;
+		margin-right: 5px;
+	}
 	.authors-earnings-screen_7wh7km > table td.minutes-read,
-	.authors-earnings-screen_7wh7km > table td.amount-earned,
-	.authors-earnings-screen_7wh7km > table td.amount-paid {
+	.authors-earnings-screen_7wh7km > table td.amount-earned {
 		display: flex;
 		justify-content: space-between;;
 	}
 	.authors-earnings-screen_7wh7km > table td.minutes-read::before,
-	.authors-earnings-screen_7wh7km > table td.amount-earned::before,
-	.authors-earnings-screen_7wh7km > table td.amount-paid::before {
+	.authors-earnings-screen_7wh7km > table td.amount-earned::before {
 		content: attr(data-header);
 		font-family: 'Museo Sans (500)';
 		color: var(--text-muted-color);

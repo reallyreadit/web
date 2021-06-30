@@ -12,6 +12,7 @@ import { NavReference } from '../Root';
 import Icon from '../../../../common/components/Icon';
 import { formatCurrency } from '../../../../common/format';
 import RouteLocation from '../../../../common/routing/RouteLocation';
+import * as classNames from 'classnames';
 
 interface Props {
 	onGetAuthorsEarningsReport: FetchFunction<AuthorsEarningsReportResponse>,
@@ -126,7 +127,14 @@ class AuthorsEarningsScreen extends React.Component<Props, State> {
 															className={columns.amountEarned.class}
 															data-header={columns.amountEarned.header}
 														>
-															{formatCurrency(item.amountEarned)}
+															<span className="content">
+																{formatCurrency(item.amountEarned)}
+																<Icon
+																	className={classNames({ 'hidden': !item.donationRecipientName })}
+																	name="charity"
+																	title={`Donated to ${item.donationRecipientName}.`}
+																/>
+															</span>
 														</td>
 													</tr>
 												)
