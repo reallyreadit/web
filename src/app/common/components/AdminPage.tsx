@@ -369,6 +369,7 @@ class AdminPage extends React.Component<
 							<tr>
 								<th>Title</th>
 								<th>Publisher URL</th>
+								<th>Authors</th>
 								<th>Length</th>
 							</tr>
 						</thead>
@@ -376,7 +377,7 @@ class AdminPage extends React.Component<
 							{this.state.authorMetadataAssignmentQueueResponse ?
 								this.state.authorMetadataAssignmentQueueResponse.isLoading ?
 									<tr>
-										<td colSpan={3}>Loading...</td>
+										<td colSpan={4}>Loading...</td>
 									</tr> :
 									this.state.authorMetadataAssignmentQueueResponse.value ?
 										this.state.authorMetadataAssignmentQueueResponse.value.articles.length ?
@@ -391,19 +392,20 @@ class AdminPage extends React.Component<
 															<td>
 																<Link href={article.url} onClick={this.props.onNavTo} text={truncateText(article.url, 30)} />
 															</td>
+															<td>{article.articleAuthors.map(author => author.slug).join(' ')}</td>
 															<td>{calculateEstimatedReadTime(article.wordCount)} min.</td>
 														</tr>
 													);
 												}
 											) :
 											<tr>
-												<td colSpan={3}>Queue is empty. Good job!</td>
+												<td colSpan={4}>Queue is empty. Good job!</td>
 											</tr> :
 										<tr>
-											<td colSpan={3}>Error loading queue.</td>
+											<td colSpan={4}>Error loading queue.</td>
 										</tr> :
 								<tr>
-									<td colSpan={3}>Click "Run Report" to load queue.</td>
+									<td colSpan={4}>Click "Run Report" to load queue.</td>
 								</tr>}
 						</tbody>
 					</table>
