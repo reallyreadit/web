@@ -1,0 +1,56 @@
+/*
+	componentPath: src/app/common/components/AdminPage/ReportTable
+	cssComponentId: report-table_gitemz
+*/
+
+.report-table_gitemz > table {
+	width: 100%;
+	background-color: var(--content-background-color);
+}
+.report-table_gitemz > table > caption {
+	background-color: var(--content-background-color);
+}
+.report-table_gitemz > table > caption > .content {
+	border-width: 1px 1px 0 1px;
+	border-style: solid;
+	border-color: var(--content-divider-color);
+}
+.report-table_gitemz > table > caption > .content > .header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px;
+}
+.report-table_gitemz > table > caption > .content > .header > form {
+	display: flex;
+	align-items: center;
+}
+.report-table_gitemz > table > caption > .content > .header > form > .input-control_k7j7i9 {
+	max-width: 200px;
+	margin-right: 5px;
+}
+.report-table_gitemz > table > caption > .content > .chart {
+	padding: 10px;
+	border-top: 1px solid var(--content-divider-color);
+}
+.report-table_gitemz > table th,
+.report-table_gitemz > table td {
+	padding: 5px;
+	border: 1px solid var(--content-divider-color);
+}
+.report-table_gitemz > table th,
+.report-table_gitemz > table td.align-center,
+.report-table_gitemz > table td[colspan] {
+	text-align: center;
+}
+.report-table_gitemz > table tfoot th,
+.report-table_gitemz > table .align-right {
+	text-align: right;
+}
+.report-table_gitemz > table th,
+.report-table_gitemz > table td:not(.null) strong {
+	font-family: 'Museo Sans (500)';
+}
+.report-table_gitemz > table td.null {
+	color: var(--text-muted-color);
+}
