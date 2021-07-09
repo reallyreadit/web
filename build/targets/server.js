@@ -48,7 +48,7 @@ class Server {
 					}
 					childProcess
 						.spawn(
-							'tsc',
+							path.resolve('node_modules/.bin/tsc'),
 							args,
 							{
 								shell: true,
