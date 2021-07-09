@@ -6,7 +6,7 @@ import DateRangeQuery from '../../../../common/models/analytics/DateRangeQuery';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 
-interface Header {
+export interface Header {
 	name: string,
 	colSpan?: number
 }
