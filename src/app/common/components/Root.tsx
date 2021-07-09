@@ -921,6 +921,7 @@ export default abstract class Root<
 				onGetRevenueReport: this.props.serverApi.getAdminSubscriptionRevenueReport,
 				onGetSignups: this.props.serverApi.getSignupAnalytics,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
+				onGetWeeklyUserActivityReport: this.props.serverApi.getWeeklyUserActivityReport,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,

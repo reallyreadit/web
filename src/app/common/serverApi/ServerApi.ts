@@ -84,6 +84,7 @@ import { AuthorsEarningsReportResponse } from '../../../common/models/subscripti
 import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
+import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -174,6 +175,7 @@ export default abstract class {
 	public readonly getConversionAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>('/Analytics/Conversions');
 	public readonly getDailyTotalAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>('/Analytics/DailyTotals');
 	public readonly getSignupAnalytics = this.createFetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>('/Analytics/Signups');
+	public readonly getWeeklyUserActivityReport = this.createFetchFunctionWithParams<DateRangeQuery, WeeklyUserActivityReport[]>('/Analytics/WeeklyUserActivityReport');
 	public readonly logExtensionRemoval = (installationId: string) => this.post({ path: '/Extension/Uninstall', data: { installationId } });
 	public readonly logExtensionRemovalFeedback = (data: { installationId: string, reason: string }) => this.post({ path: '/Extension/UninstallFeedback', data });
 	public readonly logNewPlatformNotificationRequest = (data: NewPlatformNotificationRequest) => this.post({ path: '/Analytics/NewPlatformNotificationRequest', data });
