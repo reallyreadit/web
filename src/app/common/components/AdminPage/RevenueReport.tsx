@@ -118,15 +118,9 @@ function getCustomItems(items: RevenueReportLineItem[]) {
 		item => item.priceAmount > 0 && !item.priceName
 	);
 }
-function renderBody(data: RevenueReportResponse, columnCount: number) {
+function renderBody(data: RevenueReportResponse) {
 	if (!data.lineItems.length) {
-		return (
-			<tbody>
-				<tr>
-					<td colSpan={columnCount}>No line items found.</td>
-				</tr>
-			</tbody>
-		);
+		return null;
 	}
 	return createPeriodGroups(data)
 		.map(

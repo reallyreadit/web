@@ -16,7 +16,7 @@ interface Props<TData> {
 	initialEndDate: string,
 	onGetHeaders: (data?: TData) => Header[][],
 	onFetchData: FetchFunctionWithParams<DateRangeQuery, TData>,
-	onRenderBody: (data: TData, columnCount: number) => React.ReactNode,
+	onRenderBody: (data: TData, columnCount: number) => React.ReactNode | null,
 	onRenderChart?: (data: TData) => React.ReactNode,
 	onRenderFooter?: (data: TData, columnCount: number) => React.ReactNode
 };
@@ -85,7 +85,8 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 			if (this.props.onRenderFooter) {
 				footer = this.props.onRenderFooter(this.state.data.value, columnCount);
 			}
-		} else {
+		}
+		if (!body) {
 			body = (
 				<tbody>
 					<tr>
@@ -93,7 +94,9 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 							{this.state.data ?
 								this.state.data.isLoading ?
 									'Loading...' :
-									'Error loading data.' :
+										this.state.data.errors ?
+											'Error loading data.' :
+											'No data found.' :
 								'Click "Run Report" to load data.'}
 						</td>
 					</tr>
