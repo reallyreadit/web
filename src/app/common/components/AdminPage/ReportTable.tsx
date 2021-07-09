@@ -141,10 +141,10 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 							row => (
 								<tr key={row.map(header => header.name).join(',')}>
 									{row.map(
-										header => (
+										(header, index) => (
 											<th
 												colSpan={header.colSpan ?? 1}
-												key={header.name}
+												key={`${header.name}-${index}`}
 											>
 												{header.name}
 											</th>
