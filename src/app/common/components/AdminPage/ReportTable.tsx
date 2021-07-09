@@ -14,7 +14,7 @@ interface Props<TData> {
 	title: string,
 	initialStartDate: string,
 	initialEndDate: string,
-	headers: Header[][],
+	onGetHeaders: (data?: TData) => Header[][],
 	onFetchData: FetchFunctionWithParams<DateRangeQuery, TData>,
 	onRenderBody: (data: TData, columnCount: number) => React.ReactNode,
 	onRenderChart?: (data: TData) => React.ReactNode,
@@ -67,10 +67,12 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const columnCount = this.props.headers[0].reduce(
-			(sum, header) => sum + (header.colSpan ?? 1),
-			0
-		);
+		const
+			headers = this.props.onGetHeaders(this.state.data?.value),
+			columnCount = headers[0].reduce(
+				(sum, header) => sum + (header.colSpan ?? 1),
+				0
+			);
 		let
 			chart: React.ReactNode | undefined,
 			body: React.ReactNode,
@@ -132,7 +134,7 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 						</div>
 					</caption>
 					<thead>
-						{this.props.headers.map(
+						{headers.map(
 							row => (
 								<tr key={row.map(header => header.name).join(',')}>
 									{row.map(

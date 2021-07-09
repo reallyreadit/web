@@ -24,67 +24,68 @@ enum Price {
 	SuperReader = 'Super Reader'
 }
 
-const headers = [
-	[
-		{
-			name: ''
-		},
-		{
-			name: 'Budget ($4.99)',
-			colSpan: 2
-		},
-		{
-			name: 'Reader ($14.99)',
-			colSpan: 2
-		},
-		{
-			name: 'Super Reader ($24.99)',
-			colSpan: 2
-		},
-		{
-			name: 'Custom'
-		},
-		{
-			name: ''
-		},
-		{
-			name: ''
-		}
-	],
-	[
-		{
-			name: 'Period'
-		},
-		{
-			name: 'Apple'
-		},
-		{
-			name: 'Stripe'
-		},
-		{
-			name: 'Apple'
-		},
-		{
-			name: 'Stripe'
-		},
-		{
-			name: 'Apple'
-		},
-		{
-			name: 'Stripe'
-		},
-		{
-			name: 'Stripe'
-		},
-		{
-			name: 'Total'
-		},
-		{
-			name: 'MRR'
-		}
-	]
-];
-
+function getHeaders() {
+	return [
+		[
+			{
+				name: ''
+			},
+			{
+				name: 'Budget ($4.99)',
+				colSpan: 2
+			},
+			{
+				name: 'Reader ($14.99)',
+				colSpan: 2
+			},
+			{
+				name: 'Super Reader ($24.99)',
+				colSpan: 2
+			},
+			{
+				name: 'Custom'
+			},
+			{
+				name: ''
+			},
+			{
+				name: ''
+			}
+		],
+		[
+			{
+				name: 'Period'
+			},
+			{
+				name: 'Apple'
+			},
+			{
+				name: 'Stripe'
+			},
+			{
+				name: 'Apple'
+			},
+			{
+				name: 'Stripe'
+			},
+			{
+				name: 'Apple'
+			},
+			{
+				name: 'Stripe'
+			},
+			{
+				name: 'Stripe'
+			},
+			{
+				name: 'Total'
+			},
+			{
+				name: 'MRR'
+			}
+		]
+	];
+}
 function createPeriodGroups(data: RevenueReportResponse) {
 	return data.lineItems
 		.reduce<LineItemPeriodGroup[]>(
@@ -356,7 +357,7 @@ export class RevenueReport extends React.Component<Props> {
 				title="Revenue Report"
 				initialStartDate={this._initialStartDate}
 				initialEndDate={this._initialEndDate}
-				headers={headers}
+				onGetHeaders={getHeaders}
 				onFetchData={this.props.onGetRevenueReport}
 				onRenderBody={renderBody}
 				onRenderChart={renderChart}
