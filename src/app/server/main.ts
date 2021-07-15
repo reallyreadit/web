@@ -282,6 +282,13 @@ server.get('/terms', (req, res) => {
 		findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()
 	);
 });
+server.get('/earnings', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()
+	);
+});
 // handle redirects
 server.get<{}, any, any, { token: string }>('/confirmEmail', (req, res) => {
 	req.api
