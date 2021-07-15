@@ -1,17 +1,14 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
 import FormDialog from '../../../../common/components/FormDialog';
-import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import { FetchFunction } from '../../serverApi/ServerApi';
 import Leaderboards from '../../../../common/models/Leaderboards';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ReaderLeaderboards from './LeaderboardScreen/ReaderLeaderboards';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, SharedState } from '../Root';
+import { Screen, SharedState, NavReference } from '../Root';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import AuthorLeaderboardsRequest from '../../../../common/models/stats/AuthorLeaderboardsRequest';
-import AuthorRanking from '../../../../common/models/AuthorRanking';
-import AuthorLeaderboardsTimeWindow from '../../../../common/models/stats/AuthorLeaderboardsTimeWindow';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import HeaderSelector from '../HeaderSelector';
 import AuthorLeaderboards from './LeaderboardScreen/AuthorLeaderboards';
@@ -19,6 +16,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import { AuthorsEarningsReportResponse } from '../../../../common/models/subscriptions/AuthorEarningsReport';
 
 interface Props {
 	deviceType: DeviceType,
@@ -28,9 +26,10 @@ interface Props {
 	onCloseDialog: () => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
-	onGetAuthorLeaderboards: FetchFunctionWithParams<AuthorLeaderboardsRequest, AuthorRanking[]>,
+	onGetAuthorsEarningsReport: FetchFunction<AuthorsEarningsReportResponse>,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onGetReaderLeaderboards: FetchFunction<Leaderboards>,
+	onNavTo: (ref: NavReference) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewAuthor: (slug: string, name: string) => void,
@@ -42,31 +41,13 @@ enum View {
 	Readers = 'Readers'
 }
 interface State {
-	authorLeaderboards: Fetchable<AuthorRanking[]> | null,
-	authorLeaderboardsTimeWindow: AuthorLeaderboardsTimeWindow,
+	authorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null,
 	isScreenLoading: boolean,
 	readerLeaderboards: Fetchable<Leaderboards> | null,
 	view: View
 }
 class LeaderboardsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeAuthorLeaderboardsTimeWindow = (timeWindow: AuthorLeaderboardsTimeWindow) => {
-		this.setState({
-			authorLeaderboards: this.props.onGetAuthorLeaderboards(
-				{
-					timeWindow
-				},
-				this._asyncTracker.addCallback(
-					authorLeaderboards => {
-						this.setState({
-							authorLeaderboards
-						});
-					}
-				)
-			),
-			authorLeaderboardsTimeWindow: timeWindow
-		});
-	};
 	private readonly _changeView = (value: string) => {
 		const view = value as View;
 		if (view === this.state.view) {
@@ -75,10 +56,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		switch (view) {
 			case View.Authors:
 				this.setState({
-					authorLeaderboards: this.props.onGetAuthorLeaderboards(
-						{
-							timeWindow: this.state.authorLeaderboardsTimeWindow
-						},
+					authorLeaderboards: this.props.onGetAuthorsEarningsReport(
 						this._asyncTracker.addCallback(
 							authorLeaderboards => {
 								this.setState({
@@ -94,7 +72,6 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 			case View.Readers:
 				this.setState({
 					authorLeaderboards: null,
-					authorLeaderboardsTimeWindow: AuthorLeaderboardsTimeWindow.PastWeek,
 					readerLeaderboards: this.props.onGetReaderLeaderboards(
 						this._asyncTracker.addCallback(
 							readerLeaderboards => {
@@ -132,11 +109,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		const
-			authorLeaderboardsTimeWindow = AuthorLeaderboardsTimeWindow.PastWeek,
-			authorLeaderboards = props.onGetAuthorLeaderboards(
-				{
-					timeWindow: authorLeaderboardsTimeWindow
-				},
+			authorLeaderboards = props.onGetAuthorsEarningsReport(
 				this._asyncTracker.addCallback(
 					authorLeaderboards => {
 						this.setState({
@@ -148,7 +121,6 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 			);
 		this.state = {
 			authorLeaderboards,
-			authorLeaderboardsTimeWindow,
 			isScreenLoading: authorLeaderboards.isLoading,
 			readerLeaderboards: null,
 			view: View.Authors
@@ -161,10 +133,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 					}
 					switch (this.state.view) {
 						case View.Authors:
-							props.onGetAuthorLeaderboards(
-								{
-									timeWindow: this.state.authorLeaderboardsTimeWindow
-								},
+							props.onGetAuthorsEarningsReport(
 								this._asyncTracker.addCallback(
 									authorLeaderboards => {
 										this.setState({
@@ -252,11 +221,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 							/>
 							{this.state.view === View.Authors ?
 								<AuthorLeaderboards
-									onChangeTimeWindow={this._changeAuthorLeaderboardsTimeWindow}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onViewAuthor={this.props.onViewAuthor}
-									rankings={this.state.authorLeaderboards}
-									timeWindow={this.state.authorLeaderboardsTimeWindow}
+									onNavTo={this.props.onNavTo}
+									response={this.state.authorLeaderboards}
 								/> :
 								<ReaderLeaderboards
 									leaderboards={this.state.readerLeaderboards}
@@ -291,9 +257,10 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 				onCloseDialog={services.onCloseDialog}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={services.onCreateStaticContentUrl}
+				onGetAuthorsEarningsReport={services.onGetAuthorsEarningsReport}
 				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
-				onGetAuthorLeaderboards={services.onGetAuthorLeaderboards}
 				onGetReaderLeaderboards={services.onGetReaderLeaderboards}
+				onNavTo={services.onNavTo}
 				onOpenDialog={services.onOpenDialog}
 				onRegisterArticleChangeHandler={services.onRegisterArticleChangeHandler}
 				onViewAuthor={services.onViewAuthor}

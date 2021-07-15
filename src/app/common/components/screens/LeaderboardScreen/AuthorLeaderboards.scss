@@ -3,21 +3,120 @@
 	cssComponentId: author-leaderboards_4rtwc1
 */
 
-.author-leaderboards_4rtwc1 > .leaderboard {
-	max-width: 450px;
+.author-leaderboards_4rtwc1 > table {
+	table-layout: fixed;
+	width: 100%;
+	max-width: 700px;
 	margin: 0 auto;
 }
-.author-leaderboards_4rtwc1 > .leaderboard > .header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 5px 0 10px 0;
+.author-leaderboards_4rtwc1 > table th,
+.author-leaderboards_4rtwc1 > table td {
+	padding: 5px 10px;
+	background-color: var(--content-background-color);
 }
-.author-leaderboards_4rtwc1 > .leaderboard > .header > .title {
+.author-leaderboards_4rtwc1 > table th:first-child,
+.author-leaderboards_4rtwc1 > table td:first-child {
+	padding-left: 20px;
+}
+.author-leaderboards_4rtwc1 > table th:last-child,
+.author-leaderboards_4rtwc1 > table td:last-child {
+	padding-right: 20px;
+}
+.author-leaderboards_4rtwc1 > table tr:last-child td {
+	padding-bottom: 20px;
+}
+.author-leaderboards_4rtwc1 > table th {
 	font-family: 'Museo Sans (700)';
-	font-size: 15pt;
-}
-.author-leaderboards_4rtwc1 > .leaderboard > .caption {
-	padding: 10px 0 15px 0;
 	text-align: center;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.author-leaderboards_4rtwc1 > table th.writer {
+	width: 50%;
+}
+.author-leaderboards_4rtwc1 > table th.minutes-read {
+	width: 25%;
+}
+.author-leaderboards_4rtwc1 > table th.amount-earned {
+	width: 25%;
+}
+.author-leaderboards_4rtwc1 > table td.writer {
+	white-space: nowrap;
+}
+.author-leaderboards_4rtwc1 > table td.writer > .link_ke15oa {
+	display: inline-block;
+	vertical-align: middle;
+	max-width: calc(100% - 22px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.author-leaderboards_4rtwc1 > table td.writer > .icon_rour3d {
+	margin-left: 5px;
+	vertical-align: middle;
+}
+.author-leaderboards_4rtwc1 > table td.amount-earned > .content {
+	display: inline-flex;
+	align-items: center;
+}
+.author-leaderboards_4rtwc1 > table td.amount-earned > .content > .icon_rour3d {
+	margin-left: 5px;
+}
+.author-leaderboards_4rtwc1 > table td.amount-earned > .content > .icon_rour3d.hidden {
+	visibility: hidden;
+}
+.author-leaderboards_4rtwc1 > table td.minutes-read,
+.author-leaderboards_4rtwc1 > table td.amount-earned,
+.author-leaderboards_4rtwc1 > table td.amount-paid {
+	text-align: right;
+}
+
+@media screen and (max-width: 550px) {
+	.author-leaderboards_4rtwc1 > table,
+	.author-leaderboards_4rtwc1 > table tbody,
+	.author-leaderboards_4rtwc1 > table tr,
+	.author-leaderboards_4rtwc1 > table td {
+		display: block;
+	}
+	.author-leaderboards_4rtwc1 > table thead {
+		display: none;
+	}
+	.author-leaderboards_4rtwc1 > table tr:not(:last-child) {
+		margin-bottom: 15px;
+	}
+	.author-leaderboards_4rtwc1 > table td {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	.author-leaderboards_4rtwc1 > table tr td:first-child {
+		padding-top: 20px;
+		padding-bottom: 10px;
+	}
+	.author-leaderboards_4rtwc1 > table td:last-child {
+		padding-bottom: 20px;
+	}
+	.author-leaderboards_4rtwc1 > table tr:last-child td:not(:first-child):not(:last-child) {
+		padding-bottom: 5px;
+	}
+	.author-leaderboards_4rtwc1 > table td.writer {
+		font-size: 1.15em;
+		font-family: 'Museo Sans (500)';
+	}
+	.author-leaderboards_4rtwc1 > table td.amount-earned > .content {
+		flex-flow: row-reverse;
+	}
+	.author-leaderboards_4rtwc1 > table td.amount-earned > .content > .icon_rour3d {
+		margin-left: 0;
+		margin-right: 5px;
+	}
+	.author-leaderboards_4rtwc1 > table td.minutes-read,
+	.author-leaderboards_4rtwc1 > table td.amount-earned {
+		display: flex;
+		justify-content: space-between;;
+	}
+	.author-leaderboards_4rtwc1 > table td.minutes-read::before,
+	.author-leaderboards_4rtwc1 > table td.amount-earned::before {
+		content: attr(data-header);
+		font-family: 'Museo Sans (500)';
+		color: var(--text-muted-color);
+	}
 }
