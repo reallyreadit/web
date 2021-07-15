@@ -1,5 +1,9 @@
 import UserArticle from '../UserArticle';
 
+export interface AuthorsEarningsReportRequest {
+	minAmountEarned: number,
+	maxAmountEarned: number
+}
 export interface AuthorEarningsReport {
 	authorName: string,
 	authorSlug: string,

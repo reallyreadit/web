@@ -78,7 +78,7 @@ import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/
 import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
-import { AuthorsEarningsReportResponse } from '../../../common/models/subscriptions/AuthorEarningsReport';
+import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../common/models/subscriptions/AuthorEarningsReport';
 import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
@@ -235,7 +235,7 @@ export default abstract class {
 	public readonly changeSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodChangeRequest) => this.post<SubscriptionPaymentMethodResponse>({ path: '/Subscriptions/StripePaymentMethodChange', data: request });
 	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
 	public readonly completeStripeSubscriptionUpgrade = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeUpgradePayment', data: request });
-	public readonly getAuthorsEarningsReport = this.createFetchFunction<AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
+	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
 	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');

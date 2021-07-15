@@ -1,7 +1,7 @@
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
 import FormDialog from '../../../../common/components/FormDialog';
-import { FetchFunction } from '../../serverApi/ServerApi';
+import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import Leaderboards from '../../../../common/models/Leaderboards';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ReaderLeaderboards from './LeaderboardScreen/ReaderLeaderboards';
@@ -16,7 +16,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
-import { AuthorsEarningsReportResponse } from '../../../../common/models/subscriptions/AuthorEarningsReport';
+import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../../common/models/subscriptions/AuthorEarningsReport';
 
 interface Props {
 	deviceType: DeviceType,
@@ -26,7 +26,7 @@ interface Props {
 	onCloseDialog: () => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
-	onGetAuthorsEarningsReport: FetchFunction<AuthorsEarningsReportResponse>,
+	onGetAuthorsEarningsReport: FetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onGetReaderLeaderboards: FetchFunction<Leaderboards>,
 	onNavTo: (ref: NavReference) => void,
@@ -42,10 +42,15 @@ enum View {
 }
 interface State {
 	authorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null,
+	authorLeaderboardsRequest: AuthorsEarningsReportRequest,
 	isScreenLoading: boolean,
 	readerLeaderboards: Fetchable<Leaderboards> | null,
 	view: View
 }
+const defaultAuthorLeaderboardsRequest = {
+	minAmountEarned: 1000,
+	maxAmountEarned: 0
+};
 class LeaderboardsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeView = (value: string) => {
@@ -57,6 +62,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 			case View.Authors:
 				this.setState({
 					authorLeaderboards: this.props.onGetAuthorsEarningsReport(
+						defaultAuthorLeaderboardsRequest,
 						this._asyncTracker.addCallback(
 							authorLeaderboards => {
 								this.setState({
@@ -65,6 +71,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 							}
 						)
 					),
+					authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
 					readerLeaderboards: null,
 					view
 				});
@@ -110,6 +117,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		super(props);
 		const
 			authorLeaderboards = props.onGetAuthorsEarningsReport(
+				defaultAuthorLeaderboardsRequest,
 				this._asyncTracker.addCallback(
 					authorLeaderboards => {
 						this.setState({
@@ -121,6 +129,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 			);
 		this.state = {
 			authorLeaderboards,
+			authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
 			isScreenLoading: authorLeaderboards.isLoading,
 			readerLeaderboards: null,
 			view: View.Authors
@@ -134,6 +143,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 					switch (this.state.view) {
 						case View.Authors:
 							props.onGetAuthorsEarningsReport(
+								this.state.authorLeaderboardsRequest,
 								this._asyncTracker.addCallback(
 									authorLeaderboards => {
 										this.setState({
