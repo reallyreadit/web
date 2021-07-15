@@ -1,3 +1,5 @@
+import UserArticle from '../UserArticle';
+
 export interface AuthorEarningsReport {
 	authorName: string,
 	authorSlug: string,
@@ -5,7 +7,8 @@ export interface AuthorEarningsReport {
 	donationRecipientName: string | null,
 	minutesRead: number,
 	amountEarned: number,
-	status: AuthorEarningsReportStatus
+	status: AuthorEarningsReportStatus,
+	topArticle: UserArticle
 }
 export enum AuthorEarningsReportStatus {
 	ApproachingMinimum = 1,
