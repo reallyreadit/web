@@ -62,11 +62,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
-		createUrl: () => '/earnings',
-		pathRegExp: /^\/earnings$/,
-		screenKey: ScreenKey.AuthorsEarnings
-	},
-	{
 		createUrl: params => `/email/confirm/${params['result']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,

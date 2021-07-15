@@ -160,7 +160,7 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "How much money has Readup earned for writers?",
-				answer: <p>Writer earnings and total Readup revenue are visible on the homepage and at the bottom of the menu. Individual, finalized distributions, broken down by writer, are visible <Link screen={ScreenKey.AuthorsEarnings} onClick={props.onNavTo}>here</Link>.</p>
+				answer: <p>Writer earnings and total Readup revenue are visible on the homepage and at the bottom of the menu. Individual, finalized distributions, broken down by writer, are visible <Link screen={ScreenKey.Leaderboards} onClick={props.onNavTo}>here</Link>.</p>
 			},
 			{
 				question: "What do you do with money earned by deceased writers?",
