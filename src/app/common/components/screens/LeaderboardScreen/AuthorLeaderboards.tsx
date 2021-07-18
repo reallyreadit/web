@@ -13,11 +13,13 @@ import ContentBox from '../../../../../common/components/ContentBox';
 import { calculateEstimatedReadTime } from '../../../../../common/calculate';
 import { EarningsStatusExplainerDialog } from '../../EarningsStatusExplainerDialog';
 import UserArticle from '../../../../../common/models/UserArticle';
+import Button from '../../../../../common/components/Button';
 
 interface Props {
 	onNavTo: (ref: NavReference) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onCloseDialog: () => void,
+	onLoadMoreAuthors: () => void,
 	response: Fetchable<AuthorsEarningsReportResponse>
 }
 export default class AuthorLeaderboards extends React.Component<Props> {
@@ -65,7 +67,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 	}
 
 	private renderMobileCards(): React.ReactNode {
-		return this.props.response.value.lineItems
+		return <>{this.props.response.value.lineItems
 			.sort(
 				(a, b) => b.amountEarned - a.amountEarned
 			)
@@ -94,7 +96,11 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 				</div>
 				</ContentBox>
 				);
-			});
+			})}
+			<div className="load-more-button-mobile-container">
+				{this.renderLoadMoreButton()}
+			</div>
+			</>
 	}
 
 	private renderDetailsLine(topArticle: UserArticle) : React.ReactNode {
@@ -103,7 +109,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 
 	private renderAuthorLink(item: AuthorEarningsReport): React.ReactNode {
 		return item.userAccountName ?
-			<>
+			<span>
 				<Link
 					screen={ScreenKey.Profile}
 					onClick={this.props.onNavTo}
@@ -111,13 +117,17 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 					text={item.authorName}
 				/>
 				<Icon name="verified-user" title="Verified" />
-			</> :
+			</span> :
 			<Link
 				screen={ScreenKey.Author}
 				onClick={this.props.onNavTo}
 				params={{ slug: item.authorSlug }}
 				text={item.authorName}
 			/>
+	}
+
+	private renderLoadMoreButton(): React.ReactNode {
+		return !this.props.response.isLoading && this.props.response.value.lineItems.length ? <div className="load-more-button"><Icon name="arrow-down"/><Button text="Load more" size="normal" intent="normal" onClick={this.props.onLoadMoreAuthors} /></div> : null
 	}
 
 	private renderDesktopTable() {
@@ -144,7 +154,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 				header: 'Status',
 			}
 		};
-		return (<table>
+		return (<><table>
 			<thead>
 				<tr>
 					{Object
@@ -227,38 +237,43 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 						<td colSpan={4}>
 							No earnings found.
 						</td>
-					</tr>}
+					</tr>
+					}
 			</tbody>
-		</table>)
+		</table>
+		{this.renderLoadMoreButton()}
+		</>
+		)
+
 	}
 
 	public render() {
 
 		return (
 			this.props.response.isLoading ?
-						<ContentBox>
-							<LoadingOverlay position="static" />
-						</ContentBox> :
-						this.props.response.value ?
-							<div className="author-leaderboards_4rtwc1">
-								<div className="mobile-container">
-									{this.renderMobileCards()}
-								</div>
-								<div className="desktop-container">
-									<ContentBox>
-										{this.renderDesktopTable()}
-									</ContentBox>
-								</div>
-							</div>
-							 :
+				<ContentBox>
+					<LoadingOverlay position="static" />
+				</ContentBox> :
+				this.props.response.value ?
+					<div className="author-leaderboards_4rtwc1">
+						<div className="mobile-container">
+							{this.renderMobileCards()}
+						</div>
+						<div className="desktop-container">
 							<ContentBox>
-								<InfoBox
-									position="static"
-									style="normal"
-								>
-									Error loading report.
-								</InfoBox>
+								{this.renderDesktopTable()}
 							</ContentBox>
+						</div>
+					</div>
+						:
+					<ContentBox>
+						<InfoBox
+							position="static"
+							style="normal"
+						>
+							Error loading report.
+						</InfoBox>
+					</ContentBox>
 
 		);
 	}
