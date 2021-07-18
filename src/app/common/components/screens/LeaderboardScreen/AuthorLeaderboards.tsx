@@ -12,6 +12,7 @@ import { NavReference } from '../../Root';
 import ContentBox from '../../../../../common/components/ContentBox';
 import { calculateEstimatedReadTime } from '../../../../../common/calculate';
 import { EarningsStatusExplainerDialog } from '../../EarningsStatusExplainerDialog';
+import UserArticle from '../../../../../common/models/UserArticle';
 
 interface Props {
 	onNavTo: (ref: NavReference) => void,
@@ -61,6 +62,62 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 			default:
 				return <>Approaching minimum</>;
 		}
+	}
+
+	private renderMobileCards(): React.ReactNode {
+		return this.props.response.value.lineItems
+			.sort(
+				(a, b) => b.amountEarned - a.amountEarned
+			)
+			.map(item => {
+				const [sourceSlug, articleSlug] = item.topArticle.slug.split('_'),
+				articleUrlParams = {
+					['articleSlug']: articleSlug,
+					['sourceSlug']: sourceSlug
+				}
+
+				return (<ContentBox key={item.authorSlug}>
+				<div className="author-section">
+					<div className="top-line">{this.renderAuthorLink(item)}<span className="earnings">Earned {formatCurrency(item.amountEarned)} {this.renderStatus(item)}</span></div>
+					<span className="minutes-read">Read for {item.minutesRead} min.</span>
+				</div>
+				<div className="article-section">
+					<Link
+						screen={ScreenKey.Comments}
+						onClick={this.props.onNavTo}
+						params={articleUrlParams}
+						>
+						<div className="top-article">Top Article <Icon name="arrow-ne" title="Open link to comments"/></div>
+						<div>{item.topArticle.title}</div>
+						<div>{this.renderDetailsLine(item.topArticle)}</div>
+					</Link>
+				</div>
+				</ContentBox>
+				);
+			});
+	}
+
+	private renderDetailsLine(topArticle: UserArticle) : React.ReactNode {
+		return <span className="details"><span className="source" title={topArticle.source}>{topArticle.source}</span><i className="spacer"></i>{calculateEstimatedReadTime(topArticle.wordCount)} min.<i className="spacer"></i>{topArticle.readCount} reads</span>
+	}
+
+	private renderAuthorLink(item: AuthorEarningsReport): React.ReactNode {
+		return item.userAccountName ?
+			<>
+				<Link
+					screen={ScreenKey.Profile}
+					onClick={this.props.onNavTo}
+					params={{ userName: item.userAccountName }}
+					text={item.authorName}
+				/>
+				<Icon name="verified-user" title="Verified" />
+			</> :
+			<Link
+				screen={ScreenKey.Author}
+				onClick={this.props.onNavTo}
+				params={{ slug: item.authorSlug }}
+				text={item.authorName}
+			/>
 	}
 
 	private renderDesktopTable() {
@@ -115,28 +172,19 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 							(a, b) => b.amountEarned - a.amountEarned
 						)
 						.map(
-							item => (
-								<tr key={item.authorName}>
+							item => {
+								const [sourceSlug, articleSlug] = item.topArticle.slug.split('_'),
+									articleUrlParams = {
+										['articleSlug']: articleSlug,
+										['sourceSlug']: sourceSlug
+									};
+								return (
+								<tr key={item.authorSlug}>
 									<td
 										className={columns.writer.class}
 										data-header={columns.writer.header}
 									>
-										{item.userAccountName ?
-											<>
-												<Link
-													screen={ScreenKey.Profile}
-													onClick={this.props.onNavTo}
-													params={{ userName: item.userAccountName }}
-													text={item.authorName}
-												/>
-												<Icon name="verified-user" title="Verified" />
-											</> :
-											<Link
-												screen={ScreenKey.Author}
-												onClick={this.props.onNavTo}
-												params={{ slug: item.authorSlug }}
-												text={item.authorName}
-											/>}
+										{this.renderAuthorLink(item)}
 									</td>
 									<td
 										className={columns.minutesRead.class}
@@ -150,10 +198,10 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 											<Link
 												screen={ScreenKey.Comments}
 												onClick={this.props.onNavTo}
-												params={{slug: item.topArticle.slug}}
+												params={articleUrlParams}
 												text={item.topArticle.title}
 												/><br/>
-											<span className="details"><span className="source" title={item.topArticle.source}>{item.topArticle.source}</span><i className="spacer"></i>{calculateEstimatedReadTime(item.topArticle.wordCount)} min.<i className="spacer"></i>{item.topArticle.readCount} reads</span>
+											{this.renderDetailsLine(item.topArticle)}
 
 										{/* {item.topArticle.title} */}
 									</td>
@@ -173,6 +221,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 									</td>
 								</tr>
 							)
+										}
 						) :
 					<tr>
 						<td colSpan={4}>
@@ -186,21 +235,31 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 	public render() {
 
 		return (
-			<ContentBox>
-				<div className="author-leaderboards_4rtwc1">
-					{this.props.response.isLoading ?
-						<LoadingOverlay position="static" /> :
+			this.props.response.isLoading ?
+						<ContentBox>
+							<LoadingOverlay position="static" />
+						</ContentBox> :
 						this.props.response.value ?
-							this.renderDesktopTable()
+							<div className="author-leaderboards_4rtwc1">
+								<div className="mobile-container">
+									{this.renderMobileCards()}
+								</div>
+								<div className="desktop-container">
+									<ContentBox>
+										{this.renderDesktopTable()}
+									</ContentBox>
+								</div>
+							</div>
 							 :
-							<InfoBox
-								position="static"
-								style="normal"
-							>
-								Error loading report.
-							</InfoBox>}
-				</div>
-			</ContentBox>
+							<ContentBox>
+								<InfoBox
+									position="static"
+									style="normal"
+								>
+									Error loading report.
+								</InfoBox>
+							</ContentBox>
+
 		);
 	}
 }
