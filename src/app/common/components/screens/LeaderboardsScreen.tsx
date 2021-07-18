@@ -232,6 +232,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 							{this.state.view === View.Authors ?
 								<AuthorLeaderboards
 									onNavTo={this.props.onNavTo}
+									onOpenDialog={this.props.onOpenDialog}
+									onCloseDialog={this.props.onCloseDialog}
 									response={this.state.authorLeaderboards}
 								/> :
 								<ReaderLeaderboards

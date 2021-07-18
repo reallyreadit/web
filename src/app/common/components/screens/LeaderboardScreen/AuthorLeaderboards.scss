@@ -5,14 +5,16 @@
 
 .author-leaderboards_4rtwc1 > table {
 	table-layout: fixed;
+	border-collapse: collapse;
 	width: 100%;
-	max-width: 700px;
+	// max-width: 700px;
 	margin: 0 auto;
 }
 .author-leaderboards_4rtwc1 > table th,
 .author-leaderboards_4rtwc1 > table td {
-	padding: 5px 10px;
+	padding: 8px 10px;
 	background-color: var(--content-background-color);
+	border-bottom: 1px solid var(--reader-header-border-color);
 }
 .author-leaderboards_4rtwc1 > table th:first-child,
 .author-leaderboards_4rtwc1 > table td:first-child {
@@ -32,24 +34,59 @@
 	padding-bottom: 20px;
 }
 .author-leaderboards_4rtwc1 > table th.writer {
-	width: 50%;
+	// width: 50%;
+	width: 20%;
 }
 .author-leaderboards_4rtwc1 > table th.minutes-read {
-	width: 25%;
+	width: 20%;
+}
+.author-leaderboards_4rtwc1 > table th.top-article {
+	width: 35%;
 }
 .author-leaderboards_4rtwc1 > table th.amount-earned {
-	width: 25%;
+	width: 15%;
+}
+.author-leaderboards_4rtwc1 > table th.status {
+	width: 10%;
+}
+.author-leaderboards_4rtwc1 > table th.status > .icon_rour3d {
+	margin-left: 0.5em;
+	vertical-align: middle;
+	transform: translateY(-2px);
+	cursor: pointer;
 }
 .author-leaderboards_4rtwc1 > table td.writer {
 	white-space: nowrap;
 }
-.author-leaderboards_4rtwc1 > table td.writer > .link_ke15oa {
+.author-leaderboards_4rtwc1 > table td.writer > .link_ke15oa,
+.author-leaderboards_4rtwc1 > table td.top-article > .link_ke15oa
+ {
 	display: inline-block;
 	vertical-align: middle;
-	max-width: calc(100% - 22px);
+	max-width: calc(100%);
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.author-leaderboards_4rtwc1 > table td.top-article {
+	> .details {
+		display: inline-block;
+		max-width: 100%;
+
+		font-family: "Museo Sans (300)";
+		font-size: 11pt;
+		color: var(--text-muted-color);
+		> .source {
+			white-space: nowrap;
+			vertical-align: middle;
+			display: inline-block;
+			max-width: 50%;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+	}
+}
+
 .author-leaderboards_4rtwc1 > table td.writer > .icon_rour3d {
 	margin-left: 5px;
 	vertical-align: middle;
@@ -69,6 +106,19 @@
 .author-leaderboards_4rtwc1 > table td.amount-paid {
 	text-align: right;
 }
+.author-leaderboards_4rtwc1 > table td.top-article .spacer {
+	margin: 0 5px;
+}
+.author-leaderboards_4rtwc1 > table td.top-article .spacer::before {
+	content: "•";
+	font-style: normal;
+}
+
+.author-leaderboards_4rtwc1 > table td.status > .icon_rour3d {
+	cursor: pointer;
+}
+
+
 
 @media screen and (max-width: 550px) {
 	.author-leaderboards_4rtwc1 > table,
@@ -118,5 +168,13 @@
 		content: attr(data-header);
 		font-family: 'Museo Sans (500)';
 		color: var(--text-muted-color);
+	}
+}
+
+@media screen and (min-width: 1080px) {
+	.author-leaderboards_4rtwc1 > table td.minutes-read,
+	.author-leaderboards_4rtwc1 > table td.amount-earned {
+		text-align: right;
+		padding-right: 3em;
 	}
 }
