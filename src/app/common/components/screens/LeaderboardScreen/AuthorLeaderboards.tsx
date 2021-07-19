@@ -153,6 +153,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 	}
 
 	private renderLoadMoreButton(): React.ReactNode {
+		// TODO: small refactor: we might be able to use the iconLeft API from <Button> instead
 		return !this.props.response.isLoading && this.props.response.value.lineItems.length ? <div className="load-more-button"><Icon name="arrow-down"/><Button text="Load more" size="normal" intent="normal" onClick={this.props.onLoadMoreAuthors}
 			state={
 				(!!this.props.responseMore && !this.props.responseMore.isLoading) ? 'disabled' :

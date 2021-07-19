@@ -17,6 +17,8 @@ import { variants as marketingVariants } from '../../marketingTesting';
 import Panel from '../BrowserRoot/Panel';
 import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../../common/models/subscriptions/AuthorEarningsReport';
+import Link from '../../../../common/components/Link';
+import ScreenKey from '../../../../common/routing/ScreenKey';
 
 interface Props {
 	deviceType: DeviceType,
@@ -219,7 +221,12 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	}
 
 	public render() {
-		const marketingVariant = marketingVariants[0];
+		const marketingVariant = this.state.view === View.Authors ?
+			{
+				headline: 'Where writers are really read',
+				subtext: 'Readup is the social reading platform. Readers pay to read articles across the web, distraction-free.\nWriters get paid, transparently!'
+			}
+			: marketingVariants[0];
 		return (
 			<div className="leaderboards-screen_wuzsob">
 				{this.state.isScreenLoading ?
@@ -239,6 +246,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 										onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 										onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 									/>
+									{/* TODO: might look nicer if a secondary <Button> were used */}
+									<Link screen={ScreenKey.Home} className="learn-more-button" onClick={this.props.onNavTo}>Learn More</Link>
 								</div>
 							</Panel> :
 							null}

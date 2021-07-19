@@ -9,7 +9,19 @@
 }
 .leaderboards-screen_wuzsob > .header {
 	text-align: center;
+
+	& > .content > .buttons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		.learn-more-button {
+			margin-left: 1em;
+		}
+	}
 }
+
+
 .leaderboards-screen_wuzsob > .main > .content > h1 {
 	font-family: 'Museo Sans (700)';
 	font-size: 20pt;
