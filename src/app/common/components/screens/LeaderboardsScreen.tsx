@@ -42,9 +42,9 @@ enum View {
 }
 interface State {
 	authorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null,
+	moreAuthorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null,
 	authorLeaderboardsRequest: AuthorsEarningsReportRequest,
 	isScreenLoading: boolean,
-	loadMoreCount: number,
 	readerLeaderboards: Fetchable<Leaderboards> | null,
 	view: View
 }
@@ -133,9 +133,9 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		this.state = {
 			authorLeaderboards,
 			authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
+			moreAuthorLeaderboards: null,
 			isScreenLoading: authorLeaderboards.isLoading,
 			readerLeaderboards: null,
-			loadMoreCount: 0,
 			view: View.Authors
 		};
 		this._asyncTracker.addCancellationDelegate(
@@ -199,35 +199,23 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 
 	public onLoadMoreAuthors() {
 
-		// "breakpoints" for the author list
-		// TODO this is not incorporated for the first load yet (default request)
-		const loadMorePoints = [1000, 100, 0];
-
-		if (this.state.loadMoreCount < 2) {
 		const nextRequest = {
-				minAmountEarned: loadMorePoints[this.state.loadMoreCount + 1],
-				maxAmountEarned: 0
-				// maxAmountEarned: loadMorePoints[this.state.loadMoreCount] - 0.01
-			};
+			minAmountEarned: 0,
+			maxAmountEarned: 1000
+		};
 
-			// insert the data - may be more efficient when data is appended piece by piece,
-			// rather than fully reloaded ?
-			this.setState({isScreenLoading: true}, () => {
-				this.props.onGetAuthorsEarningsReport(
-					nextRequest,
-					this._asyncTracker.addCallback(
-						authorLeaderboards => {
-							this.setState({
-								authorLeaderboardsRequest: nextRequest,
-								authorLeaderboards: authorLeaderboards,
-								loadMoreCount: this.state.loadMoreCount + 1,
-								isScreenLoading: false
-							})
-						}
-					)
+		this.setState({
+			moreAuthorLeaderboards: this.props.onGetAuthorsEarningsReport(
+				nextRequest,
+				this._asyncTracker.addCallback(
+					moreAuthorLeaderboards => {
+						this.setState({
+							moreAuthorLeaderboards,
+						})
+					}
 				)
-			})
-		}
+			)
+		})
 	}
 
 	public render() {
@@ -274,6 +262,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 									onCloseDialog={this.props.onCloseDialog}
 									onLoadMoreAuthors={this.onLoadMoreAuthors.bind(this)}
 									response={this.state.authorLeaderboards}
+									responseMore={this.state.moreAuthorLeaderboards}
 								/> :
 								<ReaderLeaderboards
 									leaderboards={this.state.readerLeaderboards}

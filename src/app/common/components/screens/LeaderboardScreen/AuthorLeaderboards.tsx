@@ -21,7 +21,12 @@ interface Props {
 	onCloseDialog: () => void,
 	onLoadMoreAuthors: () => void,
 	response: Fetchable<AuthorsEarningsReportResponse>
+	responseMore: Fetchable<AuthorsEarningsReportResponse>
 }
+
+type ColumnName = 'writer' | 'minutesRead' | 'topArticle'| 'amountEarned' | 'status';
+
+type ColumnDefinition = { [key in ColumnName]: { class: string, header: string } }
 export default class AuthorLeaderboards extends React.Component<Props> {
 	private openStatusExplainerDialog():void {
 		this.props.onOpenDialog(
@@ -66,37 +71,58 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 		}
 	}
 
-	private renderMobileCards(): React.ReactNode {
-		return <>{this.props.response.value.lineItems
-			.sort(
-				(a, b) => b.amountEarned - a.amountEarned
-			)
-			.map(item => {
-				const [sourceSlug, articleSlug] = item.topArticle.slug.split('_'),
-				articleUrlParams = {
-					['articleSlug']: articleSlug,
-					['sourceSlug']: sourceSlug
-				}
+	private renderMobileCard(item: AuthorEarningsReport) {
+		const [sourceSlug, articleSlug] = item.topArticle.slug.split('_'),
+		articleUrlParams = {
+			['articleSlug']: articleSlug,
+			['sourceSlug']: sourceSlug
+		}
 
-				return (<ContentBox key={item.authorSlug}>
-				<div className="author-section">
-					<div className="top-line">{this.renderAuthorLink(item)}<span className="earnings">Earned {formatCurrency(item.amountEarned)} {this.renderStatus(item)}</span></div>
-					<span className="minutes-read">Read for {item.minutesRead} min.</span>
-				</div>
-				<div className="article-section">
-					<Link
-						screen={ScreenKey.Comments}
-						onClick={this.props.onNavTo}
-						params={articleUrlParams}
-						>
-						<div className="top-article">Top Article <Icon name="arrow-ne" title="Open link to comments"/></div>
-						<div>{item.topArticle.title}</div>
-						<div>{this.renderDetailsLine(item.topArticle)}</div>
-					</Link>
-				</div>
-				</ContentBox>
-				);
-			})}
+		return (<ContentBox key={item.authorSlug}>
+			<div className="author-section">
+				<div className="top-line">{this.renderAuthorLink(item)}<span className="earnings">Earned {formatCurrency(item.amountEarned)} {this.renderStatus(item)}</span></div>
+				<span className="minutes-read">Read for {item.minutesRead} min.</span>
+			</div>
+			<div className="article-section">
+				<Link
+					screen={ScreenKey.Comments}
+					onClick={this.props.onNavTo}
+					params={articleUrlParams}
+					>
+					<div className="top-article">Top Article <Icon name="arrow-ne" title="Open link to comments"/></div>
+					<div>{item.topArticle.title}</div>
+					<div>{this.renderDetailsLine(item.topArticle)}</div>
+				</Link>
+			</div>
+			</ContentBox>
+		);
+	}
+
+
+
+	private renderMobileCards(): React.ReactNode {
+		return <>
+			{this.props.response.value.lineItems.length ?
+				this.props.response.value.lineItems
+				.sort(
+					(a, b) => b.amountEarned - a.amountEarned
+				)
+				.map(this.renderMobileCard.bind(this)) : 'No earnings found'
+			}
+			{this.props.responseMore
+					&& !this.props.responseMore.isLoading
+					&& this.props.responseMore.value.lineItems.length ?
+						this.props.responseMore.value.lineItems
+						.sort(
+							(a, b) => b.amountEarned - a.amountEarned
+						)
+						.map(this.renderMobileCard.bind(this))
+					: this.props.responseMore
+						&& !this.props.responseMore.isLoading
+						&& this.props.responseMore.value.lineItems.length === 0 ?
+							'No more earnings found.'
+					: null
+			}
 			<div className="load-more-button-mobile-container">
 				{this.renderLoadMoreButton()}
 			</div>
@@ -127,12 +153,66 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 	}
 
 	private renderLoadMoreButton(): React.ReactNode {
-		return !this.props.response.isLoading && this.props.response.value.lineItems.length ? <div className="load-more-button"><Icon name="arrow-down"/><Button text="Load more" size="normal" intent="normal" onClick={this.props.onLoadMoreAuthors} /></div> : null
+		return !this.props.response.isLoading && this.props.response.value.lineItems.length ? <div className="load-more-button"><Icon name="arrow-down"/><Button text="Load more" size="normal" intent="normal" onClick={this.props.onLoadMoreAuthors}
+			state={
+				(!!this.props.responseMore && !this.props.responseMore.isLoading) ? 'disabled' :
+				(!!this.props.responseMore && this.props.responseMore.isLoading) ? 'busy' : 'normal'} /></div>
+		: null
+	}
+
+	private renderDesktopLineItem(columns: ColumnDefinition, item: AuthorEarningsReport): React.ReactNode {
+			const [sourceSlug, articleSlug] = item.topArticle.slug.split('_'),
+				articleUrlParams = {
+					['articleSlug']: articleSlug,
+					['sourceSlug']: sourceSlug
+				};
+			return (
+			<tr key={item.authorSlug}>
+				<td
+					className={columns.writer.class}
+					data-header={columns.writer.header}
+				>
+					{this.renderAuthorLink(item)}
+				</td>
+				<td
+					className={columns.minutesRead.class}
+					data-header={columns.minutesRead.header}
+				>
+					{item.minutesRead} min.
+				</td>
+				<td
+					className={columns.topArticle.class}
+					data-header={columns.topArticle.header}>
+						<Link
+							screen={ScreenKey.Comments}
+							onClick={this.props.onNavTo}
+							params={articleUrlParams}
+							text={item.topArticle.title}
+							/><br/>
+						{this.renderDetailsLine(item.topArticle)}
+
+					{/* {item.topArticle.title} */}
+				</td>
+				<td
+					className={columns.amountEarned.class}
+					data-header={columns.amountEarned.header}
+				>
+					<span className="content">
+						{formatCurrency(item.amountEarned)}
+
+					</span>
+				</td>
+				<td
+					className={columns.status.class}
+					data-header={columns.status.header}>
+					{this.renderStatus(item)}
+				</td>
+			</tr>
+		)
 	}
 
 	private renderDesktopTable() {
-		type ColumnName = 'writer' | 'minutesRead' | 'topArticle'| 'amountEarned' | 'status';
-		const columns: { [key in ColumnName]: { class: string, header: string } } = {
+		const columns: ColumnDefinition = {
 			writer: {
 				class: 'writer',
 				header: 'Writer'
@@ -182,62 +262,33 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 							(a, b) => b.amountEarned - a.amountEarned
 						)
 						.map(
-							item => {
-								const [sourceSlug, articleSlug] = item.topArticle.slug.split('_'),
-									articleUrlParams = {
-										['articleSlug']: articleSlug,
-										['sourceSlug']: sourceSlug
-									};
-								return (
-								<tr key={item.authorSlug}>
-									<td
-										className={columns.writer.class}
-										data-header={columns.writer.header}
-									>
-										{this.renderAuthorLink(item)}
-									</td>
-									<td
-										className={columns.minutesRead.class}
-										data-header={columns.minutesRead.header}
-									>
-										{item.minutesRead} min.
-									</td>
-									<td
-										className={columns.topArticle.class}
-										data-header={columns.topArticle.header}>
-											<Link
-												screen={ScreenKey.Comments}
-												onClick={this.props.onNavTo}
-												params={articleUrlParams}
-												text={item.topArticle.title}
-												/><br/>
-											{this.renderDetailsLine(item.topArticle)}
-
-										{/* {item.topArticle.title} */}
-									</td>
-									<td
-										className={columns.amountEarned.class}
-										data-header={columns.amountEarned.header}
-									>
-										<span className="content">
-											{formatCurrency(item.amountEarned)}
-
-										</span>
-									</td>
-									<td
-										className={columns.status.class}
-										data-header={columns.status.header}>
-										{this.renderStatus(item)}
-									</td>
-								</tr>
-							)
-										}
+							(item) => this.renderDesktopLineItem(columns, item)
 						) :
 					<tr>
 						<td colSpan={4}>
 							No earnings found.
 						</td>
 					</tr>
+					}
+
+					{this.props.responseMore
+						&& !this.props.responseMore.isLoading
+						&& this.props.responseMore.value.lineItems.length ?
+					this.props.responseMore.value.lineItems
+						.sort(
+							(a, b) => b.amountEarned - a.amountEarned
+						)
+						.map(
+							(item) => this.renderDesktopLineItem(columns, item)
+						) : this.props.responseMore
+						&& !this.props.responseMore.isLoading
+						&& this.props.responseMore.value.lineItems.length === 0 ?
+						<tr>
+							<td colSpan={4}>
+								No more earnings found.
+							</td>
+						</tr>
+						: null
 					}
 			</tbody>
 		</table>
