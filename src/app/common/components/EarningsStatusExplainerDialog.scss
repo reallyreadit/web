@@ -7,6 +7,14 @@
 	margin: 0 0.6em
 }
 
+// iPhone SE & similar exception: make scrollable
+@media screen and (max-width: 380px) {
+	.earnings-status-explainer-dialog_l3pxm6 {
+		max-height: 370px;
+		overflow: auto;
+	}
+}
+
 .earnings-status-explainer-dialog_l3pxm6 strong {
 	font-weight: 600;
 }
