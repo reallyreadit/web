@@ -272,6 +272,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 									onLoadMoreAuthors={this.onLoadMoreAuthors.bind(this)}
 									response={this.state.authorLeaderboards}
 									responseMore={this.state.moreAuthorLeaderboards}
+									user={this.props.user}
 								/> :
 								<ReaderLeaderboards
 									leaderboards={this.state.readerLeaderboards}
