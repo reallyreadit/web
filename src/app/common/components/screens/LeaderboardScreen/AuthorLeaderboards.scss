@@ -232,7 +232,7 @@ $leaderboards-bp: 1080px;
 $left-right-padding: 12px;
 $top-bot-padding: 10px;
 .author-leaderboards_4rtwc1 > .mobile-container > .content-box_kkp9lc {
-	margin: 1em;
+	margin: 1em 5px;
 	// override
 	padding: $top-bot-padding 0 0 0;
 
@@ -288,4 +288,27 @@ $top-bot-padding: 10px;
 .author-leaderboards_4rtwc1 > .mobile-container .load-more-button-mobile-container {
 	display: flex;
 	justify-content: center;
+}
+
+
+@media screen and (max-width: 340px) {
+	.author-leaderboards_4rtwc1 > .mobile-container > .content-box_kkp9lc {
+		> .author-section {
+			> .top-line {
+				flex-wrap: wrap;
+				> .link_ke15oa {
+					// wrap over
+					width: 100%;
+				}
+				> .earnings {
+					font-size: 12pt;
+					margin-top: 5px;
+				}
+			}
+			> .minutes-read {
+				font-size: 12pt;
+				margin: 5px 0 0 0;
+			}
+		}
+	}
 }
