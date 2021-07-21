@@ -8,12 +8,13 @@ import ScreenKey from '../../../../../common/routing/ScreenKey';
 import { formatCurrency } from '../../../../../common/format';
 import InfoBox from '../../../../../common/components/InfoBox';
 import { NavReference } from '../../Root';
-// import * as classNames from 'classnames';
+import classNames from 'classnames';
 import ContentBox from '../../../../../common/components/ContentBox';
 import { calculateEstimatedReadTime } from '../../../../../common/calculate';
 import { EarningsStatusExplainerDialog } from '../../EarningsStatusExplainerDialog';
 import UserArticle from '../../../../../common/models/UserArticle';
 import Button from '../../../../../common/components/Button';
+import UserAccount from '../../../../../common/models/UserAccount';
 
 interface Props {
 	onNavTo: (ref: NavReference) => void,
@@ -22,6 +23,7 @@ interface Props {
 	onLoadMoreAuthors: () => void,
 	response: Fetchable<AuthorsEarningsReportResponse>
 	responseMore: Fetchable<AuthorsEarningsReportResponse>
+	user: UserAccount | null
 }
 
 type ColumnName = 'writer' | 'minutesRead' | 'topArticle'| 'amountEarned' | 'status';
@@ -307,7 +309,8 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 					<LoadingOverlay position="static" />
 				</ContentBox> :
 				this.props.response.value ?
-					<div className="author-leaderboards_4rtwc1">
+					<div className={classNames("author-leaderboards_4rtwc1",
+					{ "logged-in": !!this.props.user }) }>
 						<div className="mobile-container">
 							{this.renderMobileCards()}
 						</div>
