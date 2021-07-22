@@ -17,6 +17,7 @@ import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../..
 import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
 import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
 import { ProblemDetails } from '../../common/ProblemDetails';
+import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
@@ -150,6 +151,19 @@ export default class extends AppApi {
 			type: 'openExternalUrlUsingSystem',
 			data: url
 		});
+	}
+	public openExternalUrlWithCompletionHandler(url: string) {
+		return new Promise<ExternalUrlCompletionEvent>(
+			resolve => {
+				this._messagingContext.sendMessage(
+					{
+						type: 'openExternalUrlWithCompletionHandler',
+						data: url
+					},
+					resolve
+				);
+			}
+		);
 	}
 	public readArticle(reference: ArticleReference) {
 		this._messagingContext.sendMessage({

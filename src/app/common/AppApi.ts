@@ -22,6 +22,7 @@ import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../..
 import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
 import { AppleSubscriptionValidationResponse } from '../../common/models/subscriptions/AppleSubscriptionValidation';
 import { ProblemDetails } from '../../common/ProblemDetails';
+import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -43,6 +44,7 @@ export default abstract class extends EventEmitter<{
 	public abstract initialize(user?: UserAccount): Promise<DeviceInfo>;
 	public abstract openExternalUrl(url: string): void;
 	public abstract openExternalUrlUsingSystem(url: string): void;
+	public abstract openExternalUrlWithCompletionHandler(url: string): Promise<ExternalUrlCompletionEvent>;
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract requestAppleIdCredential(): void;
 	public abstract requestNotificationAuthorization(): Promise<NotificationAuthorizationRequestResult>;
