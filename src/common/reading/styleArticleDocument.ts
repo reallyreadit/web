@@ -381,7 +381,13 @@ const obsoleteStyles: {
 	[key: string]: string[]
 } = {
 	'body': ['alink', 'background', 'bgcolor', 'bottommargin', 'leftmargin', 'link', 'rightmargin', 'text', 'topmargin', 'vlink '],
-	'table': ['align', 'bgcolor', 'border', 'cellpadding', 'cellspacing', 'frame', 'rules', 'summary', 'width']
+	'table': ['align', 'bgcolor', 'border', 'cellpadding', 'cellspacing', 'frame', 'rules', 'summary', 'width'],
+	'thead': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	'tbody': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	'tfoot': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	'tr': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	'th': ['align', 'axis', 'bgcolor', 'char', 'charoff', 'height', 'valign', 'width'],
+	'td': ['abbr', 'align', 'axis', 'bgcolor', 'char', 'charoff', 'height', 'scope', 'valign', 'width']
 };
 
 export function createByline(authors: string[] | { name?: string }[]) {
