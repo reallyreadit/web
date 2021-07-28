@@ -4,56 +4,85 @@
 */
 @import '../../../../common/styles/colors';
 
+$breakpoint: 550px;
+
 .read-screen_ikr26q {
 	display: flex;
 	flex-flow: column;
 	align-items: center;
+	min-height: unset;
 }
+
+.read-screen_ikr26q.article-screen-container {
+	// overriding the ScreenContainer props...
+	background-color: var(--app-background-alt-color);
+	min-height: unset;
+	margin-left: 0;
+	margin-right: 0;
+	width: 100%;
+	max-width: unset;
+}
+
 .read-screen_ikr26q > .article {
-	flex: 0 0 auto;
-	max-width: 550px;
+	display: flex;
+	align-items: center;
 }
-.read-screen_ikr26q > .article > .meta {
+
+.read-screen_ikr26q > .article > .article__details {
+	// flex: 0 0 auto;
+	// max-width: 550px;
+	max-width: 500px;
+}
+
+.read-screen_ikr26q > .article > .article__details > .top-line {
+	text-transform: uppercase;
+	color: var(--text-muted-color);
+	font-size: 0.7rem;
+}
+
+.read-screen_ikr26q > .article > .article__details > .meta {
 	margin-bottom: 5px;
 	font-size: 11pt;
 }
-.read-screen_ikr26q > .article > .meta > .authors,
-.read-screen_ikr26q > .article > .meta > .source {
+.read-screen_ikr26q > .article > .article__details > .meta > .authors,
+.read-screen_ikr26q > .article > .article__details > .meta > .source {
 	text-transform: uppercase;
 	font-family: 'Museo Sans (700)';
 }
-.read-screen_ikr26q > .article > .meta > .source {
-	font-style: italic;
-}
-.read-screen_ikr26q > .article > .title {
+// .read-screen_ikr26q > .article > .article__details > .meta > .source {
+// 	font-style: italic;
+// }
+.read-screen_ikr26q > .article > .article__details > .title {
 	font-family: 'Cambria (bold)';
 	font-size: 20pt;
 	line-height: 1.1em;
-	font-style: italic;
+	margin-bottom: 0.3rem;
+	// font-style: italic;
 }
+
+.read-screen_ikr26q > .article > .article__image {
+	width: 190px;
+	height: 130px;
+	object-fit: cover;
+	margin-right: 2rem;
+}
+
+@media screen and (max-width: $breakpoint - 1px) {
+	.read-screen_ikr26q > .article {
+		flex-direction: column;
+		> .article__image {
+			margin: 0 0 0.7rem 0;
+			width: 100%;
+			max-height: 190px;
+			height: unset;
+		}
+	}
+}
+
 .read-screen_ikr26q > .spacer {
 	flex: 1 1 auto;
 	min-height: 10px;
 	max-height: 40px;
-}
-.read-screen_ikr26q > .ad-free-animation_lv6n94 {
-	flex: 0 0 auto;
-	font-size: 15pt;
-}
-.read-screen_ikr26q > .animation-caption {
-	position: relative;
-	font-size: 16pt;
-	font-family: 'Museo Sans (700)';
-	text-align: center;
-}
-.read-screen_ikr26q > .animation-caption > li:first-child {
-	animation: read-screen_ikr26q-caption-1 6s ease-in-out infinite alternate;
-}
-.read-screen_ikr26q > .animation-caption > li:last-child {
-	animation: read-screen_ikr26q-caption-2 6s ease-in-out infinite alternate;
-	position: absolute;
-	top: 0;
-	width: 100%;
 }
 .read-screen_ikr26q > .bypass {
 	margin-top: 10px;
@@ -64,33 +93,116 @@
 	cursor: pointer;
 }
 
-@keyframes read-screen_ikr26q-caption-1 {
-	0% {
-		opacity: 1;
+.read-screen_ikr26q {
+
+	.read-question {
+		font-size: 1.3rem;
+		text-align: center;
+		margin: 1.2rem 0;
+		font-family: 'Cambria', serif;
 	}
-	25% {
-		opacity: 1;
+
+	.choice {
+		width: 100%;
+		display: flex;
+		align-items: flex-start;
+		box-sizing: border-box;
+
+		&__image {
+			margin: 0.5rem 0.6rem 0.5rem 0rem;
+		}
+
+		&__details {
+			display: flex;
+			flex-grow: 1;
+			flex-direction: column;
+			justify-content: space-between;
+
+			h2 {
+				font-weight: bold;
+				font-size: 20px;
+				margin-bottom: 8px;
+			}
+
+			.info {
+				font-size: .9rem;
+				margin: 8px 0;
+			}
+
+			.pricing {
+				color: var(--text-muted-color);
+				text-align: center;
+				font-size: 0.8rem;
+				margin-bottom: 0.3rem
+			}
+		}
+
+		&--direct {
+			padding: 11px;
+			align-items: center;
+			.info {
+				text-align: center;
+			}
+		}
 	}
-	50% {
-		opacity: 0;
+
+	@media screen and (max-width: 374px) {
+		.read-question {
+			margin: 0 0 1rem 0;
+		}
 	}
-	100% {
-		opacity: 0;
+
+	@media screen and (min-width: 375px) and (max-width: 549px) {
+		.read-question {
+			margin: -1rem 0 1rem 0;
+		}
 	}
-}
-@keyframes read-screen_ikr26q-caption-2 {
-	0% {
-		opacity: 0;
+
+
+	@media screen and (min-width: $breakpoint) {
+		.read-question {
+			// dirty neg margin to compenste for padding
+			margin: -0.9rem 0px 1.5rem 0
+		}
+		.choice-container {
+			display: flex;
+
+			.choice {
+				flex-direction: column;
+			}
+
+			.info {
+				line-height: 1.2;
+				color: var(--text-muted-color);
+			}
+
+			.choice--readup {
+				align-items: center;
+				text-align: center;
+				max-width: 530px;
+
+				.pricing {
+					margin-top: 0.7rem;
+					margin-bottom: 0.7rem
+				}
+				.get-started-button_z950ea {
+					margin-bottom: 1.2rem;
+				}
+
+				.info {
+					margin: 8px 8px;
+				}
+			}
+
+			.choice--direct {
+				.choice__details {
+					justify-content: center;
+				}
+			}
+
+		}
 	}
-	50% {
-		opacity: 0;
-	}
-	75% {
-		opacity: 1;
-	}
-	100% {
-		opacity: 1;
-	}
+
 }
 
 @include theme using ($root, $scheme) {
