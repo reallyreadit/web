@@ -24,6 +24,9 @@ let canHydrateDom = true;
 if (
 	initData.deviceType !== DeviceType.Ios &&
 	navigator.platform === 'MacIntel' &&
+	// This check is needed so that on a Mac, Android can be spoofed in a browser's responsive Dev Tools mode
+	// The Mac platform will always be 'MacIntel', despite emulating an Android phone
+	!navigator.userAgent.includes('Android') &&
 	navigator.maxTouchPoints > 0
 ) {
 	// Update the DeviceType.
