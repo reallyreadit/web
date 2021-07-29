@@ -19,9 +19,11 @@ import AotdMetadata from './AotdMetadata';
 import UserAccount from '../models/UserAccount';
 import Link from './Link';
 import { NavReference } from '../../app/common/components/Root';
+import { DeviceType } from '../DeviceType';
 
 interface Props {
 	article: UserArticle,
+	deviceType: DeviceType,
 	highlight?: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -113,7 +115,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			>
 				<Icon
 					display="block"
-					name="share"
+					name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
 				/>
 			</ShareControl>
 		);
@@ -140,6 +142,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								onClick={this._toggleStar}
 							/> :
 							null}
+						{shareControl}
 						{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
 							<div className="bookmark">
 								<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
@@ -224,7 +227,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									</a>
 								</div>
 								{ratingControl}
-								{shareControl}
+
 							</div>
 						</div>
 						{(
