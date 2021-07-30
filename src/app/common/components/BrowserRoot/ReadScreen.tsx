@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Screen } from '../Root';
+import { NavReference, Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { findRouteByKey, findRouteByLocation } from '../../../../common/routing/Route';
+import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
@@ -21,6 +21,8 @@ import ContentBox from '../../../../common/components/ContentBox';
 import classNames = require('classnames');
 import { calculateEstimatedReadTime } from '../../../../common/calculate';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import Icon from '../../../../common/components/Icon';
+import Link from '../../../../common/components/Link';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -30,14 +32,15 @@ interface Props {
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCreateStaticContentUrl: (path: string) => string,
+	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onReadArticle: (article: UserArticle) => void,
 	user: UserAccount | null
 }
 class ReadScreen extends React.PureComponent<Props> {
-	// private readonly _readArticle = () => {
-	// 	this.props.onReadArticle(this.props.article.value);
-	// };
+	private readonly _readArticle = () => {
+		this.props.onReadArticle(this.props.article.value);
+	};
 	public componentDidMount() {
 		if (
 			(
@@ -61,14 +64,6 @@ class ReadScreen extends React.PureComponent<Props> {
 			['articleSlug']: articleSlug,
 			['sourceSlug']: sourceSlug
 		};
-		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
-			.createUrl(articleUrlParams);
-		/* To check w @jeff:
-			- extension not installed behavior
-			- is it important to support absolute urls here? like https://github.com/reallyreadit/web/blob/b45c59076ea5276d25ecd258ab25a68860c96d47/src/common/components/ArticleDetails.tsx#L95
-			- should there be an onViewComments handler? https://github.com/reallyreadit/web/blob/b45c59076ea5276d25ecd258ab25a68860c96d47/src/common/components/ArticleDetails.tsx#L34
-			- is _readArticle needed anymore? (see uncommented above)
-		*/
 		return 	(
 			<div className="article">
 				{this.props.article.value.imageUrl && <img className="article__image" src={this.props.article.value.imageUrl} /> }
@@ -93,7 +88,11 @@ class ReadScreen extends React.PureComponent<Props> {
 								null}
 						</div> :
 						null}
-						<span className="extra">{calculateEstimatedReadTime(this.props.article.value.wordCount)} min. read {this.props.article.value.commentCount > 0 ? <>· <a href={commentsLinkHref}>{this.props.article.value.commentCount} comments</a> on Readup</> : null}</span>
+						<span className="extra">{calculateEstimatedReadTime(this.props.article.value.wordCount)} min. read {this.props.article.value.commentCount > 0 ? <>·{' '}<Link
+							screen={ScreenKey.Comments}
+							onClick={this.props.onNavTo}
+							params={articleUrlParams}
+							>{this.props.article.value.commentCount} comments</Link> on Readup</> : null}</span>
 				</div>
 			</div>);
 	}
@@ -124,45 +123,49 @@ class ReadScreen extends React.PureComponent<Props> {
 							<div className="spacer"></div>
 							<div className={classNames("choice-container", {"mobile": isMobileDevice(this.props.deviceType)}) }>
 								<ContentBox className="choice--readup choice">
-									{!this.props.user || !this.props.isExtensionInstalled ?
 									<>
 										<img className="choice__image" src={this.props.onCreateStaticContentUrl(
 											`/app/images/read-screen/` + (isMobileDevice(this.props.deviceType) ? `clean-mobile.svg` : `clean-desktop.svg`))} />
 										<div className="choice__details">
 											<div>
-												{/* Readup is the app for reading. Read 100% ad-free, while supporting the writer. */}
-												{/* <h2>Readup is the app for reading.</h2> */}
-												<h2>100% distraction-free</h2>
+												<h2>Read it on Readup,<br/> the app for reading.</h2>
 												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
-												<p className="info">Readup is the app for reading. Join 4325 readers reading premium articles while supporting writers directly.</p>
+												<ul className="info dashed">
+													<li>Better reading</li>
+													<li>100% ad-free</li>
+													<li>Pick your price</li>
+												</ul>
 											</div>
-											<p className="pricing">Pick-your-price, starting from $ 5/mo</p>
-											<GetStartedButton
-												analyticsAction="ReadScreen"
-												deviceType={this.props.deviceType}
-												location={this.props.location}
-												onBeginOnboarding={this.props.onBeginOnboarding}
-												onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-												onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-												onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-											/>
+												{!this.props.user || !this.props.isExtensionInstalled ?
+													<GetStartedButton
+														analyticsAction="ReadScreen"
+														deviceType={this.props.deviceType}
+														location={this.props.location}
+														onBeginOnboarding={this.props.onBeginOnboarding}
+														onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+														onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+														onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+													/>
+												:
+													<Button
+														intent="loud"
+														onClick={this._readArticle}
+														size="large"
+														align="center"
+														text="Read Article"
+													/>
+												}
 										</div>
 									</>
-									: null }
 								</ContentBox>
+								<div className="divider">or</div>
 								<div className="choice--direct choice">
 									<img className="choice__image" src={this.props.onCreateStaticContentUrl(
 											`/app/images/read-screen/` + (isMobileDevice(this.props.deviceType) ? `distraction-mobile.svg` : `distraction-desktop.svg`))} />
 									<div className="choice__details">
-										<p className="info">No thanks, maybe later.<br/>I'll try reading it in the browser.</p>
-										<Button
-											href={this.props.article.value.url}
-											hrefPreventDefault={false}
-											align='center'
-											intent='normal'
-											text='Continue to the web'
-											>
-										</Button>
+										<p className="info">Read through the noise<br/>
+										{' '}<a href={this.props.article.value.url}>on the web</a><Icon name='arrow-ne' className="outlink"></Icon>
+										</p>
 									</div>
 								</div>
 							</div>

@@ -98,13 +98,41 @@ $breakpoint: 550px;
 	cursor: pointer;
 }
 
+
+$card-padding-desktop: 10px 2rem;
+// MOBILE-FIRST STYLES
 .read-screen_ikr26q {
 
+	ul {
+		margin: 0;
+	  }
+	ul.dashed {
+		list-style-type: none;
+	}
+	ul.dashed > li {
+		// text-indent: -5px;
+	}
+	ul.dashed > li:before {
+		content: "-";
+		text-indent: -5px;
+		margin-right: 5px;
+	}
+
 	.read-question {
-		font-size: 1.3rem;
+		font-size: 1.4rem;
 		text-align: center;
 		margin: 1.2rem 0;
 		font-family: 'Cambria', serif;
+	}
+
+	.divider {
+		// text-transform: uppercase;
+		display: flex;
+		margin: 0.5rem 1rem;
+		flex-grow: 1;
+		justify-content: center;
+		align-items: center;
+		font-style: italic;
 	}
 
 	.choice {
@@ -131,23 +159,37 @@ $breakpoint: 550px;
 
 			.info {
 				font-size: .9rem;
-				margin: 8px 0;
+				margin: 12px 0;
+				color: var(--text-muted-color);
+				line-height: 1.3;
 			}
 
-			.pricing {
-				color: var(--text-muted-color);
-				text-align: center;
-				font-size: 0.8rem;
-				margin-bottom: 0.3rem
-			}
+			// .pricing {
+			// 	color: var(--text-muted-color);
+			// 	text-align: center;
+			// 	font-size: 0.8rem;
+			// 	margin-bottom: 0.3rem
+			// }
 		}
 
 		&--direct {
 			padding: 11px;
 			align-items: center;
+			h2 {
+				color: var(--text-color)
+			}
 			.info {
 				text-align: center;
+
 			}
+			.outlink {
+				margin-left: 3px;
+				vertical-align: middle;
+				margin-bottom: 2px;
+				width: 0.8rem;
+			}
+			border: 1px solid var(--content-border-color);
+			border-radius: 3px;
 		}
 	}
 
@@ -163,7 +205,7 @@ $breakpoint: 550px;
 		}
 	}
 
-
+	// DESKTOP STYLES
 	@media screen and (min-width: $breakpoint) {
 
 		> .article > .article__details > .title {
@@ -171,42 +213,57 @@ $breakpoint: 550px;
 		}
 
 		.read-question {
+			font-size: 1.8rem;
 			// dirty neg margin to compenste for padding
 			margin: -0.9rem 0px 1.5rem 0
 		}
 		.choice-container {
 			display: flex;
 
+			.divider {
+				margin: 1rem 1rem;
+				width: 3rem;
+			}
+
 			.choice {
+				// padding: 10px 2rem;
 				flex-direction: column;
 			}
 
+			h2 {
+				line-height: 1.3rem;
+			}
+
 			.info {
-				line-height: 1.2;
+				// margin: 8px 8px;
+				margin: 24px 8px 28px 8px;
+				font-size: 1rem;
+				// text-align: left;
+				text-align: center;
+				line-height: 1.3;
 				color: var(--text-muted-color);
 			}
 
 			.choice--readup {
+				padding: 10px 3rem;
 				align-items: center;
 				text-align: center;
 				max-width: 530px;
 
-				.pricing {
-					margin-top: 0.7rem;
-					margin-bottom: 0.7rem
-				}
+				// .pricing {
+				// 	margin-top: 0.7rem;
+				// 	margin-bottom: 0.7rem
+				// }
+
 				.get-started-button_z950ea {
 					margin-bottom: 1.2rem;
-				}
-
-				.info {
-					margin: 8px 8px;
 				}
 			}
 
 			.choice--direct {
+				padding: 10px 0.5rem;
 				.choice__details {
-					justify-content: center;
+					justify-content: flex-start;
 				}
 			}
 
