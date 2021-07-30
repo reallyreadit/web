@@ -37,7 +37,6 @@ interface Props {
 	rankCallout?: React.ReactNode,
 	shareMenuPosition?: MenuPosition,
 	showAotdMetadata?: boolean,
-	useAbsoluteUrls?: boolean,
 	user?: UserAccount
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
@@ -92,9 +91,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		// comments link
 		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
 			.createUrl(articleUrlParams);
-		if (this.props.useAbsoluteUrls) {
-			commentsLinkHref = this.props.onCreateAbsoluteUrl(commentsLinkHref);
-		}
 		// rating control
 		const ratingControl = (
 			<RatingControl
