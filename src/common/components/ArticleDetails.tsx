@@ -19,7 +19,7 @@ import AotdMetadata from './AotdMetadata';
 import UserAccount from '../models/UserAccount';
 import Link from './Link';
 import { NavReference } from '../../app/common/components/Root';
-import { DeviceType } from '../DeviceType';
+import { DeviceType, isMobileDevice } from '../DeviceType';
 
 interface Props {
 	article: UserArticle,
@@ -44,7 +44,7 @@ interface Props {
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps: Partial<Props> = {
-		shareMenuPosition: MenuPosition.RightMiddle,
+		shareMenuPosition: MenuPosition.BottomCenter,
 		showAotdMetadata: true
 	};
 	private readonly _getShareData = () => {
@@ -111,7 +111,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onGetData={this._getShareData}
 				onShare={this.props.onShare}
-				menuPosition={this.props.shareMenuPosition}
+				menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
 			>
 				<Icon
 					display="block"
@@ -184,7 +184,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 								</a>
 								{ratingControl}
-								{shareControl}
 							</div>
 						</div>
 						<div className="small-stats-article">

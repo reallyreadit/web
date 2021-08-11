@@ -2,7 +2,14 @@
 
 .article-details_d2vnmv > .content > .title > .star_n3lkaj {
 	float: right;
-	margin-left: 2px;
+	margin-left: 6px;
+}
+.article-details_d2vnmv > .content > .title > .share-control_mnbspk {
+	float: right;
+	margin-left: 6px;
+	> .children > .icon_rour3d {
+		color: #858585;
+	}
 }
 .article-details_d2vnmv > .content > .title > .bookmark {
 	position: relative;
@@ -38,6 +45,7 @@
 	width: 20px;
 	margin-right: 5px;
 }
+
 .article-details_d2vnmv > .content > .columns > .article {
 	flex: 1 1 auto;
 }
