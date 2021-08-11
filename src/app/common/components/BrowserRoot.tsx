@@ -483,6 +483,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
+					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
@@ -526,6 +527,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Blog]: createBlogScreenFactory(
 				ScreenKey.Blog,
 				{
+					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
@@ -604,6 +606,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(
 				ScreenKey.Notifications,
 				{
+					deviceType: this.props.deviceType,
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -654,6 +657,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				deviceType: this.props.deviceType,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -718,6 +722,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Search]: createSearchScreenFactory(
 				ScreenKey.Search,
 				{
+					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,

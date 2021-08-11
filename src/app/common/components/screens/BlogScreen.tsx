@@ -17,8 +17,10 @@ import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import * as classNames from 'classnames';
+import {DeviceType} from '../../../../common/DeviceType';
 
 export interface Props {
+	deviceType: DeviceType,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
@@ -140,6 +142,7 @@ export default class BlogScreen extends React.Component<Props, State> {
 											<li key={article.id}>
 												<ArticleDetails
 													article={article}
+													deviceType={this.props.deviceType}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onPost={this.props.onPostArticle}

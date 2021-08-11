@@ -27,8 +27,10 @@ import produce from 'immer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { Screen, SharedState } from '../Root';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
+import {DeviceType} from '../../../../common/DeviceType';
 
 interface Props {
+	deviceType: DeviceType,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -240,6 +242,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 											post => (
 												<li key={post.date}>
 													<PostDetails
+														deviceType={this.props.deviceType}
 														onCloseDialog={this.props.onCloseDialog}
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -294,6 +297,7 @@ export default function createNotificationsScreenFactory<TScreenKey>(
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<NotificationsScreen
+				deviceType={services.deviceType}
 				onClearAlerts={services.onClearAlerts}
 				onCloseDialog={services.onCloseDialog}
 				onCopyTextToClipboard={services.onCopyTextToClipboard}

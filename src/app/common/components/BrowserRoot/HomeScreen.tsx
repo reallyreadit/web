@@ -272,6 +272,7 @@ class HomeScreen extends React.Component<Props, State> {
 								aotd={this.state.communityReads && this.state.communityReads.value.aotd}
 								aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
 								articles={this.state.communityReads && this.state.communityReads.value.articles}
+								deviceType={this.props.deviceType}
 								isLoading={this.state.isLoading}
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
