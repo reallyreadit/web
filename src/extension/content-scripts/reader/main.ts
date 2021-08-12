@@ -34,6 +34,10 @@ import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { subscribeQueryStringKey } from '../../../common/routing/queryString';
+import {createRelativeShareSelection, ShareEvent} from '../../../common/sharing/ShareEvent';
+import ShareChannel from '../../../common/sharing/ShareChannel';
+import {openTweetComposerBrowserWindow, TweetWebIntentParams} from '../../../common/sharing/twitter';
+import ShareForm from '../../../common/models/analytics/ShareForm';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -186,6 +190,20 @@ window.addEventListener(
 	}
 );
 
+// sharing
+function handleShareRequest(data: ShareEvent) {
+	return {
+		channels: [
+			ShareChannel.Clipboard,
+			ShareChannel.Email,
+			ShareChannel.Twitter
+		],
+		completionHandler: (data: ShareForm) => {
+
+		}
+	};
+};
+
 // global ui
 const globalUi = new GlobalComponentHost({
 	domAttachmentDelegate: shadowHost => {
@@ -230,10 +248,13 @@ const header = new HeaderComponentHost({
 			updateDisplayPreference(preference);
 			return eventPageApi.changeDisplayPreference(preference);
 		},
+		onCopyTextToClipboard: globalUi.clipboard.copyText,
+		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
 		onReportArticleIssue: request => {
 			eventPageApi.reportArticleIssue(request);
 			globalUi.toaster.addToast('Issue Reported', Intent.Success);
-		}
+		},
+		onShare: handleShareRequest
 	}
 });
 

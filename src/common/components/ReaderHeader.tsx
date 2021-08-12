@@ -8,20 +8,37 @@ import ArticleIssueReportRequest from '../models/analytics/ArticleIssueReportReq
 import ReportWidget from './ReaderHeader/ReportWidget';
 import SettingsWidget from './ReaderHeader/SettingsWidget';
 import DisplayPreference from '../models/userAccounts/DisplayPreference';
+import ShareControl, {MenuPosition} from './ShareControl';
+import {DeviceType} from '../DeviceType';
+import getShareData from '../sharing/getShareData';
+import {ShareEvent} from '../sharing/ShareEvent';
+import ShareResponse from '../sharing/ShareResponse';
 
 export interface Props {
 	article: Fetchable<UserArticle>,
+	deviceType: DeviceType,
 	displayPreference: DisplayPreference | null,
 	isHidden: boolean,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onNavBack?: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
+	onShare: (data: ShareEvent) => ShareResponse,
 	showProgressBar?: boolean
 }
 export default class ReaderHeader extends React.Component<Props> {
 	public static defaultProps: Partial<Props> = {
 		showProgressBar: true
 	};
+	private readonly _getShareData = (article: UserArticle) => {
+		return getShareData(
+			'Article',
+			article,
+			this.props.onCreateAbsoluteUrl
+		);
+	};
+
 	public render() {
 		return (
 			<div className="reader-header_h3o6tn">
@@ -36,6 +53,24 @@ export default class ReaderHeader extends React.Component<Props> {
 						null}
 				</div>
 				<div className="separator"></div>
+				{(!this.props.article.isLoading && this.props.article.value != null) ?
+					<>
+						<ShareControl
+							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+							onGetData={() => this._getShareData(this.props.article.value)}
+							onShare={this.props.onShare}
+							menuPosition={MenuPosition.LeftTop}
+						>
+							<Icon
+								display="block"
+								name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
+							/>
+						</ShareControl>
+						<div className="spacer"></div>
+					</> :
+					// article is loading or not loaded -> don't display share icon
+					null
+					}
 				<SettingsWidget
 					displayPreference={this.props.displayPreference}
 					isHidden={this.props.isHidden}
