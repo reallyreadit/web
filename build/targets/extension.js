@@ -34,7 +34,7 @@ const
 						.toString()
 				),
 				webUrlPattern = config.webServer.protocol + '://' + config.webServer.host + '/*';
-			manifest.version = package['it.reallyread'].version.extension.package.toString().padEnd(4, '0');
+			manifest.version = package['it.reallyread'].version.extension;
 			manifest.content_scripts[0].matches.push(webUrlPattern);
 			manifest.permissions.push(webUrlPattern);
 			fs.writeFileSync(

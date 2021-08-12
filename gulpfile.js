@@ -7,7 +7,8 @@ const
 	extension = require('./build/targets/extension'),
 	nativeClientReader = require('./build/targets/nativeClient/reader'),
 	nativeClientShareExtension = require('./build/targets/nativeClient/shareExtension'),
-	metadataParser = require('./build/targets/metadataParser');
+	metadataParser = require('./build/targets/metadataParser'),
+	contentParser = require('./build/targets/contentParser');
 
 /**
  * app
@@ -53,6 +54,16 @@ function cleanProdBrowser() {
 }
 function buildProdBrowser() {
 	return client.build(project.env.prod);
+}
+
+/**
+ * contentParser
+ */
+function cleanDevContentParser() {
+	return contentParser.clean(project.env.dev);
+}
+function buildDevContentParser() {
+	return contentParser.build(project.env.dev);
 }
 
 /**
@@ -178,6 +189,9 @@ module.exports = {
 	'build:stage:browser': buildStageBrowser,
 	'clean:prod:browser': cleanProdBrowser,
 	'build:prod:browser': buildProdBrowser,
+	'clean:dev:content-parser': cleanDevContentParser,
+	'build:dev:content-parser': buildDevContentParser,
+	'watch:dev:content-parser': contentParser.watch,
 	'clean:dev:embed': cleanDevEmbed,
 	'build:dev:embed': buildDevEmbed,
 	'watch:dev:embed': embed.watch,

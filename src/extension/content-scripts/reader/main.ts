@@ -489,7 +489,9 @@ eventPageApi
 						.get()
 						.then(
 							contentParser => {
-								const contentParseResult = contentParser.parse();
+								const contentParseResult = contentParser.parse({
+									url: window.location
+								});
 								return {
 									contentParser,
 									contentParseResult,

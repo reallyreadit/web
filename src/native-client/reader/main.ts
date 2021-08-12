@@ -87,7 +87,9 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 
 const
 	metadataParseResult = parseDocumentMetadata(),
-	contentParseResult = parseDocumentContent();
+	contentParseResult = parseDocumentContent({
+		url: window.location
+	});
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 

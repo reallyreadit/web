@@ -7,6 +7,8 @@ new WebViewMessagingContext().sendMessage({
 	type: 'parseResult',
 	data: createPageParseResult(
 		parseDocumentMetadata(),
-		parseDocumentContent()
+		parseDocumentContent({
+			url: window.location
+		})
 	)
 });
