@@ -6,7 +6,6 @@ import HttpEndpoint, { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 import Exchange from '../common/serverApi/Exchange';
 import ClientType from '../common/ClientType';
-import { DeviceType } from '../../common/DeviceType';
 
 export default class extends ServerApi {
 	private _isInitialized = false;
@@ -14,15 +13,13 @@ export default class extends ServerApi {
 		endpoint: HttpEndpoint,
 		clientType: ClientType,
 		clientVersion: string,
-		deviceType: DeviceType,
 		exchanges: Exchange[]
 	) {
 		super(
 			endpoint,
 			new RequestStore(exchanges),
 			clientType,
-			clientVersion,
-			deviceType
+			clientVersion
 		);
 	}
 	private addCustomHeaders(req: XMLHttpRequest, params: Request) {
