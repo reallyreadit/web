@@ -55,21 +55,23 @@ export default class ReaderHeader extends React.Component<Props> {
 				<div className="separator"></div>
 				{(!this.props.article.isLoading && this.props.article.value != null) ?
 					<>
-						<ShareControl
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
-							onGetData={() => this._getShareData(this.props.article.value)}
-							onShare={this.props.onShare}
-							menuPosition={MenuPosition.LeftTop}
-						>
-							<Icon
-								display="block"
-								name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
-							/>
-						</ShareControl>
+						<div className="widget">
+							<ShareControl
+								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
+								onGetData={() => this._getShareData(this.props.article.value)}
+								onShare={this.props.onShare}
+								menuPosition={MenuPosition.LeftTop}
+							>
+								<Icon
+									display="block"
+									name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
+								/>
+							</ShareControl>
+						</div>
 						<div className="spacer"></div>
 					</> :
-					// article is loading or not loaded -> don't display share icon
-					null
+						// article is loading or not loaded -> don't display share icon
+						null
 					}
 				<SettingsWidget
 					displayPreference={this.props.displayPreference}

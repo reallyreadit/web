@@ -34,9 +34,8 @@ import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { subscribeQueryStringKey } from '../../../common/routing/queryString';
-import {createRelativeShareSelection, ShareEvent} from '../../../common/sharing/ShareEvent';
+import {ShareEvent} from '../../../common/sharing/ShareEvent';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import {openTweetComposerBrowserWindow, TweetWebIntentParams} from '../../../common/sharing/twitter';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 
 window.reallyreadit = {
