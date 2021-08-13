@@ -1,5 +1,6 @@
 import ParseResult from './ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
+import { ParserDocumentLocation } from '../ParserDocumentLocation';
 
 function parseAuthors() {
 	const metaElements = document.querySelectorAll<HTMLMetaElement>('meta[name="author"]');
@@ -26,10 +27,10 @@ function parseAuthors() {
 	}
 	return [];
 }
-export default function parseMiscMetadata(): ParseResult {
+export default function parseMiscMetadata(documentLocation: ParserDocumentLocation): ParseResult {
 	const articleTitleElements = document.querySelectorAll('article h1');
 	return {
-		url: window.location.href.split(/\?|#/)[0],
+		url: documentLocation.href.split(/\?|#/)[0],
 		article: {
 			title: (
 				articleTitleElements.length === 1 ?
@@ -39,12 +40,13 @@ export default function parseMiscMetadata(): ParseResult {
 			source: {
 				url: (
 					matchGetAbsoluteUrl(
+						documentLocation.protocol,
 						getElementAttribute<HTMLLinkElement>(
 							document.querySelector('link[rel="publisher"]'),
 							e => e.href
 						)
 					) ||
-					window.location.protocol + '//' + window.location.hostname
+					documentLocation.protocol + '//' + documentLocation.hostname
 				)
 			},
 			description: getElementAttribute<HTMLMetaElement>(document.querySelector('meta[name="description"]'), e => e.content),

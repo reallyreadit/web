@@ -1,5 +1,6 @@
 import ParseResult from './ParseResult';
 import { matchGetAbsoluteUrl, getElementAttribute } from './utils';
+import { ParserDocumentLocation } from '../ParserDocumentLocation';
 
 function findMetaElementContent(property: string, elements: Element[]) {
 	return getElementAttribute<HTMLMetaElement>(
@@ -7,7 +8,7 @@ function findMetaElementContent(property: string, elements: Element[]) {
 		e => e.content
 	);
 }
-function parseOpenGraph(): ParseResult {
+function parseOpenGraph(documentLocation: ParserDocumentLocation): ParseResult {
 	const elements = Array.from(document.getElementsByTagName('meta'));
 	if (/article/i.test(findMetaElementContent('og:type', elements))) {
 		return {
@@ -22,7 +23,7 @@ function parseOpenGraph(): ParseResult {
 				authors: elements
 					.filter(e => e.getAttribute('property') === 'article:author')
 					.map(e => {
-						const url = matchGetAbsoluteUrl(e.content);
+						const url = matchGetAbsoluteUrl(documentLocation.protocol, e.content);
 						return url ? { url } : { name: e.content };
 					}),
 				section: findMetaElementContent('article:section', elements),

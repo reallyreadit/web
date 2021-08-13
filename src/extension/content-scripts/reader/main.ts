@@ -443,7 +443,9 @@ const reader = new Reader(
 )
 
 // parse metadata
-const metaParseResult = parseDocumentMetadata();
+const metaParseResult = parseDocumentMetadata({
+	url: window.location
+});
 
 // try and get a cached copy of the display preference for the transition animation
 eventPageApi
