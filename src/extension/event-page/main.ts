@@ -1,7 +1,6 @@
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
-import { sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 
@@ -36,33 +35,6 @@ const webAppApi = new WebAppApi({
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('[EventPage] installed, reason: ' + details.reason);
-	// ensure sameSite is set on sessionId and sessionKey cookies
-	[window.reallyreadit.extension.config.cookieName, sessionIdCookieKey].forEach(
-		cookieName => {
-			chrome.cookies.get(
-				{
-					url: createUrl(window.reallyreadit.extension.config.webServer),
-					name: cookieName
-				},
-				cookie => {
-					if (cookie?.sameSite === 'unspecified') {
-						chrome.cookies.set({
-							url: createUrl(window.reallyreadit.extension.config.webServer),
-							domain: cookie.domain,
-							expirationDate: cookie.expirationDate,
-							httpOnly: cookie.httpOnly,
-							name: cookie.name,
-							path: cookie.path,
-							sameSite: 'no_restriction',
-							secure: cookie.secure,
-							storeId: cookie.storeId,
-							value: cookie.value
-						});
-					}
-				}
-			);
-		}
-	);
 	// initialize settings
 	localStorage.removeItem('parseMode');
 	localStorage.removeItem('showOverlay');
