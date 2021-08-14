@@ -112,8 +112,6 @@ chrome.runtime.onInstalled.addListener(details => {
 				);
 		}
 	);
-	// clean up old alarms
-	chrome.alarms.clearAll();
 });
 chrome.runtime.onStartup.addListener(
 	() => {
