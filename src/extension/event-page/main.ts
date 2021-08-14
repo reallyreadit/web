@@ -1,7 +1,6 @@
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
-import SemanticVersion from '../../common/SemanticVersion';
 import { sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
@@ -75,6 +74,8 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('displayPreference');
 	localStorage.removeItem('blacklist');
 	localStorage.removeItem('user');
+	localStorage.removeItem('contentParserScript');
+	localStorage.removeItem('contentParserVersion');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
@@ -140,23 +141,8 @@ chrome.runtime.onInstalled.addListener(details => {
 				);
 		}
 	);
-	// create alarms
-	chrome.alarms.create(
-		'updateContentParser',
-		{
-			when: Date.now(),
-			periodInMinutes: 120
-		}
-	);
-	chrome.alarms.create(
-		ServerApi.alarms.getBlacklist,
-		{
-			when: Date.now(),
-			periodInMinutes: 120
-		}
-	);
-	// clean up old alarm
-	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
+	// clean up old alarms
+	chrome.alarms.clearAll();
 });
 chrome.runtime.onStartup.addListener(
 	() => {
@@ -213,52 +199,6 @@ chrome.runtime.onMessage.addListener(
 					}
 				);
 				return;
-		}
-	}
-);
-chrome.alarms.onAlarm.addListener(
-	alarm => {
-		if (alarm.name === 'updateContentParser') {
-			const currentVersion = SemanticVersion.greatest(
-				...[
-					window.reallyreadit.extension.config.version.common.contentParser,
-					localStorage.getItem('contentParserVersion')
-				]
-				.filter(string => !!string)
-				.map(versionString => new SemanticVersion(versionString))
-			);
-			console.log(`chrome.alarms.onAlarm (updateContentParser: checking for new version. current version: ${currentVersion.toString()})`);
-			fetch(createUrl(window.reallyreadit.extension.config.staticServer, '/extension/content-parser.txt'))
-				.then(res => res.text())
-				.then(text => {
-					const newVersionInfo = text
-						.split('\n')
-						.filter(line => !!line)
-						.map(
-							fileName => ({
-								fileName,
-								version: new SemanticVersion(fileName)
-							})
-						)
-						.find(versionInfo => currentVersion.canUpgradeTo(versionInfo.version));
-					if (newVersionInfo) {
-						console.log(`chrome.alarms.onAlarm (updateContentParser: updating to version: ${newVersionInfo.version.toString()})`);
-						fetch(createUrl(window.reallyreadit.extension.config.staticServer, '/extension/content-parser/' + newVersionInfo.fileName))
-							.then(res => res.text())
-							.then(text => {
-								localStorage.setItem('contentParserScript', text);
-								localStorage.setItem('contentParserVersion', newVersionInfo.version.toString());
-							})
-							.catch(() => {
-								console.log('chrome.alarms.onAlarm (updateContentParser: error updating to new version)');
-							});
-					} else {
-						console.log('chrome.alarms.onAlarm (updateContentParser: no new version)');
-					}
-				})
-				.catch(() => {
-					console.log('chrome.alarms.onAlarm (updateContentParser: error checking for new version)');
-				});
 		}
 	}
 );

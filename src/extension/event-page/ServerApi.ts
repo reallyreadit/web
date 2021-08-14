@@ -23,9 +23,6 @@ function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension}`);
 }
 export default class ServerApi {
-	public static alarms = {
-		getBlacklist: 'ServerApi.getBlacklist'
-	};
 	private fetchJson<T>(request: Request) {
 		return new Promise<T>((resolve, reject) => {
 			const
