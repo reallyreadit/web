@@ -12,7 +12,6 @@ const build = createBuild({
 		}
 	},
 	staticAssets: [
-		`${project.srcDir}/extension/event-page/images/**/*.*`,
 		`${project.srcDir}/extension/event-page/index.html`
 	],
 	path: 'extension/event-page'
