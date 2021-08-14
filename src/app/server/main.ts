@@ -163,7 +163,6 @@ server.use((req, res, next) => {
 		config.apiServer,
 		clientType,
 		version.app.toString(),
-		getDeviceType(req.headers['user-agent']),
 		{
 			key: config.cookieName,
 			value: req.cookies[config.cookieName]
