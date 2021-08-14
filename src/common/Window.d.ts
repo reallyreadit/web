@@ -15,7 +15,6 @@ declare global {
 			alertContentScript?: AlertContentScriptWindow,
 			app?: AppWindow,
 			embed?: EmbedWindow,
-			readerContentScript?: ReaderContentScriptWindow,
 			extension?: {
 				config?: {
 					apiServer: HttpEndpoint,

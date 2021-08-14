@@ -1,9 +1,7 @@
-import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
-import { createCommentThread } from '../../common/models/social/Post';
 import { sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
@@ -39,187 +37,36 @@ const badgeApi = new BrowserActionBadgeApi();
 // server
 const serverApi = new ServerApi({
 	onDisplayPreferenceChanged: preference => {
-		readerContentScriptApi.displayPreferenceChanged(preference);
 		webAppApi.displayPreferenceChanged(preference);
 	},
 	onUserSignedOut: () => {
 		setIcon({
 			user: null
 		});
-		readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: user => {
 		setIcon({
 			user
 		});
-		readerContentScriptApi.userUpdated(user);
 		webAppApi.userUpdated(user);
-	}
-});
-
-// reader content script
-const readerContentScriptApi = new ReaderContentScriptApi({
-	badgeApi,
-	onGetDisplayPreference: () => {
-		return serverApi.getDisplayPreference();
-	},
-	onChangeDisplayPreference: preference => {
-		// update web app
-		webAppApi.displayPreferenceChanged(preference);
-		// persist
-		return serverApi.changeDisplayPreference(preference);
-	},
-	onRegisterPage: (tabId, data) => serverApi
-		.registerPage(tabId, data)
-		.then(
-			result => {
-				// update web app (article is automatically starred)
-				webAppApi.articleUpdated({
-					article: result.userArticle,
-					isCompletionCommit: false
-				});
-				return result;
-			}
-		),
-	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
-		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
-		// commit read state
-		return serverApi
-			.commitReadState(tabId, commitData)
-			.then(
-				article => {
-					// update web app
-					webAppApi.articleUpdated({
-						article,
-						isCompletionCommit
-					});
-					// return result
-					return article;
-				}
-			);
-	},
-	onLoadContentParser: tabId => {
-		try {
-			if (
-				new SemanticVersion(localStorage.getItem('contentParserVersion'))
-					.compareTo(new SemanticVersion(window.reallyreadit.extension.config.version.common.contentParser)) > 0
-			) {
-				console.log(`contentScriptApi.onLoadContentParser (loading content parser from localStorage, tabId: ${tabId})`);
-				chrome.tabs.executeScript(tabId, { code: localStorage.getItem('contentParserScript') });
-				return;
-			}
-		} catch {
-			// fall back to bundled script
-		}
-		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
-		chrome.tabs.executeScript(tabId, { file: '/content-scripts/reader/content-parser/bundle.js' });
-	},
-	onGetComments: slug => serverApi.getComments(slug),
-	onPostArticle: form => {
-		return serverApi
-			.postArticle(form)
-			.then(
-				post => {
-					webAppApi.articlePosted(post);
-					webAppApi.articleUpdated({
-						article: post.article,
-						isCompletionCommit: false
-					});
-					if (post.comment) {
-						webAppApi.commentPosted(createCommentThread(post));
-					}
-					return post;
-				}
-			);
-	},
-	onPostComment: form => {
-		return serverApi
-			.postComment(form)
-			.then(result => {
-				webAppApi.articleUpdated({
-					article: result.article,
-					isCompletionCommit: false
-				});
-				webAppApi.commentPosted(result.comment);
-				return result;
-			});
-	},
-	onPostCommentAddendum: form => {
-		return serverApi
-			.postCommentAddendum(form)
-			.then(
-				comment => {
-					webAppApi.commentUpdated(comment);
-					return comment;
-				}
-			);
-	},
-	onPostCommentRevision: form => {
-		return serverApi
-			.postCommentRevision(form)
-			.then(
-				comment => {
-					webAppApi.commentUpdated(comment);
-					return comment;
-				}
-			);
-	},
-	onRequestTwitterBrowserLinkRequestToken: () => {
-		return serverApi.requestTwitterBrowserLinkRequestToken();
-	},
-	onReportArticleIssue: request => {
-		return serverApi.reportArticleIssue(request);
-	},
-	onSetStarred: form => serverApi
-		.setStarred(form.articleId, form.isStarred)
-		.then(
-			article => {
-				webAppApi.articleUpdated({
-					article,
-					isCompletionCommit: false
-				});
-				return article;
-			}
-		),
-	onDeleteComment: form => {
-		return serverApi
-			.deleteComment(form)
-			.then(
-				comment => {
-					webAppApi.commentUpdated(comment);
-					return comment;
-				}
-			);
 	}
 });
 
 // web app
 const webAppApi = new WebAppApi({
 	onArticleUpdated: event => {
-		// update readers
-		readerContentScriptApi.articleUpdated(event);
 	},
 	onAuthServiceLinkCompleted: response => {
-		// update readers
-		readerContentScriptApi.authServiceLinkCompleted(response);
 	},
 	onDisplayPreferenceChanged: preference => {
 		// update server cache
 		serverApi.displayPreferenceChanged(preference);
-		// update readers
-		readerContentScriptApi.displayPreferenceChanged(preference);
 	},
 	onCommentPosted: comment => {
-		// update readers
-		readerContentScriptApi.commentPosted(comment);
 	},
 	onCommentUpdated: comment => {
-		// update readers
-		readerContentScriptApi.commentUpdated(comment);
 	},
 	onSubscriptionStatusChanged: status => {
-		// update readers
-		readerContentScriptApi.subscriptionStatusChanged(status);
 	},
 	onUserSignedIn: profile => {
 		setIcon({
@@ -232,7 +79,6 @@ const webAppApi = new WebAppApi({
 			user: null
 		});
 		serverApi.userSignedOut();
-		readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: user => {
 		setIcon({
@@ -240,8 +86,6 @@ const webAppApi = new WebAppApi({
 		});
 		// update server cache
 		serverApi.userUpdated(user);
-		// update readers
-		readerContentScriptApi.userUpdated(user);
 	}
 });
 
@@ -291,7 +135,6 @@ chrome.runtime.onInstalled.addListener(details => {
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
 	// on updates
-	readerContentScriptApi.clearTabs();
 	webAppApi.clearTabs();
 	webAppApi.injectContentScripts();
 	// log all installations
@@ -387,7 +230,6 @@ chrome.runtime.onStartup.addListener(
 			user: serverApi.getUser()
 		});
 		// initialize tabs
-		readerContentScriptApi.clearTabs();
 		webAppApi.clearTabs();
 		webAppApi.injectContentScripts();
 	}
@@ -436,13 +278,6 @@ chrome.browserAction.onClicked.addListener(
 			);
 			return;
 		}
-		// article
-		chrome.tabs.executeScript(
-			tab.id,
-			{
-				code: "if (!window.reallyreadit?.readerContentScript) { window.reallyreadit = { ...window.reallyreadit, readerContentScript: { } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectReader' }); }"
-			}
-		);
 	}
 );
 chrome.runtime.onMessage.addListener(
@@ -456,14 +291,6 @@ chrome.runtime.onMessage.addListener(
 					sender.tab.id,
 					{
 						file: '/content-scripts/alert/bundle.js'
-					}
-				);
-				return;
-			case 'injectReader':
-				chrome.tabs.executeScript(
-					sender.tab.id,
-					{
-						file: '/content-scripts/reader/bundle.js'
 					}
 				);
 				return;
