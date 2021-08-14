@@ -5,31 +5,6 @@ import SemanticVersion from '../../common/SemanticVersion';
 import { sessionIdCookieKey } from '../../common/cookies';
 import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
-import UserAccount from '../../common/models/UserAccount';
-
-// browser action icon
-function setIcon(
-	state: {
-		user: UserAccount | null
-	}
-) {
-	const placeholder = '{SIZE}';
-	let pathTemplate = '/icons/';
-	if (state.user) {
-		pathTemplate += `icon-${placeholder}.png`;
-	} else {
-		pathTemplate += `icon-${placeholder}-warning.png`;
-	}
-	chrome.browserAction.setIcon({
-		path: [16, 24, 32, 40, 48].reduce<{ [key: string]: string }>(
-			(paths, size) => {
-				paths[size] = pathTemplate.replace(placeholder, size.toString());
-				return paths;
-			},
-			{ }
-		)
-	});
-}
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -40,14 +15,8 @@ const serverApi = new ServerApi({
 		webAppApi.displayPreferenceChanged(preference);
 	},
 	onUserSignedOut: () => {
-		setIcon({
-			user: null
-		});
 	},
 	onUserUpdated: user => {
-		setIcon({
-			user
-		});
 		webAppApi.userUpdated(user);
 	}
 });
@@ -69,21 +38,12 @@ const webAppApi = new WebAppApi({
 	onSubscriptionStatusChanged: status => {
 	},
 	onUserSignedIn: profile => {
-		setIcon({
-			user: profile.userAccount
-		});
 		serverApi.userSignedIn(profile);
 	},
 	onUserSignedOut: () => {
-		setIcon({
-			user: null
-		});
 		serverApi.userSignedOut();
 	},
 	onUserUpdated: user => {
-		setIcon({
-			user
-		});
 		// update server cache
 		serverApi.userUpdated(user);
 	}
@@ -127,10 +87,6 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('articles');
 	localStorage.removeItem('tabs');
 	localStorage.setItem('debug', JSON.stringify(false));
-	// update icon
-	setIcon({
-		user: serverApi.getUser()
-	});
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
@@ -225,10 +181,6 @@ chrome.runtime.onInstalled.addListener(details => {
 chrome.runtime.onStartup.addListener(
 	() => {
 		console.log('[EventPage] startup');
-		// update icon
-		setIcon({
-			user: serverApi.getUser()
-		});
 		// initialize tabs
 		webAppApi.clearTabs();
 		webAppApi.injectContentScripts();
