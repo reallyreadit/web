@@ -45,7 +45,7 @@ export default class ServerApi {
 					if (object) {
 						resolve(object);
 					} else {
-						resolve();
+						resolve(null);
 					}
 				} else {
 					if (this.status === 401) {
