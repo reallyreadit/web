@@ -1,10 +1,7 @@
 import UserArticle from '../../common/models/UserArticle';
-import SetStore from '../../common/webStorage/SetStore';
-import ObjectStore from '../../common/webStorage/ObjectStore';
 import ParseResult from '../../common/reading/ParseResult';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import Request from './Request';
-import { Cached, cache, isExpired } from './Cached';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
@@ -12,15 +9,12 @@ import CommentThread from '../../common/models/CommentThread';
 import CommentForm from '../../common/models/social/CommentForm';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
-import UserAccount, { areEqual } from '../../common/models/UserAccount';
 import Rating from '../../common/models/Rating';
 import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
-import DisplayPreference, { areEqual as areDisplayPreferencesEqual, getClientDefaultDisplayPreference } from '../../common/models/userAccounts/DisplayPreference';
-import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
@@ -32,52 +26,7 @@ export default class ServerApi {
 	public static alarms = {
 		getBlacklist: 'ServerApi.getBlacklist'
 	};
-	// cached local storage
-	private _displayPreference = new ObjectStore<DisplayPreference | null>('displayPreference', null);
-	private _blacklist = new ObjectStore<Cached<string[]>>('blacklist', {
-		value: [],
-		timestamp: 0,
-		expirationTimespan: 0
-	});
-	private _user = new ObjectStore<UserAccount>('user', null);
-	// handlers
-	private readonly _onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
-	private readonly _onUserSignedOut: () => void;
-	private readonly _onUserUpdated: (user: UserAccount) => void;
-	constructor(
-		handlers: {
-			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
-			onUserSignedOut: () => void,
-			onUserUpdated: (user: UserAccount) => void
-		}
-	) {
-		// alarms
-		chrome.alarms.onAlarm.addListener(
-			alarm => {
-				if (!this.isAuthenticated()) {
-					return;
-				}
-				switch (alarm.name) {
-					case ServerApi.alarms.getBlacklist:
-						this.checkBlacklistCache();
-						break;
-				}
-			}
-		);
-		// handlers
-		this._onDisplayPreferenceChanged = handlers.onDisplayPreferenceChanged;
-		this._onUserSignedOut = handlers.onUserSignedOut;
-		this._onUserUpdated = handlers.onUserUpdated;
-	}
-	private checkBlacklistCache() {
-		if (isExpired(this._blacklist.get())) {
-			this.fetchJson<string[]>({ method: 'GET', path: '/Extension/Blacklist' })
-				.then(rules => this._blacklist.set(cache(rules, 719000)))
-				.catch(() => {});
-		}
-	}
 	private fetchJson<T>(request: Request) {
-		const _this = this;
 		return new Promise<T>((resolve, reject) => {
 			const
 				req = new XMLHttpRequest(),
@@ -101,8 +50,6 @@ export default class ServerApi {
 				} else {
 					if (this.status === 401) {
 						console.log(`[ServerApi] user signed out (received 401 response from API server)`);
-						_this.userSignedOut();
-						_this._onUserSignedOut();
 					}
 					reject(object || ['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
 				}
@@ -179,18 +126,8 @@ export default class ServerApi {
 			data
 		});
 	}
-	public isAuthenticated() {
-		return this.getUser() != null;
-	}
-	public getUser() {
-		return this._user.get();
-	}
 	public getBlacklist() {
-		return this._blacklist
-			.get().value
-			.map(
-				pattern => new RegExp(pattern)
-			);
+		return [] as RegExp[];
 	}
 	public rateArticle(articleId: number, score: number) {
 		return this.fetchJson<{
@@ -233,61 +170,6 @@ export default class ServerApi {
 			method: 'POST',
 			path: '/Extension/Install',
 			data
-		});
-	}
-	public userSignedIn(profile: WebAppUserProfile) {
-		this._user.set(profile.userAccount);
-		this._displayPreference.set(profile.displayPreference);
-	}
-	public userSignedOut() {
-		this._user.clear();
-		this._displayPreference.clear();
-	}
-	public userUpdated(user: UserAccount) {
-		this._user.set(user || null);
-	}
-	public getDisplayPreference() {
-		const storedPreference = this._displayPreference.get();
-		this.fetchJson<DisplayPreference | null>({
-				method: 'GET',
-				path: '/UserAccounts/DisplayPreference'
-			})
-			.then(
-				preference => {
-					if (
-						storedPreference != null &&
-						preference != null &&
-						areDisplayPreferencesEqual(storedPreference, preference)
-					) {
-						return;
-					}
-					if (preference) {
-						this.displayPreferenceChanged(preference);
-					} else {
-						this.changeDisplayPreference(
-							preference = getClientDefaultDisplayPreference()
-						);
-					}
-					console.log(`[ServerApi] display preference changed`);
-					this._onDisplayPreferenceChanged(preference);
-				}
-			)
-			.catch(
-				() => {
-					console.log(`[ServerApi] error fetching display preference`);
-				}
-			);
-		return storedPreference;
-	}
-	public displayPreferenceChanged(preference: DisplayPreference) {
-		this._displayPreference.set(preference);
-	}
-	public changeDisplayPreference(preference: DisplayPreference) {
-		this.displayPreferenceChanged(preference);
-		return this.fetchJson<DisplayPreference>({
-			method: 'POST',
-			path: '/UserAccounts/DisplayPreference',
-			data: preference
 		});
 	}
 }

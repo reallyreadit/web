@@ -3,23 +3,14 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
 import { sessionIdCookieKey } from '../../common/cookies';
-import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
+import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
 
 // server
-const serverApi = new ServerApi({
-	onDisplayPreferenceChanged: preference => {
-		webAppApi.displayPreferenceChanged(preference);
-	},
-	onUserSignedOut: () => {
-	},
-	onUserUpdated: user => {
-		webAppApi.userUpdated(user);
-	}
-});
+const serverApi = new ServerApi();
 
 // web app
 const webAppApi = new WebAppApi({
@@ -28,8 +19,6 @@ const webAppApi = new WebAppApi({
 	onAuthServiceLinkCompleted: response => {
 	},
 	onDisplayPreferenceChanged: preference => {
-		// update server cache
-		serverApi.displayPreferenceChanged(preference);
 	},
 	onCommentPosted: comment => {
 	},
@@ -38,14 +27,10 @@ const webAppApi = new WebAppApi({
 	onSubscriptionStatusChanged: status => {
 	},
 	onUserSignedIn: profile => {
-		serverApi.userSignedIn(profile);
 	},
 	onUserSignedOut: () => {
-		serverApi.userSignedOut();
 	},
 	onUserUpdated: user => {
-		// update server cache
-		serverApi.userUpdated(user);
 	}
 });
 
@@ -87,6 +72,9 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('articles');
 	localStorage.removeItem('tabs');
 	localStorage.removeItem('displayedNotifications');
+	localStorage.removeItem('displayPreference');
+	localStorage.removeItem('blacklist');
+	localStorage.removeItem('user');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
@@ -180,19 +168,6 @@ chrome.runtime.onStartup.addListener(
 );
 chrome.browserAction.onClicked.addListener(
 	tab => {
-		// check if we're logged in
-		if (!serverApi.isAuthenticated()) {
-			chrome.tabs.create({
-				url: createUrl(
-					window.reallyreadit.extension.config.webServer,
-					null,
-					{
-						[extensionAuthQueryStringKey]: null
-					}
-				)
-			});
-			return;
-		}
 		// check which type of page we're looking at
 		if (!tab.url) {
 			return;
