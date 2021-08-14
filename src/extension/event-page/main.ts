@@ -11,26 +11,7 @@ const badgeApi = new BrowserActionBadgeApi();
 const serverApi = new ServerApi();
 
 // web app
-const webAppApi = new WebAppApi({
-	onArticleUpdated: event => {
-	},
-	onAuthServiceLinkCompleted: response => {
-	},
-	onDisplayPreferenceChanged: preference => {
-	},
-	onCommentPosted: comment => {
-	},
-	onCommentUpdated: comment => {
-	},
-	onSubscriptionStatusChanged: status => {
-	},
-	onUserSignedIn: profile => {
-	},
-	onUserSignedOut: () => {
-	},
-	onUserUpdated: user => {
-	}
-});
+const webAppApi = new WebAppApi();
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
