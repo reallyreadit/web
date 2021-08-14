@@ -13,8 +13,6 @@ import CommentForm from '../../common/models/social/CommentForm';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
 import UserAccount, { areEqual } from '../../common/models/UserAccount';
-import NotificationsQueryResult from '../common/models/NotificationsQueryResult';
-import DisplayedNotification from './DisplayedNotification';
 import Rating from '../../common/models/Rating';
 import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
@@ -32,14 +30,9 @@ function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 }
 export default class ServerApi {
 	public static alarms = {
-		checkNotifications: 'ServerApi.checkNotifications',
 		getBlacklist: 'ServerApi.getBlacklist'
 	};
 	// cached local storage
-	private _displayedNotifications = new SetStore<string, DisplayedNotification>(
-		'displayedNotifications',
-		notification => notification.id
-	);
 	private _displayPreference = new ObjectStore<DisplayPreference | null>('displayPreference', null);
 	private _blacklist = new ObjectStore<Cached<string[]>>('blacklist', {
 		value: [],
@@ -65,125 +58,16 @@ export default class ServerApi {
 					return;
 				}
 				switch (alarm.name) {
-					case ServerApi.alarms.checkNotifications:
-						this.checkNotifications();
-						break;
 					case ServerApi.alarms.getBlacklist:
 						this.checkBlacklistCache();
 						break;
 				}
 			}
 		);
-		// notifications
-		if (chrome.notifications) {
-			chrome.notifications.onClicked.addListener(
-				id => {
-					chrome.tabs.create({
-						url: createUrl(window.reallyreadit.extension.config.apiServer, '/Extension/Notification/' + id)
-					});
-				}
-			);
-		}
 		// handlers
 		this._onDisplayPreferenceChanged = handlers.onDisplayPreferenceChanged;
 		this._onUserSignedOut = handlers.onUserSignedOut;
 		this._onUserUpdated = handlers.onUserUpdated;
-	}
-	private checkNotifications() {
-		if (!chrome.notifications) {
-			return;
-		}
-		chrome.notifications.getAll(
-			chromeNotifications => {
-				const
-					now = Date.now(),
-					displayedNotificationExpiration = now - (2 * 60 * 1000),
-					{
-						current: currentNotifications,
-						expired: expiredNotifications
-					} = this._displayedNotifications
-						.getAll()
-						.reduce<{
-							current: DisplayedNotification[],
-							expired: DisplayedNotification[]
-						}>(
-							(result, notification) => {
-								if (notification.date >= displayedNotificationExpiration) {
-									result.current.push(notification);
-								} else {
-									result.expired.push(notification);
-								}
-								return result;
-							},
-							{
-								current: [],
-								expired: []
-							}
-						);
-				expiredNotifications.forEach(
-					notification => {
-						this._displayedNotifications.remove(notification.id);
-					}
-				);
-				this.fetchJson<NotificationsQueryResult>({
-						method: 'GET',
-						path: '/Extension/Notifications',
-						data: {
-							ids: Object
-								.keys(chromeNotifications)
-								.concat(
-									currentNotifications
-										.filter(
-											notification => !(notification.id in chromeNotifications)
-										)
-										.map(
-											notification => notification.id
-										)
-								)
-						}
-					})
-					.then(
-						result => {
-							result.cleared.forEach(
-								id => {
-									chrome.notifications.clear(id);
-									this._displayedNotifications.remove(id);
-								}
-							);
-							result.created.forEach(
-								notification => {
-									chrome.notifications.create(
-										notification.id,
-										{
-											type: 'basic',
-											iconUrl: '../icons/icon.svg',
-											title: notification.title,
-											message: notification.message,
-											isClickable: true
-										}
-									);
-									this._displayedNotifications.set({
-										id: notification.id,
-										date: Date.now()
-									});
-								}
-							);
-							const currentUser = this.getUser();
-							if (!areEqual(currentUser, result.user)) {
-								this._user.set(result.user);
-								// don't broadcast on sign in order to avoid sending stale data
-								if (currentUser) {
-									console.log(`[ServerApi] user updated (notification check)`);
-									this._onUserUpdated(result.user);
-								}
-							}
-						}
-					)
-					.catch(
-						() => { }
-					);
-			}
-		);
 	}
 	private checkBlacklistCache() {
 		if (isExpired(this._blacklist.get())) {
@@ -354,12 +238,10 @@ export default class ServerApi {
 	public userSignedIn(profile: WebAppUserProfile) {
 		this._user.set(profile.userAccount);
 		this._displayPreference.set(profile.displayPreference);
-		this.checkNotifications();
 	}
 	public userSignedOut() {
 		this._user.clear();
 		this._displayPreference.clear();
-		this._displayedNotifications.clear();
 	}
 	public userUpdated(user: UserAccount) {
 		this._user.set(user || null);

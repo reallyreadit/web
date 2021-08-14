@@ -86,6 +86,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('sourceRules');
 	localStorage.removeItem('articles');
 	localStorage.removeItem('tabs');
+	localStorage.removeItem('displayedNotifications');
 	localStorage.setItem('debug', JSON.stringify(false));
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
@@ -159,15 +160,6 @@ chrome.runtime.onInstalled.addListener(details => {
 			periodInMinutes: 120
 		}
 	);
-	if (chrome.notifications) {
-		chrome.alarms.create(
-			ServerApi.alarms.checkNotifications,
-			{
-				when: Date.now(),
-				periodInMinutes: 2.5
-			}
-		);
-	}
 	chrome.alarms.create(
 		ServerApi.alarms.getBlacklist,
 		{
