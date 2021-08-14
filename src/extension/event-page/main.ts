@@ -119,7 +119,7 @@ chrome.browserAction.onClicked.addListener(
 			return;
 		}
 		// blacklisted
-		const blacklist = serverApi.getBlacklist();
+		const blacklist = [] as RegExp[];
 		if (
 			blacklist.some(
 				regex => regex.test(tab.url)
