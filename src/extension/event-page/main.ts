@@ -13,6 +13,20 @@ const serverApi = new ServerApi();
 // web app
 const webAppApi = new WebAppApi();
 
+// alert content script
+function showAlert(tabId: number, message: string) {
+	chrome.tabs.executeScript(
+		tabId,
+		{
+			code: `if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: '${message}' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }`
+		}
+	);
+}
+function showDownloadAlert(tabId: number) {
+	const downloadUrl = createUrl(window.reallyreadit.extension.config.webServer, '/download');
+	showAlert(tabId, `Download the Readup app to continue: <a href="${downloadUrl}">${downloadUrl}</a>.`);
+}
+
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('[EventPage] installed, reason: ' + details.reason);
@@ -110,12 +124,7 @@ chrome.browserAction.onClicked.addListener(
 		}
 		// web app
 		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.webServer))) {
-			chrome.tabs.executeScript(
-				tab.id,
-				{
-					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
-				}
-			);
+			showAlert(tab.id, 'Press the Readup button when you\'re on an article web page.');
 			return;
 		}
 		// blacklisted
@@ -125,14 +134,28 @@ chrome.browserAction.onClicked.addListener(
 				regex => regex.test(tab.url)
 			)
 		) {
-			chrome.tabs.executeScript(
-				tab.id,
-				{
-					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
-				}
-			);
+			showAlert(tab.id, 'No article detected on this web page.');
 			return;
 		}
+		// article
+		chrome.runtime.sendNativeMessage(
+			'it.reallyread.mobile.browser_extension_app',
+			{
+				url: tab.url
+			},
+			response => {
+				if (chrome.runtime.lastError) {
+					console.log('[EventPage] Error sending native message.');
+					showDownloadAlert(tab.id);
+					return;
+				}
+				console.log("[EventPage] Received native message response:");
+				console.log(response);
+				if (response?.status !== 0) {
+					showDownloadAlert(tab.id);
+				}
+			}
+		);
 	}
 );
 chrome.runtime.onMessage.addListener(
