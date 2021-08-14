@@ -1,9 +1,5 @@
-import UserArticle from '../../common/models/UserArticle';
-
 enum Color {
-	Default = '#555555',
-	Read = '#32CD32',
-	Unread = '#A9A9A9'
+	Default = '#555555'
 }
 type OptionalTabId = number | null;
 interface LoadingAnimation {
@@ -79,19 +75,5 @@ export default class BrowserActionBadgeApi {
 		this._animations.push(
 			createLoadingAnimation(tabId)
 		);
-	}
-	public setReading(tabId: number, article: Pick<UserArticle, 'isRead' | 'percentComplete'>) {
-		console.log(`[BrowserActionBadgeApi] setting progress at ${Math.floor(article.percentComplete)}% for tab # ${tabId}`);
-		this.cancelAnimation(tabId);
-		chrome.browserAction.setBadgeBackgroundColor({
-			color: article.isRead ?
-				Color.Read :
-				Color.Unread,
-			tabId
-		});
-		chrome.browserAction.setBadgeText({
-			tabId,
-			text: Math.floor(article.percentComplete) + '%'
-		});
 	}
 }
