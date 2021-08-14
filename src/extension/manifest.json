@@ -40,9 +40,7 @@
   ],
   "permissions": [
     "activeTab",
-    "cookies",
-    "alarms",
-    "notifications"
+    "nativeMessaging"
   ],
   "web_accessible_resources": [
     "content-scripts/alert/bundle.css",
