@@ -76,7 +76,6 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('user');
 	localStorage.removeItem('contentParserScript');
 	localStorage.removeItem('contentParserVersion');
-	localStorage.setItem('debug', JSON.stringify(false));
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
