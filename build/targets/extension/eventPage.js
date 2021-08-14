@@ -9,7 +9,8 @@ const build = createBuild({
 		appConfig: {
 			path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 			key: 'window.reallyreadit.extension.config'
-		}
+		},
+		sourceMaps: false
 	},
 	staticAssets: [
 		`${project.srcDir}/extension/event-page/index.html`

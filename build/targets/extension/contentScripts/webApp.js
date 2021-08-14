@@ -5,7 +5,8 @@ const project = require('../../../project'),
 
 const build = createBuild({
 	webpack: {
-		entry: path.posix.join(project.srcDir, 'extension/content-scripts/web-app/main.ts')
+		entry: path.posix.join(project.srcDir, 'extension/content-scripts/web-app/main.ts'),
+		sourceMaps: false
 	},
 	path: 'extension/content-scripts/web-app'
 });

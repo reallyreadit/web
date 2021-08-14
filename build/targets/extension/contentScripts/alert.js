@@ -11,14 +11,16 @@ const build = createBuild({
 			`${project.srcDir}/common/styles/shadow-host.scss`,
 			`${project.srcDir}/extension/content-scripts/alert/main.scss`
 		],
-		targetShadowDom: true
+		targetShadowDom: true,
+		sourceMaps: false
 	},
 	webpack: {
 		appConfig: {
 			path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
 			key: 'window.reallyreadit.extension.config'
 		},
-		entry: path.posix.join(project.srcDir, 'extension/content-scripts/alert/main.ts')
+		entry: path.posix.join(project.srcDir, 'extension/content-scripts/alert/main.ts'),
+		sourceMaps: false
 	}
 });
 
