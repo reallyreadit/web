@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NavReference, ReadArticleReference, Screen } from '../Root';
-import { SharedState } from '../BrowserRoot';
+import { SharedState } from '../Root';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import RouteLocation from '../../../../common/routing/RouteLocation';
@@ -14,7 +14,6 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ScreenContainer from '../ScreenContainer';
 import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
-import GetStartedButton from './GetStartedButton';
 import Button from '../../../../common/components/Button';
 import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
@@ -29,10 +28,7 @@ interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
 	location: RouteLocation,
-	isExtensionInstalled: boolean,
-	onBeginOnboarding: (analyticsAction: string) => void,
 	onCanReadArticle: (article: UserArticle) => boolean,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
@@ -44,16 +40,20 @@ class ReadScreen extends React.PureComponent<Props> {
 	private readonly _readArticle = () => {
 		this.props.onReadArticle(this.props.article.value);
 	};
+
+	private readonly _navToExternal = (ev?: React.MouseEvent<HTMLAnchorElement>) => {
+		ev?.preventDefault();
+		this.props.onNavTo(this.props.article.value.url);
+	}
+
 	public componentDidMount() {
 		if (
 			(
 				this.props.article.value &&
-				this.props.onCanReadArticle(this.props.article.value) &&
-				this.props.isExtensionInstalled &&
-				localStorage.getItem('extensionReminderAcknowledged')
+				this.props.onCanReadArticle(this.props.article.value)
 			)
 		) {
-			window.location.href = this.props.article.value.url;
+			this._readArticle()
 		}
 	}
 	private renderArticle() {
@@ -136,28 +136,16 @@ class ReadScreen extends React.PureComponent<Props> {
 													<li>Pick your price</li>
 												</ul>
 											</div>
-												{!this.props.user || !this.props.isExtensionInstalled ?
-													<GetStartedButton
-														analyticsAction="ReadScreen"
-														deviceType={this.props.deviceType}
-														location={this.props.location}
-														onBeginOnboarding={this.props.onBeginOnboarding}
-														onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-														onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-														onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-													/>
-												:
-													<Button
-														intent="loud"
-														onClick={(this.props.onCanReadArticle(this.props.article.value)) ?
-																this._readArticle :
-																() => this.props.onOpenSubscriptionPromptDialog(this.props.article.value)}
-														size="large"
-														align="center"
-														text="Read Article"
-													/>
-												}
-										</div>
+												<Button
+													intent="loud"
+													onClick={(this.props.onCanReadArticle(this.props.article.value)) ?
+															this._readArticle :
+															() => this.props.onOpenSubscriptionPromptDialog(this.props.article.value)}
+													size="large"
+													align="center"
+													text="Read Article"
+												/>
+											</div>
 									</>
 								</ContentBox>
 								<div className="divider">or</div>
@@ -166,7 +154,7 @@ class ReadScreen extends React.PureComponent<Props> {
 											`/app/images/read-screen/` + (isMobileDevice(this.props.deviceType) ? `distraction-mobile.svg` : `distraction-desktop.svg`))} />
 									<div className="choice__details">
 										<p className="info">Read through the noise<br/>
-										{' '}<a href={this.props.article.value.url}>on the web</a><Icon name='arrow-ne' className="outlink"></Icon>
+										{' '}<a href={this.props.article.value.url} onClick={this._navToExternal}>on the web</a><Icon name='arrow-ne' className="outlink"></Icon>
 										</p>
 									</div>
 								</div>
@@ -178,7 +166,7 @@ class ReadScreen extends React.PureComponent<Props> {
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'isExtensionInstalled' | 'user'>> & {
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
@@ -215,7 +203,6 @@ export default function createReadScreenFactory<TScreenKey>(
 						...deps,
 						article: screenState.componentState,
 						location: screenState.location,
-						isExtensionInstalled: sharedState.isExtensionInstalled,
 						user: sharedState.user
 					}
 				} />

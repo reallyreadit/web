@@ -61,6 +61,7 @@ import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
+import createReadScreenFactory from './AppRoot/ReadScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -797,6 +798,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
+			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
+				deviceType: DeviceType.Ios,
+				onCanReadArticle: this.canRead.bind(this),
+				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onGetArticle: this.props.serverApi.getArticle,
+				onNavTo: this._navTo,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState
+			}),
 			[ScreenKey.Search]: createSearchScreenFactory(
 				ScreenKey.Search,
 				{
@@ -1240,8 +1252,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
-			if (result.screenKey === ScreenKey.Read) {
-				this.props.appApi.readArticle({ slug: result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'] });
+			const slug = result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'];
+			const readRef = { url: result.url, slug };
+			if (result.screenKey === ScreenKey.Read && this.canRead(readRef)) {
+				this.props.appApi.readArticle({ slug });
 			} else {
 				switch (options.method) {
 					case NavMethod.Push:
@@ -1303,6 +1317,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		} else {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
 			if (route.screenKey === ScreenKey.Read) {
+				// TODO should be modified too?
 				const pathParams = route.getPathParams(this._signInLocation.path);
 				screen = this.createScreen(ScreenKey.Comments, pathParams);
 				this.props.appApi.readArticle({
@@ -1351,19 +1366,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	}
+
+	protected canRead(article: ReadArticleReference) {
+		return (
+			this.state.subscriptionStatus.isUserFreeForLife ||
+			(
+				(this.state.subscriptionStatus.type === SubscriptionStatusType.Active) &&
+				!this.state.isProcessingPayment
+			) ||
+			article.slug.split('_')[0] === 'blogreadupcom'
+		);
+	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		ev?.preventDefault();
-		if (
-			!this.state.subscriptionStatus.isUserFreeForLife &&
-			(
-				this.state.subscriptionStatus.type !== SubscriptionStatusType.Active ||
-				this.state.isProcessingPayment
-			) &&
-			article.slug.split('_')[0] !== 'blogreadupcom'
-		) {
-			this._openSubscriptionPromptDialog(article);
-		} else {
+		if (this.canRead(article)) {
 			this.props.appApi.readArticle(article);
+		} else {
+			this._viewRead(article);
+			// this._openSubscriptionPromptDialog(article);
 		}
 	}
 	protected reloadWindow() {
@@ -1504,6 +1524,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// check for read url (the following condition can only be true in old iOS clients)
 		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUserProfile) {
 			const pathParams = initialRoute.getPathParams(this.props.initialLocation.path);
+			// TODO should be handled too?
 			this.props.appApi.readArticle({
 				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
 			});

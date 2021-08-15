@@ -708,11 +708,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
 				onBeginOnboarding: this._beginOnboarding,
+				onCanReadArticle: this.canRead.bind(this),
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog.bind(this),
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
@@ -1262,55 +1264,56 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
-	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
+
+	protected canRead(article: ReadArticleReference) {
 		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
+			[sourceSlug] = article.slug.split('_'),
 			isBlogPost = sourceSlug === 'blogreadupcom';
-		if (
-			this.state.user &&
-			!this.state.subscriptionStatus.isUserFreeForLife &&
-			this.state.subscriptionStatus.type !== SubscriptionStatusType.Active &&
-			!isBlogPost
-		) {
-			ev?.preventDefault();
-			this._openSubscriptionPromptDialog(article);
-			return;
-		}
-		if (
+		return (
+			isBlogPost ||
 			(
-				!this.state.user ||
-				!this.props.extensionApi.isInstalled
-			) &&
-			!isBlogPost
-		) {
+				!!this.state.user &&
+				(
+					this.state.subscriptionStatus.type === SubscriptionStatusType.Active
+					||
+					this.state.subscriptionStatus.isUserFreeForLife
+				)
+			)
+		)
+	}
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		if (this.canRead(article)) {
+			if (
+				this.props.extensionApi.isInstalled &&
+				!localStorage.getItem('extensionReminderAcknowledged')
+			) {
+				ev?.preventDefault();
+				this._dialog.openDialog(
+					<ExtensionReminderDialog
+						deviceType={this.props.deviceType}
+						onCreateStaticContentUrl={this._createStaticContentUrl}
+						onSubmit={
+							() => {
+								localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
+								location.href = article.url;
+								return new Promise(
+									resolve => { }
+								);
+							}
+						}
+					/>
+				);
+			} else if (!ev) {
+				location.href = article.url;
+			}
+		} else {
 			ev?.preventDefault();
 			this.setScreenState({
 				key: ScreenKey.Read,
 				method: NavMethod.ReplaceAll,
 				urlParams: { sourceSlug, articleSlug }
 			});
-		} else if (
-			this.props.extensionApi.isInstalled &&
-			!localStorage.getItem('extensionReminderAcknowledged')
-		) {
-			ev?.preventDefault();
-			this._dialog.openDialog(
-				<ExtensionReminderDialog
-					deviceType={this.props.deviceType}
-					onCreateStaticContentUrl={this._createStaticContentUrl}
-					onSubmit={
-						() => {
-							localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
-							location.href = article.url;
-							return new Promise(
-								resolve => { }
-							);
-						}
-					}
-				/>
-			);
-		} else if (!ev) {
-			location.href = article.url;
 		}
 	}
 	protected reloadWindow() {
