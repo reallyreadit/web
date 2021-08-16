@@ -139,6 +139,7 @@ chrome.browserAction.onClicked.addListener(
 			return;
 		}
 		// article
+		badgeApi.setLoading();
 		const message: ReadArticleNativeMessage = {
 			type: NativeMessageType.ReadArticle,
 			data: {
@@ -149,6 +150,7 @@ chrome.browserAction.onClicked.addListener(
 			'it.reallyread.mobile.browser_extension_app',
 			message,
 			(response?: NativeMessageResponse) => {
+				badgeApi.setDefault();
 				if (chrome.runtime.lastError) {
 					console.log('[EventPage] Error sending native message.');
 					showDownloadAlert(tab.id);
