@@ -4,6 +4,7 @@ import { createUrl } from '../../common/HttpEndpoint';
 import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { ReadArticleNativeMessage, NativeMessageType, NativeMessageResponse } from './nativeMessaging';
+import { ignoreList } from './ignoreList';
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -128,10 +129,9 @@ chrome.browserAction.onClicked.addListener(
 			showAlert(tab.id, 'Press the Readup button when you\'re on an article web page.');
 			return;
 		}
-		// blacklisted
-		const blacklist = [] as RegExp[];
+		// ignore list
 		if (
-			blacklist.some(
+			ignoreList.some(
 				regex => regex.test(tab.url)
 			)
 		) {
