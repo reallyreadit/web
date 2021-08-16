@@ -24,7 +24,7 @@ export interface Props {
 	onNavBack?: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
-	onShare: (data: ShareEvent) => ShareResponse,
+	onShare: (data: ShareEvent) => ShareResponse
 	showProgressBar?: boolean
 }
 export default class ReaderHeader extends React.Component<Props> {

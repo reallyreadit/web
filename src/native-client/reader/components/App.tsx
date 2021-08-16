@@ -31,10 +31,13 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import ReaderHeader from '../../../common/components/ReaderHeader';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
+import ShareResponse from '../../../common/sharing/ShareResponse';
+import {DeviceType} from '../../../common/DeviceType';
 
 export interface Props extends DialogServiceState {
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
+	deviceType: DeviceType,
 	dialogService: DialogService<{}>,
 	displayPreference: DisplayPreference | null,
 	isHeaderHidden: boolean,
@@ -48,7 +51,7 @@ export interface Props extends DialogServiceState {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
-	onShare: (data: ShareEvent) => void,
+	onShare: (data: ShareEvent) => ShareResponse,
 	user: UserAccount | null
 }
 export default class App extends React.Component<
@@ -165,10 +168,14 @@ export default class App extends React.Component<
 					<ReaderHeader
 						article={this.props.article}
 						displayPreference={this.props.displayPreference}
+						deviceType={this.props.deviceType}
 						isHidden={this.props.isHeaderHidden}
 						onNavBack={this.props.onNavBack}
+						onCopyTextToClipboard={this._copyTextToClipboard}
+						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onChangeDisplayPreference={this._changeDisplayPreference}
 						onReportArticleIssue={this._reportArticleIssue}
+						onShare={this.props.onShare}
 					/>
 				</div>
 				<DialogManager
