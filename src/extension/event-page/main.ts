@@ -3,6 +3,7 @@ import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
 import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
+import { ReadArticleNativeMessage, NativeMessageType, NativeMessageResponse } from './nativeMessaging';
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -138,12 +139,16 @@ chrome.browserAction.onClicked.addListener(
 			return;
 		}
 		// article
+		const message: ReadArticleNativeMessage = {
+			type: NativeMessageType.ReadArticle,
+			data: {
+				url: tab.url
+			}
+		};
 		chrome.runtime.sendNativeMessage(
 			'it.reallyread.mobile.browser_extension_app',
-			{
-				url: tab.url
-			},
-			response => {
+			message,
+			(response?: NativeMessageResponse) => {
 				if (chrome.runtime.lastError) {
 					console.log('[EventPage] Error sending native message.');
 					showDownloadAlert(tab.id);
@@ -151,7 +156,7 @@ chrome.browserAction.onClicked.addListener(
 				}
 				console.log("[EventPage] Received native message response:");
 				console.log(response);
-				if (response?.status !== 0) {
+				if (!response?.succeeded) {
 					showDownloadAlert(tab.id);
 				}
 			}
