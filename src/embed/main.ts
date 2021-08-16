@@ -52,7 +52,9 @@ const apiServer = new ApiServer({
 function activate(initializationResponse: InitializationActivationResponse) {
 	// set up the reader
 	const page = new Page(
-		parseDocumentContent()
+		parseDocumentContent({
+				url: window.location
+			})
 			.primaryTextContainers
 	);
 	page.setReadState(initializationResponse.userArticle.readState);

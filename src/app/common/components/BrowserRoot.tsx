@@ -531,6 +531,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -715,6 +716,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
+				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState

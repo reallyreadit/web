@@ -19,7 +19,7 @@ export interface Props {
 	maxLength?: number
 }
 export default class extends React.PureComponent<Props, { isEditing: boolean }> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'value' | 'validate' | 'showError' | 'onChange' | 'autoFocus' | 'required'> = {
 		value: '',
 		validate: true,
 		showError: false,

@@ -209,7 +209,7 @@ function findTraversalPaths(group: TextContainerDepthGroup) {
 				})
 			];
 		for (let i = 1; i <= group.depth && peers.length; i++) {
-			const 
+			const
 				containerLineageIndex = group.depth - i,
 				foundPeers = peers.filter(peer => peer.containerLineage[containerLineageIndex] === member.containerLineage[containerLineageIndex]);
 			if (foundPeers.length) {
@@ -483,8 +483,14 @@ function findChildren(parent: Node, depth: number, edge: GraphEdge, searchArea: 
 	);
 }
 
-export default function parseDocumentContent(): ParseResult {
-	const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
+export interface ParserParams {
+	url: {
+		hostname: string
+	}
+}
+
+export default function parseDocumentContent(params: ParserParams): ParseResult {
+	const publisherConfig = findPublisherConfig(configs.publishers, params.url.hostname);
 
 	let contentSearchRootElement: Element;
 	if (publisherConfig && publisherConfig.contentSearchRootElementSelector) {

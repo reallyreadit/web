@@ -102,7 +102,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 		try {
 			if (
 				new SemanticVersion(localStorage.getItem('contentParserVersion'))
-					.compareTo(new SemanticVersion(window.reallyreadit.extension.config.version.extension.contentParser)) > 0
+					.compareTo(new SemanticVersion(window.reallyreadit.extension.config.version.common.contentParser)) > 0
 			) {
 				console.log(`contentScriptApi.onLoadContentParser (loading content parser from localStorage, tabId: ${tabId})`);
 				chrome.tabs.executeScript(tabId, { code: localStorage.getItem('contentParserScript') });
@@ -475,7 +475,7 @@ chrome.alarms.onAlarm.addListener(
 		if (alarm.name === 'updateContentParser') {
 			const currentVersion = SemanticVersion.greatest(
 				...[
-					window.reallyreadit.extension.config.version.extension.contentParser,
+					window.reallyreadit.extension.config.version.common.contentParser,
 					localStorage.getItem('contentParserVersion')
 				]
 				.filter(string => !!string)

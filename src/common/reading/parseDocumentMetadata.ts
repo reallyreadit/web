@@ -3,6 +3,7 @@ import parseElementMicrodata from './parseElementMicrodata';
 import parseSchema from './parseSchema';
 import parseMiscMetadata from './parseMiscMetadata';
 import parseOpenGraph from './parseOpenGraph';
+import { ParserDocumentLocation } from '../ParserDocumentLocation';
 
 export interface MetadataParseResult {
 	isArticle: boolean,
@@ -64,10 +65,13 @@ function merge(schema: ParseResult, misc: ParseResult, openGraph: ParseResult): 
 	};
 }
 const articleElementAttributeBlacklistRegex = /((^|\W)comments?($|\W))/i;
-export default function parseDocumentMetadata() {
+export interface ParserParams {
+	url: ParserDocumentLocation
+}
+export default function parseDocumentMetadata(params: ParserParams) {
 	let isArticle = false;
 	// misc
-	const misc = parseMiscMetadata();
+	const misc = parseMiscMetadata(params.url);
 	if (
 		Array
 			.from(document.getElementsByTagName('article'))
@@ -82,7 +86,7 @@ export default function parseDocumentMetadata() {
 		isArticle = true;
 	}
 	// OpenGraph
-	let openGraph = parseOpenGraph();
+	let openGraph = parseOpenGraph(params.url);
 	if (openGraph) {
 		isArticle = true;
 	} else {

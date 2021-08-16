@@ -42,6 +42,19 @@ import { Result, ResultType } from '../../common/Result';
 import { ReadingErrorType } from '../../common/Errors';
 import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscriptionPrompt';
 import { createUrl } from '../../common/HttpEndpoint';
+import { parseQueryString } from '../../common/routing/queryString';
+import { ParserDocumentLocation } from '../../common/ParserDocumentLocation';
+
+// On iOS window.location will be set to the article's URL but in Electron it will be a file: URL
+// with the article's URL provided as a query parameter.
+let documentLocation: ParserDocumentLocation;
+if (window.location.protocol === 'file:') {
+	documentLocation = new URL(
+		parseQueryString(window.location.search)['url']
+	);
+} else {
+	documentLocation = window.location;
+}
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -86,8 +99,12 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 }
 
 const
-	metadataParseResult = parseDocumentMetadata(),
-	contentParseResult = parseDocumentContent();
+	metadataParseResult = parseDocumentMetadata({
+		url: documentLocation
+	}),
+	contentParseResult = parseDocumentContent({
+		url: documentLocation
+	});
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
 
@@ -104,7 +121,7 @@ styleArticleDocument({
 	completeTransition: true
 });
 
-const publisherConfig = findPublisherConfig(configs.publishers, window.location.hostname);
+const publisherConfig = findPublisherConfig(configs.publishers, documentLocation.hostname);
 procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
 
 const reader = new Reader(
@@ -156,7 +173,7 @@ const reader = new Reader(
 );
 
 // document messaging interface
-if (/(^|\.)readup\.com$/.test(window.location.hostname)) {
+if (/(^|\.)readup\.com$/.test(documentLocation.hostname)) {
 	const postScript = document.querySelector('#com_readup_blog_post_script script');
 	if (postScript) {
 		// the browser won't execute the script if we just alter the type attribute.

@@ -36,6 +36,7 @@ import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfil
 import PackageVersionInfo from '../../common/PackageVersionInfo';
 import Lazy from '../../common/Lazy';
 import { Stripe } from '@stripe/stripe-js';
+import LinkType from '../../common/models/articles/LinkType';
 
 // read configuration
 let
@@ -287,6 +288,13 @@ server.get('/earnings', (req, res) => {
 		req,
 		res,
 		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()
+	);
+});
+server.get('/about', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Mission).createUrl()
 	);
 });
 // handle redirects
@@ -614,50 +622,43 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 					}
 				);
 			break;
+		case ScreenKey.Read:
 		case ScreenKey.Comments:
 			const pathParams = req.matchedRoute.getPathParams(req.path);
-			Promise
-				.all([
-					req.api
-						.fetchJson<TwitterCardMetadata>(
-							'GET',
-							{
-								path: '/Articles/TwitterCardMetadata',
-								data: {
-									postId: pathParams['commentId'],
-									slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
-								} as TwitterCardMetadataRequest
-							}
-						)
-						.catch(
-							() => {
-								return null as TwitterCardMetadata;
-							}
-						),
-					render()
-				])
-				.then(
-					results => {
-						if (results[0]) {
-							sendResponse(
-								results[1],
-								{
-									type: TwitterCardType.Summary,
-									title: results[0].title,
-									description: results[0].description,
-									imageUrl: results[0].imageUrl
-								}
-							);
-						} else {
-							sendResponse(results[1]);
-						}
+			Promise.all([
+				req.api
+					.fetchJson<TwitterCardMetadata>('GET', {
+						path: '/Articles/TwitterCardMetadata',
+						data: {
+							postId: pathParams['commentId'],
+							slug:
+								pathParams['sourceSlug'] + "_" + pathParams['articleSlug'],
+							linkType:
+								req.matchedRoute.screenKey === ScreenKey.Comments
+									? LinkType.Comment
+									: LinkType.Read,
+						} as TwitterCardMetadataRequest,
+					})
+					.catch(() => {
+						return null as TwitterCardMetadata;
+					}),
+				render(),
+			])
+				.then((results) => {
+					if (results[0]) {
+						sendResponse(results[1], {
+							type: TwitterCardType.Summary,
+							title: results[0].title,
+							description: results[0].description,
+							imageUrl: results[0].imageUrl,
+						});
+					} else {
+						sendResponse(results[1]);
 					}
-				)
-				.catch(
-					() => {
-						sendResponse('Failed to process request.');
-					}
-				);
+				})
+				.catch(() => {
+					sendResponse('Failed to process request.');
+				});
 			break;
 		default:
 			render()

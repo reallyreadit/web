@@ -31,7 +31,8 @@ export default interface UserArticle {
 	firstPoster: string | null,
 	flair: ArticleFlair,
 	aotdContenderRank: number,
-	proofToken: string | null
+	proofToken: string | null,
+	imageUrl: string | null
 }
 export function areEqual(a: UserArticle, b: UserArticle) {
 	if (!a || !b) {
@@ -67,6 +68,7 @@ export function areEqual(a: UserArticle, b: UserArticle) {
 		a.firstPoster === b.firstPoster &&
 		a.flair === b.flair &&
 		a.aotdContenderRank === b.aotdContenderRank &&
-		a.proofToken === b.proofToken
+		a.proofToken === b.proofToken &&
+		a.imageUrl === b.imageUrl
 	);
 }

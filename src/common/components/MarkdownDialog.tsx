@@ -29,7 +29,7 @@ export default (
 					<td><strong>bold</strong></td>
 				</tr>
 				<tr>
-					<td>[link](http://link.com)</td>
+					<td>[link](https://link.com)</td>
 					<td><span className="link">link</span></td>
 				</tr>
 				<tr>

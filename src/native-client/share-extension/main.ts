@@ -6,7 +6,11 @@ import parseDocumentContent from '../../common/contentParsing/parseDocumentConte
 new WebViewMessagingContext().sendMessage({
 	type: 'parseResult',
 	data: createPageParseResult(
-		parseDocumentMetadata(),
-		parseDocumentContent()
+		parseDocumentMetadata({
+			url: window.location
+		}),
+		parseDocumentContent({
+			url: window.location
+		})
 	)
 });

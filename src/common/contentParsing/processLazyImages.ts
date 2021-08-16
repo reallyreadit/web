@@ -149,8 +149,8 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 						.from(figure.getElementsByTagName('img'))
 						.forEach(
 							img => {
-								if (img.src.startsWith('http://static.nautil.us/')) {
-									img.src = img.src.replace('http://static.nautil.us/', 'https://d3chnh8fr629l6.cloudfront.net/');
+								if (img.src.match(/https?:\/\/static\.nautil\.us\//)) {
+									img.src = img.src.replace(/https?:\/\/static\.nautil\.us\//, 'https://d3chnh8fr629l6.cloudfront.net/');
 								}
 							}
 						);

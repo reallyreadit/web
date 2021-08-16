@@ -642,6 +642,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
