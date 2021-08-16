@@ -1,7 +1,6 @@
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
-import { extensionInstalledQueryStringKey } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { ReadArticleNativeMessage, NativeMessageType, NativeMessageResponse } from './nativeMessaging';
 import { ignoreList } from './ignoreList';
@@ -57,9 +56,6 @@ chrome.runtime.onInstalled.addListener(details => {
 	// so we need to rely on the api server to get and set them for us
 	chrome.runtime.getPlatformInfo(
 		platformInfo => {
-			if (details.reason === 'install') {
-				badgeApi.setLoading();
-			}
 			serverApi
 				.logExtensionInstallation({
 					arch: platformInfo.arch,
@@ -68,17 +64,6 @@ chrome.runtime.onInstalled.addListener(details => {
 				})
 				.then(
 					response => {
-						if (details.reason === 'install') {
-							chrome.tabs.create({
-								url: createUrl(
-									window.reallyreadit.extension.config.webServer,
-									response.redirectPath,
-									{
-										[extensionInstalledQueryStringKey]: null
-									}
-								)
-							});
-						}
 						if (!response.installationId) {
 							return;
 						}
@@ -100,11 +85,6 @@ chrome.runtime.onInstalled.addListener(details => {
 						if (error) {
 							console.log(error);
 						}
-					}
-				)
-				.finally(
-					() => {
-						badgeApi.setDefault();
 					}
 				);
 		}
