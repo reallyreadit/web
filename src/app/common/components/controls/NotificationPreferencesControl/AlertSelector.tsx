@@ -22,7 +22,7 @@ interface State {
 	indicator: SaveIndicatorState
 }
 export default class AlertSelector extends React.PureComponent<Props, State> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'showChannels'> = {
 		showChannels: true
 	};
 	private readonly _asyncTracker = new AsyncTracker();

@@ -20,7 +20,7 @@ interface Props {
 	size?: ButtonSize
 }
 export default class GetStartedButton extends React.Component<Props> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'iosPromptType' | 'size'> = {
 		iosPromptType: 'auto',
 		size: 'x-large'
 	};

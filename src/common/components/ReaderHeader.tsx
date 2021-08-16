@@ -19,7 +19,7 @@ export interface Props {
 	showProgressBar?: boolean
 }
 export default class ReaderHeader extends React.Component<Props> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'showProgressBar'> = {
 		showProgressBar: true
 	};
 	public render() {

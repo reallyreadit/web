@@ -40,7 +40,7 @@ interface Props {
 	user?: UserAccount
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata'> = {
 		shareMenuPosition: MenuPosition.RightMiddle,
 		showAotdMetadata: true
 	};
