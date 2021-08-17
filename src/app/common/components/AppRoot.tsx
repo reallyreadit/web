@@ -608,6 +608,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
+					deviceType: DeviceType.Ios,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
@@ -651,9 +652,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Blog]: createBlogScreenFactory(
 				ScreenKey.Blog,
 				{
+					deviceType: DeviceType.Ios,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -695,6 +698,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				videoMode: VideoMode.Link
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				deviceType: DeviceType.Ios,
 				onClearAlerts: this._clearAlerts,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -713,6 +717,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(
 				ScreenKey.Notifications,
 				{
+					deviceType: DeviceType.Ios,
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -763,6 +768,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				deviceType: DeviceType.Ios,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -825,6 +831,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Search]: createSearchScreenFactory(
 				ScreenKey.Search,
 				{
+					deviceType: DeviceType.Ios,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,

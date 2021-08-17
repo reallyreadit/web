@@ -22,8 +22,10 @@ import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import StickyNote from '../../../../common/components/StickyNote';
 import { Sort } from '../controls/articles/AotdView';
+import {DeviceType} from '../../../../common/DeviceType';
 
 interface Props {
+	deviceType: DeviceType,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -206,6 +208,7 @@ class HomeScreen extends React.Component<Props, State> {
 							aotd={this.state.communityReads.value.aotd}
 							aotdHasAlert={this.state.communityReads.value.aotdHasAlert}
 							articles={this.state.communityReads.value.articles}
+							deviceType={this.props.deviceType}
 							isLoading={this.state.isLoading}
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}

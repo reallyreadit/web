@@ -13,12 +13,14 @@ import SelectList from '../../../../../common/components/SelectList';
 import LoadingOverlay from '../LoadingOverlay';
 import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import { NavReference } from '../../Root';
+import {DeviceType} from '../../../../../common/DeviceType';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
 export default class AotdView extends React.Component<{
 	aotd: UserArticle,
 	aotdHasAlert?: boolean,
 	articles: PageResult<UserArticle>,
+	deviceType: DeviceType,
 	isLoading: boolean,
 	onChangeSort?: (sort: Sort) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -59,6 +61,7 @@ export default class AotdView extends React.Component<{
 				<div className="aotd">
 					<ArticleDetails
 						article={this.props.aotd}
+						deviceType={this.props.deviceType}
 						highlight={this.props.aotdHasAlert}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -102,6 +105,7 @@ export default class AotdView extends React.Component<{
 								<li key={article.id}>
 									<ArticleDetails
 										article={article}
+										deviceType={this.props.deviceType}
 										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onNavTo={this.props.onNavTo}

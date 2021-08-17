@@ -290,6 +290,13 @@ server.get('/earnings', (req, res) => {
 		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()
 	);
 });
+server.get('/about', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Mission).createUrl()
+	);
+});
 // handle redirects
 server.get<{}, any, any, { token: string }>('/confirmEmail', (req, res) => {
 	req.api

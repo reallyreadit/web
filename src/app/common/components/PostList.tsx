@@ -15,10 +15,12 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import LoadingOverlay from './controls/LoadingOverlay';
 import InfoBox from '../../../common/components/InfoBox';
 import ShareData from '../../../common/sharing/ShareData';
+import {DeviceType} from '../../../common/DeviceType';
 
 interface Props {
 	addNewPosts?: boolean,
 	emptyListMessage: string,
+	deviceType: DeviceType,
 	highlightedCommentId: string | null,
 	highlightedPostId: string | null,
 	onChangePageNumber: (pageNumber: number) => void,
@@ -170,6 +172,7 @@ export class PostList extends React.Component<Props> {
 						post => (
 							<li key={post.date}>
 								<PostDetails
+									deviceType={this.props.deviceType}
 									highlightedCommentId={this.props.highlightedCommentId}
 									highlightedPostId={this.props.highlightedPostId}
 									onCloseDialog={this.props.onCloseDialog}

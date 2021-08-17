@@ -21,12 +21,14 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import { NavReference } from '../Root';
+import {DeviceType} from '../../../../common/DeviceType';
 
 enum View {
 	Recent = 'Recent',
 	BestEver = 'Best Ever'
 }
 export interface Props {
+	deviceType: DeviceType,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
@@ -196,6 +198,7 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 											<li key={article.id}>
 												<ArticleDetails
 													article={article}
+													deviceType={this.props.deviceType}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onNavTo={this.props.onNavTo}

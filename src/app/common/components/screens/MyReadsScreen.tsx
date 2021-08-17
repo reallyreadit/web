@@ -26,6 +26,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import CenteringContainer from '../../../../common/components/CenteringContainer';
 import StickyNote from '../../../../common/components/StickyNote';
 import FormDialog from '../../../../common/components/FormDialog';
+import {DeviceType} from '../../../../common/DeviceType';
 
 enum View {
 	History = 'History',
@@ -33,6 +34,7 @@ enum View {
 }
 type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>;
 interface Props {
+	deviceType: DeviceType,
 	view: View,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -240,6 +242,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 												<li key={article.id}>
 													<ArticleDetails
 														article={article}
+														deviceType={this.props.deviceType}
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onNavTo={this.props.onNavTo}

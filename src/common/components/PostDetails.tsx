@@ -12,8 +12,10 @@ import CommentThread from '../models/CommentThread';
 import classNames from 'classnames';
 import Rating from '../models/Rating';
 import AotdMetadata from './AotdMetadata';
+import {DeviceType} from '../DeviceType';
 
 interface Props {
+	deviceType: DeviceType,
 	highlightedCommentId?: string,
 	highlightedPostId?: string,
 	onCloseDialog: () => void,
@@ -54,6 +56,7 @@ export default class PostDetails extends React.Component<Props> {
 				>
 					<ArticleDetails
 						article={this.props.post.article}
+						deviceType={this.props.deviceType}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onNavTo={this.props.onNavTo}

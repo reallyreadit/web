@@ -24,7 +24,7 @@ export default class CreateAccountDialog extends FieldsetDialog<void, Props, Par
 	password?: string,
 	passwordError?: string
 }> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'autoFocus'> = {
 		autoFocus: true
 	};
 	private readonly _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });

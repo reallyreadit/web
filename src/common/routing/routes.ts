@@ -111,7 +111,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	},
 	{
 		createUrl: () => '/mission',
-		pathRegExp: /^\/mission|about$/,
+		pathRegExp: /^\/mission$/,
 		screenKey: ScreenKey.Mission
 	},
 	(function () {
