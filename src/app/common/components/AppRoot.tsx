@@ -49,7 +49,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -87,6 +87,19 @@ type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
 interface Events extends RootEvents {
 	'newStars': number,
 	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
+}
+function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPayment: boolean, article: Pick<ReadArticleReference, 'slug'>) {
+	if (!subscriptionStatus) {
+		return false;
+	}
+	return (
+		subscriptionStatus.isUserFreeForLife ||
+		(
+			(subscriptionStatus.type === SubscriptionStatusType.Active) &&
+			!isProcessingPayment
+		) ||
+		article.slug.split('_')[0] === 'blogreadupcom'
+	);
 }
 export default class extends Root<Props, State, SharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
@@ -1319,15 +1332,21 @@ export default class extends Root<Props, State, SharedState, Events> {
 			let
 				articlePathParams: { [key: string]: string } | undefined,
 				articleSlug: string | undefined;
+			// We need to use the stateless canRead function here because the new user state isn't
+			// set until this function returns.
 			if (
 				route.screenKey === ScreenKey.Read &&
-				this.canRead({
-					slug: (
-						articleSlug = createArticleSlug(
-							articlePathParams = route.getPathParams(this._signInLocation.path)
+				canRead(
+					profile.subscriptionStatus,
+					this.state.isProcessingPayment,
+					{
+						slug: (
+							articleSlug = createArticleSlug(
+								articlePathParams = route.getPathParams(this._signInLocation.path)
+							)
 						)
-					)
-				})
+					}
+				)
 			) {
 				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
 				this.props.appApi.readArticle({
@@ -1378,14 +1397,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 
 	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
-		return (
-			this.state.subscriptionStatus.isUserFreeForLife ||
-			(
-				(this.state.subscriptionStatus.type === SubscriptionStatusType.Active) &&
-				!this.state.isProcessingPayment
-			) ||
-			article.slug.split('_')[0] === 'blogreadupcom'
-		);
+		return canRead(this.state.subscriptionStatus, this.state.isProcessingPayment, article);
 	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		ev?.preventDefault();
