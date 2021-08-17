@@ -412,6 +412,7 @@ export default class MarketingScreen extends React.Component<
 									<li key={article.id}>
 										<ArticleDetails
 											article={article}
+											deviceType={this.props.deviceType}
 											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 											onNavTo={this.props.onNavTo}

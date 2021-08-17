@@ -4,10 +4,15 @@ import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleI
 import UserArticle from '../../../common/models/UserArticle';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import ExtensionComponentHost from './ExtensionComponentHost';
+import {ShareEvent} from '../../../common/sharing/ShareEvent';
+import ShareResponse from '../../../common/sharing/ShareResponse';
 
 interface Services {
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void
+	onShare: (data: ShareEvent) => ShareResponse,
 }
 type State = Pick<HeaderProps, 'article' | 'displayPreference' | 'isHidden' | 'showProgressBar'>;
 export default class HeaderComponentHost extends ExtensionComponentHost<Services, State> {

@@ -2,7 +2,15 @@
 
 .article-details_d2vnmv > .content > .title > .star_n3lkaj {
 	float: right;
+	margin-left: 8px;
+}
+.article-details_d2vnmv > .content > .title > .share-control_mnbspk {
+	float: right;
+	// the bookmark with a % has some right-margin already
 	margin-left: 2px;
+	> .children > .icon_rour3d {
+		color: #858585;
+	}
 }
 .article-details_d2vnmv > .content > .title > .bookmark {
 	position: relative;
@@ -38,6 +46,7 @@
 	width: 20px;
 	margin-right: 5px;
 }
+
 .article-details_d2vnmv > .content > .columns > .article {
 	flex: 1 1 auto;
 }

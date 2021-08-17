@@ -14,10 +14,12 @@ import InfoBox from '../../../common/components/InfoBox';
 import ArticleDetails from '../../../common/components/ArticleDetails';
 import { ShareEvent } from '../../../common/sharing/ShareEvent';
 import { NavReference } from './Root';
+import {DeviceType} from '../../../common/DeviceType';
 
 interface Props {
 	articles: Fetchable<PageResult<UserArticle>>,
 	emptyListMessage: string,
+	deviceType: DeviceType,
 	onChangeArticles: (articles: Fetchable<PageResult<UserArticle>>) => void,
 	onChangePageNumber: (pageNumber: number) => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
@@ -97,6 +99,7 @@ export class ArticleList extends React.Component<Props> {
 							<li key={article.id}>
 								<ArticleDetails
 									article={article}
+									deviceType={this.props.deviceType}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onNavTo={this.props.onNavTo}

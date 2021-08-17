@@ -11,6 +11,7 @@ import UserAccount from '../../../../../common/models/UserAccount';
 import Rating from '../../../../../common/models/Rating';
 import AotdView, { Sort } from './AotdView';
 import { NavReference } from '../../Root';
+import {DeviceType} from '../../../../../common/DeviceType';
 
 interface State {
 	communityReads: Fetchable<CommunityReads>,
@@ -57,6 +58,7 @@ export default class extends React.PureComponent<{
 	aotd: UserArticle,
 	aotdHasAlert: boolean,
 	articles: PageResult<UserArticle>,
+	deviceType: DeviceType,
 	isLoading: boolean,
 	maxLength: number | null,
 	minLength: number | null,
@@ -82,6 +84,7 @@ export default class extends React.PureComponent<{
 					aotd={this.props.aotd}
 					aotdHasAlert={this.props.aotdHasAlert}
 					articles={this.props.articles}
+					deviceType={this.props.deviceType}
 					isLoading={this.props.isLoading}
 					onChangeSort={this.props.onChangeSort}
 					onCopyTextToClipboard={this.props.onCopyTextToClipboard}

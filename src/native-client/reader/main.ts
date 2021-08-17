@@ -44,6 +44,8 @@ import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscrip
 import { createUrl } from '../../common/HttpEndpoint';
 import { parseQueryString } from '../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../common/ParserDocumentLocation';
+import ShareResponse from '../../common/sharing/ShareResponse';
+import {DeviceType} from '../../common/DeviceType';
 
 // On iOS window.location will be set to the article's URL but in Electron it will be a file: URL
 // with the article's URL provided as a query parameter.
@@ -242,8 +244,9 @@ const dialogService = new DialogService({
 	}
 });
 let
-	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user'>> = {
+	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user' >> = {
 		comments: null,
+		deviceType: DeviceType.Ios,
 		dialogs: [],
 		dialogService,
 		isHeaderHidden: false,
@@ -308,7 +311,8 @@ function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'arti
 					value: article
 				},
 				displayPreference,
-				user
+				user,
+				deviceType: DeviceType.Ios,
 			}
 		),
 		embedRootElement,
@@ -596,11 +600,15 @@ function setStatusBarVisibility(isVisible: boolean) {
 }
 
 
-function share(data: ShareEvent) {
+function share(data: ShareEvent): ShareResponse {
 	messagingContext.sendMessage({
 		type: 'share',
 		data
 	});
+
+	return {
+		channels: []
+	};
 }
 
 insertEmbed();

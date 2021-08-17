@@ -19,9 +19,11 @@ import AotdMetadata from './AotdMetadata';
 import UserAccount from '../models/UserAccount';
 import Link from './Link';
 import { NavReference } from '../../app/common/components/Root';
+import { DeviceType, isMobileDevice } from '../DeviceType';
 
 interface Props {
 	article: UserArticle,
+	deviceType: DeviceType,
 	highlight?: boolean,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -41,7 +43,7 @@ interface Props {
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata'> = {
-		shareMenuPosition: MenuPosition.RightMiddle,
+		shareMenuPosition: MenuPosition.RightTop,
 		showAotdMetadata: true
 	};
 	private readonly _getShareData = () => {
@@ -105,11 +107,11 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onGetData={this._getShareData}
 				onShare={this.props.onShare}
-				menuPosition={this.props.shareMenuPosition}
+				menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
 			>
 				<Icon
 					display="block"
-					name="share"
+					name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
 				/>
 			</ShareControl>
 		);
@@ -136,6 +138,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								onClick={this._toggleStar}
 							/> :
 							null}
+						{shareControl}
 						{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
 							<div className="bookmark">
 								<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
@@ -177,7 +180,6 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 								</a>
 								{ratingControl}
-								{shareControl}
 							</div>
 						</div>
 						<div className="small-stats-article">
@@ -220,7 +222,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 									</a>
 								</div>
 								{ratingControl}
-								{shareControl}
+
 							</div>
 						</div>
 						{(

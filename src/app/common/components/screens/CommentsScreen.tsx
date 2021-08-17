@@ -103,6 +103,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 							<Panel className="main">
 								<ArticleDetails
 									article={this.props.article.value}
+									deviceType={this.props.deviceType}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onNavTo={this.props.onNavTo}
