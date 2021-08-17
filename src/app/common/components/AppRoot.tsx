@@ -1316,12 +1316,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 			screen = this.createScreen(ScreenKey.Home);
 		} else {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
-			if (route.screenKey === ScreenKey.Read) {
-				// TODO should be modified too?
-				const pathParams = route.getPathParams(this._signInLocation.path);
-				screen = this.createScreen(ScreenKey.Comments, pathParams);
+			let
+				articlePathParams: { [key: string]: string } | undefined,
+				articleSlug: string | undefined;
+			if (
+				route.screenKey === ScreenKey.Read &&
+				this.canRead({
+					slug: (
+						articleSlug = createArticleSlug(
+							articlePathParams = route.getPathParams(this._signInLocation.path)
+						)
+					)
+				})
+			) {
+				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
 				this.props.appApi.readArticle({
-					slug: createArticleSlug(pathParams)
+					slug: articleSlug
 				});
 			} else {
 				screen = this
@@ -1522,12 +1532,20 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
-		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUserProfile) {
-			// TODO should be handled too?
-			this.props.appApi.readArticle({
-				slug: createArticleSlug(
-					initialRoute.getPathParams(this.props.initialLocation.path)
+		let articleSlug: string | undefined;
+		if (
+			initialRoute.screenKey === ScreenKey.Read &&
+			this.props.initialUserProfile &&
+			this.canRead({
+				slug: (
+					articleSlug = createArticleSlug(
+						initialRoute.getPathParams(this.props.initialLocation.path)
+					)
 				)
+			})
+		) {
+			this.props.appApi.readArticle({
+				slug: articleSlug
 			});
 		}
 		// open subscription dialog if query string key is present
