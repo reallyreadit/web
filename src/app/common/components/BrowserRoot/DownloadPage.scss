@@ -1,0 +1,77 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/DownloadPage
+        cssComponentId: download-page_4u78ip
+*/
+
+// this scss affects the outer component!
+
+.download-page_4u78ip {
+
+	// pushes down the footer, see src/app/common/components/BrowserRoot.scss#L47
+	flex-grow: 1;
+
+	.download-options {
+		margin: auto;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		margin-bottom: 44px;
+	}
+
+	.options-set {
+		> h2 {
+			margin-bottom: 18px;
+			font-family: "Cambria (Regular)";
+			font-size: 32px;
+		}
+
+		@media screen and (max-width: 767px) {
+			> h2 {
+				text-align: center;
+			}
+
+			&:last-child {
+				margin-top: 34px;
+			}
+		}
+	}
+
+
+	.download-option {
+		display: flex;
+		&:not(:first-child) {
+			margin-top: 28px;
+		}
+
+		.icon_rour3d {
+			display: block;
+			width: 4rem;
+			height: 4rem;
+			margin-right: 14px;
+		}
+
+		&__details {
+			&__title {
+				font-size: 1.2rem;
+				font-family: 'Museo Sans (700)';
+				margin-bottom: 8px;
+			}
+		}
+	}
+
+}
+
+@media screen and (min-width: 768px) {
+	.download-page_4u78ip {
+		.download-options {
+			flex-direction: row;
+			justify-content: center;
+			align-items: flex-start;
+
+			> div:first-child {
+				margin-right: 76px;
+			}
+		}
+	}
+
+}

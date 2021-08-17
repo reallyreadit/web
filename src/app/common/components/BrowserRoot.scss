@@ -43,6 +43,9 @@
 	-webkit-overflow-scrolling: touch;
 	box-sizing: border-box;
 	z-index: 1;
+	// allows a child component of a screen to flex-grow: 1 itself to push down the footer
+	display: flex;
+	flex-direction: column;
 }
 
 @include theme using ($root, $scheme) {
