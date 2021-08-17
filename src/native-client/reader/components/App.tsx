@@ -175,7 +175,7 @@ export default class App extends React.Component<
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onChangeDisplayPreference={this._changeDisplayPreference}
 						onReportArticleIssue={this._reportArticleIssue}
-						onShare={this.props.onShare}
+						onShare={this._handleShareRequest}
 					/>
 				</div>
 				<DialogManager
