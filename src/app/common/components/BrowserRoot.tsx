@@ -714,7 +714,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog.bind(this),
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
