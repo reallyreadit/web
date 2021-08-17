@@ -46,16 +46,6 @@ class ReadScreen extends React.PureComponent<Props> {
 		this.props.onNavTo(this.props.article.value.url);
 	}
 
-	public componentDidMount() {
-		if (
-			(
-				this.props.article.value &&
-				this.props.onCanReadArticle(this.props.article.value)
-			)
-		) {
-			this._readArticle()
-		}
-	}
 	private renderArticle() {
 		// comments link
 		const
