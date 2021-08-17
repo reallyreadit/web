@@ -234,3 +234,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	})(),
 ];
 export default routes;
+
+export function createArticleSlug(articlePathParams: { [key: string]: string }) {
+	return articlePathParams['sourceSlug'] + '_' + articlePathParams['articleSlug'];
+}

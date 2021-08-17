@@ -42,6 +42,7 @@ import { Result, ResultType } from '../../common/Result';
 import { ReadingErrorType } from '../../common/Errors';
 import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscriptionPrompt';
 import { createUrl } from '../../common/HttpEndpoint';
+import { createArticleSlug } from '../../common/routing/routes';
 
 const messagingContext = new WebViewMessagingContext();
 
@@ -185,8 +186,11 @@ function handleLink(url: string) {
 	const result = parseUrlForRoute(url);
 	if (result.isInternal && result.route) {
 		if (result.route.screenKey === ScreenKey.Read) {
-			const params = result.route.getPathParams(result.url.pathname);
-			readArticle(params['sourceSlug'] + '_' + params['articleSlug']);
+			readArticle(
+				createArticleSlug(
+					result.route.getPathParams(result.url.pathname)
+				)
+			);
 		} else {
 			navTo(result.url.href);
 		}

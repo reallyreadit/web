@@ -16,7 +16,7 @@ import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys, parseQueryString, subscribeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
-import routes from '../../../common/routing/routes';
+import routes, { createArticleSlug } from '../../../common/routing/routes';
 import { findRouteByLocation } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
@@ -1252,7 +1252,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
-			const slug = result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'];
+			const slug = createArticleSlug(result.screenParams);
 			const readRef = { url: result.url, slug };
 			if (result.screenKey === ScreenKey.Read && this.canRead(readRef)) {
 				this.props.appApi.readArticle({ slug });
@@ -1321,7 +1321,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				const pathParams = route.getPathParams(this._signInLocation.path);
 				screen = this.createScreen(ScreenKey.Comments, pathParams);
 				this.props.appApi.readArticle({
-					slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+					slug: createArticleSlug(pathParams)
 				});
 			} else {
 				screen = this
@@ -1523,10 +1523,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
 		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUserProfile) {
-			const pathParams = initialRoute.getPathParams(this.props.initialLocation.path);
 			// TODO should be handled too?
 			this.props.appApi.readArticle({
-				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+				slug: createArticleSlug(
+					initialRoute.getPathParams(this.props.initialLocation.path)
+				)
 			});
 		}
 		// open subscription dialog if query string key is present

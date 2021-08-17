@@ -5,7 +5,7 @@ import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { findRouteByLocation } from '../../../../common/routing/Route';
-import routes from '../../../../common/routing/routes';
+import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import { formatFetchable, formatList } from '../../../../common/format';
@@ -173,21 +173,24 @@ export default function createReadScreenFactory<TScreenKey>(
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => {
-			const
-				pathParams = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path),
-				article = deps.onGetArticle(
-					{ slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug'] },
-					article => {
-						deps.onSetScreenState(id, produce((currentState: Screen<Fetchable<UserArticle>>) => {
-							currentState.componentState = article;
-							if (article.value) {
-								currentState.title = article.value.title;
-							} else {
-								currentState.title = 'Article not found';
-							}
-						}));
-					}
-				);
+			const article = deps.onGetArticle(
+				{
+					slug: createArticleSlug(
+						findRouteByLocation(routes, location, unroutableQueryStringKeys)
+							.getPathParams(location.path)
+					)
+				},
+				article => {
+					deps.onSetScreenState(id, produce((currentState: Screen<Fetchable<UserArticle>>) => {
+						currentState.componentState = article;
+						if (article.value) {
+							currentState.title = article.value.title;
+						} else {
+							currentState.title = 'Article not found';
+						}
+					}));
+				}
+			);
 			return {
 				id,
 				componentState: article,
