@@ -43,7 +43,7 @@ interface Props {
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
 	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata'> = {
-		shareMenuPosition: MenuPosition.RightTop,
+		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true
 	};
 	private readonly _getShareData = () => {
