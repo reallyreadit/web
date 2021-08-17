@@ -1265,7 +1265,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 
-	protected canRead(article: ReadArticleReference) {
+	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
 		const
 			[sourceSlug] = article.slug.split('_'),
 			isBlogPost = sourceSlug === 'blogreadupcom';

@@ -1253,7 +1253,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
 			const slug = createArticleSlug(result.screenParams);
-			const readRef = { url: result.url, slug };
+			const readRef = { slug };
 			if (result.screenKey === ScreenKey.Read && this.canRead(readRef)) {
 				this.props.appApi.readArticle({ slug });
 			} else {
@@ -1367,7 +1367,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	}
 
-	protected canRead(article: ReadArticleReference) {
+	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
 		return (
 			this.state.subscriptionStatus.isUserFreeForLife ||
 			(
