@@ -1283,9 +1283,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
-		if (this.canRead(article)) {
+		if (
+			this.canRead(article) &&
+			this.props.extensionApi.isInstalled
+		) {
 			if (
-				this.props.extensionApi.isInstalled &&
 				!localStorage.getItem('extensionReminderAcknowledged')
 			) {
 				ev?.preventDefault();
