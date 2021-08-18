@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NavReference, NavOptions, NavMethod } from '../Root';
 import Link, { Props as LinkProps } from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import Icon from '../../../../common/components/Icon';
 // import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
 	onNavTo: (ref: NavReference, options: NavOptions) => void,
@@ -36,7 +37,7 @@ export default class extends React.PureComponent<{
 				]
 			},
 			{
-				title: "Install Readup",
+				title: "Download",
 				sublinks: [
 					// {
 					// 	key: "ios_button",
@@ -59,11 +60,10 @@ export default class extends React.PureComponent<{
 					// 		// 	onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 					// 		// ></GetStartedButton>
 					// },
-					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}>iPhone and iPad</Link>,
-					<Link key="chrome" href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US" onClick={navTo}>Chrome</Link>,
-					<Link key="firefox" href="https://addons.mozilla.org/en-US/firefox/addon/readup/" onClick={navTo}>Firefox</Link>,
-					<Link key="safari" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}>Safari</Link>,
-					<Link key="edge" href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm" onClick={navTo}>Edge</Link>
+					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}><Icon name='phone'/>iPhone and iPad</Link>,
+					<Link key="mac" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}><Icon name='apple'/>Mac</Link>,
+					<Link key="windows" href="https://microsoft.com" onClick={navTo}><Icon name='windows'/>Windows</Link>,
+					<Link key="web-extensions" screen={ScreenKey.Download} onClick={navTo}><Icon name="internet" />Web Importer</Link>
 				]
 			},
 		]
@@ -98,29 +98,9 @@ export default class extends React.PureComponent<{
 							</div>
 						)}
 					</div>
-
-					{/* <div className="links">
-						<a
-							href="https://blog.readup.com/"
-						>
-							Blog
-						</a>
-						<Separator />
-						<a
-							href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
-							onClick={this._viewPrivacyPolicy}
-						>
-							Privacy Policy
-						</a>
-						<Separator />
-						<a href="mailto:support@readup.com">support@readup.com</a>
-					</div>
-					<StoreLinks />
-					<div className="corp">
-						reallyread.it, inc.<br />
-						309 Poe Ave<br />
-						Toms River NJ 08753
-					</div> */}
+				</div>
+				<div className="corp">
+					<a href="mailto:support@readup.com">support@readup.com</a> · reallyread.it, inc., 309 Poe Ave, Toms River NJ 08753
 				</div>
 			</div>
 		);
