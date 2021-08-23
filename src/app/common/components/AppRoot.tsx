@@ -61,7 +61,7 @@ import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
-import { AppPlatform } from '../../../common/AppPlatform';
+import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -445,7 +445,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.getDeviceInfo()
 			.then(
 				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
+					if (
+						isAppleAppPlatform(deviceInfo.appPlatform) &&
+						deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
+					) {
 						this.openAppUpdateRequiredDialog('5.7');
 						throw new Error('Unsupported');
 					}
@@ -503,7 +506,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.getDeviceInfo()
 			.then(
 				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0) {
+					if (
+						!isAppleAppPlatform(deviceInfo.appPlatform) ||
+						deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0
+					) {
 						this.props.appApi.requestAppleIdCredential();
 					} else {
 						this.openAppUpdateRequiredDialog('5.4');
@@ -518,7 +524,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 					.getDeviceInfo()
 					.then(
 						deviceInfo => {
-							if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
+							if (
+								isAppleAppPlatform(deviceInfo.appPlatform) &&
+								deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
+							) {
 								this.openAppUpdateRequiredDialog('5.7');
 								throw 'Unsupported';
 							}
@@ -1294,7 +1303,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
 		// sync auth state with app
-		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.2')) >= 0) {
+		if (
+			!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
+			this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.2')) >= 0
+		) {
 			this.props.appApi
 				.signIn(profile.userAccount, eventType)
 				.then(
@@ -1336,7 +1348,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// enter orientation for new users
 		let isInOrientation: boolean;
 		if (eventType === SignInEventType.NewUser) {
-			if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0) {
+			if (
+				!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
+				this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0
+			) {
 				isInOrientation = true;
 			} else {
 				isInOrientation = false;
@@ -1357,7 +1372,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	protected onUserSignedOut() {
 		// sync auth state with app
-		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
+		if (
+			!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
+			this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0
+		) {
 			this.props.appApi.signOut();
 		} else {
 			this.props.appApi.syncAuthCookie();
@@ -1490,7 +1508,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.getDeviceInfo()
 			.then(
 				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
+					if (
+						!isAppleAppPlatform(deviceInfo.appPlatform) ||
+						deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0
+					) {
 						this.props.appApi.initialize(this.props.initialUserProfile?.userAccount);
 					} else {
 						this.props.appApi.syncAuthCookie(this.props.initialUserProfile?.userAccount);
