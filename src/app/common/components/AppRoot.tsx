@@ -61,6 +61,7 @@ import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
+import { AppPlatform } from '../../../common/AppPlatform';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -300,11 +301,28 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
-		if (provider === SubscriptionProvider.Stripe) {
-			this._openStripeSubscriptionPromptDialog(article);
-			return;
+		if (provider == null) {
+			switch (this.props.appApi.deviceInfo.appPlatform) {
+				case AppPlatform.Android:
+					throw new Error(`Subscriptions not implemented for platform: ${AppPlatform.Android}.`);
+				case AppPlatform.Ios:
+				case AppPlatform.MacOs:
+					provider = SubscriptionProvider.Apple;
+					break;
+				case AppPlatform.Linux:
+				case AppPlatform.Windows:
+					provider = SubscriptionProvider.Stripe;
+					break;
+			}
 		}
-		this._openAppStoreSubscriptionPromptDialog(article);
+		switch (provider) {
+			case SubscriptionProvider.Apple:
+				this._openAppStoreSubscriptionPromptDialog(article);
+				break;
+			case SubscriptionProvider.Stripe:
+				this._openStripeSubscriptionPromptDialog(article);
+				break;
+		}
 	};
 	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
 		.requestPayoutAccountLoginLink()
