@@ -40,9 +40,6 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		this.props.onViewHome();
 	};
-	// private readonly _openSignInPrompt = () => {
-	// 	this.props.onOpenSignInPrompt(analyticsAction);
-	// };
 
 	private _toggleMenu() {
 		this.setState((prevState) => ({menuOpen: !prevState.menuOpen}));

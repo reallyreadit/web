@@ -162,14 +162,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.Push
 		});
 	};
-
-	// private readonly _viewDownloadPage = () => {
-	// 	this.setScreenState({
-	// 		key: ScreenKey.Download,
-	// 		method: NavMethod.ReplaceAll
-	// 	});
-	// };
-
 	private readonly _viewFaq = () => {
 		this.setScreenState({
 			key: ScreenKey.Faq,
