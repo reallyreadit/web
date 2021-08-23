@@ -49,6 +49,7 @@ export function createQueryString(kvps: { [key: string]: string | Array<string> 
 }
 export const appPlatformQueryStringKey = 'appPlatform';
 export const appReferralQueryStringKey = 'appReferral';
+export const appVersion = 'appVersion';
 export const authServiceTokenQueryStringKey = 'authServiceToken';
 export const clientTypeQueryStringKey = 'clientType';
 export const deviceTypeQueryStringKey = 'deviceType';
@@ -63,6 +64,7 @@ export const referrerUrlQueryStringKey = 'referrerUrl';
 export const unroutableQueryStringKeys = [
 	appPlatformQueryStringKey,
 	appReferralQueryStringKey,
+	appVersion,
 	authServiceTokenQueryStringKey,
 	clientTypeQueryStringKey,
 	deviceTypeQueryStringKey,
