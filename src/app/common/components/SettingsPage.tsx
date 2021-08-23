@@ -32,7 +32,7 @@ import SubscriptionControl from './SettingsPage/SubscriptionControl';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import UserArticle from '../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
-import { DeviceType } from '../../../common/DeviceType';
+import { AppPlatform } from '../../../common/AppPlatform';
 import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDialog';
 import { ChangePaymentMethodDialog } from './SettingsPage/ChangePaymentMethodDialog';
@@ -48,7 +48,7 @@ import { TweetWebIntentParams } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountOnboardingLinkRequestResponseType } from '../../../common/models/subscriptions/PayoutAccount';
 
 interface Props {
-	deviceType: DeviceType,
+	appPlatform: AppPlatform,
 	displayTheme: DisplayTheme | null,
 	onCloseDialog: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
@@ -419,7 +419,7 @@ class SettingsPage extends React.PureComponent<
 							</div>
 							<div className="section">
 								<SubscriptionControl
-									deviceType={this.props.deviceType}
+									appPlatform={this.props.appPlatform}
 									onOpenChangePaymentMethodDialog={this._openChangePaymentMethodDialog}
 									onOpenPaymentConfirmationDialog={this.props.onOpenPaymentConfirmationDialog}
 									onOpenPriceChangeDialog={this.props.onOpenPriceChangeDialog}
@@ -578,7 +578,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
-				deviceType={deps.deviceType}
+				appPlatform={deps.appPlatform}
 				displayTheme={sharedState.displayTheme}
 				onCloseDialog={deps.onCloseDialog}
 				onChangeDisplayPreference={deps.onChangeDisplayPreference}

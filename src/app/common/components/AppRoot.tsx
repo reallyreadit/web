@@ -837,7 +837,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					deviceType: DeviceType.Ios,
+					appPlatform: this.props.appApi.deviceInfo.appPlatform,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,

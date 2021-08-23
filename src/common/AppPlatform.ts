@@ -5,3 +5,6 @@ export enum AppPlatform {
 	MacOs = 'macOS',
 	Windows = 'Windows'
 }
+export function isAppleAppPlatform(platform: AppPlatform) {
+	return platform === AppPlatform.Ios || platform === AppPlatform.MacOs;
+}

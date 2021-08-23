@@ -60,6 +60,7 @@ import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
+import { AppPlatform } from '../../../common/AppPlatform';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -738,7 +739,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					deviceType: this.props.deviceType,
+					/*
+						This isn't inaccurate but it doesn't matter since viewing settings in the browser is deprecated.
+						All that matters is that we pass a non-Apple platform so that App Store APIs are not called.
+					*/
+					appPlatform: AppPlatform.Windows,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,

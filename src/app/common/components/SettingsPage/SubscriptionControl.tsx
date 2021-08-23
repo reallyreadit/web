@@ -9,13 +9,13 @@ import { formatIsoDateAsUtc } from '../../../../common/format';
 import Icon from '../../../../common/components/Icon';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import UserArticle from '../../../../common/models/UserArticle';
-import { DeviceType } from '../../../../common/DeviceType';
+import { AppPlatform, isAppleAppPlatform } from '../../../../common/AppPlatform';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
 import Button from '../../../../common/components/Button';
 
 interface Props {
-	deviceType: DeviceType,
+	appPlatform: AppPlatform,
 	onOpenChangePaymentMethodDialog: () => void,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenPriceChangeDialog: () => void,
@@ -239,7 +239,7 @@ export default class SubscriptionControl extends React.Component<Props, State> {
 							<div className="message">Loading payment method...</div> :
 						<div className="message">Billed through Apple.</div>}
 					<div className="message">{renewalMessage}</div>
-					{this.props.status.provider === SubscriptionProvider.Stripe || this.props.deviceType === DeviceType.Ios ?
+					{this.props.status.provider === SubscriptionProvider.Stripe || isAppleAppPlatform(this.props.appPlatform) ?
 						<div className="actions">
 								<Link
 									onClick={this.props.onOpenPriceChangeDialog}
