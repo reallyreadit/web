@@ -1051,7 +1051,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						// open subscription dialog if query string key is present
 						const queryStringParams = parseQueryString(url.search);
 						if (subscribeQueryStringKey in queryStringParams && this.state.user) {
-							this._openAppStoreSubscriptionPromptDialog();
+							this._openSubscriptionPromptDialog();
 						}
 					} else {
 						// must be a redirect url or broken link
@@ -1063,7 +1063,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener(
 				'openSubscriptionPrompt',
 				() => {
-					this._openAppStoreSubscriptionPromptDialog();
+					this._openSubscriptionPromptDialog();
 				}
 			)
 			.addListener(
@@ -1532,7 +1532,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (subscribeQueryStringKey in queryStringParams && this.state.user) {
 			window.setTimeout(
 				() => {
-					this._openAppStoreSubscriptionPromptDialog();
+					this._openSubscriptionPromptDialog();
 				},
 				0
 			);
