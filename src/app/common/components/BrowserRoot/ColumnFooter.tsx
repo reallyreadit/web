@@ -62,8 +62,8 @@ export default class extends React.PureComponent<{
 					// },
 					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}><Icon name='phone'/>iPhone and iPad</Link>,
 					<Link key="mac" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}><Icon name='apple'/>Mac</Link>,
-					<Link key="windows" href="https://microsoft.com" onClick={navTo}><Icon name='windows'/>Windows</Link>,
-					<Link key="web-extensions" screen={ScreenKey.Download} onClick={navTo}><Icon name="internet" />Web Importer</Link>
+					<Link key="windows" href="https://static.readup.com/downloads/windows/latest" onClick={navTo}><Icon name='windows'/>Windows</Link>,
+					// <Link key="web-extensions" screen={ScreenKey.Download} onClick={navTo}><Icon name="internet" />Web Importer</Link>
 				]
 			},
 		]

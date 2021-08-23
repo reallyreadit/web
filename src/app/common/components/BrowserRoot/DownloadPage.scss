@@ -56,6 +56,13 @@
 				font-family: 'Museo Sans (700)';
 				margin-bottom: 8px;
 			}
+
+			&__android {
+				> .button_ovrlmi {
+					margin-top: 6px;
+					border: 1px solid #565656;
+				}
+			}
 		}
 	}
 
