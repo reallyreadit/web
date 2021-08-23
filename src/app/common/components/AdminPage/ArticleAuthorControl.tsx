@@ -4,7 +4,7 @@ import { Intent } from '../../../../common/components/Toaster';
 import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import { getPromiseErrorMessage } from '../../../../common/format';
 import { findRouteByKey } from '../../../../common/routing/Route';
-import routes from '../../../../common/routing/routes';
+import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 
 enum FormAction {
@@ -60,7 +60,7 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 							this.props.onShowToast('Invalid comments URL.', Intent.Danger);
 							return null;
 						}
-						articleSlug = params['sourceSlug'] + '_' + params['articleSlug'];
+						articleSlug = createArticleSlug(params);
 					} catch {
 						this.props.onShowToast('Invalid URL.', Intent.Danger);
 						return null;

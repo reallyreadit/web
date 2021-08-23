@@ -14,7 +14,7 @@ interface Props {
 	value: string
 }
 export default class HeaderSelector extends React.Component<Props> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'style'> = {
 		style: 'auto'
 	};
 	private readonly _change = (event: React.MouseEvent<HTMLButtonElement>) => {

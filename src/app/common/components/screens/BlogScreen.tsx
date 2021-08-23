@@ -17,11 +17,15 @@ import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import * as classNames from 'classnames';
+import {DeviceType} from '../../../../common/DeviceType';
+import { NavReference } from '../Root';
 
 export interface Props {
+	deviceType: DeviceType,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
+	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -140,8 +144,10 @@ export default class BlogScreen extends React.Component<Props, State> {
 											<li key={article.id}>
 												<ArticleDetails
 													article={article}
+													deviceType={this.props.deviceType}
 													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+													onNavTo={this.props.onNavTo}
 													onPost={this.props.onPostArticle}
 													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}

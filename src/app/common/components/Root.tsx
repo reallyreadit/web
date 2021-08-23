@@ -276,6 +276,23 @@ export default abstract class Root<
 			}
 		);
 	};
+	protected readonly _viewRead = (article: ReadArticleReference) => {
+		const
+			[sourceSlug, articleSlug] = article.slug.split('_'),
+			urlParams: { [key: string]: string } = {
+				['articleSlug']: articleSlug,
+				['sourceSlug']: sourceSlug
+			};
+		this.navTo(
+			{
+				key: ScreenKey.Read,
+				params: urlParams
+			},
+			{
+				method: NavMethod.Push
+			}
+		)
+	}
 	protected readonly _viewThread = (comment: Pick<CommentThread, 'articleSlug' | 'id'>) => {
 		this._viewComments(
 			{
@@ -1135,6 +1152,8 @@ export default abstract class Root<
 			user
 		});
 	}
+
+	protected abstract canRead(article: Pick<ReadArticleReference, 'slug'>): boolean;
 	protected abstract readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;

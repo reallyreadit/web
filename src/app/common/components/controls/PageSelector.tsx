@@ -8,7 +8,7 @@ interface Props {
 	disabled?: boolean
 }
 export default class PageSelector extends React.PureComponent<Props> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'disabled'> = {
 		disabled: false
 	};
 	private _updatePageNumber = (e: React.ChangeEvent<HTMLSelectElement>) => this.props.onChange(parseInt(e.currentTarget.value));

@@ -26,7 +26,7 @@ interface Props {
 	text?: string
 }
 export default class Button extends React.PureComponent<Props> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'align' | 'display' | 'hrefPreventDefault'> = {
 		align: 'left',
 		display: 'inline',
 		hrefPreventDefault: true

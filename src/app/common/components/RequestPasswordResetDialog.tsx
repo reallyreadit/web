@@ -15,7 +15,7 @@ export default class RequestPasswordResetDialog extends FieldsetDialog<void, Pro
 	email?: string,
 	emailError?: string
 }> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'autoFocus'> = {
 		autoFocus: true
 	};
 	private _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });

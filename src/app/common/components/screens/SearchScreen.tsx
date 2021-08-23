@@ -21,8 +21,10 @@ import ContentBox from '../../../../common/components/ContentBox';
 import ArticleLengthFilter from './SearchScreen/ArticleLengthFilter';
 import List from '../controls/List';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
+import {DeviceType} from '../../../../common/DeviceType';
 
 interface Props {
+	deviceType: DeviceType,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetSearchOptions: FetchFunction<SearchOptions>,
@@ -227,6 +229,7 @@ class SearchScreen extends React.Component<Props, State> {
 												<li key={article.id}>
 													<ArticleDetails
 														article={article}
+														deviceType={this.props.deviceType}
 														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onNavTo={this.props.onNavTo}
@@ -264,6 +267,7 @@ export default function createSearchScreenFactory<TScreenKey>(
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<SearchScreen
+				deviceType={services.deviceType}
 				onCopyTextToClipboard={services.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
 				onGetSearchOptions={services.onGetSearchOptions}

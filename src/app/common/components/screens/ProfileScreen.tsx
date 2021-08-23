@@ -349,6 +349,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 					<ArticleList
 						articles={this.state.articles}
 						emptyListMessage="No articles found."
+						deviceType={this.props.deviceType}
 						onChangeArticles={this._changeArticles}
 						onChangePageNumber={this._changeArticlesPageNumber}
 						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
@@ -370,6 +371,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 				return (
 					<PostList
 						addNewPosts={this.isOwnProfile()}
+						deviceType={this.props.deviceType}
 						emptyListMessage={
 							this.isOwnProfile() ?
 								'You haven\'t posted anything yet.' :

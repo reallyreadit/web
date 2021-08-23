@@ -4,7 +4,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import CommentThread from '../../../../common/models/CommentThread';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import { findRouteByLocation } from '../../../../common/routing/Route';
-import routes from '../../../../common/routing/routes';
+import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
@@ -28,7 +28,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
 	let result = {
-		slug: params['sourceSlug'] + '_' + params['articleSlug']
+		slug: createArticleSlug(params)
 	} as {
 		commentId?: string,
 		slug: string
@@ -103,6 +103,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 							<Panel className="main">
 								<ArticleDetails
 									article={this.props.article.value}
+									deviceType={this.props.deviceType}
 									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onNavTo={this.props.onNavTo}

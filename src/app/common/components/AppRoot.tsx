@@ -16,7 +16,7 @@ import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys, parseQueryString, subscribeQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
-import routes from '../../../common/routing/routes';
+import routes, { createArticleSlug } from '../../../common/routing/routes';
 import { findRouteByLocation } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
@@ -49,7 +49,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -61,6 +61,7 @@ import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
+import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 
 interface Props extends RootProps {
@@ -87,6 +88,19 @@ type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
 interface Events extends RootEvents {
 	'newStars': number,
 	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
+}
+function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPayment: boolean, article: Pick<ReadArticleReference, 'slug'>) {
+	if (!subscriptionStatus) {
+		return false;
+	}
+	return (
+		subscriptionStatus.isUserFreeForLife ||
+		(
+			(subscriptionStatus.type === SubscriptionStatusType.Active) &&
+			!isProcessingPayment
+		) ||
+		article.slug.split('_')[0] === 'blogreadupcom'
+	);
 }
 export default class extends Root<Props, State, SharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
@@ -621,6 +635,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
+					deviceType: DeviceType.Ios,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
@@ -664,9 +679,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Blog]: createBlogScreenFactory(
 				ScreenKey.Blog,
 				{
+					deviceType: DeviceType.Ios,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -708,6 +725,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				videoMode: VideoMode.Link
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
+				deviceType: DeviceType.Ios,
 				onClearAlerts: this._clearAlerts,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -726,6 +744,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(
 				ScreenKey.Notifications,
 				{
+					deviceType: DeviceType.Ios,
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -776,6 +795,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				deviceType: DeviceType.Ios,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -824,9 +844,21 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread
 			}),
+			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
+				deviceType: DeviceType.Ios,
+				onCanReadArticle: this.canRead.bind(this),
+				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onGetArticle: this.props.serverApi.getArticle,
+				onNavTo: this._navTo,
+				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+				onReadArticle: this._readArticle,
+				onSetScreenState: this._setScreenState
+			}),
 			[ScreenKey.Search]: createSearchScreenFactory(
 				ScreenKey.Search,
 				{
+					deviceType: DeviceType.Ios,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
@@ -1267,8 +1299,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
-			if (result.screenKey === ScreenKey.Read) {
-				this.props.appApi.readArticle({ slug: result.screenParams['sourceSlug'] + '_' + result.screenParams['articleSlug'] });
+			const slug = createArticleSlug(result.screenParams);
+			const readRef = { slug };
+			if (result.screenKey === ScreenKey.Read && this.canRead(readRef)) {
+				this.props.appApi.readArticle({ slug });
 			} else {
 				switch (options.method) {
 					case NavMethod.Push:
@@ -1332,11 +1366,28 @@ export default class extends Root<Props, State, SharedState, Events> {
 			screen = this.createScreen(ScreenKey.Home);
 		} else {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
-			if (route.screenKey === ScreenKey.Read) {
-				const pathParams = route.getPathParams(this._signInLocation.path);
-				screen = this.createScreen(ScreenKey.Comments, pathParams);
+			let
+				articlePathParams: { [key: string]: string } | undefined,
+				articleSlug: string | undefined;
+			// We need to use the stateless canRead function here because the new user state isn't
+			// set until this function returns.
+			if (
+				route.screenKey === ScreenKey.Read &&
+				canRead(
+					profile.subscriptionStatus,
+					this.state.isProcessingPayment,
+					{
+						slug: (
+							articleSlug = createArticleSlug(
+								articlePathParams = route.getPathParams(this._signInLocation.path)
+							)
+						)
+					}
+				)
+			) {
+				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
 				this.props.appApi.readArticle({
-					slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+					slug: articleSlug
 				});
 			} else {
 				screen = this
@@ -1387,19 +1438,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	}
+
+	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
+		return canRead(this.state.subscriptionStatus, this.state.isProcessingPayment, article);
+	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		ev?.preventDefault();
-		if (
-			!this.state.subscriptionStatus.isUserFreeForLife &&
-			(
-				this.state.subscriptionStatus.type !== SubscriptionStatusType.Active ||
-				this.state.isProcessingPayment
-			) &&
-			article.slug.split('_')[0] !== 'blogreadupcom'
-		) {
-			this._openSubscriptionPromptDialog(article);
-		} else {
+		if (this.canRead(article)) {
 			this.props.appApi.readArticle(article);
+		} else {
+			this._viewRead(article);
+			// this._openSubscriptionPromptDialog(article);
 		}
 	}
 	protected reloadWindow() {
@@ -1541,10 +1590,20 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
-		if (initialRoute.screenKey === ScreenKey.Read && this.props.initialUserProfile) {
-			const pathParams = initialRoute.getPathParams(this.props.initialLocation.path);
+		let articleSlug: string | undefined;
+		if (
+			initialRoute.screenKey === ScreenKey.Read &&
+			this.props.initialUserProfile &&
+			this.canRead({
+				slug: (
+					articleSlug = createArticleSlug(
+						initialRoute.getPathParams(this.props.initialLocation.path)
+					)
+				)
+			})
+		) {
 			this.props.appApi.readArticle({
-				slug: pathParams['sourceSlug'] + '_' + pathParams['articleSlug']
+				slug: articleSlug
 			});
 		}
 		// open subscription dialog if query string key is present

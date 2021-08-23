@@ -19,7 +19,7 @@ export default class SignInDialog extends FieldsetDialog<void, Props, Partial<St
 	password?: string,
 	passwordError?: string
 }> {
-	public static defaultProps: Partial<Props> = {
+	public static defaultProps: Pick<Props, 'autoFocus'> = {
 		autoFocus: true
 	};
 	private readonly _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });

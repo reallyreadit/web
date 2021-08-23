@@ -484,6 +484,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.AotdHistory]: createAotdHistoryScreenFactory(
 				ScreenKey.AotdHistory,
 				{
+					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
@@ -527,9 +528,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Blog]: createBlogScreenFactory(
 				ScreenKey.Blog,
 				{
+					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+					onNavTo: this._navTo,
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
@@ -605,6 +608,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(
 				ScreenKey.Notifications,
 				{
+					deviceType: this.props.deviceType,
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
 					onCopyTextToClipboard: this._clipboard.copyText,
@@ -655,6 +659,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				deviceType: this.props.deviceType,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -709,17 +714,20 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
 				onBeginOnboarding: this._beginOnboarding,
+				onCanReadArticle: this.canRead.bind(this),
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
 			[ScreenKey.Search]: createSearchScreenFactory(
 				ScreenKey.Search,
 				{
+					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
@@ -1267,55 +1275,58 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
-	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
+
+	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
 		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
+			[sourceSlug] = article.slug.split('_'),
 			isBlogPost = sourceSlug === 'blogreadupcom';
-		if (
-			this.state.user &&
-			!this.state.subscriptionStatus.isUserFreeForLife &&
-			this.state.subscriptionStatus.type !== SubscriptionStatusType.Active &&
-			!isBlogPost
-		) {
-			ev?.preventDefault();
-			this._openSubscriptionPromptDialog(article);
-			return;
-		}
-		if (
+		return (
+			isBlogPost ||
 			(
-				!this.state.user ||
-				!this.props.extensionApi.isInstalled
-			) &&
-			!isBlogPost
+				!!this.state.user &&
+				(
+					this.state.subscriptionStatus.type === SubscriptionStatusType.Active
+					||
+					this.state.subscriptionStatus.isUserFreeForLife
+				)
+			)
+		)
+	}
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
+		const [sourceSlug, articleSlug] = article.slug.split('_');
+		if (
+			this.canRead(article) &&
+			this.props.extensionApi.isInstalled
 		) {
+			if (
+				!localStorage.getItem('extensionReminderAcknowledged')
+			) {
+				ev?.preventDefault();
+				this._dialog.openDialog(
+					<ExtensionReminderDialog
+						deviceType={this.props.deviceType}
+						onCreateStaticContentUrl={this._createStaticContentUrl}
+						onSubmit={
+							() => {
+								localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
+								location.href = article.url;
+								return new Promise(
+									resolve => { }
+								);
+							}
+						}
+					/>
+				);
+			} else if (!ev) {
+				location.href = article.url;
+			}
+		} else {
 			ev?.preventDefault();
 			this.setScreenState({
 				key: ScreenKey.Read,
 				method: NavMethod.ReplaceAll,
 				urlParams: { sourceSlug, articleSlug }
 			});
-		} else if (
-			this.props.extensionApi.isInstalled &&
-			!localStorage.getItem('extensionReminderAcknowledged')
-		) {
-			ev?.preventDefault();
-			this._dialog.openDialog(
-				<ExtensionReminderDialog
-					deviceType={this.props.deviceType}
-					onCreateStaticContentUrl={this._createStaticContentUrl}
-					onSubmit={
-						() => {
-							localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
-							location.href = article.url;
-							return new Promise(
-								resolve => { }
-							);
-						}
-					}
-				/>
-			);
-		} else if (!ev) {
-			location.href = article.url;
 		}
 	}
 	protected reloadWindow() {
