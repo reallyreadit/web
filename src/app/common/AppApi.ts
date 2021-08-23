@@ -23,6 +23,8 @@ import { SubscriptionReceiptResponse } from '../../common/models/app/Subscriptio
 import { AppleSubscriptionValidationResponse } from '../../common/models/subscriptions/AppleSubscriptionValidation';
 import { ProblemDetails } from '../../common/ProblemDetails';
 import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
+import { AppPlatform } from '../../common/AppPlatform';
+import SemanticVersion from '../../common/SemanticVersion';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -39,6 +41,21 @@ export default abstract class extends EventEmitter<{
 	'openSubscriptionPrompt': void,
 	'subscriptionPurchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
 }> {
+	protected _deviceInfo: DeviceInfo;
+	constructor(
+		params: {
+			platform: AppPlatform
+		}
+	) {
+		super();
+		this._deviceInfo = {
+			appPlatform: params.platform,
+			appVersion: new SemanticVersion('0.0.0'),
+			installationId: null,
+			name: '',
+			token: null
+		};
+	}
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract getDeviceInfo(): Promise<DeviceInfo>;
 	public abstract initialize(user?: UserAccount): Promise<DeviceInfo>;
@@ -56,5 +73,7 @@ export default abstract class extends EventEmitter<{
 	public abstract signIn(user: UserAccount, eventType: SignInEventType): Promise<SignInEventResponse>;
 	public abstract signOut(): void;
 	public abstract syncAuthCookie(user?: UserAccount): void;
-	public abstract get deviceInfo(): DeviceInfo;
+	public get deviceInfo() {
+		return this._deviceInfo;
+	}
 }

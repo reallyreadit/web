@@ -22,7 +22,6 @@ import { AppPlatform } from '../../common/AppPlatform';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
-	private _deviceInfo: DeviceInfo;
 	private readonly _deviceInfoQueue: ((deviceInfo: DeviceInfo) => void)[] = [];
 	constructor(
 		params: {
@@ -30,14 +29,9 @@ export default class extends AppApi {
 			platform: AppPlatform
 		}
 	) {
-		super();
-		this._deviceInfo = {
-			appPlatform: params.platform,
-			appVersion: new SemanticVersion('0.0.0'),
-			installationId: null,
-			name: '',
-			token: null
-		};
+		super({
+			platform: params.platform
+		});
 		this._messagingContext = params.messagingContext;
 		params.messagingContext.addListener(message => {
 			switch (message.type) {
@@ -287,8 +281,5 @@ export default class extends AppApi {
 			type: 'syncAuthCookie',
 			data: user
 		});
-	}
-	public get deviceInfo() {
-		return this._deviceInfo;
 	}
 }

@@ -549,18 +549,21 @@ server.get<
 	};
 	switch (req.clientType) {
 		case ClientType.App:
+			const appPlatform = (req.query[appPlatformQueryStringKey] as AppPlatform) || AppPlatform.Ios;
 			rootElement = React.createElement(
 				AppRoot,
 				{
 					...rootProps,
-					appApi: new AppApi(),
+					appApi: new AppApi({
+						platform: appPlatform
+					}),
 					appReferral
 				}
 			);
 			initData = {
 				...commonInitData,
 				appReferral,
-				appPlatform: (req.query[appPlatformQueryStringKey] as AppPlatform) || AppPlatform.Ios,
+				appPlatform,
 				clientType: ClientType.App
 			};
 			break;
