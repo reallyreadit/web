@@ -15,7 +15,7 @@ import AppRoot from '../common/components/AppRoot';
 import CaptchaPlaceholder from './CaptchaPlaceholder';
 import BrowserRoot from '../common/components/BrowserRoot';
 import ClientType from '../common/ClientType';
-import { createQueryString, clientTypeQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey } from '../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, marketingScreenVariantQueryStringKey, unroutableQueryStringKeys, appReferralQueryStringKey, marketingVariantQueryStringKey, appPlatformQueryStringKey } from '../../common/routing/queryString';
 import { extensionVersionCookieKey, sessionIdCookieKey } from '../../common/cookies';
 import { findRouteByLocation, findRouteByKey } from '../../common/routing/Route';
 import BrowserApiPlaceholder from './BrowserApiPlaceholder';
@@ -37,6 +37,9 @@ import PackageVersionInfo from '../../common/PackageVersionInfo';
 import Lazy from '../../common/Lazy';
 import { Stripe } from '@stripe/stripe-js';
 import LinkType from '../../common/models/articles/LinkType';
+import InitData from '../common/InitData';
+import Exchange from '../common/serverApi/Exchange';
+import { AppPlatform } from '../../common/AppPlatform';
 
 // read configuration
 let
@@ -450,7 +453,15 @@ server.use((req, res, next) => {
 	}
 });
 // render the app
-server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, res) => {
+server.get<
+	{ },
+	any,
+	any,
+	{
+		[appPlatformQueryStringKey]?: string,
+		[appReferralQueryStringKey]?: string
+	}
+>('/*', (req, res) => {
 	// session id
 	if (!req.cookies[sessionIdCookieKey]) {
 		res.cookie(
@@ -521,8 +532,21 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
 	};
-	// create root element
+	// create root element and init data
 	let rootElement: React.ReactElement<any>;
+	let initData: InitData;
+	const commonInitData = {
+		apiServerEndpoint: config.apiServer,
+		deviceType,
+		exchanges: [] as Exchange[],
+		extensionVersion: extensionVersionString,
+		initialLocation: rootProps.initialLocation,
+		staticServerEndpoint: config.staticServer,
+		stripePublishableKey: config.stripePublishableKey,
+		userProfile: req.userProfile,
+		version: version.app,
+		webServerEndpoint: config.webServer
+	};
 	switch (req.clientType) {
 		case ClientType.App:
 			rootElement = React.createElement(
@@ -533,6 +557,12 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 					appReferral
 				}
 			);
+			initData = {
+				...commonInitData,
+				appReferral,
+				appPlatform: (req.query[appPlatformQueryStringKey] as AppPlatform) || AppPlatform.Ios,
+				clientType: ClientType.App
+			};
 			break;
 		case ClientType.Browser:
 			rootElement = React.createElement(
@@ -551,6 +581,11 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 					})
 				}
 			);
+			initData = {
+				...commonInitData,
+				clientType: ClientType.Browser,
+				extensionVersion: extensionVersionString
+			};
 			break;
 		default:
 			res.status(400).send('Invalid clientType');
@@ -583,18 +618,8 @@ server.get<{}, any, any, { [appReferralQueryStringKey]?: string }>('/*', (req, r
 			content,
 			chromeExtensionId: config.chromeExtensionId,
 			initData: {
-				apiServerEndpoint: config.apiServer,
-				appReferral,
-				clientType: req.clientType,
-				deviceType,
-				exchanges: req.api.exchanges,
-				extensionVersion: extensionVersionString,
-				initialLocation: rootProps.initialLocation,
-				staticServerEndpoint: config.staticServer,
-				stripePublishableKey: config.stripePublishableKey,
-				userProfile: req.userProfile,
-				version: version.app,
-				webServerEndpoint: config.webServer
+				...initData,
+				exchanges: req.api.exchanges
 			},
 			noIndex: (
 				req.matchedRoute.authLevel != null ||
