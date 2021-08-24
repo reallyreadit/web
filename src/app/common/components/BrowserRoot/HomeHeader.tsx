@@ -6,9 +6,10 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
-import { Screen }  from '../../../common/components/Root'
-import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
-import GetStartedButton from './GetStartedButton';
+import { NavOptions, NavReference, Screen }  from '../../../common/components/Root'
+import { DeviceType } from '../../../../common/DeviceType';
+// import GetStartedButton from './GetStartedButton';
+import Link from '../../../../common/components/Link';
 
 interface Props {
 	currentScreen: Screen,
@@ -16,12 +17,11 @@ interface Props {
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCreateStaticContentUrl: (path: string) => string,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenMenu: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onOpenSignInPrompt: (analyticsAction: string) => void,
-	onViewFaq: () => void,
 	onViewHome: () => void,
-	onViewMission: () => void,
 	onViewNotifications: () => void,
 	user: UserAccount | null,
 }
@@ -30,7 +30,7 @@ type State = {
 	menuOpen: boolean
 }
 
-const analyticsAction = 'Header';
+// const analyticsAction = 'Header';
 
 export default class HomeHeader extends React.PureComponent<Props, State> {
 	state: State = {
@@ -39,9 +39,6 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		this.props.onViewHome();
-	};
-	private readonly _openSignInPrompt = () => {
-		this.props.onOpenSignInPrompt(analyticsAction);
 	};
 
 	private _toggleMenu() {
@@ -74,12 +71,10 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 				{
 					screenKey: ScreenKey.Mission,
 					linkText: 'Our Mission',
-					navFunction: this.props.onViewMission
 				},
 				{
 					screenKey: ScreenKey.Faq,
 					linkText: 'FAQ',
-					navFunction: this.props.onViewFaq
 				}
 			];
 
@@ -123,32 +118,21 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 						</> :
 						<>
 							{menuLinks.map(link =>
-								<a
+								<Link
 									key={link.linkText}
+									screen={link.screenKey}
 									className={(this.props.currentScreen && this.props.currentScreen.key) === link.screenKey ? 'active' : ''}
-									onClick={this.pageNavigation.bind(this, link.navFunction)}
-								>{link.linkText}</a>)
+									onClick={(navRef: NavReference) => this.pageNavigation(this.props.onNavTo.bind(this, navRef))}
+								>
+									{link.linkText}
+								</Link>)
 							}
-							{!isMobileDevice(this.props.deviceType) ?
-								<Button
-									text="Log In"
+							<Button
+									text="Download App"
 									size="large"
-									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
-								/> :
-								null}
-							{this.props.deviceType !== DeviceType.Android ?
-								<GetStartedButton
-									analyticsAction={analyticsAction}
-									deviceType={this.props.deviceType}
-									iosPromptType="download"
-									location={this.props.currentScreen.location}
-									onBeginOnboarding={analyticsAction => this.pageNavigation(() => this.props.onBeginOnboarding(analyticsAction))}
-									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-									onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-									size="large"
-								/> :
-								null}
+									intent="loud"
+									onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({key: ScreenKey.Download}), ev)}
+								/>
 						</>}
 				</div>
 			</header>

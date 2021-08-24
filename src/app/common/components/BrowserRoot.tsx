@@ -9,6 +9,7 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
+import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
@@ -544,6 +545,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
 				}
+			),
+			[ScreenKey.Download]: createDownloadPageFactory(
+				ScreenKey.Download,
+				{ onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog, }
 			),
 			[ScreenKey.Blog]: createBlogScreenFactory(
 				ScreenKey.Blog,
@@ -1379,12 +1384,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onCreateStaticContentUrl={this._createStaticContentUrl}
 						onOpenMenu={this._openMenu}
 						onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
-						onViewMission={this._viewMission}
 						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
-						onViewFaq={this._viewFaq}
 						onViewNotifications={this._viewNotifications}
-						currentScreen={this.state.screens[0]}
+						onNavTo={this._navTo}
+						// navTo uses the Push navigation method, so the current screen is the last one
+						currentScreen={this.state.screens[this.state.screens.length - 1]}
 						user={this.state.user}
 					/> :
 					null}

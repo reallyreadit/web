@@ -4,6 +4,7 @@ enum ScreenKey {
 	Author,
 	Blog,
 	Comments,
+	Download,
 	EmailConfirmation,
 	EmailSubscriptions,
 	ExtensionRemoval,
