@@ -24,7 +24,6 @@ import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerAp
 import List from '../controls/List';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 // import Panel from './Panel';
-import GetStartedButton from './GetStartedButton';
 import HomePanel from './HomePanel';
 // import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ImageAndText from './ImageAndText';
@@ -32,10 +31,12 @@ import ImageAndText from './ImageAndText';
 import QuoteCard from './QuoteCard';
 import Button from '../../../../common/components/Button';
 import { PriceList } from './MarketingScreen/PriceList';
-import { RevenueMeter } from '../RevenueMeter';
+// import { RevenueMeter } from '../RevenueMeter';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 import { NavReference } from '../Root';
-import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
+// import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import {formatCurrency} from '../../../../common/format';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -76,21 +77,16 @@ export interface Quote {
 
 const prices = [
 	{
-		amount: 499,
-		title: 'Budget option.',
-		description: 'Individual Writer payouts will be small.'
+		amount: formatCurrency(0),
+		title: 'Lurker',
+		description: <><p>Find great reads</p><p>Read on the web</p></>
 	},
 	{
-		amount: 1499,
-		title: 'Recommended',
-		description: 'A meaningful investment in journalism.',
+		amount: `${formatCurrency(499)}/mo or more`,
+		title: 'Reader',
+		description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Watch <strong>90%</strong> of your money go to the writers &amp; publishers you read.</p></>,
 		selected: true
 	},
-	{
-		amount: 2499,
-		title: 'Super Reader!',
-		description: 'Bigger tips for the writers you read.'
-	}
 ];
 
 export default class MarketingScreen extends React.Component<
@@ -112,8 +108,6 @@ export default class MarketingScreen extends React.Component<
 	// };
 	// private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 	// private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
-	// 	event.preventDefault();
-	// 	this._beginClosingMenu();
 	// 	this.props.onViewProfile('bill');
 	// };
 	// private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -148,36 +142,57 @@ export default class MarketingScreen extends React.Component<
 		// const marketingVariant = marketingVariants[0];
 		const valuePoints = [
 			{
-				heading: "Read anything you want.",
-				paragraph: "Easily import articles from your favorite publishers and blogs. Or browse Readup's collection of top-quality articles.",
-				imageName: "read-anything.png",
-				imageAlt: "Import from any publication"
-			},
-			{
-				heading: "Reading perfected.",
-				paragraph: "Readup's iPhone app and browser extensions offer immersive, 100% distraction-free reading. No time to finish? Readup bookmarks everything, automatically. ",
-				imageName: "reading-perfected.png",
-				imageAlt: "Reading view without clutter or distractions"
-			},
-			{
-				heading: "Algorithms you can trust",
-				paragraph: "Readup doesn't have likes or upvotes. Instead, Readers \"vote\" with their time and attention. All algorithms are fully transparent and Reader privacy is always respected.",
-				imageName: "good-algorithms.png",
+				heading: "Kill paywalls, kill ads 🔫",
+				paragraph: "Get in a reading flow state. Readup removes ads, paywalls and other distractions.",
+				imageName: "kill-ads-3.0.png",
 				imageAlt: "Transparent recommendation mechanism"
 			},
 			{
-				heading: "Civil discourse. Finally.",
-				paragraph: "On Readup, it's impossible for anybody to comment on any article that they haven't fully read. Readup is troll-free, non-toxic, and non-addictive.",
-				imageName: "civil-discourse.png",
-				imageAlt: "You must read the article before you can post or reply."
+				heading: "The best articles",
+				paragraph: "Enjoy articles from top publishers, newspapers and bloggers, curated by committed readers.",
+				imageName: "best-articles-3.0.png",
+				imageAlt: "The best articles from the web"
 			},
 			{
-				heading: "A brighter future for writers",
-				paragraph: "You pay a monthly subscription to read on Readup. Readup keeps 5% and distributes the rest to the writers you read. Everything is transparent, ethical, and humane.",
-				imageName: "watch-money.png",
+				heading: "Import from anywhere, read anywhere.",
+				paragraph: "Import on your laptop at work, read on your phone in the sofa. No time to finish? Readup bookmarks everything, automatically.",
+				imageName: "import-anywhere-3.0.png",
+				imageAlt: "Import any where, read on your mobile phone or computer"
+			},
+			{
+				heading: "❤️ Really support writers & publishers",
+				paragraph: "The world’s first reading app that transparently compensates writers and publishers across the web.",
+				imageName: "watch-money-3.0.png",
 				imageAlt: "Readup distributes your money directly to writers"
 			}
 		];
+
+		const supportPoints = [
+			{
+				heading: "A vibrant community",
+				paragraph: "Read comments, follow friends, connect with interesting readers and writers. Learn together and see different perspectives.",
+				imageName: "vibrant-community-3.0.png",
+				imageAlt: "Import from any publication"
+			},
+			{
+				heading: "Algorithms you can trust",
+				paragraph: "Readup doesn't put you in an filter bubble. Article curation is universal, everyone sees the same great articles.",
+				imageName: "good-algorithms-3.0.png",
+				imageAlt: "Reading view without clutter or distractions"
+			},
+			{
+				heading: "Everyone's verified",
+				paragraph: "On Readup, all commenters are verified to have read the article. Expect inspiration, respect, and compassion.",
+				imageName: "civilized-discussion-3.0.png",
+				imageAlt: "Transparent recommendation mechanism"
+			},
+			{
+				heading: "Reading statistics",
+				paragraph: "Get a sense of how much you're reading, to the minute. Participate in a friendly reading competition in the leaderboards.",
+				imageName: "statistics-3.0.png",
+				imageAlt: "Transparent recommendation mechanism"
+			},
+		]
 
 		/*const howItWorksDesktop = [
 			{
@@ -202,18 +217,18 @@ export default class MarketingScreen extends React.Component<
 
 		const quotes: Quote[] = [
 			{
-				quote: "There is something inherently decent and civil about reading on Readup. It will be an important experiment to see if it can stay a healthy community.",
-				reader: "Plum",
-				sourceSlug: 'getrevueco',
-				articleSlug: '-trump-ban-referred-readups-reluctance-and-taking-down-tiktok',
-				commentId: 'DBvX0D'
-			},
-			{
 				quote: "My best online reading experiences have happened here.",
 				reader: "EZ1969",
 				sourceSlug: 'blogreadupcom',
 				articleSlug: 'the-readup-manifesto',
 				commentId: 'Vy6xgz'
+			},
+			{
+				quote: "I used to have several magazine subscriptions and now I have all of it at Readup. ",
+				reader: "Pegeen",
+				sourceSlug: 'organizer-sandbox',
+				articleSlug: '7-overlooked-signs-youre-living-an-extraordinary-life',
+				commentId: 'Vy6Onz'
 			},
 			{
 				quote: "I’m so grateful to have Readup in my life.",
@@ -223,11 +238,25 @@ export default class MarketingScreen extends React.Component<
 				commentId: 'V6Qbl5'
 			},
 			{
+				quote: "Readup has fundamentally changed the way I read online.",
+				reader: "bartadamley",
+				sourceSlug: 'ribbonfarm',
+				articleSlug: 'a-text-renaissance',
+				commentId: '54vELz'
+			},
+			{
 				quote: "Readup gave me my brain back!",
 				reader: "Karenz",
 				sourceSlug: 'the-new-york-review-of-books',
 				articleSlug: 'how-the-awful-stuff-won',
 				commentId: 'VXwN75'
+			},
+			{
+				quote: "Love Readup and love recommending it to my friends and family.",
+				reader: "skrt",
+				sourceSlug: 'blogreadupcom',
+				articleSlug: '2020---the-readup-year-in-review',
+				commentId: 'zjy4mV'
 			},
 			{
 				quote: "It’s fascinating to see (and super exciting to be part of) Readup’s growth. Here’s to so much more 🥂❤️✨",
@@ -244,18 +273,11 @@ export default class MarketingScreen extends React.Component<
 				commentId: 'DBvMoD'
 			},
 			{
-				quote: "Readup has fundamentally changed the way I read online.",
-				reader: "bartadamley",
-				sourceSlug: 'ribbonfarm',
-				articleSlug: 'a-text-renaissance',
-				commentId: '54vELz'
-			},
-			{
-				quote: "I used to have several magazine subscriptions and now I have all of it at Readup. ",
-				reader: "Pegeen",
-				sourceSlug: 'organizer-sandbox',
-				articleSlug: '7-overlooked-signs-youre-living-an-extraordinary-life',
-				commentId: 'Vy6Onz'
+				quote: "There is something inherently decent and civil about reading on Readup. It will be an important experiment to see if it can stay a healthy community.",
+				reader: "Plum",
+				sourceSlug: 'getrevueco',
+				articleSlug: '-trump-ban-referred-readups-reluctance-and-taking-down-tiktok',
+				commentId: 'DBvX0D'
 			},
 			{
 				quote: "I’m a believer in this project and eager to see what the market will say.",
@@ -263,13 +285,6 @@ export default class MarketingScreen extends React.Component<
 				sourceSlug: 'blogreadupcom',
 				articleSlug: 'check-out-the-new-readup-homepage',
 				commentId: 'zvgpvD'
-			},
-			{
-				quote: "Love Readup and love recommending it to my friends and family.",
-				reader: "skrt",
-				sourceSlug: 'blogreadupcom',
-				articleSlug: '2020---the-readup-year-in-review',
-				commentId: 'zjy4mV'
 			}
 		];
 
@@ -277,28 +292,19 @@ export default class MarketingScreen extends React.Component<
 			<div className="marketing-screen_n5a6wc">
 				<HomePanel className="home-hero-image">
 					<div className="home-hero-image__intro-text">
-						<h1 className="heading-regular">The internet broke reading.<br />We fixed it.</h1>
-						<p>Readup is an article-based social reading network.<br />Find, read and share the best articles and stories online.</p>
-						<GetStartedButton
-							analyticsAction="HomeScreenHeader"
-							deviceType={this.props.deviceType}
-							location={this.props.location}
-							onBeginOnboarding={this.props.onBeginOnboarding}
-							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+						<h1 className="heading-regular">The world's best reading app.</h1>
+						<p>The internet broke reading. We fixed it.</p>
+						<Button
+							hrefPreventDefault={false}
+							text="Download App"
+							size="large"
+							intent="loud"
+							onClick={() => this.props.onNavTo({key: ScreenKey.Download})}
 						/>
 					</div>
 					<img className="home-hero-image__image" src={this.props.onCreateStaticContentUrl('/app/images/home/readup-hero.png')} alt="A woman and man sit on a bench under a tree.
 							The woman enjoys reading a long article on her phone, the man is scrolling through social media feeds."/>
 				</HomePanel>
-				{/* <HomeHero
-					title={<>The internet broke reading.<br />We fixed it.</>}
-					description={<>Readup makes online reading more peaceful and focused.</>}
-					actionButton={
-
-					}
-				/> */}
 				<HomePanel
 					data-nosnippet
 				>
@@ -353,17 +359,20 @@ export default class MarketingScreen extends React.Component<
 					data-nosnippet
 					className="pricing-panel"
 				>
-					<h2 className="heading-regular">Pricing: Pay what you want</h2>
-					<p className="home-section-intro">
-						You can pay any amount you want to read on Readup.<br />
-						<strong>All Readers at all levels get full access to all features.</strong>
-					</p>
-					<p className="home-section-intro">
-						Readup takes a small cut (5%) of your payment and distributes the rest to the writers you read -- transparently, down to the penny.
-					</p>
+					<h2 className="heading-regular">Pick your price</h2>
 					<PriceList prices={prices} />
+				<div className="download-section">
+					<p className="download-section__details"><strong>Download the app to get started</strong><br/>Available on iPhone, iPad, Mac, Windows.<br/>Android coming soon.</p>
+					<Button
+							hrefPreventDefault={false}
+							text="Download App"
+							size="large"
+							intent="loud"
+							onClick={() => this.props.onNavTo({key: ScreenKey.Download})}
+					/>
+				</div>
 				</HomePanel>
-				{this.props.revenueReport.value?.report.totalRevenue > 0 ?
+				{/* {this.props.revenueReport.value?.report.totalRevenue > 0 ?
 					<HomePanel
 						data-nosnippet
 						className="revenue-panel"
@@ -373,22 +382,23 @@ export default class MarketingScreen extends React.Component<
 							report={this.props.revenueReport}
 						/>
 					</HomePanel> :
-					null}
-				<HomePanel
+					null} */}
+				{/* <HomePanel
 					data-nosnippet
 					className="how-it-works"
 				>
 					<h2 className="heading-regular">How it works</h2>
 					<p className="home-section-intro">Watch our CEO give a 3-minute demo of Readup.</p>
 					<HowItWorksVideo mode={VideoMode.Embed} />
-				</HomePanel>
+				</HomePanel> */}
 				<HomePanel
 					data-nosnippet
 					className="quote-panel"
 				>
-					<h2 className="heading-regular">What our Readers say</h2>
-					<p className="home-section-intro">We're proud to improve the lives of our Readers on a daily basis.<br/>
-						Check out these spontaneous testimonials from real humans beings.</p>
+					<h2 className="heading-regular">What our readers say</h2>
+					<p className="home-section-intro">We're proud to improve the lives of our readers on a daily basis.<br/>
+						{/* Check out these spontaneous testimonials from real humans beings. */}
+						</p>
 					<div className="quote-grid">
 						{quotes.map(quote =>
 							<QuoteCard
@@ -397,6 +407,33 @@ export default class MarketingScreen extends React.Component<
 								quote={quote} />
 						)}
 					</div>
+				</HomePanel>
+				<HomePanel
+					data-nosnippet
+				>
+					<h2 className="heading-regular">And there's more!</h2>
+					{supportPoints.map((pointData, i) =>
+					<ImageAndText
+						{...pointData}
+						key={pointData.imageName}
+						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+						imageRight={!(i % 2 == 0)}
+						type="contained" />) }
+				</HomePanel>
+				<HomePanel
+					data-nosnippet
+					className="closing-quote-panel"
+				>
+					{/* <span className="preheading">Remember</span> */}
+					<cite className="closing-quote"><p>We're on a mission to fix digital reading.</p></cite>
+					<Button
+						className="mission-button"
+						iconRight="chevron-right"
+						intent="normal"
+						onClick={this.props.onViewMission}
+						style="normal"
+						text="Learn more about our mission &amp; story"
+						/>
 				</HomePanel>
 				<HomePanel
 					className="blog"
@@ -439,21 +476,6 @@ export default class MarketingScreen extends React.Component<
 							text="See more articles"
 							/>
 						</div>
-				</HomePanel>
-				<HomePanel
-					data-nosnippet
-					className="closing-quote-panel"
-				>
-					{/* <span className="preheading">Remember</span> */}
-					<cite className="closing-quote"><p>We're on a mission to fix digital reading.</p></cite>
-					<Button
-						className="mission-button"
-						iconRight="chevron-right"
-						intent="normal"
-						onClick={this.props.onViewMission}
-						style="normal"
-						text="Learn more about our mission &amp; story"
-						/>
 				</HomePanel>
 				{/* <Panel className="header">
 					<h1>{marketingVariant.headline}</h1>

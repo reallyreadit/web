@@ -8,12 +8,23 @@
 }
 .price-list_eorvmi > .price-list-item_7j8olx {
 	margin: 0 2%;
+	// width: 50%;
 }
+
+// lurker
 .price-list_eorvmi > .price-list-item_7j8olx:first-child {
 	margin-left: 0;
+	width: 40%;
+	> .content-box_kkp9lc {
+		background-color: transparent;
+		> .title {
+			font-family: "Museo Sans (500)";
+		}
+	}
 }
 .price-list_eorvmi > .price-list-item_7j8olx:last-child {
 	margin-right: 0;
+	flex-grow: 1;
 }
 
 @media (max-width: 499px) {

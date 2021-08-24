@@ -63,6 +63,24 @@
 	font-size: 1.15em;
 }
 
+.marketing-screen_n5a6wc {
+	strong {
+		font-family: "Museo Sans (700)";
+	}
+
+	.download-section {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 2em 0;
+
+		&__details {
+			margin-right: 1em;
+		}
+	}
+}
+
 // styles for the quotes flex grid
 .marketing-screen_n5a6wc  {
 
@@ -109,7 +127,8 @@
 			margin: 14px 0;
 			min-height: 80px;
 			box-sizing: border-box;
-			max-width: 600px;
+			max-width: 450px;
+			max-height: 230px;
 
 			&__inner {
 				margin: auto;
@@ -122,7 +141,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			flex-direction: column;
-			height: 960px;
+			height: 520px;
 
 			overflow-x: scroll;
 			$fade-perc: 5%;
