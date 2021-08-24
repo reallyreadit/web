@@ -24,6 +24,7 @@ import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -47,7 +48,6 @@ export interface Props {
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
@@ -61,6 +61,7 @@ export interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
@@ -104,13 +105,13 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 								<ArticleDetails
 									article={this.props.article.value}
 									deviceType={this.props.deviceType}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onNavTo={this.props.onNavTo}
 									onRateArticle={this.props.onRateArticle}
 									onPost={this.props.onPostArticle}
 									onRead={this.props.onReadArticle}
 									onShare={this.props.onShare}
+									onShareViaChannel={this.props.onShareViaChannel}
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this._noop}
 									onViewProfile={this.props.onViewProfile}
@@ -122,7 +123,6 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									highlightedCommentId={this.props.highlightedCommentId}
 									noCommentsMessage="Be the first to post a comment on this article."
 									onCloseDialog={this.props.onCloseDialog}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onDeleteComment={this.props.onDeleteComment}
 									onNavTo={this.props.onNavTo}
@@ -131,6 +131,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									onPostCommentAddendum={this.props.onPostCommentAddendum}
 									onPostCommentRevision={this.props.onPostCommentRevision}
 									onShare={this.props.onShare}
+									onShareViaChannel={this.props.onShareViaChannel}
 									onViewProfile={this.props.onViewProfile}
 									user={this.props.user}
 								/>

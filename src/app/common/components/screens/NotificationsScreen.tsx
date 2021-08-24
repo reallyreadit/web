@@ -28,12 +28,12 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import { Screen, SharedState } from '../Root';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import {DeviceType} from '../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
 	deviceType: DeviceType,
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetNotificationPosts: FetchFunctionWithParams<NotificationPostsQuery, PageResult<Post>>,
 	onGetReplyPosts: FetchFunctionWithParams<ReplyPostsQuery, PageResult<Post>>,
@@ -44,6 +44,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -244,7 +245,6 @@ class NotificationsScreen extends React.Component<Props, State> {
 													<PostDetails
 														deviceType={this.props.deviceType}
 														onCloseDialog={this.props.onCloseDialog}
-														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onNavTo={this.props.onNavTo}
 														onOpenDialog={this.props.onOpenDialog}
@@ -252,6 +252,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 														onRead={this.props.onReadArticle}
 														onPost={this.props.onPostArticle}
 														onShare={this.props.onShare}
+														onShareViaChannel={this.props.onShareViaChannel}
 														onToggleStar={this.props.onToggleArticleStar}
 														onViewComments={this.props.onViewComments}
 														onViewProfile={this.props.onViewProfile}
@@ -300,7 +301,6 @@ export default function createNotificationsScreenFactory<TScreenKey>(
 				deviceType={services.deviceType}
 				onClearAlerts={services.onClearAlerts}
 				onCloseDialog={services.onCloseDialog}
-				onCopyTextToClipboard={services.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
 				onGetNotificationPosts={services.onGetNotificationPosts}
 				onGetReplyPosts={services.onGetReplyPosts}
@@ -311,6 +311,7 @@ export default function createNotificationsScreenFactory<TScreenKey>(
 				onReadArticle={services.onReadArticle}
 				onRegisterArticleChangeHandler={services.onRegisterArticleChangeHandler}
 				onShare={services.onShare}
+				onShareViaChannel={services.onShareViaChannel}
 				onToggleArticleStar={services.onToggleArticleStar}
 				onViewComments={services.onViewComments}
 				onViewProfile={services.onViewProfile}

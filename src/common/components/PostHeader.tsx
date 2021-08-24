@@ -1,6 +1,6 @@
 import * as React from 'react';
 import LeaderboardBadge from '../models/LeaderboardBadge';
-import ShareData from '../sharing/ShareData';
+import ShareData, { ShareChannelData } from '../sharing/ShareData';
 import ShareResponse from '../sharing/ShareResponse';
 import LeaderboardBadges from './LeaderboardBadges';
 import { format } from 'timeago.js';
@@ -17,10 +17,10 @@ export default (
 		leaderboardBadge: LeaderboardBadge,
 		isAuthor?: boolean,
 		date: string
-		onCopyTextToClipboard?: (text: string, successMessage: string) => void,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onGetShareData?: () => ShareData,
 		onShare?: (data: ShareEvent) => ShareResponse,
+		onShareViaChannel?: (data: ShareChannelData) => void,
 		onViewProfile: (userName: string) => void,
 		user?: UserAccount
 	}
@@ -40,15 +40,15 @@ export default (
 		<span className="age">{format(props.date.replace(/([^Z])$/, '$1Z'))}</span>
 		{(
 			props.userName &&
-			props.onCopyTextToClipboard &&
 			props.onGetShareData &&
-			props.onShare
+			props.onShare &&
+			props.onShareViaChannel
 		) ?
 			<ShareControl
 				menuPosition={MenuPosition.RightMiddle}
-				onCopyTextToClipboard={props.onCopyTextToClipboard}
 				onGetData={props.onGetShareData}
 				onShare={props.onShare}
+				onShareViaChannel={props.onShareViaChannel}
 			>
 				<Icon
 					display="block"

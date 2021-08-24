@@ -33,8 +33,15 @@ import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleI
 import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
 import ShareResponse from '../../../common/sharing/ShareResponse';
 import {DeviceType} from '../../../common/DeviceType';
+import { ShareChannelData } from '../../../common/sharing/ShareData';
+import ClipboardService from '../../../common/services/ClipboardService';
+import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
+import { createQueryString } from '../../../common/routing/queryString';
+import { createTweetWebIntentUrl } from '../../../common/sharing/twitter';
+import { isAppleAppPlatform, AppPlatform } from '../../../common/AppPlatform';
 
 export interface Props extends DialogServiceState {
+	appPlatform: AppPlatform,
 	article: Fetchable<UserArticle>,
 	comments: Fetchable<CommentThread[]> | null,
 	deviceType: DeviceType,
@@ -65,9 +72,11 @@ export default class App extends React.Component<
 	};
 
 	// clipboard
-	private readonly _copyTextToClipboard = () => {
-		// we don't need this since we're using native sharing
-	};
+	protected readonly _clipboard = new ClipboardService(
+		(content, intent) => {
+			this._toaster.addToast(content, intent);
+		}
+	);
 
 	// dialogs
 	protected readonly _openPostDialog = (article: UserArticle) => {
@@ -97,14 +106,44 @@ export default class App extends React.Component<
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
 
 	// sharing
+	private readonly _handleShareChannelRequest = (data: ShareChannelData) => {
+		switch (data.channel) {
+			case ShareChannel.Clipboard:
+				this._clipboard.copyText(data.text, 'Link copied to clipboard');
+				break;
+			case ShareChannel.Email:
+				this.props.onNavTo(`mailto:${createQueryString({
+					'body': data.body,
+					'subject': data.subject
+				})}`);
+				break;
+			case ShareChannel.Twitter:
+				this.props.onNavTo(
+					createTweetWebIntentUrl(data)
+				);
+				break;
+		}
+	};
 	private readonly _handleShareRequest = (data: ShareEvent) => {
-		this.props.onShare({
-			...data,
-			selection: createRelativeShareSelection(data.selection, window)
-		});
-		return {
-			channels: [] as ShareChannel[]
-		};
+		if (
+			isAppleAppPlatform(this.props.appPlatform)
+		) {
+			this.props.onShare({
+				...data,
+				selection: createRelativeShareSelection(data.selection, window)
+			});
+			return {
+				channels: [] as ShareChannel[]
+			};
+		} else {
+			return {
+				channels: [
+					ShareChannel.Clipboard,
+					ShareChannel.Email,
+					ShareChannel.Twitter
+				]
+			};
+		}
 	};
 
 	// toasts
@@ -151,7 +190,6 @@ export default class App extends React.Component<
 							comments={this.props.comments.value}
 							noCommentsMessage="No comments on this article yet."
 							onCloseDialog={this.props.dialogService.closeDialog}
-							onCopyTextToClipboard={this._copyTextToClipboard}
 							onCreateAbsoluteUrl={this._createAbsoluteUrl}
 							onDeleteComment={this.props.onDeleteComment}
 							onNavTo={this.props.onNavTo}
@@ -160,6 +198,7 @@ export default class App extends React.Component<
 							onPostCommentAddendum={this.props.onPostCommentAddendum}
 							onPostCommentRevision={this.props.onPostCommentRevision}
 							onShare={this._handleShareRequest}
+							onShareViaChannel={this._handleShareChannelRequest}
 							onViewProfile={this._viewProfile}
 							user={this.props.user}
 						/> :
@@ -171,11 +210,11 @@ export default class App extends React.Component<
 						deviceType={this.props.deviceType}
 						isHidden={this.props.isHeaderHidden}
 						onNavBack={this.props.onNavBack}
-						onCopyTextToClipboard={this._copyTextToClipboard}
 						onCreateAbsoluteUrl={this._createAbsoluteUrl}
 						onChangeDisplayPreference={this._changeDisplayPreference}
 						onReportArticleIssue={this._reportArticleIssue}
 						onShare={this._handleShareRequest}
+						onShareViaChannel={this._handleShareChannelRequest}
 					/>
 				</div>
 				<DialogManager
@@ -188,6 +227,7 @@ export default class App extends React.Component<
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
 				/>
+				<ClipboardTextInput onSetRef={this._clipboard.setTextInputRef} />
 			</div>
 		);
 	}

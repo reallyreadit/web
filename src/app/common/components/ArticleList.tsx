@@ -15,6 +15,7 @@ import ArticleDetails from '../../../common/components/ArticleDetails';
 import { ShareEvent } from '../../../common/sharing/ShareEvent';
 import { NavReference } from './Root';
 import {DeviceType} from '../../../common/DeviceType';
+import { ShareChannelData } from '../../../common/sharing/ShareData';
 
 interface Props {
 	articles: Fetchable<PageResult<UserArticle>>,
@@ -22,7 +23,6 @@ interface Props {
 	deviceType: DeviceType,
 	onChangeArticles: (articles: Fetchable<PageResult<UserArticle>>) => void,
 	onChangePageNumber: (pageNumber: number) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
@@ -30,6 +30,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -100,13 +101,13 @@ export class ArticleList extends React.Component<Props> {
 								<ArticleDetails
 									article={article}
 									deviceType={this.props.deviceType}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onNavTo={this.props.onNavTo}
 									onPost={this.props.onPostArticle}
 									onRateArticle={this.props.onRateArticle}
 									onRead={this.props.onReadArticle}
 									onShare={this.props.onShare}
+									onShareViaChannel={this.props.onShareViaChannel}
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 									onViewProfile={this.props.onViewProfile}

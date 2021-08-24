@@ -13,13 +13,13 @@ import classNames from 'classnames';
 import Rating from '../models/Rating';
 import AotdMetadata from './AotdMetadata';
 import {DeviceType} from '../DeviceType';
+import { ShareChannelData } from '../sharing/ShareData';
 
 interface Props {
 	deviceType: DeviceType,
 	highlightedCommentId?: string,
 	highlightedPostId?: string,
 	onCloseDialog: () => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -27,6 +27,7 @@ interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -57,13 +58,13 @@ export default class PostDetails extends React.Component<Props> {
 					<ArticleDetails
 						article={this.props.post.article}
 						deviceType={this.props.deviceType}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onNavTo={this.props.onNavTo}
 						onRateArticle={this.props.onRateArticle}
 						onPost={this.props.onPost}
 						onRead={this.props.onRead}
 						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
 						showAotdMetadata={false}
 						onToggleStar={this.props.onToggleStar}
 						onViewComments={this.props.onViewComments}
@@ -74,11 +75,11 @@ export default class PostDetails extends React.Component<Props> {
 						<CommentDetails
 							comment={createCommentThread(this.props.post)}
 							onCloseDialog={this.props.onCloseDialog}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onNavTo={this.props.onNavTo}
 							onOpenDialog={this.props.onOpenDialog}
 							onShare={this.props.onShare}
+							onShareViaChannel={this.props.onShareViaChannel}
 							onViewProfile={this.props.onViewProfile}
 							onViewThread={this.props.onViewThread}
 							user={this.props.user}

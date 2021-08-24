@@ -12,6 +12,7 @@ import Rating from '../../../../../common/models/Rating';
 import AotdView, { Sort } from './AotdView';
 import { NavReference } from '../../Root';
 import {DeviceType} from '../../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../../common/sharing/ShareData';
 
 interface State {
 	communityReads: Fetchable<CommunityReads>,
@@ -63,13 +64,13 @@ export default class extends React.PureComponent<{
 	maxLength: number | null,
 	minLength: number | null,
 	onChangeSort: (sort: Sort) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
@@ -87,13 +88,13 @@ export default class extends React.PureComponent<{
 					deviceType={this.props.deviceType}
 					isLoading={this.props.isLoading}
 					onChangeSort={this.props.onChangeSort}
-					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 					onNavTo={this.props.onNavTo}
 					onPostArticle={this.props.onPostArticle}
 					onRateArticle={this.props.onRateArticle}
 					onReadArticle={this.props.onReadArticle}
 					onShare={this.props.onShare}
+					onShareViaChannel={this.props.onShareViaChannel}
 					onToggleArticleStar={this.props.onToggleArticleStar}
 					onViewAotdHistory={this.props.onViewAotdHistory}
 					onViewComments={this.props.onViewComments}

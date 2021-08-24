@@ -32,6 +32,7 @@ import { variants as marketingVariants } from '../../marketingTesting';
 import { formatCurrency } from '../../../../common/format';
 import Link from '../../../../common/components/Link';
 import Icon from '../../../../common/components/Icon';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
 	authorSlug: string,
@@ -39,7 +40,6 @@ interface Props {
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
@@ -50,6 +50,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string, options?: NavOptions) => void,
@@ -236,13 +237,13 @@ class AuthorScreen extends React.Component<Props, State> {
 																<ArticleDetails
 																	article={article}
 																	deviceType={this.props.deviceType}
-																	onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 																	onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 																	onNavTo={this.props.onNavTo}
 																	onPost={this.props.onPostArticle}
 																	onRateArticle={this.props.onRateArticle}
 																	onRead={this.props.onReadArticle}
 																	onShare={this.props.onShare}
+																	onShareViaChannel={this.props.onShareViaChannel}
 																	onToggleStar={this.props.onToggleArticleStar}
 																	onViewComments={this.props.onViewComments}
 																	onViewProfile={this.props.onViewProfile}
@@ -325,7 +326,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				location={state.location}
 				onBeginOnboarding={deps.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={deps.onCopyAppReferrerTextToClipboard}
-				onCopyTextToClipboard={deps.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetAuthorArticles={deps.onGetAuthorArticles}
@@ -336,6 +336,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: D
 				onReadArticle={deps.onReadArticle}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
 				onShare={deps.onShare}
+				onShareViaChannel={deps.onShareViaChannel}
 				onToggleArticleStar={deps.onToggleArticleStar}
 				onViewComments={deps.onViewComments}
 				onViewProfile={deps.onViewProfile}

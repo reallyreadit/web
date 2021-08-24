@@ -13,18 +13,19 @@ import {DeviceType} from '../DeviceType';
 import getShareData from '../sharing/getShareData';
 import {ShareEvent} from '../sharing/ShareEvent';
 import ShareResponse from '../sharing/ShareResponse';
+import { ShareChannelData } from '../sharing/ShareData';
 
 export interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
 	displayPreference: DisplayPreference | null,
 	isHidden: boolean,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavBack?: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
-	onShare: (data: ShareEvent) => ShareResponse
+	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	showProgressBar?: boolean
 }
 export default class ReaderHeader extends React.Component<Props> {
@@ -57,9 +58,9 @@ export default class ReaderHeader extends React.Component<Props> {
 					<>
 						<div className="widget">
 							<ShareControl
-								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onGetData={() => this._getShareData(this.props.article.value)}
 								onShare={this.props.onShare}
+								onShareViaChannel={this.props.onShareViaChannel}
 								menuPosition={MenuPosition.LeftTop}
 							>
 								<Icon

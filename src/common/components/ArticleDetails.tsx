@@ -20,18 +20,19 @@ import UserAccount from '../models/UserAccount';
 import Link from './Link';
 import { NavReference } from '../../app/common/components/Root';
 import { DeviceType, isMobileDevice } from '../DeviceType';
+import { ShareChannelData } from '../sharing/ShareData';
 
 interface Props {
 	article: UserArticle,
 	deviceType: DeviceType,
 	highlight?: boolean,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -104,9 +105,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		// share
 		const shareControl = (
 			<ShareControl
-				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onGetData={this._getShareData}
 				onShare={this.props.onShare}
+				onShareViaChannel={this.props.onShareViaChannel}
 				menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
 			>
 				<Icon

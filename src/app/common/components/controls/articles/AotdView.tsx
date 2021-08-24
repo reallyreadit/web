@@ -14,6 +14,7 @@ import LoadingOverlay from '../LoadingOverlay';
 import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import { NavReference } from '../../Root';
 import {DeviceType} from '../../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../../common/sharing/ShareData';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
 export default class AotdView extends React.Component<{
@@ -23,13 +24,13 @@ export default class AotdView extends React.Component<{
 	deviceType: DeviceType,
 	isLoading: boolean,
 	onChangeSort?: (sort: Sort) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
@@ -63,13 +64,13 @@ export default class AotdView extends React.Component<{
 						article={this.props.aotd}
 						deviceType={this.props.deviceType}
 						highlight={this.props.aotdHasAlert}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onNavTo={this.props.onNavTo}
 						onPost={this.props.onPostArticle}
 						onRateArticle={this.props.onRateArticle}
 						onRead={this.props.onReadArticle}
 						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
 						onToggleStar={this.props.onToggleArticleStar}
 						onViewComments={this.props.onViewComments}
 						onViewProfile={this.props.onViewProfile}
@@ -106,13 +107,13 @@ export default class AotdView extends React.Component<{
 									<ArticleDetails
 										article={article}
 										deviceType={this.props.deviceType}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onNavTo={this.props.onNavTo}
 										onPost={this.props.onPostArticle}
 										onRateArticle={this.props.onRateArticle}
 										onRead={this.props.onReadArticle}
 										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
 										onToggleStar={this.props.onToggleArticleStar}
 										onViewComments={this.props.onViewComments}
 										onViewProfile={this.props.onViewProfile}

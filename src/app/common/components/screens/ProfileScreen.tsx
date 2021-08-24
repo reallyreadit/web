@@ -43,6 +43,7 @@ import * as classNames from 'classnames';
 import { PostList } from '../PostList';
 import HeaderSelector from '../HeaderSelector';
 import { ArticleList } from '../ArticleList';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
 	deviceType: DeviceType,
@@ -53,7 +54,6 @@ interface Props {
 	onClearAlerts: (alert: Alert) => void,
 	onCloseDialog: () => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onFollowUser: (form: UserNameForm) => Promise<void>,
@@ -74,6 +74,7 @@ interface Props {
 	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onUnfollowUser: (form: UserNameForm) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
@@ -191,9 +192,9 @@ export class ProfileScreen extends React.Component<Props, State> {
 		this.props.onOpenDialog(
 			<GetFollowersDialog
 				onCloseDialog={this.props.onCloseDialog}
-				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onShare={this.props.onShare}
+				onShareViaChannel={this.props.onShareViaChannel}
 				userName={this.props.userAccount.name}
 			/>
 		);
@@ -352,7 +353,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 						deviceType={this.props.deviceType}
 						onChangeArticles={this._changeArticles}
 						onChangePageNumber={this._changeArticlesPageNumber}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onNavTo={this.props.onNavTo}
 						onPostArticle={this.props.onPostArticle}
@@ -360,6 +360,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 						onReadArticle={this.props.onReadArticle}
 						onRegisterArticleChangeHandler={this.props.onRegisterArticleChangeHandler}
 						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
 						onToggleArticleStar={this.props.onToggleArticleStar}
 						onViewComments={this.props.onViewComments}
 						onViewProfile={this.props.onViewProfile}
@@ -382,7 +383,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 						onChangePageNumber={this._changePostsPageNumber}
 						onChangePosts={this._changePosts}
 						onCloseDialog={this.props.onCloseDialog}
-						onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onNavTo={this.props.onNavTo}
 						onOpenDialog={this.props.onOpenDialog}
@@ -393,6 +393,7 @@ export class ProfileScreen extends React.Component<Props, State> {
 						onRegisterArticlePostedHandler={this.props.onRegisterArticlePostedHandler}
 						onRegisterCommentUpdatedHandler={this.props.onRegisterCommentUpdatedHandler}
 						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
 						onToggleArticleStar={this.props.onToggleArticleStar}
 						onViewComments={this.props.onViewComments}
 						onViewProfile={this.props.onViewProfile}

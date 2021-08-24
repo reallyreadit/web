@@ -47,16 +47,26 @@ import { parseQueryString } from '../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../common/ParserDocumentLocation';
 import ShareResponse from '../../common/sharing/ShareResponse';
 import {DeviceType} from '../../common/DeviceType';
+import { AppPlatform } from '../../common/AppPlatform';
 
 // On iOS window.location will be set to the article's URL but in Electron it will be a file: URL
 // with the article's URL provided as a query parameter.
 let documentLocation: ParserDocumentLocation;
+// TODO: We should probably also pass app platform and version via query string params.
+// For now we can just assume from the location protocol.
+let
+	appPlatform: AppPlatform,
+	deviceType: DeviceType;
 if (window.location.protocol === 'file:') {
 	documentLocation = new URL(
 		parseQueryString(window.location.search)['url']
 	);
+	appPlatform = AppPlatform.Windows;
+	deviceType = DeviceType.DesktopEdge;
 } else {
 	documentLocation = window.location;
+	appPlatform = AppPlatform.Ios;
+	deviceType = DeviceType.Ios;
 }
 
 const messagingContext = new WebViewMessagingContext();
@@ -249,8 +259,9 @@ const dialogService = new DialogService({
 });
 let
 	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user' >> = {
+		appPlatform,
 		comments: null,
-		deviceType: DeviceType.Ios,
+		deviceType,
 		dialogs: [],
 		dialogService,
 		isHeaderHidden: false,
@@ -315,8 +326,7 @@ function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'arti
 					value: article
 				},
 				displayPreference,
-				user,
-				deviceType: DeviceType.Ios,
+				user
 			}
 		),
 		embedRootElement,
