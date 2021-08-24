@@ -39,6 +39,7 @@ const serverApi = new ServerApi(
 	initData.apiServerEndpoint,
 	initData.clientType,
 	initData.version.toString(),
+	initData.deviceType,
 	initData.exchanges
 );
 
