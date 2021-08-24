@@ -63,6 +63,7 @@ import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/s
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
+import ShareForm from '../../../common/models/analytics/ShareForm';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -228,10 +229,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	// sharing
 	private readonly _handleShareRequest = (data: ShareEvent) => {
-		this._handleShareRequestWithCompletion(data);
-		return {
-			channels: [] as ShareChannel[]
-		};
+		if (
+			isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform)
+		) {
+			this._handleShareRequestWithCompletion(data);
+			return {
+				channels: [] as ShareChannel[]
+			};
+		} else {
+			return {
+				channels: [
+					ShareChannel.Clipboard,
+					ShareChannel.Email,
+					ShareChannel.Twitter
+				],
+				completionHandler: (data: ShareForm) => {
+
+				}
+			};
+		}
 	};
 	private readonly _handleShareRequestWithCompletion = (data: ShareEvent) => {
 		return this.props.appApi.share({
