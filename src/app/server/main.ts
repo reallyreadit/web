@@ -300,6 +300,13 @@ server.get('/about', (req, res) => {
 		findRouteByKey(routes, ScreenKey.Mission).createUrl()
 	);
 });
+server.get('/downloads', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Download).createUrl()
+	);
+});
 // handle redirects
 server.get<{}, any, any, { token: string }>('/confirmEmail', (req, res) => {
 	req.api
