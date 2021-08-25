@@ -12,9 +12,10 @@ export const PriceList: React.SFC<Props> = (props: Props) => (
 				<PriceListItem
 					amount={price.amount}
 					description={price.description}
-					key={price.amount}
+					key={price.title}
 					selected={price.selected}
 					title={price.title}
+					subtitle={price.subtitle}
 				/>
 			)
 		)}

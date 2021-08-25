@@ -37,6 +37,8 @@ import { NavReference } from '../Root';
 // import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import {formatCurrency} from '../../../../common/format';
+import Link from '../../../../common/components/Link';
+import DownloadSection from './MarketingScreen/DownloadSection';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -79,12 +81,17 @@ const prices = [
 	{
 		amount: formatCurrency(0),
 		title: 'Lurker',
+		subtitle: 'Have a look around!',
 		description: <><p>Find great reads</p><p>Read on the web</p></>
 	},
 	{
-		amount: `${formatCurrency(499)}/mo or more`,
+		amount: <>{formatCurrency(499)}<span className="month">/month</span>
+			<br/><span className="or-more">Or more! Pay what you want.</span>
+			</>,
 		title: 'Reader',
-		description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Watch <strong>90%</strong> of your money go to the writers &amp; publishers you read.</p></>,
+		subtitle: 'Pure reading bliss',
+		// description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Watch <strong>95%</strong> of your money go to the writers &amp; publishers you read.</p></>,
+		description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Invest in better reading and writer compensation</p></>,
 		selected: true
 	},
 ];
@@ -161,7 +168,7 @@ export default class MarketingScreen extends React.Component<
 			},
 			{
 				heading: "❤️ Really support writers & publishers",
-				paragraph: "The world’s first reading app that transparently compensates writers and publishers across the web.",
+				paragraph: <div>The world’s first reading app that transparently compensates writers and publishers across the web. We distribute <strong>95%</strong> of our subscription revenue. <Link screen={ScreenKey.Leaderboards} onClick={this.props.onNavTo}>Check the open accounting.</Link></div>,
 				imageName: "watch-money-3.0.png",
 				imageAlt: "Readup distributes your money directly to writers"
 			}
@@ -361,16 +368,8 @@ export default class MarketingScreen extends React.Component<
 				>
 					<h2 className="heading-regular">Pick your price</h2>
 					<PriceList prices={prices} />
-				<div className="download-section">
-					<p className="download-section__details"><strong>Download the app to get started</strong><br/>Available on iPhone, iPad, Mac, Windows.<br/>Android coming soon.</p>
-					<Button
-							hrefPreventDefault={false}
-							text="Download App"
-							size="large"
-							intent="loud"
-							onClick={() => this.props.onNavTo({key: ScreenKey.Download})}
-					/>
-				</div>
+					<DownloadSection onNavTo={this.props.onNavTo} />
+
 				</HomePanel>
 				{/* {this.props.revenueReport.value?.report.totalRevenue > 0 ?
 					<HomePanel
@@ -413,12 +412,13 @@ export default class MarketingScreen extends React.Component<
 				>
 					<h2 className="heading-regular">And there's more!</h2>
 					{supportPoints.map((pointData, i) =>
-					<ImageAndText
-						{...pointData}
-						key={pointData.imageName}
-						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-						imageRight={!(i % 2 == 0)}
-						type="contained" />) }
+						<ImageAndText
+							{...pointData}
+							key={pointData.imageName}
+							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+							imageRight={!(i % 2 == 0)}
+							type="contained" />) }
+					<DownloadSection onNavTo={this.props.onNavTo}/>
 				</HomePanel>
 				<HomePanel
 					data-nosnippet
