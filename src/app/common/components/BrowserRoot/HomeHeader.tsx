@@ -131,7 +131,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									text="Download App"
 									size="large"
 									intent="loud"
-									onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({key: ScreenKey.Download}, {method: NavMethod.ReplaceAll}))}
+									onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({key: ScreenKey.Download}, {method: NavMethod.ReplaceAll}), ev)}
 								/>
 						</>}
 				</div>
