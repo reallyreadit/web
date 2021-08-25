@@ -43,9 +43,11 @@
 	-webkit-overflow-scrolling: touch;
 	box-sizing: border-box;
 	z-index: 1;
-	// allows a child component of a screen to flex-grow: 1 itself to push down the footer
+	// assuming that a .screen only has 2 children, this will push the footer to the bottom of the screen, but not under it
+	// example: https://github.com/reallyreadit/web/blob/56bcdadb7b786377c42cf2adbd70d6962abf8329/src/app/common/components/BrowserRoot.tsx#L1403
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 }
 
 @include theme using ($root, $scheme) {

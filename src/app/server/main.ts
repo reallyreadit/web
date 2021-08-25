@@ -248,6 +248,13 @@ server.get('/proof/:token', (req, res) => {
 			);
 		});
 });
+server.get('/downloads', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Download).createUrl()
+	);
+});
 server.get('/reads', (req, res) => {
 	redirect(
 		req,

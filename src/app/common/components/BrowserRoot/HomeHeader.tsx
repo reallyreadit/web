@@ -6,7 +6,7 @@ import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
 import UserAccount from '../../../../common/models/UserAccount';
-import { NavOptions, NavReference, Screen }  from '../../../common/components/Root'
+import { NavMethod, NavOptions, NavReference, Screen }  from '../../../common/components/Root'
 import { DeviceType } from '../../../../common/DeviceType';
 // import GetStartedButton from './GetStartedButton';
 import Link from '../../../../common/components/Link';
@@ -131,7 +131,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 									text="Download App"
 									size="large"
 									intent="loud"
-									onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({key: ScreenKey.Download}), ev)}
+									onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({key: ScreenKey.Download}, {method: NavMethod.ReplaceAll}))}
 								/>
 						</>}
 				</div>
