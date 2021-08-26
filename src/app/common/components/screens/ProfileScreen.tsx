@@ -32,7 +32,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 import Rating from '../../../../common/models/Rating';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import DownloadButton from '../BrowserRoot/DownloadButton';
 import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import StickyNote from '../../../../common/components/StickyNote';
@@ -494,14 +494,14 @@ export class ProfileScreen extends React.Component<Props, State> {
 								<Panel className="header">
 									<h1>Join Readup to read with @{this.props.profile.value.userName}.</h1>
 									<h3>
-										<GetStartedButton
+										<DownloadButton
 											analyticsAction="ProfileScreenCreateAccount"
 											deviceType={this.props.deviceType}
 											location={this.props.location}
-											onBeginOnboarding={this.props.onBeginOnboarding}
+											onNavTo={this.props.onNavTo}
+											showOpenInApp={true}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</h3>
 								</Panel> :

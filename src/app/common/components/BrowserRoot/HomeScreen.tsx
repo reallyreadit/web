@@ -7,7 +7,7 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen, NavReference } from '../Root';
+import { Screen, NavReference, NavOptions } from '../Root';
 import PageSelector from '../controls/PageSelector';
 import { SharedState } from '../BrowserRoot';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
@@ -40,7 +40,7 @@ interface Props {
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenEarningsExplainerDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,

@@ -19,7 +19,7 @@ import CommentAddendumForm from '../../../../common/models/social/CommentAddendu
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import InfoBox from '../../../../common/components/InfoBox';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import DownloadButton from '../BrowserRoot/DownloadButton';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
@@ -88,14 +88,14 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 									<h1>{marketingVariant.headline}</h1>
 									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
-										<GetStartedButton
+										<DownloadButton
 											analyticsAction="CommentsScreen"
 											deviceType={this.props.deviceType}
 											location={this.props.location}
-											onBeginOnboarding={this.props.onBeginOnboarding}
+											showOpenInApp={true}
+											onNavTo={this.props.onNavTo}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</div>
 								</Panel> :

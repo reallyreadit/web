@@ -527,7 +527,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			),
 			[ScreenKey.Download]: createDownloadPageFactory(
 				ScreenKey.Download,
-				{ onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog, }
+				{
+					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+					onCreateStaticContentUrl: this._createStaticContentUrl
+				}
 			),
 			[ScreenKey.Blog]: createBlogScreenFactory(
 				ScreenKey.Blog,

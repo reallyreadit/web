@@ -26,7 +26,7 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import DownloadButton from '../BrowserRoot/DownloadButton';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { formatCurrency } from '../../../../common/format';
@@ -43,7 +43,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -165,14 +165,14 @@ class AuthorScreen extends React.Component<Props, State> {
 									<h1>{marketingVariant.headline}</h1>
 									<h3>{marketingVariant.subtext}</h3>
 									<div className="buttons">
-										<GetStartedButton
+										<DownloadButton
 											analyticsAction="AuthorScreen"
 											deviceType={this.props.deviceType}
 											location={this.props.location}
-											onBeginOnboarding={this.props.onBeginOnboarding}
+											showOpenInApp={true}
+											onNavTo={this.props.onNavTo}
 											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 										/>
 									</div>
 								</Panel> :

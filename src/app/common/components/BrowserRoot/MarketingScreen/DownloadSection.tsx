@@ -1,23 +1,22 @@
 import * as React from 'react';
-import Button from '../../../../../common/components/Button';
-import ScreenKey from '../../../../../common/routing/ScreenKey';
-import {NavReference} from '../../Root';
+import {NavOptions, NavReference} from '../../Root';
+import DownloadButton from '../DownloadButton';
 
 interface Props {
-	onNavTo: (ref: NavReference) => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 }
 
 export const DownloadSection: React.FunctionComponent<Props> = (props: Props) => (
 		<div className="download-section_45nqkz">
-			<p className="download-section_45nqkz__details">
+			<div className="download-section_45nqkz__details">
 				<div className="download-section_45nqkz__details__heading">Download the app to get started</div>
-				Available on iPhone, iPad, Mac, Windows.<br/>Android coming soon.</p>
-			<Button
-					hrefPreventDefault={false}
-					text="Download App"
-					size="large"
-					intent="loud"
-					onClick={() => props.onNavTo({key: ScreenKey.Download})}
+				<p>Available on iPhone, iPad, Mac, Windows.<br/>Android coming soon.</p>
+			</div>
+			<DownloadButton
+				analyticsAction='download-section'
+				onNavTo={props.onNavTo}
+				onCopyAppReferrerTextToClipboard={props.onCopyAppReferrerTextToClipboard}
 			/>
 		</div>
 		);

@@ -33,12 +33,13 @@ import Button from '../../../../common/components/Button';
 import { PriceList } from './MarketingScreen/PriceList';
 // import { RevenueMeter } from '../RevenueMeter';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
-import { NavReference } from '../Root';
+import { NavOptions, NavReference } from '../Root';
 // import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import {formatCurrency} from '../../../../common/format';
 import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
+import DownloadButton from './DownloadButton';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -53,7 +54,7 @@ interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenEarningsExplainerDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
@@ -301,12 +302,14 @@ export default class MarketingScreen extends React.Component<
 					<div className="home-hero-image__intro-text">
 						<h1 className="heading-regular">The world's best reading app.</h1>
 						<p>The internet broke reading. We fixed it.</p>
-						<Button
-							hrefPreventDefault={false}
-							text="Download App"
-							size="large"
-							intent="loud"
-							onClick={() => this.props.onNavTo({key: ScreenKey.Download})}
+						<DownloadButton
+							analyticsAction='home-hero-download'
+							buttonType='platform'
+							deviceType={this.props.deviceType}
+							showOtherPlatforms={true}
+							onNavTo={this.props.onNavTo}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 						/>
 					</div>
 					<img className="home-hero-image__image" src={this.props.onCreateStaticContentUrl('/app/images/home/readup-hero.png')} alt="A woman and man sit on a bench under a tree.
@@ -368,7 +371,10 @@ export default class MarketingScreen extends React.Component<
 				>
 					<h2 className="heading-regular">Pick your price</h2>
 					<PriceList prices={prices} />
-					<DownloadSection onNavTo={this.props.onNavTo} />
+					<DownloadSection
+						onNavTo={this.props.onNavTo}
+						onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+					/>
 
 				</HomePanel>
 				{/* {this.props.revenueReport.value?.report.totalRevenue > 0 ?
@@ -418,7 +424,10 @@ export default class MarketingScreen extends React.Component<
 							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 							imageRight={!(i % 2 == 0)}
 							type="contained" />) }
-					<DownloadSection onNavTo={this.props.onNavTo}/>
+					<DownloadSection
+						onNavTo={this.props.onNavTo}
+						onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+					/>
 				</HomePanel>
 				<HomePanel
 					data-nosnippet
