@@ -669,7 +669,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.AotdHistory,
 				{
 					deviceType: DeviceType.Ios,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCopyAppReferrerTextToClipboard: this._noop,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
 					onGetCommunityReads: this.props.serverApi.getCommunityReads,
 					onNavTo: this._navTo,

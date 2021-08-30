@@ -1,0 +1,38 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/MarketingScreen/DownloadSection
+        cssComponentId: download-section_45nqkz
+*/
+
+.download-section_45nqkz {
+	width: 100%;
+	max-width: 580px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin: 2.6em auto 1.4em auto;
+
+	&__details {
+		margin-right: 1em;
+		margin-bottom: 1.1em;
+		text-align: center;
+		&__heading {
+			font-family: "Museo Sans (700)";
+			margin-bottom: 13px;
+			display: block;
+			font-size: 1.1rem;
+		}
+	}
+
+	@media screen and (min-width: 768px) {
+		flex-direction: row;
+		justify-content: space-between;
+
+		&__details {
+			margin-bottom: 0;
+			text-align: left;
+		}
+
+	}
+}
+

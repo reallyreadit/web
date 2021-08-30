@@ -1,0 +1,43 @@
+/*
+        componentPath: src/app/common/components/BrowserRoot/DownloadButton
+        cssComponentId: download-button_twjkoi
+*/
+@import '../../../../common/styles/colors';
+
+.download-button_twjkoi {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+.download-button_twjkoi .platforms {
+	margin-top: 10px;
+	color: var(--text-muted-color)
+}
+.download-button_twjkoi > .open-in-app {
+	margin-top: 10px;
+}
+.download-button_twjkoi > .ios > img {
+	display: block;
+	margin: 0 auto;
+	height: 65px;
+}
+.download-button_twjkoi > .android > .coming-soon {
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+}
+.download-button_twjkoi > .android > .button_ovrlmi {
+	margin: 15px 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .download-button_twjkoi > .android > .platforms {
+		@include theme-colors(
+			$scheme,
+			(
+				"color": $text-muted-color
+			)
+		);
+	}
+}

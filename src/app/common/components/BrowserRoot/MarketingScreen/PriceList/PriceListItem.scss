@@ -3,19 +3,66 @@
 	cssComponentId: price-list-item_7j8olx
 */
 
-.price-list-item_7j8olx > .price {
-	font-family: 'Museo Sans (700)';
-	font-size: 1.75em;
+$outer-margin: 1em;
+.price-list-item_7j8olx .price {
+	// font-family: 'Museo Sans (700)';
+	font-size: 1.25em;
+	margin-bottom: $outer-margin;
+
+	.month {
+		margin-left: 2px;
+	}
+
+	.month, .or-more {
+		font-size: 0.7em;
+	}
 }
-.price-list-item_7j8olx > .title {
-	margin: 1em 0;
+
+.price-list-item_7j8olx .title {
+	margin: $outer-margin 0 0 0;
 }
-.price-list-item_7j8olx.selected > .title {
+// .price-list-item_7j8olx.selected .title {
+// 	font-style: italic;
+// }
+
+.price-list-item_7j8olx .subtitle {
 	font-style: italic;
+	font-family: 'Museo Sans (300)';
+	margin-top: 0.4em;
+	font-size: 0.9rem;
+}
+
+.price-list-item_7j8olx {
+	width: 50%;
+}
+
+.price-list-item_7j8olx > .content-box_kkp9lc {
+	text-align: center;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+	.title {
+		font-family: 'Museo Sans (700)';
+		font-size: 1.4rem;
+	}
+
+	.description {
+		> p {
+			margin: 20px 12px;
+		}
+	}
 }
 
 @media (max-width: 499px) {
-	.price-list-item_7j8olx > .title {
+	.price-list-item_7j8olx .title {
 		margin: 0.5em 0;
+	}
+	.price-list-item_7j8olx {
+		width: 100%;
+		> .content-box_kkp9lc {
+			min-height: unset;
+		}
 	}
 }

@@ -20,8 +20,11 @@ import HeaderSelector from '../HeaderSelector';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
-import { NavReference } from '../Root';
+import { NavOptions, NavReference } from '../Root';
 import {DeviceType} from '../../../../common/DeviceType';
+import MarketingBanner from '../BrowserRoot/MarketingBanner';
+import {variants} from '../../marketingTesting';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 enum View {
@@ -30,10 +33,14 @@ enum View {
 }
 export interface Props {
 	deviceType: DeviceType,
+	location: RouteLocation,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onCreateStaticContentUrl: (path: string) => string,
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -179,6 +186,16 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 				{this.state.isScreenLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
+						{!this.props.user ?
+							<MarketingBanner
+							analyticsAction="CommentsScreen"
+							deviceType={this.props.deviceType}
+							marketingVariant={variants[0]}
+							location={this.props.location}
+							onNavTo={this.props.onNavTo}
+							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+						/> : null}
 						{this.props.title ?
 							<h1>{this.props.title}</h1> :
 							null}

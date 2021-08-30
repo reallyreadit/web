@@ -12,7 +12,7 @@ export default (
 		noGoogleSnippet?: boolean,
 		onCreateStaticContentUrl: (path: string) => string,
 		heading: string,
-		paragraph: string,
+		paragraph: string | JSX.Element,
 		imageName: string,
 		imageAlt: string,
 		type: "wide" | "contained"

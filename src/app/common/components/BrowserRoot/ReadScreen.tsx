@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavReference, ReadArticleReference, Screen } from '../Root';
+import { NavOptions, NavReference, ReadArticleReference, Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
@@ -14,7 +14,7 @@ import { unroutableQueryStringKeys } from '../../../../common/routing/queryStrin
 import LoadingOverlay from '../controls/LoadingOverlay';
 import ScreenContainer from '../ScreenContainer';
 import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
-import GetStartedButton from './GetStartedButton';
+import DownloadButton from './DownloadButton';
 import Button from '../../../../common/components/Button';
 import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
@@ -34,7 +34,7 @@ interface Props {
 	onCanReadArticle: (article: UserArticle) => boolean,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCreateStaticContentUrl: (path: string) => string,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onOpenSubscriptionPromptDialog: (article?: ReadArticleReference, provider?: SubscriptionProvider) => void
 	onReadArticle: (article: UserArticle) => void,
@@ -137,14 +137,14 @@ class ReadScreen extends React.PureComponent<Props> {
 												</ul>
 											</div>
 												{!this.props.user || !this.props.isExtensionInstalled ?
-													<GetStartedButton
+													<DownloadButton
 														analyticsAction="ReadScreen"
 														deviceType={this.props.deviceType}
 														location={this.props.location}
-														onBeginOnboarding={this.props.onBeginOnboarding}
+														showOpenInApp={true}
+														onNavTo={this.props.onNavTo}
 														onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 														onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-														onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 													/>
 												:
 													<Button

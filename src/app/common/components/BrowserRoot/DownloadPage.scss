@@ -16,10 +16,24 @@
 	}
 
 	.options-set {
+		width: 80%;
+		max-width: 285px;
+
 		> h2 {
 			margin-bottom: 18px;
 			font-family: "Cambria (Regular)";
 			font-size: 32px;
+
+			&::after {
+				content: "";
+				display: block;
+				position: relative;
+				background-color: #c3c3c3;
+				margin-top: 5px;
+				left: -0.5%;
+				width: 101%;
+				height: 1px;
+			}
 		}
 
 		@media screen and (max-width: 767px) {

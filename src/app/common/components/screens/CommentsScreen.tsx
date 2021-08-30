@@ -19,11 +19,11 @@ import CommentAddendumForm from '../../../../common/models/social/CommentAddendu
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import InfoBox from '../../../../common/components/InfoBox';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
+import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 export function getPathParams(location: RouteLocation) {
@@ -85,21 +85,15 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 						</InfoBox> :
 						<>
 							{!this.props.user ?
-								<Panel className="header">
-									<h1>{marketingVariant.headline}</h1>
-									<h3>{marketingVariant.subtext}</h3>
-									<div className="buttons">
-										<GetStartedButton
-											analyticsAction="CommentsScreen"
-											deviceType={this.props.deviceType}
-											location={this.props.location}
-											onBeginOnboarding={this.props.onBeginOnboarding}
-											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-										/>
-									</div>
-								</Panel> :
+								<MarketingBanner
+									analyticsAction="CommentsScreen"
+									deviceType={this.props.deviceType}
+									marketingVariant={marketingVariant}
+									location={this.props.location}
+									onNavTo={this.props.onNavTo}
+									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+								/> :
 								null}
 							<Panel className="main">
 								<ArticleDetails

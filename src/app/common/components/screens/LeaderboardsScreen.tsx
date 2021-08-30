@@ -6,7 +6,7 @@ import Leaderboards from '../../../../common/models/Leaderboards';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ReaderLeaderboards from './LeaderboardScreen/ReaderLeaderboards';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import { Screen, SharedState, NavReference } from '../Root';
+import { Screen, SharedState, NavReference, NavOptions } from '../Root';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -15,7 +15,7 @@ import AuthorLeaderboards from './LeaderboardScreen/AuthorLeaderboards';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
+import DownloadButton from '../BrowserRoot/DownloadButton';
 import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../../common/models/subscriptions/AuthorEarningsReport';
 import Link from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
@@ -31,7 +31,7 @@ interface Props {
 	onGetAuthorsEarningsReport: FetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onGetReaderLeaderboards: FetchFunction<Leaderboards>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onViewAuthor: (slug: string, name: string) => void,
@@ -223,8 +223,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	public render() {
 		const marketingVariant = this.state.view === View.Authors ?
 			{
-				headline: 'Where writers are really read',
-				subtext: 'Readup is the social reading platform. Readers pay to read articles across the web, distraction-free.\nWriters get paid, transparently!'
+				headline: 'Where reading compensates writers',
+				subtext: 'Readup is the world\'s best reading app. Pick any price for unlimited, ad-free reading. Compensate writers.'
 			}
 			: marketingVariants[0];
 		return (
@@ -237,14 +237,13 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 								<h1>{marketingVariant.headline}</h1>
 								<h3>{marketingVariant.subtext}</h3>
 								<div className="buttons">
-									<GetStartedButton
+									<DownloadButton
 										analyticsAction="LeaderboardsScreen"
 										deviceType={this.props.deviceType}
 										location={this.props.location}
-										onBeginOnboarding={this.props.onBeginOnboarding}
+										onNavTo={this.props.onNavTo}
 										onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 										onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-										onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 									/>
 									{/* TODO: might look nicer if a secondary <Button> were used */}
 									<Link screen={ScreenKey.Home} className="learn-more-button" onClick={this.props.onNavTo}>Learn More</Link>

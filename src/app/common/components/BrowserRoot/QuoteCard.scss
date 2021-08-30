@@ -13,7 +13,7 @@
        line-height: 1.55;
        position: relative;
        font-style: italic;
-	   text-decoration: underline;
+	   text-decoration: none;
 	   cursor: pointer;
    }
 
@@ -42,14 +42,19 @@
    .quote-card_xa1vt__quote::after {
        content: "”";
        right: 12px;
-       bottom: -118px;
+       bottom: -80px;
    }
+
 
    // reader
    &__reader {
-       margin-top: 13px;
-       display: block;
-	   text-align: center;
+		margin-top: 8px;
+		display: block;
+		text-align: right;
+		margin-right: 50px;
+		&__name {
+				text-decoration: underline;
+		}
    }
 
 //    @media screen and (min-width: 768px) {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ClassValue } from 'classnames/types';
 import HomePanel from './HomePanel';
-import GetStartedButton from './GetStartedButton';
+import DownloadButton from './DownloadButton';
 
 export default (
 	props: {
@@ -10,7 +10,7 @@ export default (
 		noGoogleSnippet?: boolean,
 		title: string | React.ReactElement,
 		description?: string | React.ReactElement,
-		actionButton?: React.ReactElement<GetStartedButton>
+		actionButton?: React.ReactElement<DownloadButton>
 	}
 ) => (
 <HomePanel className="home-hero_527aw5">

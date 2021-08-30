@@ -26,12 +26,12 @@ import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { formatCurrency } from '../../../../common/format';
 import Link from '../../../../common/components/Link';
 import Icon from '../../../../common/components/Icon';
+import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
@@ -43,7 +43,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -148,7 +148,6 @@ class AuthorScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="author-screen_2cri7v">
 				{this.state.isScreenLoading ?
@@ -162,22 +161,16 @@ class AuthorScreen extends React.Component<Props, State> {
 						</InfoBox> :
 						<>
 							{!this.props.user ?
-								<Panel className="header">
-									<h1>{marketingVariant.headline}</h1>
-									<h3>{marketingVariant.subtext}</h3>
-									<div className="buttons">
-										<GetStartedButton
-											analyticsAction="AuthorScreen"
-											deviceType={this.props.deviceType}
-											location={this.props.location}
-											onBeginOnboarding={this.props.onBeginOnboarding}
-											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-										/>
-									</div>
-								</Panel> :
-								null}
+								<MarketingBanner
+									analyticsAction="AuthorScreen"
+									deviceType={this.props.deviceType}
+									marketingVariant={marketingVariants[0]}
+									location={this.props.location}
+									onNavTo={this.props.onNavTo}
+									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+								/>
+								: null}
 							<Panel className="main">
 								<div className="profile">
 									<h1>{this.props.profile.value.name}</h1>

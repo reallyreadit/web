@@ -32,7 +32,6 @@ import Alert from '../../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 import Rating from '../../../../common/models/Rating';
 import Panel from '../BrowserRoot/Panel';
-import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import StickyNote from '../../../../common/components/StickyNote';
@@ -43,6 +42,7 @@ import * as classNames from 'classnames';
 import { PostList } from '../PostList';
 import HeaderSelector from '../HeaderSelector';
 import { ArticleList } from '../ArticleList';
+import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
@@ -492,20 +492,15 @@ export class ProfileScreen extends React.Component<Props, State> {
 						</InfoBox> :
 						<>
 							{!this.props.userAccount ?
-								<Panel className="header">
-									<h1>Join Readup to read with @{this.props.profile.value.userName}.</h1>
-									<h3>
-										<GetStartedButton
-											analyticsAction="ProfileScreenCreateAccount"
-											deviceType={this.props.deviceType}
-											location={this.props.location}
-											onBeginOnboarding={this.props.onBeginOnboarding}
-											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-											onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-										/>
-									</h3>
-								</Panel> :
+							<MarketingBanner
+								analyticsAction="CommentsScreen"
+								deviceType={this.props.deviceType}
+								marketingVariant={{headline: 'Readup is the world\'s best reading app', subtext: `Download Readup to read with @${this.props.profile.value.userName}`}}
+								location={this.props.location}
+								onNavTo={this.props.onNavTo}
+								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+							/> :
 								null}
 							<Panel className="main">
 								<div className="profile" data-nosnippet>
