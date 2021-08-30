@@ -82,7 +82,10 @@ switch (initData.clientType) {
 			AppRoot,
 			{
 				...rootProps,
-				appApi: new AppApi(messagingContext),
+				appApi: new AppApi({
+					messagingContext,
+					platform: initData.appPlatform
+				}),
 				appReferral: initData.appReferral
 			}
 		);

@@ -61,6 +61,8 @@ import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
+import { AppPlatform } from '../../../common/AppPlatform';
+import { ShareChannelData } from '../../../common/sharing/ShareData';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -230,6 +232,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// sharing
+	private readonly _handleShareChannelRequest = (data: ShareChannelData) => {
+		switch (data.channel) {
+			case ShareChannel.Clipboard:
+				this._clipboard.copyText(data.text, 'Link copied to clipboard');
+				break;
+			case ShareChannel.Email:
+				window.open(
+					`mailto:${createQueryString({
+						'body': data.body,
+						'subject': data.subject
+					})}`,
+					'_blank'
+				);
+				break;
+			case ShareChannel.Twitter:
+				this._openTweetComposer(data);
+				break;
+		}
+	};
 	private readonly _handleShareRequest = () => {
 		return {
 			channels: [
@@ -497,6 +518,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
@@ -508,7 +530,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					deviceType: this.props.deviceType,
 					onBeginOnboarding: this._beginOnboarding,
 					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onCreateTitle: profile => this._createAuthorScreenTitle(profile),
@@ -522,6 +543,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
@@ -538,7 +560,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Blog,
 				{
 					deviceType: this.props.deviceType,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 					onNavTo: this._navTo,
@@ -547,6 +568,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
@@ -557,7 +579,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onBeginOnboarding: this._beginOnboarding,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onDeleteComment: this._deleteComment,
@@ -578,6 +599,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
@@ -592,7 +614,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onBeginOnboarding: this._beginOnboarding,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
@@ -607,6 +628,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
@@ -620,7 +642,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					deviceType: this.props.deviceType,
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
 					onGetReplyPosts: this.props.serverApi.getReplyPosts,
@@ -631,6 +652,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile,
@@ -670,7 +692,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				deviceType: this.props.deviceType,
 				onCloseDialog: this._dialog.closeDialog,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
@@ -683,6 +704,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
@@ -693,7 +715,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
@@ -714,6 +735,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
@@ -737,7 +759,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Search,
 				{
 					deviceType: this.props.deviceType,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
 					onNavTo: this._navTo,
@@ -747,6 +768,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSearchArticles: this.props.serverApi.searchArticles,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile,
@@ -756,7 +778,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					deviceType: this.props.deviceType,
+					/*
+						This isn't inaccurate but it doesn't matter since viewing settings in the browser is deprecated.
+						All that matters is that we pass a non-Apple platform so that App Store APIs are not called.
+					*/
+					appPlatform: AppPlatform.Windows,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
@@ -1369,7 +1395,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onViewNotifications={this._viewNotifications}
 						onNavTo={this._navTo}
 						// navTo uses the Push navigation method, so the current screen is the last one
-						currentScreen={this.state.screens[this.state.screens.length - 1]}
+						currentScreen={this.state.screens[0]}
 						user={this.state.user}
 					/> :
 					null}

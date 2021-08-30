@@ -1,23 +1,21 @@
 import * as React from 'react';
 import Icon from './Icon';
-import { createQueryString } from '../routing/queryString';
-import ShareData from '../sharing/ShareData';
+import ShareData, { ShareChannelData } from '../sharing/ShareData';
 import ShareChannel from '../sharing/ShareChannel';
 import { truncateText } from '../format';
 import Popover, { MenuPosition, MenuState } from './Popover';
 import ShareForm from '../models/analytics/ShareForm';
 import ShareResponse from '../sharing/ShareResponse';
 import { ShareEvent } from '../sharing/ShareEvent';
-import { openTweetComposerBrowserWindow } from '../sharing/twitter';
 
 export { MenuPosition } from './Popover';
 interface Props {
 	children: React.ReactNode,
 	menuPosition: MenuPosition,
 	onComplete?: (form: ShareForm) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onGetData: () => ShareData,
-	onShare: (data: ShareEvent) => ShareResponse
+	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
@@ -32,10 +30,10 @@ export default class ShareControl extends React.PureComponent<
 	};
 	private _shareResponseCompletionHandler: (form: ShareForm) => void | null;
 	private readonly _copyLink = () => {
-		this.props.onCopyTextToClipboard(
-			this.props.onGetData().url,
-			'Link copied to clipboard'
-		);
+		this.props.onShareViaChannel({
+			channel: ShareChannel.Clipboard,
+			text: this.props.onGetData().url
+		});
 		// need to call closeMenu() to handle iOS touch behavior
 		this._beginClosingMenu();
 		this.completeWithActivityType('Copy');
@@ -47,9 +45,6 @@ export default class ShareControl extends React.PureComponent<
 			shareChannels: []
 		});
 		this._shareResponseCompletionHandler = null;
-	};
-	private readonly _handleEmailLinkClick = () => {
-		this.completeWithActivityType('Email');
 	};
 	private readonly _openMenu = (event: React.MouseEvent<HTMLElement>) => {
 		const
@@ -75,8 +70,17 @@ export default class ShareControl extends React.PureComponent<
 			}
 		}
 	};
+	private readonly _openEmailComposer = () => {
+		this.props.onShareViaChannel({
+			channel: ShareChannel.Email,
+			body: this.state.data.email.body,
+			subject: this.state.data.email.subject
+		});
+		this.completeWithActivityType('Email');
+	};
 	private readonly _openTweetComposer = () => {
-		openTweetComposerBrowserWindow({
+		this.props.onShareViaChannel({
+			channel: ShareChannel.Twitter,
 			text: truncateText(this.state.data.text, 280 - 25),
 			url: this.state.data.url,
 			hashtags: [
@@ -127,18 +131,13 @@ export default class ShareControl extends React.PureComponent<
 							</button> :
 							null}
 						{this.state.shareChannels.includes(ShareChannel.Email) ?
-							<a
+							<button
 								className="button"
-								href={`mailto:${createQueryString({
-									'body': this.state.data.email.body,
-									'subject': this.state.data.email.subject
-								})}`}
-								onClick={this._handleEmailLinkClick}
-								target="_blank"
+								onClick={this._openEmailComposer}
 							>
 								<Icon name="paper-plane" />
 								<label>Email</label>
-							</a> :
+							</button> :
 							null}
 						{this.state.shareChannels.includes(ShareChannel.Twitter) ?
 							<button

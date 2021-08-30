@@ -11,6 +11,7 @@ import CommentDeletionForm from '../../models/social/CommentDeletionForm';
 import CommentRevisionForm from '../../models/social/CommentRevisionForm';
 import CommentAddendumForm from '../../models/social/CommentAddendumForm';
 import Icon from '../Icon';
+import { ShareChannelData } from '../../sharing/ShareData';
 
 export default (props: {
 	article: UserArticle,
@@ -19,7 +20,6 @@ export default (props: {
 	noCommentsMessage: string,
 	onAuthenticationRequired?: (completionDelegate?: () => void) => Function,
 	onCloseDialog: () => void,
-	onCopyTextToClipboard: (text: string, successMessage?: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
@@ -28,6 +28,7 @@ export default (props: {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null
 }) => {
@@ -56,7 +57,6 @@ export default (props: {
 									highlightedCommentId={props.highlightedCommentId}
 									onAuthenticationRequired={props.onAuthenticationRequired}
 									onCloseDialog={props.onCloseDialog}
-									onCopyTextToClipboard={props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 									onDeleteComment={
 										isAllowedToPost ?
@@ -81,6 +81,7 @@ export default (props: {
 											null
 									}
 									onShare={props.onShare}
+									onShareViaChannel={props.onShareViaChannel}
 									onViewProfile={props.onViewProfile}
 									user={props.user}
 								/>

@@ -22,10 +22,10 @@ import ArticleLengthFilter from './SearchScreen/ArticleLengthFilter';
 import List from '../controls/List';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import {DeviceType} from '../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
 	deviceType: DeviceType,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetSearchOptions: FetchFunction<SearchOptions>,
 	onNavTo: (url: string) => boolean,
@@ -35,6 +35,7 @@ interface Props {
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onSearchArticles: (query: SearchQuery) => Promise<PageResult<UserArticle>>,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -230,13 +231,13 @@ class SearchScreen extends React.Component<Props, State> {
 													<ArticleDetails
 														article={article}
 														deviceType={this.props.deviceType}
-														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onNavTo={this.props.onNavTo}
 														onPost={this.props.onPostArticle}
 														onRateArticle={this.props.onRateArticle}
 														onRead={this.props.onReadArticle}
 														onShare={this.props.onShare}
+														onShareViaChannel={this.props.onShareViaChannel}
 														onToggleStar={this.props.onToggleArticleStar}
 														onViewComments={this.props.onViewComments}
 														onViewProfile={this.props.onViewProfile}
@@ -268,7 +269,6 @@ export default function createSearchScreenFactory<TScreenKey>(
 		render: (screen: Screen, sharedState: SharedState) => (
 			<SearchScreen
 				deviceType={services.deviceType}
-				onCopyTextToClipboard={services.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
 				onGetSearchOptions={services.onGetSearchOptions}
 				onNavTo={services.onNavTo}
@@ -278,6 +278,7 @@ export default function createSearchScreenFactory<TScreenKey>(
 				onRegisterArticleChangeHandler={services.onRegisterArticleChangeHandler}
 				onSearchArticles={services.onSearchArticles}
 				onShare={services.onShare}
+				onShareViaChannel={services.onShareViaChannel}
 				onToggleArticleStar={services.onToggleArticleStar}
 				onViewComments={services.onViewComments}
 				onViewProfile={services.onViewProfile}

@@ -34,6 +34,9 @@ import BrowserApiRelayMessenger from './BrowserApiRelayMessenger';
 import { isHttpProblemDetails } from '../common/ProblemDetails';
 import AuthServiceBrowserPopup from '../common/AuthServiceBrowserPopup';
 import KeyValuePair from '../common/KeyValuePair';
+import { ShareChannelData } from '../common/sharing/ShareData';
+import { createQueryString } from '../common/routing/queryString';
+import { openTweetComposerBrowserWindow } from '../common/sharing/twitter';
 
 interface State {
 	article: UserArticle,
@@ -215,6 +218,25 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		eventManager = new EventManager<{
 			'onOnboardingCompleted': void
 		}>(),
+		handleShareChannelRequest = (data: ShareChannelData) => {
+			switch (data.channel) {
+				case ShareChannel.Clipboard:
+					clipboardService.copyText(data.text, 'Link copied to clipboard');
+					break;
+				case ShareChannel.Email:
+					window.open(
+						`mailto:${createQueryString({
+							'body': data.body,
+							'subject': data.subject
+						})}`,
+						'_blank'
+					);
+					break;
+				case ShareChannel.Twitter:
+					openTweetComposerBrowserWindow(data);
+					break;
+			}
+		},
 		handleShareRequest = () => ({
 			channels: [
 				ShareChannel.Clipboard,
@@ -511,7 +533,6 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			)
 		},
 		services: {
-			clipboardService,
 			dialogService,
 			onAuthenticationRequired: (analyticsAction, delegate) => {
 				setState({
@@ -632,6 +653,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 					}
 				),
 			onShare: handleShareRequest,
+			onShareViaChannel: handleShareChannelRequest,
 			onViewProfile: viewProfile,
 			toasterService
 		},

@@ -9,7 +9,7 @@ import CommentCreationResponse from '../common/models/social/CommentCreationResp
 
 type Services = Pick<
 	CommentsSectionProps,
-	'clipboardService' | 'dialogService' | 'onAuthenticationRequired' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onLinkAuthServiceAccount' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onViewProfile' | 'toasterService'
+	'dialogService' | 'onAuthenticationRequired' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onLinkAuthServiceAccount' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onShareViaChannel' | 'onViewProfile' | 'toasterService'
 >;
 type State = Pick<
 	CommentsSectionProps,

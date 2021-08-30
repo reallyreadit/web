@@ -40,6 +40,7 @@ import {formatCurrency} from '../../../../common/format';
 import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
 import DownloadButton from './DownloadButton';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -49,7 +50,6 @@ interface Props {
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
@@ -61,6 +61,7 @@ interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
@@ -459,13 +460,13 @@ export default class MarketingScreen extends React.Component<
 										<ArticleDetails
 											article={article}
 											deviceType={this.props.deviceType}
-											onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 											onNavTo={this.props.onNavTo}
 											onPost={this.props.onPostArticle}
 											onRateArticle={this.props.onRateArticle}
 											onRead={this.props.onReadArticle}
 											onShare={this.props.onShare}
+											onShareViaChannel={this.props.onShareViaChannel}
 											onToggleStar={this.props.onToggleArticleStar}
 											onViewComments={this.props.onViewComments}
 											onViewProfile={this.props.onViewProfile}

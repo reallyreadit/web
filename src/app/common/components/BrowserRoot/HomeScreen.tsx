@@ -27,6 +27,7 @@ import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
 import { Sort } from '../controls/articles/AotdView';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
 	deviceType: DeviceType,
@@ -34,7 +35,6 @@ interface Props {
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onClearAlerts: (alert: Alert) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
@@ -49,6 +49,7 @@ interface Props {
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewAuthor: (slug: string, name: string) => void,
@@ -277,13 +278,13 @@ class HomeScreen extends React.Component<Props, State> {
 								maxLength={this.state.maxLength}
 								minLength={this.state.minLength}
 								onChangeSort={this._changeSort}
-								onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 								onNavTo={this.props.onNavTo}
 								onPostArticle={this.props.onPostArticle}
 								onRateArticle={this.props.onRateArticle}
 								onReadArticle={this.props.onReadArticle}
 								onShare={this.props.onShare}
+								onShareViaChannel={this.props.onShareViaChannel}
 								onToggleArticleStar={this.props.onToggleArticleStar}
 								onViewAotdHistory={this.props.onViewAotdHistory}
 								onViewComments={this.props.onViewComments}
@@ -309,7 +310,6 @@ class HomeScreen extends React.Component<Props, State> {
 				location={this.props.location}
 				onBeginOnboarding={this.props.onBeginOnboarding}
 				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-				onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
@@ -321,6 +321,7 @@ class HomeScreen extends React.Component<Props, State> {
 				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}
 				onShare={this.props.onShare}
+				onShareViaChannel={this.props.onShareViaChannel}
 				onToggleArticleStar={this.props.onToggleArticleStar}
 				onViewAotdHistory={this.props.onViewAotdHistory}
 				onViewAuthor={this.props.onViewAuthor}

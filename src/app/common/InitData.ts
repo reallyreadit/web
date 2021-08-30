@@ -5,18 +5,27 @@ import Exchange from './serverApi/Exchange';
 import AppReferral from './AppReferral';
 import { DeviceType } from '../../common/DeviceType';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import { AppPlatform } from '../../common/AppPlatform';
 
-export default interface InitData {
+type CommonInitData = {
 	apiServerEndpoint: HttpEndpoint,
-	appReferral: AppReferral,
-	clientType: ClientType,
 	deviceType: DeviceType,
 	exchanges: Exchange[],
-	extensionVersion: string | null,
 	initialLocation: RouteLocation,
 	staticServerEndpoint: HttpEndpoint,
 	stripePublishableKey: string,
 	userProfile: WebAppUserProfile | null,
 	version: string,
 	webServerEndpoint: HttpEndpoint
-}
+};
+type AppInitData = CommonInitData & {
+	appReferral: AppReferral,
+	appPlatform: AppPlatform,
+	clientType: ClientType.App
+};
+type BrowserInitData = CommonInitData & {
+	clientType: ClientType.Browser,
+	extensionVersion: string | null
+};
+type InitData = AppInitData | BrowserInitData;
+export default InitData;

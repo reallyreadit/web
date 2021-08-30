@@ -27,6 +27,7 @@ import CenteringContainer from '../../../../common/components/CenteringContainer
 import StickyNote from '../../../../common/components/StickyNote';
 import FormDialog from '../../../../common/components/FormDialog';
 import {DeviceType} from '../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 enum View {
 	History = 'History',
@@ -36,7 +37,6 @@ type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLen
 interface Props {
 	deviceType: DeviceType,
 	view: View,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string
 	onGetStarredArticles: ArticleFetchFunction,
@@ -51,6 +51,7 @@ interface Props {
 	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function,
 	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -243,13 +244,13 @@ class MyReadsScreen extends React.Component<Props, State> {
 													<ArticleDetails
 														article={article}
 														deviceType={this.props.deviceType}
-														onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onNavTo={this.props.onNavTo}
 														onPost={this.props.onPostArticle}
 														onRateArticle={this.props.onRateArticle}
 														onRead={this.props.onReadArticle}
 														onShare={this.props.onShare}
+														onShareViaChannel={this.props.onShareViaChannel}
 														onToggleStar={this.props.onToggleArticleStar}
 														onViewComments={this.props.onViewComments}
 														onViewProfile={this.props.onViewProfile}

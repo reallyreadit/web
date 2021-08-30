@@ -18,20 +18,22 @@ import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../..
 import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
 import { ProblemDetails } from '../../common/ProblemDetails';
 import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
+import { AppPlatform } from '../../common/AppPlatform';
 
 export default class extends AppApi {
 	private readonly _messagingContext: WebViewMessagingContext;
-	private _deviceInfo: DeviceInfo = {
-		appVersion: new SemanticVersion('0.0.0'),
-		installationId: null,
-		name: '',
-		token: null
-	};
 	private readonly _deviceInfoQueue: ((deviceInfo: DeviceInfo) => void)[] = [];
-	constructor(messagingContext: WebViewMessagingContext) {
-		super();
-		this._messagingContext = messagingContext;
-		messagingContext.addListener(message => {
+	constructor(
+		params: {
+			messagingContext: WebViewMessagingContext,
+			platform: AppPlatform
+		}
+	) {
+		super({
+			platform: params.platform
+		});
+		this._messagingContext = params.messagingContext;
+		params.messagingContext.addListener(message => {
 			switch (message.type) {
 				case 'alertStatusUpdated':
 					this.emitEvent('alertStatusUpdated', message.data);
@@ -78,7 +80,7 @@ export default class extends AppApi {
 		// from AppRoot componentDidMount() and setting the
 		// device info there.
 		// for now we'll keep sending/setting this asap
-		messagingContext.sendMessage(
+		params.messagingContext.sendMessage(
 			{
 				type: 'getDeviceInfo'
 			},
@@ -88,7 +90,7 @@ export default class extends AppApi {
 			}
 		);
 		// legacy app < version 5.0.0
-		messagingContext.sendMessage(
+		params.messagingContext.sendMessage(
 			{
 				type: 'getVersion'
 			},
@@ -106,6 +108,7 @@ export default class extends AppApi {
 	private setDeviceInfo(deviceInfo: SerializedDeviceInfo) {
 		this._deviceInfo = {
 			...deviceInfo,
+			appPlatform: this._deviceInfo.appPlatform,
 			appVersion: new SemanticVersion(deviceInfo.appVersion)
 		};
 	}
@@ -278,8 +281,5 @@ export default class extends AppApi {
 			type: 'syncAuthCookie',
 			data: user
 		});
-	}
-	public get deviceInfo() {
-		return this._deviceInfo;
 	}
 }

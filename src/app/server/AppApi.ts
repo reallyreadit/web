@@ -1,6 +1,5 @@
 import AppApi, { ArticleReference } from '../common/AppApi';
 import { ShareEvent } from '../../common/sharing/ShareEvent';
-import DeviceInfo from '../../common/models/app/DeviceInfo';
 import UserAccount from '../../common/models/UserAccount';
 import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
@@ -59,8 +58,5 @@ export default class extends AppApi {
 	}
 	public syncAuthCookie(user?: UserAccount) {
 		throw new Error('Operation not supported in server environment');
-	}
-	public get deviceInfo() {
-		return null as DeviceInfo;
 	}
 }

@@ -25,6 +25,7 @@ import {DeviceType} from '../../../../common/DeviceType';
 import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import {variants} from '../../marketingTesting';
 import RouteLocation from '../../../../common/routing/RouteLocation';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 enum View {
 	Recent = 'Recent',
@@ -45,6 +46,7 @@ export interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -215,13 +217,13 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 												<ArticleDetails
 													article={article}
 													deviceType={this.props.deviceType}
-													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onNavTo={this.props.onNavTo}
 													onPost={this.props.onPostArticle}
 													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}
 													onShare={this.props.onShare}
+													onShareViaChannel={this.props.onShareViaChannel}
 													onToggleStar={this.props.onToggleArticleStar}
 													onViewComments={this.props.onViewComments}
 													onViewProfile={this.props.onViewProfile}

@@ -62,6 +62,9 @@ import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import createReadScreenFactory from './AppRoot/ReadScreen';
+import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
+import ShareForm from '../../../common/models/analytics/ShareForm';
+import { ShareChannelData } from '../../../common/sharing/ShareData';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -226,11 +229,42 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// sharing
+	private readonly _handleShareChannelRequest = (data: ShareChannelData) => {
+		switch (data.channel) {
+			case ShareChannel.Clipboard:
+				this._clipboard.copyText(data.text, 'Link copied to clipboard');
+				break;
+			case ShareChannel.Email:
+				this.props.appApi.openExternalUrlUsingSystem(`mailto:${createQueryString({
+					'body': data.body,
+					'subject': data.subject
+				})}`);
+				break;
+			case ShareChannel.Twitter:
+				this._openTweetComposer(data);
+				break;
+		}
+	};
 	private readonly _handleShareRequest = (data: ShareEvent) => {
-		this._handleShareRequestWithCompletion(data);
-		return {
-			channels: [] as ShareChannel[]
-		};
+		if (
+			isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform)
+		) {
+			this._handleShareRequestWithCompletion(data);
+			return {
+				channels: [] as ShareChannel[]
+			};
+		} else {
+			return {
+				channels: [
+					ShareChannel.Clipboard,
+					ShareChannel.Email,
+					ShareChannel.Twitter
+				],
+				completionHandler: (data: ShareForm) => {
+
+				}
+			};
+		}
 	};
 	private readonly _handleShareRequestWithCompletion = (data: ShareEvent) => {
 		return this.props.appApi.share({
@@ -314,11 +348,28 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
-		if (provider === SubscriptionProvider.Stripe) {
-			this._openStripeSubscriptionPromptDialog(article);
-			return;
+		if (provider == null) {
+			switch (this.props.appApi.deviceInfo.appPlatform) {
+				case AppPlatform.Android:
+					throw new Error(`Subscriptions not implemented for platform: ${AppPlatform.Android}.`);
+				case AppPlatform.Ios:
+				case AppPlatform.MacOs:
+					provider = SubscriptionProvider.Apple;
+					break;
+				case AppPlatform.Linux:
+				case AppPlatform.Windows:
+					provider = SubscriptionProvider.Stripe;
+					break;
+			}
 		}
-		this._openAppStoreSubscriptionPromptDialog(article);
+		switch (provider) {
+			case SubscriptionProvider.Apple:
+				this._openAppStoreSubscriptionPromptDialog(article);
+				break;
+			case SubscriptionProvider.Stripe:
+				this._openStripeSubscriptionPromptDialog(article);
+				break;
+		}
 	};
 	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
 		.requestPayoutAccountLoginLink()
@@ -441,7 +492,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.getDeviceInfo()
 			.then(
 				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
+					if (
+						isAppleAppPlatform(deviceInfo.appPlatform) &&
+						deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
+					) {
 						this.openAppUpdateRequiredDialog('5.7');
 						throw new Error('Unsupported');
 					}
@@ -499,7 +553,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.getDeviceInfo()
 			.then(
 				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0) {
+					if (
+						!isAppleAppPlatform(deviceInfo.appPlatform) ||
+						deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0
+					) {
 						this.props.appApi.requestAppleIdCredential();
 					} else {
 						this.openAppUpdateRequiredDialog('5.4');
@@ -514,7 +571,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 					.getDeviceInfo()
 					.then(
 						deviceInfo => {
-							if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0) {
+							if (
+								isAppleAppPlatform(deviceInfo.appPlatform) &&
+								deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
+							) {
 								this.openAppUpdateRequiredDialog('5.7');
 								throw 'Unsupported';
 							}
@@ -621,6 +681,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
@@ -632,7 +693,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					deviceType: DeviceType.Ios,
 					onBeginOnboarding: this._noop,
 					onCopyAppReferrerTextToClipboard: this._noop,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onCreateTitle: this._createAuthorScreenTitle,
@@ -646,6 +706,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
@@ -655,7 +716,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Blog,
 				{
 					deviceType: DeviceType.Ios,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 					onNavTo: this._navTo,
@@ -664,6 +724,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
@@ -671,7 +732,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				onCloseDialog: this._dialog.closeDialog,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onDeleteComment: this._deleteComment,
@@ -689,6 +749,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewProfile: this._viewProfile
 			}),
@@ -702,7 +763,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: DeviceType.Ios,
 				onClearAlerts: this._clearAlerts,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
@@ -711,6 +771,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
@@ -722,7 +783,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					deviceType: DeviceType.Ios,
 					onClearAlerts: this._clearAlerts,
 					onCloseDialog: this._dialog.closeDialog,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
 					onGetReplyPosts: this.props.serverApi.getReplyPosts,
@@ -733,6 +793,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile,
@@ -772,7 +833,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				deviceType: DeviceType.Ios,
 				onCloseDialog: this._dialog.closeDialog,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetStarredArticles: this.props.serverApi.getStarredArticles,
@@ -786,6 +846,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterNewStarsHandler: this._registerNewStarsEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
@@ -793,7 +854,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
-				onCopyTextToClipboard: this._clipboard.copyText,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
@@ -813,6 +873,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
@@ -834,7 +895,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Search,
 				{
 					deviceType: DeviceType.Ios,
-					onCopyTextToClipboard: this._clipboard.copyText,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
 					onNavTo: this._navTo,
@@ -844,6 +904,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSearchArticles: this.props.serverApi.searchArticles,
 					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile,
@@ -853,7 +914,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					deviceType: DeviceType.Ios,
+					appPlatform: this.props.appApi.deviceInfo.appPlatform,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
@@ -1067,7 +1128,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						// open subscription dialog if query string key is present
 						const queryStringParams = parseQueryString(url.search);
 						if (subscribeQueryStringKey in queryStringParams && this.state.user) {
-							this._openAppStoreSubscriptionPromptDialog();
+							this._openSubscriptionPromptDialog();
 						}
 					} else {
 						// must be a redirect url or broken link
@@ -1079,7 +1140,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener(
 				'openSubscriptionPrompt',
 				() => {
-					this._openAppStoreSubscriptionPromptDialog();
+					this._openSubscriptionPromptDialog();
 				}
 			)
 			.addListener(
@@ -1312,7 +1373,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
 		// sync auth state with app
-		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.2')) >= 0) {
+		if (
+			!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
+			this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.2')) >= 0
+		) {
 			this.props.appApi
 				.signIn(profile.userAccount, eventType)
 				.then(
@@ -1371,7 +1435,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// enter orientation for new users
 		let isInOrientation: boolean;
 		if (eventType === SignInEventType.NewUser) {
-			if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0) {
+			if (
+				!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
+				this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.5.1')) >= 0
+			) {
 				isInOrientation = true;
 			} else {
 				isInOrientation = false;
@@ -1392,7 +1459,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	protected onUserSignedOut() {
 		// sync auth state with app
-		if (this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
+		if (
+			!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
+			this.props.appApi.deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0
+		) {
 			this.props.appApi.signOut();
 		} else {
 			this.props.appApi.syncAuthCookie();
@@ -1523,7 +1593,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.getDeviceInfo()
 			.then(
 				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0) {
+					if (
+						!isAppleAppPlatform(deviceInfo.appPlatform) ||
+						deviceInfo.appVersion.compareTo(new SemanticVersion('5.6.1')) >= 0
+					) {
 						this.props.appApi.initialize(this.props.initialUserProfile?.userAccount);
 					} else {
 						this.props.appApi.syncAuthCookie(this.props.initialUserProfile?.userAccount);
@@ -1575,7 +1648,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (subscribeQueryStringKey in queryStringParams && this.state.user) {
 			window.setTimeout(
 				() => {
-					this._openAppStoreSubscriptionPromptDialog();
+					this._openSubscriptionPromptDialog();
 				},
 				0
 			);

@@ -14,7 +14,7 @@ import UserAccount from '../../../common/models/UserAccount';
 import AsyncTracker from '../../../common/AsyncTracker';
 import LoadingOverlay from './controls/LoadingOverlay';
 import InfoBox from '../../../common/components/InfoBox';
-import ShareData from '../../../common/sharing/ShareData';
+import ShareData, { ShareChannelData } from '../../../common/sharing/ShareData';
 import {DeviceType} from '../../../common/DeviceType';
 
 interface Props {
@@ -26,7 +26,6 @@ interface Props {
 	onChangePageNumber: (pageNumber: number) => void,
 	onChangePosts: (posts: Fetchable<PageResult<Post>>) => void,
 	onCloseDialog: () => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
@@ -37,6 +36,7 @@ interface Props {
 	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
 	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
 	onShare: (data: ShareData) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -176,7 +176,6 @@ export class PostList extends React.Component<Props> {
 									highlightedCommentId={this.props.highlightedCommentId}
 									highlightedPostId={this.props.highlightedPostId}
 									onCloseDialog={this.props.onCloseDialog}
-									onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onNavTo={this.props.onNavTo}
 									onOpenDialog={this.props.onOpenDialog}
@@ -184,6 +183,7 @@ export class PostList extends React.Component<Props> {
 									onRead={this.props.onReadArticle}
 									onPost={this.props.onPostArticle}
 									onShare={this.props.onShare}
+									onShareViaChannel={this.props.onShareViaChannel}
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 									onViewProfile={this.props.onViewProfile}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ShareData from '../../../../common/sharing/ShareData';
+import ShareData, { ShareChannelData } from '../../../../common/sharing/ShareData';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
@@ -22,7 +22,6 @@ import { NavReference } from '../Root';
 
 export interface Props {
 	deviceType: DeviceType,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onNavTo: (ref: NavReference) => void,
@@ -31,6 +30,7 @@ export interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareData) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
@@ -145,13 +145,13 @@ export default class BlogScreen extends React.Component<Props, State> {
 												<ArticleDetails
 													article={article}
 													deviceType={this.props.deviceType}
-													onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 													onNavTo={this.props.onNavTo}
 													onPost={this.props.onPostArticle}
 													onRateArticle={this.props.onRateArticle}
 													onRead={this.props.onReadArticle}
 													onShare={this.props.onShare}
+													onShareViaChannel={this.props.onShareViaChannel}
 													onToggleStar={this.props.onToggleArticleStar}
 													onViewComments={this.props.onViewComments}
 													onViewProfile={this.props.onViewProfile}

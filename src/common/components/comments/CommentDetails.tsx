@@ -22,6 +22,7 @@ import FormDialog from '../FormDialog';
 import CommentAddendumComposer from './CommentAddendumComposer';
 import { DateTime } from 'luxon';
 import MarkdownContent from './MarkdownContent';
+import { ShareChannelData } from '../../sharing/ShareData';
 
 enum CompositionState {
 	None,
@@ -34,7 +35,6 @@ interface Props {
 	highlightedCommentId?: string,
 	onAuthenticationRequired?: (completionDelegate?: () => void) => Function,
 	onCloseDialog: () => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment?: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onNavTo: (url: string) => boolean,
@@ -43,6 +43,7 @@ interface Props {
 	onPostCommentAddendum?: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision?: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,
@@ -228,10 +229,10 @@ export default class CommentDetails extends React.Component<
 					leaderboardBadge={this.props.comment.badge}
 					isAuthor={this.props.comment.isAuthor}
 					date={this.props.comment.dateCreated}
-					onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 					onGetShareData={this._getShareData}
 					onShare={this.props.onShare}
+					onShareViaChannel={this.props.onShareViaChannel}
 					onViewProfile={this.props.onViewProfile}
 				/>
 				{this.state.compositionState === CompositionState.Revision ?
@@ -331,7 +332,6 @@ export default class CommentDetails extends React.Component<
 										highlightedCommentId={this.props.highlightedCommentId}
 										onAuthenticationRequired={this.props.onAuthenticationRequired}
 										onCloseDialog={this.props.onCloseDialog}
-										onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 										onDeleteComment={this.props.onDeleteComment}
 										onNavTo={this.props.onNavTo}
@@ -340,6 +340,7 @@ export default class CommentDetails extends React.Component<
 										onPostCommentAddendum={this.props.onPostCommentAddendum}
 										onPostCommentRevision={this.props.onPostCommentRevision}
 										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
 										onViewProfile={this.props.onViewProfile}
 										onViewThread={this.props.onViewThread}
 										parentCommentId={this.props.comment.id}

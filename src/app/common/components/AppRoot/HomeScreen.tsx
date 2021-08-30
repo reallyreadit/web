@@ -23,11 +23,11 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import StickyNote from '../../../../common/components/StickyNote';
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
 	deviceType: DeviceType,
 	onClearAlerts: (alert: Alert) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onNavTo: (ref: NavReference) => void,
@@ -36,6 +36,7 @@ interface Props {
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
@@ -213,13 +214,13 @@ class HomeScreen extends React.Component<Props, State> {
 							maxLength={this.state.maxLength}
 							minLength={this.state.minLength}
 							onChangeSort={this._changeSort}
-							onCopyTextToClipboard={this.props.onCopyTextToClipboard}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onNavTo={this.props.onNavTo}
 							onRateArticle={this.props.onRateArticle}
 							onPostArticle={this.props.onPostArticle}
 							onReadArticle={this.props.onReadArticle}
 							onShare={this.props.onShare}
+							onShareViaChannel={this.props.onShareViaChannel}
 							onToggleArticleStar={this.props.onToggleArticleStar}
 							onViewAotdHistory={this.props.onViewAotdHistory}
 							onViewComments={this.props.onViewComments}

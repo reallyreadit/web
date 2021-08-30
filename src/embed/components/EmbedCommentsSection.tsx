@@ -1,5 +1,4 @@
 import * as React from 'react';
-import ClipboardService from '../../common/services/ClipboardService';
 import ToasterService from '../../common/services/ToasterService';
 import DialogService from '../../common/services/DialogService';
 import UserArticle from '../../common/models/UserArticle';
@@ -21,10 +20,10 @@ import { ShareEvent } from '../../common/sharing/ShareEvent';
 import ShareResponse from '../../common/sharing/ShareResponse';
 import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
+import { ShareChannelData } from '../../common/sharing/ShareData';
 
 export interface Props {
 	article: UserArticle
-	clipboardService: ClipboardService,
 	comments: Fetchable<CommentThread[]>,
 	dialogService: DialogService<{}>,
 	onAuthenticationRequired: (analyticsAction: string, completionDelegate: () => void) => Function,
@@ -37,6 +36,7 @@ export interface Props {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (shareData: ShareEvent) => ShareResponse,
+	onShareViaChannel: (shareData: ShareChannelData) => void,
 	onViewProfile: (userName: string) => void,
 	toasterService: ToasterService,
 	user: UserAccount | null
@@ -92,7 +92,6 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 							noCommentsMessage="No comments on this article yet."
 							onAuthenticationRequired={this._requireAuthenticationForReply}
 							onCloseDialog={this.props.dialogService.closeDialog}
-							onCopyTextToClipboard={this.props.clipboardService.copyText}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onDeleteComment={this.props.onDeleteComment}
 							onNavTo={this.props.onNavTo}
@@ -101,6 +100,7 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 							onPostCommentAddendum={this.props.onPostCommentAddendum}
 							onPostCommentRevision={this.props.onPostCommentRevision}
 							onShare={this.props.onShare}
+							onShareViaChannel={this.props.onShareViaChannel}
 							onViewProfile={this.props.onViewProfile}
 							user={this.props.user}
 						/>
