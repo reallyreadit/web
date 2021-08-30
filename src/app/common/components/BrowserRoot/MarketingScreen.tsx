@@ -169,7 +169,7 @@ export default class MarketingScreen extends React.Component<
 			},
 			{
 				heading: "❤️ Really support writers & publishers",
-				paragraph: <div>The world’s first reading app that transparently compensates writers and publishers across the web. We distribute <strong>95%</strong> of our subscription revenue. <Link screen={ScreenKey.Leaderboards} onClick={this.props.onNavTo}>Check the open accounting.</Link></div>,
+				paragraph: <>The world’s first reading app that transparently compensates writers and publishers across the web. We distribute <strong>95%</strong> of our subscription revenue. <Link screen={ScreenKey.Leaderboards} onClick={this.props.onNavTo}>Check the open accounting.</Link></>,
 				imageName: "watch-money-3.0.png",
 				imageAlt: "Readup distributes your money directly to writers"
 			}
