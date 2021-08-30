@@ -19,11 +19,11 @@ import CommentAddendumForm from '../../../../common/models/social/CommentAddendu
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import InfoBox from '../../../../common/components/InfoBox';
 import Panel from '../BrowserRoot/Panel';
-import DownloadButton from '../BrowserRoot/DownloadButton';
 import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
+import MarketingBanner from '../BrowserRoot/MarketingBanner';
 
 export function getPathParams(location: RouteLocation) {
 	const params = findRouteByLocation(routes, location, unroutableQueryStringKeys).getPathParams(location.path);
@@ -84,21 +84,15 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 						</InfoBox> :
 						<>
 							{!this.props.user ?
-								<Panel className="header">
-									<h1>{marketingVariant.headline}</h1>
-									<h3>{marketingVariant.subtext}</h3>
-									<div className="buttons">
-										<DownloadButton
-											analyticsAction="CommentsScreen"
-											deviceType={this.props.deviceType}
-											location={this.props.location}
-											showOpenInApp={true}
-											onNavTo={this.props.onNavTo}
-											onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-											onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-										/>
-									</div>
-								</Panel> :
+								<MarketingBanner
+									analyticsAction="CommentsScreen"
+									deviceType={this.props.deviceType}
+									marketingVariant={marketingVariant}
+									location={this.props.location}
+									onNavTo={this.props.onNavTo}
+									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+								/> :
 								null}
 							<Panel className="main">
 								<ArticleDetails

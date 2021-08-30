@@ -223,8 +223,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	public render() {
 		const marketingVariant = this.state.view === View.Authors ?
 			{
-				headline: 'Where writers are really read',
-				subtext: 'Readup is the social reading platform. Readers pay to read articles across the web, distraction-free.\nWriters get paid, transparently!'
+				headline: 'Where reading compensates writers',
+				subtext: 'Readup is the world\'s best reading app. Pick any price for unlimited, ad-free reading. Compensate writers.'
 			}
 			: marketingVariants[0];
 		return (
