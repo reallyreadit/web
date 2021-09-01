@@ -69,7 +69,7 @@ const downloadPage = (props: Services) => (
 			<div className="options-set options-desktop">
 				<h2 className="options-set__heading">Desktop</h2>
 				{renderDownloadOption({title: 'macOS', iconName: 'apple', link: 'https://apps.apple.com/us/app/readup-social-reading/id1441825432', services: props})}
-				{renderDownloadOption({title: 'Windows', iconName: 'windows', link: 'https://static.readup.com/downloads/windows/latest', services: props})}
+				{renderDownloadOption({title: 'Windows', iconName: 'windows', link: 'https://static.readup.com/downloads/windows/ReadupSetup.exe', services: props})}
 			</div>
 		</div>
 	</div>
