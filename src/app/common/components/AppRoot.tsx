@@ -65,6 +65,7 @@ import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
+import NavBar from './BrowserRoot/NavBar';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -1522,17 +1523,25 @@ export default class extends Root<Props, State, SharedState, Events> {
 			<>
 				{this.state.user ?
 					<>
-						<Header
-							content={headerContent}
-							isTransitioningBack={this.state.isPoppingScreen}
-							onBack={this._popScreen}
-							onOpenMenu={this._openMenu}
-							onViewNotifications={this._viewNotifications}
-							selectedScreenKey={this.state.screens[0].key}
-							titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
+						<NavBar
+							onNavTo={this._navTo}
+							onViewHome={this._viewHome}
+							onViewMyImpact={this._viewMyImpact}
+							onViewMyReads={this._viewMyReads}
+							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 						/>
 						<div className="content">
+							<Header
+								content={headerContent}
+								isTransitioningBack={this.state.isPoppingScreen}
+								onBack={this._popScreen}
+								onOpenMenu={this._openMenu}
+								onViewNotifications={this._viewNotifications}
+								selectedScreenKey={this.state.screens[0].key}
+								titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
+								user={this.state.user}
+							/>
 							<ol className="screens">
 								{this.state.screens.map((screen, index, screens) => (
 									<li

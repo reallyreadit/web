@@ -3,6 +3,7 @@
 	cssComponentId: marketing-screen_n5a6wc
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/breakpoints';
 
 .marketing-screen_n5a6wc > .header {
 	text-align: center;
@@ -280,8 +281,6 @@
 	}
 
 	.home-hero-image {
-		&__intro-text {
-		}
 
 		&__image {
 			margin-bottom: 20px;
@@ -298,7 +297,7 @@
 		}
 	}
 
-	@media screen and (min-width: 900px) {
+	@include from(tablet-landscape) {
 		flex-direction: row;
 		max-width: unset;
 		margin: auto;

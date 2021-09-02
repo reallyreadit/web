@@ -63,8 +63,18 @@ export default (props: {
 					</div>}
 			</div>
 			<div className="title">{props.titles[props.titles.length - (props.isTransitioningBack ? 2 : 1)]}</div>
-			<div className="right-content">
+			<div className="right-content ">
 				{props.content}
+
+				<div
+					className="menu-button notification-icon"
+					onClick={props.onViewNotifications}
+				>
+					<Icon
+						badge={props.user.replyAlertCount + props.user.postAlertCount + props.user.loopbackAlertCount}
+						name="bell"
+					/>
+				</div>
 				<div
 					className="menu-button"
 					onClick={props.onOpenMenu}

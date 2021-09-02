@@ -3,6 +3,7 @@
   cssComponentId: app-root_vc3j5h_vc3j5h
 */
 @import '../../../common/styles/colors';
+@import '../../../common/styles/breakpoints';
 
 .app-root_vc3j5h {
 	position: relative;
@@ -10,6 +11,7 @@
 	display: flex;
 	flex-flow: column;
 }
+
 .app-root_vc3j5h > .content {
 	flex: 1 1 auto;
 	position: relative;
@@ -30,6 +32,18 @@
 	box-sizing: border-box;
 	z-index: 1;
 }
+
+@include from(tablet-landscape) {
+	// .app-root_vc3j5h > .content {
+	.app-root_vc3j5h {
+		display: flex;
+		flex-flow: row;
+	}
+	.app-root_vc3j5h {
+		flex: 1 1 auto;
+	}
+}
+
 .app-root_vc3j5h > .content > .screens > .screen + .screen.slide-in {
 	animation: app-root_vc3j5h-screen-slide-in 250ms forwards;
 }

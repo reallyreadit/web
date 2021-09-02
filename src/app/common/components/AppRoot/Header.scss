@@ -3,10 +3,13 @@
 	cssComponentId: header_q3p9go
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/breakpoints';
+
+$header-height: 41px;
 
 .header_q3p9go {
 	flex: 0 0 auto;
-	height: 41px;
+	height: $header-height;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -18,7 +21,7 @@
 .header_q3p9go > .left-content,
 .header_q3p9go > .right-content {
 	flex: 0 0 auto;
-	width: 36px;
+	min-width: 36px;
 	height: 100%;
 }
 .header_q3p9go > .left-content {
@@ -50,6 +53,41 @@
 	text-overflow: ellipsis;
 	text-align: center;
 	font-weight: bold;
+}
+
+.header_q3p9go > .right-content > .menu-button.notification-icon {
+	display: none;
+}
+
+@include from(tablet-landscape) {
+	$right-icon-margin: 14px;
+	.header_q3p9go > .right-content {
+		margin-right: $right-icon-margin;
+		display: flex;
+	}
+
+	.header_q3p9go > .right-content > .menu-button:not(:last-child) {
+		margin-right: $right-icon-margin;
+	}
+
+	.header_q3p9go > .left-content > .notification-icon-wrapper {
+		display: none;
+	}
+
+	.header_q3p9go > .right-content > .menu-button.notification-icon {
+		display: flex;
+	}
+
+	.header_q3p9go > .right-content {
+		margin-right: $right-icon-margin;
+		display: flex;
+	}
+
+	.header_q3p9go > .right-content > .menu-button:not(:last-child) {
+		margin-right: $right-icon-margin;
+	}
+
+
 }
 
 @include theme using ($root, $scheme) {
