@@ -74,6 +74,9 @@ export default class extends AppApi {
 				case 'subscriptionPurchaseCompleted':
 					this.emitEvent('subscriptionPurchaseCompleted', message.data);
 					break;
+				case 'updateAvailable':
+					this.emitEvent('updateAvailable', message.data);
+					break;
 			}
 		});
 		// one day we'll switch to calling initialize()
@@ -142,6 +145,11 @@ export default class extends AppApi {
 				);
 			}
 		);
+	}
+	public installUpdate() {
+		this._messagingContext.sendMessage({
+			type: 'installUpdate'
+		});
 	}
 	public openExternalUrl(url: string) {
 		this._messagingContext.sendMessage({

@@ -25,6 +25,7 @@ import { ProblemDetails } from '../../common/ProblemDetails';
 import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
 import { AppPlatform } from '../../common/AppPlatform';
 import SemanticVersion from '../../common/SemanticVersion';
+import { UpdateAvailableEvent } from '../../common/models/app/UpdateAvailableEvent';
 
 export type ArticleReference = { slug: string } | { url: string }
 export default abstract class extends EventEmitter<{
@@ -39,7 +40,8 @@ export default abstract class extends EventEmitter<{
 	'displayPreferenceChanged': DisplayPreference,
 	'loadUrl': string,
 	'openSubscriptionPrompt': void,
-	'subscriptionPurchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
+	'subscriptionPurchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>,
+	'updateAvailable': UpdateAvailableEvent
 }> {
 	protected _deviceInfo: DeviceInfo;
 	constructor(
@@ -59,6 +61,7 @@ export default abstract class extends EventEmitter<{
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract getDeviceInfo(): Promise<DeviceInfo>;
 	public abstract initialize(user?: UserAccount): Promise<DeviceInfo>;
+	public abstract installUpdate(): void;
 	public abstract openExternalUrl(url: string): void;
 	public abstract openExternalUrlUsingSystem(url: string): void;
 	public abstract openExternalUrlWithCompletionHandler(url: string): Promise<ExternalUrlCompletionEvent>;

@@ -458,6 +458,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 
+	// updates
+	private readonly _installUpdate = () => {
+		this.props.appApi.installUpdate();
+	};
+
 	// user account
 	private readonly _handleAuthServiceCredentialAuthResponse = (response: AuthServiceCredentialAuthResponse) => {
 		if (
@@ -1207,6 +1212,21 @@ export default class extends Root<Props, State, SharedState, Events> {
 							break;
 					}
 					this._eventManager.triggerEvent('purchaseCompleted', result);
+				}
+			)
+			.addListener(
+				'updateAvailable',
+				() => {
+					if (this._isUpdateAvailable) {
+						// Override existing web app update toast. The handle for permenant toasts is 0 (TODO: There should be a cleaner way to handle this).
+						this._toaster.removeToast(0);
+					}
+					this._isUpdateAvailable = true;
+					this._toaster.addToast(
+						<UpdateToast onReloadWindow={this._installUpdate} />,
+						Intent.Success,
+						false
+					);
 				}
 			);
 	}

@@ -17,6 +17,9 @@ export default class extends AppApi {
 	public initialize(user?: UserAccount) {
 		return Promise.reject('Operation not supported in server environment');
 	}
+	public installUpdate() {
+		throw new Error('Operation not supported in server environment');
+	}
 	public openExternalUrl(url: string) {
 		throw new Error('Operation not supported in server environment');
 	}
