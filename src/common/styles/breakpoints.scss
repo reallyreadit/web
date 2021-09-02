@@ -64,6 +64,19 @@ $range-queries-until-size: (
 	}
 }
 
+/**
+	Example usage:
+
+	@include from(tablet-portrait) {
+		color: hotpink;
+	}
+
+	results in
+
+	@media only screen and (min-width: 600px) {
+		color: hotpink;
+	}
+*/
 @mixin from($range) {
 	@include for-range($range-queries-from-size, $range) {
 		@content;
