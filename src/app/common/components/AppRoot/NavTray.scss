@@ -5,41 +5,47 @@
 @import '../../../../common/styles/colors';
 
 .nav-tray_2tc8 {
-	flex: 0 0 auto;
-	display: flex;
-	align-items: center;
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-bottom-width: env(safe-area-inset-bottom);
-	border-bottom-style: solid;
+	display: none;
 }
-.nav-tray_2tc8 > li {
-	width: 33.33%;
-	text-align: center;
-}
-.nav-tray_2tc8 > li > button {
-	width: 100%;
-	padding: 6px 0 3px 0;
-	background: none;
-	border: none;
-	outline: none;
-	-webkit-user-select: none;
-	user-select: none;
-}
-.nav-tray_2tc8 > li > button.selected {
-	font-weight: bold;
-}
-.nav-tray_2tc8 > li > button > .icon_rour3d {
-	font-size: 20px;
-}
-.nav-tray_2tc8 > li > button > label {
-	display: block;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	margin-top: 1px;
-	font-family: 'Museo Sans (100)';
-	font-size: 9pt;
+
+@media screen and (max-width: 899px) {
+	.nav-tray_2tc8 {
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		border-top-width: 1px;
+		border-top-style: solid;
+		border-bottom-width: env(safe-area-inset-bottom);
+		border-bottom-style: solid;
+	}
+	.nav-tray_2tc8 > li {
+		width: 33.33%;
+		text-align: center;
+	}
+	.nav-tray_2tc8 > li > button {
+		width: 100%;
+		padding: 6px 0 3px 0;
+		background: none;
+		border: none;
+		outline: none;
+		-webkit-user-select: none;
+		user-select: none;
+	}
+	.nav-tray_2tc8 > li > button.selected {
+		font-weight: bold;
+	}
+	.nav-tray_2tc8 > li > button > .icon_rour3d {
+		font-size: 20px;
+	}
+	.nav-tray_2tc8 > li > button > label {
+		display: block;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		margin-top: 1px;
+		font-family: 'Museo Sans (100)';
+		font-size: 9pt;
+	}
 }
 
 @include theme using ($root, $scheme) {
