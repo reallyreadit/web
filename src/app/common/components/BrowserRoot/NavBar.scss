@@ -3,13 +3,14 @@
 	cssComponentId: nav-bar_yh8orf
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/breakpoints';
 @import '../AppRoot/Header.scss';
 
 .nav-bar_yh8orf {
 	display: none;
 }
 
-@media screen and (min-width: 900px) {
+@include from(tablet-landscape) {
 	.nav-bar_yh8orf {
 		flex: 0 0 auto;
 		display: flex;

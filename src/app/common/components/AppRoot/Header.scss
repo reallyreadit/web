@@ -3,6 +3,7 @@
 	cssComponentId: header_q3p9go
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/breakpoints';
 
 $header-height: 41px;
 
@@ -58,7 +59,7 @@ $header-height: 41px;
 	display: none;
 }
 
-@media screen and (min-width: 900px) {
+@include from(tablet-landscape) {
 	$right-icon-margin: 14px;
 	.header_q3p9go > .right-content {
 		margin-right: $right-icon-margin;

@@ -3,12 +3,13 @@
 	cssComponentId: nav-tray_2tc8
 */
 @import '../../../../common/styles/colors';
+@import '../../../../common/styles/breakpoints';
 
 .nav-tray_2tc8 {
 	display: none;
 }
 
-@media screen and (max-width: 899px) {
+@include until(tablet-landscape) {
 	.nav-tray_2tc8 {
 		flex: 0 0 auto;
 		display: flex;

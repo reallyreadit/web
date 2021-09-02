@@ -3,6 +3,7 @@
   cssComponentId: app-root_vc3j5h_vc3j5h
 */
 @import '../../../common/styles/colors';
+@import '../../../common/styles/breakpoints';
 
 .app-root_vc3j5h {
 	position: relative;
@@ -32,7 +33,7 @@
 	z-index: 1;
 }
 
-@media screen and (min-width: 900px) {
+@include from(tablet-landscape) {
 	// .app-root_vc3j5h > .content {
 	.app-root_vc3j5h {
 		display: flex;
