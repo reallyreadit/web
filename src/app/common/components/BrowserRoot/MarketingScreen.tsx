@@ -82,18 +82,18 @@ export interface Quote {
 const prices = [
 	{
 		amount: formatCurrency(0),
-		title: 'Lurker',
-		subtitle: 'Have a look around!',
-		description: <><p>Find great reads</p><p>Read on the web</p></>
+		title: 'Have a look around',
+		subtitle: '',
+		description: <><p>Browse the articles and comments.</p><p>Ads, paywalls, etc. </p></>
 	},
 	{
 		amount: <>{formatCurrency(499)}<span className="month">/month</span>
-			<br/><span className="or-more">Or more! Pay what you want.</span>
+			<br/><span className="or-more">Feeling generous?<br/>Pay more! $4.99 is just the minimum.</span>
 			</>,
-		title: 'Reader',
-		subtitle: 'Pure reading bliss',
+		title: 'Read on Readup',
+		subtitle: '',
 		// description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Watch <strong>95%</strong> of your money go to the writers &amp; publishers you read.</p></>,
-		description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Invest in better reading and writer compensation</p></>,
+		description: <><p>Pure reading bliss.</p><p>No ads. No paywalls. And a really great way to support the writers you read!</p></>,
 		selected: true
 	},
 ];
@@ -154,23 +154,23 @@ export default class MarketingScreen extends React.Component<
 				heading: "Kill paywalls, kill ads 🔫",
 				paragraph: "Get in a reading flow state. Readup removes ads, paywalls and other distractions.",
 				imageName: "kill-ads-3.0.png",
-				imageAlt: "Transparent recommendation mechanism"
+				imageAlt: "No paywalls or ads on Readup"
 			},
 			{
 				heading: "The best articles",
-				paragraph: "Enjoy articles from top publishers, newspapers and bloggers, curated by committed readers.",
+				paragraph: "Enjoy articles from top publishers and blogs, curated by Readup's community of deep readers.",
 				imageName: "best-articles-3.0.png",
 				imageAlt: "The best articles from the web"
 			},
 			{
 				heading: "Import from anywhere, read anywhere.",
-				paragraph: "Import on your laptop at work, read on your phone in the sofa. No time to finish? Readup bookmarks everything, automatically.",
+				paragraph: "Create your own little library, available on any device. No time to finish an article? Readup bookmarks everything, automatically.",
 				imageName: "import-anywhere-3.0.png",
 				imageAlt: "Import any where, read on your mobile phone or computer"
 			},
 			{
-				heading: "❤️ Really support writers & publishers",
-				paragraph: <>The world’s first reading app that transparently compensates writers and publishers across the web. We distribute <strong>95%</strong> of our subscription revenue. <Link screen={ScreenKey.Leaderboards} onClick={this.props.onNavTo}>Check the open accounting.</Link></>,
+				heading: "Better pay for writers ❤️",
+				paragraph: <>Readup is completely transparent. <strong>95%</strong> of your subscription fee goes directly to the writers you read. <Link screen={ScreenKey.Leaderboards} onClick={this.props.onNavTo}>Check it out →</Link></>,
 				imageName: "watch-money-3.0.png",
 				imageAlt: "Readup distributes your money directly to writers"
 			}
@@ -179,27 +179,27 @@ export default class MarketingScreen extends React.Component<
 		const supportPoints = [
 			{
 				heading: "A vibrant community",
-				paragraph: "Read comments, follow friends, connect with interesting readers and writers. Learn together and see different perspectives.",
+				paragraph: "The Readup community is truly special - thoughtful, kind and interesting. Follow others, enjoy the comments, and feel the love.",
 				imageName: "vibrant-community-3.0.png",
 				imageAlt: "Import from any publication"
 			},
 			{
 				heading: "Algorithms you can trust",
-				paragraph: "Readup doesn't put you in an filter bubble. Article curation is universal, everyone sees the same great articles.",
+				paragraph: "There are no echo-chambers on Readup. Everyone sees the same great articles and all algorithms are 100% transparent.",
 				imageName: "good-algorithms-3.0.png",
-				imageAlt: "Reading view without clutter or distractions"
+				imageAlt: "Transparent recommendation algorithms"
 			},
 			{
-				heading: "Everyone's verified",
-				paragraph: "On Readup, all commenters are verified to have read the article. Expect inspiration, respect, and compassion.",
+				heading: "Read-certified comments",
+				paragraph: "Readup requires you to read the article if you want to comment on it. This is the key to true civil discourse. ",
 				imageName: "civilized-discussion-3.0.png",
-				imageAlt: "Transparent recommendation mechanism"
+				imageAlt: "Readup requires you to read the article if you want to comment on it."
 			},
 			{
 				heading: "Reading statistics",
-				paragraph: "Get a sense of how much you're reading, to the minute. Participate in a friendly reading competition in the leaderboards.",
+				paragraph: "Track and improve your reading performance. Read more articles to completion and spend less time skimming and scanning. ",
 				imageName: "statistics-3.0.png",
-				imageAlt: "Transparent recommendation mechanism"
+				imageAlt: "Reading statistics"
 			},
 		]
 
