@@ -62,7 +62,6 @@ export default class DownloadButton extends React.Component<Props> {
 		if (isShowInAppProps(this.props) && isDeviceTypeProps(this.props) && this.props.showOpenInApp) {
 			let targetUrl;
 			if (this.props.deviceType === DeviceType.Ios) {
-				console.log("doing ios redirect")
 				targetUrl = createUrl(
 					{
 						host: 'reallyread.it',
@@ -74,7 +73,6 @@ export default class DownloadButton extends React.Component<Props> {
 					}
 				)
 			} else {
-				console.log("doing other redirect")
 				targetUrl = createUrl(
 					{
 						host: window.location.host,
@@ -90,20 +88,19 @@ export default class DownloadButton extends React.Component<Props> {
 	}
 
 	public componentDidMount = () => {
-		// Try a redirect to the app via the readup:// protocol, if not on Safari Desktop.
-		// Redirect causes an error page Safari Desktop https://whimsical.com/web-ctas-Kec4SgBpkcCj6TJU2Gme1
+		// Try an automatic redirect to the app, if:
+		// - On desktop? Only if not on Safari Desktop.
+		// - Not on iOS. Applinks association only works after a click action & causes an error otherwise (invalid address)
+		// - On Android? -> to test! what happens on an attempted readup:// open?
 		if (isShowInAppProps(this.props) && this.props.showOpenInApp
-			&&  isDeviceTypeProps(this.props)
-			&& this.props.deviceType && this.props.deviceType !== DeviceType.DesktopSafari) {
-				this._openInApp()
+			&& isDeviceTypeProps(this.props)
+			&& this.props.deviceType
+				&& this.props.deviceType !== DeviceType.DesktopSafari
+				&& this.props.deviceType !== DeviceType.Ios
+				) {
+				this._openInApp();
 		}
 	}
-	// TODO: should probably be optional in favor of the redirect in ReadScreen on iOS? Or should that one be removed?
-
-	// problems: for opening a comments page
-	// iPad Air 4th gen: redirect results in redirect to the mac os store app. Can't reach "open in app" button.
-	// iPhone SE: automatic redirect results in error dialog after some time, open in app button click works to open comments in app.
-	// TODO: if there is no resolution, automatic redirect should be disabled where it causes issues
 
 	private _renderGenericButton = () => {
 		return <Button
@@ -144,7 +141,7 @@ export default class DownloadButton extends React.Component<Props> {
 				}
 					{ isShowInAppProps(this.props) && this.props.showOpenInApp ?
 						<Button
-							text="Or open in App"
+							text="Open in App"
 							size='normal'
 							intent="normal"
 							className="open-in-app"
