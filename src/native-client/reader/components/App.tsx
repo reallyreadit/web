@@ -59,6 +59,7 @@ export interface Props extends DialogServiceState {
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
+	onToggleStar: (article: UserArticle) => Promise<void>,
 	user: UserAccount | null
 }
 export default class App extends React.Component<
@@ -215,6 +216,7 @@ export default class App extends React.Component<
 						onReportArticleIssue={this._reportArticleIssue}
 						onShare={this._handleShareRequest}
 						onShareViaChannel={this._handleShareChannelRequest}
+						onToggleStar={this.props.onToggleStar}
 					/>
 				</div>
 				<DialogManager

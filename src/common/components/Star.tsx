@@ -3,12 +3,15 @@ import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import Icon from './Icon';
 
-export default (props: {
+interface Props {
 	className?: ClassValue,
 	starred: boolean,
 	busy: boolean,
+	look?: 'muted' | 'action'
 	onClick: () => void
-}) =>
+}
+
+const Star: React.FunctionComponent<Props> = (props) =>
 	<div
 		className={
 			classNames(
@@ -17,6 +20,7 @@ export default (props: {
 					starred: props.starred,
 					busy: props.busy
 				},
+				`look--${props.look}`,
 				props.className
 			)
 		}
@@ -28,3 +32,9 @@ export default (props: {
 			onClick={props.onClick}
 		/>
 	</div>;
+
+Star.defaultProps = {
+	look: 'muted'
+}
+
+export default Star;

@@ -29,10 +29,19 @@
 	font-size: 22px;
 	cursor: pointer;
 }
-.reader-header_h3o6tn > .widget > .popover_r7v81v > .children > .icon_rour3d {
+.reader-header_h3o6tn > .widget > .popover_r7v81v > .children  {
 	font-size: 22px;
 	cursor: pointer;
 }
+.reader-header_h3o6tn > .widget > .star_n3lkaj {
+	font-size: 22px;
+	> .icon_rour3d {
+		> .icon {
+			color: inherit;
+		}
+	}
+}
+
 .reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content {
 	position: relative;
 	padding: 10px 5px;
