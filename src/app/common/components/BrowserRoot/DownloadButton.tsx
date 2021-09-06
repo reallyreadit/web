@@ -91,14 +91,14 @@ export default class DownloadButton extends React.Component<Props> {
 		// Try an automatic redirect to the app, if:
 		// - On desktop? Only if not on Safari Desktop.
 		// - Not on iOS. Applinks association only works after a click action & causes an error otherwise (invalid address)
-		// - On Android? -> to test! what happens on an attempted readup:// open?
+		// - Not on Android. There's no Android app so far.
 		if (isShowInAppProps(this.props) && this.props.showOpenInApp
 			&& isDeviceTypeProps(this.props)
 			&& this.props.deviceType
 				&& this.props.deviceType !== DeviceType.DesktopSafari
 				&& this.props.deviceType !== DeviceType.Ios
-				) {
-				this._openInApp();
+				&& this.props.deviceType !== DeviceType.Android) {
+					this._openInApp();
 		}
 	}
 
@@ -125,21 +125,14 @@ export default class DownloadButton extends React.Component<Props> {
 							>
 								<img src={this.props.onCreateStaticContentUrl('/app/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg')} alt="App Store Badge" />
 							</a> :
-						// this.props.deviceType === DeviceType.Android ?
-						// 	<div className="android">
-						// 		<div className="coming-soon">Coming soon to Android!</div>
-						// 		<Button
-						// 			text="Get Notified"
-						// 			size={this.props.size}
-						// 			intent="loud"
-						// 			onClick={this.props.onOpenNewPlatformNotificationRequestDialog}
-						// 		/>
-						// 	</div>
-						// 	:
 						this._renderGenericButton())
 					: this._renderGenericButton()
 				}
-					{ isShowInAppProps(this.props) && this.props.showOpenInApp ?
+					{ isShowInAppProps(this.props)
+						&& this.props.showOpenInApp
+						&& isDeviceTypeProps(this.props)
+						&& this.props.deviceType !== DeviceType.Android
+						?
 						<Button
 							text="Open in App"
 							size='normal'
