@@ -9,8 +9,8 @@ export default class ImportStep extends React.PureComponent<Props> {
 	public render() {
 		return (
 			<div className="import-step_jg2xdw">
-				<h1>Import articles.</h1>
-				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Import Screenshot" />
+				<h1>Save articles.</h1>
+				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Save Screenshot" />
 				<Button
 					intent="loud"
 					onClick={this.props.onContinue}

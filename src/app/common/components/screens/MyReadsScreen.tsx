@@ -105,9 +105,9 @@ class MyReadsScreen extends React.Component<Props, State> {
 			<FormDialog
 				onClose={this.props.onCloseDialog}
 				size="small"
-				title="Import Articles to Readup"
+				title="Save Articles to Readup"
 			>
-				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Import Screenshot" style={{ maxWidth: '100%' }} />
+				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Save Screenshot" style={{ maxWidth: '100%' }} />
 			</FormDialog>
 		);
 	};

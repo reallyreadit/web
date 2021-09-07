@@ -163,10 +163,10 @@ export default class MarketingScreen extends React.Component<
 				imageAlt: "The best articles from the web"
 			},
 			{
-				heading: "Import from anywhere, read anywhere.",
+				heading: "Save from anywhere, read anywhere.",
 				paragraph: "Create your own little library, available on any device. No time to finish an article? Readup bookmarks everything, automatically.",
 				imageName: "import-anywhere-3.0.png",
-				imageAlt: "Import any where, read on your mobile phone or computer"
+				imageAlt: "Save any where, read on your mobile phone or computer"
 			},
 			{
 				heading: "Better pay for writers ❤️",
@@ -181,7 +181,7 @@ export default class MarketingScreen extends React.Component<
 				heading: "A vibrant community",
 				paragraph: "The Readup community is truly special - thoughtful, kind and interesting. Follow others, enjoy the comments, and feel the love.",
 				imageName: "vibrant-community-3.0.png",
-				imageAlt: "Import from any publication"
+				imageAlt: "Save from any publication"
 			},
 			{
 				heading: "Algorithms you can trust",
