@@ -34,8 +34,6 @@ export default class ShareControl extends React.PureComponent<
 			channel: ShareChannel.Clipboard,
 			text: this.props.onGetData().url
 		});
-		// need to call closeMenu() to handle iOS touch behavior
-		this._beginClosingMenu();
 		this.completeWithActivityType('Copy');
 	};
 	private readonly _closeMenu = () => {
@@ -99,6 +97,8 @@ export default class ShareControl extends React.PureComponent<
 		};
 	}
 	private completeWithActivityType(activityType: string) {
+		// need to manually close menu to handle iOS/macOS event behavior
+		this._beginClosingMenu();
 		if (this.props.onComplete || this._shareResponseCompletionHandler) {
 			const form: ShareForm = {
 				id: null,
