@@ -247,9 +247,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 	};
 	private readonly _handleShareRequest = (data: ShareEvent) => {
-		if (
-			isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform)
-		) {
+		if (this.props.appApi.deviceInfo.appPlatform === AppPlatform.Ios) {
 			this._handleShareRequestWithCompletion(data);
 			return {
 				channels: [] as ShareChannel[]
