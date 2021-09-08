@@ -119,7 +119,8 @@ class NotificationsScreen extends React.Component<Props, State> {
 												// merge objects in case the new object is missing properties due to outdated iOS client
 												post.article = {
 													...post.article,
-													...event.article
+													...event.article,
+													dateStarred: event.article.dateStarred
 												};
 											}
 										}

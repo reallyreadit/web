@@ -18,6 +18,17 @@
 	animation: star_n3lkaj-spinner 1000ms linear infinite;
 }
 
+.star_n3lkaj.look--action {
+	> .icon_rour3d > .icon {
+		stroke-width: 2.4px;
+	}
+
+	&.starred > .icon_rour3d > .icon,
+	&.busy > .icon_rour3d > .icon {
+		stroke-width: 2px;
+	}
+}
+
 @keyframes star_n3lkaj-spinner {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }

@@ -47,7 +47,8 @@ class AppCommentsScreen extends React.Component<
 							...this.state.article,
 							value: {
 								...this.state.article.value,
-								...event.article
+								...event.article,
+								dateStarred: event.article.dateStarred
 							}
 						}
 					});

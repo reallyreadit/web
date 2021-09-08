@@ -14,6 +14,7 @@ import getShareData from '../sharing/getShareData';
 import {ShareEvent} from '../sharing/ShareEvent';
 import ShareResponse from '../sharing/ShareResponse';
 import { ShareChannelData } from '../sharing/ShareData';
+import Star from './Star';
 
 export interface Props {
 	article: Fetchable<UserArticle>,
@@ -26,9 +27,10 @@ export interface Props {
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
+	onToggleStar: () => Promise<void>,
 	showProgressBar?: boolean
 }
-export default class ReaderHeader extends React.Component<Props> {
+export default class ReaderHeader extends React.Component<Props, { isStarring: boolean }> {
 	public static defaultProps: Pick<Props, 'showProgressBar'> = {
 		showProgressBar: true
 	};
@@ -39,6 +41,18 @@ export default class ReaderHeader extends React.Component<Props> {
 			this.props.onCreateAbsoluteUrl
 		);
 	};
+	private readonly _toggleStar = () => {
+		this.setState({ isStarring: true });
+		this.props
+			.onToggleStar()
+			.then(() => { this.setState({ isStarring: false }); })
+			.catch(() => { this.setState({ isStarring: false }); })
+	};
+
+	constructor(props: Props) {
+		super(props);
+		this.state = { isStarring: false };
+	}
 
 	public render() {
 		return (
@@ -57,6 +71,15 @@ export default class ReaderHeader extends React.Component<Props> {
 				{(!this.props.article.isLoading && this.props.article.value != null) ?
 					<>
 						<div className="widget">
+							<Star
+								starred={!!this.props.article.value.dateStarred}
+								busy={this.state.isStarring}
+								look='action'
+								onClick={this._toggleStar}
+							/>
+						</div>
+						<div className="spacer"></div>
+						<div className="widget">
 							<ShareControl
 								onGetData={() => this._getShareData(this.props.article.value)}
 								onShare={this.props.onShare}
@@ -71,7 +94,7 @@ export default class ReaderHeader extends React.Component<Props> {
 						</div>
 						<div className="spacer"></div>
 					</> :
-						// article is loading or not loaded -> don't display share icon
+						// article is loading or not loaded -> don't display star or share icon
 						null
 					}
 				<SettingsWidget

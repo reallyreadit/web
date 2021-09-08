@@ -120,7 +120,8 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 										1,
 										{
 											...article,
-											...event.article
+											...event.article,
+											dateStarred: event.article.dateStarred
 										}
 									);
 								}

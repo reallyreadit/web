@@ -289,7 +289,8 @@ let
 		onPostCommentAddendum: postCommentAddendum,
 		onPostCommentRevision: postCommentRevision,
 		onReportArticleIssue: reportArticleIssue,
-		onShare: share
+		onShare: share,
+		onToggleStar: toggleStar
 	},
 	embedRootElement: HTMLDivElement;
 function insertEmbed() {
@@ -637,6 +638,26 @@ function share(data: ShareEvent): ShareResponse {
 	return {
 		channels: []
 	};
+}
+
+function toggleStar() {
+	return new Promise<void>((resolve, reject) => {
+		messagingContext.sendMessage({
+			type: article.dateStarred ? 'unstarArticle' : 'starArticle',
+			data: {
+				articleId: article.id
+			}
+		},
+		(result: UserArticle) => {
+			if (result) {
+				article = result;
+				render();
+				resolve();
+			} else {
+				reject();
+			}
+		})
+	});
 }
 
 insertEmbed();
