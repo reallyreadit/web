@@ -14,7 +14,7 @@
       "embedIframe": "1.0.0",
       "extension": "6.0.0",
       "nativeClient": {
-        "reader": "12.2.1",
+        "reader": "14.0.0",
         "shareExtension": "4.0.3"
       }
     }
