@@ -123,7 +123,8 @@ chrome.browserAction.onClicked.addListener(
 		const message: ReadArticleNativeMessage = {
 			type: NativeMessageType.ReadArticle,
 			data: {
-				url: tab.url
+				url: tab.url,
+				star: true
 			}
 		};
 		chrome.runtime.sendNativeMessage(

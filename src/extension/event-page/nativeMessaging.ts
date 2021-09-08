@@ -6,7 +6,8 @@ export enum NativeMessageType {
 export interface ReadArticleNativeMessage {
 	type: NativeMessageType.ReadArticle,
 	data: {
-		url: string
+		url: string,
+		star: boolean
 	}
 }
 export interface NativeMessageResponseBase {
