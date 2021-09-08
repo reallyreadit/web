@@ -13,7 +13,7 @@ import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
-import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys, parseQueryString, subscribeQueryStringKey } from '../../../common/routing/queryString';
+import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys, parseQueryString, subscribeQueryStringKey, appPlatformQueryStringKey } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes, { createArticleSlug } from '../../../common/routing/routes';
@@ -247,8 +247,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 	};
 	private readonly _handleShareRequest = (data: ShareEvent) => {
+		const queryStringParams = parseQueryString(this.props.initialLocation.queryString);
 		if (
-			isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform)
+			isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) &&
+			(
+				!(appPlatformQueryStringKey in queryStringParams) ||
+				queryStringParams[appPlatformQueryStringKey] === AppPlatform.Ios
+			)
 		) {
 			this._handleShareRequestWithCompletion(data);
 			return {
