@@ -26,11 +26,16 @@ import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlC
 import { AppPlatform } from '../../common/AppPlatform';
 import SemanticVersion from '../../common/SemanticVersion';
 import { UpdateAvailableEvent } from '../../common/models/app/UpdateAvailableEvent';
+import UserArticle from '../../common/models/UserArticle';
 
 export type ArticleReference = { slug: string } | { url: string }
+export interface ArticleStarredEvent {
+	article: UserArticle
+}
 export default abstract class extends EventEmitter<{
 	'alertStatusUpdated': AlertStatus,
 	'articlePosted': Post,
+	'articleStarred': ArticleStarredEvent,
 	'articleUpdated': ArticleUpdatedEvent,
 	'authenticateAppleIdCredential': AppleIdCredential,
 	'authServiceAccountLinked': AuthServiceAccountAssociation,

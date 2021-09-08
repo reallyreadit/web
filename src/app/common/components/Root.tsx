@@ -77,6 +77,7 @@ import { RevenueReportResponse } from '../../../common/models/subscriptions/Reve
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { EarningsExplainerDialog } from './EarningsExplainerDialog';
+import { ArticleStarredEvent } from '../AppApi';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -159,6 +160,7 @@ export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'subscr
 export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
+	'articleStarred': ArticleStarredEvent,
 	'authChanged': UserAccount | null,
 	'commentPosted': CommentThread,
 	'commentUpdated': CommentThread,
@@ -391,6 +393,9 @@ export default abstract class Root<
 	};
 	protected readonly _registerArticlePostedEventHandler = (handler: (event: Post) => void) => {
 		return this._eventManager.addListener('articlePosted', handler);
+	};
+	protected readonly _registerArticleStarredEventHandler = (handler: (event: ArticleStarredEvent) => void) => {
+		return this._eventManager.addListener('articleStarred', handler);
 	};
 	protected readonly _registerAuthChangedEventHandler = (handler: (user: UserAccount | null) => void) => {
 		return this._eventManager.addListener('authChanged', handler);

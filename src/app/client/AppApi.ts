@@ -41,6 +41,9 @@ export default class extends AppApi {
 				case 'articlePosted':
 					this.emitEvent('articlePosted', message.data);
 					break;
+				case 'articleStarred':
+					this.emitEvent('articleStarred', message.data);
+					break;
 				case 'articleUpdated':
 					this.emitEvent('articleUpdated', message.data);
 					break;

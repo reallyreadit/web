@@ -1004,6 +1004,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 				this.onArticlePosted(post);
 			})
+			.addListener('articleStarred', event => {
+				// migrate deprecated article property if required due to an outdated app
+				if (!event.article.datesPosted) {
+					event.article.datesPosted = [];
+					if ((event.article as any).datePosted) {
+						event.article.datesPosted.push((event.article as any).datePosted);
+					}
+				}
+				this._eventManager.triggerEvent('articleStarred', event);
+			})
 			.addListener('articleUpdated', event => {
 				// migrate deprecated article property if required due to an outdated app
 				if (!event.article.datesPosted) {
