@@ -27,7 +27,7 @@ export interface Props {
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleStar: (article: UserArticle) => Promise<void>,
+	onToggleStar: () => Promise<void>,
 	showProgressBar?: boolean
 }
 export default class ReaderHeader extends React.Component<Props, { isStarring: boolean }> {
@@ -44,7 +44,7 @@ export default class ReaderHeader extends React.Component<Props, { isStarring: b
 	private readonly _toggleStar = () => {
 		this.setState({ isStarring: true });
 		this.props
-			.onToggleStar(this.props.article.value)
+			.onToggleStar()
 			.then(() => { this.setState({ isStarring: false }); })
 			.catch(() => { this.setState({ isStarring: false }); })
 	};

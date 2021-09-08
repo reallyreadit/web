@@ -59,7 +59,7 @@ export interface Props extends DialogServiceState {
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
-	onToggleStar: (article: UserArticle) => Promise<void>,
+	onToggleStar: () => Promise<void>,
 	user: UserAccount | null
 }
 export default class App extends React.Component<

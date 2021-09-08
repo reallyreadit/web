@@ -640,24 +640,23 @@ function share(data: ShareEvent): ShareResponse {
 	};
 }
 
-function toggleStar(article: UserArticle) {
+function toggleStar() {
 	return new Promise<void>((resolve, reject) => {
-
 		messagingContext.sendMessage({
 			type: article.dateStarred ? 'unstarArticle' : 'starArticle',
 			data: {
 				articleId: article.id
 			}
 		},
-		(article: UserArticle) => {
-			if (article)
-				{
-					resolve();
-				} else {
-					reject();
-				}
+		(result: UserArticle) => {
+			if (result) {
+				article = result;
+				render();
+				resolve();
+			} else {
+				reject();
 			}
-		)
+		})
 	});
 }
 
