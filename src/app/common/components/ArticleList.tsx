@@ -58,7 +58,8 @@ export class ArticleList extends React.Component<Props> {
 											// merge objects in case the new object is missing properties due to outdated iOS client
 											return {
 												...article,
-												...event.article
+												...event.article,
+												dateStarred: event.article.dateStarred
 											};
 										}
 										return article;

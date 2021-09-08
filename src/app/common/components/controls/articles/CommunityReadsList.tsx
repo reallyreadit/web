@@ -33,7 +33,8 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 				// merge objects in case the new object is missing properties due to outdated iOS client
 				prevState.communityReads.value.aotd = {
 					...prevState.communityReads.value.aotd,
-					...updatedArticle
+					...updatedArticle,
+					dateStarred: updatedArticle.dateStarred
 				};
 			}
 			prevState.communityReads.value.articles.items.forEach((article, index, articles) => {
@@ -44,7 +45,8 @@ export function updateCommunityReads(this: React.Component<{}, State>, updatedAr
 						1,
 						{
 							...article,
-							...updatedArticle
+							...updatedArticle,
+							dateStarred: updatedArticle.dateStarred
 						}
 					);
 				}

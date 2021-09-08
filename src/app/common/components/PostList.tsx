@@ -68,7 +68,8 @@ export class PostList extends React.Component<Props> {
 											...post,
 											article: {
 												...post.article,
-												...event.article
+												...event.article,
+												dateStarred: event.article.dateStarred
 											}
 										}
 									);

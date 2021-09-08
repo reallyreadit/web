@@ -141,7 +141,8 @@ class MyReadsScreen extends React.Component<Props, State> {
 										1,
 										{
 											...article,
-											...event.article
+											...event.article,
+											dateStarred: event.article.dateStarred
 										}
 									);
 								}
