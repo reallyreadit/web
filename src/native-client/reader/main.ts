@@ -49,31 +49,45 @@ import ShareResponse from '../../common/sharing/ShareResponse';
 import {DeviceType} from '../../common/DeviceType';
 import { AppPlatform } from '../../common/AppPlatform';
 
+const initData = window.reallyreadit.nativeClient.reader.initData;
+
 // On iOS window.location will be set to the article's URL but in Electron it will be a file: URL
 // with the article's URL provided as a query parameter.
 let documentLocation: ParserDocumentLocation;
-// TODO: We should probably also pass app platform and version via query string params.
-// For now we can just assume from the location protocol.
-let
-	appPlatform: AppPlatform,
-	deviceType: DeviceType;
 if (window.location.protocol === 'file:') {
 	documentLocation = new URL(
 		parseQueryString(window.location.search)['url']
 	);
-	appPlatform = AppPlatform.Windows;
-	deviceType = DeviceType.DesktopEdge;
 } else {
 	documentLocation = window.location;
-	appPlatform = AppPlatform.Ios;
-	deviceType = DeviceType.Ios;
+}
+
+// TODO: Shared components should no longer rely on DeviceType. For now we'll approximate using AppPlatform.
+let deviceType: DeviceType;
+switch (initData.appPlatform) {
+	case AppPlatform.Android:
+		deviceType = DeviceType.Android;
+		break;
+	case AppPlatform.Ios:
+	case AppPlatform.MacOs:
+		deviceType = DeviceType.Ios;
+		break;
+	case AppPlatform.Linux:
+	case AppPlatform.Windows:
+		deviceType = DeviceType.DesktopChrome;
+		break;
 }
 
 const messagingContext = new WebViewMessagingContext();
 
 window.reallyreadit = {
+	...window.reallyreadit,
 	nativeClient: {
-		reader: messagingContext.createIncomingMessageHandlers()
+		...window.reallyreadit.nativeClient,
+		reader: {
+			...window.reallyreadit.nativeClient.reader,
+			...messagingContext.createIncomingMessageHandlers()
+		}
 	}
 };
 
@@ -89,7 +103,7 @@ messagingContext.addListener(
 
 let
 	article: UserArticle,
-	displayPreference: DisplayPreference,
+	displayPreference = initData.displayPreference,
 	page: Page,
 	userPage: UserPage,
 	user: UserAccount,
@@ -259,7 +273,7 @@ const dialogService = new DialogService({
 });
 let
 	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user' >> = {
-		appPlatform,
+		appPlatform: initData.appPlatform,
 		comments: null,
 		deviceType,
 		dialogs: [],
@@ -649,67 +663,56 @@ function toggleStar(article: UserArticle) {
 
 insertEmbed();
 
+updateDisplayPreference(displayPreference);
+
+// send parse result
 messagingContext.sendMessage(
 	{
-		type: 'getDisplayPreference'
+		type: 'parseResult',
+		data: createPageParseResult(metadataParseResult, contentParseResult)
 	},
-	(preference: DisplayPreference | null) => {
-		// update the display preference
-		// this version is loaded from local storage. prefer an existing copy
-		// that would have been set by an external change event.
-		if (!displayPreference) {
-			updateDisplayPreference(preference);
-		}
-		// send parse result
-		messagingContext.sendMessage(
-			{
-				type: 'parseResult',
-				data: createPageParseResult(metadataParseResult, contentParseResult)
-			},
-			(result: ArticleLookupResult) => {
-				// set globals
-				article = result.userArticle;
-				userPage = result.userPage;
-				user = result.user;
-				// update the title and byline
-				updateArticleHeader({
-					title: result.userArticle.title,
-					byline: createByline(result.userArticle.articleAuthors)
-				});
-				// set up the reader
-				page = new Page(contentParseResult.primaryTextContainers);
-				page.setReadState(result.userPage.readState);
-				reader.loadPage(page);
-				// re-render ui
-				render();
-				// load comments or check for bookmark
-				if (result.userArticle.isRead) {
-					loadComments();
-				} else if (page.getBookmarkScrollTop() > window.innerHeight) {
-					dialogService.openDialog(
-						React.createElement(
-							BookmarkDialog,
-							{
-								onClose: dialogService.closeDialog,
-								onSubmit: () => {
-									const scrollTop = page.getBookmarkScrollTop();
-									if (scrollTop > window.innerHeight) {
-										contentRoot.style.opacity = '0';
-										setTimeout(
-											() => {
-												window.scrollTo(0, scrollTop);
-												contentRoot.style.opacity = '1';
-											},
-											350
-										);
-									}
-									return Promise.resolve();
-								}
+	(result: ArticleLookupResult) => {
+		// set globals
+		article = result.userArticle;
+		userPage = result.userPage;
+		user = result.user;
+		// update the title and byline
+		updateArticleHeader({
+			title: result.userArticle.title,
+			byline: createByline(result.userArticle.articleAuthors)
+		});
+		// set up the reader
+		page = new Page(contentParseResult.primaryTextContainers);
+		page.setReadState(result.userPage.readState);
+		reader.loadPage(page);
+		// re-render ui
+		render();
+		// load comments or check for bookmark
+		if (result.userArticle.isRead) {
+			loadComments();
+		} else if (page.getBookmarkScrollTop() > window.innerHeight) {
+			dialogService.openDialog(
+				React.createElement(
+					BookmarkDialog,
+					{
+						onClose: dialogService.closeDialog,
+						onSubmit: () => {
+							const scrollTop = page.getBookmarkScrollTop();
+							if (scrollTop > window.innerHeight) {
+								contentRoot.style.opacity = '0';
+								setTimeout(
+									() => {
+										window.scrollTo(0, scrollTop);
+										contentRoot.style.opacity = '1';
+									},
+									350
+								);
 							}
-						)
-					);
-				}
-			}
-		);
+							return Promise.resolve();
+						}
+					}
+				)
+			);
+		}
 	}
 );

@@ -33,6 +33,7 @@ export default (
 					onNavTo={props.onNavTo}
 					onCopyAppReferrerTextToClipboard={props.onCopyAppReferrerTextToClipboard}
 					onCreateStaticContentUrl={props.onCreateStaticContentUrl}
+					showOpenInApp={true}
 				/>
 				{/* TODO: might look nicer if a secondary <Button> were used */}
 				{/* <Link screen={ScreenKey.Home} className="learn-more-button" onClick={this.props.onNavTo}>Learn More</Link> */}

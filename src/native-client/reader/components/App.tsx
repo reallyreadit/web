@@ -38,7 +38,7 @@ import ClipboardService from '../../../common/services/ClipboardService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import { createQueryString } from '../../../common/routing/queryString';
 import { createTweetWebIntentUrl } from '../../../common/sharing/twitter';
-import { isAppleAppPlatform, AppPlatform } from '../../../common/AppPlatform';
+import { AppPlatform } from '../../../common/AppPlatform';
 
 export interface Props extends DialogServiceState {
 	appPlatform: AppPlatform,
@@ -126,9 +126,7 @@ export default class App extends React.Component<
 		}
 	};
 	private readonly _handleShareRequest = (data: ShareEvent) => {
-		if (
-			isAppleAppPlatform(this.props.appPlatform)
-		) {
+		if (this.props.appPlatform === AppPlatform.Ios) {
 			this.props.onShare({
 				...data,
 				selection: createRelativeShareSelection(data.selection, window)

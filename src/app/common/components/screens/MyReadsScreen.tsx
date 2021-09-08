@@ -105,9 +105,9 @@ class MyReadsScreen extends React.Component<Props, State> {
 			<FormDialog
 				onClose={this.props.onCloseDialog}
 				size="small"
-				title="Import Articles to Readup"
+				title="Save Articles to Readup"
 			>
-				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Import Screenshot" style={{ maxWidth: '100%' }} />
+				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Save Screenshot" style={{ maxWidth: '100%' }} />
 			</FormDialog>
 		);
 	};
@@ -201,7 +201,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 				{this.props.view === View.Starred ?
 					<>
 						<strong>Star the articles you want to read.</strong>
-						<span>Pro tip: Import articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span>
+						<span>Pro tip: Save articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span>
 					</> :
 					<>
 						<strong>Your reading history is private.</strong>

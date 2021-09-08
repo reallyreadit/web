@@ -47,27 +47,27 @@ const faqs: FaqCategory[] = [
 		]
 	}),
 	_ => ({
-		title: "Importing articles",
+		title: "Saving articles",
 		questions: [
 			{
-				question: "Do I need to import articles?",
-				answer: <p>Nope. You can always just browse the articles that other people import. But it’s a good thing to&nbsp;
-					know how to do in case you ever want to import a specific article to Readup.</p>
+				question: "Do I need to save articles?",
+				answer: <p>Nope. You can always just browse the articles that other people save. But it’s a good thing to&nbsp;
+					know how to do in case you ever want to save a specific article to Readup.</p>
 			},
 			{
-				question: "Can I import anything I want?",
-				answer: <p>Yep! Readup doesn’t enable you to bypass paywalls, but you can import paid articles&nbsp;
+				question: "Can I save anything I want?",
+				answer: <p>Yep! Readup doesn’t enable you to bypass paywalls, but you can save paid articles&nbsp;
 					(for example, from the Wall Street Journal) if you pay for them separately.</p>
 			},
 			{
-				question: "How do I import articles to Readup on my iPhone?",
-				answer: <p>The Readup share extension in iOS makes it easy to import articles to Readup with just a few clicks.&nbsp;
-					When you are viewing an article you want to import (for example in the Safari app) just click the share extension&nbsp;
+				question: "How do I save articles to Readup on my iPhone?",
+				answer: <p>The Readup share extension in iOS makes it easy to save articles to Readup with just a few clicks.&nbsp;
+					When you are viewing an article you want to save (for example in the Safari app) just click the share extension&nbsp;
 					(a square with an up arrow) and then click the Readup icon. (Note: If you can’t find the Readup icon, you might need to click “More.”)&nbsp;
 					The article will appear at the top of your Starred list in My Reads. </p>
 			},
 			{
-				question: "How do I import articles to Readup on my laptop or computer?",
+				question: "How do I save articles to Readup on my laptop or computer?",
 				answer: <p>Just click the browser button. When you view an article in Reader Mode, it will automatically be saved to&nbsp;
 					the History section of My Reads.</p>
 			},
