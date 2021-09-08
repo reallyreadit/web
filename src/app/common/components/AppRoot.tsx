@@ -847,6 +847,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterArticleStarredHandler: this._registerArticleStarredEventHandler,
 				onRegisterNewStarsHandler: this._registerNewStarsEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,

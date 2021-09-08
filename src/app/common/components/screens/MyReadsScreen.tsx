@@ -28,6 +28,7 @@ import StickyNote from '../../../../common/components/StickyNote';
 import FormDialog from '../../../../common/components/FormDialog';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
+import { ArticleStarredEvent } from '../../AppApi';
 
 enum View {
 	History = 'History',
@@ -48,6 +49,7 @@ interface Props {
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onRegisterArticleStarredHandler: (handler: (event: ArticleStarredEvent) => void) => Function,
 	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function,
 	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
@@ -149,6 +151,38 @@ class MyReadsScreen extends React.Component<Props, State> {
 							});
 						}));
 					}
+				}
+			)
+		);
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterArticleStarredHandler(
+				event => {
+					if (!this.state.articles.value) {
+						return;
+					}
+					this.setState(
+						produce(
+							(prevState: State) => {
+								const
+									articles = prevState.articles.value.items,
+									existingIndex = articles.findIndex(
+										article => article.id === event.article.id
+									);
+								// Remove either the existing article or the last article if we have a full list.
+								// TODO: List length should not be hard-coded on the API server.
+								const spliceIndex = existingIndex !== -1 ?
+									existingIndex :
+									articles.length === 40 ?
+										articles.length - 1 :
+										null;
+								if (spliceIndex != null) {
+									articles.splice(spliceIndex, 1);
+								}
+								// Add the starred article to the beginning of the list.
+								articles.unshift(event.article);
+							}
+						)
+					);
 				}
 			)
 		);
