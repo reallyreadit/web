@@ -30,7 +30,7 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import { DeviceType, isCompatibleBrowser, isMobileDevice } from '../../../common/DeviceType';
+import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
@@ -1561,20 +1561,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				secure: this.props.webServerEndpoint.protocol === 'https'
 			}
 		);
-		// open subscription dialog if query string key is present
-		// ugly hack since the dialog doesn't support server-side rendering
-		if (subscribeQueryStringKey in queryStringParams && !isMobileDevice(this.props.deviceType)) {
-			window.setTimeout(
-				() => {
-					if (this.state.user) {
-						this._openStripeSubscriptionPromptDialog();
-					} else {
-						this._beginOnboardingAtSignIn('SubscriptionPrompt');
-					}
-				},
-				0
-			);
-		}
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();
