@@ -63,6 +63,7 @@ import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../c
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
+import SemanticVersion from '../../../common/SemanticVersion';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -762,6 +763,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
+				extensionVersion: this.props.extensionApi.installedVersion,
 				onBeginOnboarding: this._beginOnboarding,
 				onCanReadArticle: this.canRead.bind(this),
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -1345,7 +1347,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
 			this.canRead(article) &&
-			this.props.extensionApi.isInstalled
+			this.props.extensionApi.isInstalled &&
+			this.props.extensionApi.installedVersion.compareTo(new SemanticVersion('6.0.0')) < 0
 		) {
 			if (
 				!localStorage.getItem('extensionReminderAcknowledged')

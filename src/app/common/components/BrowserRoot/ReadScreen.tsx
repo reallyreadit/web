@@ -24,10 +24,12 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
+import SemanticVersion from '../../../../common/SemanticVersion';
 
 interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
+	extensionVersion: SemanticVersion,
 	location: RouteLocation,
 	isExtensionInstalled: boolean,
 	onBeginOnboarding: (analyticsAction: string) => void,
@@ -50,6 +52,7 @@ class ReadScreen extends React.PureComponent<Props> {
 				this.props.article.value &&
 				this.props.onCanReadArticle(this.props.article.value) &&
 				this.props.isExtensionInstalled &&
+				this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) < 0 &&
 				localStorage.getItem('extensionReminderAcknowledged')
 			)
 		) {
@@ -136,7 +139,7 @@ class ReadScreen extends React.PureComponent<Props> {
 													<li>Pick your price</li>
 												</ul>
 											</div>
-												{!this.props.user || !this.props.isExtensionInstalled ?
+												{!this.props.user || !this.props.isExtensionInstalled || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0 ?
 													<DownloadButton
 														analyticsAction="ReadScreen"
 														deviceType={this.props.deviceType}
