@@ -65,7 +65,7 @@ import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
-import NavBar from './BrowserRoot/NavBar';
+import NavBar from './AppRoot/NavBar';
 
 interface Props extends RootProps {
 	appApi: AppApi,

@@ -1,0 +1,45 @@
+/*
+        componentPath: src/app/common/components/AppRoot/NavBar
+        cssComponentId: nav-bar_3e49ke
+*/
+@import '../../../../common/styles/colors';
+@import '../../../../common/styles/breakpoints';
+@import '../AppRoot/Header.scss';
+
+.nav-bar_3e49ke {
+	display: none;
+}
+
+@include from(tablet-landscape) {
+	.nav-bar_3e49ke {
+		flex: 0 0 auto;
+		display: flex;
+		flex-flow: column;
+		border-right-width: 1px;
+		border-right-style: solid;
+		padding-top: $header-height;
+	}
+	.nav-bar_3e49ke > ol {
+		flex: 1 1 auto;
+		display: flex;
+		flex-flow: column;
+	}
+	.nav-bar_3e49ke > .footer {
+		flex: 0 0 auto;
+		text-align: center;
+		padding: 20px;
+	}
+
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .nav-bar_3e49ke {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-right-color": $nav-border-color,
+				"background-color": $nav-background-color
+			)
+		);
+	}
+}
