@@ -4,8 +4,10 @@ import * as classNames from 'classnames';
 import NotificationsStep from './OrientationWizard/NotificationsStep';
 import NotificationAuthorizationRequestResult from '../../../../common/models/app/NotificationAuthorizationRequestResult';
 import ImportStep from './OrientationWizard/ImportStep';
+import { AppPlatform, isAppleAppPlatform } from '../../../../common/AppPlatform';
 
 interface Props {
+	appPlatform: AppPlatform,
 	onComplete: () => void,
 	onCreateStaticContentUrl: (path: string) => string
 	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>
@@ -37,7 +39,13 @@ export default class OrientationWizard extends React.PureComponent<
 			let nextStep: Step | null;
 			switch (this.state.step) {
 				case Step.Tracking:
-					nextStep = Step.Import;
+					if (
+						isAppleAppPlatform(this.props.appPlatform)
+					) {
+						nextStep = Step.Import;
+					} else {
+						nextStep = null;
+					}
 					break;
 				case Step.Import:
 					nextStep = Step.Notifications;

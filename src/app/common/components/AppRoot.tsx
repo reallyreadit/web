@@ -1594,6 +1594,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							null}
 						{this.state.isInOrientation ?
 							<OrientationWizard
+								appPlatform={this.props.appApi.deviceInfo.appPlatform}
 								onComplete={this._completeOrientation}
 								onCreateStaticContentUrl={this._createStaticContentUrl}
 								onRequestNotificationAuthorization={this._requestNotificationAuthorization}
