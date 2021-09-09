@@ -99,7 +99,11 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	private readonly _resetPassword = (token: string, email: string) => {
 		return this.props
 			.onResetPassword(token, email)
-			.then(this._handleExistingUserAuthentication);
+			.then(
+				() => {
+					this._beginClosing(ExitReason.Aborted);
+				}
+			);
 	};
 	private readonly _signIn = (form: SignInForm) => {
 		return this.props

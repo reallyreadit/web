@@ -825,19 +825,7 @@ export default abstract class Root<
 		);
 	}
 	protected abstract readonly _linkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>;
-	protected readonly _resetPassword = (token: string, password: string) => {
-		return this.props.serverApi
-			.resetPassword({
-				token,
-				password,
-				pushDevice: this.getPushDeviceForm()
-			})
-			.then(
-				profile => {
-					return this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Local);
-				}
-			);
-	};
+	protected abstract readonly _resetPassword: (token: string, password: string) => Promise<void>;
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
 			.resendConfirmationEmail()

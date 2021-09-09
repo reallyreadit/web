@@ -435,6 +435,19 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
+	protected readonly _resetPassword = (token: string, password: string) => {
+		return this.props.serverApi
+			.resetPassword({
+				token,
+				password,
+				pushDevice: this.getPushDeviceForm()
+			})
+			.then(
+				() => {
+					this._toaster.addToast('Password reset successfully.', Intent.Success);
+				}
+			);
+	};
 	private readonly _signInWithApple = (action: string) => {
 		// can't use URLSearchParams here because apple requires spaces be
 		// encoded as %20 (which encodeURIComponent does) instead of +

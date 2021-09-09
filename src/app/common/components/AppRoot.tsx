@@ -552,6 +552,19 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			);
 	};
+	protected readonly _resetPassword = (token: string, password: string) => {
+		return this.props.serverApi
+			.resetPassword({
+				token,
+				password,
+				pushDevice: this.getPushDeviceForm()
+			})
+			.then(
+				profile => {
+					return this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Local);
+				}
+			);
+	};
 	private readonly _signInWithApple = () => {
 		this.props.appApi
 			.getDeviceInfo()
