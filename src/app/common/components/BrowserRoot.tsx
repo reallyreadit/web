@@ -690,6 +690,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				/*
+					This isn't inaccurate but it doesn't matter since viewing My Reads in the browser is deprecated.
+				*/
+				appPlatform: AppPlatform.Windows,
 				deviceType: this.props.deviceType,
 				onCloseDialog: this._dialog.closeDialog,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,

@@ -835,6 +835,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
+				appPlatform: this.props.appApi.deviceInfo.appPlatform,
 				deviceType: DeviceType.Ios,
 				onCloseDialog: this._dialog.closeDialog,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,

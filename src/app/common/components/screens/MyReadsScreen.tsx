@@ -29,6 +29,7 @@ import FormDialog from '../../../../common/components/FormDialog';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import { ArticleStarredEvent } from '../../AppApi';
+import { AppPlatform } from '../../../../common/AppPlatform';
 
 enum View {
 	History = 'History',
@@ -36,6 +37,7 @@ enum View {
 }
 type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>;
 interface Props {
+	appPlatform: AppPlatform,
 	deviceType: DeviceType,
 	view: View,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -236,7 +238,9 @@ class MyReadsScreen extends React.Component<Props, State> {
 				{this.props.view === View.Starred ?
 					<>
 						<strong>Star the articles you want to read.</strong>
-						<span>Pro tip: Save articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span>
+						{this.props.appPlatform === AppPlatform.Ios ?
+							<span>Pro tip: Save articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span> :
+							null}
 					</> :
 					<>
 						<strong>Your reading history is private.</strong>
