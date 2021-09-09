@@ -20,7 +20,7 @@ import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, authServiceTokenQueryStringKey, extensionInstalledQueryStringKey, extensionAuthQueryStringKey, createQueryString, appReferralQueryStringKey, subscribeQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, extensionInstalledQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
@@ -30,7 +30,7 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
+import { DeviceType } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
@@ -838,9 +838,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		};
 
 		// route state
-		const
-			route = findRouteByLocation(routes, props.initialLocation, unroutableQueryStringKeys),
-			locationState = this.getLocationDependentState(props.initialLocation);
+		const locationState = this.getLocationDependentState(props.initialLocation);
 
 		// query string state
 		const
@@ -849,34 +847,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 		// onboarding state
 		let onboardingState: OnboardingState;
-		if (authServiceTokenQueryStringKey in queryStringParams) {
-			onboardingState = {
-				authServiceToken: queryStringParams[authServiceTokenQueryStringKey]
-			};
-		} else if ('reset-password' in queryStringParams) {
+		if ('reset-password' in queryStringParams) {
 			onboardingState = {
 				passwordResetEmail: queryStringParams['email'],
 				passwordResetToken: queryStringParams['token']
 			};
-		} else if (extensionAuthQueryStringKey in queryStringParams) {
-			onboardingState = {
-				initialAuthenticationStep: OnboardingStep.CreateAccount
-			};
-		} else if (
-			extensionInstalledQueryStringKey in queryStringParams ||
-			(
-				props.initialUserProfile &&
-				(
-					!props.extensionApi.isInstalled ||
-					!props.initialUserProfile.userAccount.dateOrientationCompleted
-				) &&
-				isCompatibleBrowser(props.deviceType) &&
-				route.screenKey !== ScreenKey.EmailSubscriptions &&
-				route.screenKey !== ScreenKey.ExtensionRemoval &&
-				!(subscribeQueryStringKey in queryStringParams)
-			)
-		) {
-			onboardingState = { };
 		}
 
 		this.state = {
