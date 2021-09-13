@@ -20,6 +20,7 @@ export default class extends React.PureComponent<{
 			{
 				title: "Company",
 				sublinks: [
+					<Link key="team" screen={ScreenKey.Team} onClick={navTo}>Meet the Team</Link>,
 					<Link key="mission" screen={ScreenKey.Mission} onClick={navTo}>Our Mission</Link>,
 					<Link key="contact" href="mailto:support@readup.com" onClick={navTo}>Contact</Link>,
 					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>Privacy Policy</Link>
@@ -98,29 +99,9 @@ export default class extends React.PureComponent<{
 							</div>
 						)}
 					</div>
-
-					{/* <div className="links">
-						<a
-							href="https://blog.readup.com/"
-						>
-							Blog
-						</a>
-						<Separator />
-						<a
-							href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}
-							onClick={this._viewPrivacyPolicy}
-						>
-							Privacy Policy
-						</a>
-						<Separator />
-						<a href="mailto:support@readup.com">support@readup.com</a>
-					</div>
-					<StoreLinks />
-					<div className="corp">
-						reallyread.it, inc.<br />
-						309 Poe Ave<br />
-						Toms River NJ 08753
-					</div> */}
+				</div>
+				<div className="corp">
+					<a href="mailto:support@readup.com">support@readup.com</a> · reallyread.it, inc., 309 Poe Ave, Toms River NJ 08753
 				</div>
 			</div>
 		);
