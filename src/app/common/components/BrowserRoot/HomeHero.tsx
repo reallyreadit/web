@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ClassValue } from 'classnames/types';
 import HomePanel from './HomePanel';
 import DownloadButton from './DownloadButton';
+import classNames = require('classnames');
 
 export default (
 	props: {
@@ -13,7 +14,7 @@ export default (
 		actionButton?: React.ReactElement<DownloadButton>
 	}
 ) => (
-<HomePanel className="home-hero_527aw5">
+<HomePanel className={classNames("home-hero_527aw5", props.className)}>
 	<h1 className="heading-regular">{props.title}</h1>
 	{ props.description && <p className="">{props.description}</p> }
 	{ props.actionButton || null }

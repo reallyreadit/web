@@ -226,6 +226,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/stats$/,
 		screenKey: ScreenKey.Stats
 	},
+	{
+		createUrl: () => '/team',
+		pathRegExp: /^\/team$/,
+		screenKey: ScreenKey.Team
+	},
 	(function () {
 		const pathRegExp = /^\/writers\/([^/]+)$/;
 		return {

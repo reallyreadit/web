@@ -21,6 +21,7 @@ export default class extends React.PureComponent<{
 			{
 				title: "Company",
 				sublinks: [
+					<Link key="team" screen={ScreenKey.Team} onClick={navTo}>Meet the Team</Link>,
 					<Link key="mission" screen={ScreenKey.Mission} onClick={navTo}>Our Mission</Link>,
 					<Link key="contact" href="mailto:support@readup.com" onClick={navTo}>Contact</Link>,
 					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>Privacy Policy</Link>
