@@ -19,9 +19,12 @@ import GetStartedButton from '../BrowserRoot/GetStartedButton';
 import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../../common/models/subscriptions/AuthorEarningsReport';
 import Link from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
+import {findRouteByKey} from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
 
 interface Props {
 	deviceType: DeviceType,
+	view: View,
 	location: RouteLocation,
 	onBeginOnboarding: (analyticsAction: string) => void,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
@@ -34,8 +37,10 @@ interface Props {
 	onNavTo: (ref: NavReference) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	onViewProfile: (userName: string) => void,
+	screenId: number,
 	user: UserAccount | null
 }
 enum View {
@@ -48,7 +53,6 @@ interface State {
 	authorLeaderboardsRequest: AuthorsEarningsReportRequest,
 	isScreenLoading: boolean,
 	readerLeaderboards: Fetchable<Leaderboards> | null,
-	view: View
 }
 const defaultAuthorLeaderboardsRequest = {
 	minAmountEarned: 1000,
@@ -60,7 +64,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeView = (value: string) => {
 		const view = value as View;
-		if (view === this.state.view) {
+		if (view === this.props.view) {
 			return;
 		}
 		switch (view) {
@@ -78,7 +82,6 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 					),
 					authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
 					readerLeaderboards: null,
-					view
 				});
 				break;
 			case View.Readers:
@@ -93,10 +96,19 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 							}
 						)
 					),
-					view
 				});
 				break;
-		}
+		};
+		this.props.onSetScreenState(
+			this.props.screenId,
+			() => ({
+				location: {
+					path: view === View.Readers ?
+						'/leaderboards/readers' :
+						'/leaderboards/writers'
+				}
+			})
+		);
 	};
 	private readonly _headerSelectorItems = [
 		{
@@ -131,14 +143,31 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 						});
 					}
 				)
+			),
+			readerLeaderboards = this.props.onGetReaderLeaderboards(
+				this._asyncTracker.addCallback(
+					readerLeaderboards => {
+						this.setState({
+							readerLeaderboards
+						});
+					}
+				)
 			);
 		this.state = {
-			authorLeaderboards,
-			authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
 			moreAuthorLeaderboards: null,
-			isScreenLoading: authorLeaderboards.isLoading,
-			readerLeaderboards: null,
-			view: View.Authors
+			...(this.props.view === View.Readers ?
+				{
+					isScreenLoading: readerLeaderboards.isLoading,
+					readerLeaderboards,
+					authorLeaderboards: null,
+					authorLeaderboardsRequest: null,
+				} :
+				{
+					isScreenLoading: authorLeaderboards.isLoading,
+					authorLeaderboards,
+					authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
+					readerLeaderboards: null,
+				})
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(
@@ -146,7 +175,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 					if (!event.isCompletionCommit) {
 						return;
 					}
-					switch (this.state.view) {
+					switch (this.props.view) {
 						case View.Authors:
 							props.onGetAuthorsEarningsReport(
 								this.state.authorLeaderboardsRequest,
@@ -180,7 +209,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 			(
 				!this.props.user !== !prevProps.user
 			) &&
-			this.state.view === View.Readers
+			this.props.view === View.Readers
 		) {
 			this.setState({
 				readerLeaderboards: this.props.onGetReaderLeaderboards(
@@ -221,7 +250,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	}
 
 	public render() {
-		const marketingVariant = this.state.view === View.Authors ?
+		const marketingVariant = this.props.view === View.Authors ?
 			{
 				headline: 'Where writers are really read',
 				subtext: 'Readup is the social reading platform. Readers pay to read articles across the web, distraction-free.\nWriters get paid, transparently!'
@@ -262,9 +291,9 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 								}
 								items={this._headerSelectorItems}
 								onChange={this._changeView}
-								value={this.state.view}
+								value={this.props.view}
 							/>
-							{this.state.view === View.Authors ?
+							{this.props.view === View.Authors ?
 								<AuthorLeaderboards
 									onNavTo={this.props.onNavTo}
 									onOpenDialog={this.props.onOpenDialog}
@@ -289,8 +318,9 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 }
 export default function createLeaderboardsScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	services: Pick<Props, Exclude<keyof Props, 'location' | 'user'>>
+	services: Pick<Props, Exclude<keyof Props, 'location' | 'screenId' | 'user' | 'view'>>
 ) {
+	const route = findRouteByKey(routes, ScreenKey.Leaderboards);
 	return {
 		create: (id: number, location: RouteLocation) => ({
 			id,
@@ -313,9 +343,14 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 				onNavTo={services.onNavTo}
 				onOpenDialog={services.onOpenDialog}
 				onRegisterArticleChangeHandler={services.onRegisterArticleChangeHandler}
+				onSetScreenState={services.onSetScreenState}
 				onViewAuthor={services.onViewAuthor}
 				onViewProfile={services.onViewProfile}
+				screenId={screen.id}
 				user={sharedState.user}
+				view={route.getPathParams(screen.location.path)['view'] === 'readers' ?
+					View.Readers :
+					View.Authors}
 			/>
 		)
 	};

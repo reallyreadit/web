@@ -31,30 +31,29 @@ $tablet-up-margin-title-intro: 0.8rem;
 		column-gap: 8px;
 	}
 
-	// .title {
-		grid-area: title;
-		.name, .role {
-			font-size: 1.4rem;
-		}
-		.name {
-			grid-area: name;
-			font-family: 'Cambria (Bold)', serif;
-			font-weight: 700;
-		}
-		// .name::after {
-		// 	content: "|";
-		// 	display: inline;
-		// }
-		.role {
-			grid-area: role;
-			color: var(--text-muted-color);
-		}
+	.name, .role {
+		font-size: 1.4rem;
+	}
 
-		.mail {
-			vertical-align: middle;
-			margin-right: 0.35rem;
+	.name {
+		grid-area: name;
+		font-family: 'Cambria (Bold)', serif;
+		font-weight: 700;
+		font-size: 1.6rem;
+	}
+
+	.role {
+		grid-area: role;
+		color: var(--text-muted-color);
+		@include from(tablet-portrait) {
+			padding-top: 2px;
 		}
-	// }
+	}
+
+	.mail {
+		vertical-align: middle;
+		margin-right: 0.35rem;
+	}
 
 
 	@include only(phone) {

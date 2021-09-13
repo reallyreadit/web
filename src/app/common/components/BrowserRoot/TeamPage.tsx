@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Button from '../../../../common/components/Button';
+import Link from '../../../../common/components/Link';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import {NavMethod, NavOptions, NavReference} from '../Root';
@@ -73,6 +74,21 @@ const profiles: ProfileData[] = [
 	}
 ];
 
+const helpers = [
+	{
+		name: "Tarunika Ravichandran",
+		readerName: "tarunika",
+		reason: "help with design",
+		link: "https://www.linkedin.com/in/tarunika-ravichandran-337a53119/"
+	},
+	{
+		name: "Adam Bartley",
+		readerName: "bartadamley",
+		reason: "help with marketing & growth",
+		link: "https://bartadamley.com/"
+	},
+]
+
 const teamPage = (props: Services) => (
 	<div className="team-page_a0fwiy">
 		<HomeHero
@@ -96,8 +112,25 @@ const teamPage = (props: Services) => (
 				text="Explore the community"
 				intent="loud"
 				align="center"
-				onClick={() => props.onNavTo({key: ScreenKey.Leaderboards}, {method: NavMethod.ReplaceAll})}
+				onClick={() => props.onNavTo({key: ScreenKey.Leaderboards, params: {
+					view: 'readers'
+				}}, {method: NavMethod.ReplaceAll})}
 			/>}
+		/>
+		<HomePanel>
+			<p className="special-thanks"><em>Special thanks</em> to those community members who tinkered with us behind the scenes over the last years:{' '}
+				{helpers.map((helper, i) => <span key={helper.readerName}><a href={helper.link} target="_blank">{helper.name}</a> (<Link
+					className="reader-link"
+					screen={ScreenKey.Profile}
+					params={{ 'userName': helper.readerName }}
+					onClick={props.onNavTo}
+				>@{helper.readerName}</Link>, for {helper.reason}){
+				i === helpers.length - 2 ? ' & ' : i === helpers.length - 1 ? '' : ', '}</span>)}
+			</p>
+		</HomePanel>
+		<HomeHero
+			title="🙋‍♀️ Want to join the team?"
+			description={<>We're happy to hear from you!<br/>Drop us an email at <a href="mailto:support@readup.com">support@readup.com</a></>}
 		/>
 	</div>
 )
