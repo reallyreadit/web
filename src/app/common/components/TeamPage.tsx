@@ -1,11 +1,11 @@
 import * as React from 'react';
-import Button from '../../../../common/components/Button';
-import Link from '../../../../common/components/Link';
-import RouteLocation from '../../../../common/routing/RouteLocation';
-import ScreenKey from '../../../../common/routing/ScreenKey';
-import {NavMethod, NavOptions, NavReference} from '../Root';
-import HomeHero from './HomeHero';
-import HomePanel from './HomePanel';
+import Button from '../../../common/components/Button';
+import Link from '../../../common/components/Link';
+import RouteLocation from '../../../common/routing/RouteLocation';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import {NavMethod, NavOptions, NavReference} from './Root';
+import HomeHero from './BrowserRoot/HomeHero';
+import HomePanel from './BrowserRoot/HomePanel';
 import Profile, {ProfileData, SocialType} from './TeamPage/Profile';
 
 interface Services {
@@ -90,7 +90,7 @@ const helpers = [
 ]
 
 const teamPage = (props: Services) => (
-	<div className="team-page_a0fwiy">
+	<div className="team-page_a9b9l1">
 		<HomeHero
 			title="Meet the team"
 			description={"We're building Readup every day"}
@@ -119,7 +119,7 @@ const teamPage = (props: Services) => (
 		/>
 		<HomePanel>
 			<p className="special-thanks"><em>Special thanks</em> to those community members who tinkered with us behind the scenes over the last years:{' '}
-				{helpers.map((helper, i) => <span key={helper.readerName}><a href={helper.link} target="_blank">{helper.name}</a> (<Link
+				{helpers.map((helper, i) => <span key={helper.readerName}><Link href={helper.link} onClick={props.onNavTo}>{helper.name}</Link> (<Link
 					className="reader-link"
 					screen={ScreenKey.Profile}
 					params={{ 'userName': helper.readerName }}
@@ -130,7 +130,7 @@ const teamPage = (props: Services) => (
 		</HomePanel>
 		<HomeHero
 			title="🙋‍♀️ Want to join the team?"
-			description={<>We're happy to hear from you!<br/>Drop us an email at <a href="mailto:support@readup.com">support@readup.com</a></>}
+			description={<>We're happy to hear from you!<br/>Drop us an email at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></>}
 		/>
 	</div>
 )
@@ -139,9 +139,5 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, service
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Meet the Team' }),
 		render: () => React.createElement(teamPage, services)
-		// render: () => React.createElement(downloadPage, {
-		// 	onOpenNewPlatformNotificationRequestDialog: services.onOpenNewPlatformNotificationRequestDialog,
-		// 	onCreateStaticContentUrl: services.onCreateStaticContentUrl
-		// })
 	};
 }

@@ -137,7 +137,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		};
 
 		// load initial data for the initially selected leaderboard
-		if (this.props.view === View.Readers) {
+		if (props.view === View.Readers) {
 			const readerLeaderboards = this.props.onGetReaderLeaderboards(
 				this._asyncTracker.addCallback(
 					readerLeaderboards => {
@@ -184,7 +184,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 					if (!event.isCompletionCommit) {
 						return;
 					}
-					switch (this.props.view) {
+					switch (props.view) {
 						case View.Authors:
 							props.onGetAuthorsEarningsReport(
 								this.state.authorLeaderboardsRequest,

@@ -18,6 +18,7 @@ import { createScreenFactory as createEmailConfirmationScreenFactory } from './E
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
 import { createScreenFactory as createMissionScreenFactory } from './MissionPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
+import createTeamPageFactory from './TeamPage';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
 import classNames from 'classnames';
@@ -964,7 +965,15 @@ export default abstract class Root<
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
-			})
+			}),
+			[ScreenKey.Team]: createTeamPageFactory(
+				ScreenKey.Team,
+				{
+					onCreateStaticContentUrl: this._createStaticContentUrl,
+					onNavTo: this._navTo
+				}
+			),
+
 		};
 	}
 	private checkProfileForUnsetValues(profile: WebAppUserProfile) {

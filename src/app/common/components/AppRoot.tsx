@@ -884,7 +884,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value
 				}
-			)
+			),
 		};
 
 		// state
