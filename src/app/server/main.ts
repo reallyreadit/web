@@ -258,6 +258,15 @@ server.get('/downloads', (req, res) => {
 		findRouteByKey(routes, ScreenKey.Download).createUrl()
 	);
 });
+server.get('/leaderboards', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl({
+			view: "writers"
+		})
+	);
+});
 server.get('/reads', (req, res) => {
 	redirect(
 		req,
