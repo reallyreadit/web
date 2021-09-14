@@ -132,8 +132,31 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
-		const
-			authorLeaderboards = props.onGetAuthorsEarningsReport(
+		let state: Pick<State, 'moreAuthorLeaderboards'> = {
+			moreAuthorLeaderboards: null,
+		};
+
+		// load initial data for the initially selected leaderboard
+		if (this.props.view === View.Readers) {
+			const readerLeaderboards = this.props.onGetReaderLeaderboards(
+				this._asyncTracker.addCallback(
+					readerLeaderboards => {
+						this.setState({
+							readerLeaderboards
+						});
+					}
+				)
+			);
+			this.state = {
+				...state,
+				isScreenLoading: readerLeaderboards.isLoading,
+				readerLeaderboards,
+				authorLeaderboards: null,
+				authorLeaderboardsRequest: null
+
+			};
+		} else {
+			const authorLeaderboards = props.onGetAuthorsEarningsReport(
 				defaultAuthorLeaderboardsRequest,
 				this._asyncTracker.addCallback(
 					authorLeaderboards => {
@@ -143,32 +166,18 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 						});
 					}
 				)
-			),
-			readerLeaderboards = this.props.onGetReaderLeaderboards(
-				this._asyncTracker.addCallback(
-					readerLeaderboards => {
-						this.setState({
-							readerLeaderboards
-						});
-					}
-				)
 			);
-		this.state = {
-			moreAuthorLeaderboards: null,
-			...(this.props.view === View.Readers ?
-				{
-					isScreenLoading: readerLeaderboards.isLoading,
-					readerLeaderboards,
-					authorLeaderboards: null,
-					authorLeaderboardsRequest: null,
-				} :
-				{
-					isScreenLoading: authorLeaderboards.isLoading,
-					authorLeaderboards,
-					authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
-					readerLeaderboards: null,
-				})
+			this.state = {
+				...state,
+				isScreenLoading: authorLeaderboards.isLoading,
+				authorLeaderboards,
+				authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
+				readerLeaderboards: null,
+			}
 		};
+
+		// reload data when an article has changed (this may have an influence on statistics)
+		// currently these events are only spawned in the local user session
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(
 				event => {

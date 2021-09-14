@@ -248,6 +248,15 @@ server.get('/proof/:token', (req, res) => {
 			);
 		});
 });
+server.get('/leaderboards', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl({
+			view: "writers"
+		})
+	);
+});
 server.get('/reads', (req, res) => {
 	redirect(
 		req,
