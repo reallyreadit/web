@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Icon, {IconName} from '../../../../../common/components/Icon';
-import Link from '../../../../../common/components/Link';
-import ScreenKey from '../../../../../common/routing/ScreenKey';
-import {NavOptions, NavReference} from '../../Root';
+import Icon, {IconName} from '../../../../common/components/Icon';
+import Link from '../../../../common/components/Link';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import {NavOptions, NavReference} from '../Root';
 
 export enum SocialType {
 	Twitter,
@@ -57,7 +57,6 @@ const profile = ({
 		</div> */}
 		<img className="picture" src={onCreateStaticContentUrl(`/app/images/team-page/${imageName}`)} alt="My Impact illustration." />
 		<div className="details">
-			{/* <a href={`mailto:${mail}`}>{mail}</a> */}
 			<Link
 				className="mail"
 				href={`mailto:${mail}`}
@@ -66,12 +65,12 @@ const profile = ({
 			>{mail}</Link>
 			<div className="social">
 				{social.map(account =>
-					<a
+					<Link
 						key={account.type}
 						href={getSocialLink(account.type, account.handle)}
-						target="_blank">
+						onClick={onNavTo}>
 						<Icon name={socialIconMap[account.type]}></Icon>
-					</a>
+					</Link>
 				)}
 			</div>
 		</div>

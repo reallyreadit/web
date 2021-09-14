@@ -11,7 +11,6 @@ import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
-import createTeamPageFactory from './BrowserRoot/TeamPage';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
@@ -836,14 +835,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value
 				}
-			),
-			[ScreenKey.Team]: createTeamPageFactory(
-				ScreenKey.Team,
-				{
-					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onNavTo: this._navTo
-				}
-			),
+			)
 		};
 
 		// route state
