@@ -18,7 +18,7 @@ const profiles: ProfileData[] = [
 		name: "Bill Loundy",
 		readerName: "bill",
 		role: "Chief Executive Officer",
-		intro: <>Thor is our UX designer and developer from Europe. Bill introduced him to Readup, and he fell in love with it. He lives in Helsinki, Finland among lakes, trees and saunas.</>,
+		intro: <>Bill is an armchair literarian on a mission to save reading. He has lots of thoughts about technology and social media and what these things are doing to our brains. Bill lives in an Earthship-adjacent abode in New Mexico among mountains, cows, and chickens.</>,
 		imageName: 'bill.png',
 		social: [
 			{
