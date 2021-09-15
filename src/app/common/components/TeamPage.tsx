@@ -41,7 +41,7 @@ const profiles: ProfileData[] = [
 		social: [
 			{
 				type: SocialType.Twitter,
-				handle: "jeffcamera"
+				handle: "jeffrocams"
 			},
 			{
 				type: SocialType.Web,
