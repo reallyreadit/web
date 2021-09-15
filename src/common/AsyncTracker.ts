@@ -23,6 +23,13 @@ export default class AsyncTracker {
 		this._animationFrameHandles.push(handle);
 		return handle;
 	}
+	/**
+	 * Wraps a callback function so that it is tracked by this tracker.
+	 * The callback will only be invoked if the wrapping callback is not in a cancelled state.
+	 * @param callback
+	 * @param tag an optional tag to identify the wrapping callback with
+	 * @returns
+	 */
 	public addCallback<T>(callback: (value: T) => void, tag?: string) {
 		const token = this.createCancellationToken(tag);
 		return (arg: T) => {
@@ -32,6 +39,10 @@ export default class AsyncTracker {
 			}
 		};
 	}
+	/**
+	 * Adds a delegate function that will be invoked when this tracker cancels its tracked operations.
+	 * @param callbacks Function(s) that will synchronously cancel an asynchronous operation when invoked
+	 */
 	public addCancellationDelegate(...callbacks: Function[]) {
 		this._cancellationDelegates.splice(this._cancellationDelegates.length - 1, 0, ...callbacks);
 	}
