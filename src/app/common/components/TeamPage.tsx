@@ -27,7 +27,7 @@ const profiles: ProfileData[] = [
 			},
 			{
 					type: SocialType.Web,
-					handle: "https://jeffcamera.com"
+					handle: "https://billloundy.com"
 			}
 		],
 		mail: "bill@readup.com",
