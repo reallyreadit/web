@@ -36,7 +36,7 @@ const profiles: ProfileData[] = [
 		name: "Jeff Camera",
 		readerName: "jeff",
 		role: "Chief Technology Officer",
-		intro: <>Thor is our UX designer and developer from Europe. Bill introduced him to Readup, and he fell in love with it. He lives in Helsinki, Finland among lakes, trees and saunas.</>,
+		intro: <>Jeff is a full-stack developer with over a decade of professional experience. In December 2016 he typed "git init" to create Readup's first repository and has been typing away ever since. Jeff lives down the shore in New Jersey among seagulls, pizza, and bagels.</>,
 		imageName: 'jeff.jpg',
 		social: [
 			{
