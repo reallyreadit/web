@@ -642,6 +642,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSetScreenState: this._setScreenState,
 					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
 				}
