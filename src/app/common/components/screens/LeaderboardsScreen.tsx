@@ -142,7 +142,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 				this._asyncTracker.addCallback(
 					readerLeaderboards => {
 						this.setState({
-							readerLeaderboards
+							readerLeaderboards,
+							isScreenLoading: false
 						});
 					}
 				)
