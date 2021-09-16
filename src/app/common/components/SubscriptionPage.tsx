@@ -69,6 +69,11 @@ export class SubscriptionPage extends React.Component<Services, State> {
 			this.state = {
 				autoLoading: true
 			}
+		}
+	}
+
+	public componentDidMount() {
+		if (this.state.autoLoading) {
 			setTimeout(() => {
 				this.setState({
 					autoLoading: false
