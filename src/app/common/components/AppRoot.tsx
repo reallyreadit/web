@@ -667,7 +667,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				if (status.isAvailable) {
 					this._isUpdateAvailable = true;
 					this._toaster.addToast(
-						<UpdateToast onReloadWindow={this._reloadWindow} />,
+						<UpdateToast
+							onUpdate={this._reloadWindow}
+							updateAction='reload'
+						/>,
 						Intent.Success,
 						false
 					);
@@ -1248,7 +1251,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 					}
 					this._isUpdateAvailable = true;
 					this._toaster.addToast(
-						<UpdateToast onReloadWindow={this._installUpdate} />,
+						<UpdateToast
+							onUpdate={this._installUpdate}
+							updateAction={
+								this.props.appApi.deviceInfo.appPlatform === AppPlatform.Linux ?
+									'download' :
+									'reload'
+							}
+						/>,
 						Intent.Success,
 						false
 					);
