@@ -11,6 +11,7 @@ import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
+import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
@@ -834,7 +835,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value
 				}
-			)
+			),
+			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {
+				onNavTo: this._navTo,
+				deviceType: this.props.deviceType
+			})
 		};
 
 		// route state
@@ -1378,7 +1383,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{(
 					topScreen.templateSection == null ||
 					(topScreen.templateSection & TemplateSection.Header)
-				 ) ?
+				 )
+				 &&
+				 (
+					 // hack to hide the footer on the subscribe loader "landing" page
+					 topScreen.key !== ScreenKey.Subscribe
+				 )
+				 ?
 					<HomeHeader
 						deviceType={this.props.deviceType}
 						onBeginOnboarding={this._beginOnboarding}
@@ -1425,7 +1436,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 										(screen.templateSection & TemplateSection.Footer)
 									) &&
 									(
-										!this.state.user
+										!this.state.user &&
+										// hack to hide the footer on the subscribe loader "landing" page
+										screen.key !== ScreenKey.Subscribe
 									)
 								) ?
 									<ColumnFooter

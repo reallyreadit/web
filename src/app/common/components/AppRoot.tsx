@@ -10,6 +10,7 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
+import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import classNames from 'classnames';
 import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
@@ -965,7 +966,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewPrivacyPolicy: this._viewPrivacyPolicy,
 					stripe: this.props.stripeLoader.value
 				}
-			)
+			),
+			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {
+				onNavTo: this._navTo,
+				deviceType: DeviceType.Ios
+				// TODO app platform needed?
+			})
 		};
 
 		// state

@@ -1,0 +1,142 @@
+import * as React from 'react';
+import Button from '../../../common/components/Button';
+import Link from '../../../common/components/Link';
+import {DeviceType} from '../../../common/DeviceType';
+import {createUrl} from '../../../common/HttpEndpoint';
+import {deviceTypeQueryStringKey} from '../../../common/routing/queryString';
+import RouteLocation from '../../../common/routing/RouteLocation';
+import LoadingOverlay from './controls/LoadingOverlay';
+import {NavOptions, NavReference, Screen } from './Root';
+
+const SUPPORT_MAIL = "support@readup.com"
+const AUTOLOAD_TIMEOUT = 5000;
+
+type Services = {
+	deviceType: DeviceType,
+	location: RouteLocation,
+	onNavTo: (ref: NavReference, options?: NavOptions) => void,
+}
+
+type State = {
+	autoLoading: boolean
+}
+
+export class SubscriptionPage extends React.Component<Services, State> {
+
+	// yes, when not on iOS or Desktop Safari
+	private _shouldTryAutoLoad() {
+		return !(
+			(this.props.deviceType === DeviceType.Ios)
+			||
+			(this.props.deviceType === DeviceType.DesktopSafari)
+		);
+	}
+
+	private _openInApp = () => {
+		let targetUrl;
+		if (this.props.deviceType === DeviceType.Ios) {
+			targetUrl = createUrl(
+				{
+					host: 'reallyread.it',
+					protocol: 'https'
+				},
+				this.props.location.path,
+				{
+					[deviceTypeQueryStringKey]: DeviceType.Ios
+				}
+			)
+		} else {
+			targetUrl = createUrl(
+				{
+					host: window.location.host,
+					protocol: 'readup'
+				},
+				this.props.location.path,
+			)
+		}
+		if (targetUrl) {
+			window.location.href = targetUrl;
+		}
+	}
+
+	constructor(props: Services) {
+		super(props);
+		this.state = {
+			autoLoading: false
+		}
+
+		if (this._shouldTryAutoLoad()) {
+			this.state = {
+				autoLoading: true
+			}
+			setTimeout(() => {
+				this.setState({
+					autoLoading: false
+				})
+			}, AUTOLOAD_TIMEOUT);
+			this._openInApp();
+		}
+	}
+
+	public render() {
+
+		const autoLoadExpired = this._shouldTryAutoLoad() && !this.state.autoLoading;
+
+		return <div className="subscription-page_u5q1tc">
+			<div className="content">
+				<div className="top-content">
+					<h1 className="heading-regular">{
+						this._shouldTryAutoLoad() ?
+							"Opening Readup..."  :
+							"Subscribe to Readup"
+					}</h1>
+					<div className="loader-wrapper">
+						<p className="intro">Awesome that you want to subscribe! Open the app to continue.</p>
+						{
+							this._shouldTryAutoLoad()
+								&& <p><strong>If a browser dialog appears, click &quot;Open Readup&quot;.</strong></p>
+						}
+						{ this.state.autoLoading ?
+							<LoadingOverlay position="static" />
+							: null
+						}
+					</div>
+					<div className="button-wrapper">
+						{
+							autoLoadExpired && <p>Not working? Try this button</p>
+						}
+						{
+							(
+								autoLoadExpired || !(this._shouldTryAutoLoad())
+							) ?
+								<Button
+									intent="loud"
+									size="large"
+									text="Open App"
+									onClick={this._openInApp} />
+							: null
+						}
+					</div>
+				</div>
+				<p className="support">
+					Need help? Contact <Link
+						href={`mailto:${SUPPORT_MAIL}`}
+						text={SUPPORT_MAIL}
+						onClick={this.props.onNavTo} />
+				</p>
+			</div>
+		</div>
+		}
+	}
+
+	export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Omit<Services, 'location'>) {
+		return {
+			create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Subscribe to Readup' }),
+			render: (state: Screen) => React.createElement(SubscriptionPage, {
+				...services,
+				location: state.location
+			})
+		};
+	}
+
+	export default SubscriptionPage;
