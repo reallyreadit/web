@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Readup",
-  "description": "The best way to read online.",
+  "name": "Save to Readup",
+  "description": "Easily save articles to the world’s best reading app.",
   "author": "reallyread.it, inc.",
 
   "icons": {
