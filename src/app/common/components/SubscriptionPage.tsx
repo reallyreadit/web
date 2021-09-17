@@ -120,7 +120,7 @@ export class SubscriptionPage extends React.Component<Services, State> {
 					</div>
 					<div className="button-wrapper">
 						{
-							autoLoadExpired && <p>Not working? Try this button</p>
+							autoLoadExpired && <p>App doesn't open? Try this button</p>
 						}
 						{
 							this.props.deviceType === DeviceType.Android ?
@@ -144,6 +144,12 @@ export class SubscriptionPage extends React.Component<Services, State> {
 									onClick={this._openInApp} />
 							:
 							null
+						}
+						{ !(this.props.deviceType === DeviceType.Android) &&
+						 	<p className="no-app">Don't have the app yet? <Link
+							 screen={ScreenKey.Download}
+							 onClick={this.props.onNavTo}
+							 text="Download App" /></p>
 						}
 					</div>
 				</div>

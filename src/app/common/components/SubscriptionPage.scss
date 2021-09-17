@@ -30,9 +30,16 @@ div.subscription-page_u5q1tc {
 				align-items: center;
 				margin: 1rem auto;
 
+				strong, p {
+					text-align: center;
+				}
+
 				strong {
 					font-family: 'Museo Sans (700)';
-					text-align: center;
+				}
+
+				.no-app {
+					color: var(--text-muted-color);
 				}
 			}
 
