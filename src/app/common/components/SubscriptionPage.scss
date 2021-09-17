@@ -32,6 +32,7 @@ div.subscription-page_u5q1tc {
 
 				strong {
 					font-family: 'Museo Sans (700)';
+					text-align: center;
 				}
 			}
 
@@ -39,6 +40,9 @@ div.subscription-page_u5q1tc {
 				> .intro {
 					text-align: center;
 					margin-bottom: 0.4rem;
+					p {
+						text-align: center;
+					}
 				}
 			}
 
@@ -54,6 +58,7 @@ div.subscription-page_u5q1tc {
 		}
 
 		> .support {
+			color: var(--text-muted-color);
 			text-align: center;
 		}
 	}

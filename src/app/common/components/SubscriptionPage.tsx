@@ -5,8 +5,9 @@ import {DeviceType} from '../../../common/DeviceType';
 import {createUrl} from '../../../common/HttpEndpoint';
 import {deviceTypeQueryStringKey} from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
+import ScreenKey from '../../../common/routing/ScreenKey';
 import LoadingOverlay from './controls/LoadingOverlay';
-import {NavOptions, NavReference, Screen } from './Root';
+import {NavMethod, NavOptions, NavReference, Screen } from './Root';
 
 const SUPPORT_MAIL = "support@readup.com"
 const AUTOLOAD_TIMEOUT = 5000;
@@ -29,6 +30,8 @@ export class SubscriptionPage extends React.Component<Services, State> {
 			(this.props.deviceType === DeviceType.Ios)
 			||
 			(this.props.deviceType === DeviceType.DesktopSafari)
+			||
+			(this.props.deviceType === DeviceType.Android)
 		);
 	}
 
@@ -93,13 +96,22 @@ export class SubscriptionPage extends React.Component<Services, State> {
 					<h1 className="heading-regular">{
 						this._shouldTryAutoLoad() ?
 							"Opening Readup..."  :
-							"Subscribe to Readup"
+							this.props.deviceType === DeviceType.Android ?
+							 "No Droid, No Fun 😢" :
+							 "Subscribe to Readup" // iOS & Safari case
 					}</h1>
 					<div className="loader-wrapper">
-						<p className="intro">Awesome that you want to subscribe! Open the app to continue.</p>
+						<p className="intro">Awesome that you want to subscribe!{" "}
+							{
+								this.props.deviceType === DeviceType.Android ?
+									<>Unfortunately, Readup isn't available for Android yet. It's coming soon!<br/><br/> Get notified when &amp; check our other apps on the Downloads page.</>
+									:
+									"Open the app to continue."
+							}
+						</p>
 						{
 							this._shouldTryAutoLoad()
-								&& <p><strong>If a browser dialog appears, click &quot;Open Readup&quot;.</strong></p>
+								&& <p><strong>If a browser dialog appears, click &quot;Open Readup&quot;</strong></p>
 						}
 						{ this.state.autoLoading ?
 							<LoadingOverlay position="static" />
@@ -111,6 +123,17 @@ export class SubscriptionPage extends React.Component<Services, State> {
 							autoLoadExpired && <p>Not working? Try this button</p>
 						}
 						{
+							this.props.deviceType === DeviceType.Android ?
+							<Button
+								intent="loud"
+								size="large"
+								text="Open Downloads"
+								onClick={(ev) => this.props.onNavTo(
+									{key: ScreenKey.Download},
+									{method: NavMethod.ReplaceAll})
+								}
+							/>
+							:
 							(
 								autoLoadExpired || !(this._shouldTryAutoLoad())
 							) ?
@@ -119,7 +142,8 @@ export class SubscriptionPage extends React.Component<Services, State> {
 									size="large"
 									text="Open App"
 									onClick={this._openInApp} />
-							: null
+							:
+							null
 						}
 					</div>
 				</div>

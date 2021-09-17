@@ -1381,13 +1381,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 					</div> :
 					null}
 				{(
-					topScreen.templateSection == null ||
-					(topScreen.templateSection & TemplateSection.Header)
-				 )
-				 &&
-				 (
-					 // hack to hide the footer on the subscribe loader "landing" page
-					 topScreen.key !== ScreenKey.Subscribe
+					(
+						topScreen.templateSection == null ||
+						(topScreen.templateSection & TemplateSection.Header)
+					)
+					&&
+					(
+						// hack to hide the footer on the subscribe loader "landing" page
+						topScreen.key !== ScreenKey.Subscribe
+					)
 				 )
 				 ?
 					<HomeHeader
@@ -1408,6 +1410,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 					null}
 				<main>
 					{(
+						// hack to hide the nav bar on the subscribe loader "landing" page, when logged in
+						(topScreen.id !== ScreenKey.Subscribe)
+						  &&
 						(
 							topScreen.templateSection == null ||
 							(topScreen.templateSection & TemplateSection.Navigation)
