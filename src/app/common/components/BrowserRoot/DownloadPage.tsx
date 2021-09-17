@@ -6,10 +6,12 @@ import {DeviceType} from '../../../../common/DeviceType';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import DownloadButton from './DownloadButton';
 import HomeHero from './HomeHero';
+import { NavReference, NavOptions } from '../Root';
 
 type Services = {
 	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onCreateStaticContentUrl: (path: string) => string
+	onCreateStaticContentUrl: (path: string) => string,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean
 };
 
 const renderDownloadOption = ({title, iconName, link, services}:
@@ -35,7 +37,7 @@ const renderDownloadOption = ({title, iconName, link, services}:
 				// TODO: specific buttons for Mac App Store, Windows
 					<DownloadButton
 						analyticsAction='download-page'
-						onNavTo={() => false}
+						onNavTo={services.onNavTo}
 						buttonType='platform'
 						deviceType={DeviceType.Ios}
 						onCreateStaticContentUrl={services.onCreateStaticContentUrl}
@@ -43,11 +45,10 @@ const renderDownloadOption = ({title, iconName, link, services}:
 					/>
 				: // generic case
 					<Button
-					hrefPreventDefault={false}
 					text="Download"
 					size="large"
 					intent="loud"
-					href={link}
+					onClick={services.onNavTo.bind(null, link)}
 				/>
 		}
 		</div>
@@ -82,7 +83,8 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, service
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Download Readup' }),
 		render: () => React.createElement(downloadPage, {
 			onOpenNewPlatformNotificationRequestDialog: services.onOpenNewPlatformNotificationRequestDialog,
-			onCreateStaticContentUrl: services.onCreateStaticContentUrl
+			onCreateStaticContentUrl: services.onCreateStaticContentUrl,
+			onNavTo: services.onNavTo
 		})
 	};
 }

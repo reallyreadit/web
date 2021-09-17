@@ -79,6 +79,7 @@ import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../com
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { EarningsExplainerDialog } from './EarningsExplainerDialog';
 import { ArticleStarredEvent } from '../AppApi';
+import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -940,6 +941,14 @@ export default abstract class Root<
 				onShowToast: this._toaster.addToast,
 				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle
 			}),
+			[ScreenKey.Download]: createDownloadPageFactory(
+				ScreenKey.Download,
+				{
+					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
+					onNavTo: this._navTo
+				}
+			),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
 			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
 				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,

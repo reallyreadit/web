@@ -9,7 +9,6 @@ import ScreenKey from '../../../common/routing/ScreenKey';
 import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
-import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
@@ -551,13 +550,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile
-				}
-			),
-			[ScreenKey.Download]: createDownloadPageFactory(
-				ScreenKey.Download,
-				{
-					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-					onCreateStaticContentUrl: this._createStaticContentUrl
 				}
 			),
 			[ScreenKey.Blog]: createBlogScreenFactory(
