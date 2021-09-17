@@ -2,10 +2,17 @@
         componentPath: src/app/common/components/BrowserRoot/DownloadPage
         cssComponentId: download-page_4u78ip
 */
+@import "../../../../common/styles/breakpoints.scss";
 
 // this scss affects the outer component!
 
 .download-page_4u78ip {
+
+	// footer push-down hack
+	@include from(tablet-portrait) {
+		height: calc(100% - 256px);
+		min-height: 660px;
+	}
 
 	.download-options {
 		margin: auto;
@@ -36,7 +43,8 @@
 			}
 		}
 
-		@media screen and (max-width: 767px) {
+		// @media screen and (max-width: 767px) {
+		@include until(tablet-portrait) {
 			> h2 {
 				text-align: center;
 			}
@@ -79,7 +87,8 @@
 
 }
 
-@media screen and (min-width: 768px) {
+// @media screen and (min-width: 768px) {
+@include from(tablet-portrait) {
 	.download-page_4u78ip {
 		.download-options {
 			flex-direction: row;
@@ -91,5 +100,4 @@
 			}
 		}
 	}
-
 }
