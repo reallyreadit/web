@@ -36,7 +36,7 @@ const profiles: ProfileData[] = [
 		name: "Jeff Camera",
 		readerName: "jeff",
 		role: "Chief Technology Officer",
-		intro: <>Jeff is a full-stack developer with over a decade of professional experience. In December 2016 he typed "git init" to create Readup's first repository and has been typing away ever since. Jeff lives down the shore in New Jersey among seagulls, pizza, and bagels.</>,
+		intro: <>Jeff is a full-stack developer with over a decade of experience shipping web apps. In December 2016 he typed "git init" to create Readup's first repository and has been typing away ever since. Jeff lives down the shore in New Jersey among seagulls, pizza, and bagels.</>,
 		imageName: 'jeff.jpg',
 		social: [
 			{
