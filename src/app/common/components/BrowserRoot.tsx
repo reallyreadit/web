@@ -17,7 +17,6 @@ import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
-import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
@@ -98,7 +97,6 @@ const welcomeMessages = {
 };
 export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
-	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
 
 	// app
@@ -502,14 +500,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _handleHistoryPopState = () => {
 		this.setScreenState({ method: NavMethod.Pop });
 	};
-	private readonly _handleVisibilityChange = () => {
-		if (!window.document.hidden) {
-			this.checkForUpdate();
-			this.startUpdateCheckInterval();
-		} else {
-			this.stopUpdateCheckInterval();
-		}
-	};
 
 	constructor(props: Props) {
 		super('browser-root_6tjc3j', true, props);
@@ -689,6 +679,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onSetScreenState: this._setScreenState,
 					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
 				}
@@ -927,11 +918,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					this.onSubscriptionStatusChanged(status, EventSource.Remote);
 				}
 			)
-			.addListener('updateAvailable', version => {
-				if (!this._isUpdateAvailable && version.compareTo(this.props.version) > 0) {
-					this.setUpdateAvailable();
-				}
-			})
 			.addListener('userSignedIn', data => {
 				let profile: WebAppUserProfile;
 				// check for broadcast from legacy web app instance
@@ -1071,16 +1057,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			screens
 		};
 	}
-	private checkForUpdate() {
-		if (!this._isUpdateAvailable) {
-			this.fetchUpdateStatus().then(status => {
-				if (status.isAvailable) {
-					this.setUpdateAvailable();
-					this.props.browserApi.updateAvailable(status.version);
-				}
-			});
-		}
-	}
 	private setScreenState(
 		options: (
 			(
@@ -1118,28 +1094,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.setState(
 				this.changeScreen(options)
 			);
-		}
-	}
-	private setUpdateAvailable() {
-		this._isUpdateAvailable = true;
-		this.stopUpdateCheckInterval();
-		this._toaster.addToast(
-			<UpdateToast onReloadWindow={this._reloadWindow} />,
-			Intent.Success,
-			false
-		);
-	}
-	private startUpdateCheckInterval() {
-		if (!this._isUpdateAvailable && !this._updateCheckInterval) {
-			this._updateCheckInterval = window.setInterval(() => {
-				this.checkForUpdate();
-			}, 10 * 60 * 1000);
-		}
-	}
-	private stopUpdateCheckInterval() {
-		if (this._updateCheckInterval) {
-			window.clearInterval(this._updateCheckInterval);
-			this._updateCheckInterval = null;
 		}
 	}
 	protected getPushDeviceForm() {
@@ -1521,11 +1475,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 		// add listener for back navigation
 		window.addEventListener('popstate', this._handleHistoryPopState);
-		// add listener for visibility change
-		window.document.addEventListener('visibilitychange', this._handleVisibilityChange);
-		if (!document.hidden) {
-			this.startUpdateCheckInterval();
-		}
 		// update other tabs with the latest user data
 		// descendent components' mount handlers will fire before this one
 		// and might have cleared an alert and already broadcast a more
@@ -1574,7 +1523,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	public componentWillUnmount() {
 		super.componentWillUnmount();
 		window.removeEventListener('popstate', this._handleHistoryPopState);
-		window.document.removeEventListener('visibilitychange', this._handleVisibilityChange);
 		if (this._updateCheckInterval) {
 			window.clearInterval(this._updateCheckInterval);
 		}

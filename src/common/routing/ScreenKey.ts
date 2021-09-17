@@ -23,6 +23,7 @@ enum ScreenKey {
 	Settings,
 	Stats,
 	Subscribe
+	Team
 }
 export default ScreenKey;
 export type ScreenParams = {

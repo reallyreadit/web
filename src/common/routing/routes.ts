@@ -103,11 +103,36 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/impact$/,
 		screenKey: ScreenKey.MyImpact
 	},
-	{
-		createUrl: () => '/leaderboards',
-		pathRegExp: /^\/leaderboards$/,
-		screenKey: ScreenKey.Leaderboards
-	},
+	// {
+	// 	createUrl: () => '/leaderboards',
+	// 	pathRegExp: /^\/leaderboards$/,
+	// 	screenKey: ScreenKey.Leaderboards
+	// },
+	(function () {
+		const pathRegExp = /^\/leaderboards\/?(writers|readers)?$/;
+		return {
+			createUrl: params => {
+				if (
+					params &&
+					(
+						params['view'] === 'writers' ||
+						params['view'] === 'readers'
+					)
+				) {
+					return `/leaderboards/${params['view']}`;
+				}
+				return '/leaderboards/writers';
+			},
+			getPathParams: path => {
+				const [, view] = path.match(pathRegExp);
+				return {
+					view: view === 'readers' ? view : 'writers'
+				};
+			},
+			pathRegExp,
+			screenKey: ScreenKey.Leaderboards
+		} as Route<DialogKey, ScreenKey>;
+	})(),
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/notifications',
@@ -230,6 +255,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/subscribe',
 		pathRegExp: /^\/subscribe$/,
 		screenKey: ScreenKey.Subscribe
+  },
+  {
+		createUrl: () => '/team',
+		pathRegExp: /^\/team$/,
+		screenKey: ScreenKey.Team
 	},
 	(function () {
 		const pathRegExp = /^\/writers\/([^/]+)$/;
