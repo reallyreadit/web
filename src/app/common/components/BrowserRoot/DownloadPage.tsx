@@ -9,8 +9,11 @@ import HomeHero from './HomeHero';
 import { NavReference, NavOptions } from '../Root';
 import HomePanel from './HomePanel';
 import Link from '../../../../common/components/Link';
+import {SafariExtensionDialog} from './SafariExtensionDialog';
 
 type Services = {
+	onOpenDialog: (dialog: React.ReactNode) => void,
+	onCloseDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean
@@ -88,12 +91,28 @@ const downloadPage = (props: Services) => (
 					DeviceType.DesktopEdge,
 					DeviceType.DesktopSafari
 				] as CompatibleBrowser[]).map(
-					browserDeviceType => (
-						<Link key={browserDeviceType} href={getStoreUrl(browserDeviceType)} onClick={props.onNavTo}>
-							<Icon name={getBrowserIconName(browserDeviceType)} />
-							<span>{browserDeviceType}</span>
-						</Link>
-					)
+					browserDeviceType => {
+						let linkProps = browserDeviceType === DeviceType.DesktopSafari ?
+						{
+							onClick: () => {
+								props.onOpenDialog(
+									<SafariExtensionDialog
+										onClose={props.onCloseDialog}
+										onCreateStaticContentUrl={props.onCreateStaticContentUrl}
+										onNavTo={props.onNavTo}
+									/>
+								);
+							}
+						} : {
+							onClick: props.onNavTo,
+							href: getStoreUrl(browserDeviceType)
+						};
+						return (
+							<Link key={browserDeviceType} {...linkProps}>
+								<Icon name={getBrowserIconName(browserDeviceType)} />
+								<span>{browserDeviceType}</span>
+							</Link>)
+					}
 				)
 			}
 			</div>
@@ -107,6 +126,8 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, service
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Download Readup' }),
 		render: () => React.createElement(downloadPage, {
 			onOpenNewPlatformNotificationRequestDialog: services.onOpenNewPlatformNotificationRequestDialog,
+			onOpenDialog: services.onOpenDialog,
+			onCloseDialog: services.onCloseDialog,
 			onCreateStaticContentUrl: services.onCreateStaticContentUrl,
 			onNavTo: services.onNavTo
 		})

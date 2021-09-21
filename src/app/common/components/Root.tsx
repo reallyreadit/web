@@ -944,6 +944,8 @@ export default abstract class Root<
 			[ScreenKey.Download]: createDownloadPageFactory(
 				ScreenKey.Download,
 				{
+					onOpenDialog: this._dialog.openDialog,
+					onCloseDialog: this._dialog.closeDialog,
 					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onNavTo: this._navTo
