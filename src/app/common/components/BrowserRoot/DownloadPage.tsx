@@ -1,14 +1,19 @@
 import * as React from 'react';
 import Button from '../../../../common/components/Button';
 import Icon, {IconName} from '../../../../common/components/Icon';
-import {DeviceType} from '../../../../common/DeviceType';
+import {CompatibleBrowser, DeviceType, getBrowserIconName, getStoreUrl} from '../../../../common/DeviceType';
 // import Link from '../../../../common/components/Link';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import DownloadButton from './DownloadButton';
 import HomeHero from './HomeHero';
 import { NavReference, NavOptions } from '../Root';
+import HomePanel from './HomePanel';
+import Link from '../../../../common/components/Link';
+import {SafariExtensionDialog} from './SafariExtensionDialog';
 
 type Services = {
+	onOpenDialog: (dialog: React.ReactNode) => void,
+	onCloseDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean
@@ -46,6 +51,7 @@ const renderDownloadOption = ({title, iconName, link, services}:
 				: // generic case
 					<Button
 					text="Download"
+					iconLeft="arrow-down"
 					size="large"
 					intent="loud"
 					onClick={services.onNavTo.bind(null, link)}
@@ -74,6 +80,43 @@ const downloadPage = (props: Services) => (
 				{renderDownloadOption({title: 'Linux (.deb)', iconName: 'linux', link: 'https://static.readup.com/downloads/linux/latest', services: props})}
 			</div>
 		</div>
+		<HomePanel className="save-to-readup">
+			<h2>Save to Readup</h2>
+			<p>Easily save articles from the web to Readup</p>
+			<div className="browsers">
+				{
+				([
+					DeviceType.DesktopChrome,
+					DeviceType.DesktopFirefox,
+					DeviceType.DesktopEdge,
+					DeviceType.DesktopSafari
+				] as CompatibleBrowser[]).map(
+					browserDeviceType => {
+						let linkProps = browserDeviceType === DeviceType.DesktopSafari ?
+						{
+							onClick: () => {
+								props.onOpenDialog(
+									<SafariExtensionDialog
+										onClose={props.onCloseDialog}
+										onCreateStaticContentUrl={props.onCreateStaticContentUrl}
+										onNavTo={props.onNavTo}
+									/>
+								);
+							}
+						} : {
+							onClick: props.onNavTo,
+							href: getStoreUrl(browserDeviceType)
+						};
+						return (
+							<Link key={browserDeviceType} {...linkProps}>
+								<Icon name={getBrowserIconName(browserDeviceType)} />
+								<span>{browserDeviceType}</span>
+							</Link>)
+					}
+				)
+			}
+			</div>
+		</HomePanel>
 	</div>
 );
 
@@ -83,6 +126,8 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, service
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Download Readup' }),
 		render: () => React.createElement(downloadPage, {
 			onOpenNewPlatformNotificationRequestDialog: services.onOpenNewPlatformNotificationRequestDialog,
+			onOpenDialog: services.onOpenDialog,
+			onCloseDialog: services.onCloseDialog,
 			onCreateStaticContentUrl: services.onCreateStaticContentUrl,
 			onNavTo: services.onNavTo
 		})
