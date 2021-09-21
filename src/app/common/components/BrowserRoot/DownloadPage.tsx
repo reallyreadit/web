@@ -1,12 +1,14 @@
 import * as React from 'react';
 import Button from '../../../../common/components/Button';
 import Icon, {IconName} from '../../../../common/components/Icon';
-import {DeviceType} from '../../../../common/DeviceType';
+import {CompatibleBrowser, DeviceType, getBrowserIconName, getStoreUrl} from '../../../../common/DeviceType';
 // import Link from '../../../../common/components/Link';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import DownloadButton from './DownloadButton';
 import HomeHero from './HomeHero';
 import { NavReference, NavOptions } from '../Root';
+import HomePanel from './HomePanel';
+import Link from '../../../../common/components/Link';
 
 type Services = {
 	onOpenNewPlatformNotificationRequestDialog: () => void,
@@ -46,6 +48,7 @@ const renderDownloadOption = ({title, iconName, link, services}:
 				: // generic case
 					<Button
 					text="Download"
+					iconLeft="arrow-down"
 					size="large"
 					intent="loud"
 					onClick={services.onNavTo.bind(null, link)}
@@ -74,6 +77,27 @@ const downloadPage = (props: Services) => (
 				{renderDownloadOption({title: 'Linux (.deb)', iconName: 'linux', link: 'https://static.readup.com/downloads/linux/latest', services: props})}
 			</div>
 		</div>
+		<HomePanel className="save-to-readup">
+			<h2>Save to Readup</h2>
+			<p>Easily save articles from the web to Readup</p>
+			<div className="browsers">
+				{
+				([
+					DeviceType.DesktopChrome,
+					DeviceType.DesktopFirefox,
+					DeviceType.DesktopEdge,
+					DeviceType.DesktopSafari
+				] as CompatibleBrowser[]).map(
+					browserDeviceType => (
+						<Link key={browserDeviceType} href={getStoreUrl(browserDeviceType)} onClick={props.onNavTo}>
+							<Icon name={getBrowserIconName(browserDeviceType)} />
+							<span>{browserDeviceType}</span>
+						</Link>
+					)
+				)
+			}
+			</div>
+		</HomePanel>
 	</div>
 );
 

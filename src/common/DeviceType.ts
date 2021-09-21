@@ -1,3 +1,5 @@
+import {IconName} from "./components/Icon";
+
 export enum DeviceType {
 	Unknown = 'Unknown Browser',
 	Ios = 'iOS',
@@ -7,7 +9,7 @@ export enum DeviceType {
 	DesktopSafari = 'Safari',
 	DesktopEdge = 'Edge'
 }
-type CompatibleBrowser = DeviceType.DesktopChrome | DeviceType.DesktopEdge | DeviceType.DesktopFirefox | DeviceType.DesktopSafari;
+export type CompatibleBrowser = DeviceType.DesktopChrome | DeviceType.DesktopEdge | DeviceType.DesktopFirefox | DeviceType.DesktopSafari;
 type CompatibleDevice = CompatibleBrowser | DeviceType.Ios;
 export function getDeviceType(userAgent: string) {
 	// test for mobile os first since browsers don't matter there
@@ -61,6 +63,23 @@ export function getStoreUrl(deviceType: CompatibleDevice) {
 			return 'https://apps.apple.com/us/app/readup-social-reading/id1441825432';
 	}
 }
+
+export function getBrowserIconName(deviceType: CompatibleBrowser): IconName {
+	switch (deviceType) {
+		case DeviceType.DesktopChrome:
+			return 'chrome';
+		case DeviceType.DesktopEdge:
+			return 'edge'
+		case DeviceType.DesktopFirefox:
+			return 'firefox';
+		case DeviceType.DesktopSafari:
+			return 'safari';
+	}
+}
+
+/**
+ * Pre-3.0 legacy function
+ */
 export function isCompatibleBrowser(deviceType: DeviceType): deviceType is CompatibleBrowser {
 	return (
 		deviceType === DeviceType.DesktopChrome ||
