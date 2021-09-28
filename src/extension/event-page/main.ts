@@ -4,6 +4,7 @@ import { createUrl } from '../../common/HttpEndpoint';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { ReadArticleNativeMessage, NativeMessageType, NativeMessageResponse } from './nativeMessaging';
 import { ignoreList } from './ignoreList';
+import { ExtensionOptionKey } from '../options-page/ExtensionOptions';
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -120,11 +121,15 @@ chrome.browserAction.onClicked.addListener(
 		}
 		// article
 		badgeApi.setLoading();
+		let shouldStar = true;
+		if (localStorage.getItem(ExtensionOptionKey.StarOnSave) !== null) {
+			shouldStar = localStorage.getItem(ExtensionOptionKey.StarOnSave) === 'true'
+		}
 		const message: ReadArticleNativeMessage = {
 			type: NativeMessageType.ReadArticle,
 			data: {
 				url: tab.url,
-				star: true
+				star: shouldStar
 			}
 		};
 		chrome.runtime.sendNativeMessage(

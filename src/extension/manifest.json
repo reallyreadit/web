@@ -38,6 +38,11 @@
       ]
     }
   ],
+  "options_ui": {
+	"page": "options-page/index.html",
+	"browser_style": true,
+	"chrome_style": true
+  },
   "permissions": [
     "activeTab",
     "nativeMessaging"
@@ -52,6 +57,7 @@
     "content-scripts/ui/fonts/museo-sans-700.ttf",
     "content-scripts/ui/fonts/museo-sans-900.ttf",
     "content-scripts/ui/images/logo.svg",
-    "content-scripts/ui/images/logo-white.svg"
+    "content-scripts/ui/images/logo-white.svg",
+    "options-page/bundle.css"
   ]
 }
