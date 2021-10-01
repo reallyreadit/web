@@ -15,16 +15,19 @@ const build = createBuild({
 		appConfig: {
 			path: appConfigPath
 		},
-		// fileName: `bundle-${package['it.reallyread'].version.extension}.css`,
 		fileName: `bundle.css`,
 		files: [
-			// TODO: this may be further narrowed down to only the components that are used needed
-			`${project.srcDir}/common/components/**/*.{css,scss}`,
+
+			// ------
+			// TODO: to shrink package size: instead of including all components, we only included the used ones here.
+			// Even more efficient would be separate component SCSS used by other extension code as well (the Alert e.g.),
+			// and reuse it from a single file.
+			// `${project.srcDir}/common/components/**/*.{css,scss}`,
+			`${project.srcDir}/common/components/ToggleSwitch*.scss`,
+			// ------
 			`${project.srcDir}/common/styles/reset.css`,
-			`${project.srcDir}/extension/options-page/main.scss`,
-			// `${project.srcDir}/common/styles/shadow-host.scss`,
+			`${project.srcDir}/extension/options-page/**/*.{css,scss}`,
 		],
-		// targetShadowDom: true
 	},
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'extension/options-page/main.ts'),

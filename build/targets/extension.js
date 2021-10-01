@@ -68,7 +68,7 @@ function build(env) {
 }
 function watch() {
 	eventPage.watch();
-	optionsPage.build(env),
+	optionsPage.watch(),
 	staticAssets.watch();
 	webAppContentScript.watch();
 	alertContentScript.watch();

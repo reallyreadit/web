@@ -7,12 +7,6 @@ import OptionsPage from './OptionsPage';
 
 insertExtensionFontStyleElement();
 
-// create the css link element
-const componentStyleLink = document.createElement('link');
-componentStyleLink.rel = 'stylesheet';
-componentStyleLink.href = chrome.runtime.getURL('/options-page/bundle.css');
-document.head.append(componentStyleLink);
-
 // create the svg icons
 const iconsElement = document.createElement('div');
 iconsElement.innerHTML = icons;
@@ -31,10 +25,17 @@ const options: ExtensionOptions = {
 	...defaultOptions
 }
 
-function _onChangeStarOnSave(isEnabled: boolean) {
-	localStorage.setItem(ExtensionOptionKey.StarOnSave, isEnabled.toString());
-	options[ExtensionOptionKey.StarOnSave] = isEnabled;
-	render();
+function _onChangeStarOnSave(isEnabled: boolean): Promise<boolean> {
+	try {
+		localStorage.setItem(ExtensionOptionKey.StarOnSave, isEnabled.toString());
+		options[ExtensionOptionKey.StarOnSave] = isEnabled;
+		return Promise.resolve(isEnabled);
+	} catch (e) {
+		// return original value if something went wrong
+		// TODO: this may lead to weird UI behavior in OptionsPage
+		console.error(e);
+		return Promise.resolve(options[ExtensionOptionKey.StarOnSave])
+	}
 }
 
 function render() {
@@ -45,7 +46,6 @@ function render() {
 		}),
 		document.getElementById('options-page-root')
 	)
-
 }
 
 // initialize options from local storage

@@ -1,5 +1,17 @@
+/*
+        componentPath: src/extension/options-page/main
+        cssComponentId: main_yapvhi
+*/
 
 // 20px to align it with the logo in the chrome extensions page
 div#options-page-root {
 	padding: 14px 20px;
+}
+
+html {
+	font-size: 13pt;
+}
+
+body {
+	font-size: inherit; // reset, in Chrome it's: 75%
 }
