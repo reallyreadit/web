@@ -80,6 +80,7 @@ const faqs: FaqCategory[] = [
 						<li><strong>In Chrome</strong>, right-click the Readup extension icon and click "Options."</li>
 						<li><strong>In Firefox</strong>, right-click the Readup extension icon, click "Manage Extension", then click the triple-dot menu next to the Readup extension, then click "Options."</li>
 						<li><strong>In Safari</strong>, right-click the Readup extension icon, click "Manage Extension...", then click "Preferences" in the pane that pops up.</li>
+						<li><strong>In Edge</strong>, right-click the Readup extension icon and click "Extension options."</li>
 					</ul>
 					<p>Disabling starring is not yet possible in our mobile apps. Send us an email at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> if this is something you want!</p>
 				</>
