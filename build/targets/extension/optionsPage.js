@@ -23,6 +23,9 @@ const build = createBuild({
 			// Even more efficient would be separate component SCSS used by other extension code as well (the Alert e.g.),
 			// and reuse it from a single file.
 			// `${project.srcDir}/common/components/**/*.{css,scss}`,
+			`${project.srcDir}/common/components/Icon.scss`,
+			`${project.srcDir}/common/components/SaveIndicator.scss`,
+			`${project.srcDir}/common/components/SpinnerIcon.scss`,
 			`${project.srcDir}/common/components/ToggleSwitch*.scss`,
 			// ------
 			`${project.srcDir}/common/styles/reset.css`,
