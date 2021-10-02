@@ -4,7 +4,7 @@ import { createUrl } from '../../common/HttpEndpoint';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { ReadArticleNativeMessage, NativeMessageType, NativeMessageResponse } from './nativeMessaging';
 import { ignoreList } from './ignoreList';
-import { ExtensionOptionKey } from '../options-page/ExtensionOptions';
+import { ExtensionOptionKey, ExtensionOptions, extensionOptionsStorageQuery } from '../options-page/ExtensionOptions';
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -121,32 +121,33 @@ chrome.browserAction.onClicked.addListener(
 		}
 		// article
 		badgeApi.setLoading();
-		let shouldStar = true;
-		if (localStorage.getItem(ExtensionOptionKey.StarOnSave) !== null) {
-			shouldStar = localStorage.getItem(ExtensionOptionKey.StarOnSave) === 'true'
-		}
-		const message: ReadArticleNativeMessage = {
-			type: NativeMessageType.ReadArticle,
-			data: {
-				url: tab.url,
-				star: shouldStar
-			}
-		};
-		chrome.runtime.sendNativeMessage(
-			'it.reallyread.mobile.browser_extension_app',
-			message,
-			(response?: NativeMessageResponse) => {
-				badgeApi.setDefault();
-				if (chrome.runtime.lastError) {
-					console.log('[EventPage] Error sending native message.');
-					showDownloadAlert(tab.id);
-					return;
-				}
-				console.log("[EventPage] Received native message response:");
-				console.log(response);
-				if (!response?.succeeded) {
-					showDownloadAlert(tab.id);
-				}
+		chrome.storage.local.get(
+			extensionOptionsStorageQuery,
+			(options: ExtensionOptions) => {
+				const message: ReadArticleNativeMessage = {
+					type: NativeMessageType.ReadArticle,
+					data: {
+						url: tab.url,
+						star: options[ExtensionOptionKey.StarOnSave]
+					}
+				};
+				chrome.runtime.sendNativeMessage(
+					'it.reallyread.mobile.browser_extension_app',
+					message,
+					(response?: NativeMessageResponse) => {
+						badgeApi.setDefault();
+						if (chrome.runtime.lastError) {
+							console.log('[EventPage] Error sending native message.');
+							showDownloadAlert(tab.id);
+							return;
+						}
+						console.log("[EventPage] Received native message response:");
+						console.log(response);
+						if (!response?.succeeded) {
+							showDownloadAlert(tab.id);
+						}
+					}
+				);
 			}
 		);
 	}

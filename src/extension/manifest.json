@@ -46,7 +46,8 @@
   },
   "permissions": [
     "activeTab",
-    "nativeMessaging"
+    "nativeMessaging",
+    "storage"
   ],
   "web_accessible_resources": [
     "content-scripts/alert/bundle.css",
