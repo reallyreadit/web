@@ -31,6 +31,7 @@ const build = createBuild({
 			`${project.srcDir}/common/styles/reset.css`,
 			`${project.srcDir}/extension/options-page/**/*.{css,scss}`,
 		],
+		sourceMaps: false
 	},
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'extension/options-page/main.ts'),
