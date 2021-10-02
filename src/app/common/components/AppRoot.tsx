@@ -1390,10 +1390,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
-			const slug = createArticleSlug(result.screenParams);
-			const readRef = { slug };
-			if (result.screenKey === ScreenKey.Read && this.canRead(readRef)) {
-				this.props.appApi.readArticle({ slug });
+			let readRef: Pick<ReadArticleReference, 'slug'>;
+			if (
+				result.screenKey === ScreenKey.Read &&
+				this.canRead(
+					readRef = {
+						slug: createArticleSlug(result.screenParams)
+					}
+				)
+			) {
+				this.props.appApi.readArticle(readRef);
 			} else {
 				switch (options.method) {
 					case NavMethod.Push:
