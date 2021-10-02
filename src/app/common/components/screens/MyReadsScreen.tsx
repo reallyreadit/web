@@ -30,6 +30,7 @@ import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import { ArticleStarredEvent } from '../../AppApi';
 import { AppPlatform } from '../../../../common/AppPlatform';
+import Link from '../../../../common/components/Link';
 
 enum View {
 	History = 'History',
@@ -239,8 +240,8 @@ class MyReadsScreen extends React.Component<Props, State> {
 					<>
 						<strong>Star the articles you want to read.</strong>
 						{this.props.appPlatform === AppPlatform.Ios ?
-							<span>Pro tip: Save articles from elsewhere. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span> :
-							null}
+							<span>Pro tip: Save articles from other apps using the Readup share extension. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span> :
+							<span>Pro tip: Save articles from your web browser with one click using the Readup <Link screen={ScreenKey.Download} onClick={this.props.onNavTo}>browser extensions</Link>.</span>}
 					</> :
 					<>
 						<strong>Your reading history is private.</strong>
