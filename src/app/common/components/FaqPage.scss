@@ -113,6 +113,9 @@
 				> ol > li:not(:last-child) {
 					margin-bottom: 0.25em;
 				}
+				> ul {
+					list-style: inside;
+				}
 			}
 		}
 

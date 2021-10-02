@@ -46,7 +46,7 @@ const faqs: FaqCategory[] = [
 			},
 		]
 	}),
-	_ => ({
+	props => ({
 		title: "Saving articles",
 		questions: [
 			{
@@ -71,6 +71,20 @@ const faqs: FaqCategory[] = [
 				answer: <p>Just click the browser button. When you view an article in Reader Mode, it will automatically be saved to&nbsp;
 					the History section of My Reads.</p>
 			},
+			{
+				question: "Can I disable the automatic starring of saved articles?",
+				answer: <>
+					<p>Yes, you can on the desktop apps! You'll find this setting in the extension options page. To find the options:
+					</p>
+					<ul>
+						<li><strong>In Chrome</strong>, right-click the Readup extension icon and click "Options."</li>
+						<li><strong>In Firefox</strong>, right-click the Readup extension icon, click "Manage Extension", then click the triple-dot menu next to the Readup extension, then click "Options."</li>
+						<li><strong>In Safari</strong>, right-click the Readup extension icon, click "Manage Extension...", then click "Preferences" in the pane that pops up.</li>
+						<li><strong>In Edge</strong>, right-click the Readup extension icon and click "Extension options."</li>
+					</ul>
+					<p>Disabling starring is not yet possible in our mobile apps. Send us an email at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> if this is something you want!</p>
+				</>
+			}
 		]
 	}),
 	props => ({

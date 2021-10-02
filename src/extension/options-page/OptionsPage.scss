@@ -1,0 +1,27 @@
+/*
+        componentPath: src/extension/options-page/OptionsPage
+        cssComponentId: options-page_rzop97
+*/
+
+.options-page_rzop97 {
+	max-width: 700px;
+	margin: auto;
+	margin-top: 28px;
+
+	.logo-light {
+		height: 3em;
+		vertical-align: middle;
+		display: inline-block;
+		margin-right: 1rem;
+	}
+
+	h1 {
+		display: inline-block;
+		font-family: 'Museo Sans (500)';
+		font-size: 1.6rem;
+	}
+
+	.heading {
+		margin-bottom: 1.4rem;
+	}
+}

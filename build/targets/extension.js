@@ -7,6 +7,7 @@ const
 	project = require('../project'),
 	createBuild = require('../createBuild'),
 	eventPage = require('./extension/eventPage'),
+	optionsPage = require('./extension/optionsPage'),
 	webAppContentScript = require('./extension/contentScripts/webApp'),
 	alertContentScript = require('./extension/contentScripts/alert');
 
@@ -59,6 +60,7 @@ function clean(env) {
 function build(env) {
 	return Promise.all([
 		eventPage.build(env),
+		optionsPage.build(env),
 		staticAssets.build(env),
 		webAppContentScript.build(env),
 		alertContentScript.build(env)
@@ -66,6 +68,7 @@ function build(env) {
 }
 function watch() {
 	eventPage.watch();
+	optionsPage.watch(),
 	staticAssets.watch();
 	webAppContentScript.watch();
 	alertContentScript.watch();
