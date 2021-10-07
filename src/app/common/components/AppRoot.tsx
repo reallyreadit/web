@@ -51,6 +51,7 @@ import { SubscriptionPurchaseRequest } from '../../../common/models/app/Subscrip
 import { Result, ResultType } from '../../../common/Result';
 import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
+import { createFreeTrialScreenFactory } from './screens/FreeTrialScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
 import { AppStoreErrorType } from '../../../common/Errors';
@@ -200,6 +201,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 	private readonly _viewFaq = () => {
 		this.replaceAllScreens(ScreenKey.Faq);
+	};
+	private readonly _viewFreeTrial = () => {
+		this.replaceAllScreens(ScreenKey.FreeTrial);
 	};
 	private readonly _viewHome = () => {
 		this.replaceAllScreens(ScreenKey.Home);
@@ -779,6 +783,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				videoMode: VideoMode.Link
+			}),
+			[ScreenKey.FreeTrial]: createFreeTrialScreenFactory( ScreenKey.FreeTrial, {
+					onCreateStaticContentUrl: this._createStaticContentUrl,
+					onNavTo: this._navTo,
+					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
+					onShareViaChannel: this._handleShareChannelRequest,
+					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: DeviceType.Ios,
@@ -1565,10 +1576,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 					<>
 						<NavBar
 							onNavTo={this._navTo}
+							onViewFreeTrial={this._viewFreeTrial}
 							onViewHome={this._viewHome}
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
+							subscriptionStatus={this.state.subscriptionStatus}
 							user={this.state.user}
 						/>
 						<div className="content">
@@ -1598,11 +1611,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 							</ol>
 						</div>
 						<NavTray
+							onViewFreeTrial={this._viewFreeTrial}
 							onViewHome={this._viewHome}
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
+							subscriptionStatus={this.state.subscriptionStatus}
 						/>
 						{this.state.menuState !== 'closed' ?
 							<Menu

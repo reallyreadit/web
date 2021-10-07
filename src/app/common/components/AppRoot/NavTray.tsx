@@ -4,13 +4,16 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
 import { Screen } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
+import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
+	onViewFreeTrial: () => void,
 	onViewHome: () => void,
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
-	user: UserAccount
+	user: UserAccount,
+	subscriptionStatus: SubscriptionStatus
 }
 export default class NavTray extends React.PureComponent<Props>{
 	public render() {
@@ -38,6 +41,19 @@ export default class NavTray extends React.PureComponent<Props>{
 					</button>
 				</li>
 				<li>
+				{
+					this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
+					// SubscriptionStatusType.PaymentConfirmationRequired and SubscriptionStatusType.PaymentFailed
+					// are already handled in MyImpactScreen
+						?
+					<button
+						className={this.props.selectedScreen.key === ScreenKey.FreeTrial ? 'selected' : null}
+						onClick={this.props.onViewFreeTrial}
+					>
+						<Icon name="rocket" />
+						<label>Free Trial</label>
+					</button>
+						:
 					<button
 						className={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : null}
 						onClick={this.props.onViewMyImpact}
@@ -45,6 +61,7 @@ export default class NavTray extends React.PureComponent<Props>{
 						<Icon name="dollar" />
 						<label>My Impact</label>
 					</button>
+				}
 				</li>
 			</ol>
 		);
