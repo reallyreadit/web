@@ -24,6 +24,7 @@ import StickyNote from '../../../../common/components/StickyNote';
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
+import FreeTrialNotice from './FreeTrialNotice';
 
 interface Props {
 	deviceType: DeviceType,
@@ -200,10 +201,7 @@ class HomeScreen extends React.Component<Props, State> {
 							/> :
 							null}
 						{!this.state.communityReads.value.userReadCount ?
-							<StickyNote>
-								<strong>Welcome to Readup.</strong>
-								<span>It's time to start reading!</span>
-							</StickyNote> :
+							<FreeTrialNotice /> :
 							null}
 						<CommunityReadsList
 							aotd={this.state.communityReads.value.aotd}
