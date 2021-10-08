@@ -12,7 +12,7 @@ const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	freeTrialUrl = findRouteByKey(routes, ScreenKey.FreeTrial).createUrl(),
 	myImpactUrl = findRouteByKey(routes, ScreenKey.MyImpact).createUrl(),
-	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();;
+	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
 	onNavTo: (ref: NavReference, options: NavOptions) => void,
