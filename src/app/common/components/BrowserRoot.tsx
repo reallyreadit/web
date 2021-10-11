@@ -680,9 +680,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onNavTo: this.navTo,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onShareViaChannel: this._handleShareChannelRequest,
 					onViewAuthor: this._viewAuthor
 				}
 			),

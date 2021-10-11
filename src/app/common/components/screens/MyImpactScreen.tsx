@@ -16,10 +16,16 @@ import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } 
 import Button from '../../../../common/components/Button';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
-import { Screen, SharedState } from '../Root';
+import { NavOptions, NavReference, Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import Link from '../../../../common/components/Link';
+import ContentBox from '../../../../common/components/ContentBox';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import Icon from '../../../../common/components/Icon';
+import FreeTrialNotice from '../AppRoot/FreeTrialNotice';
+import {ShareChannelData} from '../../../../common/sharing/ShareData';
+import ShareChannel from '../../../../common/sharing/ShareChannel';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -66,9 +72,11 @@ const headerSelectorItems = [
 interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	subscriptionStatus: SubscriptionStatus
 }
@@ -87,6 +95,22 @@ class MyImpactScreen extends React.Component<Props, State> {
 	private readonly _openSubscriptionPromptDialog = () => {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
+	private readonly _openTweetComposer = () => {
+		this.props.onShareViaChannel({
+			channel: ShareChannel.Twitter,
+			// text: truncateText(this.state.data.text, 280 - 25),
+			text: "I just finished some articles on Readup, check it out! ",
+			url: "https://readup.com",
+			// hashtags: [
+			// 	'ReadOnReadup'
+			// ],
+			via: 'ReadupDotCom'
+		});
+		// TODO: award new reads 10 seconds after clicking?
+		// vv not needed?
+		// this.completeWithActivityType('Twitter');
+	};
+
 	private readonly _selectReportType = (value: string) => {
 		this.setState({
 			hasChangedReportType: true,
@@ -125,6 +149,56 @@ class MyImpactScreen extends React.Component<Props, State> {
 			)
 		);
 	}
+
+	private _renderFreeTrialNotice() {
+		// if (calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial.freeViews) > 0) {
+		if ('true-story' === 'true-story') {
+			return <FreeTrialNotice />
+		}
+		return null;
+	}
+
+	private _renderFreeTrialContent() {
+		return (
+			<>
+				{/* <h2></h2> */}
+				<p className="intro">Welcome. Your first article views are on us!</p>
+				{<ContentBox className="stats">
+					<div className="metric views--remaining">5 views remaining</div>
+					<Link screen={ScreenKey.MyReads} params={{view: 'history'}} onClick={this.props.onNavTo} className="metric views--used">0 views used</Link>
+					<div className="metric articles-completions">0 article completions</div>
+				</ContentBox>}
+				{/* TODO: hide when already tweeted */}
+				<div className="tweet-prompt">
+					<p>Tweet about Readup for 5 more free views.</p>
+					<Button
+						intent="loud"
+						onClick={this._openTweetComposer}
+						iconLeft="twitter"
+						size="normal"
+						align="center"
+						text="Tweet"
+					/>
+				</div>
+				<div className="subscribe-prompt">
+					<h2>Become a Reader</h2>
+					<ul className="value-points">
+						<li><Icon name="checkmark"/>Unlimited, ad-free reading</li>
+						<li><Icon name="checkmark"/>Watch your money go to the writers you read</li>
+						<li><Icon name="checkmark"/>Pick your price. Starting from 5$/mo.</li>
+					</ul>
+					<Button
+						intent="loud"
+						onClick={(_) => this.props.onOpenSubscriptionPromptDialog()}
+						size="large"
+						align="center"
+						text="Subscribe"
+					/>
+				</div>
+			</>
+		);
+	}
+
 	private renderContent() {
 		if (this.state.summary.isLoading) {
 			return (
@@ -148,9 +222,11 @@ class MyImpactScreen extends React.Component<Props, State> {
 		}
 		switch (this.props.subscriptionStatus.type) {
 			case SubscriptionStatusType.NeverSubscribed:
+				return this._renderFreeTrialContent();
 			case SubscriptionStatusType.PaymentFailed:
 				return (
 					<>
+						{this._renderFreeTrialNotice()}
 						{this.props.subscriptionStatus.type === SubscriptionStatusType.PaymentFailed ?
 							this.renderViewToggle() :
 							null}
@@ -177,6 +253,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 			case SubscriptionStatusType.PaymentConfirmationRequired:
 				return (
 					<>
+						{this._renderFreeTrialNotice()}
 						{this.renderViewToggle()}
 						<div className="content-block title">Subscription Incomplete</div>
 						<div className="spacer"></div>
@@ -219,6 +296,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 			case SubscriptionStatusType.Lapsed:
 				return (
 					<>
+						{this._renderFreeTrialNotice()}
 						{this.renderViewToggle()}
 						<div className="content-block title">Subscription Inactive</div>
 						<div className="spacer"></div>
@@ -295,19 +373,21 @@ export function createMyImpactScreenFactory<TScreenKey>(
 	deps: Pick<Props, Exclude<keyof Props, 'subscriptionStatus'>>
 ) {
 	return {
-		create: (id: number, location: RouteLocation) => ({
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
 			id,
 			key,
 			location,
-			title: 'My Impact'
+			title: sharedState.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? 'Free Trial' : 'My Impact'
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyImpactScreen
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
+				onNavTo={deps.onNavTo}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
+				onShareViaChannel={deps.onShareViaChannel}
 				onViewAuthor={deps.onViewAuthor}
 				subscriptionStatus={sharedState.subscriptionStatus}
 			/>

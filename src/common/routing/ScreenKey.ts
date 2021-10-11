@@ -9,7 +9,6 @@ enum ScreenKey {
 	EmailSubscriptions,
 	ExtensionRemoval,
 	Faq,
-	FreeTrial,
 	Home,
 	Leaderboards,
 	Mission,

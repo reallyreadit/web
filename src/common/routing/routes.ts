@@ -93,12 +93,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.ExtensionRemoval
 	},
 	{
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/free-trial',
-		pathRegExp: /^\/free-trial$/,
-		screenKey: ScreenKey.FreeTrial
-	},
-	{
 		createUrl: () => '/faq',
 		pathRegExp: /^\/faq$/,
 		screenKey: ScreenKey.Faq

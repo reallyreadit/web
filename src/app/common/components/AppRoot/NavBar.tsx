@@ -10,13 +10,11 @@ import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/mod
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
-	freeTrialUrl = findRouteByKey(routes, ScreenKey.FreeTrial).createUrl(),
 	myImpactUrl = findRouteByKey(routes, ScreenKey.MyImpact).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
 	onNavTo: (ref: NavReference, options: NavOptions) => void,
-	onViewFreeTrial: () => void,
 	onViewHome: () => void,
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
@@ -53,30 +51,15 @@ export default class NavBar extends React.PureComponent<Props> {
 						/>
 					</li>
 					<li>
-					{
-						this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
-						// SubscriptionStatusType.PaymentConfirmationRequired and SubscriptionStatusType.PaymentFailed
-						// are already handled in MyImpactScreen
-						 ?
-						<Button
-							href={freeTrialUrl}
-							onClick={this.props.onViewFreeTrial}
-							state={this.props.selectedScreen.key === ScreenKey.FreeTrial ? 'selected' : 'normal'}
-							iconLeft="rocket"
-							text="Free Trial"
-							size="x-large"
-							display="block"
-						/>
-						: <Button
-							href={myImpactUrl}
-							onClick={this.props.onViewMyImpact}
-							state={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : 'normal'}
-							iconLeft="dollar"
-							text="My Impact"
-							size="x-large"
-							display="block"
-						/>
-					}
+					<Button
+						href={myImpactUrl}
+						onClick={this.props.onViewMyImpact}
+						state={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : 'normal'}
+						iconLeft={this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "rocket" : "dollar" }
+						text={this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "Free Trial" : "My Impact" }
+						size="x-large"
+						display="block"
+					/>
 					</li>
 				</ol>
 				<div className="footer"></div>

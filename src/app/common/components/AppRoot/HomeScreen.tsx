@@ -20,7 +20,6 @@ import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
-import StickyNote from '../../../../common/components/StickyNote';
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';

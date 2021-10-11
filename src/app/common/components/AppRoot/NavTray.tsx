@@ -7,7 +7,6 @@ import Alert from '../../../../common/models/notifications/Alert';
 import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
-	onViewFreeTrial: () => void,
 	onViewHome: () => void,
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
@@ -41,27 +40,13 @@ export default class NavTray extends React.PureComponent<Props>{
 					</button>
 				</li>
 				<li>
-				{
-					this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
-					// SubscriptionStatusType.PaymentConfirmationRequired and SubscriptionStatusType.PaymentFailed
-					// are already handled in MyImpactScreen
-						?
-					<button
-						className={this.props.selectedScreen.key === ScreenKey.FreeTrial ? 'selected' : null}
-						onClick={this.props.onViewFreeTrial}
-					>
-						<Icon name="rocket" />
-						<label>Free Trial</label>
-					</button>
-						:
 					<button
 						className={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : null}
 						onClick={this.props.onViewMyImpact}
 					>
-						<Icon name="dollar" />
-						<label>My Impact</label>
+						<Icon name={ this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "rocket" : "dollar" } />
+						<label>{ this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "Free Trial" : "My Impact" }</label>
 					</button>
-				}
 				</li>
 			</ol>
 		);
