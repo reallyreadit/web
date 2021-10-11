@@ -2,11 +2,15 @@ import SubscriptionProvider from './SubscriptionProvider';
 import { SubscriptionPriceLevel } from './SubscriptionPrice';
 
 export function calculateFreeViewBalance(freeTrial: FreeTrial) {
-	const totalCreditAmount = freeTrial.freeViewCredits.reduce(
-		(total, credit) => total + credit.amount,
-		0
-	);
-	return totalCreditAmount - freeTrial.freeViews.length;
+	const totalViewCreditAmount = freeTrial.credits
+		.filter(
+			credit => credit.type === FreeTrialCreditType.ArticleView
+		)
+		.reduce(
+			(total, credit) => total + credit.amount,
+			0
+		);
+	return totalViewCreditAmount - freeTrial.articleViews.length;
 }
 export enum SubscriptionStatusType {
 	NeverSubscribed = 1,
@@ -15,21 +19,26 @@ export enum SubscriptionStatusType {
 	Active = 4,
 	Lapsed = 5
 }
-export enum FreeViewCreditType {
+export enum FreeTrialCreditType {
+	ArticleView = 1
+}
+export enum FreeTrialCreditTrigger {
 	AccountCreated = 1,
 	PromoTweetIntended = 2
 }
-export interface FreeViewCredit {
-	type: FreeViewCreditType,
-	dateIssued: string,
+export interface FreeTrialCredit {
+	dateCreated: string,
+	trigger: FreeTrialCreditTrigger,
+	type: FreeTrialCreditType
 	amount: number
 }
-export interface FreeView {
-	article_id: number
+export interface FreeTrialArticleView {
+	articleId: number,
+	dateViewed: string
 }
 export interface FreeTrial {
-	freeViewCredits: FreeViewCredit[],
-	freeViews: FreeView[]
+	credits: FreeTrialCredit[],
+	articleViews: FreeTrialArticleView[]
 }
 export type InactiveSubscriptionStatusBase = {
 	isUserFreeForLife: true
