@@ -49,7 +49,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusWithFreeTrialBase, calculateFreeViewBalance } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -98,12 +98,39 @@ function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPaym
 		return false;
 	}
 	return (
-		subscriptionStatus.isUserFreeForLife ||
-		(
-			(subscriptionStatus.type === SubscriptionStatusType.Active) &&
-			!isProcessingPayment
-		) ||
-		article.slug.split('_')[0] === 'blogreadupcom'
+			subscriptionStatus.isUserFreeForLife
+		||
+			(
+				(subscriptionStatus.type === SubscriptionStatusType.Active) &&
+				!isProcessingPayment
+			)
+		||
+
+			(
+				// determine whether the reader is a free trial reader
+				(
+						subscriptionStatus.type !== SubscriptionStatusType.Active
+					||
+						(
+							subscriptionStatus.type === SubscriptionStatusType.Active
+							&& isProcessingPayment
+						)
+				)
+					&&
+				(
+					(
+					// free trial reader has remaining balance
+					calculateFreeViewBalance((subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial) > 0 )
+					||
+					// free trial reader already opened this article before
+					(subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial.articleViews.find(
+						// articleView => articleView.slug === article.slug
+						_ => false
+					)
+				)
+			)
+		||
+			article.slug.split('_')[0] === 'blogreadupcom'
 	);
 }
 export default class extends Root<Props, State, SharedState, Events> {
