@@ -12,7 +12,7 @@ import { formatCountable, formatIsoDateAsUtc, formatCurrency } from '../../../..
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, InactiveSubscriptionStatusWithFreeTrialBase, FreeTrialCreditTrigger, FreeTrialCredit, calculateFreeViewBalance } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import Button from '../../../../common/components/Button';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
@@ -23,9 +23,10 @@ import Link from '../../../../common/components/Link';
 import ContentBox from '../../../../common/components/ContentBox';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
-import FreeTrialNotice from '../AppRoot/FreeTrialNotice';
-import {ShareChannelData} from '../../../../common/sharing/ShareData';
-import ShareChannel from '../../../../common/sharing/ShareChannel';
+import FreeTrialNotice, {findTweetPromoCredit} from '../AppRoot/FreeTrialNotice';
+import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
+import {TweetWebIntentParams} from '../../../../common/sharing/twitter';
+import {Intent} from '../../../../common/components/Toaster';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -75,15 +76,18 @@ interface Props {
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
+	onOpenTweetComposerWithCompletionHandler: (params: TweetWebIntentParams) => Promise<void>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShareViaChannel: (data: ShareChannelData) => void,
+	onRegisterFreeTrialPromoTweetIntent: (request: FreeTrialPromoTweetIntentRegistrationRequest) => Promise<FreeTrialPromoTweetIntentRegistrationResponse>
+	onShowToast: (content: React.ReactNode, intent: Intent, remove?: boolean) => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	subscriptionStatus: SubscriptionStatus
 }
 interface State {
 	hasChangedReportType: boolean,
 	selectedReportType: ReportType,
-	summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>
+	summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>,
+	isTweeting: boolean,
 }
 class MyImpactScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -95,20 +99,42 @@ class MyImpactScreen extends React.Component<Props, State> {
 	private readonly _openSubscriptionPromptDialog = () => {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
+
+	private readonly _findTweetPromoCredit = (subscriptionStatus?: SubscriptionStatus): FreeTrialCredit | undefined => {
+		const subcriptionStatusToUse = subscriptionStatus ? subscriptionStatus : this.props.subscriptionStatus;
+		return findTweetPromoCredit(subcriptionStatusToUse);
+	}
+
 	private readonly _openTweetComposer = () => {
-		this.props.onShareViaChannel({
-			channel: ShareChannel.Twitter,
-			// text: truncateText(this.state.data.text, 280 - 25),
+		this.setState({isTweeting: true})
+		this.props.onOpenTweetComposerWithCompletionHandler({
 			text: "I just finished some articles on Readup, check it out! ",
 			url: "https://readup.com",
 			// hashtags: [
 			// 	'ReadOnReadup'
 			// ],
 			via: 'ReadupDotCom'
-		});
-		// TODO: award new reads 10 seconds after clicking?
-		// vv not needed?
-		// this.completeWithActivityType('Twitter');
+		}).then(() => this.props.onRegisterFreeTrialPromoTweetIntent({})
+		).then((res) => {
+			this.setState({isTweeting: false});
+			const subBase = res.subscriptionStatus as InactiveSubscriptionStatusBase;
+			let toastMessage;
+			 if (subBase.isUserFreeForLife) {
+				toastMessage =  'Thanks for tweeting!';
+			 } else {
+				const tweetPromoCredit = this._findTweetPromoCredit(res.subscriptionStatus);
+				if (tweetPromoCredit) {
+					toastMessage = `You received ${tweetPromoCredit.amount} more free views!`
+				} else {
+					// shouldn't happen!
+					console.error("Couldn't find assigned requested tweet credit!")
+				}
+
+			 }
+			if (toastMessage) {
+				this.props.onShowToast(toastMessage, Intent.Success);
+			}
+		})
 	};
 
 	private readonly _selectReportType = (value: string) => {
@@ -126,7 +152,8 @@ class MyImpactScreen extends React.Component<Props, State> {
 		this.state = {
 			hasChangedReportType: false,
 			selectedReportType: ReportType.CurrentPeriod,
-			summary: this.fetchData()
+			summary: this.fetchData(),
+			isTweeting: false
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(
@@ -151,9 +178,15 @@ class MyImpactScreen extends React.Component<Props, State> {
 	}
 
 	private _renderFreeTrialNotice() {
-		// if (calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial.freeViews) > 0) {
-		if ('true-story' === 'true-story') {
-			return <FreeTrialNotice />
+		if (
+			!this.props.subscriptionStatus.isUserFreeForLife
+			&& calculateFreeViewBalance(( this.props.subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase ).freeTrial) > 0) {
+			return <FreeTrialNotice
+				detailLevel='minimal'
+				onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
+				onNavTo={this.props.onNavTo}
+				subscriptionStatus={this.props.subscriptionStatus}
+			/>
 		}
 		return null;
 	}
@@ -168,17 +201,19 @@ class MyImpactScreen extends React.Component<Props, State> {
 					<Link screen={ScreenKey.MyReads} params={{view: 'history'}} onClick={this.props.onNavTo} className="metric views--used">0 views used</Link>
 					<div className="metric articles-completions">0 article completions</div>
 				</ContentBox>}
-				{/* TODO: hide when already tweeted */}
 				<div className="tweet-prompt">
-					<p>Tweet about Readup for 5 more free views.</p>
-					<Button
-						intent="loud"
-						onClick={this._openTweetComposer}
-						iconLeft="twitter"
-						size="normal"
-						align="center"
-						text="Tweet"
-					/>
+					<p>Tweet about Readup{ this.props.subscriptionStatus.isUserFreeForLife ? '!' : ' for 5 more free views.'}</p>
+					{this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit() &&
+						<Button
+							intent="loud"
+							onClick={this._openTweetComposer}
+							state={this.state.isTweeting ? 'busy' : 'normal'}
+							iconLeft="twitter"
+							size="normal"
+							align="center"
+							text="Tweet"
+						/>
+					}
 				</div>
 				<div className="subscribe-prompt">
 					<h2>Become a Reader</h2>
@@ -386,8 +421,10 @@ export function createMyImpactScreenFactory<TScreenKey>(
 				onNavTo={deps.onNavTo}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
+				onOpenTweetComposerWithCompletionHandler={deps.onOpenTweetComposerWithCompletionHandler}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
-				onShareViaChannel={deps.onShareViaChannel}
+				onRegisterFreeTrialPromoTweetIntent={deps.onRegisterFreeTrialPromoTweetIntent}
+				onShowToast={deps.onShowToast}
 				onViewAuthor={deps.onViewAuthor}
 				subscriptionStatus={sharedState.subscriptionStatus}
 			/>

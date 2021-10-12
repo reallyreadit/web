@@ -40,12 +40,14 @@ export interface FreeTrial {
 	credits: FreeTrialCredit[],
 	articleViews: FreeTrialArticleView[]
 }
-export type InactiveSubscriptionStatusBase = {
-	isUserFreeForLife: true
-} | {
+export type InactiveSubscriptionStatusWithFreeTrialBase = {
 	isUserFreeForLife: false,
 	freeTrial: FreeTrial
-};
+}
+
+export type InactiveSubscriptionStatusBase = {
+	isUserFreeForLife: true
+} | InactiveSubscriptionStatusWithFreeTrialBase;
 export type NeverSubscribedSubscriptionStatus = InactiveSubscriptionStatusBase & {
 	type: SubscriptionStatusType.NeverSubscribed
 };

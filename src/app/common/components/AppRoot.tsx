@@ -66,6 +66,7 @@ import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
+import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -272,10 +273,35 @@ export default class extends Root<Props, State, SharedState, Events> {
 		});
 	};
 	private readonly _openTweetComposer = (params: TweetWebIntentParams) => {
+
 		this.props.appApi.openExternalUrlUsingSystem(
 			createTweetWebIntentUrl(params)
 		);
 	};
+	private readonly _openTweetComposerWithCompletionHandler = (params: TweetWebIntentParams) => {
+		this.props.appApi.openExternalUrlUsingSystem(
+			createTweetWebIntentUrl(params)
+		);
+		return new Promise<void>(
+			(resolve, reject) => {
+				const resolveWhenActive = () => {
+					this.props.appApi.removeListener('didBecomeActive', resolveWhenActive);
+					resolve();
+				};
+				this.props.appApi.addListener('didBecomeActive', resolveWhenActive);
+			}
+		);
+	};
+	private _registerFreeTrialPromoTweetIntent(params: FreeTrialPromoTweetIntentRegistrationRequest): Promise<FreeTrialPromoTweetIntentRegistrationResponse> {
+		return this.props.serverApi
+		.registerFreeTrialPromoTweetIntent(params)
+		.then(
+			res => {
+				this.onSubscriptionStatusChanged(res.subscriptionStatus, EventSource.Local);
+				return res;
+			}
+		);
+	}
 
 	// subscriptions
 	private readonly _openAppStoreSubscriptionPromptDialog = (article?: ReadArticleReference, activeSubscription?: ActiveSubscriptionStatus) => {
@@ -786,6 +812,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -848,8 +875,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onNavTo: this._navTo,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+					onOpenTweetComposerWithCompletionHandler: this._openTweetComposerWithCompletionHandler,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onShareViaChannel: this._handleShareChannelRequest,
+					onRegisterFreeTrialPromoTweetIntent: this._registerFreeTrialPromoTweetIntent,
+					onShowToast: this._toaster.addToast,
 					onViewAuthor: this._viewAuthor
 				}
 			),
