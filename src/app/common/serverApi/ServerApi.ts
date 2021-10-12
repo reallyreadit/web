@@ -83,6 +83,7 @@ import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../co
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
+import { FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -242,6 +243,7 @@ export default abstract class {
 	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
 	public readonly createStripeSetupIntent = () => this.post<StripeSetupIntentResponse>({ path: '/Subscriptions/StripeSetupIntentRequest' });
 	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
+	public readonly registerFreeTrialPromoTweetIntent = (request: FreeTrialPromoTweetIntentRegistrationRequest) => this.post<FreeTrialPromoTweetIntentRegistrationResponse>({ path: '/Subscriptions/FreeTrialPromoTweetIntent', data: request });
 	public readonly requestAppleSubscriptionStatusUpdate = () => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/AppleSubscriptionStatusUpdateRequest' });
 	public readonly requestPayoutAccountLoginLink = () => this.post<PayoutAccountLoginLinkRequestResponse>({ path: '/Subscriptions/PayoutAccountLoginLinkRequest' });
 	public readonly requestPayoutAccountOnboardingLink = () => this.post<PayoutAccountOnboardingLinkRequestResponse>({ path: '/Subscriptions/PayoutAccountOnboardingLinkRequest' });

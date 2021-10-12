@@ -1,6 +1,17 @@
 import SubscriptionProvider from './SubscriptionProvider';
 import { SubscriptionPriceLevel } from './SubscriptionPrice';
 
+export function calculateFreeViewBalance(freeTrial: FreeTrial) {
+	const totalViewCreditAmount = freeTrial.credits
+		.filter(
+			credit => credit.type === FreeTrialCreditType.ArticleView
+		)
+		.reduce(
+			(total, credit) => total + credit.amount,
+			0
+		);
+	return totalViewCreditAmount - freeTrial.articleViews.length;
+}
 export enum SubscriptionStatusType {
 	NeverSubscribed = 1,
 	PaymentConfirmationRequired = 2,
@@ -8,22 +19,46 @@ export enum SubscriptionStatusType {
 	Active = 4,
 	Lapsed = 5
 }
-export type NeverSubscribedSubscriptionStatus = {
-	type: SubscriptionStatusType.NeverSubscribed,
-	isUserFreeForLife: boolean
+export enum FreeTrialCreditType {
+	ArticleView = 1
+}
+export enum FreeTrialCreditTrigger {
+	AccountCreated = 1,
+	PromoTweetIntended = 2
+}
+export interface FreeTrialCredit {
+	dateCreated: string,
+	trigger: FreeTrialCreditTrigger,
+	type: FreeTrialCreditType
+	amount: number
+}
+export interface FreeTrialArticleView {
+	articleId: number,
+	dateViewed: string
+}
+export interface FreeTrial {
+	credits: FreeTrialCredit[],
+	articleViews: FreeTrialArticleView[]
+}
+export type InactiveSubscriptionStatusBase = {
+	isUserFreeForLife: true
+} | {
+	isUserFreeForLife: false,
+	freeTrial: FreeTrial
 };
-export type PaymentConfirmationRequiredSubscriptionStatus = {
+export type NeverSubscribedSubscriptionStatus = InactiveSubscriptionStatusBase & {
+	type: SubscriptionStatusType.NeverSubscribed
+};
+export type PaymentConfirmationRequiredSubscriptionStatus = InactiveSubscriptionStatusBase & {
 	type: SubscriptionStatusType.PaymentConfirmationRequired,
 	provider: SubscriptionProvider,
 	price: SubscriptionPriceLevel,
-	invoiceId: string,
-	isUserFreeForLife: boolean
+	invoiceId: string
 };
-export type PaymentFailedSubscriptionStatus = {
+export type PaymentFailedSubscriptionStatus = InactiveSubscriptionStatusBase & {
 	type: SubscriptionStatusType.PaymentFailed,
 	provider: SubscriptionProvider,
-	price: SubscriptionPriceLevel,
-	isUserFreeForLife: boolean
+	price: SubscriptionPriceLevel
 };
 export type ActiveSubscriptionStatus = {
 		type: SubscriptionStatusType.Active,
@@ -41,14 +76,13 @@ export type ActiveSubscriptionStatus = {
 			autoRenewEnabled: false
 		}
 	);
-export type LapsedSubscriptionStatus = {
+export type LapsedSubscriptionStatus = InactiveSubscriptionStatusBase & {
 	type: SubscriptionStatusType.Lapsed,
 	provider: SubscriptionProvider,
 	price: SubscriptionPriceLevel,
 	lastPeriodEndDate: string,
 	lastPeriodRenewalGracePeriodEndDate: string,
-	lastPeriodDateRefunded: string | null,
-	isUserFreeForLife: boolean
+	lastPeriodDateRefunded: string | null
 };
 export type SubscriptionStatus =
 	NeverSubscribedSubscriptionStatus |
