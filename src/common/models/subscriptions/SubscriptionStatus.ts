@@ -34,6 +34,7 @@ export interface FreeTrialCredit {
 }
 export interface FreeTrialArticleView {
 	articleId: number,
+	articleSlug: string,
 	dateViewed: string
 }
 export interface FreeTrial {
