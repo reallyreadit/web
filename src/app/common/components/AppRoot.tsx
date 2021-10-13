@@ -118,14 +118,12 @@ function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPaym
 				)
 					&&
 				(
-					(
 					// free trial reader has remaining balance
-					calculateFreeViewBalance((subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial) > 0 )
+					( calculateFreeViewBalance((subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial) > 0 )
 					||
 					// free trial reader already opened this article before
-					(subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial.articleViews.find(
-						// articleView => articleView.slug === article.slug
-						_ => false
+					!!(subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial.articleViews.find(
+						articleView => articleView.articleSlug === article.slug
 					)
 				)
 			)
