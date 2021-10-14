@@ -311,7 +311,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			(resolve, reject) => {
 				const resolveWhenActive = () => {
 					this.props.appApi.removeListener('didBecomeActive', resolveWhenActive);
-					resolve();
+						resolve();
 				};
 				this.props.appApi.addListener('didBecomeActive', resolveWhenActive);
 			}
@@ -897,6 +897,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 					onNavTo: this._navTo,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,

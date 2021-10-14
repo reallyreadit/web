@@ -82,7 +82,7 @@ class ReadScreen extends React.PureComponent<Props> {
 							screen={ScreenKey.Comments}
 							onClick={this.props.onNavTo}
 							params={articleUrlParams}
-							>{this.props.article.value.commentCount} comments</Link> on Readup</> : null}</span>
+							>{this.props.article.value.commentCount} comment{this.props.article.value.commentCount !== 1 ? 's' : ''}</Link> on Readup</> : null}</span>
 				</div>
 			</div>);
 	}

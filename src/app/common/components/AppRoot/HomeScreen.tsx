@@ -24,7 +24,7 @@ import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import FreeTrialNotice from './FreeTrialNotice';
-import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 
 interface Props {
@@ -203,7 +203,11 @@ class HomeScreen extends React.Component<Props, State> {
 								text="Show new Article of the Day"
 							/> :
 							null}
-						{!this.state.communityReads.value.userReadCount ?
+						{(
+							!(this.props.subscriptionStatus.isUserFreeForLife) &&
+							this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
+						)
+							?
 							<FreeTrialNotice
 								onNavTo={this.props.onNavTo}
 								onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}

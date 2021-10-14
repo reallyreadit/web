@@ -681,6 +681,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 					onNavTo: this.navTo,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,

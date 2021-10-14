@@ -2,7 +2,7 @@ import * as React from 'react';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { SubscriptionDistributionReport } from '../../../../common/models/subscriptions/SubscriptionDistributionReport';
-import { FetchFunction } from '../../serverApi/ServerApi';
+import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -12,7 +12,7 @@ import { formatCountable, formatIsoDateAsUtc, formatCurrency } from '../../../..
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, InactiveSubscriptionStatusWithFreeTrialBase, FreeTrialCreditTrigger, FreeTrialCredit, calculateFreeViewBalance } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, InactiveSubscriptionStatusWithFreeTrialBase, FreeTrialCredit, calculateFreeViewBalance } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import Button from '../../../../common/components/Button';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
@@ -27,6 +27,8 @@ import FreeTrialNotice, {findTweetPromoCredit} from '../AppRoot/FreeTrialNotice'
 import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import {TweetWebIntentParams} from '../../../../common/sharing/twitter';
 import {Intent} from '../../../../common/components/Toaster';
+import PageResult from '../../../../common/models/PageResult';
+import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -70,9 +72,11 @@ const headerSelectorItems = [
 	}
 ];
 
+type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>;
 interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
+	onGetUserArticleHistory: ArticleFetchFunction,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
@@ -87,6 +91,7 @@ interface State {
 	hasChangedReportType: boolean,
 	selectedReportType: ReportType,
 	summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>,
+	userArticleHistory: Fetchable<PageResult<UserArticle>>, // used to calculate free reads read to completion
 	isTweeting: boolean,
 }
 class MyImpactScreen extends React.Component<Props, State> {
@@ -106,7 +111,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 	}
 
 	private readonly _openTweetComposer = () => {
-		this.setState({isTweeting: true})
+		this.setState({ isTweeting: true })
 		this.props.onOpenTweetComposerWithCompletionHandler({
 			text: "I just finished some articles on Readup, check it out! ",
 			url: "https://readup.com",
@@ -137,6 +142,22 @@ class MyImpactScreen extends React.Component<Props, State> {
 		})
 	};
 
+	private readonly _calculateFreeReadsToCompletion = () => {
+		const freeTrial = (this.props.subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial;
+		if (!this.state.userArticleHistory || this.state.userArticleHistory.isLoading) {
+			return -1;
+		} else {
+			const freeViewsReadToCompletion = this.state.userArticleHistory.value.items &&
+				this.state.userArticleHistory.value.items.filter(
+					historyArticle =>
+						// this historical read was registered as a free view
+						freeTrial.articleViews.find(articleView => articleView.articleId === historyArticle.id) &&
+						historyArticle.isRead
+					);
+			return (freeViewsReadToCompletion && freeViewsReadToCompletion.length) || 0;
+		}
+	}
+
 	private readonly _selectReportType = (value: string) => {
 		this.setState({
 			hasChangedReportType: true,
@@ -152,8 +173,8 @@ class MyImpactScreen extends React.Component<Props, State> {
 		this.state = {
 			hasChangedReportType: false,
 			selectedReportType: ReportType.CurrentPeriod,
-			summary: this.fetchData(),
-			isTweeting: false
+			isTweeting: false,
+			...this.fetchData()
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(
@@ -165,16 +186,31 @@ class MyImpactScreen extends React.Component<Props, State> {
 			)
 		);
 	}
-	private fetchData() {
-		return this.props.onGetSubscriptionDistributionSummary(
-			this._asyncTracker.addCallback(
-				summary => {
-					this.setState({
-						summary
-					});
-				}
+	private fetchData(): {
+		summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>,
+		userArticleHistory: Fetchable<PageResult<UserArticle>>, // used to calculate free reads read to completion
+	} {
+		return {
+			summary: this.props.onGetSubscriptionDistributionSummary(
+				this._asyncTracker.addCallback(
+					summary => {
+						this.setState({
+							summary
+						});
+					}
+				)
+			),
+			// assumption: all free views will fit in 1 page
+			userArticleHistory: this.props.onGetUserArticleHistory({pageNumber: 1},
+				this._asyncTracker.addCallback(
+					userArticleHistory => {
+						this.setState({
+							userArticleHistory
+						})
+					}
+				)
 			)
-		);
+		}
 	}
 
 	private _renderFreeTrialNotice() {
@@ -192,14 +228,27 @@ class MyImpactScreen extends React.Component<Props, State> {
 	}
 
 	private _renderFreeTrialContent() {
+		const subcriptionStatusNeverSubscribed = this.props.subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase;
+		const viewsUsed = subcriptionStatusNeverSubscribed.freeTrial.articleViews.length;
+		const viewsRemaining = calculateFreeViewBalance(subcriptionStatusNeverSubscribed.freeTrial);
+		const articleCompletions = this._calculateFreeReadsToCompletion();
 		return (
 			<>
 				{/* <h2></h2> */}
 				<p className="intro">Welcome. Your first article views are on us!</p>
 				{<ContentBox className="stats">
-					<div className="metric views--remaining">5 views remaining</div>
-					<Link screen={ScreenKey.MyReads} params={{view: 'history'}} onClick={this.props.onNavTo} className="metric views--used">0 views used</Link>
-					<div className="metric articles-completions">0 article completions</div>
+					<div className="metric views--remaining">{viewsRemaining} view{viewsRemaining !== 1 ? 's' : ''} remaining</div>
+					<Link
+						screen={ScreenKey.MyReads}
+						params={{view: 'history'}}
+						onClick={this.props.onNavTo}
+						className="metric views--used">{viewsUsed} view{viewsUsed !== 1 ? 's' : ''} used</Link>
+					<div className="metric articles-completions">
+						{ this.state.userArticleHistory.isLoading ?
+							<><SpinnerIcon/> loading</> :
+							<>{articleCompletions} article completion{articleCompletions !== 1 ? 's' : ''}</>
+						}
+					</div>
 				</ContentBox>}
 				<div className="tweet-prompt">
 					<p>Tweet about Readup{ this.props.subscriptionStatus.isUserFreeForLife ? '!' : ' for 5 more free views.'}</p>
@@ -418,6 +467,7 @@ export function createMyImpactScreenFactory<TScreenKey>(
 			<MyImpactScreen
 				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
+				onGetUserArticleHistory={deps.onGetUserArticleHistory}
 				onNavTo={deps.onNavTo}
 				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
 				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
