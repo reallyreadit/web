@@ -136,7 +136,7 @@ class ReadScreen extends React.PureComponent<Props> {
 												<ul className="info dashed">
 													<li>Better reading</li>
 													<li>100% ad-free</li>
-													<li>Pick your price</li>
+													<li>Try for free</li>
 												</ul>
 											</div>
 												{!this.props.user || !this.props.isExtensionInstalled || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0 ?
