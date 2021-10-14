@@ -14,5 +14,6 @@ export enum ReadingErrorType {
 	SubscriptionRequired = "https://docs.readup.com/errors/reading/subscription-required"
 };
 export enum SubscriptionsErrorType {
+	FreeTrialCreditLimitExceeded = "https://docs.readup.com/errors/subscriptions/free-trial-credit-limit-exceeded",
 	ReceiptValidationFailed = "https://docs.readup.com/errors/subscriptions/receipt-validation-failed"
 }
