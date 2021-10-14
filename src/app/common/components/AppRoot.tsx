@@ -66,7 +66,7 @@ import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
-import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
+import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -317,15 +317,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private _registerFreeTrialPromoTweetIntent(params: FreeTrialPromoTweetIntentRegistrationRequest): Promise<FreeTrialPromoTweetIntentRegistrationResponse> {
+	private readonly _registerFreeTrialPromoTweetIntent = (params: FreeTrialPromoTweetIntentRegistrationRequest) => {
 		return this.props.serverApi
-		.registerFreeTrialPromoTweetIntent(params)
-		.then(
-			res => {
-				this.onSubscriptionStatusChanged(res.subscriptionStatus, EventSource.Local);
-				return res;
-			}
-		);
+			.registerFreeTrialPromoTweetIntent(params)
+			.then(
+				res => {
+					this.onSubscriptionStatusChanged(res.subscriptionStatus, EventSource.Local);
+					return res;
+				}
+			);
 	}
 
 	// subscriptions
