@@ -82,19 +82,18 @@ export interface Quote {
 const prices = [
 	{
 		amount: formatCurrency(0),
-		title: 'Have a look around',
+		title: 'Try for free',
 		subtitle: '',
-		description: <><p>Browse the articles and comments.</p><p>Ads, paywalls, etc. </p></>
+		description: <><p>Read 5 articles for free</p><p>No commitment or credit card required</p></>
 	},
 	{
 		amount: <>{formatCurrency(499)}<span className="month">/month</span>
-			<br/><span className="or-more">Feeling generous?<br/>Pay more! $4.99 is just the minimum.</span>
+			<br/><span className="or-more">Feeling generous? Pay more!</span>
 			</>,
-		title: 'Read on Readup',
+		title: 'Pick your price',
 		subtitle: '',
-		// description: <><p>Read on Readup:<br/> no ads, no paywalls</p><p>Watch <strong>95%</strong> of your money go to the writers &amp; publishers you read.</p></>,
-		description: <><p>Pure reading bliss.</p><p>No ads. No paywalls. And a really great way to support the writers you read!</p></>,
-		selected: true
+		description: <><p>Unlimited reading</p><p>A great way to support the writers you read!</p></>,
+		// selected: true
 	},
 ];
 
@@ -370,7 +369,8 @@ export default class MarketingScreen extends React.Component<
 					data-nosnippet
 					className="pricing-panel"
 				>
-					<h2 className="heading-regular">Pick your price</h2>
+					<h2 className="heading-regular">Start reading today</h2>
+					<p className="home-section-intro home-section-intro--centered">Reading on Readup is different. See for yourself!</p>
 					<PriceList prices={prices} />
 					<DownloadSection
 						onNavTo={this.props.onNavTo}

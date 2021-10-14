@@ -6,17 +6,19 @@
 .price-list_eorvmi {
 	display: flex;
 }
+
 .price-list_eorvmi > .price-list-item_7j8olx {
 	margin: 0 2%;
-	// width: 50%;
+	width: 50%;
 }
 
 // lurker
 .price-list_eorvmi > .price-list-item_7j8olx:first-child {
 	margin-left: 0;
-	width: 40%;
+	// width: 40%;
+	width: 50%;
 	> .content-box_kkp9lc {
-		background-color: transparent;
+		// background-color: transparent;
 		> .title {
 			font-family: "Museo Sans (500)";
 		}
