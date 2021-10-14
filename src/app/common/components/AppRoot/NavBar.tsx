@@ -6,6 +6,7 @@ import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount
 import { Screen, NavReference, NavOptions } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
+import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
@@ -18,7 +19,8 @@ interface Props {
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
-	user: UserAccount
+	subscriptionStatus: SubscriptionStatus,
+	user: UserAccount,
 }
 export default class NavBar extends React.PureComponent<Props> {
 	public render() {
@@ -49,15 +51,15 @@ export default class NavBar extends React.PureComponent<Props> {
 						/>
 					</li>
 					<li>
-						<Button
-							href={myImpactUrl}
-							onClick={this.props.onViewMyImpact}
-							state={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : 'normal'}
-							iconLeft="dollar"
-							text="My Impact"
-							size="x-large"
-							display="block"
-						/>
+					<Button
+						href={myImpactUrl}
+						onClick={this.props.onViewMyImpact}
+						state={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : 'normal'}
+						iconLeft={this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "rocket" : "dollar" }
+						text={this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "Free Trial" : "My Impact" }
+						size="x-large"
+						display="block"
+					/>
 					</li>
 				</ol>
 				<div className="footer"></div>

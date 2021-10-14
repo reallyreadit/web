@@ -49,7 +49,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusWithFreeTrialBase, calculateFreeViewBalance } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -66,6 +66,7 @@ import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
+import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -97,12 +98,37 @@ function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPaym
 		return false;
 	}
 	return (
-		subscriptionStatus.isUserFreeForLife ||
-		(
-			(subscriptionStatus.type === SubscriptionStatusType.Active) &&
-			!isProcessingPayment
-		) ||
-		article.slug.split('_')[0] === 'blogreadupcom'
+			subscriptionStatus.isUserFreeForLife
+		||
+			(
+				(subscriptionStatus.type === SubscriptionStatusType.Active) &&
+				!isProcessingPayment
+			)
+		||
+
+			(
+				// determine whether the reader is a free trial reader
+				(
+						subscriptionStatus.type !== SubscriptionStatusType.Active
+					||
+						(
+							subscriptionStatus.type === SubscriptionStatusType.Active
+							&& isProcessingPayment
+						)
+				)
+					&&
+				(
+					// free trial reader has remaining balance
+					( calculateFreeViewBalance((subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial) > 0 )
+					||
+					// free trial reader already opened this article before
+					!!(subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial.articleViews.find(
+						articleView => articleView.articleSlug === article.slug
+					)
+				)
+			)
+		||
+			article.slug.split('_')[0] === 'blogreadupcom'
 	);
 }
 export default class extends Root<Props, State, SharedState, Events> {
@@ -272,10 +298,35 @@ export default class extends Root<Props, State, SharedState, Events> {
 		});
 	};
 	private readonly _openTweetComposer = (params: TweetWebIntentParams) => {
+
 		this.props.appApi.openExternalUrlUsingSystem(
 			createTweetWebIntentUrl(params)
 		);
 	};
+	private readonly _openTweetComposerWithCompletionHandler = (params: TweetWebIntentParams) => {
+		this.props.appApi.openExternalUrlUsingSystem(
+			createTweetWebIntentUrl(params)
+		);
+		return new Promise<void>(
+			(resolve, reject) => {
+				const resolveWhenActive = () => {
+					this.props.appApi.removeListener('didBecomeActive', resolveWhenActive);
+					resolve();
+				};
+				this.props.appApi.addListener('didBecomeActive', resolveWhenActive);
+			}
+		);
+	};
+	private _registerFreeTrialPromoTweetIntent(params: FreeTrialPromoTweetIntentRegistrationRequest): Promise<FreeTrialPromoTweetIntentRegistrationResponse> {
+		return this.props.serverApi
+		.registerFreeTrialPromoTweetIntent(params)
+		.then(
+			res => {
+				this.onSubscriptionStatusChanged(res.subscriptionStatus, EventSource.Local);
+				return res;
+			}
+		);
+	}
 
 	// subscriptions
 	private readonly _openAppStoreSubscriptionPromptDialog = (article?: ReadArticleReference, activeSubscription?: ActiveSubscriptionStatus) => {
@@ -786,6 +837,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -845,9 +897,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
+					onNavTo: this._navTo,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+					onOpenTweetComposerWithCompletionHandler: this._openTweetComposerWithCompletionHandler,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onRegisterFreeTrialPromoTweetIntent: this._registerFreeTrialPromoTweetIntent,
+					onShowToast: this._toaster.addToast,
 					onViewAuthor: this._viewAuthor
 				}
 			),
@@ -1569,6 +1625,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
+							subscriptionStatus={this.state.subscriptionStatus}
 							user={this.state.user}
 						/>
 						<div className="content">
@@ -1603,6 +1660,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
+							subscriptionStatus={this.state.subscriptionStatus}
 						/>
 						{this.state.menuState !== 'closed' ?
 							<Menu

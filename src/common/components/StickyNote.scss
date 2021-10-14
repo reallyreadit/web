@@ -6,8 +6,10 @@
 
 .sticky-note_zcw6jg {
 	padding: 10px;
-	transform: rotate(-3deg);
-	transform-origin: 0 0;
+	&:not(.type--straight) {
+		transform: rotate(-3deg);
+		transform-origin: 0 0;
+	}
 }
 .sticky-note_zcw6jg > strong {
 	display: block;

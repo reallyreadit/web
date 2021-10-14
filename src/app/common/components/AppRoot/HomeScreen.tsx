@@ -7,7 +7,7 @@ import CommunityReadsList, { updateCommunityReads } from '../controls/articles/C
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { Screen, SharedState, NavReference } from '../Root';
+import { Screen, SharedState, NavReference, NavOptions } from '../Root';
 import AsyncLink from '../controls/AsyncLink';
 import produce from 'immer';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
@@ -20,17 +20,20 @@ import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
-import StickyNote from '../../../../common/components/StickyNote';
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
+import FreeTrialNotice from './FreeTrialNotice';
+import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 
 interface Props {
 	deviceType: DeviceType,
 	onClearAlerts: (alert: Alert) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
-	onNavTo: (ref: NavReference) => void,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
+	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
@@ -41,7 +44,8 @@ interface Props {
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
-	user: UserAccount | null
+	user: UserAccount | null,
+	subscriptionStatus: SubscriptionStatus
 }
 interface State {
 	communityReads: Fetchable<CommunityReads>,
@@ -200,10 +204,11 @@ class HomeScreen extends React.Component<Props, State> {
 							/> :
 							null}
 						{!this.state.communityReads.value.userReadCount ?
-							<StickyNote>
-								<strong>Welcome to Readup.</strong>
-								<span>It's time to start reading!</span>
-							</StickyNote> :
+							<FreeTrialNotice
+								onNavTo={this.props.onNavTo}
+								onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
+								subscriptionStatus={this.props.subscriptionStatus}
+							/> :
 							null}
 						<CommunityReadsList
 							aotd={this.state.communityReads.value.aotd}
@@ -243,7 +248,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'user' | 'subscriptionStatus'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -256,7 +261,8 @@ export default function <TScreenKey>(
 			<HomeScreen {
 				...{
 					...deps,
-					user: sharedState.user
+					user: sharedState.user,
+					subscriptionStatus: sharedState.subscriptionStatus
 				}
 			} />
 		)
