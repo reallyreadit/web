@@ -10,7 +10,8 @@ $breakpoint: 550px;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
-	min-height: unset;
+	justify-content: center;
+	// min-height: unset;
 }
 
 .read-screen_rfbmah.article-screen-container {

@@ -254,8 +254,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 								key: ScreenKey.MyReads,
 								params: {view: 'history'}
 							}, {method: NavMethod.ReplaceAll}
-							)
-						}
+							)}
 						className="metric views--used">View history</Link>
 				</ContentBox>}
 				{

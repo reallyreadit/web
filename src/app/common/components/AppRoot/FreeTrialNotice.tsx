@@ -5,7 +5,7 @@ import SubscriptionProvider from '../../../../common/models/subscriptions/Subscr
 import {calculateFreeViewBalance, FreeTrialCredit, FreeTrialCreditTrigger, isTrialingSubscription, SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import UserArticle from '../../../../common/models/UserArticle';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import {NavOptions, NavReference} from '../Root';
+import {NavMethod, NavOptions, NavReference} from '../Root';
 
 export const findTweetPromoCredit = (subscriptionStatus: SubscriptionStatus): FreeTrialCredit | undefined => {
 	if (isTrialingSubscription(subscriptionStatus)) {
@@ -39,10 +39,13 @@ const FreeTrialNotice = (
 			title = <strong>{articlesLeftTitle}</strong>;
 		} else if (viewsUsed === 0) {
 			title = <strong>Welcome to Readup!</strong>,
-			subLine = <span>Your first 5 article views are on us.</span>
+			subLine = <span>Your first 5 articles are on us.</span>
 		} else if (viewsUsed > 0 && viewsRemaining > 0 && !hasPromoTweeted) {
 			title = <strong>{articlesLeftTitle}</strong>;
-			subLine = <span><Link screen={ScreenKey.MyImpact} onClick={props.onNavTo}>Tweet about Readup</Link> to get 5 more.</span>
+			subLine = <span><Link onClick={() => props.onNavTo({
+					key: ScreenKey.MyImpact,
+				}, {method: NavMethod.ReplaceAll}
+			)}>Tweet about Readup</Link> to get 5 more.</span>
 		} else if (viewsUsed > 0 && viewsRemaining > 0 && hasPromoTweeted) {
 			title = <strong>{articlesLeftTitle}</strong>;
 			subLine = <span><Link onClick={props.onOpenSubscriptionPromptDialog}>Subscribe</Link> for unlimited reading</span>
