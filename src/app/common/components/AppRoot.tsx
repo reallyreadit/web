@@ -49,7 +49,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusWithFreeTrialBase, calculateFreeViewBalance } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusWithFreeTrialBase, calculateFreeViewBalance, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -1323,6 +1323,27 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			);
 	}
+	private enterReaderView(article: Pick<ReadArticleReference, 'slug'>) {
+		// Proactively register the article view in order to keep the subscription status state (and free view counters) up to date.
+		if (
+			isFreeViewCreditRequiredForArticle(this.state.subscriptionStatus, article)
+		) {
+			this.onSubscriptionStatusChanged(
+				{
+					...this.state.subscriptionStatus,
+					freeTrial: {
+						...this.state.subscriptionStatus.freeTrial,
+						articleViews: this.state.subscriptionStatus.freeTrial.articleViews.concat(
+							createFreeTrialArticleView(article)
+						),
+					}
+				},
+				EventSource.Local
+			);
+		}
+		// Send the signal to the native app.
+		this.props.appApi.readArticle(article);
+	}
 	private openAppUpdateRequiredDialog(versionRequired: string) {
 		this._dialog.openDialog(
 			(
@@ -1457,7 +1478,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					}
 				)
 			) {
-				this.props.appApi.readArticle(readRef);
+				this.enterReaderView(readRef);
 			} else {
 				switch (options.method) {
 					case NavMethod.Push:
@@ -1523,7 +1544,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
 			let
 				articlePathParams: { [key: string]: string } | undefined,
-				articleSlug: string | undefined;
+				articleRef: Pick<ReadArticleReference, 'slug'> | undefined;
 			// We need to use the stateless canRead function here because the new user state isn't
 			// set until this function returns.
 			if (
@@ -1531,19 +1552,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 				canRead(
 					profile.subscriptionStatus,
 					this.state.isProcessingPayment,
-					{
-						slug: (
-							articleSlug = createArticleSlug(
-								articlePathParams = route.getPathParams(this._signInLocation.path)
-							)
+					articleRef = {
+						slug: createArticleSlug(
+							articlePathParams = route.getPathParams(this._signInLocation.path)
 						)
 					}
 				)
 			) {
 				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
-				this.props.appApi.readArticle({
-					slug: articleSlug
-				});
+				// We can't user enterReaderView here because it modifies the current state and the new user
+				// state isn't set until this function returns.
+				if (
+					isFreeViewCreditRequiredForArticle(profile.subscriptionStatus, articleRef)
+				) {
+					profile.subscriptionStatus.freeTrial.articleViews.push(
+						createFreeTrialArticleView(articleRef)
+					);
+				}
+				this.props.appApi.readArticle(articleRef);
 			} else {
 				screen = this
 					.getLocationDependentState(this._signInLocation)
@@ -1600,7 +1626,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
 		ev?.preventDefault();
 		if (this.canRead(article)) {
-			this.props.appApi.readArticle(article);
+			this.enterReaderView(article);
 		} else {
 			this._viewRead(article);
 			// this._openSubscriptionPromptDialog(article);
@@ -1768,7 +1794,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				)
 			})
 		) {
-			this.props.appApi.readArticle({
+			this.enterReaderView({
 				slug: articleSlug
 			});
 		}
