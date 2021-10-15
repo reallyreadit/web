@@ -63,6 +63,7 @@ import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
 import {FreeTrialPromoTweetIntentRegistrationRequest} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
+import { isReadupBlogPost } from '../../../common/models/UserArticle';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -1256,11 +1257,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 
 	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
-		const
-			[sourceSlug] = article.slug.split('_'),
-			isBlogPost = sourceSlug === 'blogreadupcom';
 		return (
-			isBlogPost ||
+			isReadupBlogPost(article) ||
 			(
 				!!this.state.user &&
 				(

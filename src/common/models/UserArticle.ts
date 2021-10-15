@@ -72,3 +72,6 @@ export function areEqual(a: UserArticle, b: UserArticle) {
 		a.imageUrl === b.imageUrl
 	);
 }
+export function isReadupBlogPost(article: Pick<UserArticle, 'slug'>) {
+	return article.slug.split('_')[0] === 'blogreadupcom';
+}

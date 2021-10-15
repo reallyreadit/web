@@ -67,6 +67,7 @@ import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
 import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
+import { isReadupBlogPost } from '../../../common/models/UserArticle';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -128,7 +129,7 @@ function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPaym
 				)
 			)
 		||
-			article.slug.split('_')[0] === 'blogreadupcom'
+			isReadupBlogPost(article)
 	);
 }
 export default class extends Root<Props, State, SharedState, Events> {
