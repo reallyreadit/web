@@ -33,7 +33,9 @@ export interface FreeTrialCredit {
 	amount: number
 }
 export interface FreeTrialArticleView {
-	articleId: number,
+	// articleId is returned by the API but for the time being it makes things simpler to only
+	// use the article slug since that's what is usually passed around when reading articles.
+	//articleId: number,
 	articleSlug: string,
 	dateViewed: string
 }

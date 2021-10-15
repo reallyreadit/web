@@ -151,7 +151,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 				this.state.userArticleHistory.value.items.filter(
 					historyArticle =>
 						// this historical read was registered as a free view
-						freeTrial.articleViews.find(articleView => articleView.articleId === historyArticle.id) &&
+						freeTrial.articleViews.find(articleView => articleView.articleSlug === historyArticle.slug) &&
 						historyArticle.isRead
 					);
 			return (freeViewsReadToCompletion && freeViewsReadToCompletion.length) || 0;
