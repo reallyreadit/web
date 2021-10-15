@@ -49,7 +49,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusWithFreeTrialBase, calculateFreeViewBalance, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus,calculateFreeViewBalance, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView, isTrialingSubscription } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -110,22 +110,23 @@ function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPaym
 			(
 				// determine whether the reader is a free trial reader
 				(
-						subscriptionStatus.type !== SubscriptionStatusType.Active
-					||
-						(
-							subscriptionStatus.type === SubscriptionStatusType.Active
-							&& isProcessingPayment
-						)
+						isTrialingSubscription(subscriptionStatus)
+					// edge case that should never happen, and if it happens, it's not bad if we top the free trial here?
+					// ||
+					// 	(
+					// 		subscriptionStatus.type === SubscriptionStatusType.Active
+					// 		&& isProcessingPayment
+					// 	)
 				)
 					&&
 				(
 					// free trial reader has remaining balance
-					( calculateFreeViewBalance((subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial) > 0 )
+					( calculateFreeViewBalance(subscriptionStatus.freeTrial) > 0 )
 					||
 					// free trial reader already opened this article before
-					!!(subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial.articleViews.find(
+					!!(subscriptionStatus.freeTrial.articleViews.find(
 						articleView => articleView.articleSlug === article.slug
-					)
+					))
 				)
 			)
 		||

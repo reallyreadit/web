@@ -12,7 +12,7 @@ import { formatCountable, formatIsoDateAsUtc, formatCurrency } from '../../../..
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, InactiveSubscriptionStatusWithFreeTrialBase, FreeTrialCredit, calculateFreeViewBalance } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, FreeTrialCredit, calculateFreeViewBalance, isTrialingSubscription } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import Button from '../../../../common/components/Button';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
@@ -143,10 +143,11 @@ class MyImpactScreen extends React.Component<Props, State> {
 	};
 
 	private readonly _calculateFreeReadsToCompletion = () => {
-		const freeTrial = (this.props.subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase).freeTrial;
-		if (!this.state.userArticleHistory || this.state.userArticleHistory.isLoading) {
+		if (!isTrialingSubscription(this.props.subscriptionStatus)) {
 			return -1;
-		} else {
+		}
+		const freeTrial = this.props.subscriptionStatus.freeTrial;
+		if (!this.state.userArticleHistory || this.state.userArticleHistory.isLoading) {
 			const freeViewsReadToCompletion = this.state.userArticleHistory.value.items &&
 				this.state.userArticleHistory.value.items.filter(
 					historyArticle =>
@@ -155,6 +156,8 @@ class MyImpactScreen extends React.Component<Props, State> {
 						historyArticle.isRead
 					);
 			return (freeViewsReadToCompletion && freeViewsReadToCompletion.length) || 0;
+		} else {
+			return -1;
 		}
 	}
 
@@ -214,9 +217,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 	}
 
 	private _renderFreeTrialNotice() {
-		if (
-			!this.props.subscriptionStatus.isUserFreeForLife
-			&& calculateFreeViewBalance(( this.props.subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase ).freeTrial) > 0) {
+		if (isTrialingSubscription(this.props.subscriptionStatus) && calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial) > 0) {
 			return <FreeTrialNotice
 				detailLevel='minimal'
 				onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
@@ -228,9 +229,11 @@ class MyImpactScreen extends React.Component<Props, State> {
 	}
 
 	private _renderFreeTrialContent() {
-		const subcriptionStatusNeverSubscribed = this.props.subscriptionStatus as InactiveSubscriptionStatusWithFreeTrialBase;
-		const viewsUsed = subcriptionStatusNeverSubscribed.freeTrial.articleViews.length;
-		const viewsRemaining = calculateFreeViewBalance(subcriptionStatusNeverSubscribed.freeTrial);
+		if (!isTrialingSubscription(this.props.subscriptionStatus)) {
+			return null;
+		}
+		const viewsUsed = this.props.subscriptionStatus.freeTrial.articleViews.length;
+		const viewsRemaining = calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial);
 		const articleCompletions = this._calculateFreeReadsToCompletion();
 		return (
 			<>
@@ -246,11 +249,15 @@ class MyImpactScreen extends React.Component<Props, State> {
 					<div className="metric articles-completions">
 						{ this.state.userArticleHistory.isLoading ?
 							<><SpinnerIcon/> loading</> :
+							articleCompletions > -1 ?
 							<>{articleCompletions} article completion{articleCompletions !== 1 ? 's' : ''}</>
+							: null
 						}
 					</div>
 				</ContentBox>}
-				<div className="tweet-prompt">
+				{
+					(this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit())
+				? <div className="tweet-prompt">
 					<p>Tweet about Readup{ this.props.subscriptionStatus.isUserFreeForLife ? '!' : ' for 5 more free views.'}</p>
 					{this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit() &&
 						<Button
@@ -263,7 +270,9 @@ class MyImpactScreen extends React.Component<Props, State> {
 							text="Tweet"
 						/>
 					}
-				</div>
+					</div>
+					: null
+				}
 				<div className="subscribe-prompt">
 					<h2>Become a Reader</h2>
 					<ul className="value-points">
