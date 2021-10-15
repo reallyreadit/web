@@ -51,20 +51,23 @@ export type InactiveSubscriptionStatusWithFreeTrialBase = {
 export type InactiveSubscriptionStatusBase = {
 	isUserFreeForLife: true
 } | InactiveSubscriptionStatusWithFreeTrialBase;
-export type NeverSubscribedSubscriptionStatus = InactiveSubscriptionStatusBase & {
+type NeverSubscribedSubscriptionStatusBase = {
 	type: SubscriptionStatusType.NeverSubscribed
 };
-export type PaymentConfirmationRequiredSubscriptionStatus = InactiveSubscriptionStatusBase & {
+export type NeverSubscribedSubscriptionStatus = NeverSubscribedSubscriptionStatusBase & InactiveSubscriptionStatusBase;
+type PaymentConfirmationRequiredSubscriptionStatusBase = {
 	type: SubscriptionStatusType.PaymentConfirmationRequired,
 	provider: SubscriptionProvider,
 	price: SubscriptionPriceLevel,
 	invoiceId: string
 };
-export type PaymentFailedSubscriptionStatus = InactiveSubscriptionStatusBase & {
+export type PaymentConfirmationRequiredSubscriptionStatus = PaymentConfirmationRequiredSubscriptionStatusBase & InactiveSubscriptionStatusBase;
+type PaymentFailedSubscriptionStatusBase = {
 	type: SubscriptionStatusType.PaymentFailed,
 	provider: SubscriptionProvider,
 	price: SubscriptionPriceLevel
 };
+export type PaymentFailedSubscriptionStatus = PaymentFailedSubscriptionStatusBase & InactiveSubscriptionStatusBase;
 export type ActiveSubscriptionStatus = {
 		type: SubscriptionStatusType.Active,
 		provider: SubscriptionProvider,
@@ -81,7 +84,7 @@ export type ActiveSubscriptionStatus = {
 			autoRenewEnabled: false
 		}
 	);
-export type LapsedSubscriptionStatus = InactiveSubscriptionStatusBase & {
+type LapsedSubscriptionStatusBase = {
 	type: SubscriptionStatusType.Lapsed,
 	provider: SubscriptionProvider,
 	price: SubscriptionPriceLevel,
@@ -89,9 +92,15 @@ export type LapsedSubscriptionStatus = InactiveSubscriptionStatusBase & {
 	lastPeriodRenewalGracePeriodEndDate: string,
 	lastPeriodDateRefunded: string | null
 };
+export type LapsedSubscriptionStatus = LapsedSubscriptionStatusBase & InactiveSubscriptionStatusBase;
 export type SubscriptionStatus =
 	NeverSubscribedSubscriptionStatus |
 	PaymentConfirmationRequiredSubscriptionStatus |
 	PaymentFailedSubscriptionStatus |
 	ActiveSubscriptionStatus |
 	LapsedSubscriptionStatus;
+export type InactiveSubscriptionStatusWithFreeTrial =
+	(NeverSubscribedSubscriptionStatusBase & InactiveSubscriptionStatusWithFreeTrialBase) |
+	(PaymentConfirmationRequiredSubscriptionStatus & InactiveSubscriptionStatusWithFreeTrialBase) |
+	(PaymentFailedSubscriptionStatus & InactiveSubscriptionStatusWithFreeTrialBase) |
+	(LapsedSubscriptionStatus & InactiveSubscriptionStatusWithFreeTrialBase);
