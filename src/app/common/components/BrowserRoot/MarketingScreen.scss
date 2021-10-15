@@ -4,6 +4,7 @@
 */
 @import '../../../../common/styles/colors';
 @import '../../../../common/styles/breakpoints';
+@import '../AppRoot/SubscribePitchElement.scss';
 
 .marketing-screen_n5a6wc p {
 	line-height: 1.4;
@@ -46,9 +47,6 @@
 	font-size: 17.33px;
 	font-family: 'Museo Sans (300)', sans-serif;
 	line-height: 1.6;
-	&--centered {
-		text-align: center;
-	}
 }
 .marketing-screen_n5a6wc > .home-panel_w65z7c > .content > .home-section-intro strong {
 	font-family: 'Museo Sans (500)', sans-serif;
@@ -63,6 +61,10 @@
 }
 .marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > .price-list_eorvmi {
 	margin-top: 1.5em;
+	ul {
+		text-align: start;
+		@extend %pitch-element-list-style;
+	}
 }
 
 // styles for the revenue section

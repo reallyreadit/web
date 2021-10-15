@@ -1,0 +1,25 @@
+/*
+        componentPath: src/app/common/components/AppRoot/SubscribePitchElement
+        cssComponentId: subscribe-pitch-element_5mjzry
+*/
+
+%pitch-element-list-style {
+	> li {
+		line-height: 1.3;
+		margin: 8px auto;
+		> .icon_rour3d {
+			// checkmarks
+			margin-right: 0.4em;
+			vertical-align: middle;
+			transform: translateY(-2px);
+		}
+	}
+}
+
+.subscribe-pitch-element_5mjzry {
+	text-align: start;
+
+	> ul.value-points {
+		@extend %pitch-element-list-style;
+	}
+}

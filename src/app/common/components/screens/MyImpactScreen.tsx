@@ -12,23 +12,23 @@ import { formatCountable, formatIsoDateAsUtc, formatCurrency } from '../../../..
 import { DateTime } from 'luxon';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, FreeTrialCredit, calculateFreeViewBalance, isTrialingSubscription } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus, InactiveSubscriptionStatusBase, FreeTrialCredit, calculateFreeViewBalance, isTrialingSubscription, calculateTotalFreeViewCredit } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import Button from '../../../../common/components/Button';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
-import { NavOptions, NavReference, Screen, SharedState } from '../Root';
+import { NavMethod, NavOptions, NavReference, Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import Link from '../../../../common/components/Link';
 import ContentBox from '../../../../common/components/ContentBox';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import Icon from '../../../../common/components/Icon';
 import FreeTrialNotice, {findTweetPromoCredit} from '../AppRoot/FreeTrialNotice';
 import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import {TweetWebIntentParams} from '../../../../common/sharing/twitter';
 import {Intent} from '../../../../common/components/Toaster';
 import PageResult from '../../../../common/models/PageResult';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
+import SubscribePitchElement from '../AppRoot/SubscribePitchElement';
 
 function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDistributionReport) {
 	const daysRemaining = Math.ceil(
@@ -129,7 +129,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 			 } else {
 				const tweetPromoCredit = this._findTweetPromoCredit(res.subscriptionStatus);
 				if (tweetPromoCredit) {
-					toastMessage = `You received ${tweetPromoCredit.amount} more free views!`
+					toastMessage = `You received ${tweetPromoCredit.amount} more free articles!`
 				} else {
 					// shouldn't happen!
 					console.error("Couldn't find assigned requested tweet credit!")
@@ -147,7 +147,10 @@ class MyImpactScreen extends React.Component<Props, State> {
 			return -1;
 		}
 		const freeTrial = this.props.subscriptionStatus.freeTrial;
-		if (!this.state.userArticleHistory || this.state.userArticleHistory.isLoading) {
+		if (!!this.state.userArticleHistory
+			&& !this.state.userArticleHistory.isLoading
+			&& !!this.state.userArticleHistory.value
+			) {
 			const freeViewsReadToCompletion = this.state.userArticleHistory.value.items &&
 				this.state.userArticleHistory.value.items.filter(
 					historyArticle =>
@@ -232,33 +235,33 @@ class MyImpactScreen extends React.Component<Props, State> {
 		if (!isTrialingSubscription(this.props.subscriptionStatus)) {
 			return null;
 		}
-		const viewsUsed = this.props.subscriptionStatus.freeTrial.articleViews.length;
 		const viewsRemaining = calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial);
+		const totalFreeViews = calculateTotalFreeViewCredit(this.props.subscriptionStatus.freeTrial);
 		const articleCompletions = this._calculateFreeReadsToCompletion();
 		return (
 			<>
-				{/* <h2></h2> */}
-				<p className="intro">Welcome. Your first article views are on us!</p>
 				{<ContentBox className="stats">
-					<div className="metric views--remaining">{viewsRemaining} view{viewsRemaining !== 1 ? 's' : ''} remaining</div>
-					<Link
-						screen={ScreenKey.MyReads}
-						params={{view: 'history'}}
-						onClick={this.props.onNavTo}
-						className="metric views--used">{viewsUsed} view{viewsUsed !== 1 ? 's' : ''} used</Link>
-					<div className="metric articles-completions">
+					<div className="metric views--remaining">{viewsRemaining} of {totalFreeViews} article{viewsRemaining !== 1 ? 's' : ''} left</div>
+					<div className="metric article-completions">
 						{ this.state.userArticleHistory.isLoading ?
 							<><SpinnerIcon/> loading</> :
 							articleCompletions > -1 ?
-							<>{articleCompletions} article completion{articleCompletions !== 1 ? 's' : ''}</>
+							<>{articleCompletions} article{articleCompletions !== 1 ? 's' : ''} finished</>
 							: null
 						}
 					</div>
+					<Link onClick={() => this.props.onNavTo({
+								key: ScreenKey.MyReads,
+								params: {view: 'history'}
+							}, {method: NavMethod.ReplaceAll}
+							)
+						}
+						className="metric views--used">View history</Link>
 				</ContentBox>}
 				{
 					(this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit())
 				? <div className="tweet-prompt">
-					<p>Tweet about Readup{ this.props.subscriptionStatus.isUserFreeForLife ? '!' : ' for 5 more free views.'}</p>
+					<p>Tweet about Readup{ this.props.subscriptionStatus.isUserFreeForLife ? '!' : ' for 5 more free articles.'}</p>
 					{this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit() &&
 						<Button
 							intent="loud"
@@ -275,11 +278,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 				}
 				<div className="subscribe-prompt">
 					<h2>Become a Reader</h2>
-					<ul className="value-points">
-						<li><Icon name="checkmark"/>Unlimited, ad-free reading</li>
-						<li><Icon name="checkmark"/>Watch your money go to the writers you read</li>
-						<li><Icon name="checkmark"/>Pick your price. Starting from 5$/mo.</li>
-					</ul>
+					<SubscribePitchElement/>
 					<Button
 						intent="loud"
 						onClick={(_) => this.props.onOpenSubscriptionPromptDialog()}

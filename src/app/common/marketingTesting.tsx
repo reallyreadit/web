@@ -10,7 +10,7 @@ export const variants: {
 } = {
 	0: {
 		headline: 'Readup is the world\'s best reading app.',
-		subtext: 'Great articles, no ads. Get started today.'
+		subtext: 'Great articles, no ads. Get started for free.'
 	},
 	1: {
 		headline: 'We are a community of readers. Join us!',

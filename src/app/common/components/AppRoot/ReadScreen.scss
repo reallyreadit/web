@@ -1,19 +1,19 @@
 /*
-	componentPath: src/app/common/components/BrowserRoot/ReadScreen
-	cssComponentId: read-screen_ikr26q
+        componentPath: src/app/common/components/AppRoot/ReadScreen
+        cssComponentId: read-screen_rfbmah
 */
 @import '../../../../common/styles/colors';
 
 $breakpoint: 550px;
 
-.read-screen_ikr26q {
+.read-screen_rfbmah {
 	display: flex;
 	flex-flow: column;
 	align-items: center;
 	min-height: unset;
 }
 
-.read-screen_ikr26q.article-screen-container {
+.read-screen_rfbmah.article-screen-container {
 	// overriding the ScreenContainer props...
 	background-color: var(--app-background-alt-color);
 	min-height: unset;
@@ -23,40 +23,40 @@ $breakpoint: 550px;
 	max-width: unset;
 }
 
-.read-screen_ikr26q > .article {
+.read-screen_rfbmah > .article {
 	display: flex;
 	align-items: center;
 }
 
-.read-screen_ikr26q > .article > .article__details {
+.read-screen_rfbmah > .article > .article__details {
 	// flex: 0 0 auto;
 	// max-width: 550px;
 	max-width: 500px;
 }
 
-.read-screen_ikr26q > .article > .article__details > .top-line {
+.read-screen_rfbmah > .article > .article__details > .top-line {
 	text-transform: uppercase;
 	color: var(--text-muted-color);
 	font-size: 0.7rem;
 }
 
-.read-screen_ikr26q > .article > .article__details > .meta {
+.read-screen_rfbmah > .article > .article__details > .meta {
 	margin-bottom: 5px;
 	font-size: 11pt;
 }
-.read-screen_ikr26q > .article > .article__details > .meta > .authors,
-.read-screen_ikr26q > .article > .article__details > .meta > .source {
+.read-screen_rfbmah > .article > .article__details > .meta > .authors,
+.read-screen_rfbmah > .article > .article__details > .meta > .source {
 	text-transform: uppercase;
 	font-family: 'Museo Sans (500)';
 	font-size: 10pt;
 }
-.read-screen_ikr26q > .article > .article__details > .extra {
+.read-screen_rfbmah > .article > .article__details > .extra {
 	font-size: 11pt;
 }
-// .read-screen_ikr26q > .article > .article__details > .meta > .source {
+// .read-screen_rfbmah > .article > .article__details > .meta > .source {
 // 	font-style: italic;
 // }
-.read-screen_ikr26q > .article > .article__details > .title {
+.read-screen_rfbmah > .article > .article__details > .title {
 	font-family: 'Cambria (bold)';
 	font-size: 18pt;
 	line-height: 1.1em;
@@ -65,7 +65,7 @@ $breakpoint: 550px;
 }
 
 
-.read-screen_ikr26q > .article > .article__image {
+.read-screen_rfbmah > .article > .article__image {
 	width: 190px;
 	height: 130px;
 	object-fit: cover;
@@ -73,7 +73,7 @@ $breakpoint: 550px;
 }
 
 @media screen and (max-width: $breakpoint - 1px) {
-	.read-screen_ikr26q > .article {
+	.read-screen_rfbmah > .article {
 		flex-direction: column;
 		> .article__image {
 			margin: 0 0 0.7rem 0;
@@ -84,15 +84,15 @@ $breakpoint: 550px;
 	}
 }
 
-.read-screen_ikr26q > .spacer {
+.read-screen_rfbmah > .spacer {
 	flex: 1 1 auto;
 	min-height: 10px;
 	max-height: 40px;
 }
-.read-screen_ikr26q > .bypass {
+.read-screen_rfbmah > .bypass {
 	margin-top: 10px;
 }
-.read-screen_ikr26q > .bypass > a {
+.read-screen_rfbmah > .bypass > a {
 	font-size: 11pt;
 	text-decoration: underline;
 	cursor: pointer;
@@ -101,7 +101,7 @@ $breakpoint: 550px;
 
 $card-padding-desktop: 10px 2rem;
 // MOBILE-FIRST STYLES
-.read-screen_ikr26q {
+.read-screen_rfbmah {
 
 	ul {
 		margin: 0;
@@ -119,10 +119,10 @@ $card-padding-desktop: 10px 2rem;
 	}
 
 	.read-question {
-		font-size: 1.4rem;
-		text-align: center;
+		font-size: 1.14rem;
+		// text-align: center;
 		margin: 1.2rem 0;
-		font-family: 'Cambria', serif;
+		// font-family: 'Cambria', serif;
 	}
 
 	.divider {
@@ -213,7 +213,8 @@ $card-padding-desktop: 10px 2rem;
 		}
 
 		.read-question {
-			font-size: 1.8rem;
+			// font-size: 1.8rem;
+
 			// dirty neg margin to compenste for padding
 			margin: -0.9rem 0px 1.5rem 0
 		}
@@ -273,7 +274,7 @@ $card-padding-desktop: 10px 2rem;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .read-screen_ikr26q > .bypass > a {
+	#{$root} .read-screen_rfbmah > .bypass > a {
 		@include theme-colors(
 			$scheme,
 			(

@@ -36,11 +36,12 @@ import { RevenueReportResponse } from '../../../../common/models/subscriptions/R
 import { NavOptions, NavReference } from '../Root';
 // import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import {formatCurrency} from '../../../../common/format';
 import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
 import DownloadButton from './DownloadButton';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
+import SubscribePitchElement from '../AppRoot/SubscribePitchElement';
+import Icon from '../../../../common/components/Icon';
 // import classNames from 'classnames';
 // import HomeHero from './HomeHero';
 
@@ -79,20 +80,26 @@ export interface Quote {
 	commentId: string
 }
 
-const prices = [
+const prices: {
+	amount: JSX.Element,
+	title: string,
+	subtitle: string,
+	description: JSX.Element
+}[] = [
 	{
-		amount: formatCurrency(0),
-		title: 'Try for free',
+		amount: null,
+		title: 'Free Trial',
 		subtitle: '',
-		description: <><p>Read 5 articles for free</p><p>No commitment or credit card required</p></>
+		description: <ul>
+			<li><Icon name="checkmark"/>No commitment or credit card required.</li>
+			<li><Icon name="checkmark"/>5 free reads</li>
+		</ul>
 	},
 	{
-		amount: <>{formatCurrency(499)}<span className="month">/month</span>
-			<br/><span className="or-more">Feeling generous? Pay more!</span>
-			</>,
-		title: 'Pick your price',
+		amount: null,
+		title: 'Become a reader',
 		subtitle: '',
-		description: <><p>Unlimited reading</p><p>A great way to support the writers you read!</p></>,
+		description: <SubscribePitchElement/>,
 		// selected: true
 	},
 ];
@@ -369,8 +376,7 @@ export default class MarketingScreen extends React.Component<
 					data-nosnippet
 					className="pricing-panel"
 				>
-					<h2 className="heading-regular">Start reading today</h2>
-					<p className="home-section-intro home-section-intro--centered">Reading on Readup is different. See for yourself!</p>
+					<h2 className="heading-regular">Start reading for free</h2>
 					<PriceList prices={prices} />
 					<DownloadSection
 						onNavTo={this.props.onNavTo}

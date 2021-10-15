@@ -33,20 +33,21 @@ const FreeTrialNotice = (
 		const viewsUsed = props.subscriptionStatus.freeTrial.articleViews.length;
 		const viewsRemaining = calculateFreeViewBalance(props.subscriptionStatus.freeTrial);
 		const hasPromoTweeted = !!findTweetPromoCredit(props.subscriptionStatus);
+		const articlesLeftTitle = `${viewsRemaining} free article${viewsRemaining !== 1 ? 's' : ''} left`;
 
 		if (props.detailLevel === 'minimal') {
-			title = <strong>Free trial: {viewsRemaining} view{viewsRemaining !== 1 ? 's' : ''} remaining</strong>;
+			title = <strong>{articlesLeftTitle}</strong>;
 		} else if (viewsUsed === 0) {
 			title = <strong>Welcome to Readup!</strong>,
 			subLine = <span>Your first 5 article views are on us.</span>
 		} else if (viewsUsed > 0 && viewsRemaining > 0 && !hasPromoTweeted) {
-			title = <strong>{viewsRemaining} free article view{viewsRemaining !== 1 ? 's' : ''} remaining</strong>;
+			title = <strong>{articlesLeftTitle}</strong>;
 			subLine = <span><Link screen={ScreenKey.MyImpact} onClick={props.onNavTo}>Tweet about Readup</Link> to get 5 more.</span>
 		} else if (viewsUsed > 0 && viewsRemaining > 0 && hasPromoTweeted) {
-			title = <strong>{viewsRemaining} free article view{viewsRemaining !== 1 ? 's' : ''} remaining</strong>;
+			title = <strong>{articlesLeftTitle}</strong>;
 			subLine = <span><Link onClick={props.onOpenSubscriptionPromptDialog}>Subscribe</Link> for unlimited reading</span>
 		} else {
-			title = <strong>{viewsRemaining} free article view{viewsRemaining !== 1 ? 's' : ''} remaining</strong>;
+			title = <strong>{articlesLeftTitle}</strong>;
 			subLine = <span><Link onClick={props.onOpenSubscriptionPromptDialog}>Subscribe</Link> to continue reading</span>
 		}
 	return (

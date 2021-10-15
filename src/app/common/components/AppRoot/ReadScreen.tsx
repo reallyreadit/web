@@ -8,7 +8,7 @@ import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
-import { formatFetchable, formatList } from '../../../../common/format';
+import { formatFetchable } from '../../../../common/format';
 import produce from 'immer';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -18,11 +18,11 @@ import Button from '../../../../common/components/Button';
 import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
 import classNames = require('classnames');
-import { calculateEstimatedReadTime } from '../../../../common/calculate';
-import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
-import Link from '../../../../common/components/Link';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
+import {isFreeTrialOverSubscription, isTrialingSubscription, SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import SubscribePitchElement from './SubscribePitchElement';
+import StickyNote from '../../../../common/components/StickyNote';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -34,7 +34,8 @@ interface Props {
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onOpenSubscriptionPromptDialog: (article?: ReadArticleReference, provider?: SubscriptionProvider) => void
 	onReadArticle: (article: UserArticle) => void,
-	user: UserAccount | null
+	user: UserAccount | null,
+	subscriptionStatus: SubscriptionStatus
 }
 class ReadScreen extends React.PureComponent<Props> {
 	private readonly _readArticle = () => {
@@ -46,55 +47,15 @@ class ReadScreen extends React.PureComponent<Props> {
 		this.props.onNavTo(this.props.article.value.url);
 	}
 
-	private renderArticle() {
-		// comments link
-		const
-		[sourceSlug, articleSlug] = this.props.article.value.slug.split('_'),
-		articleUrlParams = {
-			['articleSlug']: articleSlug,
-			['sourceSlug']: sourceSlug
-		};
-		return 	(
-			<div className="article">
-				{this.props.article.value.imageUrl && <img className="article__image" src={this.props.article.value.imageUrl} /> }
-				<div className="article__details">
-					<span className="top-line">Article</span>
-					<div className="title">{this.props.article.value.title}</div>
-					{this.props.article.value.source || this.props.article.value.articleAuthors.length ?
-						<div className="meta">
-							{this.props.article.value.articleAuthors.length ?
-								<>By{' '}
-								<span className="authors">
-									{formatList(this.props.article.value.articleAuthors.map(author => author.name))}
-								</span></> :
-								null}
-							{this.props.article.value.articleAuthors.length && this.props.article.value.source ?
-								<span> in </span> :
-								null}
-							{this.props.article.value.source ?
-								<span className="source">
-									{this.props.article.value.source}
-								</span> :
-								null}
-						</div> :
-						null}
-						<span className="extra">{calculateEstimatedReadTime(this.props.article.value.wordCount)} min. read {this.props.article.value.commentCount > 0 ? <>·{' '}<Link
-							screen={ScreenKey.Comments}
-							onClick={this.props.onNavTo}
-							params={articleUrlParams}
-							>{this.props.article.value.commentCount} comment{this.props.article.value.commentCount !== 1 ? 's' : ''}</Link> on Readup</> : null}</span>
-				</div>
-			</div>);
-	}
 	public render() {
 		return (
 				this.props.article.isLoading ?
-					<ScreenContainer className="read-screen_ikr26q">
+					<ScreenContainer className="read-screen_rfbmah">
 						<LoadingOverlay position="absolute" />
 					</ScreenContainer>
 					:
 					!this.props.article.value ?
-						<ScreenContainer className="read-screen_ikr26q">
+						<ScreenContainer className="read-screen_rfbmah">
 							<InfoBox
 								position="absolute"
 								style="normal"
@@ -104,12 +65,21 @@ class ReadScreen extends React.PureComponent<Props> {
 						</ScreenContainer>
 						:
 						<>
-						<ScreenContainer className="read-screen_ikr26q article-screen-container">
+						{/* <ScreenContainer className="read-screen_rfbmah article-screen-container">
 							{this.renderArticle()}
-						</ScreenContainer>
-						<ScreenContainer className="read-screen_ikr26q">
+						</ScreenContainer> */}
+						<ScreenContainer className="read-screen_rfbmah">
 							<div className="spacer"></div>
-							<div className="read-question">How would you like to read the article?</div>
+							<div className="read-question">
+								{/* NOTE: trialing the subscription here means that the reader is out of free views,
+									because they should only be landing on this screen within the app if they're out of free views
+								*/}
+								{ isFreeTrialOverSubscription(this.props.subscriptionStatus) ?
+									<StickyNote type='straight'>You're out of free articles!</StickyNote>
+									:
+									'How would you like to read the article?'
+								}
+							</div>
 							<div className="spacer"></div>
 							<div className={classNames("choice-container", {"mobile": isMobileDevice(this.props.deviceType)}) }>
 								<ContentBox className="choice--readup choice">
@@ -118,13 +88,37 @@ class ReadScreen extends React.PureComponent<Props> {
 											`/app/images/read-screen/` + (isMobileDevice(this.props.deviceType) ? `clean-mobile.svg` : `clean-desktop.svg`))} />
 										<div className="choice__details">
 											<div>
-												<h2>Read it on Readup,<br/> the app for reading.</h2>
 												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
-												<ul className="info dashed">
-													<li>Better reading</li>
-													<li>100% ad-free</li>
-													<li>Pick your price</li>
-												</ul>
+												{
+													isFreeTrialOverSubscription(this.props.subscriptionStatus) ?
+													<>
+														<h2>Become a Reader</h2>
+														<SubscribePitchElement />
+													</>
+													:
+													<>
+													<h2>Read it on Readup,<br/> the app for reading.</h2>
+														<ul className="info dashed">
+														{ isTrialingSubscription(this.props.subscriptionStatus) ?
+															<>
+																<li>100% ad-free</li>
+																<li>Compensate writers</li>
+																<li>Pick your price</li>
+															</>
+															:
+															<>
+																<li>Better reading</li>
+																<li>100% ad-free</li>
+																<li>Pick your price</li>
+															</>
+														}
+
+															<li>Better reading</li>
+															<li>100% ad-free</li>
+															<li>Pick your price</li>
+														</ul>
+													</>
+												}
 											</div>
 												<Button
 													intent="loud"
@@ -133,7 +127,7 @@ class ReadScreen extends React.PureComponent<Props> {
 															() => this.props.onOpenSubscriptionPromptDialog(this.props.article.value)}
 													size="large"
 													align="center"
-													text="Read Article"
+													text={isFreeTrialOverSubscription(this.props.subscriptionStatus) ? "Subscribe" : "Read Article"}
 												/>
 											</div>
 									</>
@@ -156,7 +150,7 @@ class ReadScreen extends React.PureComponent<Props> {
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user'>> & {
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user' | 'subscriptionStatus'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
@@ -196,7 +190,8 @@ export default function createReadScreenFactory<TScreenKey>(
 						...deps,
 						article: screenState.componentState,
 						location: screenState.location,
-						user: sharedState.user
+						user: sharedState.user,
+						subscriptionStatus: sharedState.subscriptionStatus
 					}
 				} />
 			);

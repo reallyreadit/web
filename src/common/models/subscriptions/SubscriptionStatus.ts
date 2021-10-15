@@ -3,16 +3,19 @@ import { SubscriptionPriceLevel } from './SubscriptionPrice';
 import UserArticle, { isReadupBlogPost } from '../UserArticle';
 import { formatIsoDateAsDotNet } from '../../format';
 
+export function calculateTotalFreeViewCredit(freeTrial: FreeTrial) {
+	return freeTrial.credits
+	.filter(
+		credit => credit.type === FreeTrialCreditType.ArticleView
+	)
+	.reduce(
+		(total, credit) => total + credit.amount,
+		0
+	);
+}
+
 export function calculateFreeViewBalance(freeTrial: FreeTrial) {
-	const totalViewCreditAmount = freeTrial.credits
-		.filter(
-			credit => credit.type === FreeTrialCreditType.ArticleView
-		)
-		.reduce(
-			(total, credit) => total + credit.amount,
-			0
-		);
-	return totalViewCreditAmount - freeTrial.articleViews.length;
+	return calculateTotalFreeViewCredit(freeTrial) - freeTrial.articleViews.length;
 }
 export function createFreeTrialArticleView(article: Pick<UserArticle, 'slug'>, dateViewed: Date = new Date()): FreeTrialArticleView {
 	return {
@@ -40,6 +43,11 @@ export function isTrialingSubscription(status: SubscriptionStatus): status is In
 		status.isUserFreeForLife === false
 	);
 }
+
+export function isFreeTrialOverSubscription(status: SubscriptionStatus) {
+	return isTrialingSubscription(status) && calculateFreeViewBalance(status.freeTrial) === 0;
+}
+
 export enum SubscriptionStatusType {
 	NeverSubscribed = 1,
 	PaymentConfirmationRequired = 2,
