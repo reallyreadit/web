@@ -1,5 +1,7 @@
 import SubscriptionProvider from './SubscriptionProvider';
 import { SubscriptionPriceLevel } from './SubscriptionPrice';
+import UserArticle, { isReadupBlogPost } from '../UserArticle';
+import { formatIsoDateAsDotNet } from '../../format';
 
 export function calculateFreeViewBalance(freeTrial: FreeTrial) {
 	const totalViewCreditAmount = freeTrial.credits
@@ -11,6 +13,32 @@ export function calculateFreeViewBalance(freeTrial: FreeTrial) {
 			0
 		);
 	return totalViewCreditAmount - freeTrial.articleViews.length;
+}
+export function createFreeTrialArticleView(article: Pick<UserArticle, 'slug'>, dateViewed: Date = new Date()): FreeTrialArticleView {
+	return {
+		articleSlug: article.slug,
+		dateViewed: formatIsoDateAsDotNet(
+			dateViewed.toISOString()
+		)
+	};
+}
+export function hasUsedFreeViewCreditForArticle(status: InactiveSubscriptionStatusWithFreeTrial, article: Pick<UserArticle, 'slug'>) {
+	return status.freeTrial.articleViews.some(
+		view => view.articleSlug === article.slug
+	);
+}
+export function isFreeViewCreditRequiredForArticle(status: SubscriptionStatus, article: Pick<UserArticle, 'slug'>): status is InactiveSubscriptionStatusWithFreeTrial {
+	return (
+		isTrialingSubscription(status) &&
+		!hasUsedFreeViewCreditForArticle(status, article) &&
+		!isReadupBlogPost(article)
+	);
+}
+export function isTrialingSubscription(status: SubscriptionStatus): status is InactiveSubscriptionStatusWithFreeTrial {
+	return (
+		status.type !== SubscriptionStatusType.Active &&
+		status.isUserFreeForLife === false
+	);
 }
 export enum SubscriptionStatusType {
 	NeverSubscribed = 1,
