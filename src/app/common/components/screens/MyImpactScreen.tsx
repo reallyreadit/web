@@ -231,16 +231,18 @@ class MyImpactScreen extends React.Component<Props, State> {
 		return null;
 	}
 
+	/**
+	 *
+	 * @returns content rendered for a free trial reader, or free-for-life reader (= endless free trial)
+	 */
 	private _renderFreeTrialContent() {
-		if (!isTrialingSubscription(this.props.subscriptionStatus)) {
-			return null;
-		}
-		const viewsRemaining = calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial);
-		const totalFreeViews = calculateTotalFreeViewCredit(this.props.subscriptionStatus.freeTrial);
-		const articleCompletions = this._calculateFreeReadsToCompletion();
-		return (
-			<>
-				{<ContentBox className="stats">
+		let freeTrialInfo: React.ReactNode = null;
+		if (isTrialingSubscription(this.props.subscriptionStatus)) {
+			const viewsRemaining = calculateFreeViewBalance(this.props.subscriptionStatus.freeTrial);
+			const totalFreeViews = calculateTotalFreeViewCredit(this.props.subscriptionStatus.freeTrial);
+			const articleCompletions = this._calculateFreeReadsToCompletion();
+
+			freeTrialInfo = (<ContentBox className="stats">
 					<div className="metric views--remaining">{viewsRemaining} of {totalFreeViews} article{viewsRemaining !== 1 ? 's' : ''} left</div>
 					<div className="metric article-completions">
 						{ this.state.userArticleHistory.isLoading ?
@@ -256,12 +258,19 @@ class MyImpactScreen extends React.Component<Props, State> {
 							}, {method: NavMethod.ReplaceAll}
 							)}
 						className="metric views--used">View history</Link>
-				</ContentBox>}
+				</ContentBox>);
+		} else if (this.props.subscriptionStatus.isUserFreeForLife) {
+			freeTrialInfo = <p className="intro">As an early Readup adopter, you can read for free.<br/> Please consider subscribing!</p>
+		}
+
+		return (
+			<>
+				{freeTrialInfo}
 				{
 					(this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit())
 				? <div className="tweet-prompt">
 					<p>Tweet about Readup{ this.props.subscriptionStatus.isUserFreeForLife ? '!' : ' for 5 more free articles.'}</p>
-					{this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit() &&
+					{(this.props.subscriptionStatus.isUserFreeForLife || !this._findTweetPromoCredit()) &&
 						<Button
 							intent="loud"
 							onClick={this._openTweetComposer}
