@@ -8,7 +8,7 @@ import { findRouteByLocation } from '../../../../common/routing/Route';
 import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
-import { formatFetchable, formatList } from '../../../../common/format';
+import { formatFetchable, formatList, formatCountable } from '../../../../common/format';
 import produce from 'immer';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -95,7 +95,7 @@ class ReadScreen extends React.PureComponent<Props> {
 							screen={ScreenKey.Comments}
 							onClick={this.props.onNavTo}
 							params={articleUrlParams}
-							>{this.props.article.value.commentCount} comment{this.props.article.value.commentCount !== 1 ? 's' : ''}</Link> on Readup</> : null}</span>
+							>{this.props.article.value.commentCount} {formatCountable(this.props.article.value.commentCount, 'comment')}</Link> on Readup</> : null}</span>
 				</div>
 			</div>);
 	}
