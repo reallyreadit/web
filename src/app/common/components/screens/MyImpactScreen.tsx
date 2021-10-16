@@ -4,7 +4,7 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import { SubscriptionDistributionReport } from '../../../../common/models/subscriptions/SubscriptionDistributionReport';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import Fetchable from '../../../../common/Fetchable';
-import AsyncTracker from '../../../../common/AsyncTracker';
+import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import DistributionChart, { ReportType } from './MyImpactScreen/DistributionChart';
 import { formatSubscriptionPriceAmount, formatSubscriptionPriceName, SubscriptionPriceLevel } from '../../../../common/models/subscriptions/SubscriptionPrice';
@@ -105,64 +105,80 @@ class MyImpactScreen extends React.Component<Props, State> {
 		this.props.onOpenSubscriptionPromptDialog();
 	};
 
-	private readonly _findTweetPromoCredit = (subscriptionStatus?: SubscriptionStatus): FreeTrialCredit | undefined => {
-		const subcriptionStatusToUse = subscriptionStatus ? subscriptionStatus : this.props.subscriptionStatus;
-		return findTweetPromoCredit(subcriptionStatusToUse);
-	}
-
 	private readonly _openTweetComposer = () => {
-		this.setState({ isTweeting: true })
-		this.props.onOpenTweetComposerWithCompletionHandler({
-			text: "I just finished some articles on Readup, check it out! ",
-			url: "https://readup.com",
-			// hashtags: [
-			// 	'ReadOnReadup'
-			// ],
-			via: 'ReadupDotCom'
-		}).then(() => this.props.onRegisterFreeTrialPromoTweetIntent({})
-		).then((res) => {
-			this.setState({isTweeting: false});
-			const subBase = res.subscriptionStatus as InactiveSubscriptionStatusBase;
-			let toastMessage;
-			 if (subBase.isUserFreeForLife) {
-				toastMessage =  'Thanks for tweeting!';
-			 } else {
-				const tweetPromoCredit = this._findTweetPromoCredit(res.subscriptionStatus);
-				if (tweetPromoCredit) {
-					toastMessage = `You received ${tweetPromoCredit.amount} more free articles!`
-				} else {
-					// shouldn't happen!
-					console.error("Couldn't find assigned requested tweet credit!")
+		// Tweeting in this context is modal. Guard against duplicate events by using the callback form of setState so that we can
+		// safely check the current state before proceeding.
+		this.setState(
+			prevState => {
+				// Cancel the whole operation if we're already Tweeting.
+				if (prevState.isTweeting) {
+					return null;
 				}
-
-			 }
-			if (toastMessage) {
-				this.props.onShowToast(toastMessage, Intent.Success);
-			}
-		})
-	};
-
-	private readonly _calculateFreeReadsToCompletion = () => {
-		if (!isTrialingSubscription(this.props.subscriptionStatus)) {
-			return -1;
-		}
-		const freeTrial = this.props.subscriptionStatus.freeTrial;
-		if (!!this.state.userArticleHistory
-			&& !this.state.userArticleHistory.isLoading
-			&& !!this.state.userArticleHistory.value
-			) {
-			const freeViewsReadToCompletion = this.state.userArticleHistory.value.items &&
-				this.state.userArticleHistory.value.items.filter(
-					historyArticle =>
-						// this historical read was registered as a free view
-						freeTrial.articleViews.find(articleView => articleView.articleSlug === historyArticle.slug) &&
-						historyArticle.isRead
+				this._asyncTracker
+					// We're going to want to call setState after this promise resolves so make it cancellable by adding it to the AsyncTracker instance.
+					// The user might navigate away from this screen before the Tweet completion handler resolves.
+					// Calling setState on an unmounted component is an error in React.
+					.addPromise(
+						this.props.onOpenTweetComposerWithCompletionHandler({
+							text: "I just finished some articles on Readup, check it out! ",
+							url: "https://readup.com",
+							via: 'ReadupDotCom'
+						})
+					)
+					.then(
+						() => {
+							// Only register the promo Tweet for non-free-for-life users.
+							if (this.props.subscriptionStatus.isUserFreeForLife) {
+								this.props.onShowToast('Thanks for tweeting!', Intent.Success);
+								return Promise.resolve();
+							} else {
+								// Promo Tweet registration is another async request that should be cancellable.
+								return this._asyncTracker
+									.addPromise(
+										this.props.onRegisterFreeTrialPromoTweetIntent({})
+									)
+									.then(
+										res => {
+											const tweetPromoCredit = isTrialingSubscription(res.subscriptionStatus) && findTweetPromoCredit(res.subscriptionStatus.freeTrial);
+											if (tweetPromoCredit) {
+												// The promo Tweet credit could yield any number of free articles so we should use formatCountable to handle singular/plural forms.
+												this.props.onShowToast(`You received ${tweetPromoCredit.amount} more free ${formatCountable(tweetPromoCredit.amount, 'article')}!`, Intent.Success);
+											} else {
+												// shouldn't happen!
+												console.error("Couldn't find assigned requested tweet credit!")
+											}
+										}
+									);
+							}
+						}
+					)
+					.then(
+						() => {
+							// Clear the modal Tweet state after a successful operation.
+							this.setState({
+								isTweeting: false
+							});
+						}
+					)
+					.catch(
+						reason => {
+							// If any of the promises were cancelled we should return immediately so that we don't call setState on an unmounted component.
+							if ((reason as CancellationToken)?.isCancelled) {
+								return;
+							}
+							// Otherwise we can clear the modal Tweet state and optionally show an error message here since something went wrong.
+							this.setState({
+								isTweeting: false
+							});
+						}
 					);
-			return (freeViewsReadToCompletion && freeViewsReadToCompletion.length) || 0;
-		} else {
-			return -1;
-		}
-	}
+				// Set the modal Tweet state.
+				return {
+					isTweeting: true
+				};
+			}
+		);
+	};
 
 	private readonly _selectReportType = (value: string) => {
 		this.setState({
