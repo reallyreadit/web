@@ -2,17 +2,14 @@ import * as React from 'react';
 import Link from '../../../../common/components/Link';
 import StickyNote from '../../../../common/components/StickyNote';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
-import {calculateFreeViewBalance, FreeTrialCredit, FreeTrialCreditTrigger, isTrialingSubscription, SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
+import {calculateFreeViewBalance, FreeTrialCredit, FreeTrialCreditTrigger, isTrialingSubscription, SubscriptionStatus, FreeTrial } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import UserArticle from '../../../../common/models/UserArticle';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import {NavMethod, NavOptions, NavReference} from '../Root';
+import { formatCountable } from '../../../../common/format';
 
-export const findTweetPromoCredit = (subscriptionStatus: SubscriptionStatus): FreeTrialCredit | undefined => {
-	if (isTrialingSubscription(subscriptionStatus)) {
-		return subscriptionStatus.freeTrial.credits.find(c => c.trigger === FreeTrialCreditTrigger.PromoTweetIntended);
-	} else {
-		return undefined;
-	}
+export const findTweetPromoCredit = (freeTrial: FreeTrial): FreeTrialCredit | undefined => {
+	return freeTrial.credits.find(c => c.trigger === FreeTrialCreditTrigger.PromoTweetIntended);
 }
 
 const FreeTrialNotice = (
@@ -32,8 +29,8 @@ const FreeTrialNotice = (
 	} else {
 		const viewsUsed = props.subscriptionStatus.freeTrial.articleViews.length;
 		const viewsRemaining = calculateFreeViewBalance(props.subscriptionStatus.freeTrial);
-		const hasPromoTweeted = !!findTweetPromoCredit(props.subscriptionStatus);
-		const articlesLeftTitle = `${viewsRemaining} free article${viewsRemaining !== 1 ? 's' : ''} left`;
+		const hasPromoTweeted = !!findTweetPromoCredit(props.subscriptionStatus.freeTrial);
+		const articlesLeftTitle = `${viewsRemaining} free ${formatCountable(viewsRemaining, 'article')} left`;
 
 		if (props.detailLevel === 'minimal') {
 			title = <strong>{articlesLeftTitle}</strong>;
