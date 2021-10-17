@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AsyncTracker from '../../../../common/AsyncTracker';
+import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
 import Button from '../../../../common/components/Button';
 import Dialog from '../../../../common/components/Dialog';
 import { mapPromiseErrorToResultIfNotCancelled, formatProblemDetails } from '../../../../common/format';
@@ -348,14 +348,32 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			)
 			.catch(
 				reason => {
-					mapPromiseErrorToResultIfNotCancelled(
-						reason,
-						result => {
-							this.setState({
-								receiptResult: result
-							})
+					if ((reason as CancellationToken)?.isCancelled) {
+						return;
+					}
+					/**
+					 * The Readup app got rejected by App Store reviewers multiple times starting Sept. 17th, 2021
+					 * due to an error message caused by the failure to request the StoreKit receipt. This issue was
+					 * not reproducible on any physical iOS devices using Sandbox accounts. As a workaround we're going
+					 * to try bypassing the receipt validation if the request fails and skip right to loading the
+					 * products. This is not ideal but I believe that Apple servers will prevent duplicate purchases
+					 * if this ever hits a real user in production.
+					 */
+					this.setState({
+						receiptResult: {
+							type: ResultType.Success,
+							value: {
+								base64EncodedReceipt: ''
+							}
+						},
+						subscriptionValidationResult: {
+							type: ResultType.Success,
+							value: {
+								type: AppleSubscriptionValidationResponseType.EmptyReceipt
+							}
 						}
-					);
+					});
+					this.loadProducts();
 				}
 			);
 	}
