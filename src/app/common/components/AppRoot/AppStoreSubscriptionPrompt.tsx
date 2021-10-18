@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AsyncTracker, { CancellationToken } from '../../../../common/AsyncTracker';
+import AsyncTracker from '../../../../common/AsyncTracker';
 import Button from '../../../../common/components/Button';
 import Dialog from '../../../../common/components/Dialog';
 import { mapPromiseErrorToResultIfNotCancelled, formatProblemDetails } from '../../../../common/format';
@@ -332,25 +332,6 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 			)
 			.then(
 				result => {
-					this.setState({
-						receiptResult: mapAppResult(
-							result,
-							response => response,
-							error => formatProblemDetails(error)
-						)
-					});
-					if (result.type === ResultType.Success) {
-						this.validateSubscription({
-							base64EncodedReceipt: result.value.base64EncodedReceipt
-						});
-					}
-				}
-			)
-			.catch(
-				reason => {
-					if ((reason as CancellationToken)?.isCancelled) {
-						return;
-					}
 					/**
 					 * The Readup app got rejected by App Store reviewers multiple times starting Sept. 17th, 2021
 					 * due to an error message caused by the failure to request the StoreKit receipt. This issue was
@@ -359,21 +340,45 @@ export default class AppStoreSubscriptionPrompt extends React.Component<Props, S
 					 * products. This is not ideal but I believe that Apple servers will prevent duplicate purchases
 					 * if this ever hits a real user in production.
 					 */
-					this.setState({
-						receiptResult: {
-							type: ResultType.Success,
-							value: {
-								base64EncodedReceipt: ''
-							}
-						},
-						subscriptionValidationResult: {
-							type: ResultType.Success,
-							value: {
-								type: AppleSubscriptionValidationResponseType.EmptyReceipt
-							}
+					switch (result.type) {
+						case ResultType.Success:
+							this.setState({
+								receiptResult: result
+							});
+							this.validateSubscription({
+								base64EncodedReceipt: result.value.base64EncodedReceipt
+							});
+							break;
+						case ResultType.Failure:
+							this.setState({
+								receiptResult: {
+									type: ResultType.Success,
+									value: {
+										base64EncodedReceipt: ''
+									}
+								},
+								subscriptionValidationResult: {
+									type: ResultType.Success,
+									value: {
+										type: AppleSubscriptionValidationResponseType.EmptyReceipt
+									}
+								}
+							});
+							this.loadProducts();
+							break;
+					}
+				}
+			)
+			.catch(
+				reason => {
+					mapPromiseErrorToResultIfNotCancelled(
+						reason,
+						result => {
+							this.setState({
+								receiptResult: result
+							})
 						}
-					});
-					this.loadProducts();
+					);
 				}
 			);
 	}
