@@ -93,7 +93,7 @@ const teamPage = (props: Services) => (
 	<div className="team-page_a9b9l1">
 		<HomeHero
 			title="Meet the team"
-			description={"We're building Readup every day"}
+			description="We’re on a mission to fix the web for readers."
 		/>
 		<HomePanel>
 			{profiles.map(profile => <Profile
