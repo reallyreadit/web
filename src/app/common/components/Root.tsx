@@ -927,7 +927,6 @@ export default abstract class Root<
 				onCloseDialog: this._dialog.closeDialog,
 				onGetArticleIssueReports: this.props.serverApi.getArticleIssueReportAnalytics,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
-				onGetBulkMailingLists: this.props.serverApi.getBulkMailingLists,
 				onGetConversions: this.props.serverApi.getConversionAnalytics,
 				onGetDailyTotals: this.props.serverApi.getDailyTotalAnalytics,
 				onGetRevenueReport: this.props.serverApi.getAdminSubscriptionRevenueReport,

@@ -1,33 +1,82 @@
 import * as React from 'react';
 import FieldsetDialog, { Props as FieldsetDialogProps, State } from '../controls/FieldsetDialog';
-import Fetchable from '../../../../common/Fetchable';
 import Link from '../../../../common/components/Link';
 import { Intent } from '../../../../common/components/Toaster';
-import SelectList, { SelectListOption } from '../../../../common/components/SelectList';
+import SelectList from '../../../../common/components/SelectList';
+import { BulkMailingRequest, BulkMailingTestRequest, BulkEmailSubscriptionStatusFilter } from '../../../../common/models/BulkMailing';
+import KeyValuePair from '../../../../common/KeyValuePair';
 
+type SubscriptionStatusFilterOptionValue = BulkEmailSubscriptionStatusFilter | null;
+type FreeForLifeFilterOptionValue = boolean | null;
+
+const subscriptionStatusFilterOptions: KeyValuePair<string, SubscriptionStatusFilterOptionValue>[] = [
+	{
+		key: 'Any',
+		value: null
+	},
+	{
+		key: 'Currently Subscribed',
+		value: BulkEmailSubscriptionStatusFilter.CurrentlySubscribed
+	},
+	{
+		key: 'Never Subscribed',
+		value: BulkEmailSubscriptionStatusFilter.NeverSubscribed
+	},
+	{
+		key: 'Not Currently Subscribed',
+		value: BulkEmailSubscriptionStatusFilter.NotCurrentlySubscribed
+	}
+];
+const freeForlifeFilterOptions: KeyValuePair<string, FreeForLifeFilterOptionValue>[] = [
+	{
+		key: 'Any',
+		value: null
+	},
+	{
+		key: 'Free-for-life',
+		value: true
+	},
+	{
+		key: 'Not Free-for-life',
+		value: false
+	}
+];
 interface Props {
-	onGetLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
-	onSend: (list: string, subject: string, body: string) => Promise<void>,
-	onSendTest: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
+	onSend: (request: BulkMailingRequest) => Promise<void>,
+	onSendTest: (request: BulkMailingTestRequest) => Promise<void>,
 	onSent: () => void
 }
 export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props, Partial<State> & {
-	lists: Fetchable<{ key: string, value: string }[]>,
-	list: string,
 	subject: string
 	body: string,
+	subscriptionStatusFilter: SubscriptionStatusFilterOptionValue,
+	freeForLifeFilter: FreeForLifeFilterOptionValue,
 	testAddress: string,
 	sendingTestEmail: boolean
 }> {
-	private readonly _listPlaceholder = 'Loading...';
-	private _changeList = (e: React.ChangeEvent<HTMLSelectElement>) => this.setState({ list: e.currentTarget.value });
 	private _changeSubject = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ subject: e.currentTarget.value });
 	private _changeBody = (e: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({ body: e.currentTarget.value });
+	private _changeSubscriptionStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		this.setState({
+			subscriptionStatusFilter: JSON.parse(e.target.value) as SubscriptionStatusFilterOptionValue
+		});
+	};
+	private _changeFreeForLifeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		this.setState({
+			freeForLifeFilter: JSON.parse(e.target.value) as FreeForLifeFilterOptionValue
+		});
+	};
 	private _changeTestAddress = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ testAddress: e.currentTarget.value });
 	private _sendTestEmail = () => {
 		this.setState({ sendingTestEmail: true });
 		this.props
-			.onSendTest(this.state.list, this.state.subject, this.state.body, this.state.testAddress)
+			.onSendTest({
+				subject: this.state.subject,
+				body: this.state.body,
+				subscriptionStatusFilter: this.state.subscriptionStatusFilter,
+				freeForLifeFilter: this.state.freeForLifeFilter,
+				emailAddress: this.state.testAddress
+			})
 			.then(() => {
 				this.props.onShowToast('Test email sent.', Intent.Success);
 			})
@@ -52,36 +101,55 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 			},
 			props
 		);
-		const lists = props.onGetLists(lists => this.setState({ lists, list: lists.value[0].value }));
 		this.state = {
 			...this.state,
-			lists,
-			list: lists.isLoading ? this._listPlaceholder : lists.value[0].value,
 			subject: '',
 			body: '',
+			subscriptionStatusFilter: null,
+			freeForLifeFilter: null,
 			testAddress: '',
 			sendingTestEmail: false
 		};
 	}
 	protected renderFields() {
-		let listOptions: SelectListOption[];
-		if (!this.state.lists.isLoading) {
-			listOptions = this.state.lists.value;
-		} else {
-			listOptions = [{
-				key: this._listPlaceholder
-			}];
-		}
 		return (
 			<table className="create-bulk-mailing-dialog_bbvobo">
 				<tbody>
 					<tr>
-						<th>List</th>
+						<th>Subscription Status</th>
 						<td>
 							<SelectList
-								onChange={this._changeList}
-								options={listOptions}
-								value={this.state.list}
+								onChange={this._changeSubscriptionStatusFilter}
+								options={
+									subscriptionStatusFilterOptions.map(
+										option => ({
+											key: option.key,
+											value: JSON.stringify(option.value)
+										})
+									)
+								}
+								value={
+									JSON.stringify(this.state.subscriptionStatusFilter)
+								}
+							/>
+						</td>
+					</tr>
+					<tr>
+						<th>Free-for-life</th>
+						<td>
+							<SelectList
+								onChange={this._changeFreeForLifeFilter}
+								options={
+									freeForlifeFilterOptions.map(
+										option => ({
+											key: option.key,
+											value: JSON.stringify(option.value)
+										})
+									)
+								}
+								value={
+									JSON.stringify(this.state.freeForLifeFilter)
+								}
 							/>
 						</td>
 					</tr>
@@ -136,7 +204,12 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 	}
 	protected submitForm() {
 		if (window.confirm('Really?')) {
-			return this.props.onSend(this.state.list, this.state.subject, this.state.body);
+			return this.props.onSend({
+				subject: this.state.subject,
+				body: this.state.body,
+				subscriptionStatusFilter: this.state.subscriptionStatusFilter,
+				freeForLifeFilter: this.state.freeForLifeFilter
+			});
 		} else {
 			return Promise.reject(['cancelled']);
 		}

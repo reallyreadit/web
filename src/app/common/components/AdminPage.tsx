@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import BulkMailing from '../../../common/models/BulkMailing';
+import BulkMailing, { BulkMailingTestRequest, BulkMailingRequest, BulkEmailSubscriptionStatusFilter } from '../../../common/models/BulkMailing';
 import Fetchable from '../../../common/Fetchable';
 import Link from '../../../common/components/Link';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
@@ -32,13 +32,17 @@ import { ConversionsReport } from './AdminPage/ConversionsReport';
 import { ArticleIssuesReport } from './AdminPage/ArticleIssuesReport';
 import { WeeklyUserActivityReport } from './AdminPage/WeeklyUserActivityReport';
 
+const bulkMailingSubscriptionStatusLabels: { [key in BulkEmailSubscriptionStatusFilter]: string } = {
+	[BulkEmailSubscriptionStatusFilter.CurrentlySubscribed]: 'Currently Subscribed',
+	[BulkEmailSubscriptionStatusFilter.NeverSubscribed]: 'Never Subscribed',
+	[BulkEmailSubscriptionStatusFilter.NotCurrentlySubscribed]: 'Not Currently Subscribed'
+};
 interface Props {
 	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>,
 	onCloseDialog: () => void,
 	onGetArticleIssueReports: FetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>,
 	onGetAuthorMetadataAssignmentQueue: FetchFunction<AuthorMetadataAssignmentQueueResponse>,
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
-	onGetBulkMailingLists: (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => Fetchable<{ key: string, value: string }[]>,
 	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
 	onGetDailyTotals: FetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>,
 	onGetRevenueReport: FetchFunctionWithParams<DateRangeQuery, RevenueReportResponse>,
@@ -47,8 +51,8 @@ interface Props {
 	onGetWeeklyUserActivityReport: FetchFunctionWithParams<DateRangeQuery, WeeklyUserActivityReportRow[]>,
 	onNavTo: (ref: NavReference) => void,
 	onOpenDialog: (dialog: React.ReactNode) => void,
-	onSendBulkMailing: (list: string, subject: string, body: string) => Promise<void>,
-	onSendTestBulkMailing: (list: string, subject: string, body: string, emailAddress: string) => Promise<void>,
+	onSendBulkMailing: (request: BulkMailingRequest) => Promise<void>,
+	onSendTestBulkMailing: (request: BulkMailingTestRequest) => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onUnassignAuthorFromArticle: (request: AuthorUnassignmentRequest) => Promise<void>,
 	user: UserAccount
@@ -73,7 +77,6 @@ class AdminPage extends React.Component<
 		this.props.onOpenDialog(
 			<CreateBulkMailingDialog
 				onCloseDialog={this.props.onCloseDialog}
-				onGetLists={this.props.onGetBulkMailingLists}
 				onSend={this.props.onSendBulkMailing}
 				onSendTest={this.props.onSendTestBulkMailing}
 				onSent={this._reloadMailings}
@@ -231,7 +234,9 @@ class AdminPage extends React.Component<
 								<th>Date Sent</th>
 								<th>Subject</th>
 								<th>Body</th>
-								<th>List</th>
+								<th>Type</th>
+								<th>Subscription Status</th>
+								<th>Free-for-life Status</th>
 								<th>Sent By</th>
 								<th>Recipient Count</th>
 							</tr>
@@ -245,19 +250,31 @@ class AdminPage extends React.Component<
 												<td>{m.dateSent}</td>
 												<td>{m.subject}</td>
 												<td>{m.body}</td>
-												<td>{m.list}</td>
+												<td>{m.type}</td>
+												<td>
+													{m.subscriptionStatusFilter != null ?
+														bulkMailingSubscriptionStatusLabels[m.subscriptionStatusFilter] :
+														'Any'}
+												</td>
+												<td>
+													{m.freeForLifeFilter != null ?
+														m.freeForLifeFilter ?
+															'Free-for-life' :
+															'Not Free-for-life' :
+														'Any'}
+												</td>
 												<td>{m.userAccount}</td>
-												<td>{m.recipientCount - m.errorCount}/{m.recipientCount}</td>
+												<td>{m.recipientCount}</td>
 											</tr>
 										)) :
 										<tr>
-											<td colSpan={6}>No mailings found.</td>
+											<td colSpan={8}>No mailings found.</td>
 										</tr> :
 									<tr>
-										<td colSpan={6}>Error loading mailings.</td>
+										<td colSpan={8}>Error loading mailings.</td>
 									</tr> :
 								<tr>
-									<td colSpan={6}>Loading...</td>
+									<td colSpan={8}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>
@@ -277,7 +294,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onGetArticleIssueReports={deps.onGetArticleIssueReports}
 					onGetAuthorMetadataAssignmentQueue={deps.onGetAuthorMetadataAssignmentQueue}
 					onGetBulkMailings={deps.onGetBulkMailings}
-					onGetBulkMailingLists={deps.onGetBulkMailingLists}
 					onGetConversions={deps.onGetConversions}
 					onGetDailyTotals={deps.onGetDailyTotals}
 					onGetRevenueReport={deps.onGetRevenueReport}

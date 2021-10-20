@@ -1,10 +1,25 @@
+export enum BulkEmailSubscriptionStatusFilter {
+	CurrentlySubscribed = 1,
+	NotCurrentlySubscribed = 2,
+	NeverSubscribed = 3
+}
+export interface BulkMailingRequest {
+	subject: string,
+	body: string,
+	subscriptionStatusFilter: BulkEmailSubscriptionStatusFilter | null,
+	freeForLifeFilter: boolean | null
+}
+export interface BulkMailingTestRequest extends BulkMailingRequest {
+	emailAddress: string
+}
 export default interface BulkMailing {
 	id: number,
 	dateSent: string,
 	subject: string,
 	body: string,
-	list: string,
+	type: string,
+	subscriptionStatusFilter: BulkEmailSubscriptionStatusFilter | null,
+	freeForLifeFilter: boolean | null,
 	userAccount: string,
-	recipientCount: number,
-	errorCount: number
+	recipientCount: number
 }

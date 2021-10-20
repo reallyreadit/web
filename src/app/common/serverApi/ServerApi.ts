@@ -1,6 +1,6 @@
 import Fetchable from '../../../common/Fetchable';
 import UserArticle from '../../../common/models/UserArticle';
-import BulkMailing from '../../../common/models/BulkMailing';
+import BulkMailing, { BulkMailingTestRequest, BulkMailingRequest } from '../../../common/models/BulkMailing';
 import CommentThread from '../../../common/models/CommentThread';
 import UserAccount from '../../../common/models/UserAccount';
 import Request from './Request';
@@ -148,14 +148,11 @@ export default abstract class {
 	public readonly getBulkMailings = (callback: (mailings: Fetchable<BulkMailing[]>) => void) => {
 		return this.get<BulkMailing[]>({ path: '/BulkMailings/List' }, callback);
 	};
-	public readonly getBulkMailingLists = (callback: (mailings: Fetchable<{ key: string, value: string }[]>) => void) => {
-		return this.get<{ key: string, value: string }[]>({ path: '/BulkMailings/Lists' }, callback);
+	public readonly sendTestBulkMailing = (request: BulkMailingTestRequest) => {
+		return this.post({ path: '/BulkMailings/SendTest', data: request });
 	};
-	public readonly sendTestBulkMailing = (list: string, subject: string, body: string, emailAddress: string) => {
-		return this.post({ path: '/BulkMailings/SendTest', data: { list, subject, body, emailAddress } });
-	};
-	public readonly sendBulkMailing = (list: string, subject: string, body: string) => {
-		return this.post({ path: '/BulkMailings/Send', data: { list, subject, body } });
+	public readonly sendBulkMailing = (request: BulkMailingRequest) => {
+		return this.post({ path: '/BulkMailings/Send', data: request });
 	};
 	public readonly getEmailSubscriptions = (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => {
 		return this.get({ path: '/UserAccounts/EmailSubscriptions', data: { token } }, callback);
