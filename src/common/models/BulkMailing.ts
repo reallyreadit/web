@@ -7,7 +7,9 @@ export interface BulkMailingRequest {
 	subject: string,
 	body: string,
 	subscriptionStatusFilter: BulkEmailSubscriptionStatusFilter | null,
-	freeForLifeFilter: boolean | null
+	freeForLifeFilter: boolean | null,
+	userCreatedAfterFilter: string | null,
+	userCreatedBeforeFilter: string | null
 }
 export interface BulkMailingTestRequest extends BulkMailingRequest {
 	emailAddress: string
@@ -20,6 +22,8 @@ export default interface BulkMailing {
 	type: string,
 	subscriptionStatusFilter: BulkEmailSubscriptionStatusFilter | null,
 	freeForLifeFilter: boolean | null,
+	userCreatedAfterFilter: string | null,
+	userCreatedBeforeFilter: string | null,
 	userAccount: string,
 	recipientCount: number
 }

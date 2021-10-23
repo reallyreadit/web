@@ -9,6 +9,12 @@ import KeyValuePair from '../../../../common/KeyValuePair';
 type SubscriptionStatusFilterOptionValue = BulkEmailSubscriptionStatusFilter | null;
 type FreeForLifeFilterOptionValue = boolean | null;
 
+function nullIfEmpty(inputValue: string) {
+	return inputValue.trim() !== '' ?
+		inputValue :
+		null;
+}
+
 const subscriptionStatusFilterOptions: KeyValuePair<string, SubscriptionStatusFilterOptionValue>[] = [
 	{
 		key: 'Any',
@@ -51,6 +57,8 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 	body: string,
 	subscriptionStatusFilter: SubscriptionStatusFilterOptionValue,
 	freeForLifeFilter: FreeForLifeFilterOptionValue,
+	userCreatedAfterFilter: string,
+	userCreatedBeforeFilter: string,
 	testAddress: string,
 	sendingTestEmail: boolean
 }> {
@@ -66,15 +74,22 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 			freeForLifeFilter: JSON.parse(e.target.value) as FreeForLifeFilterOptionValue
 		});
 	};
+	private _changeUserCreatedAfterFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			userCreatedAfterFilter: e.target.value
+		});
+	};
+	private _changeUserCreatedBeforeFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			userCreatedBeforeFilter: e.target.value
+		});
+	};
 	private _changeTestAddress = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ testAddress: e.currentTarget.value });
 	private _sendTestEmail = () => {
 		this.setState({ sendingTestEmail: true });
 		this.props
 			.onSendTest({
-				subject: this.state.subject,
-				body: this.state.body,
-				subscriptionStatusFilter: this.state.subscriptionStatusFilter,
-				freeForLifeFilter: this.state.freeForLifeFilter,
+				...this.getRequestFromState(),
 				emailAddress: this.state.testAddress
 			})
 			.then(() => {
@@ -107,8 +122,20 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 			body: '',
 			subscriptionStatusFilter: null,
 			freeForLifeFilter: null,
+			userCreatedAfterFilter: '',
+			userCreatedBeforeFilter: '',
 			testAddress: '',
 			sendingTestEmail: false
+		};
+	}
+	private getRequestFromState(): BulkMailingRequest {
+		return {
+			subject: this.state.subject,
+			body: this.state.body,
+			subscriptionStatusFilter: this.state.subscriptionStatusFilter,
+			freeForLifeFilter: this.state.freeForLifeFilter,
+			userCreatedAfterFilter: nullIfEmpty(this.state.userCreatedAfterFilter),
+			userCreatedBeforeFilter: nullIfEmpty(this.state.userCreatedBeforeFilter)
 		};
 	}
 	protected renderFields() {
@@ -151,6 +178,18 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 									JSON.stringify(this.state.freeForLifeFilter)
 								}
 							/>
+						</td>
+					</tr>
+					<tr>
+						<th>User Created on or After</th>
+						<td>
+							<input type="text" value={this.state.userCreatedAfterFilter} onChange={this._changeUserCreatedAfterFilter} />
+						</td>
+					</tr>
+					<tr>
+						<th>User Created Before</th>
+						<td>
+							<input type="text" value={this.state.userCreatedBeforeFilter} onChange={this._changeUserCreatedBeforeFilter} />
 						</td>
 					</tr>
 					<tr>
@@ -204,12 +243,9 @@ export default class CreateBulkMailingDialog extends FieldsetDialog<void, Props,
 	}
 	protected submitForm() {
 		if (window.confirm('Really?')) {
-			return this.props.onSend({
-				subject: this.state.subject,
-				body: this.state.body,
-				subscriptionStatusFilter: this.state.subscriptionStatusFilter,
-				freeForLifeFilter: this.state.freeForLifeFilter
-			});
+			return this.props.onSend(
+				this.getRequestFromState()
+			);
 		} else {
 			return Promise.reject(['cancelled']);
 		}

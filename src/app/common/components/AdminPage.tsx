@@ -237,6 +237,8 @@ class AdminPage extends React.Component<
 								<th>Type</th>
 								<th>Subscription Status</th>
 								<th>Free-for-life Status</th>
+								<th>User Created After</th>
+								<th>User Created Before</th>
 								<th>Sent By</th>
 								<th>Recipient Count</th>
 							</tr>
@@ -263,18 +265,20 @@ class AdminPage extends React.Component<
 															'Not Free-for-life' :
 														'Any'}
 												</td>
+												<td>{m.userCreatedAfterFilter}</td>
+												<td>{m.userCreatedBeforeFilter}</td>
 												<td>{m.userAccount}</td>
 												<td>{m.recipientCount}</td>
 											</tr>
 										)) :
 										<tr>
-											<td colSpan={8}>No mailings found.</td>
+											<td colSpan={10}>No mailings found.</td>
 										</tr> :
 									<tr>
-										<td colSpan={8}>Error loading mailings.</td>
+										<td colSpan={10}>Error loading mailings.</td>
 									</tr> :
 								<tr>
-									<td colSpan={8}>Loading...</td>
+									<td colSpan={10}>Loading...</td>
 								</tr>}
 						</tbody>
 					</table>
