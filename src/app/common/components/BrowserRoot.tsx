@@ -1365,7 +1365,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				<main>
 					{(
 						// hack to hide the nav bar on the subscribe loader "landing" page, when logged in
-						(topScreen.id !== ScreenKey.Subscribe)
+						(topScreen.key !== ScreenKey.Subscribe)
 						  &&
 						(
 							topScreen.templateSection == null ||
