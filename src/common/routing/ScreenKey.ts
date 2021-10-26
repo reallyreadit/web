@@ -22,7 +22,7 @@ enum ScreenKey {
 	Search,
 	Settings,
 	Stats,
-	Subscribe
+	Subscribe,
 	Team
 }
 export default ScreenKey;
