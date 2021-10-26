@@ -1,0 +1,72 @@
+/*
+        componentPath: src/app/common/components/SubscriptionPage
+        cssComponentId: subscription-page_u5q1tc
+*/
+
+div.subscription-page_u5q1tc {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	height: 100%;
+
+	padding: 1rem 2rem;
+
+	> .content {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		height: 100%;
+		box-sizing: border-box;
+
+		> .top-content {
+			margin-top: 20vh;
+			max-height: 400px;
+
+			> .loader-wrapper,
+			> .button-wrapper {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin: 1rem auto;
+
+				strong, p {
+					text-align: center;
+				}
+
+				strong {
+					font-family: 'Museo Sans (700)';
+				}
+
+				.no-app {
+					color: var(--text-muted-color);
+				}
+			}
+
+			> .loader-wrapper {
+				> .intro {
+					text-align: center;
+					margin-bottom: 0.4rem;
+					p {
+						text-align: center;
+					}
+				}
+			}
+
+			.loading-overlay_zfgtd1,
+			.button_ovrlmi {
+				margin: 0.7rem auto;
+			}
+
+			> h1 {
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+		}
+
+		> .support {
+			color: var(--text-muted-color);
+			text-align: center;
+		}
+	}
+}
