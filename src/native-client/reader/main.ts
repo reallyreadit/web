@@ -203,7 +203,9 @@ const reader = new Reader(
 window.addEventListener(
 	'message',
 	event => {
-		if (!event.origin.endsWith('readup.com')) {
+		if (
+			!/(^|\.)readup\.com$/.test(documentLocation.hostname)
+		) {
 			return;
 		}
 		switch (event.data?.type as String || null) {
