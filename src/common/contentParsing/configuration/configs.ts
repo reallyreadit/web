@@ -65,6 +65,31 @@ export default {
 			contentSearchRootElementSelector: 'div.main-article-body'
 		},
 		{
+			hostname: 'bloomberg.com',
+			preprocessor: () => {
+				// Extract the article content from the script.
+				const
+					featureBodyScript = document.querySelector('script[data-component-props="FeatureBody"]'),
+					featureBodyElement = document.querySelector('[data-component-root="FeatureBody"]');
+				if (!featureBodyScript || !featureBodyElement) {
+					return;
+				}
+				let featureBodyData: { body: string };
+				try {
+					featureBodyData = JSON.parse(featureBodyScript.textContent);
+				} catch {
+					return;
+				}
+				const copyContainer = Array
+					.from(featureBodyElement.children)
+					.find(
+						child => child.classList.contains('body-copy') || child.classList.contains('fence-body')
+					) ??
+					featureBodyElement;
+				copyContainer.innerHTML = featureBodyData.body;
+			}
+		},
+		{
 			hostname: 'bostonglobe.com',
 			transpositions: [
 				{
