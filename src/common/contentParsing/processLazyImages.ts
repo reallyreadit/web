@@ -261,7 +261,6 @@ export default function procesLazyImages(strategy?: LazyImageStrategy): void {
 			break;
 		case LazyImageStrategy.QuantaScriptTemplate:
 			const
-				// can't select type="text/template" because it gets replaced with text/x-readup-disabled-javascript in order app versions
 				templateScripts = document.querySelectorAll('div[id^="component-"] script');
 			if (templateScripts.length) {
 				createObserver(

@@ -10,8 +10,7 @@ import TextContainer from './TextContainer';
 const whitelistedScriptTypes = [
 	'application/json',
 	'application/ld+json',
-	'text/template',
-	'text/x-readup-disabled-javascript'
+	'text/template'
 ];
 function prune(element: ChildNode, depth: number, isInsideImageContainer: boolean, content: Node[][], images: ImageContainer[], config: ImageContainerContentConfig) {
 	if (
