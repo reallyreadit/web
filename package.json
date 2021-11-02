@@ -7,15 +7,15 @@
       "app": "1.55.0",
 			"appPublic": "1.52.1",
 			"common": {
-				"contentParser": "2.0.0",
+				"contentParser": "2.0.1",
 				"metadataParser": "2.0.0"
 			},
       "embed": "1.0.1",
       "embedIframe": "1.0.0",
       "extension": "6.2.0",
       "nativeClient": {
-        "reader": "14.0.0",
-        "shareExtension": "4.0.3"
+        "reader": "14.0.1",
+        "shareExtension": "4.0.4"
       }
     }
   },
