@@ -492,6 +492,11 @@ export interface ParserParams {
 export default function parseDocumentContent(params: ParserParams): ParseResult {
 	const publisherConfig = findPublisherConfig(configs.publishers, params.url.hostname);
 
+	// Run the preprocessor before everything else if one exists.
+	if (publisherConfig?.preprocessor) {
+		publisherConfig.preprocessor();
+	}
+
 	let contentSearchRootElement: Element;
 	if (publisherConfig && publisherConfig.contentSearchRootElementSelector) {
 		contentSearchRootElement = document.querySelector(publisherConfig.contentSearchRootElementSelector);

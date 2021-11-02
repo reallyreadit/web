@@ -8,6 +8,7 @@ export function findPublisherConfig(configs: PublisherConfig[], hostname: string
 }
 export default interface PublisherConfig {
 	hostname: string,
+	preprocessor?: () => void,
 	contentSearchRootElementSelector?: string,
 	transpositions?: TranspositionConfig[],
 	textContainerSearch?: PublisherContainerSearchConfig,
