@@ -200,16 +200,6 @@ const reader = new Reader(
 );
 
 // document messaging interface
-if (/(^|\.)readup\.com$/.test(documentLocation.hostname)) {
-	const postScript = document.querySelector('#com_readup_blog_post_script script');
-	if (postScript) {
-		// the browser won't execute the script if we just alter the type attribute.
-		// we have to create a new script element.
-		const replacementScript = document.createElement('script');
-		replacementScript.textContent = postScript.textContent;
-		postScript.replaceWith(replacementScript);
-	}
-}
 window.addEventListener(
 	'message',
 	event => {
