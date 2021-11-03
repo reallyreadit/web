@@ -50,7 +50,7 @@ function renderCountdown(status: ActiveSubscriptionStatus, dist: SubscriptionDis
 				)
 				.length('days')
 		);
-	if (dist.authorDistributions.length) {
+	if (!dist.authorDistributions.length) {
 		return (
 			<div className="content-block">{daysRemaining} {formatCountable(daysRemaining, 'day')} until your first month's payments are finalized and processed. Keep reading!</div>
 		);
