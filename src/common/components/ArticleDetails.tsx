@@ -21,6 +21,7 @@ import Link from './Link';
 import { NavReference } from '../../app/common/components/Root';
 import { DeviceType, isMobileDevice } from '../DeviceType';
 import { ShareChannelData } from '../sharing/ShareData';
+import classnames = require('classnames');
 
 interface Props {
 	article: UserArticle,
@@ -40,12 +41,14 @@ interface Props {
 	rankCallout?: React.ReactNode,
 	shareMenuPosition?: MenuPosition,
 	showAotdMetadata?: boolean,
+	showImage?: boolean,
 	user?: UserAccount
 }
 export default class extends React.PureComponent<Props, { isStarring: boolean }> {
-	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata'> = {
+	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage'> = {
 		shareMenuPosition: MenuPosition.LeftTop,
-		showAotdMetadata: true
+		showAotdMetadata: true,
+		showImage: false
 	};
 	private readonly _getShareData = () => {
 		return getShareData(
@@ -54,10 +57,15 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			this.props.onCreateAbsoluteUrl
 		);
 	};
+	private readonly _shouldShowImage = () => {
+		return this.props.showImage && this.props.article.imageUrl;
+	}
 	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
+		e.stopPropagation();
 		this.props.onRead(this.props.article, e);
 	};
-	private readonly _toggleStar = () => {
+	private readonly _toggleStar = (ev?: React.MouseEvent) => {
+		if (ev) ev.stopPropagation();
 		this.setState({ isStarring: true });
 		this.props
 			.onToggleStar(this.props.article)
@@ -65,6 +73,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			.catch(() => { this.setState({ isStarring: false }); })
 	};
 	private readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
+		e.stopPropagation();
 		e.preventDefault();
 		this.props.onViewComments(this.props.article);
 	};
@@ -84,7 +93,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 		const authorLinks = this.props.article.articleAuthors.map(
 			(author, index, authors) => (
 				<React.Fragment key={author.slug}>
-					<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} />
+					<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} stopPropagation={true} />
 					{index !== authors.length - 1 ?
 						<span>, </span> :
 						null}
@@ -117,7 +126,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 			</ShareControl>
 		);
 		return (
-			<div className="article-details_d2vnmv">
+			<div className={classnames( "article-details_d2vnmv", {"has-image": this._shouldShowImage()} )}>
 				{this.props.showAotdMetadata ?
 					<AotdMetadata
 						article={this.props.article}
@@ -127,119 +136,131 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						rankCallout={this.props.rankCallout}
 					/> :
 					null}
-				<ContentBox
-					className="content"
-					highlight={this.props.highlight}
+				<a
+					className="article-container"
+					onClick={this._read}
+					href={this.props.article.url}
 				>
-					<div className="title">
-						{this.props.user ?
-							<Star
-								starred={!!this.props.article.dateStarred}
-								busy={this.state.isStarring}
-								onClick={this._toggleStar}
-							/> :
-							null}
-						{shareControl}
-						{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
-							<div className="bookmark">
-								<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
-								<Icon name="bookmark" />
+					{
+						 this._shouldShowImage() ?
+							<div className="image-container">
+								<img src={this.props.article.imageUrl} />
 							</div> :
-							null}
-						<a
-							className="title-link"
-							href={this.props.article.url}
-							onClick={this._read}
-						>
-							{this.props.article.title}
-						</a>
-					</div>
-					<div className="columns">
-						<div className="article">
-							<div className="meta">
-								<span>{this.props.article.source}</span>
-								<i className="spacer"></i>
-								{authorLinks}
-								{authorLinks.length ?
-									<i className="spacer"></i> :
-									null}
-								{this.props.article.datePublished ?
-									<>
-										<span>{formatTimestamp(this.props.article.datePublished)}</span>
-										<i className="spacer"></i>
-									</> :
-									null}
-								<span>{estimatedReadTime}</span>
-							</div>
-							<div className="stats">
-								<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-								<a
-									className="comments"
-									href={commentsLinkHref}
-									onClick={this._viewComments}
-								>
-									{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
-								</a>
-								{ratingControl}
-							</div>
+							null
+					}
+					<ContentBox
+						className="content"
+						highlight={this.props.highlight}
+					>
+						<div className="title">
+							{this.props.user ?
+								<Star
+									starred={!!this.props.article.dateStarred}
+									busy={this.state.isStarring}
+									onClick={this._toggleStar}
+								/> :
+								null}
+							{shareControl}
+							{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
+								<div className="bookmark">
+									<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
+									<Icon name="bookmark" />
+								</div> :
+								null}
+							<a
+								className="title-link"
+								href={this.props.article.url}
+							>
+								{this.props.article.title}
+							</a>
 						</div>
-						<div className="small-stats-article">
-							<div className="meta">
-								<div className="publisher">
-									{this.props.article.source}
-								</div>
-								<div className="author-date-length">
+						<div className="columns">
+							<div className="article">
+								<div className="meta">
+									<span>{this.props.article.source}</span>
+									<i className="spacer"></i>
+									{authorLinks}
 									{authorLinks.length ?
-										<span className="author">
-											{authorLinks}
-										</span> :
-										null}
-									{authorLinks.length && this.props.article.datePublished ?
-										<span className="spacer"></span> :
+										<i className="spacer"></i> :
 										null}
 									{this.props.article.datePublished ?
-										<span className="date">
-											{formatTimestamp(this.props.article.datePublished)}
-										</span> :
+										<>
+											<span>{formatTimestamp(this.props.article.datePublished)}</span>
+											<i className="spacer"></i>
+										</> :
 										null}
-									{authorLinks.length || this.props.article.datePublished ?
-										<span className="spacer"></span> :
-										null}
-									<span className="length">
-										{estimatedReadTime}
-									</span>
+									<span>{estimatedReadTime}</span>
 								</div>
-							</div>
-							<div className="stats">
-								<div className="reads">
-									<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-								</div>
-								<div className="comments">
+								<div className="stats">
+									<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 									<a
+										className="comments"
 										href={commentsLinkHref}
 										onClick={this._viewComments}
 									>
 										{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 									</a>
+									{ratingControl}
 								</div>
-								{ratingControl}
-
 							</div>
+							<div className="small-stats-article">
+								<div className="meta">
+									<div className="publisher">
+										{this.props.article.source}
+									</div>
+									<div className="author-date-length">
+										{authorLinks.length ?
+											<span className="author">
+												{authorLinks}
+											</span> :
+											null}
+										{authorLinks.length && this.props.article.datePublished ?
+											<span className="spacer"></span> :
+											null}
+										{this.props.article.datePublished ?
+											<span className="date">
+												{formatTimestamp(this.props.article.datePublished)}
+											</span> :
+											null}
+										{authorLinks.length || this.props.article.datePublished ?
+											<span className="spacer"></span> :
+											null}
+										<span className="length">
+											{estimatedReadTime}
+										</span>
+									</div>
+								</div>
+								<div className="stats">
+									<div className="reads">
+										<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+									</div>
+									<div className="comments">
+										<a
+											href={commentsLinkHref}
+											onClick={this._viewComments}
+										>
+											{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+										</a>
+									</div>
+									{ratingControl}
+
+								</div>
+							</div>
+							{(
+								this.props.onPost &&
+								(this.props.article.isRead || this.props.article.datesPosted.length)
+							) ?
+								<div className="post">
+									<PostButton
+										article={this.props.article}
+										menuPosition={MenuPosition.LeftMiddle}
+										onPost={this.props.onPost}
+									/>
+								</div> :
+								null}
 						</div>
-						{(
-							this.props.onPost &&
-							(this.props.article.isRead || this.props.article.datesPosted.length)
-						) ?
-							<div className="post">
-								<PostButton
-									article={this.props.article}
-									menuPosition={MenuPosition.LeftMiddle}
-									onPost={this.props.onPost}
-								/>
-							</div> :
-							null}
-					</div>
-				</ContentBox>
+					</ContentBox>
+				</a>
 			</div>
 		);
 	}

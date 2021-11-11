@@ -75,6 +75,8 @@ export default class AotdView extends React.Component<{
 						onViewComments={this.props.onViewComments}
 						onViewProfile={this.props.onViewProfile}
 						user={this.props.user}
+						showImage={true}
+						showAotdMetadata={false}
 					/>
 					<div className="controls">
 						<Button

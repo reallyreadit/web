@@ -1,10 +1,57 @@
 @import '../styles/colors';
+@import "../styles/breakpoints.scss";
 
-.article-details_d2vnmv > .content > .title > .star_n3lkaj {
+// image overrides
+$borderRadius: 3px;
+.article-details_d2vnmv > .article-container {
+	display: block;
+	text-decoration: none;
+}
+
+.article-details_d2vnmv.has-image {
+	.article-container > .image-container {
+		box-sizing: border-box;
+		border-style: solid;
+		overflow: hidden;
+		color: var(--content-border-color);
+	}
+}
+.article-details_d2vnmv > .article-container > .image-container {
+	position: relative;
+	width: 25%;
+	padding-bottom: 25%;
+	border-width: 1px 0px 1px 1px;
+	border-radius: $borderRadius 0 0 $borderRadius;
+
+	& > img {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+.article-details_d2vnmv > .article-container > .content {
+	border-width: 1px 1px 1px 0;
+	border-radius: 0 $borderRadius $borderRadius 0;
+}
+
+.article-details_d2vnmv > .article-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.article-details_d2vnmv > .article-container > .content {
+	flex-grow: 1;
+}
+
+.article-details_d2vnmv > .article-container > .content > .title > .star_n3lkaj {
 	float: right;
 	margin-left: 8px;
 }
-.article-details_d2vnmv > .content > .title > .share-control_mnbspk {
+.article-details_d2vnmv > .article-container > .content > .title > .share-control_mnbspk {
 	float: right;
 	// the bookmark with a % has some right-margin already
 	margin-left: 2px;
@@ -15,12 +62,12 @@
 		margin-top: -8px;
 	}
 }
-.article-details_d2vnmv > .content > .title > .bookmark {
+.article-details_d2vnmv > .article-container > .content > .title > .bookmark {
 	position: relative;
 	float: right;
 	margin-top: -10px;
 }
-.article-details_d2vnmv > .content > .title > .bookmark > .percent-complete {
+.article-details_d2vnmv > .article-container > .content > .title > .bookmark > .percent-complete {
 	font-family: 'Museo Sans (500)';
 	font-size: 8pt;
 	position: absolute;
@@ -29,43 +76,43 @@
 	left: 50%;
 	z-index: 1;
 }
-.article-details_d2vnmv > .content > .title > .bookmark > .icon_rour3d {
+.article-details_d2vnmv > .article-container > .content > .title > .bookmark > .icon_rour3d {
 	display: block;
 	width: 42px;
 	height: 42px;
 }
-.article-details_d2vnmv > .content > .title > .title-link {
+.article-details_d2vnmv > .article-container > .content > .title > .title-link {
 	font-family: 'Cambria (bold)';
 	font-size: 16pt;
 	text-decoration: none;
 	line-height: 1em;
 	word-break: break-word;
 }
-.article-details_d2vnmv > .content > .columns {
+.article-details_d2vnmv > .article-container > .content > .columns {
 	display: flex;
 }
-.article-details_d2vnmv > .content > .columns > .star-container {
+.article-details_d2vnmv > .article-container > .content > .columns > .star-container {
 	flex: 0 0 auto;
 	width: 20px;
 	margin-right: 5px;
 }
 
-.article-details_d2vnmv > .content > .columns > .article {
+.article-details_d2vnmv > .article-container > .content > .columns > .article {
 	flex: 1 1 auto;
 }
-.article-details_d2vnmv > .content > .columns > .article > .meta {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .meta {
 	margin-top: 5px;
 	font-family: 'Museo Sans (300)';
 	font-size: 11pt;
 }
 // TODO: 'spacer' should be defined somewhere globally, it is reused
-.article-details_d2vnmv > .content > .columns > .article > .meta > .spacer {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer {
 	margin: 0 5px;
 }
-.article-details_d2vnmv > .content > .columns > .article > .meta > .spacer::before {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer::before {
 	content: "•";
 }
-.article-details_d2vnmv > .content > .columns > .article > .stats {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats {
 	display: flex;
 	align-items: center;
 	height: 22px;
@@ -73,23 +120,23 @@
 	font-family: 'Museo Sans (500)';
 	font-size: 12pt;
 }
-.article-details_d2vnmv > .content > .columns > .article > .stats > .reads,
-.article-details_d2vnmv > .content > .columns > .article > .stats > .comments {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .reads,
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .comments {
 	margin-right: 10px;
 }
-.article-details_d2vnmv > .content > .columns > .article > .stats > .popover_r7v81v {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .popover_r7v81v {
 	flex: 0 0 auto;
 }
-.article-details_d2vnmv > .content > .columns > .article > .stats > .popover_r7v81v + .popover_r7v81v {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .popover_r7v81v + .popover_r7v81v {
 	margin-left: 10px;
 }
-.article-details_d2vnmv > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
 	font-size: 16px;
 }
-.article-details_d2vnmv > .content > .columns > .small-stats-article {
+.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article {
 	display: none;
 }
-.article-details_d2vnmv > .content > .columns > .post {
+.article-details_d2vnmv > .article-container > .content > .columns > .post {
 	flex: 0 0 auto;
 	display: flex;
 	flex-flow: column;
@@ -98,53 +145,54 @@
 	margin-left: 5px;
 }
 
+
 @media (max-width: 449px) {
-	.article-details_d2vnmv > .content > .title {
+	.article-details_d2vnmv > .article-container > .content > .title {
 		margin-bottom: 2px;
 	}
-	.article-details_d2vnmv > .content > .columns > .star-container,
-	.article-details_d2vnmv > .content > .columns > .article {
+	.article-details_d2vnmv > .article-container > .content > .columns > .star-container,
+	.article-details_d2vnmv > .article-container > .content > .columns > .article {
 		display: none;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article {
 		flex: 1 1 auto;
 		display: flex;
 		flex-flow: column;
 		min-width: 0;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta {
 		flex: 0 0 auto;
 		font-family: 'Museo Sans (300)';
 		font-size: 11pt;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .publisher,
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .publisher,
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length {
 		display: flex;
 		margin-top: 1px;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length > .author {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .author {
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer {
 		flex: 0 0 auto;
 		width: 10px;
 		text-align: center;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer::before {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer::before {
 		content: "|";
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length > .date,
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length > .length {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .date,
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .length {
 		flex: 0 0 auto;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats {
 		flex: 0 0 auto;
 		display: flex;
 		align-items: center;
@@ -152,27 +200,44 @@
 		font-family: 'Museo Sans (500)';
 		font-size: 11pt;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .reads,
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .comments {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .reads,
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .comments {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		margin-right: 5px;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .reads,
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .popover_r7v81v {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .reads,
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .popover_r7v81v {
 		flex: 0 0 auto;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .popover_r7v81v + .popover_r7v81v {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .popover_r7v81v + .popover_r7v81v {
 		margin-left: 5px;
 	}
-	.article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
 		font-size: 16px;
 	}
 }
 
+@include until(tablet-portrait) {
+	.article-details_d2vnmv > .article-container {
+		flex-direction: column;
+	}
+	.article-details_d2vnmv > .article-container > .image-container {
+		width: 100%;
+		padding-bottom: 53.356%; // = 1/1.91
+		border-width: 1px 1px 0 1px;
+		border-radius: $borderRadius $borderRadius 0 0;
+	}
+	.article-details_d2vnmv > .article-container > .content {
+		flex-direction: column;
+		border-width: 0 1px 1px 1px; // remove top border
+		border-radius: 0 0 $borderRadius $borderRadius;
+	}
+}
+
 @include theme using ($root, $scheme) {
-	#{$root} .article-details_d2vnmv > .content > .title > .bookmark > .percent-complete {
+	#{$root} .article-details_d2vnmv > .article-container > .content > .title > .bookmark > .percent-complete {
 		@include theme-colors(
 			$scheme,
 			(
@@ -180,11 +245,11 @@
 			)
 		);
 	}
-	#{$root} .article-details_d2vnmv > .content > .title > .bookmark > .icon_rour3d,
-	#{$root} .article-details_d2vnmv > .content > .columns > .article > .meta > .spacer,
-	#{$root} .article-details_d2vnmv > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d,
-	#{$root} .article-details_d2vnmv > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer,
-	#{$root} .article-details_d2vnmv > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+	#{$root} .article-details_d2vnmv > .article-container > .content > .title > .bookmark > .icon_rour3d,
+	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer,
+	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d,
+	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer,
+	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
 		@include theme-colors(
 			$scheme,
 			(
