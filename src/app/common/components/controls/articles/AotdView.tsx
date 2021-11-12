@@ -28,7 +28,7 @@ export default class AotdView extends React.Component<{
 	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,

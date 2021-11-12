@@ -31,7 +31,7 @@ interface Props {
 	onNavTo: (url: string) => boolean,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onSearchArticles: (query: SearchQuery) => Promise<PageResult<UserArticle>>,
 	onShare: (data: ShareEvent) => ShareResponse,

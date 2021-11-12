@@ -15,7 +15,8 @@ interface Props {
 	onComplete?: (form: ShareForm) => void,
 	onGetData: () => ShareData,
 	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void
+	onShareViaChannel: (data: ShareChannelData) => void,
+	stopPropagation?: boolean
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
@@ -155,6 +156,7 @@ export default class ShareControl extends React.PureComponent<
 				onBeginClosing={this._beginClosingMenu}
 				onClose={this._closeMenu}
 				onOpen={this._openMenu}
+				stopPropagation={this.props.stopPropagation}
 			>
 				{this.props.children}
 			</Popover>

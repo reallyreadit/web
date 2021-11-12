@@ -60,7 +60,7 @@ interface Props {
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
@@ -122,10 +122,10 @@ export default class MarketingScreen extends React.Component<
 	// 	this.setState({ menuState: MenuState.Opened });
 	// };
 	// private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
-	// private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	// private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLElement>
 	// 	this.props.onViewProfile('bill');
 	// };
-	// private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	// private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLElement>
 	// 	event.preventDefault();
 	// 	this._beginClosingMenu();
 	// 	this.props.onViewProfile('jeff');

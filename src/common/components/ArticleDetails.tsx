@@ -31,7 +31,7 @@ interface Props {
 	onNavTo: (ref: NavReference) => void,
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onRead: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleStar: (article: UserArticle) => Promise<void>,
@@ -44,7 +44,9 @@ interface Props {
 	showImage?: boolean,
 	user?: UserAccount
 }
-export default class extends React.PureComponent<Props, { isStarring: boolean }> {
+export default class extends React.PureComponent<Props, {
+		isStarring: boolean,
+	}> {
 	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage'> = {
 		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true,
@@ -60,8 +62,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	private readonly _shouldShowImage = () => {
 		return this.props.showImage && this.props.article.imageUrl;
 	}
-	private readonly _read = (e: React.MouseEvent<HTMLAnchorElement>) => {
+	private readonly _read = (e: React.MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
+		// e.preventDefault(); // this might break the browser behavior
 		this.props.onRead(this.props.article, e);
 	};
 	private readonly _toggleStar = (ev?: React.MouseEvent) => {
@@ -79,7 +82,9 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 	};
 	constructor(props: Props) {
 		super(props);
-		this.state = { isStarring: false };
+		this.state = {
+			isStarring: false,
+		};
 	}
 	public render() {
 		const
@@ -109,6 +114,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				article={this.props.article}
 				menuPosition={MenuPosition.TopCenter}
 				onRateArticle={this.props.onRateArticle}
+				stopPropagation={true}
 			/>
 		);
 		// share
@@ -118,6 +124,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				onShare={this.props.onShare}
 				onShareViaChannel={this.props.onShareViaChannel}
 				menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
+				stopPropagation={true}
 			>
 				<Icon
 					display="block"
@@ -125,6 +132,46 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 				/>
 			</ShareControl>
 		);
+		// image
+
+		// based on https://stackoverflow.com/a/63836797/4973029
+		const useImageLoaded = (): [
+			React.MutableRefObject<HTMLImageElement>,
+			boolean,
+			React.Dispatch<React.SetStateAction<boolean>>
+		] => {
+			const [loaded, setLoaded] = React.useState(false)
+			const ref = React.useRef<HTMLImageElement>()
+
+			// check if the image is already loaded after the first render (in that case, onLoad will not fire)
+			React.useEffect(() => {
+				if (ref.current && ref.current.complete) {
+					setLoaded(true)
+				}
+			}, [])
+
+			return [ref, loaded, setLoaded];
+		}
+
+		const ImageComponent = ({src}: {src: string}) => {
+			// function component to prevent full ArticleDetails rerenders when the image loads
+			const [ref, loaded, setLoaded] = useImageLoaded();
+			return <div className="image-container">
+				{/* A temporary placeholder / "skeleton" that shows until*/}
+				<div className="image placeholder" style={{display: loaded ? "none" : "flex"}}>
+					<Icon name="trophy" />
+				</div>
+				<img
+					ref={ref}
+					style={{display: loaded ? "block" : "none"}}
+					className="image"
+					onLoad={() => setLoaded(true)}
+					src={src}
+					// 6mb file for testing
+					// src="https://upload.wikimedia.org/wikipedia/commons/2/28/Dirt_jump_IMG_7609.jpg"
+				/>
+			</div>
+		}
 		return (
 			<div className={classnames( "article-details_d2vnmv", {"has-image": this._shouldShowImage()} )}>
 				{this.props.showAotdMetadata ?
@@ -136,16 +183,13 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 						rankCallout={this.props.rankCallout}
 					/> :
 					null}
-				<a
+				<div
 					className="article-container"
 					onClick={this._read}
-					href={this.props.article.url}
 				>
 					{
 						 this._shouldShowImage() ?
-							<div className="image-container">
-								<img src={this.props.article.imageUrl} />
-							</div> :
+							<ImageComponent src={this.props.article.imageUrl} /> :
 							null
 					}
 					<ContentBox
@@ -260,7 +304,7 @@ export default class extends React.PureComponent<Props, { isStarring: boolean }>
 								null}
 						</div>
 					</ContentBox>
-				</a>
+				</div>
 			</div>
 		);
 	}
