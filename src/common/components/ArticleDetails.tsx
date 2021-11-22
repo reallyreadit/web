@@ -21,10 +21,12 @@ import Link from './Link';
 import { NavReference } from '../../app/common/components/Root';
 import { DeviceType, isMobileDevice } from '../DeviceType';
 import { ShareChannelData } from '../sharing/ShareData';
-import classnames = require('classnames');
+import * as classnames from 'classnames';
+import ImageComponent from './Image';
 
 interface Props {
 	article: UserArticle,
+	className?: string,
 	deviceType: DeviceType,
 	highlight?: boolean,
 	onCreateAbsoluteUrl: (path: string) => string,
@@ -41,6 +43,7 @@ interface Props {
 	rankCallout?: React.ReactNode,
 	shareMenuPosition?: MenuPosition,
 	showAotdMetadata?: boolean,
+	showDescription?: boolean,
 	showImage?: boolean,
 	user?: UserAccount
 }
@@ -52,22 +55,22 @@ export default class extends React.PureComponent<Props, {
 		showAotdMetadata: true,
 		showImage: false
 	};
-	private readonly _getShareData = () => {
+	protected readonly _getShareData = () => {
 		return getShareData(
 			'Article',
 			this.props.article,
 			this.props.onCreateAbsoluteUrl
 		);
 	};
-	private readonly _shouldShowImage = () => {
+	protected readonly _shouldShowImage = () => {
 		return this.props.showImage && this.props.article.imageUrl;
 	}
-	private readonly _read = (e: React.MouseEvent<HTMLElement>) => {
+	protected readonly _read = (e: React.MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		// e.preventDefault(); // this might break the browser behavior
 		this.props.onRead(this.props.article, e);
 	};
-	private readonly _toggleStar = (ev?: React.MouseEvent) => {
+	protected readonly _toggleStar = (ev?: React.MouseEvent) => {
 		if (ev) ev.stopPropagation();
 		this.setState({ isStarring: true });
 		this.props
@@ -75,27 +78,40 @@ export default class extends React.PureComponent<Props, {
 			.then(() => { this.setState({ isStarring: false }); })
 			.catch(() => { this.setState({ isStarring: false }); })
 	};
-	private readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
+	protected readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
 		this.props.onViewComments(this.props.article);
 	};
+
+	protected _articleUrlParams: {
+		articleSlug: string;
+		sourceSlug: string;
+	};
+	protected _authorLinks: JSX.Element[];
+	protected _commentsLinkHref: string;
+	protected _estimatedReadTime: string;
+	protected _ratingControl: React.ReactElement<RatingControl>;
+	protected _shareControl: React.ReactElement<ShareControl>;
+
 	constructor(props: Props) {
 		super(props);
 		this.state = {
 			isStarring: false,
 		};
-	}
-	public render() {
-		const
-			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),
-			articleUrlParams = {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			},
-			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
+
+		// rating control
+		this._ratingControl = (
+			<RatingControl
+				article={this.props.article}
+				menuPosition={MenuPosition.TopCenter}
+				onRateArticle={this.props.onRateArticle}
+				stopPropagation={true}
+			/>
+		);
+
 		// author links
-		const authorLinks = this.props.article.articleAuthors.map(
+		this._authorLinks = this.props.article.articleAuthors.map(
 			(author, index, authors) => (
 				<React.Fragment key={author.slug}>
 					<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} stopPropagation={true} />
@@ -105,20 +121,9 @@ export default class extends React.PureComponent<Props, {
 				</React.Fragment>
 			)
 		);
-		// comments link
-		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
-			.createUrl(articleUrlParams);
-		// rating control
-		const ratingControl = (
-			<RatingControl
-				article={this.props.article}
-				menuPosition={MenuPosition.TopCenter}
-				onRateArticle={this.props.onRateArticle}
-				stopPropagation={true}
-			/>
-		);
-		// share
-		const shareControl = (
+
+		// share control
+		this._shareControl = (
 			<ShareControl
 				onGetData={this._getShareData}
 				onShare={this.props.onShare}
@@ -132,48 +137,23 @@ export default class extends React.PureComponent<Props, {
 				/>
 			</ShareControl>
 		);
-		// image
 
-		// based on https://stackoverflow.com/a/63836797/4973029
-		const useImageLoaded = (): [
-			React.MutableRefObject<HTMLImageElement>,
-			boolean,
-			React.Dispatch<React.SetStateAction<boolean>>
-		] => {
-			const [loaded, setLoaded] = React.useState(false)
-			const ref = React.useRef<HTMLImageElement>()
+		const [sourceSlug, articleSlug] = this.props.article.slug.split('_');
+		this._articleUrlParams = {
+			['articleSlug']: articleSlug,
+			['sourceSlug']: sourceSlug
+		};
 
-			// check if the image is already loaded after the first render (in that case, onLoad will not fire)
-			React.useEffect(() => {
-				if (ref.current && ref.current.complete) {
-					setLoaded(true)
-				}
-			}, [])
+		this._estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
 
-			return [ref, loaded, setLoaded];
+		// comments link
+		this._commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
+			.createUrl(this._articleUrlParams);
+
 		}
-
-		const ImageComponent = ({src}: {src: string}) => {
-			// function component to prevent full ArticleDetails rerenders when the image loads
-			const [ref, loaded, setLoaded] = useImageLoaded();
-			return <div className="image-container">
-				{/* A temporary placeholder / "skeleton" that shows until*/}
-				<div className="image placeholder" style={{display: loaded ? "none" : "flex"}}>
-					<Icon name="trophy" />
-				</div>
-				<img
-					ref={ref}
-					style={{display: loaded ? "block" : "none"}}
-					className="image"
-					onLoad={() => setLoaded(true)}
-					src={src}
-					// 6mb file for testing
-					// src="https://upload.wikimedia.org/wikipedia/commons/2/28/Dirt_jump_IMG_7609.jpg"
-				/>
-			</div>
-		}
+	public render() {
 		return (
-			<div className={classnames( "article-details_d2vnmv", {"has-image": this._shouldShowImage()} )}>
+			<div className={classnames( "article-details_d2vnmv", {"has-image": this._shouldShowImage()}, this.props.className )}>
 				{this.props.showAotdMetadata ?
 					<AotdMetadata
 						article={this.props.article}
@@ -204,7 +184,7 @@ export default class extends React.PureComponent<Props, {
 									onClick={this._toggleStar}
 								/> :
 								null}
-							{shareControl}
+							{this._shareControl}
 							{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
 								<div className="bookmark">
 									<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
@@ -223,8 +203,8 @@ export default class extends React.PureComponent<Props, {
 								<div className="meta">
 									<span>{this.props.article.source}</span>
 									<i className="spacer"></i>
-									{authorLinks}
-									{authorLinks.length ?
+									{this._authorLinks}
+									{this._authorLinks.length ?
 										<i className="spacer"></i> :
 										null}
 									{this.props.article.datePublished ?
@@ -233,18 +213,22 @@ export default class extends React.PureComponent<Props, {
 											<i className="spacer"></i>
 										</> :
 										null}
-									<span>{estimatedReadTime}</span>
+									<span>{this._estimatedReadTime}</span>
 								</div>
+								{
+									this.props.showDescription && !!this.props.article.description ?
+										<p className="description">{this.props.article.description}</p> : null
+								}
 								<div className="stats">
 									<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 									<a
 										className="comments"
-										href={commentsLinkHref}
+										href={this._commentsLinkHref}
 										onClick={this._viewComments}
 									>
 										{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 									</a>
-									{ratingControl}
+									{this._ratingControl}
 								</div>
 							</div>
 							<div className="small-stats-article">
@@ -253,12 +237,12 @@ export default class extends React.PureComponent<Props, {
 										{this.props.article.source}
 									</div>
 									<div className="author-date-length">
-										{authorLinks.length ?
+										{this._authorLinks.length ?
 											<span className="author">
-												{authorLinks}
+												{this._authorLinks}
 											</span> :
 											null}
-										{authorLinks.length && this.props.article.datePublished ?
+										{this._authorLinks.length && this.props.article.datePublished ?
 											<span className="spacer"></span> :
 											null}
 										{this.props.article.datePublished ?
@@ -266,27 +250,31 @@ export default class extends React.PureComponent<Props, {
 												{formatTimestamp(this.props.article.datePublished)}
 											</span> :
 											null}
-										{authorLinks.length || this.props.article.datePublished ?
+										{this._authorLinks.length || this.props.article.datePublished ?
 											<span className="spacer"></span> :
 											null}
 										<span className="length">
-											{estimatedReadTime}
+											{this._estimatedReadTime}
 										</span>
 									</div>
 								</div>
+								{
+									this.props.showDescription && !!this.props.article.description ?
+										<p className="description">{this.props.article.description}</p> : null
+								}
 								<div className="stats">
 									<div className="reads">
 										<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 									</div>
 									<div className="comments">
 										<a
-											href={commentsLinkHref}
+											href={this._commentsLinkHref}
 											onClick={this._viewComments}
 										>
 											{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 										</a>
 									</div>
-									{ratingControl}
+									{this._ratingControl}
 
 								</div>
 							</div>

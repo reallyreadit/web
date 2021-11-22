@@ -15,6 +15,8 @@ import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import { NavReference } from '../../Root';
 import {DeviceType} from '../../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../../common/sharing/ShareData';
+import ArticleDetailsDisplay from '../../../../../common/components/ArticleDetailsDisplay';
+import Icon from '../../../../../common/components/Icon';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
 export default class AotdView extends React.Component<{
@@ -56,12 +58,21 @@ export default class AotdView extends React.Component<{
 	public render() {
 		return (
 			<div className="aotd-view_hgax0h">
-				<div className="section-header">
+				<div className="section-header--aotd">
+					<Icon name="trophy" />
 					<label>Article of the Day</label>
 				</div>
 				<div className="aotd">
 					<ArticleDetails
 						article={this.props.aotd}
+						// for testing purposes (trying out varied content)
+						// article={this.props.articles.items[
+						// 	// Math.floor(Math.random() * this.props.articles.items.length)
+						// 	Math.floor((
+						// 		(Math.floor(new Date().getTime() / 1000) % 300) / 300)
+						// 		* this.props.articles.items.length)
+						// ]}
+						className="aotd--mobile-standard"
 						deviceType={this.props.deviceType}
 						highlight={this.props.aotdHasAlert}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -76,7 +87,28 @@ export default class AotdView extends React.Component<{
 						onViewProfile={this.props.onViewProfile}
 						user={this.props.user}
 						showImage={true}
+						showDescription={true}
 						showAotdMetadata={false}
+					/>
+					<ArticleDetailsDisplay
+						article={this.props.aotd}
+						className="aotd--desktop-display"
+						deviceType={this.props.deviceType}
+						highlight={this.props.aotdHasAlert}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
+						onPost={this.props.onPostArticle}
+						onRateArticle={this.props.onRateArticle}
+						onRead={this.props.onReadArticle}
+						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
+						onToggleStar={this.props.onToggleArticleStar}
+						onViewComments={this.props.onViewComments}
+						onViewProfile={this.props.onViewProfile}
+						user={this.props.user}
+						showImage={true}
+						showDescription={true}
+						showAotdMetadata={true}
 					/>
 					<div className="controls">
 						<Button

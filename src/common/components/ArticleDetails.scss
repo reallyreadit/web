@@ -13,34 +13,33 @@ $borderRadius: 3px;
 	}
 }
 
-.article-details_d2vnmv.has-image {
-	.article-container > .image-container {
+.article-details_d2vnmv.has-image > .article-container {
+	 > .image_1ctn9c {
 		box-sizing: border-box;
 		border-style: solid;
 		overflow: hidden;
 		color: var(--content-border-color);
-	}
-}
-.article-details_d2vnmv > .article-container > .image-container {
-	position: relative;
-	width: 25%;
-	// note for the future: the below is an aspect ratio hack, see also padding-bottom used for the mobile breakpoint below
-	// A better aspect-ratio property is coming https://caniuse.com/mdn-css_properties_aspect-ratio
-	// It would be preferable because its simpler, but also because the padding hack to preserve aspect ratio can't be combined with max-height & max-width
-	// (see issue: https://stackoverflow.com/questions/27420434/max-height-ignored-when-percentage-padding-defines-element-height)
-	// It's already released in most browsers, except crucially in iOS 14 Safari which we should still support.
-	padding-bottom: 25%;
-	border-width: 1px 0px 1px 1px;
-	border-radius: $borderRadius 0 0 $borderRadius;
+		position: relative;
+		width: 25%;
+		// note for the future: the below is an aspect ratio hack, see also padding-bottom used for the mobile breakpoint below
+		// A better aspect-ratio property is coming https://caniuse.com/mdn-css_properties_aspect-ratio
+		// It would be preferable because its simpler, but also because the padding hack to preserve aspect ratio can't be combined with max-height & max-width
+		// (see issue: https://stackoverflow.com/questions/27420434/max-height-ignored-when-percentage-padding-defines-element-height)
+		// It's already released in most browsers, except crucially in iOS 14 Safari which we should still support.
+		padding-bottom: 25%;
+		border-width: 1px 0px 1px 1px;
+		border-radius: $borderRadius 0 0 $borderRadius;
 
-	& > .image {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		> .image {
+			// positioning of image or placeholder
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
 
-		&.placeholder {
+		> .placeholder {
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -54,16 +53,20 @@ $borderRadius: 3px;
 				animation-direction: alternate;
 			}
 		}
+
+		> img {
+			// image properties
+			object-fit: cover;
+		}
 	}
 
-	& > img {
-		object-fit: cover;
+	> .content {
+		border-width: 1px 1px 1px 0;
+		border-radius: 0 $borderRadius $borderRadius 0;
 	}
 }
 
 .article-details_d2vnmv > .article-container > .content {
-	border-width: 1px 1px 1px 0;
-	border-radius: 0 $borderRadius $borderRadius 0;
 	box-sizing: border-box;
 	max-width: 100%; // prevents long author names from expanding the box till it oveflows
 }
@@ -141,6 +144,7 @@ $borderRadius: 3px;
 }
 .article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer::before {
 	content: "•";
+	font-style: normal;
 }
 .article-details_d2vnmv > .article-container > .content > .columns > .article > .stats {
 	display: flex;
@@ -173,6 +177,13 @@ $borderRadius: 3px;
 	justify-content: flex-end;
 	align-items: flex-end;
 	margin-left: 5px;
+}
+
+.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .description,
+.article-details_d2vnmv > .article-container > .content > .columns > .article > .description {
+	font-size: 11pt;
+	color: var(--text-muted-color);
+	margin: 0.5em 0;
 }
 
 
@@ -247,12 +258,13 @@ $borderRadius: 3px;
 	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
 		font-size: 16px;
 	}
+
 }
 
 @include until(tablet-portrait) {
 	.article-details_d2vnmv.has-image > .article-container {
 		flex-direction: column;
-		> .image-container {
+		> .image_1ctn9c {
 			width: 100%;
 			padding-bottom: 53.356%; // = 1/1.91 aspect ratio hack
 			border-width: 1px 1px 0 1px;
