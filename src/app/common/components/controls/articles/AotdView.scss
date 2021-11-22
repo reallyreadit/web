@@ -3,13 +3,32 @@
 	cssComponentId: aotd-view_hgax0h
 */
 @import '../../../../../common/styles/colors';
+@import '../../../../../common/styles/breakpoints.scss';
 
 .aotd-view_hgax0h > .section-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 10px;
+
+	&--aotd {
+		margin-bottom: 0.5em;
+		color: var(--text-muted-color);
+		> .icon_rour3d {
+			vertical-align: middle;
+			margin-right: 0.2em;
+		}
+		> label {
+			font-size: 0.8rem;
+			text-transform: uppercase;
+		}
+		@include from(tablet-portrait) {
+			display: none;
+		}
+	}
+
 }
+
 .aotd-view_hgax0h > .section-header > label {
 	font-size: 17pt;
 	font-family: 'Museo Sans (500)';
@@ -18,6 +37,7 @@
 	margin-top: 20px;
 	text-align: center;
 }
+
 .aotd-view_hgax0h > .separator {
 	width: 80%;
 	margin: 20px auto;
@@ -26,6 +46,26 @@
 }
 .aotd-view_hgax0h > .loading-overlay_zfgtd1 {
 	margin: 20px 0;
+}
+
+.aotd-view_hgax0h > .aotd > .aotd {
+	&--desktop-display {
+		display: flex;
+	}
+	&--mobile-standard {
+		display: none;
+	}
+}
+
+@include until(tablet-portrait) {
+	.aotd-view_hgax0h > .aotd > .aotd {
+		&--desktop-display {
+			display: none;
+		}
+		&--mobile-standard {
+			display: block;
+		}
+	}
 }
 
 @include theme using ($root, $scheme) {

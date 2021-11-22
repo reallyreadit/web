@@ -11,7 +11,8 @@ export { MenuPosition } from './Popover';
 interface Props {
 	article: UserArticle,
 	menuPosition: MenuPosition,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
+	stopPropagation?: boolean
 }
 export default class RatingControl extends React.PureComponent<
 	Props,
@@ -106,6 +107,7 @@ export default class RatingControl extends React.PureComponent<
 				onBeginClosing={this._beginClosingMenu}
 				onClose={this._closeMenu}
 				onOpen={this._openMenu}
+				stopPropagation={this.props.stopPropagation}
 			>
 				<div className="seal">
 					<Icon name="rating-seal" />

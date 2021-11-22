@@ -30,7 +30,8 @@ interface Props {
 	menuState: MenuState,
 	onBeginClosing: () => void,
 	onClose: () => void,
-	onOpen: (event: React.MouseEvent<HTMLElement>) => void
+	onOpen: (event: React.MouseEvent<HTMLElement>) => void,
+	stopPropagation?: boolean
 }
 export default class Popover extends React.PureComponent<Props> {
 	private _childElementWillReceiveFocus = false;
@@ -49,6 +50,11 @@ export default class Popover extends React.PureComponent<Props> {
 		}
 	};
 	private readonly _handleChildrenClick = (event: React.MouseEvent<HTMLElement>) => {
+		if (this.props.stopPropagation) {
+			// children themselves don't need to stop propagation (e.g. <RatingSelector> in <RatingControl>)
+			// because events will bubble up till here and then be stopped
+			event.stopPropagation();
+		}
 		if (this.props.menuState === MenuState.Opened) {
 			this.props.onBeginClosing();
 		} else {
@@ -77,6 +83,7 @@ export default class Popover extends React.PureComponent<Props> {
 						isClosing={this.props.menuState === MenuState.Closing}
 						onMouseDown={this._registerImpendingChildFocusTransition}
 						position={this.props.menuPosition}
+						stopPropagation={this.props.stopPropagation}
 					>
 						{this.props.menuChildren}
 					</Menu>:

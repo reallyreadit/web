@@ -1274,7 +1274,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			)
 		)
 	}
-	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
 			this.canRead(article) &&

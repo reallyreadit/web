@@ -25,7 +25,7 @@ interface Props {
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPost: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onRead: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onRead: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleStar: (article: UserArticle) => Promise<void>,

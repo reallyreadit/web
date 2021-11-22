@@ -14,7 +14,8 @@ type BaseProps = {
 	iconLeft?: IconName,
 	iconRight?: IconName,
 	onAnimationEnd?: (event: React.AnimationEvent) => void,
-	state?: 'normal' | 'disabled' | 'busy'
+	state?: 'normal' | 'disabled' | 'busy',
+	stopPropagation?: boolean
 };
 type NoHrefProps = BaseProps & {
 	onClick: () => void
@@ -46,6 +47,9 @@ function isScreenHrefProps(props: NoHrefProps | StringHrefProps | ScreenHrefProp
 export default class extends React.Component<Props> {
 	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
 		e.preventDefault();
+		if (this.props.stopPropagation != null && this.props.stopPropagation !== false) {
+			e.stopPropagation();
+		}
 		if (this.props.state === 'busy' || this.props.state === 'disabled') {
 			return;
 		}

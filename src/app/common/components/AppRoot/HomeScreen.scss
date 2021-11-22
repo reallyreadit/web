@@ -6,10 +6,12 @@
 .home-screen_an7vm5 {
 	display: flex;
 	flex-flow: column;
+	padding: 16px 20px;
 }
+
 .home-screen_an7vm5 > .sticky-note_zcw6jg {
 	flex: 0 0 auto;
-	margin: 0 auto 10px auto;
+	margin: 0 auto 16px auto;
 }
 .home-screen_an7vm5 > .loading-overlay_zfgtd1 {
 	flex: 1 1 auto;

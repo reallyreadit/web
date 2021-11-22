@@ -27,7 +27,7 @@ interface Props {
 	onNavTo: (ref: NavReference) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,

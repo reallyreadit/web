@@ -6,7 +6,8 @@ export default (props: {
 	children: React.ReactNode,
 	isClosing: boolean,
 	onMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void,
-	position: MenuPosition
+	position: MenuPosition,
+	stopPropagation?: boolean
 }) => {
 	const menuPosition = props.position.split('/');
 	return (
@@ -21,6 +22,9 @@ export default (props: {
 				)
 			}
 			onMouseDown={props.onMouseDown}
+			onClick={(e) => {
+				if (props.stopPropagation) e.stopPropagation();
+			}}
 		>
 			{props.children}
 		</span>
