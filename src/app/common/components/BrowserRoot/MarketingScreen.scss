@@ -206,7 +206,14 @@
 	}
 
 	.mission-button {
-		margin-top: 18px;
+		// margin-top: 18px;
+		text-decoration: none;
+		font-size: 3rem;
+		font-family: 'Cambria (bold)';
+		white-space: normal;
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 
 

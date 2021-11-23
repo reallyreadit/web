@@ -262,8 +262,8 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	public render() {
 		const marketingVariant = this.props.view === View.Authors ?
 			{
-				headline: 'Where reading compensates writers',
-				subtext: 'Readup is the world\'s best reading app. Pick any price for unlimited, ad-free reading. Compensate writers.'
+				headline: 'Better compensation for writers. 100% transparency.',
+				subtext: null
 			}
 			: marketingVariants[0];
 		return (
@@ -285,7 +285,12 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 										onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 									/>
 									{/* TODO: might look nicer if a secondary <Button> were used */}
-									<Link screen={ScreenKey.Home} className="learn-more-button" onClick={this.props.onNavTo}>Learn More</Link>
+									<Link
+										href="https://www.youtube.com/watch?v=JwQOsdnywUs"
+										className="learn-more-button"
+										onClick={this.props.onNavTo}>
+											Learn More
+									</Link>
 								</div>
 							</Panel> :
 							null}

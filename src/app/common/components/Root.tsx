@@ -958,7 +958,11 @@ export default abstract class Root<
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
-			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission),
+			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission,
+				{
+					onNavTo: this._navTo
+				}
+			),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(
 				ScreenKey.PrivacyPolicy, {
