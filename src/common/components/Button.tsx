@@ -22,8 +22,9 @@ interface Props {
 	showIndicator?: boolean,
 	size?: ButtonSize,
 	state?: 'normal' | 'disabled' | 'busy' | 'set' | 'selected',
+	stopPropagation?: boolean,
 	style?: 'normal' | 'preferred',
-	text?: string
+	text?: string,
 }
 export default class Button extends React.PureComponent<Props> {
 	public static defaultProps: Pick<Props, 'align' | 'display' | 'hrefPreventDefault'> = {
@@ -34,6 +35,9 @@ export default class Button extends React.PureComponent<Props> {
 	private readonly _click = (event: React.MouseEvent) => {
 		if (this.props.href && this.props.hrefPreventDefault) {
 			event.preventDefault();
+		}
+		if (this.props.stopPropagation) {
+			event.stopPropagation();
 		}
 		if (
 			this.props.onClick &&
