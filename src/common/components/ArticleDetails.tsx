@@ -287,6 +287,7 @@ export default class extends React.PureComponent<Props, {
 										article={this.props.article}
 										menuPosition={MenuPosition.LeftMiddle}
 										onPost={this.props.onPost}
+										stopPropagation={true}
 									/>
 								</div> :
 								null}

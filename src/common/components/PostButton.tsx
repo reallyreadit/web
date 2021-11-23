@@ -8,7 +8,8 @@ import Link from './Link';
 interface Props {
 	article: UserArticle,
 	menuPosition: MenuPosition,
-	onPost: (article: UserArticle) => void
+	onPost: (article: UserArticle) => void,
+	stopPropagation?: boolean
 }
 export default class PostButton extends React.PureComponent<
 	Props,
@@ -50,6 +51,8 @@ export default class PostButton extends React.PureComponent<
 							<Link
 								text="Post again"
 								onClick={this._post}
+								// stopPropagation is implied here
+								// https://github.com/reallyreadit/web/blob/500a41c5f9fa588e19b15cd85501f3f17a23366d/src/common/components/Popover.tsx#L54
 							/>
 						</div>
 					}
@@ -58,11 +61,13 @@ export default class PostButton extends React.PureComponent<
 					onBeginClosing={this._beginClosingMenu}
 					onClose={this._closeMenu}
 					onOpen={this._openMenu}
+					stopPropagation={this.props.stopPropagation}
 				>
 					<Button
 						intent="success"
 						state="set"
 						text="Post"
+						stopPropagation={this.props.stopPropagation}
 					/>
 				</Popover>
 			);
@@ -73,6 +78,7 @@ export default class PostButton extends React.PureComponent<
 				intent="success"
 				onClick={this._post}
 				text="Post"
+				stopPropagation={this.props.stopPropagation}
 			/>
 		);
 	}

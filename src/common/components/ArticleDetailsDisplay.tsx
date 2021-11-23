@@ -126,6 +126,7 @@ export default class extends ArticleDetails {
 											article={this.props.article}
 											menuPosition={MenuPosition.LeftMiddle}
 											onPost={this.props.onPost}
+											stopPropagation={true}
 										/>
 									</div> :
 									null
