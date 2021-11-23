@@ -4,6 +4,10 @@
 */
 
 .team-page_a9b9l1 {
+	.home-panel_w65z7c {
+		overflow: hidden;
+	}
+
 	.home-panel_w65z7c:nth-child(odd) {
 		background-color: var(--app-background-alt-color);
 	}
@@ -18,6 +22,8 @@
 	.home-panel_w65z7c > .content > p.special-thanks {
 		margin: auto;
 		max-width: 700px;
+		font-family: 'Museo Sans (300)', sans-serif;
+		font-size: 13pt;
 		text-align: center;
 	}
 

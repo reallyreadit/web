@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { JsonLd } from 'react-schemaorg';
-import ArticleDetails from '../../../../common/components/ArticleDetails';
+// import ArticleDetails from '../../../../common/components/ArticleDetails';
 import { Corporation } from 'schema-dts';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { DeviceType } from '../../../../common/DeviceType';
@@ -11,7 +11,7 @@ import { DeviceType } from '../../../../common/DeviceType';
 // import AotdView from '../controls/articles/AotdView';
 import Fetchable from '../../../../common/Fetchable';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
-import LoadingOverlay from '../controls/LoadingOverlay';
+// import LoadingOverlay from '../controls/LoadingOverlay';
 import CommunityReads from '../../../../common/models/CommunityReads';
 // import { variants as marketingVariants } from '../../marketingTesting';
 import PageResult from '../../../../common/models/PageResult';
@@ -21,7 +21,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
-import List from '../controls/List';
+// import List from '../controls/List';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 // import Panel from './Panel';
 import HomePanel from './HomePanel';
@@ -29,7 +29,7 @@ import HomePanel from './HomePanel';
 import ImageAndText from './ImageAndText';
 // import Card from './Card';
 import QuoteCard from './QuoteCard';
-import Button from '../../../../common/components/Button';
+// import Button from '../../../../common/components/Button';
 import { PriceList } from './MarketingScreen/PriceList';
 // import { RevenueMeter } from '../RevenueMeter';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
@@ -157,19 +157,19 @@ export default class MarketingScreen extends React.Component<
 		// const marketingVariant = marketingVariants[0];
 		const valuePoints = [
 			{
-				heading: "Kill paywalls, kill ads 🔫",
-				paragraph: "Get in a reading flow state. Readup removes ads, paywalls and other distractions.",
+				heading: "100% distraction-free reading",
+				paragraph: "Readup obliterates ads and paywalls so you can focus on reading.",
 				imageName: "kill-ads-3.0.png",
 				imageAlt: "No paywalls or ads on Readup"
 			},
 			{
-				heading: "The best articles",
-				paragraph: "Enjoy articles from top publishers and blogs, curated by Readup's community of deep readers.",
+				heading: "The world's best articles",
+				paragraph: "Not sure what to read? The Readup community curates the best of the best from across the web.",
 				imageName: "best-articles-3.0.png",
 				imageAlt: "The best articles from the web"
 			},
 			{
-				heading: "Save from anywhere, read anywhere.",
+				heading: "Save articles",
 				paragraph: "Create your own little library, available on any device. No time to finish an article? Readup bookmarks everything, automatically.",
 				imageName: "import-anywhere-3.0.png",
 				imageAlt: "Save any where, read on your mobile phone or computer"
@@ -441,17 +441,16 @@ export default class MarketingScreen extends React.Component<
 					className="closing-quote-panel"
 				>
 					{/* <span className="preheading">Remember</span> */}
-					<cite className="closing-quote"><p>We're on a mission to fix digital reading.</p></cite>
-					<Button
+					{/* <cite className="closing-quote"><p>We're on a mission to fix digital reading.</p></cite> */}
+					<Link
 						className="mission-button"
-						iconRight="chevron-right"
-						intent="normal"
-						onClick={this.props.onViewMission}
-						style="normal"
-						text="Learn more about our mission &amp; story"
+						iconRight="arrow-right"
+						href="https://blog.readup.com/2021/02/08/the-readup-manifesto.html"
+						onClick={this.props.onNavTo}
+						text="Read the manifesto"
 						/>
 				</HomePanel>
-				<HomePanel
+				{/* <HomePanel
 					className="blog"
 					noGoogleSnippet
 				>
@@ -492,7 +491,7 @@ export default class MarketingScreen extends React.Component<
 							text="See more articles"
 							/>
 						</div>
-				</HomePanel>
+				</HomePanel> */}
 				{/* <Panel className="header">
 					<h1>{marketingVariant.headline}</h1>
 					<h3>{marketingVariant.subtext}</h3>
