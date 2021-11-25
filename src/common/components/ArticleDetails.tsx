@@ -84,15 +84,51 @@ export default class extends React.PureComponent<Props, {
 		this.props.onViewComments(this.props.article);
 	};
 
-	protected _articleUrlParams: {
-		articleSlug: string;
-		sourceSlug: string;
-	};
-	protected _authorLinks: JSX.Element[];
-	protected _commentsLinkHref: string;
-	protected _estimatedReadTime: string;
-	protected _ratingControl: React.ReactElement<RatingControl>;
-	protected _shareControl: React.ReactElement<ShareControl>;
+	protected _getArticleUrlParams = () => {
+		const [sourceSlug, articleSlug] = this.props.article.slug.split('_');
+		return {
+			['articleSlug']: articleSlug,
+			['sourceSlug']: sourceSlug
+		};
+	}
+
+	protected _renderAuthorLinks = () => this.props.article.articleAuthors.map(
+		(author, index, authors) => (
+			<React.Fragment key={author.slug}>
+				<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} stopPropagation={true} />
+				{index !== authors.length - 1 ?
+					<span>, </span> :
+					null}
+			</React.Fragment>
+		)
+	);
+
+	protected _renderCommentsLinkHref = () => findRouteByKey(routes, ScreenKey.Comments)
+												.createUrl(this._getArticleUrlParams());
+	protected _renderEstimatedReadTime = () => calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
+	protected _renderRatingControl = () => (
+		<RatingControl
+			article={this.props.article}
+			menuPosition={MenuPosition.TopCenter}
+			onRateArticle={this.props.onRateArticle}
+			stopPropagation={true}
+		/>
+	);
+	protected _renderShareControl = () => (
+		<ShareControl
+			onGetData={this._getShareData}
+			onShare={this.props.onShare}
+			onShareViaChannel={this.props.onShareViaChannel}
+			menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
+			stopPropagation={true}
+		>
+			<Icon
+				display="block"
+				name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
+			/>
+		</ShareControl>
+	)
+
 	protected MAX_DESCRIPTION_LENGTH = 250;
 
 	constructor(props: Props) {
@@ -100,58 +136,8 @@ export default class extends React.PureComponent<Props, {
 		this.state = {
 			isStarring: false,
 		};
+	}
 
-		// rating control
-		this._ratingControl = (
-			<RatingControl
-				article={this.props.article}
-				menuPosition={MenuPosition.TopCenter}
-				onRateArticle={this.props.onRateArticle}
-				stopPropagation={true}
-			/>
-		);
-
-		// author links
-		this._authorLinks = this.props.article.articleAuthors.map(
-			(author, index, authors) => (
-				<React.Fragment key={author.slug}>
-					<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} stopPropagation={true} />
-					{index !== authors.length - 1 ?
-						<span>, </span> :
-						null}
-				</React.Fragment>
-			)
-		);
-
-		// share control
-		this._shareControl = (
-			<ShareControl
-				onGetData={this._getShareData}
-				onShare={this.props.onShare}
-				onShareViaChannel={this.props.onShareViaChannel}
-				menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
-				stopPropagation={true}
-			>
-				<Icon
-					display="block"
-					name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
-				/>
-			</ShareControl>
-		);
-
-		const [sourceSlug, articleSlug] = this.props.article.slug.split('_');
-		this._articleUrlParams = {
-			['articleSlug']: articleSlug,
-			['sourceSlug']: sourceSlug
-		};
-
-		this._estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
-
-		// comments link
-		this._commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
-			.createUrl(this._articleUrlParams);
-
-		}
 	public render() {
 		return (
 			<div className={classnames( "article-details_d2vnmv", {"has-image": this._shouldShowImage()}, this.props.className )}>
@@ -185,7 +171,7 @@ export default class extends React.PureComponent<Props, {
 									onClick={this._toggleStar}
 								/> :
 								null}
-							{this._shareControl}
+							{this._renderShareControl()}
 							{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
 								<div className="bookmark">
 									<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
@@ -204,8 +190,8 @@ export default class extends React.PureComponent<Props, {
 								<div className="meta">
 									<span>{this.props.article.source}</span>
 									<i className="spacer"></i>
-									{this._authorLinks}
-									{this._authorLinks.length ?
+									{this._renderAuthorLinks()}
+									{this._renderAuthorLinks().length ?
 										<i className="spacer"></i> :
 										null}
 									{this.props.article.datePublished ?
@@ -214,7 +200,7 @@ export default class extends React.PureComponent<Props, {
 											<i className="spacer"></i>
 										</> :
 										null}
-									<span>{this._estimatedReadTime}</span>
+									<span>{this._renderEstimatedReadTime()}</span>
 								</div>
 								{
 									this.props.showDescription && !!this.props.article.description ?
@@ -224,12 +210,12 @@ export default class extends React.PureComponent<Props, {
 									<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 									<a
 										className="comments"
-										href={this._commentsLinkHref}
+										href={this._renderCommentsLinkHref()}
 										onClick={this._viewComments}
 									>
 										{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 									</a>
-									{this._ratingControl}
+									{this._renderRatingControl()}
 								</div>
 							</div>
 							<div className="small-stats-article">
@@ -238,12 +224,12 @@ export default class extends React.PureComponent<Props, {
 										{this.props.article.source}
 									</div>
 									<div className="author-date-length">
-										{this._authorLinks.length ?
+										{this._renderAuthorLinks().length ?
 											<span className="author">
-												{this._authorLinks}
+												{this._renderAuthorLinks()}
 											</span> :
 											null}
-										{this._authorLinks.length && this.props.article.datePublished ?
+										{this._renderAuthorLinks().length && this.props.article.datePublished ?
 											<span className="spacer"></span> :
 											null}
 										{this.props.article.datePublished ?
@@ -251,11 +237,11 @@ export default class extends React.PureComponent<Props, {
 												{formatTimestamp(this.props.article.datePublished)}
 											</span> :
 											null}
-										{this._authorLinks.length || this.props.article.datePublished ?
+										{this._renderAuthorLinks().length || this.props.article.datePublished ?
 											<span className="spacer"></span> :
 											null}
 										<span className="length">
-											{this._estimatedReadTime}
+											{this._renderEstimatedReadTime()}
 										</span>
 									</div>
 								</div>
@@ -269,13 +255,13 @@ export default class extends React.PureComponent<Props, {
 									</div>
 									<div className="comments">
 										<a
-											href={this._commentsLinkHref}
+											href={this._renderCommentsLinkHref()}
 											onClick={this._viewComments}
 										>
 											{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 										</a>
 									</div>
-									{this._ratingControl}
+									{this._renderRatingControl()}
 
 								</div>
 							</div>
