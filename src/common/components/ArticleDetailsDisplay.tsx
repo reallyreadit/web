@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { formatTimestamp, formatCountable } from '../format';
+import { formatTimestamp, formatCountable, truncateText } from '../format';
 import Star from './Star';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
@@ -28,7 +28,6 @@ export default class extends ArticleDetails {
 		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
 			.createUrl(articleUrlParams);
 
-		const MAX_DESCRIPTION_LENGTH = 250;
 		return (
 			<div
 				className={classnames( "article-details-display_ssv8xk", {"has-image": true}, this.props.className )}>
@@ -84,9 +83,7 @@ export default class extends ArticleDetails {
 							</div>
 							{
 								this.props.showDescription && typeof this.props.article.description === "string" ?
-								<div className="description">{this.props.article.description.slice(0, MAX_DESCRIPTION_LENGTH)}{
-									this.props.article.description.length > MAX_DESCRIPTION_LENGTH ? "…" : null
-								}</div>
+								<div className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</div>
 								: null
 							}
 							<div className="bottom-bar">

@@ -59,7 +59,7 @@ export function truncateText(text: string, length: number) {
 	if (!text) {
 		return text;
 	}
-	return text.length > length ? text.substring(0, length - 3) + '...' : text;
+	return text.length > length ? text.substring(0, length - 3) + '…' : text;
 }
 export function formatPossessive(text: string) {
 	return `${text}'${text.endsWith('s') ? '' : 's'}`;

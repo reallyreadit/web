@@ -1,6 +1,6 @@
 import * as React from 'react';
 import UserArticle from '../models/UserArticle';
-import { formatTimestamp, formatCountable } from '../format';
+import { formatTimestamp, formatCountable, truncateText } from '../format';
 import Star from './Star';
 import ScreenKey from '../routing/ScreenKey';
 import routes from '../routing/routes';
@@ -93,6 +93,7 @@ export default class extends React.PureComponent<Props, {
 	protected _estimatedReadTime: string;
 	protected _ratingControl: React.ReactElement<RatingControl>;
 	protected _shareControl: React.ReactElement<ShareControl>;
+	protected MAX_DESCRIPTION_LENGTH = 250;
 
 	constructor(props: Props) {
 		super(props);
@@ -217,7 +218,7 @@ export default class extends React.PureComponent<Props, {
 								</div>
 								{
 									this.props.showDescription && !!this.props.article.description ?
-										<p className="description">{this.props.article.description}</p> : null
+										<p className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</p> : null
 								}
 								<div className="stats">
 									<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
