@@ -28,7 +28,7 @@ export default class extends ArticleDetails {
 		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
 			.createUrl(articleUrlParams);
 
-
+		const MAX_DESCRIPTION_LENGTH = 250;
 		return (
 			<div
 				className={classnames( "article-details-display_ssv8xk", {"has-image": true}, this.props.className )}>
@@ -84,7 +84,9 @@ export default class extends ArticleDetails {
 							</div>
 							{
 								this.props.showDescription && typeof this.props.article.description === "string" ?
-								<div className="description">{this.props.article.description}</div>
+								<div className="description">{this.props.article.description.slice(0, MAX_DESCRIPTION_LENGTH)}{
+									this.props.article.description.length > MAX_DESCRIPTION_LENGTH ? "…" : null
+								}</div>
 								: null
 							}
 							<div className="bottom-bar">
