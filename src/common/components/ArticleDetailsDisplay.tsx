@@ -1,12 +1,8 @@
 import * as React from 'react';
-import { formatTimestamp, formatCountable } from '../format';
+import { formatTimestamp, formatCountable, truncateText } from '../format';
 import Star from './Star';
-import ScreenKey from '../routing/ScreenKey';
-import routes from '../routing/routes';
-import { findRouteByKey } from '../routing/Route';
 // import { MenuPosition } from './ShareControl';
 import Icon from './Icon';
-import { calculateEstimatedReadTime } from '../calculate';
 // import PostButton from './PostButton';
 // import AotdMetadata from './AotdMetadata';
 import classnames = require('classnames');
@@ -16,19 +12,6 @@ import Pill from './Pill';
 
 export default class extends ArticleDetails {
 	public render() {
-		const
-			[sourceSlug, articleSlug] = this.props.article.slug.split('_'),
-			articleUrlParams = {
-				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
-			},
-			estimatedReadTime = calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
-
-		// comments link
-		let commentsLinkHref = findRouteByKey(routes, ScreenKey.Comments)
-			.createUrl(articleUrlParams);
-
-		const MAX_DESCRIPTION_LENGTH = 250;
 		return (
 			<div
 				className={classnames( "article-details-display_ssv8xk", {"has-image": true}, this.props.className )}>
@@ -68,8 +51,8 @@ export default class extends ArticleDetails {
 								</a>
 							</div>
 							<div className="meta">
-								{this._authorLinks}
-								{this._authorLinks.length ?
+								{this._renderAuthorLinks()}
+								{this._renderAuthorLinks().length ?
 									<>{" "}in{" "}</> :
 									null}
 								<span className="source">{this.props.article.source}</span>
@@ -84,31 +67,29 @@ export default class extends ArticleDetails {
 							</div>
 							{
 								this.props.showDescription && typeof this.props.article.description === "string" ?
-								<div className="description">{this.props.article.description.slice(0, MAX_DESCRIPTION_LENGTH)}{
-									this.props.article.description.length > MAX_DESCRIPTION_LENGTH ? "…" : null
-								}</div>
+								<div className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</div>
 								: null
 							}
 							<div className="bottom-bar">
 								<div className="stats">
-									<Pill><span>{estimatedReadTime}</span></Pill>
+									<Pill><span>{this._renderEstimatedReadTime()}</span></Pill>
 									<Pill><div className="reads">
 										<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
 									</div></Pill>
 									<Pill>
 										<div className="comments">
 											<a
-												href={commentsLinkHref}
+												href={this._renderCommentsLinkHref()}
 												onClick={this._viewComments}
 											>
 												{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
 											</a>
 										</div>
 									</Pill>
-									{this._ratingControl}
+									{this._renderRatingControl()}
 								</div>
 								<div className="actions">
-									{this._shareControl}
+									{this._renderShareControl()}
 									{this.props.user ?
 										<Star
 											starred={!!this.props.article.dateStarred}
