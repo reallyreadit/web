@@ -3,14 +3,11 @@ import CommentThread from '../../models/CommentThread';
 import CommentComposer from './CommentComposer';
 import Link from '../Link';
 import classNames from 'classnames';
-import { findRouteByKey } from '../../routing/Route';
-import routes from '../../routing/routes';
-import ScreenKey from '../../routing/ScreenKey';
 import ShareResponse from '../../sharing/ShareResponse';
 import { ShareEvent } from '../../sharing/ShareEvent';
 import AsyncTracker from '../../AsyncTracker';
 import UserAccount from '../../models/UserAccount';
-import { formatPossessive, formatIsoDateAsUtc } from '../../format';
+import { formatIsoDateAsUtc } from '../../format';
 import ContentBox from '../ContentBox';
 import PostHeader from '../PostHeader';
 import CommentForm from '../../models/social/CommentForm';
@@ -23,6 +20,7 @@ import CommentAddendumComposer from './CommentAddendumComposer';
 import { DateTime } from 'luxon';
 import MarkdownContent from './MarkdownContent';
 import { ShareChannelData } from '../../sharing/ShareData';
+import AbstractCommentShareable from '../AbstractCommentShareable';
 
 enum CompositionState {
 	None,
@@ -47,16 +45,19 @@ interface Props {
 	onViewProfile: (userName: string) => void,
 	onViewThread?: (comment: CommentThread) => void,
 	parentCommentId?: string,
+	showPostHeader?: boolean,
 	user: UserAccount | null
 }
-export default class CommentDetails extends React.Component<
+export default class CommentDetails extends AbstractCommentShareable<
 	Props,
 	{
 		compositionState: CompositionState
 	}
 > {
+	public static defaultProps: Pick<Props, 'showPostHeader'> = {
+		showPostHeader: true
+	}
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _commentsScreenRoute = findRouteByKey(routes, ScreenKey.Comments);
 	private readonly _textDivRef: React.RefObject<HTMLDivElement>;
 	private readonly _openEditComposer = () => {
 		if ((DateTime.fromISO(formatIsoDateAsUtc(this.props.comment.dateCreated)).diffNow('seconds').seconds * -1) < (60 * 2) + 50) {
@@ -156,33 +157,6 @@ export default class CommentDetails extends React.Component<
 				}
 			);
 	};
-	private readonly _getShareData = () => {
-		const
-			articleTitle = this.props.comment.articleTitle,
-			commentAuthor = this.props.comment.userAccount,
-			quotedCommentText = this.props.comment.text
-				.split(/\n\n+/)
-				.map((paragraph, index, paragraphs) => `"${paragraph}${index === paragraphs.length - 1 ? '"' : ''}`)
-				.join('\n\n'),
-			shareUrl = this.getCommentAbsoluteUrl();
-		return {
-			action: 'Comment',
-			email: {
-				body: `${quotedCommentText}\n\n${shareUrl}`,
-				subject: (
-					this.props.user && this.props.user.name === commentAuthor ?
-						`My comment on "${articleTitle}"` :
-						`Check out ${formatPossessive(commentAuthor)} comment on "${articleTitle}"`
-				)
-			},
-			text: (
-				this.props.user && this.props.user.name === commentAuthor ?
-					this.props.comment.text :
-					`Check out ${formatPossessive(commentAuthor)} comment on "${articleTitle}"`
-			),
-			url: shareUrl
-		};
-	};
 	private readonly _viewThread = () => {
 		this.props.onViewThread(this.props.comment);
 	};
@@ -195,16 +169,6 @@ export default class CommentDetails extends React.Component<
 			this._textDivRef = React.createRef();
 		}
 	}
-	private getCommentAbsoluteUrl() {
-		const [sourceSlug, articleSlug] = this.props.comment.articleSlug.split('_');
-		return this.props.onCreateAbsoluteUrl(
-			this._commentsScreenRoute.createUrl({
-				['articleSlug']: articleSlug,
-				['commentId']: this.props.comment.id,
-				['sourceSlug']: sourceSlug
-			})
-		);
-	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
@@ -216,25 +180,24 @@ export default class CommentDetails extends React.Component<
 		);
 		return (
 			<ContentBox
-				className={classNames(
-					'comment-details_qker1u',
-					{
-						'post-embed': !!this.props.onViewThread
-					}
-				)}
+				className="comment-details_qker1u"
+
 				highlight={this.props.highlightedCommentId === this.props.comment.id}
 			>
-				<PostHeader
-					userName={this.props.comment.userAccount}
-					leaderboardBadge={this.props.comment.badge}
-					isAuthor={this.props.comment.isAuthor}
-					date={this.props.comment.dateCreated}
-					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-					onGetShareData={this._getShareData}
-					onShare={this.props.onShare}
-					onShareViaChannel={this.props.onShareViaChannel}
-					onViewProfile={this.props.onViewProfile}
-				/>
+				{ this.props.showPostHeader ?
+					<PostHeader
+						userName={this.props.comment.userAccount}
+						leaderboardBadge={this.props.comment.badge}
+						isAuthor={this.props.comment.isAuthor}
+						date={this.props.comment.dateCreated}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onGetShareData={this._getShareData}
+						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
+						onViewProfile={this.props.onViewProfile}
+					/>
+					: null
+				}
 				{this.state.compositionState === CompositionState.Revision ?
 					<CommentRevisionComposer
 						comment={this.props.comment}

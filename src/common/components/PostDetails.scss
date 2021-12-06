@@ -8,13 +8,25 @@
 	animation-duration: 2500ms;
 	animation-fill-mode: forwards;
 	animation-delay: 500ms;
+
 }
-.post-details_8qx033 > .content > .post-header_f4a846,
+.post-details_8qx033 > .content-box_kkp9lc.content {
+	border-radius: 0 0 3px 3px;
+	border-top-width: 0;
+    border-color: var(--intent-neutral-color);
+}
+.post-details_8qx033 > .content > .article-details_d2vnmv {
+	padding: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: var(--content-border-color);
+}
 .post-details_8qx033 > .content > .comment-details_qker1u {
 	margin-top: 10px;
 }
-.post-details_8qx033 > .content > .post-header_f4a846 {
-	border-radius: 3px;
+.post-details_8qx033 > .post-header_f4a846 {
+	border-radius: 3px 3px 0 0;
 }
 
 @keyframes post-details_8qx033-alert-light {

@@ -11,9 +11,9 @@ import PostHeader from './PostHeader';
 import CommentThread from '../models/CommentThread';
 import classNames from 'classnames';
 import Rating from '../models/Rating';
-import AotdMetadata from './AotdMetadata';
 import {DeviceType} from '../DeviceType';
 import { ShareChannelData } from '../sharing/ShareData';
+import AbstractCommentShareable from './AbstractCommentShareable';
 
 interface Props {
 	deviceType: DeviceType,
@@ -35,15 +35,31 @@ interface Props {
 	post: Post,
 	user: UserAccount | null
 }
-export default class PostDetails extends React.Component<Props> {
+export default class PostDetails extends AbstractCommentShareable<Props> {
+
 	public render() {
+		const commentThread = this._getCommentThread();
 		return (
 			<div className="post-details_8qx033">
-				<AotdMetadata
-					article={this.props.post.article}
-					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-					onViewProfile={this.props.onViewProfile}
-				/>
+				{this._hasComment() ?
+					<PostHeader
+						userName={commentThread.userAccount}
+						leaderboardBadge={commentThread.badge}
+						isAuthor={commentThread.isAuthor}
+						date={commentThread.dateCreated}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onGetShareData={this._getShareData}
+						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
+						onViewProfile={this.props.onViewProfile}
+					/> :
+					<PostHeader
+						userName={this.props.post.userName}
+						leaderboardBadge={this.props.post.badge}
+						date={this.props.post.date}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onViewProfile={this.props.onViewProfile}
+				/>}
 				<ContentBox
 					className={classNames('content', { 'alert': this.props.post.hasAlert })}
 					highlight={
@@ -60,18 +76,19 @@ export default class PostDetails extends React.Component<Props> {
 						deviceType={this.props.deviceType}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onNavTo={this.props.onNavTo}
-						onRateArticle={this.props.onRateArticle}
 						onPost={this.props.onPost}
+						onRateArticle={this.props.onRateArticle}
 						onRead={this.props.onRead}
 						onShare={this.props.onShare}
 						onShareViaChannel={this.props.onShareViaChannel}
-						showAotdMetadata={false}
 						onToggleStar={this.props.onToggleStar}
 						onViewComments={this.props.onViewComments}
 						onViewProfile={this.props.onViewProfile}
+						showAotdMetadata={false}
+						showMetaActions={false}
 						user={this.props.user}
 					/>
-					{this.props.post.comment ?
+					{ this._hasComment() ?
 						<CommentDetails
 							comment={createCommentThread(this.props.post)}
 							onCloseDialog={this.props.onCloseDialog}
@@ -83,14 +100,9 @@ export default class PostDetails extends React.Component<Props> {
 							onViewProfile={this.props.onViewProfile}
 							onViewThread={this.props.onViewThread}
 							user={this.props.user}
-						/> :
-						<PostHeader
-							userName={this.props.post.userName}
-							leaderboardBadge={this.props.post.badge}
-							date={this.props.post.date}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onViewProfile={this.props.onViewProfile}
-						/>}
+							showPostHeader={false}
+						/> : null
+					}
 				</ContentBox>
 			</div>
 		);

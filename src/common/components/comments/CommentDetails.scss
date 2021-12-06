@@ -45,24 +45,6 @@
 .comment-details_qker1u > .replies > li {
 	margin-top: 5px;
 }
-.comment-details_qker1u.post-embed {
-	border-width: 1px;
-	border-style: solid;
-	border-radius: 3px;
-	border-top-width: 0;
-}
-.comment-details_qker1u.post-embed > .post-header_f4a846 {
-	border-radius: 3px 3px 0 0;
-}
-.comment-details_qker1u.post-embed > .text-wrapper > .text {
-	margin: 10px;
-}
-.comment-details_qker1u.post-embed > .addenda {
-	padding: 0 10px 10px 10px;
-}
-.comment-details_qker1u.post-embed > .actions {
-	margin: 0 10px 10px 10px;
-}
 
 @media (max-width: 449px) {
 	.comment-details_qker1u > .actions {
@@ -87,14 +69,6 @@
 			$scheme,
 			(
 				"border-left-color": $content-divider-color
-			)
-		);
-	}
-	#{$root} .comment-details_qker1u.post-embed {
-		@include theme-colors(
-			$scheme,
-			(
-				"border-color": $intent-neutral-color
 			)
 		);
 	}
