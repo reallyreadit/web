@@ -32,6 +32,9 @@ interface State {
 	isLoadingNewItems: boolean,
 	newItemCount: number
 }
+/**
+ * A dialog intended to either show a list of followees or a list of followers (collectively called "followings")
+ */
 export default class FollowingListDialog extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _followUser = (form: UserNameForm) => {

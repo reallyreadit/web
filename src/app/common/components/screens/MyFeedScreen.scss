@@ -22,3 +22,21 @@
 .my-feed-screen_921ddo > .page-selector_a8tbpb {
 	flex: 0 0 auto;
 }
+$following-margin: 6px;
+.my-feed-screen_921ddo > .followings {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+	> .following-count {
+		display: block;
+		font-family: 'Museo Sans (500)';
+		font-size: 15pt;
+		// margin-top: 20px;
+		&:first-child {
+			margin-right: $following-margin;
+		}
+		&:last-child {
+			margin-left: $following-margin;
+		}
+	}
+}

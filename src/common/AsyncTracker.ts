@@ -24,11 +24,12 @@ export default class AsyncTracker {
 		return handle;
 	}
 	/**
-	 * Wraps a callback function so that it is tracked by this tracker.
-	 * The callback will only be invoked if the wrapping callback is not in a cancelled state.
+	 * Wraps a callback function so that it is tracked by this tracker, and cancelable (optionally via a tag).
+	 * When the returned wrapping callback is invoked, the inner given callback will only be invoked if
+	 * the wrapping callback is not in a cancelled state.
 	 * @param callback
-	 * @param tag an optional tag to identify the wrapping callback with
-	 * @returns
+	 * @param tag an optional tag to identify this wrapping callback
+	 * @returns a function with the same signature as the callback given
 	 */
 	public addCallback<T>(callback: (value: T) => void, tag?: string) {
 		const token = this.createCancellationToken(tag);
@@ -41,6 +42,7 @@ export default class AsyncTracker {
 	}
 	/**
 	 * Adds a delegate function that will be invoked when this tracker cancels its tracked operations.
+	 * Useful in the case when the given callback is an "unsubscribe" action of an "observer" in the Observable/Observer pattern.
 	 * @param callbacks Function(s) that will synchronously cancel an asynchronous operation when invoked
 	 */
 	public addCancellationDelegate(...callbacks: Function[]) {

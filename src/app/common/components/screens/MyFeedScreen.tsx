@@ -8,8 +8,7 @@ import Fetchable from '../../../../common/Fetchable';
 import UserArticle from '../../../../common/models/UserArticle';
 import Rating from '../../../../common/models/Rating';
 import CommentThread from '../../../../common/models/CommentThread';
-import AsyncTracker from '../../../../common/AsyncTracker';
-import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
+import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import List from '../controls/List';
@@ -27,6 +26,13 @@ import ShareResponse from '../../../../common/sharing/ShareResponse';
 import {ShareEvent} from '../../../../common/sharing/ShareEvent';
 import {DeviceType} from '../../../../common/DeviceType';
 import {ShareChannelData} from '../../../../common/sharing/ShareData';
+import AbstractFollowable, {noop, reloadProfile, updateProfile} from '../AbstractFollowable';
+import UserNameForm from '../../../../common/models/social/UserNameForm';
+import Following from '../../../../common/models/social/Following';
+import UserNameQuery from '../../../../common/models/social/UserNameQuery';
+import Profile from '../../../../common/models/social/Profile';
+import Link from '../../../../common/components/Link';
+import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
 
 interface Props {
 	deviceType: DeviceType,
@@ -34,31 +40,41 @@ interface Props {
 	onCloseDialog: () => void,
 	onCopyTextToClipboard: (text: string, successMessage: string) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onFollowUser: (form: UserNameForm) => Promise<void>,
+	onGetFollowees: FetchFunction<Following[]>,
+	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
 	onGetNotificationPosts: FetchFunctionWithParams<NotificationPostsQuery, PageResult<Post>>,
 	onNavTo: (url: string) => boolean,
 	onOpenDialog: (dialog: React.ReactNode) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onReloadProfile: (screenId: number, userName: string, user: UserAccount | null) => Promise<Profile>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
+	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
+	onUnfollowUser: (form: UserNameForm) => Promise<void>,
+	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewThread: (comment: CommentThread) => void,
-	user: UserAccount
+	profile: Fetchable<Profile>,
+	screenId: number,
+	userAccount: UserAccount | null,
+	userName: string
 }
 interface State {
 	isLoadingNewItems: boolean,
 	isScreenLoading: boolean,
 	newItemCount: number,
-	posts: Fetchable<PageResult<Post>>
+	posts: Fetchable<PageResult<Post>>,
+
 }
 
 const postAlerts = Alert.Post | Alert.Loopback;
-class MyFeedScreen extends React.Component<Props, State> {
-	private readonly _asyncTracker = new AsyncTracker();
+class MyFeedScreen extends AbstractFollowable<Props, State> {
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
 			posts: {
@@ -120,7 +136,7 @@ class MyFeedScreen extends React.Component<Props, State> {
 		);
 	}
 	private clearAlertIfNeeded() {
-		if (!this._hasClearedAlert && hasAnyAlerts(this.props.user, postAlerts)) {
+		if (!this._hasClearedAlert && hasAnyAlerts(this.props.userAccount, postAlerts)) {
 			this.props.onClearAlerts(postAlerts);
 			this._hasClearedAlert = true;
 		}
@@ -149,11 +165,12 @@ class MyFeedScreen extends React.Component<Props, State> {
 		this.clearAlertIfNeeded();
 	}
 	public componentDidUpdate(prevProps: Props) {
-		if (this.props.user && prevProps.user) {
+		super.componentDidUpdate(prevProps);
+		if (this.props.userAccount && prevProps.userAccount) {
 			const newItemCount = Math.max(
 				0,
-				(this.props.user.postAlertCount - prevProps.user.postAlertCount) +
-				(this.props.user.loopbackAlertCount - prevProps.user.loopbackAlertCount)
+				(this.props.userAccount.postAlertCount - prevProps.userAccount.postAlertCount) +
+				(this.props.userAccount.loopbackAlertCount - prevProps.userAccount.loopbackAlertCount)
 			);
 			if (newItemCount) {
 				this.setState({
@@ -178,7 +195,25 @@ class MyFeedScreen extends React.Component<Props, State> {
 								onClick={this._loadNewItems}
 								text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'post')}`}
 							/> :
-							null}
+						null}
+						<div className="followings">
+							{this.props.profile.value.followeeCount ?
+								<Link
+									className="following-count"
+									onClick={this._showFollowees}
+									text={this._getFolloweesText()}
+								/> :
+								<div className="following-count">{this._getFolloweesText()}</div>}
+							{" "}|{" "}
+							{this.props.profile.value.followerCount ?
+										<Link
+											badge={this.isOwnProfile() && this.props.userAccount.followerAlertCount}
+											className="following-count"
+											onClick={this._showFollowers}
+											text={this._getFollowersText()}
+										/> :
+										<div className="following-count">{this._getFollowersText()}</div>}
+						</div>
 						{this.state.posts.isLoading ?
 							<LoadingOverlay position="static" /> :
 							this.state.posts.value.items.length ?
@@ -203,7 +238,7 @@ class MyFeedScreen extends React.Component<Props, State> {
 														onViewProfile={this.props.onViewProfile}
 														onViewThread={this.props.onViewThread}
 														post={post}
-														user={this.props.user}
+														user={this.props.userAccount}
 													/>
 												</li>
 											)
@@ -226,19 +261,67 @@ class MyFeedScreen extends React.Component<Props, State> {
 		);
 	}
 }
+type Deps = Pick<Props, Exclude<keyof Props, 'location'
+	| 'onCopyAppReferrerTextToClipboard'
+	| 'onOpenNewPlatformNotificationRequestDialog'
+	| 'onReloadProfile'
+	| 'onUpdateProfile'
+	| 'profile'
+	| 'screenId'
+ 	| 'onBeginOnboarding'
+	| 'userAccount'
+	| 'userName'
+	>>;
+
+const createNewScreenState = (result: Fetchable<Profile>, user: UserAccount | null) => produce(
+	(currentState: Screen<Fetchable<Profile>>) => {
+		currentState.componentState = result;
+	}
+);
+
 export default function createMyFeedScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+	deps: Deps & {
+		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
+		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void
+	}
 ) {
+	const factoryHelperDeps = {
+		...deps,
+		createNewScreenState: createNewScreenState
+	};
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'My Feed' }),
-		render: (screen: Screen, sharedState: SharedState) => (
-			<MyFeedScreen {
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => {
+			const profile = deps.onGetProfile(
+				{
+					userName: sharedState.user.name
+				},
+				result => {
+					deps.onSetScreenState(id, createNewScreenState(result, sharedState.user));
+				}
+			);
+			return {
+				id,
+				componentState: profile,
+				key,
+				location,
+				title: 'My Feed' }
+		},
+		render: (screen: Screen, sharedState: SharedState) => {
+			return (<MyFeedScreen {
 				...{
 					...deps,
-					user: sharedState.user
-				}
-			} />
-		)
-	};
+					location: screen.location,
+					onBeginOnboarding: noop,
+					onCopyAppReferrerTextToClipboard: noop,
+					onOpenNewPlatformNotificationRequestDialog: noop,
+					onReloadProfile: reloadProfile.bind(null, factoryHelperDeps),
+					onUpdateProfile: updateProfile.bind(null, factoryHelperDeps),
+					profile: screen.componentState,
+					screenId: screen.id,
+					userAccount: sharedState.user,
+					userName: sharedState.user.name,
+				}} />);
+		}
+	}
 }
