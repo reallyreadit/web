@@ -253,7 +253,7 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 								<CenteringContainer>
 									<StickyNote>
 										<strong>Follow readers who interest you.</strong>
-										<span>Their posts will appear here.</span>
+										<span>Their posts will appear here, as well as posts from people who commented on articles that you read.</span>
 									</StickyNote>
 								</CenteringContainer>}
 						</>}
