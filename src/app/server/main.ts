@@ -278,10 +278,18 @@ server.get('/inbox', (req, res) => {
 	redirect(
 		req,
 		res,
-		findRouteByKey(routes, ScreenKey.Notifications).createUrl()
+		findRouteByKey(routes, ScreenKey.MyFeed).createUrl()
 	);
 });
 server.get('/following', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.MyFeed).createUrl()
+	);
+});
+// this route was never used AFAIK, it's there preventively for those users still on the browser
+server.get('/replies', (req, res) => {
 	redirect(
 		req,
 		res,

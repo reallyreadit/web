@@ -99,6 +99,12 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	},
 	{
 		authLevel: UserAccountRole.Regular,
+		createUrl: () => '/my-feed',
+		pathRegExp: /^\/my-feed$/,
+		screenKey: ScreenKey.MyFeed
+	},
+	{
+		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/impact',
 		pathRegExp: /^\/impact$/,
 		screenKey: ScreenKey.MyImpact

@@ -8,6 +8,7 @@ import { SubscriptionStatus, SubscriptionStatusType } from '../../../../common/m
 
 interface Props {
 	onViewHome: () => void,
+	onViewMyFeed: () => void,
 	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
@@ -28,6 +29,15 @@ export default class NavTray extends React.PureComponent<Props>{
 							name="earth"
 						/>
 						<label>Discover</label>
+					</button>
+				</li>
+				<li>
+					<button
+						className={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : null}
+						onClick={this.props.onViewMyFeed}
+					>
+						<Icon name="candy" />
+						<label>My Feed</label>
 					</button>
 				</li>
 				<li>
