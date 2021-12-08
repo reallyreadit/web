@@ -12,7 +12,6 @@ import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import classNames from 'classnames';
-import Menu from './AppRoot/Menu';
 import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
 import ClientType from '../ClientType';
@@ -150,18 +149,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return this._eventManager.addListener('purchaseCompleted', handler);
 	}
 
-	// menu
-	private readonly _closeMenu = () => {
-		this.setState({ menuState: 'closing' });
-	};
-	private readonly _hideMenu = () => {
-		this.setState({ menuState: 'closed' });
-	};
-	private readonly _openMenu = () => {
-		this.checkRevenueReportExpiration();
-		this.setState({ menuState: 'opened' });
-	};
-
 	// notifications
 	private readonly _requestNotificationAuthorization = () => {
 		return this.props.appApi.requestNotificationAuthorization();
@@ -211,9 +198,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _popScreen = () => {
 		this.setState({ isPoppingScreen: true });
 	};
-	private readonly _viewAdminPage = () => {
-		this.replaceAllScreens(ScreenKey.Admin);
-	};
 	private readonly _viewAotdHistory = () => {
 		this.pushScreen(ScreenKey.AotdHistory);
 	};
@@ -225,26 +209,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private readonly _viewBlog = () => {
-		this.replaceAllScreens(ScreenKey.Blog);
-	};
-	private readonly _viewFaq = () => {
-		this.replaceAllScreens(ScreenKey.Faq);
-	};
 	private readonly _viewHome = () => {
 		this.replaceAllScreens(ScreenKey.Home);
 	};
 	private readonly _viewNotifications = () => {
 		this.replaceAllScreens(ScreenKey.Notifications);
 	};
-	private readonly _viewLeaderboards = () => {
-		this.replaceAllScreens(ScreenKey.Leaderboards);
-	};
 	private readonly _viewMyFeed = () => {
 		this.replaceAllScreens(ScreenKey.MyFeed);
-	};
-	private readonly _viewMyImpact = () => {
-		this.replaceAllScreens(ScreenKey.MyImpact);
 	};
 	private readonly _viewMyReads = () => {
 		this.replaceAllScreens(ScreenKey.MyReads);
@@ -252,14 +224,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewPrivacyPolicy = () => {
 		this.pushScreen(ScreenKey.PrivacyPolicy);
 	};
-	private readonly _viewSearch = () => {
-		this.replaceAllScreens(ScreenKey.Search);
-	};
 	private readonly _viewSettings = () => {
-		this.replaceAllScreens(ScreenKey.Settings);
-	};
-	private readonly _viewStats = () => {
-		this.replaceAllScreens(ScreenKey.Stats);
+		this.pushScreen(ScreenKey.Settings);
 	};
 
 	// sharing
@@ -1696,7 +1662,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onNavTo={this._navTo}
 							onViewHome={this._viewHome}
 							onViewMyFeed={this._viewMyFeed}
-							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							subscriptionStatus={this.state.subscriptionStatus}
@@ -1707,9 +1672,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 								content={headerContent}
 								isTransitioningBack={this.state.isPoppingScreen}
 								onBack={this._popScreen}
-								onOpenMenu={this._openMenu}
 								onViewNotifications={this._viewNotifications}
-								selectedScreenKey={this.state.screens[0].key}
+								onViewProfile={this._viewProfile}
+								onViewSettings={this._viewSettings}
+								// this is only the selected "root" screen when ReplaceAll is used
+								selectedRootScreen={this.state.screens[0]}
+								currentScreen={this.state.screens[this.state.screens.length - 1]}
 								titles={this.state.screens.map(screen => screen.titleContent || screen.title)}
 								user={this.state.user}
 							/>
@@ -1731,31 +1699,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 						<NavTray
 							onViewHome={this._viewHome}
 							onViewMyFeed={this._viewMyFeed}
-							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
 							subscriptionStatus={this.state.subscriptionStatus}
 						/>
-						{this.state.menuState !== 'closed' ?
-							<Menu
-								isClosing={this.state.menuState === 'closing'}
-								onClose={this._closeMenu}
-								onClosed={this._hideMenu}
-								onOpenEarningsExplainerDialog={this._openEarningsExplainerDialog}
-								onViewAdminPage={this._viewAdminPage}
-								onViewBlog={this._viewBlog}
-								onViewFaq={this._viewFaq}
-								onViewLeaderboards={this._viewLeaderboards}
-								onViewProfile={this._viewProfile}
-								onViewSearch={this._viewSearch}
-								onViewSettings={this._viewSettings}
-								onViewStats={this._viewStats}
-								revenueReport={this.state.revenueReport}
-								selectedScreen={this.state.screens[0]}
-								userAccount={this.state.user}
-							/> :
-							null}
 						{this.state.isInOrientation ?
 							<OrientationWizard
 								appPlatform={this.props.appApi.deviceInfo.appPlatform}

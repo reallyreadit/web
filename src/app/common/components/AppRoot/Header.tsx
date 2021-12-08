@@ -1,16 +1,21 @@
 import * as React from 'react';
+import { NavOptions, Screen } from '../Root';
 import Icon, { IconName } from '../../../../common/components/Icon';
 import UserAccount from '../../../../common/models/UserAccount';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import * as classNames from 'classnames';
+import {findRouteByKey} from '../../../../common/routing/Route';
+import routes from '../../../../common/routing/routes';
 
 export default (props: {
 	content?: React.ReactNode,
 	isTransitioningBack: boolean,
 	onBack: () => void,
-	onOpenMenu: () => void,
 	onViewNotifications: () => void,
-	selectedScreenKey: ScreenKey,
+	onViewProfile: (userName?: string, options?: NavOptions) => void,
+	onViewSettings: () => void,
+	selectedRootScreen: Screen,
+	currentScreen: Screen,
 	titles: (React.ReactNode | null)[],
 	user: UserAccount
 }) => {
@@ -51,7 +56,7 @@ export default (props: {
 							classNames(
 								'notification-icon-wrapper',
 								{
-									'selected': props.selectedScreenKey === ScreenKey.Notifications
+									'selected': props.selectedRootScreen.key === ScreenKey.Notifications
 								}
 							)
 						}
@@ -75,15 +80,35 @@ export default (props: {
 						name="bell"
 					/>
 				</div>
-				<div
-					className="menu-button"
-					onClick={props.onOpenMenu}
-				>
-					<Icon
-						badge={props.user.followerAlertCount}
-						name="menu2"
-					/>
-				</div>
+				{
+					( (props.currentScreen.key === ScreenKey.Profile) &&
+						findRouteByKey(routes, ScreenKey.Profile)
+							.getPathParams(props.currentScreen.location.path)['userName'].toLowerCase()
+							=== props.user.name.toLowerCase()
+					) ?
+						<div
+							className="menu-button"
+							onClick={props.onViewSettings}
+						>
+							<Icon
+								name="gear2"
+							/>
+						</div>
+					:
+						(
+							props.currentScreen.key !== ScreenKey.Settings &&
+							props.currentScreen.key !== ScreenKey.Admin ) ?
+							<div
+								className="menu-button"
+								onClick={(_) => props.onViewProfile(props.user.name)}
+							>
+								<Icon
+									badge={props.user.followerAlertCount}
+									name="user"
+								/>
+							</div>
+						: null
+				}
 			</div>
 		</div>
 	);
