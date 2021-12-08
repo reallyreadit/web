@@ -47,6 +47,7 @@ import { AuthorEmailVerificationRequest } from '../../../common/models/userAccou
 import { TweetWebIntentParams } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountOnboardingLinkRequestResponseType } from '../../../common/models/subscriptions/PayoutAccount';
 import SettingsLink from './SettingsPage/SettingsLink';
+import UserAccountRole from '../../../common/models/UserAccountRole';
 
 interface Props {
 	appPlatform: AppPlatform,
@@ -366,6 +367,16 @@ class SettingsPage extends React.PureComponent<
 		const user = this.props.user;
 		return (
 			<ScreenContainer className="settings-page_ejwkk">
+				{this.props.user.role === UserAccountRole.Admin ?
+					<Button
+						onClick={() => this.props.onNavTo({key: ScreenKey.Admin})}
+						className="admin-button"
+						text="Admin"
+						size="large"
+						intent="loud"
+						display="block"
+					/>
+					: null}
 				<SettingsLink iconName="question-circle" screenKey={ScreenKey.Faq} onNavTo={this.props.onNavTo}>
 					Got a question? We’re here to help
 				</SettingsLink>
