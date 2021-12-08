@@ -52,3 +52,13 @@
 .settings-page_ejwkk > .accounts > .section > .account > .date {
 	margin-bottom: 5px;
 }
+
+// to follow the screen padding
+.settings-page_ejwkk > .settings-link_knmy9p:nth-of-type(3) {
+	margin-bottom: 40px;
+}
+@media (max-width: 374px) {
+	.settings-page_ejwkk > .settings-link_knmy9p:nth-of-type(3) {
+		margin-bottom: 20px;
+	}
+}

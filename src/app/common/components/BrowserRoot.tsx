@@ -808,6 +808,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
+					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
 					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
 					onOpenPriceChangeDialog: this._openPriceChangeDialog,

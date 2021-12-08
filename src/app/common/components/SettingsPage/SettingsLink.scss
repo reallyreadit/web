@@ -1,0 +1,40 @@
+/*
+        componentPath: src/app/common/components/SettingsPage/SettingsLink
+        cssComponentId: settings-link_knmy9p
+*/
+$icon-size: 1.75rem;
+$content-box-padding: 10px;
+$icon-margin: 4px;
+.settings-link_knmy9p {
+	margin-bottom: 12px;
+	> div.wrapper {
+		font-size: 14pt;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		> div.left-content {
+			display: flex;
+			align-items: center;
+			> .icon_rour3d {
+				width: $icon-size;
+				height: $icon-size;
+				min-width: $icon-size;
+				margin-right: $content-box-padding + $icon-margin;
+				margin-left: $icon-margin;
+			}
+			> .content .detail {
+				font-size: 0.9rem;
+				color: var(--text-muted-color);
+			}
+		}
+		> .icon_rour3d {
+			width: 1.5rem;
+			min-width: 1.5rem;
+			height: 1.5rem;
+			margin-right: 14px;
+			margin-left: 6px;
+		}
+	}
+}
