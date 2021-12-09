@@ -1,0 +1,25 @@
+/*
+        componentPath: src/app/common/components/AppRoot/ContendersScreen
+        cssComponentId: contenders-screen_2yh8r3
+*/
+
+.contenders-screen_2yh8r3 {
+	display: flex;
+	flex-flow: column;
+	padding: 16px 20px;
+}
+
+.contenders-screen_2yh8r3 > .sticky-note_zcw6jg {
+	flex: 0 0 auto;
+	margin: 0 auto 16px auto;
+}
+.contenders-screen_2yh8r3 > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}
+.contenders-screen_2yh8r3 > .community-reads-list_g4cy3n {
+	flex: 0 0 auto;
+}
+.contenders-screen_2yh8r3 > .show-more {
+	text-align: center;
+	margin: 20px 0;
+}

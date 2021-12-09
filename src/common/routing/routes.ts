@@ -62,6 +62,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
+		createUrl: () => '/contenders',
+		pathRegExp: /^\/contenders$/,
+		screenKey: ScreenKey.Contenders
+	},
+	{
 		createUrl: () => '/download',
 		pathRegExp: /^\/download$/,
 		screenKey: ScreenKey.Download

@@ -7,6 +7,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import { SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
+	onViewContenders: () => void,
 	onViewHome: () => void,
 	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
@@ -28,6 +29,17 @@ export default class NavTray extends React.PureComponent<Props>{
 							name="earth"
 						/>
 						<label>Discover</label>
+					</button>
+				</li>
+				<li>
+					<button
+						className={this.props.selectedScreen.key === ScreenKey.Contenders ? 'selected' : null}
+						onClick={this.props.onViewContenders}
+					>
+						<Icon
+							name="boxing-gloves"
+						/>
+						<label>Contenders</label>
 					</button>
 				</li>
 				<li>

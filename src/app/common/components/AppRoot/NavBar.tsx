@@ -9,12 +9,14 @@ import Alert from '../../../../common/models/notifications/Alert';
 import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 const
+	contendersUrl = findRouteByKey(routes, ScreenKey.Contenders).createUrl(),
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
 	onNavTo: (ref: NavReference, options: NavOptions) => void,
+	onViewContenders: () => void,
 	onViewHome: () => void,
 	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
@@ -35,6 +37,17 @@ export default class NavBar extends React.PureComponent<Props> {
 							state={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
 							iconLeft="earth"
 							text="Discover"
+							size="x-large"
+							display="block"
+						/>
+					</li>
+					<li>
+						<Button
+							href={contendersUrl}
+							onClick={this.props.onViewContenders}
+							state={this.props.selectedScreen.key === ScreenKey.Contenders ? 'selected' : 'normal'}
+							iconLeft="boxing-gloves"
+							text="Contenders"
 							size="x-large"
 							display="block"
 						/>

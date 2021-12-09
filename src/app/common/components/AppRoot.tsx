@@ -8,6 +8,7 @@ import UserAccount, { hasAnyAlerts, areEqual as areUsersEqual } from '../../../c
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './AppRoot/CommentsScreen';
+import createContenderScreenFactory from './AppRoot/ContendersScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
@@ -208,6 +209,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 				slug
 			}
 		);
+	};
+	private readonly _viewContenders = () => {
+		this.replaceAllScreens(ScreenKey.Contenders);
 	};
 	private readonly _viewHome = () => {
 		this.replaceAllScreens(ScreenKey.Home);
@@ -795,6 +799,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
+				onViewProfile: this._viewProfile
+			}),
+			[ScreenKey.Contenders]: createContenderScreenFactory(ScreenKey.Contenders, {
+				deviceType: DeviceType.Ios,
+				onClearAlerts: this._clearAlerts,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetCommunityReads: this.props.serverApi.getCommunityReads,
+				onNavTo: this._navTo,
+				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
+				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewAotdHistory: this._viewAotdHistory,
+				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
@@ -1660,6 +1682,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					<>
 						<NavBar
 							onNavTo={this._navTo}
+							onViewContenders={this._viewContenders}
 							onViewHome={this._viewHome}
 							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
@@ -1697,6 +1720,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							</ol>
 						</div>
 						<NavTray
+							onViewContenders={this._viewContenders}
 							onViewHome={this._viewHome}
 							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
