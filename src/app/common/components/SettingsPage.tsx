@@ -6,7 +6,7 @@ import ChangePasswordDialog from './SettingsPage/ChangePasswordDialog';
 import ChangeEmailAddressDialog from './SettingsPage/ChangeEmailAddressDialog';
 import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../../../common/components/Toaster';
-import { Screen, SharedState } from './Root';
+import { NavOptions, NavReference, Screen, SharedState } from './Root';
 import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
@@ -46,6 +46,8 @@ import { WriterAccountControl } from './SettingsPage/WriterAccountControl';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { TweetWebIntentParams } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountOnboardingLinkRequestResponseType } from '../../../common/models/subscriptions/PayoutAccount';
+import SettingsLink from './SettingsPage/SettingsLink';
+import UserAccountRole from '../../../common/models/UserAccountRole';
 
 interface Props {
 	appPlatform: AppPlatform,
@@ -60,6 +62,7 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onCreateStaticContentUrl: (path: string) => string,
 	onDeleteAccount: () => Promise<void>,
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
@@ -364,6 +367,27 @@ class SettingsPage extends React.PureComponent<
 		const user = this.props.user;
 		return (
 			<ScreenContainer className="settings-page_ejwkk">
+				{this.props.user.role === UserAccountRole.Admin ?
+					<Button
+						onClick={() => this.props.onNavTo({key: ScreenKey.Admin})}
+						className="admin-button"
+						text="Admin"
+						size="large"
+						intent="loud"
+						display="block"
+					/>
+					: null}
+				<SettingsLink iconName="question-circle" screenKey={ScreenKey.Faq} onNavTo={this.props.onNavTo}>
+					Got a question? We’re here to help
+				</SettingsLink>
+				<SettingsLink iconName="chart" screenKey={ScreenKey.Stats} onNavTo={this.props.onNavTo}>
+					View your personal reading stats
+				</SettingsLink>
+					{/* TODO: what to do with copy in case of free trial? */}
+				<SettingsLink iconName="pie-chart" screenKey={ScreenKey.MyImpact} onNavTo={this.props.onNavTo}>
+					<div>Readup allocates your subscription fees to the writers you read.</div>
+					<div className="detail">View your impact</div>
+				</SettingsLink>
 				{this.state.settings.isLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
@@ -384,7 +408,7 @@ class SettingsPage extends React.PureComponent<
 							</div>
 						</div>
 						<div className="setting">
-							<div className="header">
+						<div className="header">
 								<span className="label">Email Address</span>
 								<Separator />
 								<Link text="Change" iconLeft="write" onClick={this._openChangeEmailAddressDialog} />
@@ -600,6 +624,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onGetTimeZones={deps.onGetTimeZones}
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
 				onLinkAuthServiceAccount={deps.onLinkAuthServiceAccount}
+				onNavTo={deps.onNavTo}
 				onRequestPayoutAccountLogin={deps.onRequestPayoutAccountLogin}
 				onRequestPayoutAccountOnboarding={deps.onRequestPayoutAccountOnboarding}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
