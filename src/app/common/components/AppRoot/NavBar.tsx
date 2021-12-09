@@ -6,19 +6,17 @@ import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount
 import { Screen, NavReference, NavOptions } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
-import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 const
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
-	myImpactUrl = findRouteByKey(routes, ScreenKey.MyImpact).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
 	onNavTo: (ref: NavReference, options: NavOptions) => void,
 	onViewHome: () => void,
 	onViewMyFeed: () => void,
-	onViewMyImpact: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
 	subscriptionStatus: SubscriptionStatus,
@@ -43,17 +41,6 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 					<li>
 						<Button
-							href={myFeedUrl}
-							onClick={this.props.onViewMyFeed}
-							state={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}
-							iconLeft="candy"
-							text="My Feed"
-							size="x-large"
-							display="block"
-						/>
-					</li>
-					<li>
-						<Button
 							href={myReadsUrl}
 							onClick={this.props.onViewMyReads}
 							state={this.props.selectedScreen.key === ScreenKey.MyReads ? 'selected' : 'normal'}
@@ -65,11 +52,11 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 					<li>
 						<Button
-							href={myImpactUrl}
-							onClick={this.props.onViewMyImpact}
-							state={this.props.selectedScreen.key === ScreenKey.MyImpact ? 'selected' : 'normal'}
-							iconLeft={this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "rocket" : "dollar" }
-							text={this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed ? "Free Trial" : "My Impact" }
+							href={myFeedUrl}
+							onClick={this.props.onViewMyFeed}
+							state={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}
+							iconLeft="candy"
+							text="My Feed"
 							size="x-large"
 							display="block"
 						/>
