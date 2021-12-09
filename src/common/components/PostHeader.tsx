@@ -11,19 +11,25 @@ import UserAccount from '../models/UserAccount';
 import { ShareEvent } from '../sharing/ShareEvent';
 import * as classNames from 'classnames';
 
-export default (
-	props: {
-		userName: string,
-		leaderboardBadge: LeaderboardBadge,
-		isAuthor?: boolean,
-		date: string
-		onCreateAbsoluteUrl: (path: string) => string,
-		onGetShareData?: () => ShareData,
-		onShare?: (data: ShareEvent) => ShareResponse,
-		onShareViaChannel?: (data: ShareChannelData) => void,
-		onViewProfile: (userName: string) => void,
-		user?: UserAccount
-	}
+interface Props {
+	userName: string,
+	leaderboardBadge: LeaderboardBadge,
+	isAuthor?: boolean,
+	date: string
+	onCreateAbsoluteUrl: (path: string) => string,
+	onGetShareData?: () => ShareData,
+	onShare?: (data: ShareEvent) => ShareResponse,
+	onShareViaChannel?: (data: ShareChannelData) => void,
+	onViewProfile: (userName: string) => void,
+	/** adds the copy "posted" to make explicitly denote the action done
+	 * NOTE: unused for now, part of an update that we may include soon
+	*/
+	verbose?: boolean,
+	user?: UserAccount
+};
+
+const PostHeader = (
+	props: Props
 ) => (
 	<div className={classNames('post-header_f4a846', { 'has-flair': props.isAuthor })}>
 		{!!props.userName && (!props.user || props.user.name !== props.userName) ?
@@ -37,6 +43,9 @@ export default (
 		{props.leaderboardBadge !== LeaderboardBadge.None ?
 			<LeaderboardBadges badge={props.leaderboardBadge} /> :
 			null}
+		{
+			props.verbose ? <span className="posted-copy">posted</span> : null
+		}
 		<span className="age">{format(props.date.replace(/([^Z])$/, '$1Z'))}</span>
 		{(
 			props.userName &&
@@ -64,3 +73,9 @@ export default (
 			null}
 	</div>
 );
+
+PostHeader.defaultProps = {
+	verbose: false
+};
+
+export default PostHeader;

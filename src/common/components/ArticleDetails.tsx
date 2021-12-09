@@ -44,16 +44,19 @@ interface Props {
 	shareMenuPosition?: MenuPosition,
 	showAotdMetadata?: boolean,
 	showDescription?: boolean,
+	// metadata actions: the bottom metadata bar with reads (not an action), comments link, rating control
+	showMetaActions?: boolean,
 	showImage?: boolean,
 	user?: UserAccount
 }
 export default class extends React.PureComponent<Props, {
 		isStarring: boolean,
 	}> {
-	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage'> = {
+	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions'> = {
 		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true,
-		showImage: false
+		showImage: false,
+		showMetaActions: true
 	};
 	protected readonly _getShareData = () => {
 		return getShareData(
@@ -149,7 +152,8 @@ export default class extends React.PureComponent<Props, {
 						pointsCallout={this.props.pointsCallout}
 						rankCallout={this.props.rankCallout}
 					/> :
-					null}
+					null
+				}
 				<div
 					className="article-container"
 					onClick={this._read}
@@ -206,17 +210,19 @@ export default class extends React.PureComponent<Props, {
 									this.props.showDescription && !!this.props.article.description ?
 										<p className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</p> : null
 								}
-								<div className="stats">
-									<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-									<a
-										className="comments"
-										href={this._renderCommentsLinkHref()}
-										onClick={this._viewComments}
-									>
-										{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
-									</a>
-									{this._renderRatingControl()}
-								</div>
+								{ this.props.showMetaActions ?
+									<div className="stats">
+										<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+										<a
+											className="comments"
+											href={this._renderCommentsLinkHref()}
+											onClick={this._viewComments}
+										>
+											{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+										</a>
+										{this._renderRatingControl()}
+									</div> : null
+								}
 							</div>
 							<div className="small-stats-article">
 								<div className="meta">
@@ -249,21 +255,22 @@ export default class extends React.PureComponent<Props, {
 									this.props.showDescription && !!this.props.article.description ?
 										<p className="description">{this.props.article.description}</p> : null
 								}
-								<div className="stats">
-									<div className="reads">
-										<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-									</div>
-									<div className="comments">
-										<a
-											href={this._renderCommentsLinkHref()}
-											onClick={this._viewComments}
-										>
-											{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
-										</a>
-									</div>
-									{this._renderRatingControl()}
-
-								</div>
+								{ this.props.showMetaActions ?
+									<div className="stats">
+										<div className="reads">
+											<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+										</div>
+										<div className="comments">
+											<a
+												href={this._renderCommentsLinkHref()}
+												onClick={this._viewComments}
+											>
+												{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+											</a>
+										</div>
+										{this._renderRatingControl()}
+									</div>  : null
+								}
 							</div>
 							{(
 								this.props.onPost &&

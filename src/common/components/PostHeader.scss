@@ -13,11 +13,19 @@
 .post-header_f4a846.has-flair {
 	padding: 3px 10px;
 }
+
+$spacing: 10px;
+// spacing between items
+.post-header_f4a846 > .user-name,
+.post-header_f4a846 > .leaderboard-badges_s4o6nj,
+.post-header_f4a846 > .posted-copy {
+	margin-right: $spacing;
+}
+
 .post-header_f4a846 > .user-name {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-family: 'Museo Sans (500)';
-	margin-right: 10px;
 }
 .post-header_f4a846 > .leaderboard-badges_s4o6nj {
 	flex: 0 0 auto;
@@ -29,7 +37,7 @@
 }
 .post-header_f4a846 > .share-control_mnbspk {
 	flex: 0 0 auto;
-	margin-left: 10px;
+	margin-left: $spacing;
 }
 .post-header_f4a846 > .author {
 	display: flex;
