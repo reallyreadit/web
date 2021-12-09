@@ -53,7 +53,7 @@ export default class extends React.PureComponent<Props> {
 						{showMenu ?
 							<>
 								<Icon
-									badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
+									badge={this.props.user.replyAlertCount}
 									name="bell"
 									onClick={this.props.onViewNotifications}
 								/>

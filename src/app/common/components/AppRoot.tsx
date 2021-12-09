@@ -69,6 +69,7 @@ import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
 import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import { isReadupBlogPost } from '../../../common/models/UserArticle';
+import createMyFeedScreenFactory from './screens/MyFeedScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -238,6 +239,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 	private readonly _viewLeaderboards = () => {
 		this.replaceAllScreens(ScreenKey.Leaderboards);
+	};
+	private readonly _viewMyFeed = () => {
+		this.replaceAllScreens(ScreenKey.MyFeed);
 	};
 	private readonly _viewMyImpact = () => {
 		this.replaceAllScreens(ScreenKey.MyImpact);
@@ -893,6 +897,36 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onSetScreenState: this._setScreenState,
 					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
+				ScreenKey.MyFeed,
+				{
+					deviceType: DeviceType.Ios,
+					onClearAlerts: this._clearAlerts,
+					onCloseDialog: this._dialog.closeDialog,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onFollowUser: this._followUser,
+					onGetFollowees: this.props.serverApi.getFollowees,
+					onGetFollowers: this.props.serverApi.getFollowers,
+					onGetProfile: this.props.serverApi.getProfile,
+					onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
+					onNavTo: this._navTo,
+					onOpenDialog: this._dialog.openDialog,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
+					onSetScreenState: this._setScreenState,
+					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onUnfollowUser: this._unfollowUser,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
 				}
 			),
 			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
@@ -1660,6 +1694,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						<NavBar
 							onNavTo={this._navTo}
 							onViewHome={this._viewHome}
+							onViewMyFeed={this._viewMyFeed}
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
@@ -1694,6 +1729,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						</div>
 						<NavTray
 							onViewHome={this._viewHome}
+							onViewMyFeed={this._viewMyFeed}
 							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}

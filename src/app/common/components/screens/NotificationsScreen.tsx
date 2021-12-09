@@ -1,6 +1,5 @@
 import * as React from 'react';
 import ScreenContainer from '../ScreenContainer';
-import HeaderSelector from '../HeaderSelector';
 import Post from '../../../../common/models/social/Post';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -51,16 +50,11 @@ interface Props {
 	onViewThread: (comment: CommentThread) => void,
 	user: UserAccount
 }
-enum View {
-	Posts = 'Posts',
-	Replies = 'Replies'
-}
 interface State {
 	isLoadingNewItems: boolean,
 	isScreenLoading: boolean,
 	newItemCount: number,
-	posts: Fetchable<PageResult<Post>>,
-	view: View
+	replies: Fetchable<PageResult<Post>>,
 }
 class NotificationsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -68,52 +62,37 @@ class NotificationsScreen extends React.Component<Props, State> {
 		this.setState({
 			isLoadingNewItems: false,
 			newItemCount: 0,
-			posts: this.fetchPosts(this.state.view, pageNumber)
-		});
-	};
-	private readonly _changeView = (value: string) => {
-		const view = value as View;
-		if (view === this.state.view) {
-			return;
-		}
-		this.setState({
-			isLoadingNewItems: false,
-			newItemCount: 0,
-			posts: this.fetchPosts(view, 1),
-			view
+			replies: this.fetchReplies(pageNumber)
 		});
 	};
 	private readonly _loadNewItems = () => {
 		this.setState({
 			isLoadingNewItems: true
 		});
-		this.fetchPosts(this.state.view, 1);
+		this.fetchReplies(1);
 	};
 	constructor(props: Props) {
 		super(props);
-		const
-			view = View.Posts,
-			posts = this.fetchPosts(view, 1);
+		const replies = this.fetchReplies(1);
 		this.state = {
 			isLoadingNewItems: false,
-			isScreenLoading: posts.isLoading,
+			isScreenLoading: replies.isLoading,
 			newItemCount: 0,
-			posts,
-			view
+			replies: replies,
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(
 				event => {
 					if (
-						this.state.posts.value &&
-						this.state.posts.value.items.some(
+						this.state.replies.value &&
+						this.state.replies.value.items.some(
 							post => post.article.id === event.article.id
 						)
 					) {
 						this.setState(
 							produce(
 								(prevState: State) => {
-									prevState.posts.value.items.forEach(
+									prevState.replies.value.items.forEach(
 										(post, index, posts) => {
 											if (post.article.id === event.article.id) {
 												// merge objects in case the new object is missing properties due to outdated iOS client
@@ -134,29 +113,14 @@ class NotificationsScreen extends React.Component<Props, State> {
 		);
 	}
 	private checkAlertState() {
-		let alerts: Alert;
-		switch (this.state.view) {
-			case View.Posts:
-				alerts = Alert.Post | Alert.Loopback;
-				break;
-			case View.Replies:
-				alerts = Alert.Reply;
-				break;
-		}
+		let alerts = Alert.Reply;
 		if (hasAnyAlerts(this.props.user, alerts)) {
 			this.props.onClearAlerts(alerts);
 		}
 	}
-	private fetchPosts(view: View, pageNumber: number) {
-		let fetchFunction: FetchFunctionWithParams<NotificationPostsQuery & ReplyPostsQuery, PageResult<Post>>;
-		switch (view) {
-			case View.Posts:
-				fetchFunction = this.props.onGetNotificationPosts;
-				break;
-			case View.Replies:
-				fetchFunction = this.props.onGetReplyPosts;
-		}
-		return fetchFunction(
+
+	private fetchReplies(pageNumber: number) {
+		return this.props.onGetReplyPosts(
 			{
 				pageNumber
 			},
@@ -165,7 +129,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 					this.setState({
 						isLoadingNewItems: false,
 						isScreenLoading: false,
-						posts,
+						replies: posts,
 						newItemCount: 0
 					});
 					this.checkAlertState();
@@ -174,30 +138,15 @@ class NotificationsScreen extends React.Component<Props, State> {
 		);
 	}
 	private getUpdateBannerText() {
-		switch (this.state.view) {
-			case View.Posts:
-				return `Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'post')}`;
-			case View.Replies:
-				return `Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'reply', 'replies')}`;
-		}
+		return `Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'reply', 'replies')}`;
 	}
+
 	public componentDidMount() {
 		this.checkAlertState();
 	}
 	public componentDidUpdate(prevProps: Props) {
-		let newItemCount: number;
-		switch (this.state.view) {
-			case View.Posts:
-				newItemCount = Math.max(
-					0,
-					(this.props.user.postAlertCount - prevProps.user.postAlertCount) +
-					(this.props.user.loopbackAlertCount - prevProps.user.loopbackAlertCount)
-				);
-				break;
-			case View.Replies:
-				newItemCount = Math.max(0, this.props.user.replyAlertCount - prevProps.user.replyAlertCount);
-				break;
-		}
+		let newItemCount
+				= Math.max(0, this.props.user.replyAlertCount - prevProps.user.replyAlertCount);
 		if (newItemCount) {
 			this.setState({
 				newItemCount
@@ -220,27 +169,12 @@ class NotificationsScreen extends React.Component<Props, State> {
 								text={this.getUpdateBannerText()}
 							/> :
 							null}
-						<HeaderSelector
-							disabled={this.state.posts.isLoading || this.state.isLoadingNewItems}
-							items={[
-								{
-									value: View.Posts,
-									badge: this.props.user.postAlertCount + this.props.user.loopbackAlertCount
-								},
-								{
-									value: View.Replies,
-									badge: this.props.user.replyAlertCount
-								}
-							]}
-							onChange={this._changeView}
-							value={this.state.view}
-						/>
-						{this.state.posts.isLoading ?
+						{this.state.replies.isLoading ?
 							<LoadingOverlay position="static" /> :
-							this.state.posts.value.items.length ?
+							this.state.replies.value.items.length ?
 								<>
 									<List>
-										{this.state.posts.value.items.map(
+										{this.state.replies.value.items.map(
 											post => (
 												<li key={post.date}>
 													<PostDetails
@@ -266,21 +200,17 @@ class NotificationsScreen extends React.Component<Props, State> {
 										)}
 									</List>
 									<PageSelector
-										pageNumber={this.state.posts.value.pageNumber}
-										pageCount={this.state.posts.value.pageCount}
+										pageNumber={this.state.replies.value.pageNumber}
+										pageCount={this.state.replies.value.pageCount}
 										onChange={this._changePage}
 									/>
 								</> :
 								<CenteringContainer>
 									<StickyNote>
-										{this.state.view === View.Posts ?
-											<>
-												<strong>Follow readers who interest you.</strong>
-												<span>Their posts will appear here.</span>
-											</> :
-											<span>No replies found.</span>}
+										<span>No replies found.</span>
 									</StickyNote>
-								</CenteringContainer>}
+								</CenteringContainer>
+								}
 					</>}
 			</ScreenContainer>
 		);
@@ -295,7 +225,7 @@ export default function createNotificationsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Notifications'
+			title: 'Replies'
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<NotificationsScreen

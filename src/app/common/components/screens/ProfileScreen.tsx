@@ -10,7 +10,7 @@ import Post from '../../../../common/models/social/Post';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import LeaderboardBadges from '../../../../common/components/LeaderboardBadges';
-import { formatCountable, formatCurrency } from '../../../../common/format';
+import { formatCurrency } from '../../../../common/format';
 import UserArticle from '../../../../common/models/UserArticle';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
@@ -18,14 +18,11 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import AsyncTracker from '../../../../common/AsyncTracker';
 import Link from '../../../../common/components/Link';
-import GetFollowersDialog from './ProfileScreen/GetFollowersDialog';
 import CommentThread from '../../../../common/models/CommentThread';
 import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
 import FollowButton from '../../../../common/components/FollowButton';
-import FollowingListDialog from '../FollowingListDialog';
 import LeaderboardBadge from '../../../../common/models/LeaderboardBadge';
 import InfoBox from '../../../../common/components/InfoBox';
 import Alert from '../../../../common/models/notifications/Alert';
@@ -44,6 +41,7 @@ import HeaderSelector from '../HeaderSelector';
 import { ArticleList } from '../ArticleList';
 import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
+import AbstractFollowable from '../AbstractFollowable';
 
 interface Props {
 	deviceType: DeviceType,
@@ -117,8 +115,8 @@ const
 		}
 	];
 
-export class ProfileScreen extends React.Component<Props, State> {
-	private readonly _asyncTracker = new AsyncTracker();
+export class ProfileScreen extends AbstractFollowable<Props, State> {
+
 	private readonly _changeArticles = (articles: Fetchable<PageResult<UserArticle>>) => {
 		this.setState({
 			view: View.Articles,
@@ -177,83 +175,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 				break;
 		}
 	};
-	private readonly _followUser = (form: UserNameForm) => {
-		return this.props
-			.onFollowUser(form)
-			.then(
-				() => {
-					if (form.userName === this.props.userName) {
-						this.setIsFollowed();
-					}
-				}
-			);
-	};
-	private readonly _openGetFollowersDialog = () => {
-		this.props.onOpenDialog(
-			<GetFollowersDialog
-				onCloseDialog={this.props.onCloseDialog}
-				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onShare={this.props.onShare}
-				onShareViaChannel={this.props.onShareViaChannel}
-				userName={this.props.userAccount.name}
-			/>
-		);
-	};
-	private readonly _showFollowees = () => {
-		this.props.onOpenDialog(
-			<FollowingListDialog
-				onClearAlerts={this.props.onClearAlerts}
-				onCloseDialog={this.props.onCloseDialog}
-				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onFollowUser={this._followUser}
-				onGetFollowings={this.props.onGetFollowees}
-				onUnfollowUser={this._unfollowUser}
-				onViewProfile={this.props.onViewProfile}
-				title="Following"
-				userAccount={this.props.userAccount}
-			/>
-		);
-	};
-	private readonly _showFollowers = () => {
-		const isOwnProfile = this.isOwnProfile();
-		this.props.onOpenDialog(
-			<FollowingListDialog
-				clearFollowersAlerts={isOwnProfile}
-				onClearAlerts={this.props.onClearAlerts}
-				onCloseDialog={this.props.onCloseDialog}
-				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onFollowUser={this._followUser}
-				onGetFollowings={
-					(callback: (value: Fetchable<Following[]>) => void) => this.props.onGetFollowers({ userName: this.props.userName }, callback)
-				}
-				onUnfollowUser={this._unfollowUser}
-				onViewProfile={this.props.onViewProfile}
-				title={
-					isOwnProfile ?
-						"Followers" :
-						`Following ${this.props.userName}`
-				}
-				userAccount={this.props.userAccount}
-			/>
-		);
-	};
-	private readonly _unfollowUser = (form: UserNameForm) => {
-		return this.props
-			.onUnfollowUser(form)
-			.then(
-				() => {
-					if (form.userName === this.props.userName) {
-						this.props.onUpdateProfile(
-							this.props.screenId,
-							{
-								isFollowed: false,
-								followerCount: this.props.profile.value.followerCount - 1
-							}
-						);
-					}
-				}
-			);
-	};
 	constructor(props: Props) {
 		super(props);
 		if (props.profile.isLoading || !props.profile.value) {
@@ -278,27 +199,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 				posts: this.fetchPosts(1)
 			};
 		}
-		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterFolloweeCountChangedHandler(
-				change => {
-					if (this.props.profile.value && this.isOwnProfile()) {
-						this.props.onUpdateProfile(
-							this.props.screenId,
-							{
-								followeeCount: Math.max(
-									this.props.profile.value.followeeCount + (
-										change === FolloweeCountChange.Increment ?
-											1 :
-											-1
-									),
-									0
-								)
-							}
-						);
-					}
-				}
-			)
-		);
 	}
 	private fetchArticles() {
 		return this.props.onGetAuthorArticles(
@@ -337,9 +237,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 				}
 			)
 		);
-	}
-	private isOwnProfile() {
-		return this.props.userAccount && this.props.userAccount.name === this.props.userName;
 	}
 	private renderList() {
 		switch (this.state.view) {
@@ -405,25 +302,10 @@ export class ProfileScreen extends React.Component<Props, State> {
 				);
 		}
 	}
-	private setIsFollowed() {
-		this.props.onUpdateProfile(
-			this.props.screenId,
-			{
-				isFollowed: true,
-				followerCount: this.props.profile.value.followerCount + 1
-			}
-		);
-	}
 	public componentDidUpdate(prevProps: Props) {
 		// reload the profile if the profile user has changed or the user has signed in or out
-		if (
-			this.props.userName !== prevProps.userName ||
-			(
-				this.props.userAccount ?
-					!prevProps.userAccount || prevProps.userAccount.id !== this.props.userAccount.id :
-					!!prevProps.userAccount
-			)
-		) {
+		// overrides abstract method
+		if (this._profileUserChangedOrUserChanged(prevProps)) {
 			this.setState(
 				{
 					view: View.Indeterminate,
@@ -460,13 +342,6 @@ export class ProfileScreen extends React.Component<Props, State> {
 	}
 	public render() {
 		const isOwnProfile = this.isOwnProfile();
-		let
-			followeesText: string,
-			followersText: string;
-		if (this.props.profile.value) {
-			followeesText = `Following ${this.props.profile.value.followeeCount}`;
-			followersText = this.props.profile.value.followerCount + ' ' + formatCountable(this.props.profile.value.followerCount, 'follower');
-		}
 		let isListLoading: boolean;
 		switch (this.state.view) {
 			case View.Articles:
@@ -526,9 +401,9 @@ export class ProfileScreen extends React.Component<Props, State> {
 												<Link
 													className="following-count"
 													onClick={this._showFollowees}
-													text={followeesText}
+													text={this._getFolloweesText()}
 												/> :
-												<span className="following-count">{followeesText}</span>}
+												<span className="following-count">{this._getFolloweesText()}</span>}
 											<StickyNote>
 												<strong>Invite your friends.</strong>
 												<span onClick={this._openGetFollowersDialog}>Get followers.</span>
@@ -548,9 +423,9 @@ export class ProfileScreen extends React.Component<Props, State> {
 											badge={isOwnProfile && this.props.userAccount.followerAlertCount}
 											className="following-count"
 											onClick={this._showFollowers}
-											text={followersText}
+											text={this._getFollowersText()}
 										/> :
-										<span className="following-count">{followersText}</span>}
+										<span className="following-count">{this._getFollowersText()}</span>}
 								</div>
 								{this.props.profile.value.authorProfile ?
 									<div className="controls" data-nosnippet>

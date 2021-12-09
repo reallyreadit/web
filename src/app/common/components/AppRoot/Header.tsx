@@ -71,7 +71,7 @@ export default (props: {
 					onClick={props.onViewNotifications}
 				>
 					<Icon
-						badge={props.user.replyAlertCount + props.user.postAlertCount + props.user.loopbackAlertCount}
+						badge={props.user.replyAlertCount}
 						name="bell"
 					/>
 				</div>
