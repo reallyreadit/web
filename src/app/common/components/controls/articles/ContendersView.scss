@@ -1,0 +1,46 @@
+/*
+        componentPath: src/app/common/components/controls/articles/ContendersView
+        cssComponentId: contenders-view_a7cu96
+*/
+@import '../../../../../common/styles/colors';
+@import '../../../../../common/styles/breakpoints.scss';
+
+.contenders-view_a7cu96 > .section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.contenders-view_a7cu96 > .section-header > label {
+	font-size: 17pt;
+	font-family: 'Museo Sans (500)';
+	@include only(phone) {
+		font-size: 16pt;
+	}
+}
+.contenders-view_a7cu96 > .aotd > .controls {
+	margin-top: 20px;
+	text-align: center;
+}
+
+.contenders-view_a7cu96 > .separator {
+	width: 80%;
+	margin: 20px auto;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+.contenders-view_a7cu96 > .loading-overlay_zfgtd1 {
+	margin: 20px 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .contenders-view_a7cu96 > .separator {
+		@include theme-colors(
+			$scheme,
+			(
+				"border-bottom-color": $content-border-color
+			)
+		);
+	}
+}

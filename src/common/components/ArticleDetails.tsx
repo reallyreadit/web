@@ -24,11 +24,12 @@ import { ShareChannelData } from '../sharing/ShareData';
 import * as classnames from 'classnames';
 import ImageComponent from './Image';
 
-interface Props {
+export interface ArticleDetailsProps {
 	article: UserArticle,
 	className?: string,
 	deviceType: DeviceType,
 	highlight?: boolean,
+	imagePosition?: 'left' | 'right',
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onPost: (article: UserArticle) => void,
@@ -44,19 +45,23 @@ interface Props {
 	shareMenuPosition?: MenuPosition,
 	showAotdMetadata?: boolean,
 	showDescription?: boolean,
+	showImage?: boolean,
 	// metadata actions: the bottom metadata bar with reads (not an action), comments link, rating control
 	showMetaActions?: boolean,
-	showImage?: boolean,
+	showScout?: boolean,
 	user?: UserAccount
 }
-export default class extends React.PureComponent<Props, {
-		isStarring: boolean,
-	}> {
-	public static defaultProps: Pick<Props, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions'> = {
+export interface ArticleDetailsState {
+	isStarring: boolean,
+}
+export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extends React.PureComponent<P, ArticleDetailsState> {
+	public static defaultProps: Pick<ArticleDetailsProps, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions' | 'showScout' | 'imagePosition' > = {
 		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true,
 		showImage: false,
-		showMetaActions: true
+		showMetaActions: true,
+		showScout: true,
+		imagePosition: 'right'
 	};
 	protected readonly _getShareData = () => {
 		return getShareData(
@@ -134,9 +139,9 @@ export default class extends React.PureComponent<Props, {
 
 	protected MAX_DESCRIPTION_LENGTH = 250;
 
-	constructor(props: Props) {
+	constructor(props: P) {
 		super(props);
-		this.state = {
+		this.state ={
 			isStarring: false,
 		};
 	}
@@ -151,21 +156,22 @@ export default class extends React.PureComponent<Props, {
 						onViewProfile={this.props.onViewProfile}
 						pointsCallout={this.props.pointsCallout}
 						rankCallout={this.props.rankCallout}
+						showScout={this.props.showScout}
 					/> :
 					null
 				}
-				<div
-					className="article-container"
-					onClick={this._read}
+				<ContentBox
+					className={`article-container image--${this.props.imagePosition}`}
+					highlight={this.props.highlight}
 				>
 					{
 						 this._shouldShowImage() ?
 							<ImageComponent src={this.props.article.imageUrl} /> :
 							null
 					}
-					<ContentBox
+					<div
 						className="content"
-						highlight={this.props.highlight}
+						onClick={this._read}
 					>
 						<div className="title">
 							{this.props.user ?
@@ -253,7 +259,7 @@ export default class extends React.PureComponent<Props, {
 								</div>
 								{
 									this.props.showDescription && !!this.props.article.description ?
-										<p className="description">{this.props.article.description}</p> : null
+										<p className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</p> : null
 								}
 								{ this.props.showMetaActions ?
 									<div className="stats">
@@ -286,8 +292,8 @@ export default class extends React.PureComponent<Props, {
 								</div> :
 								null}
 						</div>
-					</ContentBox>
-				</div>
+					</div>
+				</ContentBox>
 			</div>
 		);
 	}

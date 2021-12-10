@@ -3,7 +3,7 @@ import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
-import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
+import { updateCommunityReads } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -23,14 +23,23 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import FreeTrialNotice from './FreeTrialNotice';
-import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
+import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
+import PageResult from '../../../../common/models/PageResult';
+import List from '../controls/List';
+import ArticleDetails from '../../../../common/components/ArticleDetails';
+import Button from '../../../../common/components/Button';
+import ScreenKey from '../../../../common/routing/ScreenKey';
+import {LeaderboardsViewParams} from '../screens/LeaderboardsScreen';
+import MorphingArticleDetails from '../../../../common/components/MorphingArticleDetails';
+import Icon from '../../../../common/components/Icon';
 
 interface Props {
 	deviceType: DeviceType,
 	onClearAlerts: (alert: Alert) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
+	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
@@ -41,15 +50,15 @@ interface Props {
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	user: UserAccount | null,
 	subscriptionStatus: SubscriptionStatus
 }
 interface State {
+	aotdHistory: Fetchable<PageResult<UserArticle>>,
+	// only intended for fetching the AOTD
 	communityReads: Fetchable<CommunityReads>,
-	isLoading: boolean,
 	isLoadingNewItems: boolean,
 	maxLength?: number,
 	minLength?: number,
@@ -57,15 +66,8 @@ interface State {
 	sort: Sort
 }
 class HomeScreen extends React.Component<Props, State> {
+	private static readonly COMMUNITY_READS_PAGE_SIZE = 1;
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changeSort = (sort: Sort) => {
-		this.setState({
-			isLoading: true,
-			newAotd: false,
-			sort
-		});
-		this.fetchItems(this.state.minLength, this.state.maxLength, 1, sort);
-	};
 	private _hasClearedAlert = false;
 	private readonly _loadMore = () => {
 		this.setState({
@@ -74,26 +76,24 @@ class HomeScreen extends React.Component<Props, State> {
 		});
 		return new Promise<void>(
 			resolve => {
-				this.props.onGetCommunityReads(
+				const newPageNumber = this.state.aotdHistory.value.pageNumber + 1;
+				this.props.onGetAotdHistory(
 					{
-						pageNumber: this.state.communityReads.value.articles.pageNumber + 1,
-						pageSize: 10,
-						sort: this.state.sort,
-						minLength: this.state.minLength,
-						maxLength: this.state.maxLength
+						pageNumber: newPageNumber,
+						minLength: null,
+						maxLength: null
 					},
 					this._asyncTracker.addCallback(
-						communityReads => {
+						aotdHistory => {
 							resolve();
 							this.setState(
 								produce(
 									(state: State) => {
-										state.communityReads.value.articles = {
-											...communityReads.value.articles,
-											items: state.communityReads.value.articles.items.concat(
-												communityReads.value.articles.items
-											)
-										}
+										state.aotdHistory.value.pageNumber = newPageNumber;
+										state.aotdHistory.value.items = [
+											...state.aotdHistory.value.items,
+											...aotdHistory.value.items
+										 ];
 									}
 								)
 							);
@@ -107,18 +107,34 @@ class HomeScreen extends React.Component<Props, State> {
 		this.setState({
 			isLoadingNewItems: true
 		});
-		this.fetchItems(null, null, 1, this.state.sort);
+		this.fetchNewAOTD(null, null, 1, this.state.sort);
+
 	};
 	constructor(props: Props) {
 		super(props);
 		const sort = CommunityReadSort.Hot;
 		this.state = {
+			aotdHistory: props.onGetAotdHistory(
+				{
+					maxLength: null,
+					minLength: null,
+					pageNumber: 1
+				},
+				this._asyncTracker.addCallback(
+					aotdHistory => {
+						this.setState({
+							aotdHistory,
+						});
+					}
+				)
+			),
 			communityReads: props.onGetCommunityReads(
 				{
 					maxLength: null,
 					minLength: null,
 					pageNumber: 1,
-					pageSize: 10,
+					// we only need the aotd, not paginated contenders here
+					pageSize: HomeScreen.COMMUNITY_READS_PAGE_SIZE,
 					sort
 				},
 				this._asyncTracker.addCallback(
@@ -130,7 +146,6 @@ class HomeScreen extends React.Component<Props, State> {
 					}
 				)
 			),
-			isLoading: false,
 			isLoadingNewItems: false,
 			newAotd: false,
 			sort
@@ -147,28 +162,46 @@ class HomeScreen extends React.Component<Props, State> {
 			this._hasClearedAlert = true;
 		}
 	}
-	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number, sort: Sort) {
-		this.props.onGetCommunityReads(
-			{
-				maxLength,
-				minLength,
-				pageNumber,
-				pageSize: 10,
-				sort
-			},
-			this._asyncTracker.addCallback(
-				communityReads => {
-					this.setState({
-						communityReads,
-						isLoading: false,
-						isLoadingNewItems: false,
-						newAotd: false,
-					});
-					this.clearAlertIfNeeded();
+	// note: this assumes that only 1 day has passed since the new AOTD arrived (there is only 1 new AOTD)
+	private fetchNewAOTD(minLength: number | null, maxLength: number | null, pageNumber: number, sort: Sort) {
+		const communityPromise = new Promise<Fetchable<CommunityReads>>((resolve, reject) => {
+			try {
+				this.props.onGetCommunityReads(
+					{
+						maxLength,
+						minLength,
+						pageNumber,
+						pageSize: HomeScreen.COMMUNITY_READS_PAGE_SIZE,
+						sort
+					},
+					resolve
+				);
+			} catch (e) {
+				reject(e);
+			}
+		});
+
+		communityPromise.then( (communityReads) => {
+			this.setState(produce((state: State) => {
+				// add the OLD aotd to the top of the AOTD history locally
+				if (!state.aotdHistory.isLoading && this.state.aotdHistory.value) {
+					state.aotdHistory.value.items = [
+						state.communityReads.value.aotd,
+						...state.aotdHistory.value.items
+					];
 				}
-			)
-		);
+				// merge in the new AOTD
+				state.communityReads = communityReads;
+				// set loading state
+				state = {
+					...state,
+					isLoadingNewItems: false,
+					newAotd: false
+				}
+			}));
+		})
 	}
+
 	public componentDidMount() {
 		if (!this.state.communityReads.isLoading) {
 			this.clearAlertIfNeeded();
@@ -193,51 +226,119 @@ class HomeScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<ScreenContainer className="home-screen_an7vm5">
-				{this.state.communityReads.isLoading ?
+				{/* NOTE: this will only show content once both the AOTD and previous winners are loaded */}
+				{(
+					this.isLoading()
+				) ?
 					<LoadingOverlay position="static" /> :
 					<>
+						{/* TODO: this has not been tested yet */}
 						{this.state.newAotd ?
 							<UpdateBanner
 								isBusy={this.state.isLoadingNewItems}
 								onClick={this._loadNewItems}
 								text="Show new Article of the Day"
 							/> :
-							null}
-						{(
-							!(this.props.subscriptionStatus.isUserFreeForLife) &&
-							this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
-						)
-							?
-							<FreeTrialNotice
-								onNavTo={this.props.onNavTo}
-								onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
-								subscriptionStatus={this.props.subscriptionStatus}
-							/> :
-							null}
-						<CommunityReadsList
-							aotd={this.state.communityReads.value.aotd}
-							aotdHasAlert={this.state.communityReads.value.aotdHasAlert}
-							articles={this.state.communityReads.value.articles}
+						null}
+						<h2 className="section-header">
+							<Icon name="trophy"/> Article of the Day
+						</h2>
+						<MorphingArticleDetails
+							article={this.state.communityReads.value.aotd}
+							className="aotd--desktop-display"
 							deviceType={this.props.deviceType}
-							isLoading={this.state.isLoading}
-							maxLength={this.state.maxLength}
-							minLength={this.state.minLength}
-							onChangeSort={this._changeSort}
+							highlight={this.state.communityReads.value.aotdHasAlert}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onNavTo={this.props.onNavTo}
+							onPost={this.props.onPostArticle}
 							onRateArticle={this.props.onRateArticle}
-							onPostArticle={this.props.onPostArticle}
-							onReadArticle={this.props.onReadArticle}
+							onRead={this.props.onReadArticle}
 							onShare={this.props.onShare}
 							onShareViaChannel={this.props.onShareViaChannel}
-							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewAotdHistory={this.props.onViewAotdHistory}
+							onToggleStar={this.props.onToggleArticleStar}
 							onViewComments={this.props.onViewComments}
 							onViewProfile={this.props.onViewProfile}
-							sort={this.state.sort}
 							user={this.props.user}
+							showImage={true}
+							showDescription={true}
+							showScout={false}
+							showAotdMetadata={false}
+							topline={null}
 						/>
-						{!this.state.isLoading ?
+						<h2 className="section-header">
+							<Icon name="trophy"/> Yesterday's Article of the Day
+						</h2>
+						<MorphingArticleDetails
+							article={this.state.aotdHistory.value.items[0]}
+							className="aotd--desktop-display"
+							deviceType={this.props.deviceType}
+							highlight={this.state.communityReads.value.aotdHasAlert}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onNavTo={this.props.onNavTo}
+							onPost={this.props.onPostArticle}
+							onRateArticle={this.props.onRateArticle}
+							onRead={this.props.onReadArticle}
+							onShare={this.props.onShare}
+							onShareViaChannel={this.props.onShareViaChannel}
+							onToggleStar={this.props.onToggleArticleStar}
+							onViewComments={this.props.onViewComments}
+							onViewProfile={this.props.onViewProfile}
+							user={this.props.user}
+							showImage={true}
+							showDescription={true}
+							showScout={false}
+							showAotdMetadata={false}
+							topline={null}
+						/>
+						<h2 className="section-header">
+							<Icon name="internet" /> Discover
+						</h2>
+						<div className="controls">
+							<Button
+								iconRight="chevron-right"
+								intent="normal"
+								onClick={(_) => this.props.onNavTo({key: ScreenKey.AotdHistory})}
+								text="Top articles of all time"
+							/>
+							<Button
+								iconRight="chevron-right"
+								intent="normal"
+								onClick={(_) => this.props.onNavTo({
+									key: ScreenKey.Leaderboards, params: {view: LeaderboardsViewParams.Readers}})}
+								text="Community Leaderboards"
+							/>
+						</div>
+						<h2 className="section-header">
+							<Icon name="history-simple"/> Previous Winners
+						</h2>
+						<List>
+							{this.state.aotdHistory.value.items.slice(1).map(
+								(article, index) => (
+									<li key={article.id}>
+										<ArticleDetails
+											article={article}
+											deviceType={this.props.deviceType}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
+											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onShareViaChannel={this.props.onShareViaChannel}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+											onViewProfile={this.props.onViewProfile}
+											showAotdMetadata={true}
+											showDescription={true}
+											showScout={false}
+											showImage={true}
+											user={this.props.user}
+										/>
+									</li>
+								)
+							)}
+						</List>
+						{!this.isLoading() ?
 							<div className="show-more">
 								<AsyncLink
 									text="Show more"
@@ -249,6 +350,10 @@ class HomeScreen extends React.Component<Props, State> {
 			</ScreenContainer>
 		);
 	}
+
+	private isLoading() {
+		return this.state.communityReads.isLoading || this.state.aotdHistory.isLoading;
+	}
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
@@ -259,7 +364,7 @@ export default function <TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Discover'
+			title: 'AOTD'
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen {

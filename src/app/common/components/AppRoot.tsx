@@ -830,6 +830,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				deviceType: DeviceType.Ios,
 				onClearAlerts: this._clearAlerts,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetAotdHistory: this.props.serverApi.getAotdHistory,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
 				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
@@ -840,7 +841,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewAotdHistory: this._viewAotdHistory,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile
 			}),

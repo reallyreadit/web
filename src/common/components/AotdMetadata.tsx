@@ -3,16 +3,17 @@ import UserArticle from '../models/UserArticle';
 import AotdRank from './AotdRank';
 import AotdScore from './AotdScore';
 
-export default (
+const AotdMetadata = (
 	props: {
 		article: Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'firstPoster' | 'hotScore'>,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onViewProfile: (userName: string) => void,
 		pointsCallout?: React.ReactNode,
-		rankCallout?: React.ReactNode
+		rankCallout?: React.ReactNode,
+		showScout?: boolean
 	}
 ) => {
-	
+
 	return (
 		<div className="aotd-metadata_j18sed">
 			<AotdRank
@@ -24,7 +25,14 @@ export default (
 				callout={props.pointsCallout}
 				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 				onViewProfile={props.onViewProfile}
+				showScout={props.showScout}
 			/>
 		</div>
 	);
 };
+
+AotdMetadata.defaultProps = {
+	showScout: true
+}
+
+export default AotdMetadata;

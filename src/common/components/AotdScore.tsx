@@ -3,12 +3,13 @@ import UserArticle from '../models/UserArticle';
 import { formatTimestamp } from '../format';
 import ProfileLink from './ProfileLink';
 
-export default (
+const AotdScore = (
 	props: {
 		article: Pick<UserArticle, 'aotdTimestamp' | 'firstPoster' | 'hotScore'>,
 		callout?: React.ReactNode,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onViewProfile: (userName: string) => void,
+		showScout?: boolean
 	}
 ) => (
 	<div className="aotd-score_ndfcug">
@@ -18,7 +19,7 @@ export default (
 				`${props.article.hotScore} pts`}
 			{props.callout}
 		</span>
-		{props.article.firstPoster ?
+		{props.article.firstPoster && props.showScout ?
 			<>
 				<span> - Scout: </span>
 				<ProfileLink
@@ -27,6 +28,15 @@ export default (
 					userName={props.article.firstPoster}
 				/>
 			</> :
-			<span> - Be the first to post!</span>}
+			props.showScout ?
+				<span> - Be the first to post!</span>
+				: null
+			}
 	</div>
 );
+
+AotdScore.defaultProps = {
+	showScout: true
+}
+
+export default AotdScore;

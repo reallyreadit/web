@@ -6,11 +6,16 @@ import Icon from './Icon';
 // import PostButton from './PostButton';
 // import AotdMetadata from './AotdMetadata';
 import classnames = require('classnames');
-import ArticleDetails from './ArticleDetails';
+import ArticleDetails, {ArticleDetailsProps} from './ArticleDetails';
 import ImageComponent from './Image';
 import Pill from './Pill';
+import PostButton from './PostButton';
+import {MenuPosition} from './Popover';
 
-export default class extends ArticleDetails {
+export type ArticleDetailsDisplayProps = ArticleDetailsProps & {
+	topline?: string
+}
+export default class extends ArticleDetails<ArticleDetailsDisplayProps> {
 	public render() {
 		return (
 			<div
@@ -34,7 +39,7 @@ export default class extends ArticleDetails {
 					/>
 					{/* todo: do something with the highlight prop? see ArticleDetails */}
 					<div className="article-details-display_ssv8xk__details">
-							<span className="top-line"><Icon name="trophy"/>Article of the Day</span>
+							{ this.props.topline ? <span className="top-line"><Icon name="trophy"/>{this.props.topline}</span> : null }
 							<div className="title">
 								{/* Bookmark */}
 								{/* {!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
@@ -97,10 +102,8 @@ export default class extends ArticleDetails {
 											onClick={this._toggleStar}
 										/> :
 										null}
-									{/* NOTE: the Post button is disabled here since it looks weird in many breakpoints,
-										and I don't think its presence is important here (posting can be done from /comments/ page or in the embed)
-										Let's see by using this new view for a while if readers really miss it */}
-									{/* {(
+									{/* NOTE: re-included the post button for consistency since it's everywhere on the home screen */}
+									{(
 										this.props.onPost &&
 										(this.props.article.isRead || this.props.article.datesPosted.length)
 										) ?
@@ -113,7 +116,7 @@ export default class extends ArticleDetails {
 										/>
 									</div> :
 									null
-									} */}
+									}
 								</div>
 							</div>
 					</div>

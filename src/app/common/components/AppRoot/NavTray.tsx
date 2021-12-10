@@ -26,9 +26,9 @@ export default class NavTray extends React.PureComponent<Props>{
 					>
 						<Icon
 							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
-							name="earth"
+							name="trophy"
 						/>
-						<label>Discover</label>
+						<label>AOTD</label>
 					</button>
 				</li>
 				<li>
@@ -37,7 +37,7 @@ export default class NavTray extends React.PureComponent<Props>{
 						onClick={this.props.onViewContenders}
 					>
 						<Icon
-							name="boxing-gloves"
+							name="podium"
 						/>
 						<label>Contenders</label>
 					</button>

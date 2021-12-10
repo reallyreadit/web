@@ -38,24 +38,26 @@ const ImageComponent = ({
 	const [ref, loaded, setLoaded] = useImageLoaded();
 
 	return <div className="image_1ctn9c">
-		{/* A temporary placeholder / "skeleton" that shows until the image is loaded */}
-		<div
-			className={classnames("image",  "placeholder", {
-				"always-show-placeholder": !!alwaysShowPlaceholder,
-				"loading": !alwaysShowPlaceholder && !loaded
-			} )}
-			style={{display: !!alwaysShowPlaceholder || !loaded ? "flex" : "none"}}>
-			<Icon name="trophy" />
+		<div className="positioner">
+			{/* A temporary placeholder / "skeleton" that shows until the image is loaded */}
+			<div
+				className={classnames("image",  "placeholder", {
+					"always-show-placeholder": !!alwaysShowPlaceholder,
+					"loading": !alwaysShowPlaceholder && !loaded
+				} )}
+				style={{display: !!alwaysShowPlaceholder || !loaded ? "flex" : "none"}}>
+				<Icon name="trophy" />
+			</div>
+			{!alwaysShowPlaceholder && <img
+				ref={ref}
+				style={{display: loaded ? "block" : "none"}}
+				className="image"
+				onLoad={() => setLoaded(true)}
+				src={src}
+				// 6mb file for testing
+				// src="https://upload.wikimedia.org/wikipedia/commons/2/28/Dirt_jump_IMG_7609.jpg"
+			/>}
 		</div>
-		{!alwaysShowPlaceholder && <img
-			ref={ref}
-			style={{display: loaded ? "block" : "none"}}
-			className="image"
-			onLoad={() => setLoaded(true)}
-			src={src}
-			// 6mb file for testing
-			// src="https://upload.wikimedia.org/wikipedia/commons/2/28/Dirt_jump_IMG_7609.jpg"
-		/>}
 	</div>
 }
 

@@ -35,8 +35,8 @@ export default class NavBar extends React.PureComponent<Props> {
 							href={homeUrl}
 							onClick={this.props.onViewHome}
 							state={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
-							iconLeft="earth"
-							text="Discover"
+							iconLeft="trophy"
+							text="AOTD"
 							size="x-large"
 							display="block"
 						/>
@@ -46,7 +46,7 @@ export default class NavBar extends React.PureComponent<Props> {
 							href={contendersUrl}
 							onClick={this.props.onViewContenders}
 							state={this.props.selectedScreen.key === ScreenKey.Contenders ? 'selected' : 'normal'}
-							iconLeft="boxing-gloves"
+							iconLeft="podium"
 							text="Contenders"
 							size="x-large"
 							display="block"
