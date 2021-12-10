@@ -1,4 +1,5 @@
-import React = require("react");
+
+import * as React from "react";
 import ContentBox from "../../../../common/components/ContentBox";
 import Icon, {IconName} from "../../../../common/components/Icon";
 import ScreenKey from "../../../../common/routing/ScreenKey";
