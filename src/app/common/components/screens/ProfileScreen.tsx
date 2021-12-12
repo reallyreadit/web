@@ -105,10 +105,10 @@ const
 	listPageSize = 40,
 	headerSelectorItems = [
 		{
-			value: View.Articles
+			value: View.Posts
 		},
 		{
-			value: View.Posts
+			value: View.Articles
 		}
 	];
 
@@ -178,16 +178,6 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 			this.state = {
 				view: View.Indeterminate,
 				isFollowingButtonBusy: false
-			};
-		} else if (
-			props.profile.value.authorProfile &&
-			!props.highlightedCommentId &&
-			!props.highlightedPostId
-		) {
-			this.state = {
-				view: View.Articles,
-				isFollowingButtonBusy: false,
-				articles: this.fetchArticles()
 			};
 		} else {
 			this.state = {
@@ -315,23 +305,11 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		}
 		// set the view when the profile has loaded
 		if (this.props.profile.value && prevProps.profile.isLoading) {
-			if (
-				this.props.profile.value.authorProfile &&
-				!this.props.highlightedCommentId &&
-				!this.props.highlightedPostId
-			) {
-				this.setState({
-					view: View.Articles,
-					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-					articles: this.fetchArticles()
-				});
-			} else {
-				this.setState({
-					view: View.Posts,
-					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-					posts: this.fetchPosts(1)
-				});
-			}
+			this.setState({
+				view: View.Posts,
+				isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+				posts: this.fetchPosts(1)
+			});
 		}
 	}
 	public componentWillUnmount() {
