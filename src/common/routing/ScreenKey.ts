@@ -2,6 +2,7 @@ enum ScreenKey {
 	Admin,
 	AotdHistory,
 	Author,
+	BestEver,
 	Blog,
 	Comments,
 	Contenders,

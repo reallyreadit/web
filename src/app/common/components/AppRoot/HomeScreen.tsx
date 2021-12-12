@@ -297,7 +297,7 @@ class HomeScreen extends React.Component<Props, State> {
 							<Button
 								iconRight="chevron-right"
 								intent="normal"
-								onClick={(_) => this.props.onNavTo({key: ScreenKey.AotdHistory})}
+								onClick={(_) => this.props.onNavTo({key: ScreenKey.BestEver})}
 								text="Top articles of all time"
 							/>
 							<Button

@@ -70,6 +70,7 @@ import NavBar from './AppRoot/NavBar';
 import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import { isReadupBlogPost } from '../../../common/models/UserArticle';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
+import createBestEverScreenFactory from './screens/BestEverScreen';
 
 interface Props extends RootProps {
 	appApi: AppApi,
@@ -753,6 +754,27 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onReadArticle: this._readArticle,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
+					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.BestEver]: createBestEverScreenFactory(
+				ScreenKey.BestEver,
+				{
+					deviceType: DeviceType.Ios,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCopyAppReferrerTextToClipboard: this._noop,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onCreateStaticContentUrl: this._createStaticContentUrl,
+					onGetCommunityReads: this.props.serverApi.getCommunityReads,
+					onNavTo: this._navTo,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
