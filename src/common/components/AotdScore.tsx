@@ -9,19 +9,22 @@ const AotdScore = (
 		callout?: React.ReactNode,
 		onCreateAbsoluteUrl: (path: string) => string,
 		onViewProfile: (userName: string) => void,
+		showPoints?: boolean,
 		showScout?: boolean
 	}
 ) => (
 	<div className="aotd-score_ndfcug">
-		<span className="points">
-			{props.article.aotdTimestamp ?
-				`AOTD on ${formatTimestamp(props.article.aotdTimestamp)}` :
-				`${props.article.hotScore} pts`}
-			{props.callout}
-		</span>
+		{ props.showPoints ?
+			<span className="points">
+				{props.article.aotdTimestamp ?
+					`AOTD on ${formatTimestamp(props.article.aotdTimestamp)}` :
+					`${props.article.hotScore} pts`}
+				{props.callout}
+			</span> : null
+		}
 		{props.article.firstPoster && props.showScout ?
 			<>
-				<span> - Scout: </span>
+				<span> {props.showPoints ? "-" : null} Scout: </span>
 				<ProfileLink
 					onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 					onViewProfile={props.onViewProfile}
@@ -36,6 +39,7 @@ const AotdScore = (
 );
 
 AotdScore.defaultProps = {
+	showPoints: true,
 	showScout: true
 }
 

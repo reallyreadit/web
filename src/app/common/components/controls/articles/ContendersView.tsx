@@ -92,6 +92,7 @@ export default class AotdView extends React.Component<{
 											<RankCallout /> :
 											null
 										}
+										showPoints={false}
 										user={this.props.user}
 									/>
 								</li>

@@ -10,6 +10,7 @@ const AotdMetadata = (
 		onViewProfile: (userName: string) => void,
 		pointsCallout?: React.ReactNode,
 		rankCallout?: React.ReactNode,
+		showPoints?: boolean,
 		showScout?: boolean
 	}
 ) => {
@@ -25,6 +26,7 @@ const AotdMetadata = (
 				callout={props.pointsCallout}
 				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 				onViewProfile={props.onViewProfile}
+				showPoints={props.showPoints}
 				showScout={props.showScout}
 			/>
 		</div>
@@ -32,6 +34,7 @@ const AotdMetadata = (
 };
 
 AotdMetadata.defaultProps = {
+	showPoints: true,
 	showScout: true
 }
 

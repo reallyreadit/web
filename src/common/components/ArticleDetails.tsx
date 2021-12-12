@@ -48,6 +48,7 @@ export interface ArticleDetailsProps {
 	showImage?: boolean,
 	// metadata actions: the bottom metadata bar with reads (not an action), comments link, rating control
 	showMetaActions?: boolean,
+	showPoints?: boolean,
 	showScout?: boolean,
 	user?: UserAccount
 }
@@ -55,11 +56,12 @@ export interface ArticleDetailsState {
 	isStarring: boolean,
 }
 export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extends React.PureComponent<P, ArticleDetailsState> {
-	public static defaultProps: Pick<ArticleDetailsProps, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions' | 'showScout' | 'imagePosition' > = {
+	public static defaultProps: Pick<ArticleDetailsProps, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions' | 'showScout' | 'imagePosition' | 'showPoints'> = {
 		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true,
 		showImage: false,
 		showMetaActions: true,
+		showPoints: true,
 		showScout: true,
 		imagePosition: 'right'
 	};
@@ -156,6 +158,7 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 						onViewProfile={this.props.onViewProfile}
 						pointsCallout={this.props.pointsCallout}
 						rankCallout={this.props.rankCallout}
+						showPoints={this.props.showPoints}
 						showScout={this.props.showScout}
 					/> :
 					null
