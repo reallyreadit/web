@@ -77,10 +77,12 @@ export default class extends ArticleDetails<ArticleDetailsDisplayProps> {
 							}
 							<div className="bottom-bar">
 								<div className="stats">
+									<Pill>
+										<div className="reads">
+											<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+										</div>
+									</Pill>
 									<Pill><span>{this._renderEstimatedReadTime()}</span></Pill>
-									<Pill><div className="reads">
-										<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
-									</div></Pill>
 									<Pill>
 										<div className="comments">
 											<a

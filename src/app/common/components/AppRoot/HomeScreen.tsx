@@ -329,9 +329,9 @@ class HomeScreen extends React.Component<Props, State> {
 											onViewComments={this.props.onViewComments}
 											onViewProfile={this.props.onViewProfile}
 											showAotdMetadata={true}
-											showDescription={true}
+											showDescription={false}
 											showScout={false}
-											showImage={true}
+											showImage={false}
 											user={this.props.user}
 										/>
 									</li>
