@@ -63,7 +63,7 @@ import SearchQuery from '../../../common/models/articles/SearchQuery';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
-import { DeviceType, isMobileDevice } from '../../../common/DeviceType';
+import { DeviceType } from '../../../common/DeviceType';
 import { AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
 import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
@@ -104,10 +104,7 @@ export default abstract class {
 		this._reqStore = requestStore;
 		this._clientType = clientType;
 		this._clientVersion = clientVersion;
-		this._shouldIncludeCredentials = (
-			clientType === ClientType.App ||
-			!isMobileDevice(deviceType)
-		);
+		this._shouldIncludeCredentials = clientType === ClientType.App;
 	}
 	private createFetchFunction<TResult>(path: string) {
 		return (callback: (value: Fetchable<TResult>) => void) => this.get<TResult>({ path }, callback);
