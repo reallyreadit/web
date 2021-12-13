@@ -28,7 +28,6 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Panel from '../BrowserRoot/Panel';
 import { DeviceType } from '../../../../common/DeviceType';
 import { variants as marketingVariants } from '../../marketingTesting';
-import Link from '../../../../common/components/Link';
 import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
@@ -68,15 +67,6 @@ class AuthorScreen extends React.Component<Props, State> {
 			}
 		});
 		this.fetchArticles(pageNumber);
-	};
-	private readonly _verifyAccout = () => {
-		if (this.props.user) {
-			this.props.onNavTo({
-				key: ScreenKey.Settings
-			});
-		} else {
-			this.props.onBeginOnboarding('AuthorScreenVerification');
-		}
 	};
 	constructor(props: Props) {
 		super(props);
@@ -173,16 +163,6 @@ class AuthorScreen extends React.Component<Props, State> {
 							<Panel className="main">
 								<div className="profile">
 									<h1>{this.props.profile.value.name}</h1>
-									{this.props.profile.value.totalEarnings ?
-										<InfoBox
-											position="static"
-											style="normal"
-										>
-											<p className="fine-print">
-												Are you {this.props.profile.value.name}? <Link onClick={this._verifyAccout}>Get verified</Link>.
-											</p>
-										</InfoBox> :
-									null}
 								</div>
 								{this.state.articles.isLoading ?
 									<LoadingOverlay position="static" /> :
