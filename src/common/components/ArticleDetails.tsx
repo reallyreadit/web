@@ -30,6 +30,7 @@ export interface ArticleDetailsProps {
 	deviceType: DeviceType,
 	highlight?: boolean,
 	imagePosition?: 'left' | 'right',
+	isFeatured?: boolean,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onPost: (article: UserArticle) => void,
@@ -56,14 +57,15 @@ export interface ArticleDetailsState {
 	isStarring: boolean,
 }
 export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extends React.PureComponent<P, ArticleDetailsState> {
-	public static defaultProps: Pick<ArticleDetailsProps, 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions' | 'showScout' | 'imagePosition' | 'showPoints'> = {
+	public static defaultProps: Pick<ArticleDetailsProps, 'isFeatured' | 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions' | 'showScout' | 'imagePosition' | 'showPoints'> = {
 		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true,
 		showImage: false,
 		showMetaActions: true,
 		showPoints: true,
 		showScout: true,
-		imagePosition: 'right'
+		imagePosition: 'right',
+		isFeatured: false
 	};
 	protected readonly _getShareData = () => {
 		return getShareData(
@@ -150,7 +152,10 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 
 	public render() {
 		return (
-			<div className={classnames( "article-details_d2vnmv", {"has-image": this._shouldShowImage()}, this.props.className )}>
+			<div className={classnames( "article-details_d2vnmv", {
+				"has-image": this._shouldShowImage(),
+				"is-featured": this.props.isFeatured
+				}, this.props.className )}>
 				{this.props.showAotdMetadata ?
 					<AotdMetadata
 						article={this.props.article}

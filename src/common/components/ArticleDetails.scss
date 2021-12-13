@@ -13,6 +13,17 @@ $borderRadius: 3px;
 	}
 }
 
+// don't show images on non-featured images on phones
+// TODO: This solution is inefficient for data usage on phones.
+//		Browsers still load images within "display: none" elements.
+.article-details_d2vnmv.has-image:not(.is-featured) > .article-container {
+	@include only(phone) {
+		> .image_1ctn9c {
+			display: none;
+		}
+	}
+}
+
 .article-details_d2vnmv.has-image > .article-container {
 	@include from(tablet-portrait) {
 		&.image--left > .image_1ctn9c {
@@ -24,6 +35,7 @@ $borderRadius: 3px;
 	}
 
 	> .image_1ctn9c {
+
 		box-sizing: border-box;
 		overflow: hidden;
 		min-width: 120px;
@@ -195,11 +207,24 @@ $borderRadius: 3px;
 	margin-left: 5px;
 }
 
-.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .description,
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .description {
-	font-size: 11pt;
-	color: var(--text-muted-color);
-	margin: 0.5em 0;
+.article-details_d2vnmv {
+	& > .article-container > .content > .columns > .small-stats-article > .description,
+	& > .article-container > .content > .columns > .article > .description {
+		font-size: 11pt;
+		color: var(--text-muted-color);
+		margin: 0.5em 0;
+	}
+}
+
+// for non-featured articles, the description lines are clamped to a standardised 3 lines
+.article-details_d2vnmv:not(.is-featured) {
+	& > .article-container > .content > .columns > .small-stats-article > .description,
+	& > .article-container > .content > .columns > .article > .description {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 }
 
 

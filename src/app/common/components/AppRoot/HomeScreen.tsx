@@ -248,6 +248,7 @@ class HomeScreen extends React.Component<Props, State> {
 							className="aotd--desktop-display"
 							deviceType={this.props.deviceType}
 							highlight={this.state.communityReads.value.aotdHasAlert}
+							isFeatured={true}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onNavTo={this.props.onNavTo}
 							onPost={this.props.onPostArticle}
@@ -273,6 +274,7 @@ class HomeScreen extends React.Component<Props, State> {
 							className="aotd--desktop-display"
 							deviceType={this.props.deviceType}
 							highlight={this.state.communityReads.value.aotdHasAlert}
+							isFeatured={true}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onNavTo={this.props.onNavTo}
 							onPost={this.props.onPostArticle}
