@@ -34,6 +34,13 @@
 	margin: 20px 0;
 }
 
+.contenders-view_a7cu96 > .list_prxe9g {
+	// mute aotd text
+	> li > div > div.aotd-metadata_j18sed > div.aotd-score_ndfcug {
+		color: var(--text-muted-color);
+	}
+}
+
 @include theme using ($root, $scheme) {
 	#{$root} .contenders-view_a7cu96 > .separator {
 		@include theme-colors(
