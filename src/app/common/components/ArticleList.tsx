@@ -112,6 +112,7 @@ export class ArticleList extends React.Component<Props> {
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 									onViewProfile={this.props.onViewProfile}
+									showAotdMetadata={false}
 									user={this.props.userAccount}
 								/>
 							</li>

@@ -198,6 +198,7 @@ class AuthorScreen extends React.Component<Props, State> {
 																	onToggleStar={this.props.onToggleArticleStar}
 																	onViewComments={this.props.onViewComments}
 																	onViewProfile={this.props.onViewProfile}
+																	showAotdMetadata={false}
 																	user={this.props.user}
 																/>
 															</li>
