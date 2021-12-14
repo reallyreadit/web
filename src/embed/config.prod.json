@@ -1,0 +1,14 @@
+{
+	"apiServer": {
+		"protocol": "https",
+		"host": "api.readup.com"
+	},
+	"staticServer": {
+		"protocol": "https",
+		"host": "static.readup.com"
+	},
+	"webServer": {
+		"protocol": "https",
+		"host": "readup.com"
+	}
+}

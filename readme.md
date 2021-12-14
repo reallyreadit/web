@@ -1,6 +1,5 @@
 # reallyread.it web
 ## Setup Guide
-### Common
 1. Install NodeJS	14: https://nodejs.org/en/download/
 2. Configure the NodeJS environment for development
 
@@ -9,87 +8,20 @@
 3. Install packages
 
         npm ci
+## Running Locally
 ### App
-1. Configure the web server. Optionally set the value for `stripePublishableKey` if you want to enable subscription purchases through Stripe.
-
-        src/app/server/config.dev.json
-    ```json
-    {
-    	"apiServer": {
-    		"protocol": "https",
-    		"host": "api.dev.readup.com"
-    	},
-    	"chromeExtensionId": "",
-    	"contentRootPath": "bin/dev/app/client",
-    	"cookieDomain": ".dev.readup.com",
-    	"cookieName": "devSessionKey",
-    	"packageFilePath": "package.json",
-    	"port": 5001,
-    	"secureCookie": true,
-    	"serveStaticContent": true,
-    	"staticServer": {
-    		"protocol": "https",
-    		"host": "static.dev.readup.com"
-    	},
-		"stripePublishableKey": "",
-    	"webServer": {
-    		"protocol": "https",
-    		"host": "dev.readup.com"
-    	}
-	 }
-    ```
-2. Start the server
+1. Start the server
 
         npx gulp watch:dev:app
 ### Embed
-1. Configure the embed
-
-        src/embed/config.dev.json
-    ```json
-    {
-    	"apiServer": {
-    		"protocol": "https",
-    		"host": "api.dev.readup.com"
-    	},
-    	"staticServer": {
-    		"protocol": "https",
-    		"host": "static.dev.readup.com"
-    	},
-    	"webServer": {
-    		"protocol": "https",
-    		"host": "dev.readup.com"
-    	}
-    }
-    ```
-2. Build the embed
+1. Build the embed
 
         npx gulp build:dev:embed
 ### Extension
-1. Configure the extension
-
-        src/extension/common/config.dev.json
-    ```json
-    {
-    	"apiServer": {
-    		"protocol": "https",
-    		"host": "api.dev.readup.com"
-    	},
-    	"cookieDomain": "dev.readup.com",
-    	"cookieName": "devSessionKey",
-    	"staticServer": {
-    		"protocol": "https",
-    		"host": "static.dev.readup.com"
-    	},
-    	"webServer": {
-    		"protocol": "https",
-    		"host": "dev.readup.com"
-    	}
-    }
-    ```
-2. Build the extension
+1. Build the extension
 
         npx gulp build:dev:extension
-3. Load the extension in a browser
+2. Load the extension in a browser
     - Chrome
         1. Go to chrome://extensions and enable "Developer mode"
         2. Click "Load unpacked extension..." and select the output directory (`bin/dev/extension`)
@@ -98,23 +30,8 @@
         2. Click "This Firefox"
         2. Click "Load Temporary Add-on" and select the `manifest.json` file from the output directory (`bin/dev/extension`)
 ### Native Client
-1. Configure the native client reader
-
-        src/native-client/reader/config.dev.json
-    ```json
-    {
-    	"staticServer": {
-    		"protocol": "https",
-    		"host": "static.dev.readup.com"
-    	},
-    	"webServer": {
-    		"protocol": "https",
-    		"host": "dev.readup.com"
-    	}
-    }
-    ```
-2. Build the native client script bundles
+1. Build the native client script bundles
 
         npx gulp build:dev:native-client-reader
         npx gulp build:dev:native-client-share-extension
-3. Copy files to the `ios` repository under `IosApp/reader.js` and `ShareExtension/share-extension.js` and update `RRITReaderScriptVersion` and `RRITShareExtensionScriptVersion` in the `plist` files.
+2. Copy files to the `ios` repository under `IosApp/reader.js` and `ShareExtension/share-extension.js` and update `RRITReaderScriptVersion` and `RRITShareExtensionScriptVersion` in the `plist` files.

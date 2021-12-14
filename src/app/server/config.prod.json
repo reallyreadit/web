@@ -1,0 +1,29 @@
+{
+	"apiServer": {
+		"protocol": "https",
+		"host": "api.readup.com"
+	},
+	"chromeExtensionId": "mkeiglkfdfamdjehidenkklibndmljfi",
+	"contentRootPath": "../../../client",
+	"cookieDomain": ".readup.com",
+	"cookieName": "sessionKey",
+	"logStream": {
+		"type": "rotating-file",
+		"path": "../../../logs/app.log",
+		"period": "1d",
+		"count": 31,
+		"level": "warn"
+	},
+	"packageFilePath": "../../../package.json",
+	"secureCookie": true,
+	"serveStaticContent": false,
+	"staticServer": {
+		"protocol": "https",
+		"host": "static.readup.com"
+	},
+	"stripePublishableKey": "pk_live_51HijWFCE1GzMLmqKOoExoqDCQXNJuROvvr7K82hhPyr1r7QoRh0yLpUL5O8ExiLcfAQG9SfUh51wLRJpF2mMFaJ200PwEHfxQK",
+	"webServer": {
+		"protocol": "https",
+		"host": "readup.com"
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"apiServer": {
+		"protocol": "https",
+		"host": "api.readup.com"
+	},
+	"cookieDomain": "readup.com",
+	"cookieName": "sessionKey",
+	"staticServer": {
+		"protocol": "https",
+		"host": "static.readup.com"
+	},
+	"webServer": {
+		"protocol": "https",
+		"host": "readup.com"
+	}
+}
