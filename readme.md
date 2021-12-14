@@ -9,9 +9,6 @@
 3. Install packages
 
         npm ci
-4. Gulp is included as a development dependency and is used to execute build actions. If you do not have Gulp installed globally or have an incompatible global version installed you can use a package runner like [npx](https://www.npmjs.com/package/npx) or create an alias to execute the version included in this repository.
-
-        alias gulp="node node_modules/gulp/bin/gulp.js"
 ### App
 1. Configure the web server. Optionally set the value for `stripePublishableKey` if you want to enable subscription purchases through Stripe.
 
@@ -43,7 +40,7 @@
     ```
 2. Start the server
 
-        gulp watch:dev:app
+        npx gulp watch:dev:app
 ### Embed
 1. Configure the embed
 
@@ -66,7 +63,7 @@
     ```
 2. Build the embed
 
-        gulp build:dev:embed
+        npx gulp build:dev:embed
 ### Extension
 1. Configure the extension
 
@@ -91,7 +88,7 @@
     ```
 2. Build the extension
 
-        gulp build:dev:extension
+        npx gulp build:dev:extension
 3. Load the extension in a browser
     - Chrome
         1. Go to chrome://extensions and enable "Developer mode"
@@ -118,6 +115,6 @@
     ```
 2. Build the native client script bundles
 
-        gulp build:dev:native-client-reader
-        gulp build:dev:native-client-share-extension
+        npx gulp build:dev:native-client-reader
+        npx gulp build:dev:native-client-share-extension
 3. Copy files to the `ios` repository under `IosApp/reader.js` and `ShareExtension/share-extension.js` and update `RRITReaderScriptVersion` and `RRITShareExtensionScriptVersion` in the `plist` files.
