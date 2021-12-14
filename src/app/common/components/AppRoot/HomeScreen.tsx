@@ -23,7 +23,7 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import PageResult from '../../../../common/models/PageResult';
@@ -34,6 +34,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import {LeaderboardsViewParams} from '../screens/LeaderboardsScreen';
 import MorphingArticleDetails from '../../../../common/components/MorphingArticleDetails';
 import Icon from '../../../../common/components/Icon';
+import FreeTrialNotice from './FreeTrialNotice';
 
 interface Props {
 	deviceType: DeviceType,
@@ -240,6 +241,17 @@ class HomeScreen extends React.Component<Props, State> {
 								text="Show new Article of the Day"
 							/> :
 						null}
+						{(
+							!(this.props.subscriptionStatus.isUserFreeForLife) &&
+							this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
+						)
+							?
+							<FreeTrialNotice
+								onNavTo={this.props.onNavTo}
+								onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
+								subscriptionStatus={this.props.subscriptionStatus}
+							/> :
+						null}
 						<h2 className="section-header">
 							<Icon name="trophy"/> Article of the Day
 						</h2>
@@ -331,9 +343,9 @@ class HomeScreen extends React.Component<Props, State> {
 											onViewComments={this.props.onViewComments}
 											onViewProfile={this.props.onViewProfile}
 											showAotdMetadata={true}
-											showDescription={false}
+											showDescription={true}
 											showScout={false}
-											showImage={false}
+											showImage={true}
 											user={this.props.user}
 										/>
 									</li>

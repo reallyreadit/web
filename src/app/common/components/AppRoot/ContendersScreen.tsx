@@ -23,8 +23,7 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import FreeTrialNotice from './FreeTrialNotice';
-import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
+import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import ContendersView from '../controls/articles/ContendersView';
 
@@ -202,17 +201,6 @@ class ContendersScreen extends React.Component<Props, State> {
 								isBusy={this.state.isLoadingNewItems}
 								onClick={this._loadNewItems}
 								text="Show new Article of the Day"
-							/> :
-							null}
-						{(
-							!(this.props.subscriptionStatus.isUserFreeForLife) &&
-							this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
-						)
-							?
-							<FreeTrialNotice
-								onNavTo={this.props.onNavTo}
-								onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
-								subscriptionStatus={this.props.subscriptionStatus}
 							/> :
 							null}
 						<ContendersView

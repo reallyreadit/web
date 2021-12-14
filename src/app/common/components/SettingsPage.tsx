@@ -29,7 +29,7 @@ import ContentBox from '../../../common/components/ContentBox';
 import DisplayPreferencesControl from './SettingsPage/DisplayPreferencesControl';
 import DisplayPreference, { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import SubscriptionControl from './SettingsPage/SubscriptionControl';
-import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import UserArticle from '../../../common/models/UserArticle';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { AppPlatform } from '../../../common/AppPlatform';
@@ -384,10 +384,20 @@ class SettingsPage extends React.PureComponent<
 					View your personal reading stats
 				</SettingsLink>
 					{/* TODO: what to do with copy in case of free trial? */}
-				<SettingsLink iconName="pie-chart" screenKey={ScreenKey.MyImpact} onNavTo={this.props.onNavTo}>
-					<div>Readup allocates your subscription fees to the writers you read.</div>
-					<div className="detail">View your impact</div>
-				</SettingsLink>
+					{(
+						!(this.props.subscriptionStatus.isUserFreeForLife) &&
+						this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
+					)
+						?
+					<SettingsLink iconName="rocket" screenKey={ScreenKey.MyImpact} onNavTo={this.props.onNavTo}>
+						<div>You're on your free trial</div>
+						<div className="detail">Upgrade for unlimited, ad-free reading</div>
+					</SettingsLink>
+					: <SettingsLink iconName="pie-chart" screenKey={ScreenKey.MyImpact} onNavTo={this.props.onNavTo}>
+						<div>Readup allocates your subscription fees to the writers you read.</div>
+						<div className="detail">View your impact</div>
+					</SettingsLink>
+				}
 				{this.state.settings.isLoading ?
 					<LoadingOverlay position="absolute" /> :
 					<>
