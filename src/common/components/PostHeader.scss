@@ -15,7 +15,24 @@
 }
 
 $spacing: 10px;
+$spacing-verbose: 5px;
 // spacing between items
+.post-header_f4a846 {
+	& > .user-name,
+	& > .leaderboard-badges_s4o6nj,
+	& > .posted-copy {
+		margin-right: $spacing;
+	}
+}
+
+.post-header_f4a846.is-verbose {
+	& > .user-name,
+	& > .leaderboard-badges_s4o6nj,
+	& > .posted-copy {
+		margin-right: $spacing-verbose;
+	}
+}
+
 .post-header_f4a846 > .user-name,
 .post-header_f4a846 > .leaderboard-badges_s4o6nj,
 .post-header_f4a846 > .posted-copy {

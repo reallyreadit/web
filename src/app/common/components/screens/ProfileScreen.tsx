@@ -10,7 +10,6 @@ import Post from '../../../../common/models/social/Post';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import LeaderboardBadges from '../../../../common/components/LeaderboardBadges';
-import { formatCurrency } from '../../../../common/format';
 import UserArticle from '../../../../common/models/UserArticle';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
@@ -18,7 +17,6 @@ import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
-import Link from '../../../../common/components/Link';
 import CommentThread from '../../../../common/models/CommentThread';
 import UserNameForm from '../../../../common/models/social/UserNameForm';
 import Following from '../../../../common/models/social/Following';
@@ -31,7 +29,6 @@ import Rating from '../../../../common/models/Rating';
 import Panel from '../BrowserRoot/Panel';
 import { ProfilePage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
-import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
 import AuthorArticleQuery from '../../../../common/models/articles/AuthorArticleQuery';
 import Icon from '../../../../common/components/Icon';
@@ -108,10 +105,10 @@ const
 	listPageSize = 40,
 	headerSelectorItems = [
 		{
-			value: View.Articles
+			value: View.Posts
 		},
 		{
-			value: View.Posts
+			value: View.Articles
 		}
 	];
 
@@ -181,16 +178,6 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 			this.state = {
 				view: View.Indeterminate,
 				isFollowingButtonBusy: false
-			};
-		} else if (
-			props.profile.value.authorProfile &&
-			!props.highlightedCommentId &&
-			!props.highlightedPostId
-		) {
-			this.state = {
-				view: View.Articles,
-				isFollowingButtonBusy: false,
-				articles: this.fetchArticles()
 			};
 		} else {
 			this.state = {
@@ -318,23 +305,11 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		}
 		// set the view when the profile has loaded
 		if (this.props.profile.value && prevProps.profile.isLoading) {
-			if (
-				this.props.profile.value.authorProfile &&
-				!this.props.highlightedCommentId &&
-				!this.props.highlightedPostId
-			) {
-				this.setState({
-					view: View.Articles,
-					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-					articles: this.fetchArticles()
-				});
-			} else {
-				this.setState({
-					view: View.Posts,
-					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-					posts: this.fetchPosts(1)
-				});
-			}
+			this.setState({
+				view: View.Posts,
+				isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+				posts: this.fetchPosts(1)
+			});
 		}
 	}
 	public componentWillUnmount() {
@@ -390,42 +365,15 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 											<LeaderboardBadges badge={this.props.profile.value.leaderboardBadge} /> :
 											null}
 									</div>
-									{this.props.profile.value.authorProfile && this.props.profile.value.authorProfile.totalEarnings ?
-										<div className="earnings">
-											Total Readup earnings: {formatCurrency(this.props.profile.value.authorProfile.totalEarnings)}
-										</div> :
-										null}
-									{isOwnProfile ?
-										<>
-											{this.props.profile.value.followeeCount ?
-												<Link
-													className="following-count"
-													onClick={this._showFollowees}
-													text={this._getFolloweesText()}
-												/> :
-												<span className="following-count">{this._getFolloweesText()}</span>}
-											<StickyNote>
-												<strong>Invite your friends.</strong>
-												<span onClick={this._openGetFollowersDialog}>Get followers.</span>
-											</StickyNote>
-										</> :
-										this.props.userAccount ?
-											<FollowButton
-												following={this.props.profile.value}
-												isBusy={this.state.isFollowingButtonBusy}
-												onFollow={this._followUser}
-												onUnfollow={this._unfollowUser}
-												size="large"
-											/> :
-											null}
-									{this.props.profile.value.followerCount ?
-										<Link
-											badge={isOwnProfile && this.props.userAccount.followerAlertCount}
-											className="following-count"
-											onClick={this._showFollowers}
-											text={this._getFollowersText()}
+										{!isOwnProfile && this.props.userAccount ?
+										<FollowButton
+											following={this.props.profile.value}
+											isBusy={this.state.isFollowingButtonBusy}
+											onFollow={this._followUser}
+											onUnfollow={this._unfollowUser}
+											size="large"
 										/> :
-										<span className="following-count">{this._getFollowersText()}</span>}
+									null}
 								</div>
 								{this.props.profile.value.authorProfile ?
 									<div className="controls" data-nosnippet>

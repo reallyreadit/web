@@ -43,22 +43,28 @@ export default class PostDetails extends AbstractCommentShareable<Props> {
 			<div className="post-details_8qx033">
 				{this._hasComment() ?
 					<PostHeader
+						article={this.props.post.article}
 						userName={commentThread.userAccount}
 						leaderboardBadge={commentThread.badge}
 						isAuthor={commentThread.isAuthor}
+						isComment={true}
 						date={commentThread.dateCreated}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onGetShareData={this._getShareData}
 						onShare={this.props.onShare}
 						onShareViaChannel={this.props.onShareViaChannel}
 						onViewProfile={this.props.onViewProfile}
+						verbose={true}
 					/> :
 					<PostHeader
+						article={this.props.post.article}
 						userName={this.props.post.userName}
 						leaderboardBadge={this.props.post.badge}
+						isComment={false}
 						date={this.props.post.date}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onViewProfile={this.props.onViewProfile}
+						verbose={true}
 				/>}
 				<ContentBox
 					className={classNames('content', { 'alert': this.props.post.hasAlert })}
