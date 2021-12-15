@@ -47,6 +47,12 @@ enum View {
 	Authors = 'Writers',
 	Readers = 'Readers'
 }
+
+export enum LeaderboardsViewParams {
+	Readers = 'readers',
+	Writers = 'writers'
+}
+
 interface State {
 	authorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null,
 	moreAuthorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null,
@@ -362,7 +368,7 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 				onViewProfile={services.onViewProfile}
 				screenId={screen.id}
 				user={sharedState.user}
-				view={route.getPathParams(screen.location.path)['view'] === 'readers' ?
+				view={route.getPathParams(screen.location.path)['view'] === LeaderboardsViewParams.Readers ?
 					View.Readers :
 					View.Authors}
 			/>

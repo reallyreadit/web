@@ -1,0 +1,25 @@
+/*
+        componentPath: src/common/components/MorphingArticleDetails
+        cssComponentId: morphing-article-details_izt93z
+*/
+@import '../../common/styles/breakpoints.scss';
+
+.morphing-article-details_izt93z {
+	&--desktop-display {
+		display: flex;
+	}
+	&--mobile-standard {
+		display: none;
+	}
+}
+
+@include until(tablet-portrait) {
+	.morphing-article-details_izt93z {
+		&--desktop-display {
+			display: none;
+		}
+		&--mobile-standard {
+			display: block;
+		}
+	}
+}

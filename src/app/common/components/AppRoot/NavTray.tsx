@@ -7,6 +7,7 @@ import Alert from '../../../../common/models/notifications/Alert';
 import { SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
+	onViewContenders: () => void,
 	onViewHome: () => void,
 	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
@@ -25,9 +26,20 @@ export default class NavTray extends React.PureComponent<Props>{
 					>
 						<Icon
 							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
-							name="earth"
+							name="trophy"
 						/>
-						<label>Discover</label>
+						<label>AOTD</label>
+					</button>
+				</li>
+				<li>
+					<button
+						className={this.props.selectedScreen.key === ScreenKey.Contenders ? 'selected' : null}
+						onClick={this.props.onViewContenders}
+					>
+						<Icon
+							name="podium"
+						/>
+						<label>Contenders</label>
 					</button>
 				</li>
 				<li>

@@ -1,0 +1,25 @@
+/*
+        componentPath: src/app/common/components/screens/BestEverScreen
+        cssComponentId: best-ever-screen_bmdeo1
+*/
+
+.best-ever-screen_bmdeo1 {
+	display: flex;
+	flex-flow: column;
+}
+.best-ever-screen_bmdeo1 > .loading-overlay_zfgtd1 {
+	flex: 1 1 auto;
+}
+.best-ever-screen_bmdeo1 > .list_prxe9g,
+.best-ever-screen_bmdeo1 > .page-selector_a8tbpb {
+	flex: 0 0 auto;
+}
+.best-ever-screen_bmdeo1 > h1 {
+	font-family: 'Museo Sans (700)';
+	font-size: 20pt;
+	margin-bottom: 20px;
+}
+.best-ever-screen_bmdeo1 > .controls {
+	flex: 0 0 auto;
+	margin-bottom: 20px;
+}

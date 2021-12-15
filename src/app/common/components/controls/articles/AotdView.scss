@@ -35,7 +35,9 @@
 }
 .aotd-view_hgax0h > .aotd > .controls {
 	margin-top: 20px;
-	text-align: center;
+	display: flex;
+	justify-content: center;
+	// text-align: center;
 }
 
 .aotd-view_hgax0h > .separator {
@@ -46,26 +48,6 @@
 }
 .aotd-view_hgax0h > .loading-overlay_zfgtd1 {
 	margin: 20px 0;
-}
-
-.aotd-view_hgax0h > .aotd > .aotd {
-	&--desktop-display {
-		display: flex;
-	}
-	&--mobile-standard {
-		display: none;
-	}
-}
-
-@include until(tablet-portrait) {
-	.aotd-view_hgax0h > .aotd > .aotd {
-		&--desktop-display {
-			display: none;
-		}
-		&--mobile-standard {
-			display: block;
-		}
-	}
 }
 
 @include theme using ($root, $scheme) {

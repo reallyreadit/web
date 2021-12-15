@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from "react";
 import AsyncTracker from "../../../common/AsyncTracker";
 import Fetchable from "../../../common/Fetchable";
 import {formatCountable } from "../../../common/format";

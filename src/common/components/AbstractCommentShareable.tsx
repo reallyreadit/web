@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from "react";
 import {formatPossessive} from "../format";
 import CommentThread from "../models/CommentThread";
 import Post, {createCommentThread} from "../models/social/Post";

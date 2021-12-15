@@ -28,6 +28,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.AotdHistory
 	},
 	{
+		createUrl: () => '/top-articles-of-all-time',
+		pathRegExp: /^\/top-articles-of-all-time$/,
+		screenKey: ScreenKey.BestEver
+	},
+	{
 		createUrl: () => '/blog',
 		noIndex: () => true,
 		pathRegExp: /^\/blog$/,
@@ -61,6 +66,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			screenKey: ScreenKey.Comments
 		} as Route<DialogKey, ScreenKey>;
 	})(),
+	{
+		createUrl: () => '/contenders',
+		pathRegExp: /^\/contenders$/,
+		screenKey: ScreenKey.Contenders
+	},
 	{
 		createUrl: () => '/download',
 		pathRegExp: /^\/download$/,
