@@ -12,10 +12,10 @@ if (Test-Path $versionDir) {
 }
 
 Write-Host 'Cleaning...'
-& node_modules/.bin/gulp.ps1 clean:prod:app
+npx gulp clean:prod:app
 
 Write-Host 'Building...'
-& node_modules/.bin/gulp.ps1 build:prod:app
+npx gulp build:prod:app
 
 if (-not (Test-Path $publishDir)) {
 	Write-Host 'Creating publish directory...'
