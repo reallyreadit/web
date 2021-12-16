@@ -38,22 +38,23 @@
 ## Publishing & Deploying
 ### App
 In all the steps below, `{version}` is a placeholder for the unquoted version number of this release, e.g. `1.2.3`.
-1. Increment the `[it.reallyread].version.app` version number in `package.json` for this release according to [Semantic Versioning](https://semver.org/) if it hasn't been incremented already. If you want to trigger an "Update Available" toast in the app, update the `appPublic` version as well. If you do not want to trigger an update toast, for example during a non-critical patch release, do not update the `appPublic` version.
-2. Run the `publish-app.ps1` script. The deployable assets will be available in the `pkg/app/{version}` directory after the script finishes.
-3. Upload the assets.
+1. Increment the `[it.reallyread].version.app` version number in `package.json` for this release according to [Semantic Versioning](https://semver.org/) if it hasn't been incremented already. If you want to trigger an "Update Available" toast in the app, update the `appPublic` version as well. The toast prompts for a reload of the app for every client running the old app. If you do not want to trigger an update toast, for example during a non-critical patch release, do not update the `appPublic` version. `appPublic` is the only version the `web` client sees. This will result in the old app version running in clients until they are fully restarted.
+2. Commit the incremented `package.json` with a commit message like "app release", where "app" can be replaced with whichever sub-projects in the web monorepo (extension, embed, app, native-client) have been updated.
+3. Run the `publish-app.ps1` script. The deployable assets will be available in the `pkg/app/{version}` directory after the script finishes.
+4. Upload the assets.
     1. Upload the `app-{version}.zip` package to `s3://aws.reallyread.it/web-sites`. This is the private location that the EC2 instances will download the package from during installation.
     2. Upload the `.js` and `.css` bundle files to `s3://static.readup.com/app/bundles`. This is the public hosted location that the webapp will link to.
-4. Install the package.
+5. Install the package.
 
 	Perform a zero-downtime deployment by installing the package to a server that is offline, bringing that server online, and then taking the server with the old version of the package offline.
     1. Select the target [EC2 instance](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Instances:) that is currently offline and start the instance. It should be named `readup-app-server-x` where `x` is `a` or `b`.
 	2. Log in to the server using Remote Desktop over the VPN connection (see [`ops` `README`](https://github.com/reallyreadit/ops)) and execute the update script using PowerShell.
 
 			Execute-S3Object -Key app/update.ps1 -Params @{Version = '{version}'}
-	3. Log out of the server.
-5. Register the EC2 instance with the [`app-servers` ELB target group](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#TargetGroup:targetGroupArn=arn:aws:elasticloadbalancing:us-east-2:064442047535:targetgroup/app-servers/16e45c6db2907b89).
-6. When the target is healthy, deregister the old EC2 instance.
-7. When the old EC2 instance has finished draining, log in to the server and shut it down.
+	3. Log out of the server. Don't just close the connection, but use a "Sign out" action.
+6. Register the EC2 instance with the [`app-servers` ELB target group](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#TargetGroup:targetGroupArn=arn:aws:elasticloadbalancing:us-east-2:064442047535:targetgroup/app-servers/16e45c6db2907b89). As soon as the new instance is healthy, the old and new instance will each receive 50% of the traffic.
+7. When the target is healthy, deregister the old EC2 instance from the ELB target group. It will start "draining". The new instance will receive 100% of the traffic. This is a good moment to check whether there are any critical bugs in the release.
+8. When the old EC2 instance has finished draining, log in to the server and shut it down with the following command.
 
 		Execute-S3Object -Key app/shutdown.ps1
 
