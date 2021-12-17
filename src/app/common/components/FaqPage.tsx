@@ -95,21 +95,21 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "Do I need to save articles?",
-				answer: <p>Nope. You can always just browse the articles that other people save. But it’s a good thing to&nbsp;
+				answer: <p>Nope. You can always just browse the articles that other people save. But it’s a good thing to{" "}
 					know how to do in case you ever want to save a specific article to Readup.</p>
 			},
 			{
 				question: "How do I save articles to Readup on my iPhone?",
 				answer: <>
-					<p>The Readup share extension in iOS makes it easy to save articles to Readup with just a few clicks.&nbsp;
-					When you are viewing an article you want to save (for example in the Safari app) just click the share extension&nbsp;
-					(a square with an up arrow) and then click the Readup icon. (Note: If you can’t find the Readup icon, you might need to click “More.”)&nbsp;</p>
+					<p>The Readup share extension in iOS makes it easy to save articles to Readup with just a few clicks.{" "}
+					When you are viewing an article you want to save (for example in the Safari app) just click the share extension{" "}
+					(a square with an up arrow) and then click the Readup icon. (Note: If you can’t find the Readup icon, you might need to click “More.”){" "}</p>
 					<p>You'll receive a notification that you can tap to open the article in Readup directly, and The article will appear at the top of your Starred list in My Reads. </p>
 					</>
 			},
 			{
 				question: "How do I save articles to Readup on my laptop or computer?",
-				answer: <p>First, get the browser extesion for your browser from our <Link screen={ScreenKey.Download} onClick={props.onNavTo}>Downloads page</Link>. Then just click the browser extension button. When you view an article in Reader Mode, it will automatically be saved to&nbsp;
+				answer: <p>First, get the browser extesion for your browser from our <Link screen={ScreenKey.Download} onClick={props.onNavTo}>Downloads page</Link>. Then just click the browser extension button. When you view an article in Reader Mode, it will automatically be saved to{" "}
 					the History section of My Reads.</p>
 			},
 			{
@@ -145,7 +145,7 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "How much does Readup cost?",
-				answer: <p>You pick your price: $4.99, $14.99, or $24.99 per month. Readup is exactly the same no matter what price you pick. Prices are in USD and may be converted to your local currency by our payment processor, Stripe.</p>
+				answer: <p>You pick your price: $4.99, $14.99, or $24.99 per month. Readup is exactly the same no matter what price you pick. All prices are in USD and may be converted to your local currency by our payment processor, Stripe.</p>
 			},
 			{
 				question: "Why are there multiple prices for the same thing? ",
@@ -161,7 +161,7 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "Can I contribute more than $24.99?",
-				answer: <p>Yes! If you wish to contribute more than $24.99, open {renderSettings(props)} from your laptop or computer, click 'Change Price,' and enter a Custom Price. (Note: You can't do this from your iPhone.)</p>
+				answer: <p>Yes! If you wish to contribute more than $24.99 USD, open {renderSettings(props)} from your laptop or computer, click 'Change Price,' and enter a Custom Price. (Note: You can't do this from your iPhone.)</p>
 			}
 	]}),
 	props => ({
@@ -173,7 +173,7 @@ const faqs: FaqCategory[] = [
 			},
 			{
 				question: "How do I get paid?",
-				answer: <p>On the first of every month, Readup automatically pays all verified writers who have earned $10 or more and who have connected their Readup account to Stripe. To get paid, the first step is to get verified.</p>
+				answer: <p>On the first of every month, Readup automatically pays all verified writers who have earned $10 or more in pledges and who have connected their Readup account to Stripe. To get paid, the first step is to get verified.</p>
 			},
 			{
 				question: "What happens when I get verified?",
@@ -194,11 +194,11 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "I'm a developer. Can I help?",
-				answer: <p>Maybe! Let us know how you'd like to help at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> </p>
+				answer: <p>Maybe! Let us know how you'd like to contribute at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			},
 			{
 				question: "I'm not a developer. Can I help?",
-				answer: <p>Maybe! Let us know how you'd like to help at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link> </p>
+				answer: <p>Maybe! Let us know how you'd like to contribute at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			},
 			{
 				question: "Is Readup a non-profit or for-profit?",
