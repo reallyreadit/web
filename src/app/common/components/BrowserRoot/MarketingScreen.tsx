@@ -1,19 +1,11 @@
 import * as React from 'react';
 import { JsonLd } from 'react-schemaorg';
-// import ArticleDetails from '../../../../common/components/ArticleDetails';
 import { Corporation } from 'schema-dts';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { DeviceType } from '../../../../common/DeviceType';
-// import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
-// import ScreenKey from '../../../../common/routing/ScreenKey';
-// import routes from '../../../../common/routing/routes';
-// import { findRouteByKey } from '../../../../common/routing/Route';
-// import AotdView from '../controls/articles/AotdView';
 import Fetchable from '../../../../common/Fetchable';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
-// import LoadingOverlay from '../controls/LoadingOverlay';
 import CommunityReads from '../../../../common/models/CommunityReads';
-// import { variants as marketingVariants } from '../../marketingTesting';
 import PageResult from '../../../../common/models/PageResult';
 import Rating from '../../../../common/models/Rating';
 import UserAccount from '../../../../common/models/UserAccount';
@@ -21,30 +13,19 @@ import UserArticle from '../../../../common/models/UserArticle';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { FetchFunction, FetchFunctionWithParams } from '../../serverApi/ServerApi';
-// import List from '../controls/List';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-// import Panel from './Panel';
 import HomePanel from './HomePanel';
-// import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ImageAndText from './ImageAndText';
-// import Card from './Card';
 import QuoteCard from './QuoteCard';
-// import Button from '../../../../common/components/Button';
 import { PriceList } from './MarketingScreen/PriceList';
-// import { RevenueMeter } from '../RevenueMeter';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 import { NavOptions, NavReference } from '../Root';
-// import { HowItWorksVideo, VideoMode } from '../HowItWorksVideo';
-import ScreenKey from '../../../../common/routing/ScreenKey';
 import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
 import DownloadButton from './DownloadButton';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import SubscribePitchElement from '../AppRoot/SubscribePitchElement';
 import Icon from '../../../../common/components/Icon';
-// import classNames from 'classnames';
-// import HomeHero from './HomeHero';
-
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	deviceType: DeviceType,
@@ -97,7 +78,7 @@ const prices: {
 	},
 	{
 		amount: null,
-		title: 'Become a reader',
+		title: 'Buy a subscription',
 		subtitle: '',
 		description: <SubscribePitchElement/>,
 		// selected: true
@@ -112,24 +93,6 @@ export default class MarketingScreen extends React.Component<
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	// private readonly _beginClosingMenu = () => {
-	// 	this.setState({ menuState: MenuState.Closing });
-	// };
-	// private readonly _closeMenu = () => {
-	// 	this.setState({ menuState: MenuState.Closed });
-	// };
-	// private readonly _openMenu = () => {
-	// 	this.setState({ menuState: MenuState.Opened });
-	// };
-	// private readonly _profileRoute = findRouteByKey(routes, ScreenKey.Profile);
-	// private readonly _viewBillsProfile = (event: React.MouseEvent<HTMLElement>
-	// 	this.props.onViewProfile('bill');
-	// };
-	// private readonly _viewJeffsProfile = (event: React.MouseEvent<HTMLElement>
-	// 	event.preventDefault();
-	// 	this._beginClosingMenu();
-	// 	this.props.onViewProfile('jeff');
-	// };
 	constructor(props: Props) {
 		super(props);
 		this.state = {
@@ -157,8 +120,8 @@ export default class MarketingScreen extends React.Component<
 		// const marketingVariant = marketingVariants[0];
 		const valuePoints = [
 			{
-				heading: "100% distraction-free reading",
-				paragraph: "Readup obliterates ads and paywalls so you can focus on reading.",
+				heading: "The world's best* reading app",
+				paragraph: "*Best = most ethically-designed. Readup is 100% distraction-free. No ads. No paywalls.",
 				imageName: "kill-ads-3.0.png",
 				imageAlt: "No paywalls or ads on Readup"
 			},
@@ -175,8 +138,8 @@ export default class MarketingScreen extends React.Component<
 				imageAlt: "Save any where, read on your mobile phone or computer"
 			},
 			{
-				heading: "Better pay for writers ❤️",
-				paragraph: <>Readup is completely transparent. <strong>95%</strong> of your subscription fee goes directly to the writers you read. <Link screen={ScreenKey.Leaderboards} onClick={this.props.onNavTo}>Check it out →</Link></>,
+				heading: "Readup compensates writers 💸",
+				paragraph: "Readup pledges more than 90% of your subscription fee to the writers you read.",
 				imageName: "watch-money-3.0.png",
 				imageAlt: "Readup distributes your money directly to writers"
 			}
@@ -307,8 +270,8 @@ export default class MarketingScreen extends React.Component<
 			<div className="marketing-screen_n5a6wc">
 				<HomePanel className="home-hero-image">
 					<div className="home-hero-image__intro-text">
-						<h1 className="heading-regular">The world's best reading app.</h1>
-						<p>The internet broke reading. We fixed it.</p>
+						<h1 className="heading-regular">The internet is destroying your ability to read.</h1>
+						<p>Steal it back. Join the Readup community today.</p>
 						<DownloadButton
 							analyticsAction='home-hero-download'
 							buttonType='platform'
@@ -333,50 +296,11 @@ export default class MarketingScreen extends React.Component<
 						imageRight={!(i % 2 == 0)}
 						type="contained" />) }
 				</HomePanel>
-				{/* <HomePanel
-					data-nosnippet
-				>
-					<h2 className="heading-regular">We're on a quest to save journalism.</h2>
-					<div className="flex-panel">
-						{[1,2,3].map(n => <Card key={n}>Test</Card>)}
-					</div>
-				</HomePanel> */}
-				{/*<HomePanel id='how-it-works'>
-					<h2 className="heading-regular">How it works</h2>
-					<div className="how-it-works__selector">
-						{[{value: 'Desktop'}, {value: 'iOS'}].map(
-							(item, i) => (
-								<button
-									className={classNames({ 'selected': i % 2 == 0 })}
-									disabled={false}
-									key={item.value}
-									// onClick={this._change}
-									onClick={() => {}}
-									value={item.value}
-								>
-									{item.value}*/}
-									{/* <AlertBadge count={item.badge} /> */}
-								{/*</button>*/}
-							{/*)
-						)}
-					</div>*/}
-					{/* <div> */}
-						{/*{howItWorksDesktop.map(props =>
-							<ImageAndText
-								{...props}
-								key={props.heading}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-								type='wide'
-							/>
-						)}*/}
-					{/* </div> */}
-
-				{/*</HomePanel>*/}
 				<HomePanel
 					data-nosnippet
 					className="pricing-panel"
 				>
-					<h2 className="heading-regular">Start reading for free</h2>
+					<h2 className="heading-regular">Join the community.</h2>
 					<PriceList prices={prices} />
 					<DownloadSection
 						onNavTo={this.props.onNavTo}
@@ -384,25 +308,6 @@ export default class MarketingScreen extends React.Component<
 					/>
 
 				</HomePanel>
-				{/* {this.props.revenueReport.value?.report.totalRevenue > 0 ?
-					<HomePanel
-						data-nosnippet
-						className="revenue-panel"
-					>
-						<RevenueMeter
-							onOpenEarningsExplainerDialog={this.props.onOpenEarningsExplainerDialog}
-							report={this.props.revenueReport}
-						/>
-					</HomePanel> :
-					null} */}
-				{/* <HomePanel
-					data-nosnippet
-					className="how-it-works"
-				>
-					<h2 className="heading-regular">How it works</h2>
-					<p className="home-section-intro">Watch our CEO give a 3-minute demo of Readup.</p>
-					<HowItWorksVideo mode={VideoMode.Embed} />
-				</HomePanel> */}
 				<HomePanel
 					data-nosnippet
 					className="quote-panel"
