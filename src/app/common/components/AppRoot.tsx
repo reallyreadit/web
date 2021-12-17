@@ -59,7 +59,6 @@ import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
-import { VideoMode } from './HowItWorksVideo';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import createReadScreenFactory from './AppRoot/ReadScreen';
@@ -846,7 +845,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCreateTitle: this._createFaqScreenTitle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				videoMode: VideoMode.Link
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: DeviceType.Ios,
