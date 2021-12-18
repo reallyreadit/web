@@ -8,8 +8,8 @@ import HomePanel from './BrowserRoot/HomePanel';
 import Button from '../../../common/components/Button';
 import Link from '../../../common/components/Link';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import { NavReference, Screen } from './Root';
-import { HowItWorksVideo, VideoMode } from './HowItWorksVideo';
+import { NavReference, Screen, SharedState } from './Root';
+import UserAccount from '../../../common/models/UserAccount';
 
 interface Faq {
 	question: string;
@@ -25,25 +25,69 @@ const faqs: FaqCategory[] = [
 		title: "Getting Started",
 		questions: [
 			{
-				question: "How do I get started on my iPhone?",
-				answer: <p>Download <Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>the app</Link>&nbsp;
-						from the app store.</p>
+				question: "How do I get started on my iPhone (or iPad)?",
+				answer: <p>Download <Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>the app</Link>{" "}
+					from the app store.</p>
 			},
 			{
-				question: "How do I get started on my laptop or computer?",
-				answer: <p>First, add the Readup browser extension to your favorite web browser —&nbsp;
-					<Link href="https://chrome.google.com/webstore/detail/readup/mkeiglkfdfamdjehidenkklibndmljfi?hl=en-US" onClick={props.onNavTo}>Chrome</Link>,&nbsp;
-					<Link href="https://addons.mozilla.org/en-US/firefox/addon/readup/" onClick={props.onNavTo}>Firefox</Link>,&nbsp;
-					<Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>Safari</Link> or&nbsp;
-					<Link href="https://microsoftedge.microsoft.com/addons/detail/readup/nnnlnihiejbbkikldbfeeefljhpplhcm" onClick={props.onNavTo}>Edge</Link>.&nbsp;
-					 Next, look for the Readup button in your browser window (near the URL bar) which enables you to activate Reader Mode&nbsp;
-					 on any article you wish to read with just one click.
-					 <br/>Finally, remember to visit Readup.com to explore articles, read comments, and manage your account.</p>
+				question: "How do I get started on my Android?",
+				answer: (onOpenNewPlatformNotificationRequestDialog: () => void) => (
+				<>
+					<p>Shucks! Readup isn't currently available for Android. Tap the button below to get notified when we launch the Android app.</p>
+					<div className="faq-android-notify">
+						<Button
+							text="Get Notified"
+							size="x-large"
+							intent="loud"
+							onClick={onOpenNewPlatformNotificationRequestDialog}/>
+					</div>
+				</>
+				)
 			},
 			{
-				question: "Do I need to create an account?",
-				answer: <p>Yes. In addition to downloading the app and/or extensions, you will need to create an account on Readup.</p>
+				question: "How do I get started on my computer?",
+				answer: <p>Download the app for{" "}
+					<Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>Mac</Link>,{" "}
+					<Link href="https://static.readup.com/downloads/windows/ReadupSetup.exe" onClick={props.onNavTo}>Windows</Link> or{" "}
+					<Link href="https://static.readup.com/downloads/linux/latest" onClick={props.onNavTo}>Linux</Link>.
+				</p>
 			},
+			{
+				question: "What's a reader name?",
+				answer: <p>The word "user" dehumanizes people. In lieu of "usernames," Readup has reader names.</p>
+			},
+		]
+	}),
+	props => ({
+		title: "Using Readup",
+		questions: [
+			{
+				question: "What can I read on Readup?",
+				answer: <p>Anything! Readup curates top-quality articles from across the web. Plus you can easily save (or "import") articles to Readup from pretty much anywhere.</p>
+			},
+			{
+				question: "I noticed a problem within an article. What do I do?",
+				answer: <>
+							<p>Uh oh! All articles on Readup should display perfectly, but sometimes Readup's ad-destroyer (or "parser") makes a mistake. If you notice a problem within an article, please report it by clicking the flag icon in the top right corner.</p>
+							<img
+								alt="Screenshot of how to report issues on Readup"
+								style={{"maxWidth": "min(70vw,450px)", "margin": "0.7em", "boxShadow": "0px 2px 10px #0003", "paddingLeft": "0"}}
+								src={props.onCreateStaticContentUrl('/app/images/faq-page/how-to-report-issues-mobile.jpeg')}
+							/>
+						</>
+			},
+			{
+				question: "When is the Article of the Day selected?",
+				answer: <p>The #1 Contender becomes AOTD at midnight Pacific Standard Time. </p>
+			},
+			{
+				question: "Can I use Readup to bypass paywalls?",
+				answer: <p>Yes. Readup is essentially a browser that cleans pages up by stripping away everything except the actual article. Many articles that are "hidden" behind soft paywalls are still "visible" in the code. Readup displays those articles.</p>
+			},
+			{
+				question: "Can I change my reader name?",
+				answer: <p>No. If you want a new reader name, you need to create a new account.</p>
+			}
 		]
 	}),
 	props => ({
@@ -51,24 +95,21 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "Do I need to save articles?",
-				answer: <p>Nope. You can always just browse the articles that other people save. But it’s a good thing to&nbsp;
+				answer: <p>Nope. You can always just browse the articles that other people save. But it’s a good thing to{" "}
 					know how to do in case you ever want to save a specific article to Readup.</p>
 			},
 			{
-				question: "Can I save anything I want?",
-				answer: <p>Yep! Readup doesn’t enable you to bypass paywalls, but you can save paid articles&nbsp;
-					(for example, from the Wall Street Journal) if you pay for them separately.</p>
-			},
-			{
 				question: "How do I save articles to Readup on my iPhone?",
-				answer: <p>The Readup share extension in iOS makes it easy to save articles to Readup with just a few clicks.&nbsp;
-					When you are viewing an article you want to save (for example in the Safari app) just click the share extension&nbsp;
-					(a square with an up arrow) and then click the Readup icon. (Note: If you can’t find the Readup icon, you might need to click “More.”)&nbsp;
-					The article will appear at the top of your Starred list in My Reads. </p>
+				answer: <>
+					<p>The Readup share extension in iOS makes it easy to save articles to Readup with just a few clicks.{" "}
+					When you are viewing an article you want to save (for example in the Safari app) just click the share extension{" "}
+					(a square with an up arrow) and then click the Readup icon. (Note: If you can’t find the Readup icon, you might need to click “More.”){" "}</p>
+					<p>You'll receive a notification that you can tap to open the article in Readup directly, and The article will appear at the top of your Starred list in My Reads. </p>
+					</>
 			},
 			{
 				question: "How do I save articles to Readup on my laptop or computer?",
-				answer: <p>Just click the browser button. When you view an article in Reader Mode, it will automatically be saved to&nbsp;
+				answer: <p>First, get the browser extesion for your browser from our <Link screen={ScreenKey.Download} onClick={props.onNavTo}>Downloads page</Link>. Then just click the browser extension button. When you view an article in Reader Mode, it will automatically be saved to{" "}
 					the History section of My Reads.</p>
 			},
 			{
@@ -88,154 +129,90 @@ const faqs: FaqCategory[] = [
 		]
 	}),
 	props => ({
-		title: "Reading on Readup",
-		questions: [
-			{
-				question: "Why didn’t I get credit for something I read?",
-				answer: <p>Make sure that you’re reading in Reader Mode in order to get credit.</p>
-			},
-			{
-				question: "Am I “reading” too fast?",
-				answer: <p>Maybe. Fast reading is okay, but Readup won’t give you credit for skimming or scanning. If you think that Readup isn’t&nbsp;
-					giving you credit for articles you’re really reading, please send us an email: <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
-			},
-			{
-				question: "What if a specific article doesn’t work?",
-				answer: <p>Please flag any article errors by clicking the small flag in the top right corner of Reader Mode.</p>
-			},
-			{
-				question: "Who chooses the Article of the Day?",
-				answer: <p>Everybody! The Article of the Day (AOTD) is "crowdsourced." At midnight (Pacific Time) the #1 top ranked article becomes the AOTD for the following day.</p>
-			}
-		]
-	}),
-	props => ({
 		title: "Privacy",
 		questions: [
 			{
-				question: "Does Readup track my reading?",
-				answer: <p>Yes. But it is completely secure and anonymous. Our <Link screen={ScreenKey.PrivacyPolicy} onClick={props.onNavTo}>Privacy Policy</Link> is short and sweet&nbsp;
-				and we highly suggest you read it.</p>
+				question: "Can people see everything I've been reading?",
+				answer: <p>No. Your reading history is 100% private by default. On an article-by-article basis, you choose what you want to post publicly.</p>
 			},
 			{
-				question: "Will other people know what I’ve been reading?",
-				answer: <p>Not by default. After you finish an article, you can choose to post it publicly.&nbsp;
-					Otherwise, all of your reading stays totally private.</p>
+				question: "Can I trust Readup?",
+				answer: <p>Yes! Our <Link onClick={props.onNavTo} screen={ScreenKey.PrivacyPolicy}>Privacy Policy</Link> is short and sweet. Read it.</p>
 			}
-		]
-	}),
-	props => ({
+	]}),
+	props =>({
 		title: "Billing",
 		questions: [
 			{
 				question: "How much does Readup cost?",
-				answer: <p>If you create an account on iOS (iPhone or iPad) you have three choices: $4.99, $14.99 or $24.99. If you create an account on desktop, you can choose one of those three prices or choose any custom price.</p>
+				answer: <p>You pick your price: $4.99, $14.99, or $24.99 per month. Readup is exactly the same no matter what price you pick. All prices are in USD and may be converted to your local currency by our payment processor, Stripe.</p>
 			},
 			{
-				question: "Can I really pick ANY price?",
-				answer: <p>Yes, but only on desktop. On iOS you have three price choices.</p>
+				question: "Why are there multiple prices for the same thing? ",
+				answer: <p>We're committed to keeping Readup affordable to all. At the same time, many of our readers are so enthusiastic about our mission that they choose to increase their financial contribution.</p>
 			},
 			{
-				question: "Is there a minimum subscription price?",
-				answer: <p>Yes. $4.99.</p>
+				question: "Can other people see what price I've picked?",
+				answer: <p>No.</p>
 			},
 			{
-				question: "Are some features only available at certain pricing levels?",
-				answer: <p>No. All Readers at all levels get full access to all features. The only difference is that when you pay more (or less) to read on Readup you are giving more (or less) to the writers you read.</p>
+				question: "Can I change my price?",
+				answer: <p>Yes. Visit {renderSettings(props)} to do this.</p>
 			},
 			{
-				question: "Can I get a refund?",
-				answer: <p>Yes. Just send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+				question: "Can I contribute more than $24.99?",
+				answer: <p>Yes! If you wish to contribute more than $24.99 USD, open {renderSettings(props)} from your laptop or computer, click 'Change Price,' and enter a Custom Price. (Note: You can't do this from your iPhone.)</p>
 			}
-		]
-	}),
+	]}),
 	props => ({
 		title: "Writers",
 		questions: [
 			{
-				question: "What is writer verification?",
-				answer: <p>Verification on Readup is for writers only. Verification proves that your account is real and connects your account and identity to the articles you've written.</p>
+				question: "How does Readup work?",
+				answer: <p>Readers pay to read on Readup, and writers get paid when they're read on Readup.</p>
 			},
 			{
-				question: "Why should I get verified?",
-				answer: <p>As a verified writer, your articles will appear on your profile. Also, you won't have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted. Most importantly, verified writers can collect their earnings.</p>
+				question: "How do I get paid?",
+				answer: <p>On the first of every month, Readup automatically pays all verified writers who have earned $10 or more in pledges and who have connected their Readup account to Stripe. To get paid, the first step is to get verified.</p>
+			},
+			{
+				question: "What happens when I get verified?",
+				answer: <p>Articles you've written will appear on your profile. You won't have to read your own articles in order to comment on them, and your comments will be prioritized and highlighted.</p>
 			},
 			{
 				question: "How do I get verified?",
-				answer: <p>Create an account on Readup. Go to Settings. Click "Get Verified."</p>
+				answer: <p>Go to {renderSettings(props)}. Click "Get Verified."</p>
 			},
 			{
-				question: "Is there a minimum to cash out?",
-				answer: <p>Yes. You must earn at least $10.00 on Readup in order to cash out. To hit the minimum, encourage your readers to read you on Readup and share the link to your profile page. Posting your own articles and participating in conversations about your own articles is another way to get more readers.</p>
+				question: "Do I have to pay taxes?",
+				answer: <p>Maybe. If you live in the USA and earn less than $600 on Readup in one year, you don't have to pay any taxes or report any earnings. If you earn more than $600, Stripe will provide the necessary paperwork for you. For more information: <Link onClick={props.onNavTo} href="https://stripe.com/docs/connect/tax-reporting">https://stripe.com/docs/connect/tax-reporting</Link></p>
 			},
-			{
-				question: "Is there a time limit to cash out?",
-				answer: <p>No. Writer earnings do not expire. Readup will hold the balance indefinitely, so you never have to worry about losing the money you have earned.</p>
-			},
-			{
-				question: "How much money has Readup earned for writers?",
-				answer: <p>Writer earnings and total Readup revenue are visible on the homepage and at the bottom of the menu. Individual, finalized distributions, broken down by writer, are visible <Link screen={ScreenKey.Leaderboards} onClick={props.onNavTo}>here</Link>.</p>
-			},
-			{
-				question: "What do you do with money earned by deceased writers?",
-				answer: <p>Money earned by dead writers (Ernest Hemingway and Toni Morrison, for example) gets donated to <Link href="https://www.eff.org/" onClick={props.onNavTo}>EFF: Electronic Frontier Foundation</Link>. Readup’s mission aligns with the work that EFF does to defend digital privacy, free speech, and innovation.</p>
-			},
-			{
-				question: "Do I have to pay taxes on the money on earn on Readup?",
-				answer: (
-					<>
-						<p>USA residents: Maybe. If you earn less than $600 in one year, you don't have to worry about it. If you earn more than $600, Stripe will provide the necessary paperwork for you. For more information: <Link href="https://stripe.com/docs/connect/tax-reporting" onClick={props.onNavTo}>https://stripe.com/docs/connect/tax-reporting</Link></p>
-						<p>Non-USA residents: Maybe. Check with your local rules, and let us know if you have any questions.</p>
-						<p>No matter where you live, the Readup team is here to help!</p>
-					</>
-				)
-			},
-			{
-				question: "What if a writer declines to get paid?",
-				answer: <p>We recognize that some writers will decline payment from Readup for legal, ethical, or personal reasons. In that case, we’re happy to donate the money to <Link href="https://www.eff.org/" onClick={props.onNavTo}>EFF: Electronic Frontier Foundation</Link> or any charity that the writer chooses.</p>
-			}
 		]
 	}),
 	props => ({
 		title: "Misc",
 		questions: [
 			{
-				question: "Can I change my reader name?",
-				answer: <p>No. If you want a new reader name, you need to create a new account.</p>
+				question: "I'm a developer. Can I help?",
+				answer: <p>Maybe! Let us know how you'd like to contribute at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			},
 			{
-				question: "Do you have an Android app?",
-				answer: (onOpenNewPlatformNotificationRequestDialog: () => void) => (
-				<>
-					<p>Not yet, but we will soon!<br/>Hit this button to get notified when we do.</p>
-					<div className="faq-android-notify">
-						<Button
-							text="Get Notified"
-							size="x-large"
-							intent="loud"
-							onClick={onOpenNewPlatformNotificationRequestDialog}/>
-					</div>
-				</>
-				)
+				question: "I'm not a developer. Can I help?",
+				answer: <p>Maybe! Let us know how you'd like to contribute at <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
 			},
 			{
-				question: "Who started Readup?",
-				answer: (<p>Two friends, <Link href="https://billloundy.com/" onClick={props.onNavTo}>Bill Loundy</Link> and <Link href="https://jeffcamera.com/" onClick={props.onNavTo}>Jeff Camera</Link>.&nbsp;
-					(We love reading and you’ll often see us in the comments. We’re <Link screen={ScreenKey.Profile} params={{ 'userName': 'bill' }} onClick={props.onNavTo}>@bill</Link> and <Link screen={ScreenKey.Profile} params={{ 'userName': 'jeff' }} onClick={props.onNavTo}>@jeff</Link>.)</p>)
+				question: "Is Readup a non-profit or for-profit?",
+				answer: <p>For-profit.</p>
 			},
 			{
-				question: "How does Readup make money? ",
-				answer: (<p>Readers pay to read on Readup. Readup takes 5% and gives the rest to writers.</p>)
+				question: "Who owns Readup?",
+				answer: <p>Readup is owned by a for-profit organization called reallyread.it, inc., which is owned by Bill, Jeff &amp; Thor.</p>
 			},
 			{
-				question: "Are you hiring?",
-				answer: <p>Yes! Email us if you’re interested in joining the team: <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
-			},
-			{
-				question: "Does Readup work with publishers?",
-				answer: <p>Not yet, but we plan to. If you are a publisher and you’d like to have a conversation, don’t hesitate to reach out:&nbsp;
-					<Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link></p>
+				question: "How does Readup operate?",
+				answer: <p>Readup is 100% volunteer-owned and operated. Readup has no employees and nobody gets paid to work on Readup.</p>
 			}
+
 		]
 	})
 ];
@@ -267,23 +244,27 @@ const renderFaqCategory = (props: Props, createFaqCategory: FaqCategory) => {
 		</div>;
 }
 
-type CoreProps = {
+type Props = {
 	location: RouteLocation,
 	onNavTo: (ref: NavReference) => void,
-	onOpenNewPlatformNotificationRequestDialog: () => void
+	onCreateStaticContentUrl: (path: string) => string,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
+	user: UserAccount
 };
-type VideoProps = {
-	videoMode: VideoMode.Embed
-} | {
-	videoMode: VideoMode.Link,
-	onCreateStaticContentUrl: (path: string) => string
-};
-type Props = CoreProps & VideoProps;
 
-type Services = Pick<CoreProps, Exclude<keyof CoreProps, 'location'>> &
-	VideoProps & {
+
+type Services = Pick<Props, Exclude<keyof Props, 'location' | 'user'>> &
+	{
 		onCreateTitle: () => string
 	};
+
+const renderSettings = (props: Props): React.ReactElement<Link> | string => {
+	if (props.user) {
+		return <Link onClick={props.onNavTo} screen={ScreenKey.Settings}>the Settings screen</Link>
+	} else {
+		return "the Settings screen in the app";
+	}
+}
 
 function jumpTo(url: string) {
 	const target = document.getElementById(
@@ -345,19 +326,7 @@ const FaqPage = (props: Props): JSX.Element => {
 		<div className="faq-page_35vamf">
 			<HomeHero
 				title="Frequently Asked Questions"
-				description={
-					<>
-						<span>If your question isn't answered below, please send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>.</span>
-						<span>For a general overview on Readup, watch this 3-minute demo video:</span>
-						{props.videoMode === VideoMode.Embed ?
-							<HowItWorksVideo mode={VideoMode.Embed} /> :
-							<HowItWorksVideo
-								mode={VideoMode.Link}
-								onCreateStaticContentUrl={props.onCreateStaticContentUrl}
-								onNavTo={props.onNavTo}
-							/>}
-					</>
-				}
+				description={<span>If your question isn't answered below, please send an email to <Link href="mailto:support@readup.com" onClick={props.onNavTo}>support@readup.com</Link>.</span>}
 			/>
 			<HomePanel className="faq-content">
 				<div className="sidebar">
@@ -385,21 +354,15 @@ const FaqPage = (props: Props): JSX.Element => {
 export function createScreenFactory<TScreenKey>(key: TScreenKey, services: Services) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: services.onCreateTitle() }),
-		render: (screen: Screen) => (
-			services.videoMode === VideoMode.Embed ?
+		render: (screen: Screen, sharedState: SharedState) => (
 				<FaqPage
 					location={screen.location}
+					onCreateStaticContentUrl={ services.onCreateStaticContentUrl}
 					onNavTo={services.onNavTo}
 					onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
-					videoMode={VideoMode.Embed}
-				/> :
-				<FaqPage
-					location={screen.location}
-					onCreateStaticContentUrl={services.onCreateStaticContentUrl}
-					onNavTo={services.onNavTo}
-					onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
-					videoMode={VideoMode.Link}
+					user={sharedState.user}
 				/>
+
 		)
 	};
 }

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Icon, {IconName} from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import {NavOptions, NavReference} from '../Root';
@@ -13,36 +12,13 @@ export enum SocialType {
 export interface ProfileData {
 	name: string,
 	readerName: string,
-	role: string,
-	intro: JSX.Element,
 	imageName: string,
-	social: {
-		type: SocialType,
-		handle: string
-	}[],
+	web: string,
 	mail: string
 }
 
-function getSocialLink(type: SocialType, handle: string) {
-	switch (type) {
-		case SocialType.Twitter:
-			return `https://twitter.com/${handle}`
-		case SocialType.LinkedIn:
-			return `https://linkedin.com/in/${handle}`
-		case SocialType.Web:
-			return handle;
-	}
-}
-
-const socialIconMap: {[key in SocialType]: IconName}  = {
-	[SocialType.Twitter]: 'twitter',
-	// TODO
-	[SocialType.LinkedIn]: 'linkedin',
-	[SocialType.Web]: 'internet'
-}
-
 const profile = ({
-	data: {name, readerName, role, intro, imageName, social, mail},
+	data: {name, readerName, imageName, web, mail},
 	onCreateStaticContentUrl,
 	onNavTo
 	}: {
@@ -51,38 +27,23 @@ const profile = ({
 		onNavTo: (ref: NavReference, options?: NavOptions) => void,
 	}) => (
 	<div className="profile_m7zor">
-			<span className="name">{name}</span>
-			<span className="role">{role}</span>
-		{/* <div className="title">
-		</div> */}
-		<img className="picture" src={onCreateStaticContentUrl(`/app/images/team-page/${imageName}`)} alt="My Impact illustration." />
+		<img className="picture" src={onCreateStaticContentUrl(`/app/images/team-page/${imageName}`)} alt={`${name}'s profile picture`} />
 		<div className="details">
-			<Link
-				className="mail"
-				href={`mailto:${mail}`}
-				onClick={onNavTo}
-				iconLeft='envelope'
-			>{mail}</Link>
-			<div className="social">
-				{social.map(account =>
-					<Link
-						key={account.type}
-						href={getSocialLink(account.type, account.handle)}
-						onClick={onNavTo}>
-						<Icon name={socialIconMap[account.type]}></Icon>
-					</Link>
-				)}
+			<span className="name">{name}</span>
+			<div>
+				Reader name: <Link
+					className="reader-link"
+					screen={ScreenKey.Profile}
+					params={{ 'userName': readerName }}
+					onClick={onNavTo}
+				>{readerName}</Link>
 			</div>
-		</div>
-		<div className="intro">
-			<div className="intro__text">{intro}</div>
 			<Link
-				className="reader-link"
-				screen={ScreenKey.Profile}
-				params={{ 'userName': readerName }}
-				onClick={onNavTo}
-				iconRight='arrow-right'
-			>See what {name.split(' ')[0]} is reading</Link>
+				text={web.replace("https://", "")}
+				href={web}
+				onClick={onNavTo}>
+				{/* <Icon name="internet"></Icon> */}
+			</Link>
 		</div>
 	</div>
 )
