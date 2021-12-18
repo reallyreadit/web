@@ -2,6 +2,7 @@
         componentPath: src/app/common/components/TeamPage
         cssComponentId: team-page_a9b9l1
 */
+@import '../../../../src/common/styles/breakpoints.scss';
 
 .team-page_a9b9l1 {
 	.home-panel_w65z7c {
@@ -16,6 +17,25 @@
 		.button_ovrlmi {
 			max-width: 300px;
 			margin: auto;
+		}
+	}
+
+	.home-panel_w65z7c {
+		> .content {
+			> h2 {
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+
+			> div.profiles {
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 2rem;
+				align-items: center;
+				@include from(tablet-portrait) {
+					flex-direction: row;
+				}
+			}
 		}
 	}
 
