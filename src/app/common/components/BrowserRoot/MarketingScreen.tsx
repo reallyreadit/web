@@ -270,7 +270,7 @@ export default class MarketingScreen extends React.Component<
 			<div className="marketing-screen_n5a6wc">
 				<HomePanel className="home-hero-image">
 					<div className="home-hero-image__intro-text">
-						<h1 className="heading-regular">The internet is destroying your ability to read.</h1>
+						<h1 className="heading-regular">The internet is destroying our ability to read.</h1>
 						<p>Steal it back. Join the Readup community today.</p>
 						<DownloadButton
 							analyticsAction='home-hero-download'
@@ -313,7 +313,7 @@ export default class MarketingScreen extends React.Component<
 					className="quote-panel"
 				>
 					<h2 className="heading-regular">What our readers say</h2>
-					<p className="home-section-intro">We're proud to improve the lives of our readers on a daily basis.<br/>
+					<p className="home-section-intro">We're proud to improve the lives of internet readers on a daily basis.<br/>
 						{/* Check out these spontaneous testimonials from real humans beings. */}
 						</p>
 					<div className="quote-grid">
