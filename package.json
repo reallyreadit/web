@@ -4,7 +4,7 @@
   "private": true,
   "it.reallyread": {
     "version": {
-      "app": "1.58.0",
+      "app": "1.58.1",
 			"appPublic": "1.58.0",
 			"common": {
 				"contentParser": "2.0.1",
