@@ -276,6 +276,10 @@ export default {
 			}
 		},
 		{
+			hostname: 'taosnews.com',
+			contentSearchRootElementSelector: '[itemprop="articleBody"]'
+		},
+		{
 			hostname: 'techcrunch.com',
 			contentSearchRootElementSelector: '.article-content'
 		},
