@@ -31,6 +31,8 @@ import { SignupsReport } from './AdminPage/SignupsReport';
 import { ConversionsReport } from './AdminPage/ConversionsReport';
 import { ArticleIssuesReport } from './AdminPage/ArticleIssuesReport';
 import { WeeklyUserActivityReport } from './AdminPage/WeeklyUserActivityReport';
+import { PayoutReportRequest, PayoutReportResponse } from '../../../common/models/subscriptions/PayoutReport';
+import { PayoutReport } from './AdminPage/PayoutReport';
 
 const bulkMailingSubscriptionStatusLabels: { [key in BulkEmailSubscriptionStatusFilter]: string } = {
 	[BulkEmailSubscriptionStatusFilter.CurrentlySubscribed]: 'Currently Subscribed',
@@ -45,6 +47,7 @@ interface Props {
 	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
 	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
 	onGetDailyTotals: FetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>,
+	onGetPayoutReport: FetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>,
 	onGetRevenueReport: FetchFunctionWithParams<DateRangeQuery, RevenueReportResponse>,
 	onGetSignups: FetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>,
 	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
@@ -162,6 +165,9 @@ class AdminPage extends React.Component<
 					/>
 					<ArticleIssuesReport
 						onGetArticleIssueReports={this.props.onGetArticleIssueReports}
+					/>
+					<PayoutReport
+						onGetPayoutReport={this.props.onGetPayoutReport}
 					/>
 					<h2>Tools</h2>
 					<ArticleAuthorControl
@@ -300,6 +306,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetConversions={deps.onGetConversions}
 					onGetDailyTotals={deps.onGetDailyTotals}
+					onGetPayoutReport={deps.onGetPayoutReport}
 					onGetRevenueReport={deps.onGetRevenueReport}
 					onGetSignups={deps.onGetSignups}
 					onGetUserStats={deps.onGetUserStats}

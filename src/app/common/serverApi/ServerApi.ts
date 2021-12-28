@@ -84,6 +84,7 @@ import { AuthorEmailVerificationRequest } from '../../../common/models/userAccou
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
 import { FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
+import { PayoutReportRequest, PayoutReportResponse } from '../../../common/models/subscriptions/PayoutReport';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
 export type FetchFunctionWithParams<TParams, TResult> = (params: TParams, callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -231,6 +232,7 @@ export default abstract class {
 	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
 	public readonly completeStripeSubscriptionUpgrade = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeUpgradePayment', data: request });
 	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
+	public readonly getPayoutReport = this.createFetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>('/Subscriptions/PayoutReport');
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
 	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
