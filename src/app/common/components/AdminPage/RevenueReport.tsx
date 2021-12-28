@@ -136,7 +136,7 @@ function renderBody(data: RevenueReportResponse) {
 								item => item.period === group.period
 							);
 						return (
-							<tr>
+							<tr key={group.period}>
 								<td className="align-center">{group.period.replace(/T00:00:00$/, '')}</td>
 								{renderProviderPriceCells(group.items, Price.Budget)}
 								{renderProviderPriceCells(group.items, Price.Reader)}
