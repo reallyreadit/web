@@ -10,16 +10,28 @@ export interface Header {
 	name: string,
 	colSpan?: number
 }
-interface Props<TData> {
+type BaseProps<TData> = {
 	title: string,
-	initialStartDate: string,
-	initialEndDate: string,
 	onGetHeaders: (data?: TData) => Header[][],
-	onFetchData: FetchFunctionWithParams<DateRangeQuery, TData>,
 	onRenderBody: (data: TData, columnCount: number) => React.ReactNode | null,
 	onRenderChart?: (data: TData) => React.ReactNode,
 	onRenderFooter?: (data: TData, columnCount: number) => React.ReactNode
 };
+type DateRangeQueryProps<TData> = BaseProps<TData> & {
+	initialStartDate: string,
+	initialEndDate: string,
+	onFetchData: FetchFunctionWithParams<DateRangeQuery, TData>
+};
+type UnknownQueryProps<TData> = BaseProps<TData> & {
+	onFetchData: FetchFunctionWithParams<unknown, TData>
+};
+type Props<TData> = DateRangeQueryProps<TData> | UnknownQueryProps<TData>;
+function isDateRangeQueryProps<TData>(props: Props<TData>): props is DateRangeQueryProps<TData> {
+	return (
+		typeof (props as DateRangeQueryProps<TData>).initialStartDate === 'string' &&
+		typeof (props as DateRangeQueryProps<TData>).initialEndDate === 'string'
+	);
+}
 interface State<TData> {
 	startDate: string,
 	endDate: string,
@@ -29,20 +41,29 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _runReport = (event: React.MouseEvent) => {
 		event.preventDefault();
-		this.setState({
-			data: this.props.onFetchData(
+		const callback = this._asyncTracker.addCallback(
+			(data: Fetchable<TData>) => {
+				this.setState({
+					data
+				});
+			}
+		);
+		let data: Fetchable<TData>;
+		if (
+			isDateRangeQueryProps(this.props)
+		) {
+			data = this.props.onFetchData(
 				{
 					startDate: this.state.startDate,
 					endDate: this.state.endDate
 				},
-				this._asyncTracker.addCallback(
-					data => {
-						this.setState({
-							data
-						});
-					}
-				)
-			)
+				callback
+			);
+		} else {
+			data = this.props.onFetchData(null, callback);
+		}
+		this.setState({
+			data
 		});
 	};
 	private readonly _setStartDate = (value: string) => {
@@ -57,11 +78,21 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 	};
 	constructor(props: Props<TData>) {
 		super(props);
-		this.state = {
-			data: null,
-			startDate: props.initialStartDate,
-			endDate: props.initialEndDate
-		};
+		if (
+			isDateRangeQueryProps(props)
+		) {
+			this.state = {
+				data: null,
+				startDate: props.initialStartDate,
+				endDate: props.initialEndDate
+			};
+		} else {
+			this.state = {
+				data: null,
+				startDate: '',
+				endDate: ''
+			};
+		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -111,18 +142,22 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 							<div className="header">
 								<label>{this.props.title}</label>
 								<form>
-									<InputControl
-										type="text"
-										label="Start Date"
-										value={this.state.startDate}
-										onChange={this._setStartDate}
-									/>
-									<InputControl
-										type="text"
-										label="End Date"
-										value={this.state.endDate}
-										onChange={this._setEndDate}
-									/>
+									{isDateRangeQueryProps(this.props) ?
+										<>
+											<InputControl
+												type="text"
+												label="Start Date"
+												value={this.state.startDate}
+												onChange={this._setStartDate}
+											/>
+											<InputControl
+												type="text"
+												label="End Date"
+												value={this.state.endDate}
+												onChange={this._setEndDate}
+											/>
+										</> :
+										null}
 									<Button
 										onClick={this._runReport}
 										text="Run Report"
