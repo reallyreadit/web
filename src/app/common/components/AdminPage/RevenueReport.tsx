@@ -122,38 +122,42 @@ function renderBody(data: RevenueReportResponse) {
 	if (!data.lineItems.length) {
 		return null;
 	}
-	return createPeriodGroups(data)
-		.map(
-			group => {
-				const
-					groupTotal = sumNetAmount(group.items),
-					customTotal = sumNetAmount(
-						getCustomItems(group.items)
-					),
-					monthlyRecurringLineItem = data.monthlyRecurringRevenueLineItems.find(
-						item => item.period === group.period
-					);
-				return (
-					<tr>
-						<td className="align-center">{group.period.replace(/T00:00:00$/, '')}</td>
-						{renderProviderPriceCells(group.items, Price.Budget)}
-						{renderProviderPriceCells(group.items, Price.Reader)}
-						{renderProviderPriceCells(group.items, Price.SuperReader)}
-						<td className={classNames('align-right', { 'null': customTotal === 0 })}>
-							{formatCurrency(customTotal)}
-						</td>
-						<td className={classNames('align-right', { 'null': groupTotal === 0 })}>
-							<strong>
-								{formatCurrency(groupTotal)}
-							</strong>
-						</td>
-						<td className="align-right">
-							{formatCurrency(monthlyRecurringLineItem.amount)}
-						</td>
-					</tr>
-				);
-			}
-		);
+	return (
+		<tbody>
+			{createPeriodGroups(data)
+				.map(
+					group => {
+						const
+							groupTotal = sumNetAmount(group.items),
+							customTotal = sumNetAmount(
+								getCustomItems(group.items)
+							),
+							monthlyRecurringLineItem = data.monthlyRecurringRevenueLineItems.find(
+								item => item.period === group.period
+							);
+						return (
+							<tr>
+								<td className="align-center">{group.period.replace(/T00:00:00$/, '')}</td>
+								{renderProviderPriceCells(group.items, Price.Budget)}
+								{renderProviderPriceCells(group.items, Price.Reader)}
+								{renderProviderPriceCells(group.items, Price.SuperReader)}
+								<td className={classNames('align-right', { 'null': customTotal === 0 })}>
+									{formatCurrency(customTotal)}
+								</td>
+								<td className={classNames('align-right', { 'null': groupTotal === 0 })}>
+									<strong>
+										{formatCurrency(groupTotal)}
+									</strong>
+								</td>
+								<td className="align-right">
+									{formatCurrency(monthlyRecurringLineItem.amount)}
+								</td>
+							</tr>
+						);
+					}
+				)}
+		</tbody>
+	);
 }
 function renderChart(data: RevenueReportResponse) {
 	if (!data.lineItems.length) {
