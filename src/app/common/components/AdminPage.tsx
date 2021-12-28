@@ -32,7 +32,9 @@ import { ConversionsReport } from './AdminPage/ConversionsReport';
 import { ArticleIssuesReport } from './AdminPage/ArticleIssuesReport';
 import { WeeklyUserActivityReport } from './AdminPage/WeeklyUserActivityReport';
 import { PayoutReportRequest, PayoutReportResponse } from '../../../common/models/subscriptions/PayoutReport';
+import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 import { PayoutReport } from './AdminPage/PayoutReport';
+import { AuthorUserAccountControl } from './AdminPage/AuthorUserAccountControl';
 
 const bulkMailingSubscriptionStatusLabels: { [key in BulkEmailSubscriptionStatusFilter]: string } = {
 	[BulkEmailSubscriptionStatusFilter.CurrentlySubscribed]: 'Currently Subscribed',
@@ -41,6 +43,7 @@ const bulkMailingSubscriptionStatusLabels: { [key in BulkEmailSubscriptionStatus
 };
 interface Props {
 	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>,
+	onAssignUserAccountToAuthor: (request: AuthorUserAccountAssignmentRequest) => Promise<void>,
 	onCloseDialog: () => void,
 	onGetArticleIssueReports: FetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>,
 	onGetAuthorMetadataAssignmentQueue: FetchFunction<AuthorMetadataAssignmentQueueResponse>,
@@ -170,6 +173,10 @@ class AdminPage extends React.Component<
 						onGetPayoutReport={this.props.onGetPayoutReport}
 					/>
 					<h2>Tools</h2>
+					<AuthorUserAccountControl
+						onAssignUserAccountToAuthor={this.props.onAssignUserAccountToAuthor}
+						onShowToast={this.props.onShowToast}
+					/>
 					<ArticleAuthorControl
 						onAssignAuthorToArticle={this.props.onAssignAuthorToArticle}
 						onShowToast={this.props.onShowToast}
@@ -300,6 +307,7 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 			return (
 				<AdminPage
 					onAssignAuthorToArticle={deps.onAssignAuthorToArticle}
+					onAssignUserAccountToAuthor={deps.onAssignUserAccountToAuthor}
 					onCloseDialog={deps.onCloseDialog}
 					onGetArticleIssueReports={deps.onGetArticleIssueReports}
 					onGetAuthorMetadataAssignmentQueue={deps.onGetAuthorMetadataAssignmentQueue}

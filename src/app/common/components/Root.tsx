@@ -80,6 +80,7 @@ import { AuthorEmailVerificationRequest } from '../../../common/models/userAccou
 import { EarningsExplainerDialog } from './EarningsExplainerDialog';
 import { ArticleStarredEvent } from '../AppApi';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
+import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 
 export interface Props {
 	captcha: CaptchaBase,
@@ -211,6 +212,9 @@ export default abstract class Root<
 			});
 	};
 	protected readonly _unassignAuthorFromArticle = (request: AuthorUnassignmentRequest) => this.props.serverApi.unassignAuthorFromArticle(request);
+
+	// authors
+	protected readonly _assignUserAccountToAuthor = (request: AuthorUserAccountAssignmentRequest) => this.props.serverApi.assignUserAccountToAuthor(request);
 
 	// clipboard
 	protected readonly _clipboard: ClipboardService;
@@ -923,6 +927,7 @@ export default abstract class Root<
 		this._screenFactoryMap = {
 			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
 				onAssignAuthorToArticle: this._assignAuthorToArticle,
+				onAssignUserAccountToAuthor: this._assignUserAccountToAuthor,
 				onGetAuthorMetadataAssignmentQueue: this.props.serverApi.getAuthorMetadataAssignmentQueue,
 				onCloseDialog: this._dialog.closeDialog,
 				onGetArticleIssueReports: this.props.serverApi.getArticleIssueReportAnalytics,

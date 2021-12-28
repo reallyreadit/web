@@ -1,0 +1,31 @@
+/*
+	componentPath: src/app/common/components/AdminPage/AuthorUserAccountControl
+	cssComponentId: author-user-account-control_hcskdm
+*/
+
+.author-user-account-control_hcskdm {
+	padding: 5px;
+	background-color: var(--control-background-color);
+	border: 1px solid var(--control-border-color);
+}
+.author-user-account-control_hcskdm > fieldset > label {
+	display: flex;
+	align-items: center;
+	margin: 5px 0;
+}
+.author-user-account-control_hcskdm > fieldset > label > input {
+	background-color: var(--control-background-color);
+	border: 1px solid var(--control-border-color);
+}
+.author-user-account-control_hcskdm > fieldset > label > span + input {
+	flex: 1 1 auto;
+	margin-left: 5px;
+}
+.author-user-account-control_hcskdm > button {
+	padding: 5px;
+	background-color: var(--control-background-color);
+	border: 1px solid var(--control-border-color);
+}
+.author-user-account-control_hcskdm > button[disabled] {
+	background-color: var(--control-disabled-color);
+}

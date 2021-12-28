@@ -84,6 +84,7 @@ import { AuthorEmailVerificationRequest } from '../../../common/models/userAccou
 import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
 import { FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
+import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 import { PayoutReportRequest, PayoutReportResponse } from '../../../common/models/subscriptions/PayoutReport';
 
 export type FetchFunction<TResult> = (callback: (value: Fetchable<TResult>) => void) => Fetchable<TResult>;
@@ -197,6 +198,7 @@ export default abstract class {
 	public readonly linkTwitterAccount = (data: TwitterCredentialLinkForm) => this.post<AuthServiceAccountAssociation>({ path: '/Auth/TwitterLink', data });
 
 	// Authors
+	public readonly assignUserAccountToAuthor = (data: AuthorUserAccountAssignmentRequest) => this.post({ path: '/Authors/UserAccountAssignment', data });
 	public readonly getAuthorProfile = this.createFetchFunctionWithParams<AuthorProfileRequest, AuthorProfile>('/Authors/Profile');
 
 	// Extension
