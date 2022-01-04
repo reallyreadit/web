@@ -39,7 +39,8 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 			authorReference: event.target.value
 		});
 	};
-	private readonly _submit = () => {
+	private readonly _submit = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
 		this.setState(
 			currentState => {
 				// Make sure we're not already submitting.

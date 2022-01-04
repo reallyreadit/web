@@ -27,7 +27,8 @@ export class AuthorUserAccountControl extends React.Component<Props, State> {
 			userName: event.target.value
 		});
 	};
-	private readonly _submit = () => {
+	private readonly _submit = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
 		this.setState(
 			currentState => {
 				// Make sure we're not already submitting.
