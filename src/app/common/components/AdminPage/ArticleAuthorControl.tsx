@@ -55,10 +55,10 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 					try {
 						const
 							articleUrl = new URL(articleSlug),
-							params = findRouteByKey(routes, ScreenKey.Comments)
+							params = findRouteByKey(routes, ScreenKey.Read)
 								.getPathParams(articleUrl.pathname);
 						if (!params['sourceSlug'] || !params['articleSlug']) {
-							this.props.onShowToast('Invalid comments URL.', Intent.Danger);
+							this.props.onShowToast('Invalid read URL.', Intent.Danger);
 							return null;
 						}
 						articleSlug = createArticleSlug(params);
@@ -175,7 +175,7 @@ export class ArticleAuthorControl extends React.Component<Props, State> {
 							disabled={this.state.isSubmitting}
 						/>
 					</label>
-					<label>Example: the-new-yorker_the-dead-zone OR https://readup.com/comments/the-new-yorker/the-dead-zone</label>
+					<label>Example: the-new-yorker_the-dead-zone OR https://readup.com/read/the-new-yorker/the-dead-zone</label>
 					<label>
 						<span>{authorReferenceLabelText}</span>
 						<input
