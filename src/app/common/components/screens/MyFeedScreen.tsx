@@ -196,6 +196,9 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 								text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'post')}`}
 							/> :
 						null}
+						{
+						this.props.profile.isLoading ?
+							<LoadingOverlay position="static" /> :
 						<div className="followings">
 							{this.props.profile.value.followeeCount ?
 								<Link
@@ -214,6 +217,7 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 										/> :
 										<div className="following-count">{this._getFollowersText()}</div>}
 						</div>
+						}
 						{this.state.posts.isLoading ?
 							<LoadingOverlay position="static" /> :
 							this.state.posts.value.items.length ?
