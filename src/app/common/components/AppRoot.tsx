@@ -824,7 +824,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Contenders]: createContenderScreenFactory(ScreenKey.Contenders, {
 				deviceType: DeviceType.Ios,
-				onClearAlerts: this._clearAlerts,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,

@@ -55,7 +55,10 @@ export default class NavTray extends React.PureComponent<Props>{
 						className={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : null}
 						onClick={this.props.onViewMyFeed}
 					>
-						<Icon name="candy" />
+						<Icon
+							badge={this.props.user.followerAlertCount}
+							name="candy"
+						/>
 						<label>My Feed</label>
 					</button>
 				</li>

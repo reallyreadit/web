@@ -66,6 +66,7 @@ export default class NavBar extends React.PureComponent<Props> {
 					<li>
 						<Button
 							href={myFeedUrl}
+							badge={this.props.user.followerAlertCount}
 							onClick={this.props.onViewMyFeed}
 							state={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}
 							iconLeft="candy"
