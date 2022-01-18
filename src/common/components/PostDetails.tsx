@@ -19,6 +19,8 @@ interface Props {
 	deviceType: DeviceType,
 	highlightedCommentId?: string,
 	highlightedPostId?: string,
+	// Whether this PostDetails is a reply to a comment of the current user. Used for verbose copy in the PostHeader.
+	isReply?: boolean,
 	onCloseDialog: () => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onNavTo: (url: string) => boolean,
@@ -47,6 +49,7 @@ export default class PostDetails extends AbstractCommentShareable<Props> {
 						userName={commentThread.userAccount}
 						leaderboardBadge={commentThread.badge}
 						isAuthor={commentThread.isAuthor}
+						isReply={this.props.isReply}
 						isComment={true}
 						date={commentThread.dateCreated}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}

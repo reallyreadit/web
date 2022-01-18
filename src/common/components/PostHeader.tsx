@@ -36,7 +36,8 @@ type VerboseProps = BaseProps & {
 	// it being a silent post or not by looking at the presence of sharing props
 	// however, in case we ever allow for sharing silent posts, this is a semantic way
 	// of keeping behavior modular.
-	isComment: boolean
+	isComment: boolean,
+	isReply: boolean
 }
 
 type Props = BaseProps | VerboseProps;
@@ -47,6 +48,10 @@ function isVerboseProps(props: BaseProps | VerboseProps): props is VerboseProps 
 
 // what did the user do in this post?
 function getVerboseCopy(props: VerboseProps) {
+	// this is reply to one of the user's posts
+	if (props.isReply) {
+		return "replied";
+	}
 	// scouting status trumps all
 	if (props.userName === props.article.firstPoster) {
 		return "scouted";

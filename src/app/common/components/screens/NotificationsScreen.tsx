@@ -179,6 +179,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 												<li key={post.date}>
 													<PostDetails
 														deviceType={this.props.deviceType}
+														isReply={true}
 														onCloseDialog={this.props.onCloseDialog}
 														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 														onNavTo={this.props.onNavTo}
