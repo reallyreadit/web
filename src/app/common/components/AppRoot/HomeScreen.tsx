@@ -223,6 +223,7 @@ class HomeScreen extends React.Component<Props, State> {
 					newAotd: false
 				}
 			}));
+			this.clearAlertIfNeeded();
 		})
 	}
 
