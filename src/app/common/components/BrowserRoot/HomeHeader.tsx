@@ -111,7 +111,6 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 								onClick={this.props.onViewNotifications}
 							/>
 							<Icon
-								badge={this.props.user.followerAlertCount}
 								name="menu2"
 								onClick={this.props.onOpenMenu}
 							/>
