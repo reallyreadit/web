@@ -153,7 +153,30 @@ class HomeScreen extends React.Component<Props, State> {
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
+				// updates the AOTD (and more, but only the AOTD is relevant here)
 				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
+				// updates the previous AOTD winners if needed
+				if (
+					this.state.aotdHistory.value &&
+					this.state.aotdHistory.value.items.some(article => article.id === event.article.id)
+				) {
+					this.setState(produce((prevState: State) => {
+						prevState.aotdHistory.value.items.forEach((article, index, articles) => {
+							if (article.id === event.article.id) {
+								// merge objects in case the new object is missing properties due to outdated iOS client
+								articles.splice(
+									articles.indexOf(article),
+									1,
+									{
+										...article,
+										...event.article,
+										dateStarred: event.article.dateStarred
+									}
+								);
+							}
+						});
+					}));
+				}
 			})
 		);
 	}
