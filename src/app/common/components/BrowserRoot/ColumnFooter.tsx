@@ -10,6 +10,7 @@ export default class extends React.PureComponent<{
 }> {
 	public render() {
 		const navTo = (ref: NavReference) => this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
+		const navToPush = (ref: NavReference) => this.props.onNavTo(ref, { method: NavMethod.Push });
 
 		interface LinkSet {
 			title: string,
@@ -34,7 +35,7 @@ export default class extends React.PureComponent<{
 						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>What is Readup?</Link> :
 						null,
 					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>FAQ</Link>,
-					<Link key="blog" screen={ScreenKey.Blog} onClick={navTo}>Blog</Link>
+					<Link key="blog" href="https://blog.readup.com" onClick={navTo} >Blog</Link>
 				]
 			},
 			{
@@ -61,9 +62,9 @@ export default class extends React.PureComponent<{
 					// 		// 	onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 					// 		// ></GetStartedButton>
 					// },
-					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}><Icon name='phone'/>iPhone and iPad</Link>,
-					<Link key="mac" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navTo}><Icon name='apple'/>Mac</Link>,
-					<Link key="windows" href="https://static.readup.com/downloads/windows/ReadupSetup.exe" onClick={navTo}><Icon name='windows'/>Windows</Link>,
+					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navToPush}><Icon name='phone'/>iPhone and iPad</Link>,
+					<Link key="mac" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navToPush}><Icon name='apple'/>Mac</Link>,
+					<Link key="windows" href="https://static.readup.com/downloads/windows/ReadupSetup.exe" onClick={navToPush}><Icon name='windows'/>Windows</Link>,
 					// <Link key="web-extensions" screen={ScreenKey.Download} onClick={navTo}><Icon name="internet" />Web Importer</Link>
 				]
 			},
@@ -101,7 +102,7 @@ export default class extends React.PureComponent<{
 					</div>
 				</div>
 				<div className="corp">
-					<a href="mailto:support@readup.com">support@readup.com</a> · reallyread.it, inc., 309 Poe Ave, Toms River NJ 08753
+					<Link onClick={navTo} href="mailto:support@readup.com">support@readup.com</Link> · reallyread.it, inc., 309 Poe Ave, Toms River NJ 08753
 				</div>
 			</div>
 		);
