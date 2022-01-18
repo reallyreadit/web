@@ -171,16 +171,14 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 				<ContentBox
 					className={`article-container image--${this.props.imagePosition}`}
 					highlight={this.props.highlight}
+					onClick={this._read}
 				>
 					{
 						 this._shouldShowImage() ?
 							<ImageComponent src={this.props.article.imageUrl} /> :
 							null
 					}
-					<div
-						className="content"
-						onClick={this._read}
-					>
+					<div className="content">
 						<div className="title">
 							{this.props.user ?
 								<Star

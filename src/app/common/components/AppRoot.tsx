@@ -1675,7 +1675,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
 		return canRead(this.state.subscriptionStatus, this.state.isProcessingPayment, article);
 	}
-	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) {
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<Element>) {
 		ev?.preventDefault();
 		if (this.canRead(article)) {
 			this.enterReaderView(article);
