@@ -206,19 +206,19 @@ class HomeScreen extends React.Component<Props, State> {
 		});
 
 		communityPromise.then( (communityReads) => {
-			this.setState(produce((state: State) => {
+			this.setState(produce((prevState: State) => {
 				// add the OLD aotd to the top of the AOTD history locally
-				if (!state.aotdHistory.isLoading && this.state.aotdHistory.value) {
-					state.aotdHistory.value.items = [
-						state.communityReads.value.aotd,
-						...state.aotdHistory.value.items
+				if (!prevState.aotdHistory.isLoading && this.state.aotdHistory.value) {
+					prevState.aotdHistory.value.items = [
+						prevState.communityReads.value.aotd,
+						...prevState.aotdHistory.value.items
 					];
 				}
 				// merge in the new AOTD
-				state.communityReads = communityReads;
+				prevState.communityReads = communityReads;
 				// set loading state
-				state = {
-					...state,
+				return {
+					...prevState,
 					isLoadingNewItems: false,
 					newAotd: false
 				}
