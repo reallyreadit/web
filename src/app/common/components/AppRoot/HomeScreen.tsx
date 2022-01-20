@@ -205,7 +205,7 @@ class HomeScreen extends React.Component<Props, State> {
 			}
 		});
 
-		communityPromise.then( (communityReads) => {
+		this._asyncTracker.addPromise(communityPromise).then( (communityReads) => {
 			this.setState(produce((prevState: State) => {
 				// add the OLD aotd to the top of the AOTD history locally
 				if (!prevState.aotdHistory.isLoading && this.state.aotdHistory.value) {
