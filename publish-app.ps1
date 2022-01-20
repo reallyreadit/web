@@ -23,7 +23,8 @@ if (-not (Test-Path $publishDir)) {
 }
 
 Write-Host 'Cleaning publish directory...'
-Get-ChildItem $publishDir -Exclude node_modules | Remove-Item -Recurse
+# added -Force because .well-known is a hidden file https://stackoverflow.com/a/25806947/4973029
+Get-ChildItem $publishDir -Exclude node_modules | Remove-Item -Recurse -Force
 
 Write-Host 'Copying program files to publish directory...'
 Copy-Item -Path $outputDir/* -Destination $publishDir -Recurse
