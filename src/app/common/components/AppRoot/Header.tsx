@@ -102,10 +102,7 @@ export default (props: {
 								className="menu-button"
 								onClick={(_) => props.onViewProfile(props.user.name)}
 							>
-								<Icon
-									badge={props.user.followerAlertCount}
-									name="user"
-								/>
+								<Icon name="user" />
 							</div>
 						: null
 				}

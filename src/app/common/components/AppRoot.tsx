@@ -824,7 +824,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Contenders]: createContenderScreenFactory(ScreenKey.Contenders, {
 				deviceType: DeviceType.Ios,
-				onClearAlerts: this._clearAlerts,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
@@ -1676,7 +1675,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
 		return canRead(this.state.subscriptionStatus, this.state.isProcessingPayment, article);
 	}
-	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) {
+	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<Element>) {
 		ev?.preventDefault();
 		if (this.canRead(article)) {
 			this.enterReaderView(article);

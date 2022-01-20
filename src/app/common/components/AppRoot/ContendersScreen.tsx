@@ -1,7 +1,7 @@
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
-import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
+import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import { updateCommunityReads } from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -16,8 +16,6 @@ import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
-import Alert from '../../../../common/models/notifications/Alert';
-import UpdateBanner from '../../../../common/components/UpdateBanner';
 import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import { Sort } from '../controls/articles/AotdView';
@@ -29,7 +27,6 @@ import ContendersView from '../controls/articles/ContendersView';
 
 interface Props {
 	deviceType: DeviceType,
-	onClearAlerts: (alert: Alert) => void,
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
@@ -50,10 +47,8 @@ interface Props {
 interface State {
 	communityReads: Fetchable<CommunityReads>,
 	isLoading: boolean,
-	isLoadingNewItems: boolean,
 	maxLength?: number,
 	minLength?: number,
-	newAotd: boolean,
 	sort: Sort
 }
 class ContendersScreen extends React.Component<Props, State> {
@@ -61,17 +56,11 @@ class ContendersScreen extends React.Component<Props, State> {
 	private readonly _changeSort = (sort: Sort) => {
 		this.setState({
 			isLoading: true,
-			newAotd: false,
 			sort
 		});
 		this.fetchItems(this.state.minLength, this.state.maxLength, 1, sort);
 	};
-	private _hasClearedAlert = false;
 	private readonly _loadMore = () => {
-		this.setState({
-			isLoadingNewItems: false,
-			newAotd: false
-		});
 		return new Promise<void>(
 			resolve => {
 				this.props.onGetCommunityReads(
@@ -103,12 +92,6 @@ class ContendersScreen extends React.Component<Props, State> {
 			}
 		);
 	};
-	private readonly _loadNewItems = () => {
-		this.setState({
-			isLoadingNewItems: true
-		});
-		this.fetchItems(null, null, 1, this.state.sort);
-	};
 	constructor(props: Props) {
 		super(props);
 		const sort = CommunityReadSort.Hot;
@@ -126,13 +109,10 @@ class ContendersScreen extends React.Component<Props, State> {
 						this.setState({
 							communityReads
 						});
-						this.clearAlertIfNeeded();
 					}
 				)
 			),
 			isLoading: false,
-			isLoadingNewItems: false,
-			newAotd: false,
 			sort
 		};
 		this._asyncTracker.addCancellationDelegate(
@@ -140,12 +120,6 @@ class ContendersScreen extends React.Component<Props, State> {
 				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
 			})
 		);
-	}
-	private clearAlertIfNeeded() {
-		if (!this._hasClearedAlert && hasAnyAlerts(this.props.user, Alert.Aotd)) {
-			this.props.onClearAlerts(Alert.Aotd);
-			this._hasClearedAlert = true;
-		}
 	}
 	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number, sort: Sort) {
 		this.props.onGetCommunityReads(
@@ -161,31 +135,10 @@ class ContendersScreen extends React.Component<Props, State> {
 					this.setState({
 						communityReads,
 						isLoading: false,
-						isLoadingNewItems: false,
-						newAotd: false,
 					});
-					this.clearAlertIfNeeded();
 				}
 			)
 		);
-	}
-	public componentDidMount() {
-		if (!this.state.communityReads.isLoading) {
-			this.clearAlertIfNeeded();
-		}
-	}
-	public componentDidUpdate(prevProps: Props) {
-		if (
-			this.props.user &&
-			this.props.user.aotdAlert &&
-			prevProps.user &&
-			!prevProps.user.aotdAlert
-		) {
-			this.setState({
-				newAotd: true
-			});
-			this._hasClearedAlert = false;
-		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -196,16 +149,7 @@ class ContendersScreen extends React.Component<Props, State> {
 				{this.state.communityReads.isLoading ?
 					<LoadingOverlay position="static" /> :
 					<>
-						{this.state.newAotd ?
-							<UpdateBanner
-								isBusy={this.state.isLoadingNewItems}
-								onClick={this._loadNewItems}
-								text="Show new Article of the Day"
-							/> :
-							null}
 						<ContendersView
-							aotd={this.state.communityReads.value.aotd}
-							aotdHasAlert={this.state.communityReads.value.aotdHasAlert}
 							articles={this.state.communityReads.value.articles}
 							deviceType={this.props.deviceType}
 							isLoading={this.state.isLoading}
@@ -220,7 +164,6 @@ class ContendersScreen extends React.Component<Props, State> {
 							onShare={this.props.onShare}
 							onShareViaChannel={this.props.onShareViaChannel}
 							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewAotdHistory={this.props.onViewAotdHistory}
 							onViewComments={this.props.onViewComments}
 							onViewProfile={this.props.onViewProfile}
 							sort={this.state.sort}

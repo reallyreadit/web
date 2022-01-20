@@ -7,7 +7,8 @@ export default (
 	props: {
 		children: React.ReactNode,
 		className?: ClassValue,
-		highlight?: boolean
+		highlight?: boolean,
+		onClick?: React.MouseEventHandler<HTMLDivElement>
 	}
 ) => {
 	const className = classNames('content-box_kkp9lc', props.className);
@@ -19,10 +20,13 @@ export default (
 			>
 				{props.children}
 			</Highlighter>
-		);	
+		);
 	}
 	return (
-		<div className={className}>
+		<div
+			className={className}
+			onClick={props.onClick}
+		>
 			{props.children}
 		</div>
 	);

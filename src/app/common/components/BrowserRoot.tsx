@@ -1130,7 +1130,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			});
 			return true;
 		} else if (!result.isInternal && result.url) {
-			window.open(result.url, '_blank');
+			const navOptions = options ?? { method: NavMethod.Push };
+			// NavMethod.Replace & NavMethod.ReplaceAll result in the link being opened in the current window
+			window.open(result.url, navOptions.method === NavMethod.Push ? '_blank' : '_self');
 			return true;
 		}
 		return false;

@@ -153,7 +153,30 @@ class HomeScreen extends React.Component<Props, State> {
 		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler(event => {
+				// updates the AOTD (and more, but only the AOTD is relevant here)
 				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
+				// updates the previous AOTD winners if needed
+				if (
+					this.state.aotdHistory.value &&
+					this.state.aotdHistory.value.items.some(article => article.id === event.article.id)
+				) {
+					this.setState(produce((prevState: State) => {
+						prevState.aotdHistory.value.items.forEach((article, index, articles) => {
+							if (article.id === event.article.id) {
+								// merge objects in case the new object is missing properties due to outdated iOS client
+								articles.splice(
+									articles.indexOf(article),
+									1,
+									{
+										...article,
+										...event.article,
+										dateStarred: event.article.dateStarred
+									}
+								);
+							}
+						});
+					}));
+				}
 			})
 		);
 	}
@@ -182,24 +205,25 @@ class HomeScreen extends React.Component<Props, State> {
 			}
 		});
 
-		communityPromise.then( (communityReads) => {
-			this.setState(produce((state: State) => {
+		this._asyncTracker.addPromise(communityPromise).then( (communityReads) => {
+			this.setState(produce((prevState: State) => {
 				// add the OLD aotd to the top of the AOTD history locally
-				if (!state.aotdHistory.isLoading && this.state.aotdHistory.value) {
-					state.aotdHistory.value.items = [
-						state.communityReads.value.aotd,
-						...state.aotdHistory.value.items
+				if (!prevState.aotdHistory.isLoading && this.state.aotdHistory.value) {
+					prevState.aotdHistory.value.items = [
+						prevState.communityReads.value.aotd,
+						...prevState.aotdHistory.value.items
 					];
 				}
 				// merge in the new AOTD
-				state.communityReads = communityReads;
+				prevState.communityReads = communityReads;
 				// set loading state
-				state = {
-					...state,
+				return {
+					...prevState,
 					isLoadingNewItems: false,
 					newAotd: false
 				}
 			}));
+			this.clearAlertIfNeeded();
 		})
 	}
 

@@ -16,9 +16,7 @@ import {DeviceType} from '../../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../../common/sharing/ShareData';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
-export default class AotdView extends React.Component<{
-	aotd: UserArticle,
-	aotdHasAlert?: boolean,
+export default class ContendersView extends React.Component<{
 	articles: PageResult<UserArticle>,
 	deviceType: DeviceType,
 	isLoading: boolean,
@@ -33,7 +31,6 @@ export default class AotdView extends React.Component<{
 	onShare: (data: ShareEvent) => ShareResponse,
 	onShareViaChannel: (data: ShareChannelData) => void,
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	sort: Sort,
