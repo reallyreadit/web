@@ -11,7 +11,7 @@ export const DownloadSection: React.FunctionComponent<Props> = (props: Props) =>
 		<div className="download-section_45nqkz">
 			<div className="download-section_45nqkz__details">
 				<div className="download-section_45nqkz__details__heading">Download the app to get started</div>
-				<p>Available on iPhone, iPad, Mac, Windows.<br/>Android coming soon.</p>
+				<p>Available on iPhone, iPad, Mac, Windows.<br/>Android in progress.</p>
 			</div>
 			<DownloadButton
 				analyticsAction='download-section'

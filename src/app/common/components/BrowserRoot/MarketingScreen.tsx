@@ -17,15 +17,12 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import HomePanel from './HomePanel';
 import ImageAndText from './ImageAndText';
 import QuoteCard from './QuoteCard';
-import { PriceList } from './MarketingScreen/PriceList';
 import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 import { NavOptions, NavReference } from '../Root';
-import Link from '../../../../common/components/Link';
+// import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
 import DownloadButton from './DownloadButton';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import SubscribePitchElement from '../AppRoot/SubscribePitchElement';
-import Icon from '../../../../common/components/Icon';
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	deviceType: DeviceType,
@@ -61,30 +58,6 @@ export interface Quote {
 	commentId: string
 }
 
-const prices: {
-	amount: JSX.Element,
-	title: string,
-	subtitle: string,
-	description: JSX.Element
-}[] = [
-	{
-		amount: null,
-		title: 'Free Trial',
-		subtitle: '',
-		description: <ul>
-			<li><Icon name="checkmark"/>No commitment or credit card required.</li>
-			<li><Icon name="checkmark"/>5 free reads</li>
-		</ul>
-	},
-	{
-		amount: null,
-		title: 'Buy a subscription',
-		subtitle: '',
-		description: <SubscribePitchElement/>,
-		// selected: true
-	},
-];
-
 export default class MarketingScreen extends React.Component<
 	Props,
 	{
@@ -117,81 +90,53 @@ export default class MarketingScreen extends React.Component<
 		this._asyncTracker.cancelAll();
 	}
 	public render () {
-		// const marketingVariant = marketingVariants[0];
 		const valuePoints = [
 			{
-				heading: "The world's best* reading app",
-				paragraph: "*Best = most ethically-designed. Readup is 100% distraction-free. No ads. No paywalls.",
+				heading: "Made for readers, by readers",
+				paragraph: "Readup was built by people love deep reading. The app removes distractions from articles.",
 				imageName: "kill-ads-3.0.png",
 				imageAlt: "No paywalls or ads on Readup"
 			},
 			{
-				heading: "The world's best articles",
+				heading: "A vibrant community",
 				paragraph: "Not sure what to read? The Readup community curates the best of the best from across the web.",
 				imageName: "best-articles-3.0.png",
 				imageAlt: "The best articles from the web"
 			},
 			{
-				heading: "Save articles",
-				paragraph: "Create your own little library, available on any device. No time to finish an article? Readup bookmarks everything, automatically.",
-				imageName: "import-anywhere-3.0.png",
-				imageAlt: "Save any where, read on your mobile phone or computer"
-			},
-			{
-				heading: "Readup compensates writers 💸",
-				paragraph: "Readup pledges more than 90% of your subscription fee to the writers you read.",
-				imageName: "watch-money-3.0.png",
-				imageAlt: "Readup distributes your money directly to writers"
-			}
-		];
-
-		const supportPoints = [
-			{
-				heading: "A vibrant community",
-				paragraph: "The Readup community is truly special - thoughtful, kind and interesting. Follow others, enjoy the comments, and feel the love.",
-				imageName: "vibrant-community-3.0.png",
-				imageAlt: "Save from any publication"
-			},
-			{
 				heading: "Algorithms you can trust",
-				paragraph: "There are no echo-chambers on Readup. Everyone sees the same great articles and all algorithms are 100% transparent.",
+				paragraph: "There are no filter-bubble algorithms behind Readup. Readup is open, and everyone sees the same great articles.",
 				imageName: "good-algorithms-3.0.png",
 				imageAlt: "Transparent recommendation algorithms"
 			},
+			// {
+			// 	heading: "A vibrant community",
+			// 	paragraph: "The Readup community is truly special - thoughtful, kind and interesting. Follow others, enjoy the comments, and feel the love.",
+			// 	imageName: "vibrant-community-3.0.png",
+			// 	imageAlt: "Save from any publication"
+			// },
 			{
 				heading: "Read-certified comments",
-				paragraph: "Readup requires you to read the article if you want to comment on it. This is the key to true civil discourse. ",
+				paragraph: "Readup requires you to read the article if you want to comment on it. This is the key to true civil discourse.",
 				imageName: "civilized-discussion-3.0.png",
 				imageAlt: "Readup requires you to read the article if you want to comment on it."
 			},
-			{
-				heading: "Reading statistics",
-				paragraph: "Track and improve your reading performance. Read more articles to completion and spend less time skimming and scanning. ",
-				imageName: "statistics-3.0.png",
-				imageAlt: "Reading statistics"
-			},
-		]
+		];
 
-		/*const howItWorksDesktop = [
-			{
-				heading: "Step 1: Click the button",
-				paragraph: "lalaland",
-				imageName: 'click-button.png',
-				imageAlt: 'Click the Readup extension button in the right-top of the screen.'
-			},
-			{
-				heading: "Step 2: Enjoy reading",
-				paragraph: "lalala",
-				imageName: 'read-article.png',
-				imageAlt: 'Read the article'
-			},
-			{
-				heading: "Step 3: Discover socially",
-				paragraph: "lalala",
-				imageName: 'discover-socially.png',
-				imageAlt: 'Discover Socially'
-			}
-		];*/
+		// const supportPoints = [
+		// 	{
+		// 		heading: "Save for later",
+		// 		paragraph: "Create your own little reading list, available on any device. No time to finish an article? Readup bookmarks everything, automatically.",
+		// 		imageName: "import-anywhere-3.0.png",
+		// 		imageAlt: "Save any where, read on your mobile phone or computer"
+		// 	},
+		// 	{
+		// 		heading: "Reading statistics",
+		// 		paragraph: "Track and improve your reading performance. Read more articles to completion and spend less time skimming and scanning. ",
+		// 		imageName: "statistics-3.0.png",
+		// 		imageAlt: "Reading statistics"
+		// 	},
+		// ]
 
 		const quotes: Quote[] = [
 			{
@@ -270,8 +215,8 @@ export default class MarketingScreen extends React.Component<
 			<div className="marketing-screen_n5a6wc">
 				<HomePanel className="home-hero-image">
 					<div className="home-hero-image__intro-text">
-						<h1 className="heading-regular">The internet is destroying our ability to read.</h1>
-						<p>Steal it back. Join the Readup community today.</p>
+						<h1 className="heading-regular">Online reading is broken.<br/>We're fixing it.</h1>
+						<p>Readup is a free &amp; open-source reading app.<br/>Join our community today!</p>
 						<DownloadButton
 							analyticsAction='home-hero-download'
 							buttonType='platform'
@@ -300,8 +245,7 @@ export default class MarketingScreen extends React.Component<
 					data-nosnippet
 					className="pricing-panel"
 				>
-					<h2 className="heading-regular">Join the community.</h2>
-					<PriceList prices={prices} />
+					<h2 className="heading-regular">Get Readup</h2>
 					<DownloadSection
 						onNavTo={this.props.onNavTo}
 						onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
@@ -325,7 +269,7 @@ export default class MarketingScreen extends React.Component<
 						)}
 					</div>
 				</HomePanel>
-				<HomePanel
+				{/* <HomePanel
 					data-nosnippet
 				>
 					<h2 className="heading-regular">And there's more!</h2>
@@ -340,13 +284,11 @@ export default class MarketingScreen extends React.Component<
 						onNavTo={this.props.onNavTo}
 						onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
 					/>
-				</HomePanel>
-				<HomePanel
+				</HomePanel> */}
+				{/* <HomePanel
 					data-nosnippet
 					className="closing-quote-panel"
 				>
-					{/* <span className="preheading">Remember</span> */}
-					{/* <cite className="closing-quote"><p>We're on a mission to fix digital reading.</p></cite> */}
 					<Link
 						className="mission-button"
 						iconRight="arrow-right"
@@ -355,6 +297,7 @@ export default class MarketingScreen extends React.Component<
 						text="Read the manifesto"
 						/>
 				</HomePanel>
+				*/}
 				{/* <HomePanel
 					className="blog"
 					noGoogleSnippet
