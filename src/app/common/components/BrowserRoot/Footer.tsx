@@ -16,7 +16,7 @@ export default class extends React.PureComponent<{
 		return (
 			<div
 				className="footer_ink40x"
-				data-nosnippet	
+				data-nosnippet
 			>
 				<div className="links">
 					<a
@@ -32,14 +32,8 @@ export default class extends React.PureComponent<{
 						Privacy Policy
 					</a>
 					<Separator />
-					<a href="mailto:support@readup.com">support@readup.com</a>
 				</div>
 				<StoreLinks />
-				<div className="corp">
-					reallyread.it, inc.<br />
-					309 Poe Ave<br />
-					Toms River NJ 08753
-				</div>
 			</div>
 		);
 	}

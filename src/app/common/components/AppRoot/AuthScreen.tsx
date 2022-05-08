@@ -72,16 +72,14 @@ export default class extends React.PureComponent<Props> {
 								`Error signing in with ${authProviderNames[this.props.authStatus.provider]}` :
 							null}
 					</div>
-					{/* <h2>Welcome to Readup!</h2> */}
 					<div className="welcome-text">
 						<p className="welcome-text__summary">Log in or create an account</p>
-						<p className="welcome-text__free-trial small-font">Get started for free. </p>
+						<p className="welcome-text__free-trial small-font">Readup is a free &amp; donation-based app.</p>
 					</div>
 					<AuthServiceButton
 						onClick={this.props.onSignInWithTwitter}
 						provider={AuthServiceProvider.Twitter}
 					/>
-					{/* <div className="twitter-notice small-font">Recommended. We'll never tweet without your permission.</div> */}
 					<AuthServiceButton
 						onClick={this.props.onSignInWithApple}
 						provider={AuthServiceProvider.Apple}

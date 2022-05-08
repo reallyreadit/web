@@ -33,7 +33,7 @@ const profiles: ProfileData[] = [
 		readerName: "thorgalle",
 		imageName: 'thor.jpg',
 		web: "https://thorgalle.me",
-		mail: "thor@readup.com"
+		mail: "thorgalle+readup@gmail.com"
 	}
 ];
 
