@@ -50,7 +50,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus,calculateFreeViewBalance, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView, isTrialingSubscription } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatusType, ActiveSubscriptionStatus, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -67,7 +67,6 @@ import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
 import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
-import { isReadupBlogPost } from '../../../common/models/UserArticle';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBestEverScreenFactory from './screens/BestEverScreen';
 
@@ -95,45 +94,6 @@ type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
 interface Events extends RootEvents {
 	'newStars': number,
 	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
-}
-function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPayment: boolean, article: Pick<ReadArticleReference, 'slug'>) {
-	if (!subscriptionStatus) {
-		return false;
-	}
-	return (
-			subscriptionStatus.isUserFreeForLife
-		||
-			(
-				(subscriptionStatus.type === SubscriptionStatusType.Active) &&
-				!isProcessingPayment
-			)
-		||
-
-			(
-				// determine whether the reader is a free trial reader
-				(
-						isTrialingSubscription(subscriptionStatus)
-					// edge case that should never happen, and if it happens, it's not bad if we top the free trial here?
-					// ||
-					// 	(
-					// 		subscriptionStatus.type === SubscriptionStatusType.Active
-					// 		&& isProcessingPayment
-					// 	)
-				)
-					&&
-				(
-					// free trial reader has remaining balance
-					( calculateFreeViewBalance(subscriptionStatus.freeTrial) > 0 )
-					||
-					// free trial reader already opened this article before
-					!!(subscriptionStatus.freeTrial.articleViews.find(
-						articleView => articleView.articleSlug === article.slug
-					))
-				)
-			)
-		||
-			isReadupBlogPost(article)
-	);
 }
 export default class extends Root<Props, State, SharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
@@ -1006,7 +966,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: DeviceType.Ios,
-				onCanReadArticle: this.canRead.bind(this),
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
@@ -1521,16 +1480,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
-			let readRef: Pick<ReadArticleReference, 'slug'>;
-			if (
-				result.screenKey === ScreenKey.Read &&
-				this.canRead(
-					readRef = {
-						slug: createArticleSlug(result.screenParams)
-					}
-				)
-			) {
-				this.enterReaderView(readRef);
+			if (result.screenKey === ScreenKey.Read) {
+				this.enterReaderView({
+					slug: createArticleSlug(result.screenParams)
+				});
 			} else {
 				switch (options.method) {
 					case NavMethod.Push:
@@ -1594,23 +1547,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 			screen = this.createScreen(ScreenKey.Home);
 		} else {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
-			let
-				articlePathParams: { [key: string]: string } | undefined,
-				articleRef: Pick<ReadArticleReference, 'slug'> | undefined;
 			// We need to use the stateless canRead function here because the new user state isn't
 			// set until this function returns.
-			if (
-				route.screenKey === ScreenKey.Read &&
-				canRead(
-					profile.subscriptionStatus,
-					this.state.isProcessingPayment,
+			if (route.screenKey === ScreenKey.Read) {
+				const
+					articlePathParams = route.getPathParams(this._signInLocation.path),
 					articleRef = {
-						slug: createArticleSlug(
-							articlePathParams = route.getPathParams(this._signInLocation.path)
-						)
-					}
-				)
-			) {
+						slug: createArticleSlug(articlePathParams)
+					};
 				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
 				// We can't user enterReaderView here because it modifies the current state and the new user
 				// state isn't set until this function returns.
@@ -1672,17 +1616,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	}
 
-	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
-		return canRead(this.state.subscriptionStatus, this.state.isProcessingPayment, article);
-	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<Element>) {
 		ev?.preventDefault();
-		if (this.canRead(article)) {
-			this.enterReaderView(article);
-		} else {
-			this._viewRead(article);
-			// this._openSubscriptionPromptDialog(article);
-		}
+		this.enterReaderView(article);
 	}
 	protected reloadWindow() {
 		window.location.reload(true);
@@ -1820,20 +1756,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
-		let articleSlug: string | undefined;
 		if (
 			initialRoute.screenKey === ScreenKey.Read &&
-			this.props.initialUserProfile &&
-			this.canRead({
-				slug: (
-					articleSlug = createArticleSlug(
-						initialRoute.getPathParams(this.props.initialLocation.path)
-					)
-				)
-			})
+			this.props.initialUserProfile
 		) {
 			this.enterReaderView({
-				slug: articleSlug
+				slug: createArticleSlug(
+					initialRoute.getPathParams(this.props.initialLocation.path)
+				)
 			});
 		}
 		// open subscription dialog if the initial route is to Subscribe

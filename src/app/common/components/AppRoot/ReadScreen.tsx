@@ -28,7 +28,6 @@ interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
 	location: RouteLocation,
-	onCanReadArticle: (article: UserArticle) => boolean,
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
@@ -122,9 +121,7 @@ class ReadScreen extends React.PureComponent<Props> {
 											</div>
 												<Button
 													intent="loud"
-													onClick={(this.props.onCanReadArticle(this.props.article.value)) ?
-															this._readArticle :
-															() => this.props.onOpenSubscriptionPromptDialog(this.props.article.value)}
+													onClick={this._readArticle}
 													size="large"
 													align="center"
 													text={isFreeTrialOverSubscription(this.props.subscriptionStatus) ? "Subscribe" : "Read Article"}

@@ -1175,7 +1175,6 @@ export default abstract class Root<
 		});
 	}
 
-	protected abstract canRead(article: Pick<ReadArticleReference, 'slug'>): boolean;
 	protected abstract readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;

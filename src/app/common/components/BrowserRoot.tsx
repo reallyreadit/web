@@ -63,7 +63,6 @@ import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
 import {FreeTrialPromoTweetIntentRegistrationRequest} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
-import { isReadupBlogPost } from '../../../common/models/UserArticle';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -756,7 +755,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				deviceType: this.props.deviceType,
 				extensionVersion: this.props.extensionApi.installedVersion,
 				onBeginOnboarding: this._beginOnboarding,
-				onCanReadArticle: this.canRead.bind(this),
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
@@ -1263,23 +1261,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 
-	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
-		return (
-			isReadupBlogPost(article) ||
-			(
-				!!this.state.user &&
-				(
-					this.state.subscriptionStatus.type === SubscriptionStatusType.Active
-					||
-					this.state.subscriptionStatus.isUserFreeForLife
-				)
-			)
-		)
-	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
-			this.canRead(article) &&
 			this.props.extensionApi.isInstalled &&
 			this.props.extensionApi.installedVersion.compareTo(new SemanticVersion('6.0.0')) < 0
 		) {
