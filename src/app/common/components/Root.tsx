@@ -59,7 +59,7 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionStatus, ActiveSubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import Lazy from '../../../common/Lazy';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
@@ -69,11 +69,7 @@ import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel } from '..
 import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
 import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
 import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
-import StripeAutoRenewDialog from './StripeAutoRenewDialog';
-import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
-import StripePriceChangeDialog from './StripePriceChangeDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
-import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
@@ -534,46 +530,6 @@ export default abstract class Root<
 	};
 
 	// subscriptions
-	private readonly _changeStripeSubscriptionPrice = (price: SubscriptionPriceSelection) => this.props.serverApi
-		.changeStripeSubscriptionPrice(
-			isStandardSubscriptionPriceLevel(price) ?
-				({
-					priceLevelId: price.id
-				}) :
-				({
-					customPriceAmount: price.amount
-				})
-		)
-		.then(this._handleSubscriptionPaymentResponse);
-	protected readonly _changeSubscriptionPaymentMethod = (card: StripeCardElement) => this.props.serverApi
-		.createStripeSetupIntent()
-		.then(
-			response => this.props.stripeLoader.value.then(
-				stripe => stripe.confirmCardSetup(
-					response.clientSecret,
-					{
-						payment_method: {
-							card
-						}
-					}
-				)
-			)
-		)
-		.then(
-			result => {
-				if (!result.setupIntent) {
-					throw result.error;
-				}
-				return this.props.serverApi.changeSubscriptionPaymentMethod({
-					paymentMethodId: result.setupIntent.payment_method
-				});
-			}
-		);
-	private readonly _completeStripeSubscriptionUpgrade = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
-		card,
-		price,
-		request => this.props.serverApi.completeStripeSubscriptionUpgrade(request)
-	);
 	private readonly _confirmSubscriptionCardPayment: ((invoiceId: string, clientSecret?: string) => Promise<StripePaymentResponse>) = (invoiceId, clientSecret) => {
 		let clientConfirmation: Promise<any>;
 		if (clientSecret) {
@@ -621,33 +577,6 @@ export default abstract class Root<
 			callback(response);
 		}
 	);
-	protected readonly _openStripeAutoRenewDialog = (currentStatus: ActiveSubscriptionStatus) => new Promise<void>(
-		resolve => {
-			const
-				close = () => {
-					this._dialog.closeDialog();
-					resolve();
-				},
-				setAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.props.serverApi
-					.setStripeSubscriptionAutoRenewStatus(request)
-					.then(
-						response => {
-							this.onSubscriptionStatusChanged(response.status, EventSource.Local);
-							return response;
-						}
-					);
-			this._dialog.openDialog(
-				() => (
-					<StripeAutoRenewDialog
-						currentStatus={currentStatus}
-						onClose={close}
-						onSetStripeSubscriptionAutoRenewStatus={setAutoRenewStatus}
-						onShowToast={this._toaster.addToast}
-					/>
-				)
-			);
-		}
-	);
 	protected readonly _openStripePaymentConfirmationDialog = (invoiceId: string) => {
 		this._dialog.openDialog(
 			() => (
@@ -657,25 +586,6 @@ export default abstract class Root<
 					onGetSubscriptionStatus={this._getSubscriptionStatus}
 					onShowToast={this._toaster.addToast}
 					onConfirmPayment={this._confirmSubscriptionCardPayment}
-				/>
-			)
-		);
-	};
-	protected readonly _openStripePriceChangeDialog = (activeSubscription: ActiveSubscriptionStatus) => {
-		this._dialog.openDialog(
-			sharedState => (
-				<StripePriceChangeDialog
-					activeSubscription={activeSubscription}
-					displayTheme={sharedState.displayTheme}
-					onChangePrice={this._changeStripeSubscriptionPrice}
-					onClose={this._dialog.closeDialog}
-					onCompleteUpgrade={this._completeStripeSubscriptionUpgrade}
-					onCreateStaticContentUrl={this._createStaticContentUrl}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onOpenStripeSubscriptionPrompt={this._openStripeSubscriptionPromptDialog}
-					onShowToast={this._toaster.addToast}
-					stripe={this.props.stripeLoader.value}
 				/>
 			)
 		);
@@ -733,8 +643,6 @@ export default abstract class Root<
 					.then(this._handleSubscriptionPaymentResponse);
 			}
 		);
-	protected readonly _updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) =>
-		this.props.serverApi.updateSubscriptionPaymentMethod(request);
 	private _revenueReportTimestamp = Date.now();
 
 	// toasts

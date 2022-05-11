@@ -50,7 +50,7 @@ import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationReq
 import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
 import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
 import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { ActiveSubscriptionStatus, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import { ProblemDetails } from '../../../common/ProblemDetails';
@@ -294,44 +294,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					}
 				}
 			);
-	};
-	private readonly _openPriceChangeDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			throw new Error('Invalid subscription state.');
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
-			this._openStripePriceChangeDialog(this.state.subscriptionStatus);
-			return;
-		}
-		this._openAppStoreSubscriptionPromptDialog(null, this.state.subscriptionStatus);
-	};
-	private readonly _openSubscriptionAutoRenewDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			return Promise.reject(
-				new Error('Invalid subscription state.')
-			);
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
-			return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
-		}
-		this.props.appApi.openExternalUrlUsingSystem('https://apps.apple.com/account/subscriptions');
-		return new Promise<void>(
-			(resolve, reject) => {
-				const refreshSubscriptionStatus = () => {
-					this.props.appApi.removeListener('didBecomeActive', refreshSubscriptionStatus);
-					this.props.serverApi
-						.requestAppleSubscriptionStatusUpdate()
-						.then(
-							response => {
-								this.onSubscriptionStatusChanged(response.status, EventSource.Local);
-								resolve();
-							}
-						)
-						.catch(reject);
-				};
-				this.props.appApi.addListener('didBecomeActive', refreshSubscriptionStatus);
-			}
-		);
 	};
 	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
 		if (provider == null) {
@@ -960,26 +922,19 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					appPlatform: this.props.appApi.deviceInfo.appPlatform,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
-					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onDeleteAccount: this._deleteAccount,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
-					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenPriceChangeDialog: this._openPriceChangeDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
@@ -987,9 +942,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
 					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
-					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
-					onViewPrivacyPolicy: this._viewPrivacyPolicy,
-					stripe: this.props.stripeLoader.value
+					onViewPrivacyPolicy: this._viewPrivacyPolicy
 				}
 			),
 			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {

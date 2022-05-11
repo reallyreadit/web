@@ -49,7 +49,7 @@ import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../c
 import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
-import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
@@ -266,28 +266,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// subscriptions
-	private readonly _openPriceChangeDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			throw new Error('Invalid subscription state.');
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Apple) {
-			throw new Error('Operation not supported in browser environment.');
-		}
-		this._openStripePriceChangeDialog(this.state.subscriptionStatus);
-	};
-	private readonly _openSubscriptionAutoRenewDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			return Promise.reject(
-				new Error('Invalid subscription state.')
-			);
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Apple) {
-			return Promise.reject(
-				new Error('Operation not supported in browser environment.')
-			);
-		}
-		return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
-	};
 	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
 		if (provider === SubscriptionProvider.Apple) {
 			throw new Error('Operation not supported in browser environment.');
@@ -759,30 +737,19 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					/*
-						This isn't inaccurate but it doesn't matter since viewing settings in the browser is deprecated.
-						All that matters is that we pass a non-Apple platform so that App Store APIs are not called.
-					*/
-					appPlatform: AppPlatform.Windows,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
-					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onDeleteAccount: this._deleteAccount,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenPriceChangeDialog: this._openPriceChangeDialog,
-					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
@@ -790,9 +757,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
 					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
-					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
-					onViewPrivacyPolicy: this._viewPrivacyPolicy,
-					stripe: this.props.stripeLoader.value
+					onViewPrivacyPolicy: this._viewPrivacyPolicy
 				}
 			),
 			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {

@@ -28,15 +28,7 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import ContentBox from '../../../common/components/ContentBox';
 import DisplayPreferencesControl from './SettingsPage/DisplayPreferencesControl';
 import DisplayPreference, { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
-import SubscriptionControl from './SettingsPage/SubscriptionControl';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
-import UserArticle from '../../../common/models/UserArticle';
-import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
-import { AppPlatform } from '../../../common/AppPlatform';
-import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
-import { UpdatePaymentMethodDialog } from './SettingsPage/UpdatePaymentMethodDialog';
-import { ChangePaymentMethodDialog } from './SettingsPage/ChangePaymentMethodDialog';
-import { StripeCardElement, Stripe } from '@stripe/stripe-js';
 import Button from '../../../common/components/Button';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
@@ -49,27 +41,20 @@ import SettingsLink from './SettingsPage/SettingsLink';
 import UserAccountRole from '../../../common/models/UserAccountRole';
 
 interface Props {
-	appPlatform: AppPlatform,
 	displayTheme: DisplayTheme | null,
 	onCloseDialog: () => void,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 	onChangeEmailAddress: (email: string) => Promise<void>,
 	onChangeNotificationPreference: (data: NotificationPreference) => Promise<NotificationPreference>,
 	onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>,
-	onChangePaymentMethod: (card: StripeCardElement) => Promise<SubscriptionPaymentMethodResponse>,
 	onChangeTimeZone: (timeZone: { id: number }) => Promise<void>,
 	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateStaticContentUrl: (path: string) => string,
 	onDeleteAccount: () => Promise<void>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onGetSettings: FetchFunction<Settings>,
 	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>,
 	onOpenDialog: (dialog: React.ReactNode) => void,
-	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
-	onOpenPriceChangeDialog: () => void,
-	onOpenSubscriptionAutoRenewDialog: () => Promise<void>,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onOpenTweetComposer: (params: TweetWebIntentParams) => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
 	onResendConfirmationEmail: () => Promise<void>,
@@ -77,10 +62,8 @@ interface Props {
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
 	onSignOut: () => Promise<void>,
 	onSubmitAuthorEmailVerificationRequest: (request: AuthorEmailVerificationRequest) => Promise<void>,
-	onUpdatePaymentMethod: (request: SubscriptionPaymentMethodUpdateRequest) => Promise<SubscriptionPaymentMethodResponse>,
 	onViewPrivacyPolicy: () => void,
 	subscriptionStatus: SubscriptionStatus,
-	stripe: Promise<Stripe> | null
 	user: UserAccount
 }
 class SettingsPage extends React.PureComponent<
@@ -92,24 +75,6 @@ class SettingsPage extends React.PureComponent<
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _changePaymentMethod = (card: StripeCardElement) => {
-		return this.props
-			.onChangePaymentMethod(card)
-			.then(
-				response => {
-					this.setState({
-						settings: {
-							...this.state.settings,
-							value: {
-								...this.state.settings.value,
-								subscriptionPaymentMethod: response.paymentMethod
-							}
-						}
-					});
-					return response;
-				}
-			);
-	};
 	private readonly _changeTimeZone = (id: number, timeZoneDisplayName: string) => {
 		return this.props
 			.onChangeTimeZone({ id })
@@ -191,18 +156,6 @@ class SettingsPage extends React.PureComponent<
 			/>
 		);
 	};
-	private readonly _openChangePaymentMethodDialog = () => {
-		this.props.onOpenDialog(
-			<ChangePaymentMethodDialog
-				displayTheme={this.props.displayTheme}
-				onCloseDialog={this.props.onCloseDialog}
-				onChangePaymentMethod={this._changePaymentMethod}
-				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-				onShowToast={this.props.onShowToast}
-				stripe={this.props.stripe}
-			/>
-		);
-	};
 	private readonly _openChangeTimeZoneDialog = () => {
 		this.props.onOpenDialog(
 			<ChangeTimeZoneDialog
@@ -232,16 +185,6 @@ class SettingsPage extends React.PureComponent<
 				onShowToast={this.props.onShowToast}
 			/>
 		)
-	};
-	private readonly _openUpdatePaymentMethodDialog = () => {
-		this.props.onOpenDialog(
-			<UpdatePaymentMethodDialog
-				paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
-				onCloseDialog={this.props.onCloseDialog}
-				onShowToast={this.props.onShowToast}
-				onUpdatePaymentMethod={this._updatePaymentMethod}
-			/>
-		);
 	};
 	private readonly _signOut = () => {
 		this.setState(
@@ -275,24 +218,6 @@ class SettingsPage extends React.PureComponent<
 				};
 			}
 		);
-	};
-	private readonly _updatePaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => {
-		return this.props
-			.onUpdatePaymentMethod(request)
-			.then(
-				response => {
-					this.setState({
-						settings: {
-							...this.state.settings,
-							value: {
-								...this.state.settings.value,
-								subscriptionPaymentMethod: response.paymentMethod
-							}
-						}
-					});
-					return response;
-				}
-			);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -410,24 +335,6 @@ class SettingsPage extends React.PureComponent<
 											</div>
 										</>}
 								</div>
-							</div>
-						</div>
-						<div className="setting">
-							<div className="header">
-								<span className="label">Subscription</span>
-							</div>
-							<div className="section">
-								<SubscriptionControl
-									appPlatform={this.props.appPlatform}
-									onOpenChangePaymentMethodDialog={this._openChangePaymentMethodDialog}
-									onOpenPaymentConfirmationDialog={this.props.onOpenPaymentConfirmationDialog}
-									onOpenPriceChangeDialog={this.props.onOpenPriceChangeDialog}
-									onOpenSubscriptionAutoRenewDialog={this.props.onOpenSubscriptionAutoRenewDialog}
-									onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
-									onOpenUpdatePaymentMethodDialog={this._openUpdatePaymentMethodDialog}
-									paymentMethod={this.state.settings.value.subscriptionPaymentMethod}
-									status={this.props.subscriptionStatus}
-								/>
 							</div>
 						</div>
 						<div className="setting">
@@ -574,23 +481,16 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage
-				appPlatform={deps.appPlatform}
 				displayTheme={sharedState.displayTheme}
 				onCloseDialog={deps.onCloseDialog}
 				onChangeDisplayPreference={deps.onChangeDisplayPreference}
 				onChangeEmailAddress={deps.onChangeEmailAddress}
 				onChangeNotificationPreference={deps.onChangeNotificationPreference}
 				onChangePassword={deps.onChangePassword}
-				onChangePaymentMethod={deps.onChangePaymentMethod}
 				onChangeTimeZone={deps.onChangeTimeZone}
 				onCreateAbsoluteUrl={deps.onCreateAbsoluteUrl}
-				onCreateStaticContentUrl={deps.onCreateStaticContentUrl}
 				onDeleteAccount={deps.onDeleteAccount}
 				onOpenDialog={deps.onOpenDialog}
-				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
-				onOpenPriceChangeDialog={deps.onOpenPriceChangeDialog}
-				onOpenSubscriptionAutoRenewDialog={deps.onOpenSubscriptionAutoRenewDialog}
-				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onOpenTweetComposer={deps.onOpenTweetComposer}
 				onGetSettings={deps.onGetSettings}
 				onGetTimeZones={deps.onGetTimeZones}
@@ -602,9 +502,7 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onShowToast={deps.onShowToast}
 				onSignOut={deps.onSignOut}
 				onSubmitAuthorEmailVerificationRequest={deps.onSubmitAuthorEmailVerificationRequest}
-				onUpdatePaymentMethod={deps.onUpdatePaymentMethod}
 				onViewPrivacyPolicy={deps.onViewPrivacyPolicy}
-				stripe={deps.stripe}
 				subscriptionStatus={sharedState.subscriptionStatus}
 				user={sharedState.user}
 			/>
