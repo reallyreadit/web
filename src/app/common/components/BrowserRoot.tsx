@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
-import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference, parseNavReference, ReadArticleReference } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
@@ -147,21 +146,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.ReplaceAll
 		});
 	};
-	private readonly _viewMyImpact = () => {
-		this.setScreenState({
-			key: ScreenKey.MyImpact,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewMission = () => {
 		this.setScreenState({
 			key: ScreenKey.Mission,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewMyReads = () => {
-		this.setScreenState({
-			key: ScreenKey.MyReads,
 			method: NavMethod.ReplaceAll
 		});
 	};
@@ -1185,22 +1172,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					/> :
 					null}
 				<main>
-					{(
-						(
-							topScreen.templateSection == null ||
-							(topScreen.templateSection & TemplateSection.Navigation)
-						) &&
-						this.state.user
-					) ?
-						<NavBar
-							onNavTo={this._navTo}
-							onViewHome={this._viewHome}
-							onViewMyImpact={this._viewMyImpact}
-							onViewMyReads={this._viewMyReads}
-							selectedScreen={this.state.screens[0]}
-							user={this.state.user}
-						/> :
-						null}
 					<ol className="screens">
 						{this.state.screens.map(screen => (
 							<li
