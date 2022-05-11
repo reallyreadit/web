@@ -832,8 +832,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					profile = data;
 				} else {
 					profile = {
-						userAccount: data,
-						subscriptionStatus: null
+						userAccount: data
 					};
 					// manually check for display preference before setting default
 					this.props.serverApi.getDisplayPreference(
@@ -1011,7 +1010,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
 			revenueReport: this.state.revenueReport,
-			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
 	}

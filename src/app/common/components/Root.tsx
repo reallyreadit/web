@@ -59,11 +59,9 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import Lazy from '../../../common/Lazy';
 import { Stripe } from '@stripe/stripe-js';
-import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
@@ -144,13 +142,12 @@ export type State = (
 		displayTheme: DisplayTheme | null,
 		revenueReport: Fetchable<RevenueReportResponse>,
 		screens: Screen[],
-		subscriptionStatus: SubscriptionStatus,
 		user: UserAccount | null
 	} &
 	ToasterState &
 	DialogServiceState
 );
-export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'subscriptionStatus' | 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'user'>;
 export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
@@ -525,24 +522,7 @@ export default abstract class Root<
 	};
 
 	// subscriptions
-	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => {
-		return this.props.serverApi.getSubscriptionDistributionSummary(
-			summary => {
-				if (summary.value) {
-					this.onSubscriptionStatusChanged(summary.value.subscriptionStatus, EventSource.Local);
-				}
-				callback(summary);
-			}
-		);
-	}
-	protected readonly _getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
-		response => {
-			if (response.value) {
-				this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
-			}
-			callback(response);
-		}
-	);
+	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
 	private _revenueReportTimestamp = Date.now();
 
 	// toasts
@@ -632,7 +612,6 @@ export default abstract class Root<
 			settings => {
 				if (settings.value) {
 					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
-					this.onSubscriptionStatusChanged(settings.value.subscriptionStatus, EventSource.Local);
 				}
 				callback(settings);
 			}
@@ -713,7 +692,6 @@ export default abstract class Root<
 				}
 			),
 			toasts: [],
-			subscriptionStatus: props.initialUserProfile?.subscriptionStatus,
 			user: props.initialUserProfile?.userAccount
 		} as TState;
 
@@ -836,7 +814,6 @@ export default abstract class Root<
 					{
 						...supplementaryState as State,
 						displayTheme: userProfile?.displayPreference.theme,
-						subscriptionStatus: userProfile?.subscriptionStatus,
 						user: userProfile?.userAccount
 					},
 					() => {
@@ -944,24 +921,6 @@ export default abstract class Root<
 	protected onLocationChanged(path: string, title?: string) { }
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
-	}
-	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
-		// Invalidate the revenue report timestamp if the subscription has changed.
-		const currentStatus = this.state.subscriptionStatus as SubscriptionStatus;
-		if (
-			status.type === SubscriptionStatusType.Active &&
-			(
-				!currentStatus ||
-				currentStatus.type !== SubscriptionStatusType.Active ||
-				currentStatus.price.amount !== status.price.amount
-			)
-		) {
-			this._revenueReportTimestamp = 0;
-		}
-		// Update the state.
-		this.setState({
-			subscriptionStatus: status
-		});
 	}
 	protected onTitleChanged(title: string) { }
 	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<TState>) {

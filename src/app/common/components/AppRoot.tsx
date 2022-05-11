@@ -260,7 +260,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			this.onUserSignedIn(
 				{
 					displayPreference: response.displayPreference,
-					subscriptionStatus: response.subscriptionStatus,
 					userAccount: response.user
 				},
 				SignInEventType.ExistingUser,
@@ -1136,7 +1135,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			revenueReport: this.state.revenueReport,
-			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
 	}

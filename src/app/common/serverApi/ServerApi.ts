@@ -64,8 +64,6 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType } from '../../../common/DeviceType';
-import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
-import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
@@ -222,9 +220,7 @@ export default abstract class {
 	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
 	public readonly getPayoutReport = this.createFetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>('/Subscriptions/PayoutReport');
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
-	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
 	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
-	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
 
 	// UserAccounts
 	public readonly changeDisplayPreference = (data: DisplayPreference) => this.post<DisplayPreference>({ path: '/UserAccounts/DisplayPreference', data });
