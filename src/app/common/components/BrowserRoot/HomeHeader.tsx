@@ -5,25 +5,14 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
-import UserAccount from '../../../../common/models/UserAccount';
 import { NavMethod, NavOptions, NavReference, Screen }  from '../../../common/components/Root'
-import { DeviceType } from '../../../../common/DeviceType';
 // import GetStartedButton from './GetStartedButton';
 import Link from '../../../../common/components/Link';
 
 interface Props {
 	currentScreen: Screen,
-	deviceType: DeviceType,
-	onBeginOnboarding: (analyticsAction: string) => void,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenMenu: () => void,
-	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onOpenSignInPrompt: (analyticsAction: string) => void,
-	onViewHome: () => void,
-	onViewNotifications: () => void,
-	user: UserAccount | null,
+	onViewHome: () => void
 }
 
 type State = {
@@ -79,12 +68,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 			];
 
 		return (
-			<header className={
-				classNames(
-					'home-header_2afwll',
-					{ 'responsive': !this.props.user }
-				)
-			}>
+			<header className="home-header_2afwll responsive">
 				<div className="menu-controls-container">
 					<a
 						className="logo"
@@ -103,36 +87,24 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 						"menu-container",
 						{ open: this.state.menuOpen }
 					)}>
-					{this.props.user ?
-						<>
-							<Icon
-								badge={this.props.user.replyAlertCount + this.props.user.postAlertCount + this.props.user.loopbackAlertCount}
-								name="bell"
-								onClick={this.props.onViewNotifications}
-							/>
-							<Icon
-								name="menu2"
-								onClick={this.props.onOpenMenu}
-							/>
-						</> :
-						<>
-							{menuLinks.map(link =>
-								<Link
-									key={link.linkText}
-									screen={link.screenKey}
-									className={(this.props.currentScreen && this.props.currentScreen.key) === link.screenKey ? 'active' : ''}
-									onClick={(navRef: NavReference) => this.pageNavigation(this.props.onNavTo.bind(this, navRef))}
-								>
-									{link.linkText}
-								</Link>)
-							}
-							<Button
-									text="Download App"
-									size="large"
-									intent="loud"
-									onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({key: ScreenKey.Download}, {method: NavMethod.ReplaceAll}), ev)}
-								/>
-						</>}
+					<>
+						{menuLinks.map(link =>
+							<Link
+								key={link.linkText}
+								screen={link.screenKey}
+								className={(this.props.currentScreen && this.props.currentScreen.key) === link.screenKey ? 'active' : ''}
+								onClick={(navRef: NavReference) => this.pageNavigation(this.props.onNavTo.bind(this, navRef))}
+							>
+								{link.linkText}
+							</Link>)
+						}
+						<Button
+							text="Download App"
+							size="large"
+							intent="loud"
+							onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({ key: ScreenKey.Download }, { method: NavMethod.ReplaceAll }), ev)}
+						/>
+					</>
 				</div>
 			</header>
 		);

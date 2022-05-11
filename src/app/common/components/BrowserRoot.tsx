@@ -140,12 +140,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.ReplaceAll
 		});
 	};
-	private readonly _viewNotifications = () => {
-		this.setScreenState({
-			key: ScreenKey.Notifications,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewMission = () => {
 		this.setScreenState({
 			key: ScreenKey.Mission,
@@ -201,14 +195,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			onboarding: {
 				analyticsAction,
 				initialAuthenticationStep: OnboardingStep.CreateAccount
-			}
-		});
-	};
-	private readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
-		this.setState({
-			onboarding: {
-				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.SignIn
 			}
 		});
 	};
@@ -1156,19 +1142,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				)
 				 ?
 					<HomeHeader
-						deviceType={this.props.deviceType}
-						onBeginOnboarding={this._beginOnboarding}
-						onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
-						onCreateStaticContentUrl={this._createStaticContentUrl}
-						onOpenMenu={this._openMenu}
-						onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
-						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
-						onViewNotifications={this._viewNotifications}
 						onNavTo={this._navTo}
 						// navTo uses the Push navigation method, so the current screen is the last one
 						currentScreen={this.state.screens[0]}
-						user={this.state.user}
 					/> :
 					null}
 				<main>
