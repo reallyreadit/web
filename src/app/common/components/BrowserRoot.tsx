@@ -10,7 +10,6 @@ import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
-import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
@@ -747,11 +746,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
 					onViewPrivacyPolicy: this._viewPrivacyPolicy
 				}
-			),
-			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {
-				onNavTo: this._navTo,
-				deviceType: this.props.deviceType
-			})
+			)
 		};
 
 		// route state
@@ -1240,17 +1235,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div> :
 					null}
-				{(
-					(
-						topScreen.templateSection == null ||
-						(topScreen.templateSection & TemplateSection.Header)
-					)
-					&&
-					(
-						// hack to hide the footer on the subscribe loader "landing" page
-						topScreen.key !== ScreenKey.Subscribe
-					)
-				 )
+				{
+				(
+					topScreen.templateSection == null ||
+					(topScreen.templateSection & TemplateSection.Header)
+				)
 				 ?
 					<HomeHeader
 						deviceType={this.props.deviceType}
@@ -1270,9 +1259,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					null}
 				<main>
 					{(
-						// hack to hide the nav bar on the subscribe loader "landing" page, when logged in
-						(topScreen.key !== ScreenKey.Subscribe)
-						  &&
 						(
 							topScreen.templateSection == null ||
 							(topScreen.templateSection & TemplateSection.Navigation)
@@ -1300,11 +1286,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 										screen.templateSection == null ||
 										(screen.templateSection & TemplateSection.Footer)
 									) &&
-									(
-										!this.state.user &&
-										// hack to hide the footer on the subscribe loader "landing" page
-										screen.key !== ScreenKey.Subscribe
-									)
+									!this.state.user
 								) ?
 									<ColumnFooter
 										onNavTo={this._navTo}

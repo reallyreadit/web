@@ -11,7 +11,6 @@ import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createContenderScreenFactory from './AppRoot/ContendersScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
-import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import classNames from 'classnames';
 import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
@@ -939,12 +938,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
 					onViewPrivacyPolicy: this._viewPrivacyPolicy
 				}
-			),
-			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {
-				onNavTo: this._navTo,
-				deviceType: DeviceType.Ios
-				// TODO app platform needed?
-			})
+			)
 		};
 
 		// state
@@ -1121,7 +1115,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							queryString: url.search
 						},
 						route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
-					if (route && route.screenKey !== ScreenKey.Subscribe) {
+					if (route) {
 						const { screens, dialog } = this.processNavigationRequest(this.state.user, location);
 						this.setState({
 							dialogs: (
@@ -1133,10 +1127,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							menuState: 'closed',
 							screens
 						});
-					} else if (route?.screenKey === ScreenKey.Subscribe) {
-						if (this.state.user) {
-							this._openSubscriptionPromptDialog();
-						}
 					} else {
 						// must be a redirect url or broken link
 						// send to server for appropriate redirect
@@ -1289,18 +1279,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 		let screens: Screen[];
 		let dialog: React.ReactNode;
 		const route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
-		if (route.screenKey === ScreenKey.Read || route.screenKey === ScreenKey.Subscribe) {
+		if (route.screenKey === ScreenKey.Read) {
 			dialog = null;
 			if (user) {
 				screens = [
-					route.screenKey === ScreenKey.Read ?
-						this.createScreen(ScreenKey.Comments, route.getPathParams(location.path)) :
-						this.createScreen(ScreenKey.Home)
+					this.createScreen(ScreenKey.Comments, route.getPathParams(location.path))
 				];
 			} else {
-				this._signInLocation = route.screenKey === ScreenKey.Read ?
-					location :
-					null;
+				this._signInLocation = location;
 				screens = [];
 			}
 		} else {
@@ -1674,16 +1660,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					initialRoute.getPathParams(this.props.initialLocation.path)
 				)
 			});
-		}
-		// open subscription dialog if the initial route is to Subscribe
-		// ugly hack since the dialog doesn't support server-side rendering
-		if (initialRoute.screenKey === ScreenKey.Subscribe && this.state.user) {
-			window.setTimeout(
-				() => {
-					this._openSubscriptionPromptDialog();
-				},
-				0
-			);
 		}
 	}
 	public componentWillUnmount() {

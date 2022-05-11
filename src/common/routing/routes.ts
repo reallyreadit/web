@@ -267,11 +267,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/stats$/,
 		screenKey: ScreenKey.Stats
 	},
-	{
-		createUrl: () => '/subscribe',
-		pathRegExp: /^\/subscribe$/,
-		screenKey: ScreenKey.Subscribe
-  },
   {
 		createUrl: () => '/team',
 		pathRegExp: /^\/team$/,
