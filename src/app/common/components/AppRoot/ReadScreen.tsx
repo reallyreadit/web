@@ -19,9 +19,7 @@ import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
 import classNames = require('classnames');
 import Icon from '../../../../common/components/Icon';
-import {isFreeTrialOverSubscription, isTrialingSubscription, SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
-import SubscribePitchElement from './SubscribePitchElement';
-import StickyNote from '../../../../common/components/StickyNote';
+import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -71,11 +69,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								{/* NOTE: trialing the subscription here means that the reader is out of free views,
 									because they should only be landing on this screen within the app if they're out of free views
 								*/}
-								{ isFreeTrialOverSubscription(this.props.subscriptionStatus) ?
-									<StickyNote type='straight'>You're out of free articles!</StickyNote>
-									:
-									'How would you like to read the article?'
-								}
+								How would you like to read the article?
 							</div>
 							<div className="spacer"></div>
 							<div className={classNames("choice-container", {"mobile": isMobileDevice(this.props.deviceType)}) }>
@@ -86,43 +80,21 @@ class ReadScreen extends React.PureComponent<Props> {
 										<div className="choice__details">
 											<div>
 												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
-												{
-													isFreeTrialOverSubscription(this.props.subscriptionStatus) ?
-													<>
-														<h2>Become a Reader</h2>
-														<SubscribePitchElement />
-													</>
-													:
-													<>
-													<h2>Read it on Readup,<br/> the app for reading.</h2>
-														<ul className="info dashed">
-														{ isTrialingSubscription(this.props.subscriptionStatus) ?
-															<>
-																<li>100% ad-free</li>
-																<li>Compensate writers</li>
-																<li>Pick your price</li>
-															</>
-															:
-															<>
-																<li>Better reading</li>
-																<li>100% ad-free</li>
-																<li>Pick your price</li>
-															</>
-														}
-
-															<li>Better reading</li>
-															<li>100% ad-free</li>
-															<li>Pick your price</li>
-														</ul>
-													</>
-												}
+												<>
+													<h2>Read it on Readup,<br /> the app for reading.</h2>
+													<ul className="info dashed">
+														<li>Better reading</li>
+														<li>100% ad-free</li>
+														<li>Pick your price</li>
+													</ul>
+												</>
 											</div>
 												<Button
 													intent="loud"
 													onClick={this._readArticle}
 													size="large"
 													align="center"
-													text={isFreeTrialOverSubscription(this.props.subscriptionStatus) ? "Subscribe" : "Read Article"}
+													text="Read Article"
 												/>
 											</div>
 									</>
