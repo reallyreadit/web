@@ -24,7 +24,7 @@ export default class extends React.PureComponent<{
 				sublinks: [
 					<Link key="team" screen={ScreenKey.Team} onClick={navTo}>Meet the Team</Link>,
 					<Link key="mission" screen={ScreenKey.Mission} onClick={navTo}>Our Mission</Link>,
-					<DiscordInviteLink key="contact" onClick={navTo}>Discord Community</DiscordInviteLink>,
+					<DiscordInviteLink reactKey="contact" onClick={navTo}>Discord Community</DiscordInviteLink>,
 					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>Privacy Policy</Link>
 				]
 			},

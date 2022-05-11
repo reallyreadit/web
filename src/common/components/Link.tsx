@@ -137,4 +137,4 @@ class Link extends React.Component<Props> {
 
 export default Link;
 
-export const DiscordInviteLink = (props: {children: React.ReactNode, onClick: (ref: NavReference) => void, key?: string}) => <Link onClick={props.onClick} href="https://discord.gg/XQZa8pHdVs" key={props.key}>{props.children}</Link>
+export const DiscordInviteLink = (props: {children: React.ReactNode, onClick: (ref: NavReference) => void, reactKey?: string}) => <Link onClick={props.onClick} href="https://discord.gg/XQZa8pHdVs" key={props.reactKey}>{props.children}</Link>
