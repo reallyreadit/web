@@ -475,7 +475,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
 				onNavTo: this._navTo,
-				onOpenEarningsExplainerDialog: this._openEarningsExplainerDialog,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,

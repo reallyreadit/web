@@ -64,7 +64,6 @@ import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotif
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
-import { EarningsExplainerDialog } from './EarningsExplainerDialog';
 import { ArticleStarredEvent } from '../AppApi';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
@@ -330,17 +329,6 @@ export default abstract class Root<
 	};
 
 	// dialogs
-	protected readonly _openEarningsExplainerDialog = () => {
-		this._dialog.openDialog(
-			sharedState => (
-				<EarningsExplainerDialog
-					onClose={this._dialog.closeDialog}
-					onReadArticle={this._readArticle}
-					revenueReport={sharedState.revenueReport}
-				/>
-			)
-		);
-	};
 	protected readonly _openNewPlatformNotificationRequestDialog = () => {
 		this._dialog.openDialog(
 			<NewPlatformNotificationRequestDialog

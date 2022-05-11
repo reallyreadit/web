@@ -41,7 +41,6 @@ interface Props {
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenEarningsExplainerDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
@@ -315,7 +314,6 @@ class HomeScreen extends React.Component<Props, State> {
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onGetUserCount={this.props.onGetUserCount}
 				onNavTo={this.props.onNavTo}
-				onOpenEarningsExplainerDialog={this.props.onOpenEarningsExplainerDialog}
 				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}

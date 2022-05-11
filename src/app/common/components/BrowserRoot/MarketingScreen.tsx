@@ -34,7 +34,6 @@ interface Props {
 	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
 	onGetUserCount: FetchFunction<{ userCount: number }>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenEarningsExplainerDialog: () => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
