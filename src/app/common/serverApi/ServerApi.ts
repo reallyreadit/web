@@ -81,7 +81,6 @@ import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/an
 import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../common/models/subscriptions/AuthorEarningsReport';
 import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
-import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
 import { FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
@@ -243,9 +242,6 @@ export default abstract class {
 	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
 	public readonly registerFreeTrialPromoTweetIntent = (request: FreeTrialPromoTweetIntentRegistrationRequest) => this.post<FreeTrialPromoTweetIntentRegistrationResponse>({ path: '/Subscriptions/FreeTrialPromoTweetIntent', data: request });
 	public readonly requestAppleSubscriptionStatusUpdate = () => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/AppleSubscriptionStatusUpdateRequest' });
-	public readonly requestPayoutAccountLoginLink = () => this.post<PayoutAccountLoginLinkRequestResponse>({ path: '/Subscriptions/PayoutAccountLoginLinkRequest' });
-	public readonly requestPayoutAccountOnboardingLink = () => this.post<PayoutAccountOnboardingLinkRequestResponse>({ path: '/Subscriptions/PayoutAccountOnboardingLinkRequest' });
-	public readonly requestPayoutAccountUpdate = () => this.post<PayoutAccountResponse>({ path: '/Subscriptions/PayoutAccountUpdateRequest' });
 	public readonly setStripeSubscriptionAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/StripeAutoRenewStatus', data: request });
 	public readonly updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => this.post<SubscriptionPaymentMethodResponse>({ path: '/Subscriptions/StripePaymentMethodUpdate', data: request });
 	public readonly validateAppleSubscription = (request: AppleSubscriptionValidationRequest) => this.post<AppleSubscriptionValidationResponse>({ path: '/Subscriptions/AppleSubscriptionValidation', data: request });

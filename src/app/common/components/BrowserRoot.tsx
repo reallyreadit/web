@@ -58,7 +58,6 @@ import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
-import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
@@ -295,33 +294,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		this._openStripeSubscriptionPromptDialog(article);
 	};
-	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
-		.requestPayoutAccountLoginLink()
-		.then(
-			response => {
-				window.location.href = response.loginUrl;
-				return new Promise<void>(
-					() => {
-						// leave the promise unresolved as the browser navigates
-					}
-				);
-			}
-		);
-	private readonly _requestPayoutAccountOnboarding = () => this.props.serverApi
-		.requestPayoutAccountOnboardingLink()
-		.then(
-			response => {
-				if (response.type === PayoutAccountOnboardingLinkRequestResponseType.ReadyForOnboarding) {
-					window.location.href = response.onboardingUrl;
-					return new Promise<PayoutAccountOnboardingLinkRequestResponse>(
-						() => {
-							// leave the promise unresolved as the browser navigates
-						}
-					);
-				}
-				return response;
-			}
-		);
 
 	// user account
 	private readonly _beginOnboarding = (analyticsAction: string) => {
@@ -813,8 +785,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
-					onRequestPayoutAccountLogin: this._requestPayoutAccountLogin,
-					onRequestPayoutAccountOnboarding: this._requestPayoutAccountOnboarding,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,

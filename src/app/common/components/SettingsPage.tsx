@@ -45,7 +45,6 @@ import { AccountDeletionDialog } from './SettingsPage/AccountDeletionDialog';
 import { WriterAccountControl } from './SettingsPage/WriterAccountControl';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { TweetWebIntentParams } from '../../../common/sharing/twitter';
-import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountOnboardingLinkRequestResponseType } from '../../../common/models/subscriptions/PayoutAccount';
 import SettingsLink from './SettingsPage/SettingsLink';
 import UserAccountRole from '../../../common/models/UserAccountRole';
 
@@ -73,8 +72,6 @@ interface Props {
 	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onOpenTweetComposer: (params: TweetWebIntentParams) => void,
 	onRegisterNotificationPreferenceChangedEventHandler: (handler: (preference: NotificationPreference) => void) => () => void,
-	onRequestPayoutAccountLogin: () => Promise<void>,
-	onRequestPayoutAccountOnboarding: () => Promise<PayoutAccountOnboardingLinkRequestResponse>,
 	onResendConfirmationEmail: () => Promise<void>,
 	onSendPasswordCreationEmail: () => Promise<void>,
 	onShowToast: (content: React.ReactNode, intent: Intent) => void,
@@ -246,26 +243,6 @@ class SettingsPage extends React.PureComponent<
 			/>
 		);
 	};
-	private readonly _requestPayoutAccountOnboarding = () => this._asyncTracker
-		.addPromise(
-			this.props.onRequestPayoutAccountOnboarding()
-		)
-		.then(
-			response => {
-				if (response.type === PayoutAccountOnboardingLinkRequestResponseType.OnboardingCompleted) {
-					this.setState({
-						settings: {
-							...this.state.settings,
-							value: {
-								...this.state.settings.value,
-								payoutAccount: response.payoutAccount
-							}
-						}
-					});
-				}
-				return response;
-			}
-		);
 	private readonly _signOut = () => {
 		this.setState(
 			prevState => {
@@ -538,11 +515,8 @@ class SettingsPage extends React.PureComponent<
 									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 									onOpenDialog={this.props.onOpenDialog}
 									onOpenTweetComposer={this.props.onOpenTweetComposer}
-									onRequestPayoutAccountLogin={this.props.onRequestPayoutAccountLogin}
-									onRequestPayoutAccountOnboarding={this._requestPayoutAccountOnboarding}
 									onShowToast={this.props.onShowToast}
 									onSubmitAuthorEmailVerificationRequest={this.props.onSubmitAuthorEmailVerificationRequest}
-									payoutAccount={this.state.settings.value.payoutAccount}
 								/>
 							</div>
 						</div>
@@ -623,8 +597,6 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onRegisterNotificationPreferenceChangedEventHandler={deps.onRegisterNotificationPreferenceChangedEventHandler}
 				onLinkAuthServiceAccount={deps.onLinkAuthServiceAccount}
 				onNavTo={deps.onNavTo}
-				onRequestPayoutAccountLogin={deps.onRequestPayoutAccountLogin}
-				onRequestPayoutAccountOnboarding={deps.onRequestPayoutAccountOnboarding}
 				onResendConfirmationEmail={deps.onResendConfirmationEmail}
 				onSendPasswordCreationEmail={deps.onSendPasswordCreationEmail}
 				onShowToast={deps.onShowToast}

@@ -60,7 +60,6 @@ import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
-import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
@@ -358,42 +357,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				break;
 		}
 	};
-	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
-		.requestPayoutAccountLoginLink()
-		.then(
-			response => {
-				this.props.appApi.openExternalUrl(response.loginUrl);
-			}
-		);
-	private readonly _requestPayoutAccountOnboarding = () => this.props.serverApi
-		.requestPayoutAccountOnboardingLink()
-		.then(
-			response => {
-				if (response.type === PayoutAccountOnboardingLinkRequestResponseType.ReadyForOnboarding) {
-					this.props.appApi.openExternalUrlUsingSystem(response.onboardingUrl);
-					return new Promise<PayoutAccountOnboardingLinkRequestResponse>(
-						(resolve, reject) => {
-							const refreshPayoutAccount = () => {
-								this.props.appApi.removeListener('didBecomeActive', refreshPayoutAccount);
-								this.props.serverApi
-									.requestPayoutAccountUpdate()
-									.then(
-										response => {
-											resolve({
-												type: PayoutAccountOnboardingLinkRequestResponseType.OnboardingCompleted,
-												payoutAccount: response.payoutAccount
-											});
-										}
-									)
-									.catch(reject);
-							};
-							this.props.appApi.addListener('didBecomeActive', refreshPayoutAccount);
-						}
-					);
-				}
-				return response;
-			}
-		);
 	private readonly _requestSubscriptionProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request);
 	private readonly _requestSubscriptionPurchase = (request: SubscriptionPurchaseRequest) => {
 		this.setState(
@@ -1019,8 +982,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
-					onRequestPayoutAccountLogin: this._requestPayoutAccountLogin,
-					onRequestPayoutAccountOnboarding: this._requestPayoutAccountOnboarding,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,
