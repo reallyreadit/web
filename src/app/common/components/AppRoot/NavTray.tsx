@@ -4,7 +4,6 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
 import { Screen } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
-import { SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
 	onViewContenders: () => void,
@@ -12,8 +11,7 @@ interface Props {
 	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
-	user: UserAccount,
-	subscriptionStatus: SubscriptionStatus
+	user: UserAccount
 }
 export default class NavTray extends React.PureComponent<Props>{
 	public render() {

@@ -6,7 +6,6 @@ import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount
 import { Screen, NavReference, NavOptions } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
-import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 const
 	contendersUrl = findRouteByKey(routes, ScreenKey.Contenders).createUrl(),
@@ -21,7 +20,6 @@ interface Props {
 	onViewMyFeed: () => void,
 	onViewMyReads: () => void,
 	selectedScreen: Screen,
-	subscriptionStatus: SubscriptionStatus,
 	user: UserAccount,
 }
 export default class NavBar extends React.PureComponent<Props> {

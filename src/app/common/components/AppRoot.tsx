@@ -1316,7 +1316,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
-							subscriptionStatus={this.state.subscriptionStatus}
 							user={this.state.user}
 						/>
 						<div className="content">
@@ -1355,7 +1354,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
-							subscriptionStatus={this.state.subscriptionStatus}
 						/>
 						{this.state.isInOrientation ?
 							<OrientationWizard

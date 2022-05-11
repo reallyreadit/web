@@ -28,7 +28,6 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import ContentBox from '../../../common/components/ContentBox';
 import DisplayPreferencesControl from './SettingsPage/DisplayPreferencesControl';
 import DisplayPreference, { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
-import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import Button from '../../../common/components/Button';
 import { findRouteByKey } from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
@@ -63,7 +62,6 @@ interface Props {
 	onSignOut: () => Promise<void>,
 	onSubmitAuthorEmailVerificationRequest: (request: AuthorEmailVerificationRequest) => Promise<void>,
 	onViewPrivacyPolicy: () => void,
-	subscriptionStatus: SubscriptionStatus,
 	user: UserAccount
 }
 class SettingsPage extends React.PureComponent<
@@ -249,10 +247,7 @@ class SettingsPage extends React.PureComponent<
 		);
 	}
 	public componentDidUpdate(prevProps: Props) {
-		if (
-			this.props.user.timeZoneId !== prevProps.user.timeZoneId ||
-			this.props.subscriptionStatus.type !== prevProps.subscriptionStatus.type
-		) {
+		if (this.props.user.timeZoneId !== prevProps.user.timeZoneId) {
 			this.props.onGetSettings(
 				this._asyncTracker.addCallback(
 					settings => {
@@ -476,7 +471,7 @@ class SettingsPage extends React.PureComponent<
 		);
 	}
 }
-export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'displayTheme' | 'subscriptionStatus' | 'user'>>) {
+export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'displayTheme' | 'user'>>) {
 	return {
 		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Settings' }),
 		render: (screenState: Screen, sharedState: SharedState) => (
@@ -503,7 +498,6 @@ export default function createSettingsScreenFactory<TScreenKey>(key: TScreenKey,
 				onSignOut={deps.onSignOut}
 				onSubmitAuthorEmailVerificationRequest={deps.onSubmitAuthorEmailVerificationRequest}
 				onViewPrivacyPolicy={deps.onViewPrivacyPolicy}
-				subscriptionStatus={sharedState.subscriptionStatus}
 				user={sharedState.user}
 			/>
 		)

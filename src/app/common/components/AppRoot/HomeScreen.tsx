@@ -23,7 +23,6 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import {SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import PageResult from '../../../../common/models/PageResult';
 import List from '../controls/List';
@@ -50,8 +49,7 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
-	user: UserAccount | null,
-	subscriptionStatus: SubscriptionStatus
+	user: UserAccount | null
 }
 interface State {
 	aotdHistory: Fetchable<PageResult<UserArticle>>,
@@ -381,7 +379,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user' | 'subscriptionStatus'>>
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -394,8 +392,7 @@ export default function <TScreenKey>(
 			<HomeScreen {
 				...{
 					...deps,
-					user: sharedState.user,
-					subscriptionStatus: sharedState.subscriptionStatus
+					user: sharedState.user
 				}
 			} />
 		)

@@ -19,7 +19,6 @@ import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
 import classNames = require('classnames');
 import Icon from '../../../../common/components/Icon';
-import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 
 interface Props {
 	article: Fetchable<UserArticle>,
@@ -29,8 +28,7 @@ interface Props {
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
 	onReadArticle: (article: UserArticle) => void,
-	user: UserAccount | null,
-	subscriptionStatus: SubscriptionStatus
+	user: UserAccount | null
 }
 class ReadScreen extends React.PureComponent<Props> {
 	private readonly _readArticle = () => {
@@ -117,7 +115,7 @@ class ReadScreen extends React.PureComponent<Props> {
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user' | 'subscriptionStatus'>> & {
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
@@ -157,8 +155,7 @@ export default function createReadScreenFactory<TScreenKey>(
 						...deps,
 						article: screenState.componentState,
 						location: screenState.location,
-						user: sharedState.user,
-						subscriptionStatus: sharedState.subscriptionStatus
+						user: sharedState.user
 					}
 				} />
 			);

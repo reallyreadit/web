@@ -9,7 +9,6 @@ import DistributionChart, { ReportType } from './MyImpactScreen/DistributionChar
 import { formatCurrency } from '../../../../common/format';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import { SubscriptionDistributionSummaryResponse } from '../../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { SubscriptionStatusType, SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
 import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
 import { NavOptions, NavReference, Screen, SharedState } from '../Root';
@@ -40,13 +39,12 @@ interface Props {
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterFreeTrialPromoTweetIntent: (request: FreeTrialPromoTweetIntentRegistrationRequest) => Promise<FreeTrialPromoTweetIntentRegistrationResponse>
 	onShowToast: (content: React.ReactNode, intent: Intent, remove?: boolean) => void,
-	onViewAuthor: (slug: string, name: string) => void,
-	subscriptionStatus: SubscriptionStatus
+	onViewAuthor: (slug: string, name: string) => void
 }
 interface State {
 	hasChangedReportType: boolean,
 	selectedReportType: ReportType,
-	summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>,
+	summary: Fetchable<SubscriptionDistributionSummaryResponse>,
 	userArticleHistory: Fetchable<PageResult<UserArticle>>, // used to calculate free reads read to completion
 	isTweeting: boolean,
 }
@@ -82,7 +80,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 		);
 	}
 	private fetchData(): {
-		summary: Fetchable<Pick<SubscriptionDistributionSummaryResponse, Exclude<keyof SubscriptionDistributionSummaryResponse, 'subscriptionStatus'>>>,
+		summary: Fetchable<SubscriptionDistributionSummaryResponse>,
 		userArticleHistory: Fetchable<PageResult<UserArticle>>, // used to calculate free reads read to completion
 	} {
 		return {
@@ -180,8 +178,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 					{
 						'fade-in':
 							!this.state.hasChangedReportType &&
-							this.state.summary.value &&
-							this.props.subscriptionStatus.type === SubscriptionStatusType.Active
+							this.state.summary.value
 					}
 				)
 			}>
@@ -192,7 +189,7 @@ class MyImpactScreen extends React.Component<Props, State> {
 }
 export function createMyImpactScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'subscriptionStatus'>>
+	deps: Props
 ) {
 	return {
 		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
@@ -212,7 +209,6 @@ export function createMyImpactScreenFactory<TScreenKey>(
 				onRegisterFreeTrialPromoTweetIntent={deps.onRegisterFreeTrialPromoTweetIntent}
 				onShowToast={deps.onShowToast}
 				onViewAuthor={deps.onViewAuthor}
-				subscriptionStatus={sharedState.subscriptionStatus}
 			/>
 		)
 	};

@@ -21,7 +21,6 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 import ContendersView from '../controls/articles/ContendersView';
 
 interface Props {
@@ -39,8 +38,7 @@ interface Props {
 	onViewAotdHistory: () => void,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
-	user: UserAccount | null,
-	subscriptionStatus: SubscriptionStatus
+	user: UserAccount | null
 }
 interface State {
 	communityReads: Fetchable<CommunityReads>,
@@ -182,7 +180,7 @@ class ContendersScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user' | 'subscriptionStatus'>>
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -195,8 +193,7 @@ export default function <TScreenKey>(
 			<ContendersScreen {
 				...{
 					...deps,
-					user: sharedState.user,
-					subscriptionStatus: sharedState.subscriptionStatus
+					user: sharedState.user
 				}
 			} />
 		)
