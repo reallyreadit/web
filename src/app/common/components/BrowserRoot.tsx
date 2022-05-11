@@ -48,7 +48,6 @@ import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../c
 import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
-import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
@@ -828,12 +827,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
-			.addListener(
-				'subscriptionStatusChanged',
-				status => {
-					this.onSubscriptionStatusChanged(status, EventSource.Remote);
-				}
-			)
 			.addListener('userSignedIn', data => {
 				let profile: WebAppUserProfile;
 				// check for broadcast from legacy web app instance
@@ -1103,12 +1096,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onNotificationPreferenceChanged(preference);
 	}
-	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
-		if (eventSource === EventSource.Local) {
-			this.props.browserApi.subscriptionStatusChanged(status);
-		}
-		super.onSubscriptionStatusChanged(status, eventSource);
-	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
@@ -1376,10 +1363,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (this.props.initialUserProfile?.displayPreference) {
 			this.props.browserApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
 			this.props.extensionApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
-		}
-		// broadcast subscription status if signed in
-		if (this.props.initialUserProfile?.subscriptionStatus) {
-			this.props.browserApi.subscriptionStatusChanged(this.props.initialUserProfile.subscriptionStatus);
 		}
 		// broadcast extension installation or removal
 		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);

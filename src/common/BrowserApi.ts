@@ -11,7 +11,6 @@ import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
 import { BroadcastChannelInterface } from './messaging/BroadcastChannelInterface';
 import StorageBroadcastChannel from './messaging/StorageBroadcastChannel';
-import { SubscriptionStatus } from './models/subscriptions/SubscriptionStatus';
 
 export type MessageListener = (messageData: any) => void;
 interface Messenger {
@@ -38,7 +37,7 @@ export class BroadcastChannelMessenger {
 					}
 				);
 			}
-		); 
+		);
 	}
 	public addListener(listener: MessageListener) {
 		this._listeners.push(listener);
@@ -89,7 +88,7 @@ export default class BrowserApi extends BrowserApiBase {
 		);
 	}
 	private broadcastUpdate(type: string, data?: {}) {
-		this._messenger.postMessage({ type, data });	
+		this._messenger.postMessage({ type, data });
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {
 		this.broadcastUpdate('articleUpdated', event);
@@ -126,9 +125,6 @@ export default class BrowserApi extends BrowserApiBase {
 	}
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);
-	}
-	public subscriptionStatusChanged(status: SubscriptionStatus) {
-		this.broadcastUpdate('subscriptionStatusChanged', status);
 	}
 	public setTitle(title: string) {
 		window.document.title = title;
