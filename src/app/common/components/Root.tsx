@@ -60,8 +60,6 @@ import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import Lazy from '../../../common/Lazy';
-import { Stripe } from '@stripe/stripe-js';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
@@ -77,7 +75,6 @@ export interface Props {
 	initialUserProfile: WebAppUserProfile | null,
 	serverApi: ServerApi,
 	staticServerEndpoint: HttpEndpoint,
-	stripeLoader: Lazy<Promise<Stripe>>,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
 }
