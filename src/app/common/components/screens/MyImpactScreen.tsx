@@ -13,7 +13,6 @@ import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
 import { NavOptions, NavReference, Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
-import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import {TweetWebIntentParams} from '../../../../common/sharing/twitter';
 import {Intent} from '../../../../common/components/Toaster';
 import PageResult from '../../../../common/models/PageResult';
@@ -37,7 +36,6 @@ interface Props {
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenTweetComposerWithCompletionHandler: (params: TweetWebIntentParams) => Promise<void>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onRegisterFreeTrialPromoTweetIntent: (request: FreeTrialPromoTweetIntentRegistrationRequest) => Promise<FreeTrialPromoTweetIntentRegistrationResponse>
 	onShowToast: (content: React.ReactNode, intent: Intent, remove?: boolean) => void,
 	onViewAuthor: (slug: string, name: string) => void
 }
@@ -206,7 +204,6 @@ export function createMyImpactScreenFactory<TScreenKey>(
 				onNavTo={deps.onNavTo}
 				onOpenTweetComposerWithCompletionHandler={deps.onOpenTweetComposerWithCompletionHandler}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
-				onRegisterFreeTrialPromoTweetIntent={deps.onRegisterFreeTrialPromoTweetIntent}
 				onShowToast={deps.onShowToast}
 				onViewAuthor={deps.onViewAuthor}
 			/>

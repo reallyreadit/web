@@ -55,7 +55,6 @@ import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
-import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBestEverScreenFactory from './screens/BestEverScreen';
 
@@ -237,16 +236,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			}
 		);
 	};
-	private readonly _registerFreeTrialPromoTweetIntent = (params: FreeTrialPromoTweetIntentRegistrationRequest) => {
-		return this.props.serverApi
-			.registerFreeTrialPromoTweetIntent(params)
-			.then(
-				res => {
-					this.onSubscriptionStatusChanged(res.subscriptionStatus, EventSource.Local);
-					return res;
-				}
-			);
-	}
 
 	// updates
 	private readonly _installUpdate = () => {
@@ -706,7 +695,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 					onNavTo: this._navTo,
 					onOpenTweetComposerWithCompletionHandler: this._openTweetComposerWithCompletionHandler,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onRegisterFreeTrialPromoTweetIntent: this._registerFreeTrialPromoTweetIntent,
 					onShowToast: this._toaster.addToast,
 					onViewAuthor: this._viewAuthor
 				}

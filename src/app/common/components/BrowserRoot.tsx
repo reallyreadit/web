@@ -58,7 +58,6 @@ import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../c
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
-import {FreeTrialPromoTweetIntentRegistrationRequest} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -626,8 +625,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onViewAuthor: this._viewAuthor,
 					onShowToast: this._toaster.addToast,
 					// dummy
-					onOpenTweetComposerWithCompletionHandler: (param) => Promise.reject(),
-					onRegisterFreeTrialPromoTweetIntent: (request: FreeTrialPromoTweetIntentRegistrationRequest) => Promise.reject()
+					onOpenTweetComposerWithCompletionHandler: (param) => Promise.reject()
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
