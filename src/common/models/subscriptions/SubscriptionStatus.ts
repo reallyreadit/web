@@ -1,52 +1,5 @@
 import SubscriptionProvider from './SubscriptionProvider';
 import { SubscriptionPriceLevel } from './SubscriptionPrice';
-import UserArticle, { isReadupBlogPost } from '../UserArticle';
-import { formatIsoDateAsDotNet } from '../../format';
-
-export function calculateTotalFreeViewCredit(freeTrial: FreeTrial) {
-	return freeTrial.credits
-	.filter(
-		credit => credit.type === FreeTrialCreditType.ArticleView
-	)
-	.reduce(
-		(total, credit) => total + credit.amount,
-		0
-	);
-}
-
-export function calculateFreeViewBalance(freeTrial: FreeTrial) {
-	return calculateTotalFreeViewCredit(freeTrial) - freeTrial.articleViews.length;
-}
-export function createFreeTrialArticleView(article: Pick<UserArticle, 'slug'>, dateViewed: Date = new Date()): FreeTrialArticleView {
-	return {
-		articleSlug: article.slug,
-		dateViewed: formatIsoDateAsDotNet(
-			dateViewed.toISOString()
-		)
-	};
-}
-export function hasUsedFreeViewCreditForArticle(status: InactiveSubscriptionStatusWithFreeTrial, article: Pick<UserArticle, 'slug'>) {
-	return status.freeTrial.articleViews.some(
-		view => view.articleSlug === article.slug
-	);
-}
-export function isFreeViewCreditRequiredForArticle(status: SubscriptionStatus, article: Pick<UserArticle, 'slug'>): status is InactiveSubscriptionStatusWithFreeTrial {
-	return (
-		isTrialingSubscription(status) &&
-		!hasUsedFreeViewCreditForArticle(status, article) &&
-		!isReadupBlogPost(article)
-	);
-}
-export function isTrialingSubscription(status: SubscriptionStatus): status is InactiveSubscriptionStatusWithFreeTrial {
-	return (
-		status.type !== SubscriptionStatusType.Active &&
-		status.isUserFreeForLife === false
-	);
-}
-
-export function isFreeTrialOverSubscription(status: SubscriptionStatus) {
-	return isTrialingSubscription(status) && calculateFreeViewBalance(status.freeTrial) === 0;
-}
 
 export enum SubscriptionStatusType {
 	NeverSubscribed = 1,
