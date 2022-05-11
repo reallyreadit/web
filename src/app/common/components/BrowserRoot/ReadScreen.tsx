@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavOptions, NavReference, ReadArticleReference, Screen } from '../Root';
+import { NavOptions, NavReference, Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
@@ -23,7 +23,6 @@ import { calculateEstimatedReadTime } from '../../../../common/calculate';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import SemanticVersion from '../../../../common/SemanticVersion';
 
 interface Props {
@@ -37,7 +36,6 @@ interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onOpenSubscriptionPromptDialog: (article?: ReadArticleReference, provider?: SubscriptionProvider) => void
 	onReadArticle: (article: UserArticle) => void,
 	user: UserAccount | null
 }

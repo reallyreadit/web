@@ -24,7 +24,6 @@ import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import {SubscriptionStatus } from '../../../../common/models/subscriptions/SubscriptionStatus';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import PageResult from '../../../../common/models/PageResult';
 import List from '../controls/List';
@@ -42,7 +41,6 @@ interface Props {
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,

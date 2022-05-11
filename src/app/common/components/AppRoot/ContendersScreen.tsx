@@ -22,7 +22,6 @@ import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import {SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import ContendersView from '../controls/articles/ContendersView';
 
 interface Props {
@@ -30,7 +29,6 @@ interface Props {
 	onCreateAbsoluteUrl: (path: string) => string,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,

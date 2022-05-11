@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavReference, ReadArticleReference, Screen } from '../Root';
+import { NavReference, Screen } from '../Root';
 import { SharedState } from '../Root';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
@@ -19,7 +19,6 @@ import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
 import classNames = require('classnames');
 import Icon from '../../../../common/components/Icon';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import {isFreeTrialOverSubscription, isTrialingSubscription, SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
 import SubscribePitchElement from './SubscribePitchElement';
 import StickyNote from '../../../../common/components/StickyNote';
@@ -31,7 +30,6 @@ interface Props {
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onOpenSubscriptionPromptDialog: (article?: ReadArticleReference, provider?: SubscriptionProvider) => void
 	onReadArticle: (article: UserArticle) => void,
 	user: UserAccount | null,
 	subscriptionStatus: SubscriptionStatus

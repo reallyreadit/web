@@ -14,7 +14,6 @@ import HeaderSelector from '../HeaderSelector';
 import * as classNames from 'classnames';
 import { NavOptions, NavReference, Screen, SharedState } from '../Root';
 import UserArticle from '../../../../common/models/UserArticle';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import {FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse} from '../../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import {TweetWebIntentParams} from '../../../../common/sharing/twitter';
 import {Intent} from '../../../../common/components/Toaster';
@@ -37,8 +36,6 @@ interface Props {
 	onGetSubscriptionDistributionSummary: FetchFunction<SubscriptionDistributionSummaryResponse>,
 	onGetUserArticleHistory: ArticleFetchFunction,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenPaymentConfirmationDialog: (invoiceId: string) => void,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onOpenTweetComposerWithCompletionHandler: (params: TweetWebIntentParams) => Promise<void>,
 	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
 	onRegisterFreeTrialPromoTweetIntent: (request: FreeTrialPromoTweetIntentRegistrationRequest) => Promise<FreeTrialPromoTweetIntentRegistrationResponse>
@@ -210,8 +207,6 @@ export function createMyImpactScreenFactory<TScreenKey>(
 				onGetSubscriptionDistributionSummary={deps.onGetSubscriptionDistributionSummary}
 				onGetUserArticleHistory={deps.onGetUserArticleHistory}
 				onNavTo={deps.onNavTo}
-				onOpenPaymentConfirmationDialog={deps.onOpenPaymentConfirmationDialog}
-				onOpenSubscriptionPromptDialog={deps.onOpenSubscriptionPromptDialog}
 				onOpenTweetComposerWithCompletionHandler={deps.onOpenTweetComposerWithCompletionHandler}
 				onRegisterArticleChangeHandler={deps.onRegisterArticleChangeHandler}
 				onRegisterFreeTrialPromoTweetIntent={deps.onRegisterFreeTrialPromoTweetIntent}

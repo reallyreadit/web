@@ -51,7 +51,6 @@ import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
-import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
@@ -263,14 +262,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 	private readonly _openTweetComposer = (params: TweetWebIntentParams) => {
 		openTweetComposerBrowserWindow(params);
-	};
-
-	// subscriptions
-	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
-		if (provider === SubscriptionProvider.Apple) {
-			throw new Error('Operation not supported in browser environment.');
-		}
-		this._openStripeSubscriptionPromptDialog(article);
 	};
 
 	// user account
@@ -633,8 +624,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
 					onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 					onNavTo: this.navTo,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onViewAuthor: this._viewAuthor,
 					onShowToast: this._toaster.addToast,
@@ -710,7 +699,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
