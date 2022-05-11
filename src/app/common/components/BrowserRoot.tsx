@@ -6,7 +6,6 @@ import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
@@ -67,11 +66,9 @@ interface Props extends RootProps {
 type OnboardingState = Pick<OnboardingProps, 'analyticsAction' | 'authServiceToken' | 'initialAuthenticationStep' | 'passwordResetEmail' | 'passwordResetToken'>;
 interface State extends RootState {
 	isExtensionInstalled: boolean,
-	menuState: MenuState,
 	onboarding: OnboardingState | null,
 	welcomeMessage: WelcomeMessage | null
 }
-type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
@@ -110,18 +107,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 
-	// menu
-	private readonly _closeMenu = () => {
-		this.setState({ menuState: 'closing' });
-	};
-	private readonly _hideMenu = () => {
-		this.setState({ menuState: 'closed' });
-	};
-	private readonly _openMenu = () => {
-		this.checkRevenueReportExpiration();
-		this.setState({ menuState: 'opened' });
-	};
-
 	// welcome message
 	private readonly _dismissWelcomeMessage = () => {
 		this.setState({ welcomeMessage: null });
@@ -135,12 +120,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		'Author not found'
 	);
 	private readonly _createFaqScreenTitle = () => 'Frequently Asked Questions';
-	private readonly _viewAdminPage = () => {
-		this.setScreenState({
-			key: ScreenKey.Admin,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewAotdHistory = () => {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
@@ -156,12 +135,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.Push
 		});
 	};
-	private readonly _viewFaq = () => {
-		this.setScreenState({
-			key: ScreenKey.Faq,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
@@ -171,12 +144,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewNotifications = () => {
 		this.setScreenState({
 			key: ScreenKey.Notifications,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewLeaderboards = () => {
-		this.setScreenState({
-			key: ScreenKey.Leaderboards,
 			method: NavMethod.ReplaceAll
 		});
 	};
@@ -201,24 +168,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewSearch = () => {
-		this.setScreenState({
-			key: ScreenKey.Search,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewSettings = () => {
-		this.setScreenState({
-			key: ScreenKey.Settings,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewStats = () => {
-		this.setScreenState({
-			key: ScreenKey.Stats,
 			method: NavMethod.ReplaceAll
 		});
 	};
@@ -765,7 +714,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			...this.state,
 			dialogs: [],
 			isExtensionInstalled: props.extensionApi.isInstalled,
-			menuState: 'closed',
 			onboarding: onboardingState,
 			screens: [locationState.screen],
 			welcomeMessage: (
@@ -957,7 +905,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 		// return the new state object
 		return {
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
 		};
 	}
@@ -1277,24 +1224,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						))}
 					</ol>
 				</main>
-				{this.state.menuState !== 'closed' ?
-					<Menu
-						isClosing={this.state.menuState === 'closing'}
-						onClose={this._closeMenu}
-						onClosed={this._hideMenu}
-						onOpenEarningsExplainerDialog={this._openEarningsExplainerDialog}
-						onViewAdminPage={this._viewAdminPage}
-						onViewFaq={this._viewFaq}
-						onViewLeaderboards={this._viewLeaderboards}
-						onViewProfile={this._viewProfile}
-						onViewSearch={this._viewSearch}
-						onViewSettings={this._viewSettings}
-						onViewStats={this._viewStats}
-						revenueReport={this.state.revenueReport}
-						selectedScreen={this.state.screens[0]}
-						userAccount={this.state.user}
-					/> :
-					null}
 				<DialogManager
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}
