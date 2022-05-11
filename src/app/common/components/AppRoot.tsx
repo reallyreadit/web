@@ -44,7 +44,6 @@ import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
-import { isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
@@ -1037,23 +1036,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			);
 	}
 	private enterReaderView(article: Pick<ReadArticleReference, 'slug'>) {
-		// Proactively register the article view in order to keep the subscription status state (and free view counters) up to date.
-		if (
-			isFreeViewCreditRequiredForArticle(this.state.subscriptionStatus, article)
-		) {
-			this.onSubscriptionStatusChanged(
-				{
-					...this.state.subscriptionStatus,
-					freeTrial: {
-						...this.state.subscriptionStatus.freeTrial,
-						articleViews: this.state.subscriptionStatus.freeTrial.articleViews.concat(
-							createFreeTrialArticleView(article)
-						),
-					}
-				},
-				EventSource.Local
-			);
-		}
 		// Send the signal to the native app.
 		this.props.appApi.readArticle(article);
 	}
@@ -1257,15 +1239,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 						slug: createArticleSlug(articlePathParams)
 					};
 				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
-				// We can't user enterReaderView here because it modifies the current state and the new user
-				// state isn't set until this function returns.
-				if (
-					isFreeViewCreditRequiredForArticle(profile.subscriptionStatus, articleRef)
-				) {
-					profile.subscriptionStatus.freeTrial.articleViews.push(
-						createFreeTrialArticleView(articleRef)
-					);
-				}
 				this.props.appApi.readArticle(articleRef);
 			} else {
 				screen = this
