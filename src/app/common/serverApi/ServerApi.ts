@@ -64,11 +64,8 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType } from '../../../common/DeviceType';
-import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { StripePaymentConfirmationRequest } from '../../../common/models/subscriptions/StripePaymentConfirmationRequest';
-import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
@@ -223,14 +220,12 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// Subscriptions
-	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
 	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
 	public readonly getPayoutReport = this.createFetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>('/Subscriptions/PayoutReport');
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
 	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
 	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
 	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
-	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
 	public readonly registerFreeTrialPromoTweetIntent = (request: FreeTrialPromoTweetIntentRegistrationRequest) => this.post<FreeTrialPromoTweetIntentRegistrationResponse>({ path: '/Subscriptions/FreeTrialPromoTweetIntent', data: request });
 
 	// UserAccounts

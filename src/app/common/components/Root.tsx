@@ -62,13 +62,8 @@ import Settings from '../../../common/models/Settings';
 import { SubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import Lazy from '../../../common/Lazy';
-import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
+import { Stripe } from '@stripe/stripe-js';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
-import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
-import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
-import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
@@ -530,35 +525,6 @@ export default abstract class Root<
 	};
 
 	// subscriptions
-	private readonly _confirmSubscriptionCardPayment: ((invoiceId: string, clientSecret?: string) => Promise<StripePaymentResponse>) = (invoiceId, clientSecret) => {
-		let clientConfirmation: Promise<any>;
-		if (clientSecret) {
-			clientConfirmation = this.props.stripeLoader.value.then(
-				stripe => stripe.confirmCardPayment(clientSecret)
-			);
-		} else {
-			clientConfirmation = Promise.resolve();
-		}
-		return clientConfirmation.then(
-			() => this.props.serverApi
-				.confirmStripeSubscriptionPayment({
-					invoiceId
-				})
-				.then(this._handleSubscriptionPaymentResponse)
-		);
-	};
-	private readonly _createStripeSubscription = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
-		card,
-		price,
-		request => this.props.serverApi.createStripeSubscription(request)
-	);
-	private readonly _handleSubscriptionPaymentResponse = (response: StripePaymentResponse) => {
-		this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-		if (response.type === StripePaymentResponseType.RequiresConfirmation) {
-			return this._confirmSubscriptionCardPayment(response.invoiceId, response.clientSecret);
-		}
-		return response;
-	};
 	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => {
 		return this.props.serverApi.getSubscriptionDistributionSummary(
 			summary => {
@@ -577,72 +543,6 @@ export default abstract class Root<
 			callback(response);
 		}
 	);
-	protected readonly _openStripePaymentConfirmationDialog = (invoiceId: string) => {
-		this._dialog.openDialog(
-			() => (
-				<StripePaymentConfirmationDialog
-					invoiceId={invoiceId}
-					onClose={this._dialog.closeDialog}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onShowToast={this._toaster.addToast}
-					onConfirmPayment={this._confirmSubscriptionCardPayment}
-				/>
-			)
-		);
-	};
-	protected readonly _openStripeSubscriptionPromptDialog = (article?: ReadArticleReference) => {
-		this._dialog.openDialog(
-			sharedState => (
-				<StripeSubscriptionPrompt
-					article={article}
-					displayTheme={sharedState.displayTheme}
-					onClose={this._dialog.closeDialog}
-					onCreateStaticContentUrl={this._createStaticContentUrl}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onReadArticle={this._readArticle}
-					onShowToast={this._toaster.addToast}
-					onSubscribe={this._createStripeSubscription}
-					stripe={this.props.stripeLoader.value}
-					subscriptionStatus={sharedState.subscriptionStatus}
-				/>
-			)
-		);
-	};
-	private readonly _processStripeSubscriptionPayment = (
-		card: StripeCardElement,
-		price: SubscriptionPriceSelection,
-		submit: (request: StripeSubscriptionPaymentRequest) => Promise<StripePaymentResponse>
-	) => this.props.stripeLoader.value
-		.then(
-			stripe => stripe.createPaymentMethod({
-				type: 'card',
-				card
-			})
-		)
-		.then(
-			result => {
-				if (result.error) {
-					throw new Error(result.error.message);
-				}
-				let request: StripeSubscriptionPaymentRequest;
-				if (
-					isStandardSubscriptionPriceLevel(price)
-				) {
-					request = {
-						paymentMethodId: result.paymentMethod.id,
-						priceLevelId: price.id
-					};
-				} else {
-					request = {
-						paymentMethodId: result.paymentMethod.id,
-						customPriceAmount: price.amount
-					};
-				}
-				return submit(request)
-					.then(this._handleSubscriptionPaymentResponse);
-			}
-		);
 	private _revenueReportTimestamp = Date.now();
 
 	// toasts
