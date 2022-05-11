@@ -70,12 +70,10 @@ export interface AuthStatus {
 	provider: AuthServiceProvider,
 	step: AuthStep
 }
-type MenuState = 'opened' | 'closing' | 'closed';
 interface State extends RootState {
 	authStatus: AuthStatus | null,
 	isInOrientation: boolean,
-	isPoppingScreen: boolean,
-	menuState: MenuState,
+	isPoppingScreen: boolean
 }
 interface Events extends RootEvents {
 	'newStars': number
@@ -823,7 +821,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 					false
 			),
 			isPoppingScreen: false,
-			menuState: 'closed',
 			screens
 		};
 
@@ -989,7 +986,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 									[]
 							),
 							isPoppingScreen: false,
-							menuState: 'closed',
 							screens
 						});
 					} else {
@@ -1120,7 +1116,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
 		});
 	}
@@ -1270,7 +1265,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		}
 		return super.onUserSignedOut(
 			{
-				menuState: 'closed',
 				screens: []
 			}
 		);
