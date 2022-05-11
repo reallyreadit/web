@@ -64,7 +64,6 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType } from '../../../common/DeviceType';
-import { AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
 import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
 import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
 import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
@@ -233,7 +232,6 @@ export default abstract class {
 	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
 	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
 	public readonly registerFreeTrialPromoTweetIntent = (request: FreeTrialPromoTweetIntentRegistrationRequest) => this.post<FreeTrialPromoTweetIntentRegistrationResponse>({ path: '/Subscriptions/FreeTrialPromoTweetIntent', data: request });
-	public readonly validateAppleSubscription = (request: AppleSubscriptionValidationRequest) => this.post<AppleSubscriptionValidationResponse>({ path: '/Subscriptions/AppleSubscriptionValidation', data: request });
 
 	// UserAccounts
 	public readonly changeDisplayPreference = (data: DisplayPreference) => this.post<DisplayPreference>({ path: '/UserAccounts/DisplayPreference', data });

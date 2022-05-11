@@ -12,11 +12,6 @@ import SignInEventResponse from '../../common/models/app/SignInEventResponse';
 import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
-import { Result } from '../../common/Result';
-import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../../common/models/app/SubscriptionProducts';
-import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
-import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
-import { ProblemDetails } from '../../common/ProblemDetails';
 import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
 import { AppPlatform } from '../../common/AppPlatform';
 
@@ -70,12 +65,6 @@ export default class extends AppApi {
 					break;
 				case 'loadUrl':
 					this.emitEvent('loadUrl', message.data);
-					break;
-				case 'openSubscriptionPrompt':
-					this.emitEvent('openSubscriptionPrompt');
-					break;
-				case 'subscriptionPurchaseCompleted':
-					this.emitEvent('subscriptionPurchaseCompleted', message.data);
 					break;
 				case 'updateAvailable':
 					this.emitEvent('updateAvailable', message.data);
@@ -196,44 +185,6 @@ export default class extends AppApi {
 				this._messagingContext.sendMessage(
 					{
 						type: 'requestNotificationAuthorization'
-					},
-					resolve
-				);
-			}
-		);
-	}
-	public requestSubscriptionProducts(request: SubscriptionProductsRequest) {
-		return new Promise<Result<SubscriptionProductsResponse, ProblemDetails>>(
-			resolve => {
-				this._messagingContext.sendMessage(
-					{
-						type: 'requestSubscriptionProducts',
-						data: request
-					},
-					resolve
-				);
-			}
-		);
-	}
-	public requestSubscriptionPurchase(request: SubscriptionPurchaseRequest) {
-		return new Promise<Result<SubscriptionPurchaseResponse, ProblemDetails>>(
-			resolve => {
-				this._messagingContext.sendMessage(
-					{
-						type: 'requestSubscriptionPurchase',
-						data: request
-					},
-					resolve
-				);
-			}
-		);
-	}
-	public requestSubscriptionReceipt() {
-		return new Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>(
-			resolve => {
-				this._messagingContext.sendMessage(
-					{
-						type: 'requestSubscriptionReceipt'
 					},
 					resolve
 				);

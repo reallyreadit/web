@@ -43,17 +43,9 @@ import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet, getPromiseErrorMessage, formatProblemDetails, formatFetchable } from '../../../common/format';
-import AppStoreSubscriptionPrompt from './AppRoot/AppStoreSubscriptionPrompt';
-import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
-import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
-import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
-import { Result, ResultType } from '../../../common/Result';
-import { ActiveSubscriptionStatus, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
+import { isFreeViewCreditRequiredForArticle, createFreeTrialArticleView } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
-import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
-import { ProblemDetails } from '../../../common/ProblemDetails';
-import { AppStoreErrorType } from '../../../common/Errors';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
@@ -85,15 +77,12 @@ interface State extends RootState {
 	authStatus: AuthStatus | null,
 	isInOrientation: boolean,
 	isPoppingScreen: boolean,
-	isProcessingPayment: boolean,
 	menuState: MenuState,
 }
-type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
 interface Events extends RootEvents {
-	'newStars': number,
-	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
+	'newStars': number
 }
-export default class extends Root<Props, State, SharedState, Events> {
+export default class extends Root<Props, State, RootSharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
 	private _signInLocation: RouteLocation | null;
 	private readonly _noop = () => {
@@ -104,9 +93,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
 		return this._eventManager.addListener('newStars', handler);
 	};
-	private readonly _registerPurchaseCompletedEventHandler = (handler: (result: Result<AppleSubscriptionValidationResponse, ProblemDetails>) => void) => {
-		return this._eventManager.addListener('purchaseCompleted', handler);
-	}
 
 	// notifications
 	private readonly _requestNotificationAuthorization = () => {
@@ -262,112 +248,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			);
 	}
-
-	// subscriptions
-	private readonly _openAppStoreSubscriptionPromptDialog = (article?: ReadArticleReference, activeSubscription?: ActiveSubscriptionStatus) => {
-		this.props.appApi
-			.getDeviceInfo()
-			.then(
-				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('7.0.0')) >= 0) {
-						this._dialog.openDialog(
-							sharedState => (
-								<AppStoreSubscriptionPrompt
-									activeSubscription={activeSubscription}
-									article={article}
-									isPaymentProcessing={sharedState.isProcessingPayment}
-									onClose={this._dialog.closeDialog}
-									onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-									onGetSubscriptionStatus={this._getSubscriptionStatus}
-									onReadArticle={this._readArticle}
-									onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
-									onRequestSubscriptionProducts={this._requestSubscriptionProducts}
-									onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
-									onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
-									onValidateSubscription={this._validateSubscription}
-								/>
-							)
-						);
-					} else {
-						this.openAppUpdateRequiredDialog('7.0');
-					}
-				}
-			);
-	};
-	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
-		if (provider == null) {
-			switch (this.props.appApi.deviceInfo.appPlatform) {
-				case AppPlatform.Android:
-					throw new Error(`Subscriptions not implemented for platform: ${AppPlatform.Android}.`);
-				case AppPlatform.Ios:
-				case AppPlatform.MacOs:
-					provider = SubscriptionProvider.Apple;
-					break;
-				case AppPlatform.Linux:
-				case AppPlatform.Windows:
-					provider = SubscriptionProvider.Stripe;
-					break;
-			}
-		}
-		switch (provider) {
-			case SubscriptionProvider.Apple:
-				this._openAppStoreSubscriptionPromptDialog(article);
-				break;
-			case SubscriptionProvider.Stripe:
-				this._openStripeSubscriptionPromptDialog(article);
-				break;
-		}
-	};
-	private readonly _requestSubscriptionProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request);
-	private readonly _requestSubscriptionPurchase = (request: SubscriptionPurchaseRequest) => {
-		this.setState(
-			prevState => {
-				if (prevState.isProcessingPayment) {
-					return null;
-				}
-				this.props.appApi
-					.requestSubscriptionPurchase(request)
-					.then(
-						result => {
-							// only process failures here. if the transaction was successfully added to the
-							// payment queue then we will remain in a processing state until we receive a
-							// payment completion event
-							if (result.type === ResultType.Failure) {
-								this._toaster.addToast(
-									formatProblemDetails(result.error),
-									Intent.Danger
-								);
-								this.setState({
-									isProcessingPayment: false
-								});
-							}
-						}
-					)
-					.catch(
-						reason => {
-							this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
-							this.setState({
-								isProcessingPayment: false
-							});
-						}
-					);
-				return {
-					isProcessingPayment: true
-				};
-			}
-		);
-	};
-	private readonly _requestSubscriptionReceipt = () => this.props.appApi.requestSubscriptionReceipt();
-	private readonly _validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
-		.validateAppleSubscription(request)
-		.then(
-			response => {
-				if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-					this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-				}
-				return response;
-			}
-		);
 
 	// updates
 	private readonly _installUpdate = () => {
@@ -957,7 +837,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					false
 			),
 			isPoppingScreen: false,
-			isProcessingPayment: false,
 			menuState: 'closed',
 			screens
 		};
@@ -1135,78 +1014,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			)
 			.addListener(
-				'openSubscriptionPrompt',
-				() => {
-					this._openSubscriptionPromptDialog();
-				}
-			)
-			.addListener(
-				'subscriptionPurchaseCompleted',
-				result => {
-					// this event can fire at any time. for example a purchased or failed
-					// transaction could have failed to register with the api server. in such
-					// a case the registration will be retried until completed, potentially on
-					// subsequent app launches. therefore only show a toast if we're currently
-					// processing a payment.
-					switch (result.type) {
-						case ResultType.Success:
-							if (result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-								this.onSubscriptionStatusChanged(result.value.subscriptionStatus, EventSource.Local);
-							}
-							if (this.state.isProcessingPayment) {
-								this.setState({
-									isProcessingPayment: false
-								});
-								let toast: {
-									content: string,
-									intent: Intent
-								};
-								switch (result.value.type) {
-									case AppleSubscriptionValidationResponseType.AssociatedWithAnotherUser:
-										// this toast probably shouldn't disappear on its own but it's also very unlikely
-										// that a user will ever see this. subscriptions associated with another account
-										// should be caught during the status check when the SubscriptionPrompt opens.
-										toast = {
-											content: `Purchase failed: Subscription associated with another account: ${result.value.subscribedUsername}.`,
-											intent: Intent.Neutral
-										};
-										break;
-									case AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser:
-										// this or a failure is what we should see 99% of the time.
-										toast = {
-											content: 'Purchase completed.',
-											intent: Intent.Success
-										};
-										break;
-									case AppleSubscriptionValidationResponseType.EmptyReceipt:
-										// this should never happen
-										toast = {
-											content: 'Purchase failed: Subscription status inactive.',
-											intent: Intent.Danger
-										};
-										break;
-								}
-								this._toaster.addToast(toast.content, toast.intent);
-							}
-							break;
-						case ResultType.Failure:
-							if (this.state.isProcessingPayment) {
-								this._toaster.addToast(
-									formatProblemDetails(result.error),
-									result.error.type === AppStoreErrorType.PurchaseCancelled ?
-										Intent.Neutral :
-										Intent.Danger
-								);
-								this.setState({
-									isProcessingPayment: false
-								});
-							}
-							break;
-					}
-					this._eventManager.triggerEvent('purchaseCompleted', result);
-				}
-			)
-			.addListener(
 				'updateAvailable',
 				() => {
 					if (this._isUpdateAvailable) {
@@ -1358,7 +1165,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected getSharedState() {
 		return {
 			displayTheme: this.state.displayTheme,
-			isProcessingPayment: this.state.isProcessingPayment,
 			revenueReport: this.state.revenueReport,
 			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user

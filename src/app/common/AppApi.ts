@@ -16,12 +16,6 @@ import WebAuthResponse from '../../common/models/app/WebAuthResponse';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
-import { Result } from '../../common/Result';
-import { SubscriptionProductsRequest, SubscriptionProductsResponse } from '../../common/models/app/SubscriptionProducts';
-import { SubscriptionPurchaseRequest, SubscriptionPurchaseResponse } from '../../common/models/app/SubscriptionPurchase';
-import { SubscriptionReceiptResponse } from '../../common/models/app/SubscriptionReceipt';
-import { AppleSubscriptionValidationResponse } from '../../common/models/subscriptions/AppleSubscriptionValidation';
-import { ProblemDetails } from '../../common/ProblemDetails';
 import { ExternalUrlCompletionEvent } from '../../common/models/app/ExternalUrlCompletionEvent';
 import { AppPlatform } from '../../common/AppPlatform';
 import SemanticVersion from '../../common/SemanticVersion';
@@ -44,8 +38,6 @@ export default abstract class extends EventEmitter<{
 	'didBecomeActive': AppActivationEvent,
 	'displayPreferenceChanged': DisplayPreference,
 	'loadUrl': string,
-	'openSubscriptionPrompt': void,
-	'subscriptionPurchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>,
 	'updateAvailable': UpdateAvailableEvent
 }> {
 	protected _deviceInfo: DeviceInfo;
@@ -73,9 +65,6 @@ export default abstract class extends EventEmitter<{
 	public abstract readArticle(reference: ArticleReference): void;
 	public abstract requestAppleIdCredential(): void;
 	public abstract requestNotificationAuthorization(): Promise<NotificationAuthorizationRequestResult>;
-	public abstract requestSubscriptionProducts(request: SubscriptionProductsRequest): Promise<Result<SubscriptionProductsResponse, ProblemDetails>>;
-	public abstract requestSubscriptionPurchase(request: SubscriptionPurchaseRequest): Promise<Result<SubscriptionPurchaseResponse, ProblemDetails>>;
-	public abstract requestSubscriptionReceipt(): Promise<Result<SubscriptionReceiptResponse, ProblemDetails>>;
 	public abstract requestWebAuthentication(request: WebAuthRequest): Promise<WebAuthResponse>;
 	public abstract share(data: ShareEvent): Promise<ShareResult>;
 	public abstract signIn(user: UserAccount, eventType: SignInEventType): Promise<SignInEventResponse>;
