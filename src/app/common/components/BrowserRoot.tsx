@@ -1106,7 +1106,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.subscriptionStatusChanged(status);
-			this.props.extensionApi.subscriptionStatusChanged(status);
 		}
 		super.onSubscriptionStatusChanged(status, eventSource);
 	}
@@ -1381,7 +1380,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// broadcast subscription status if signed in
 		if (this.props.initialUserProfile?.subscriptionStatus) {
 			this.props.browserApi.subscriptionStatusChanged(this.props.initialUserProfile.subscriptionStatus);
-			this.props.extensionApi.subscriptionStatusChanged(this.props.initialUserProfile.subscriptionStatus);
 		}
 		// broadcast extension installation or removal
 		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
