@@ -65,7 +65,6 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType } from '../../../common/DeviceType';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
 import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../common/models/subscriptions/AuthorEarningsReport';
@@ -220,7 +219,6 @@ export default abstract class {
 	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
 	public readonly getPayoutReport = this.createFetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>('/Subscriptions/PayoutReport');
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
-	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
 
 	// UserAccounts
 	public readonly changeDisplayPreference = (data: DisplayPreference) => this.post<DisplayPreference>({ path: '/UserAccounts/DisplayPreference', data });

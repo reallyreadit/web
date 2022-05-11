@@ -61,7 +61,6 @@ import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
-import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { ArticleStarredEvent } from '../AppApi';
@@ -136,14 +135,13 @@ export interface ScreenFactory<TSharedState> {
 export type State = (
 	{
 		displayTheme: DisplayTheme | null,
-		revenueReport: Fetchable<RevenueReportResponse>,
 		screens: Screen[],
 		user: UserAccount | null
 	} &
 	ToasterState &
 	DialogServiceState
 );
-export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'user'>;
 export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
@@ -508,7 +506,6 @@ export default abstract class Root<
 
 	// subscriptions
 	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
-	private _revenueReportTimestamp = Date.now();
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
@@ -666,16 +663,6 @@ export default abstract class Root<
 		// state
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
-			revenueReport: props.serverApi.getSubscriptionRevenueReport(
-				{
-					useCache: true
-				},
-				response => {
-					this.setState({
-						revenueReport: response
-					});
-				}
-			),
 			toasts: [],
 			user: props.initialUserProfile?.userAccount
 		} as TState;
@@ -808,24 +795,6 @@ export default abstract class Root<
 				);
 			}
 		);
-	}
-	protected checkRevenueReportExpiration() {
-		const now = Date.now();
-		if (now - this._revenueReportTimestamp >= 1 * 60 * 60 * 1000) {
-			// Don't request the cached value if the revenue report timestamp has been invalidated.
-			this.props.serverApi.getSubscriptionRevenueReport(
-				{
-					useCache: this._revenueReportTimestamp !== 0
-				},
-				response => {
-					this.setState({
-						revenueReport: response
-					});
-				}
-			);
-			// Reset the revenue report timestamp.
-			this._revenueReportTimestamp = now;
-		}
 	}
 	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: SemanticVersion }> {
 		const

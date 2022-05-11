@@ -926,7 +926,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
-			revenueReport: this.state.revenueReport,
 			user: this.state.user
 		};
 	}

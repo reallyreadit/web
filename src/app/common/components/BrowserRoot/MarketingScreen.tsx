@@ -17,7 +17,6 @@ import RouteLocation from '../../../../common/routing/RouteLocation';
 import HomePanel from './HomePanel';
 import ImageAndText from './ImageAndText';
 import QuoteCard from './QuoteCard';
-import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 import { NavOptions, NavReference } from '../Root';
 // import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
@@ -46,7 +45,6 @@ interface Props {
 	onViewProfile: (userName: string) => void,
 	onViewAuthor: (slug: string, name: string) => void,
 	onViewMission: () => void,
-	revenueReport: Fetchable<RevenueReportResponse>,
 	user: UserAccount | null
 }
 export interface Quote {

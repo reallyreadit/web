@@ -26,7 +26,6 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import StickyNote from '../../../../common/components/StickyNote';
 import { DeviceType } from '../../../../common/DeviceType';
 import { Sort } from '../controls/articles/AotdView';
-import { RevenueReportResponse } from '../../../../common/models/subscriptions/RevenueReport';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
@@ -55,7 +54,6 @@ interface Props {
 	onViewComments: (article: UserArticle) => void,
 	onViewMission: () => void,
 	onViewProfile: (userName: string) => void,
-	revenueReport: Fetchable<RevenueReportResponse>,
 	user: UserAccount | null
 }
 interface State {
@@ -326,7 +324,6 @@ class HomeScreen extends React.Component<Props, State> {
 				onViewComments={this.props.onViewComments}
 				onViewMission={this.props.onViewMission}
 				onViewProfile={this.props.onViewProfile}
-				revenueReport={this.props.revenueReport}
 				user={this.props.user}
 			/>
 		);
@@ -334,7 +331,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'revenueReport' | 'user'>>
+	deps: Pick<Props, Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({

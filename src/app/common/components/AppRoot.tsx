@@ -1129,7 +1129,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 	protected getSharedState() {
 		return {
 			displayTheme: this.state.displayTheme,
-			revenueReport: this.state.revenueReport,
 			user: this.state.user
 		};
 	}
