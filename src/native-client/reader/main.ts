@@ -39,9 +39,6 @@ import { parseUrlForRoute } from '../../common/routing/Route';
 import ScreenKey from '../../common/routing/ScreenKey';
 import { ProblemDetails } from '../../common/ProblemDetails';
 import { Result, ResultType } from '../../common/Result';
-import { ReadingErrorType } from '../../common/Errors';
-import { ReaderSubscriptionPrompt } from '../../common/components/ReaderSubscriptionPrompt';
-import { createUrl } from '../../common/HttpEndpoint';
 import { createArticleSlug } from '../../common/routing/routes';
 import { parseQueryString } from '../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../common/ParserDocumentLocation';
@@ -106,8 +103,7 @@ let
 	displayPreference = initData.displayPreference,
 	page: Page,
 	userPage: UserPage,
-	user: UserAccount,
-	isWaitingForSubscription = false;
+	user: UserAccount;
 
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
@@ -172,25 +168,6 @@ const reader = new Reader(
 							loadComments();
 						} else {
 							render();
-						}
-						break;
-					case ResultType.Failure:
-						if (result.error.type === ReadingErrorType.SubscriptionRequired && !isWaitingForSubscription) {
-							reader.unloadPage();
-							dialogService.openDialog(
-								React.createElement(
-									ReaderSubscriptionPrompt,
-									{
-										onCreateStaticContentUrl: path => createUrl(window.reallyreadit.nativeClient.reader.config.staticServer, path),
-										onSubscribe: () => {
-											messagingContext.sendMessage({
-												type: 'openSubscriptionPrompt'
-											});
-										}
-									}
-								)
-							);
-							isWaitingForSubscription = true;
 						}
 						break;
 				}
