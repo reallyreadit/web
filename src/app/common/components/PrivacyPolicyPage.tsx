@@ -13,7 +13,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 	<ScreenContainer>
 		<div className="privacy-policy-page_75v4wh">
 			<h2>Privacy Policy and Terms of Use</h2>
-			<h3>Updated: Thursday, May 19, 2022</h3>
+			<h3>Updated: Thursday, May 20, 2022</h3>
 			<section>
 				<p>This privacy policy and terms of use notice applies to The Readup Service ("Service") which comprises the following applications and services:</p>
 				<ul>
@@ -24,8 +24,7 @@ const PrivacyPolicyPage: React.SFC<Props> = props => (
 					<li>The <Link href={getStoreUrl(DeviceType.DesktopFirefox)} onClick={props.onNavTo}>Readup extension for Firefox</Link>.</li>
 					<li>The <Link href={getStoreUrl(DeviceType.DesktopEdge)} onClick={props.onNavTo}>Readup extension for Microsoft Edge</Link>.</li>
 				</ul>
-				<p>The Readup Service is owned and operated by Shore Logic, LLC. ("Service Provider"), a limited liability company based in New Jersey and wholly owned by Jeff Camera, the original developer of the Readup software. The Service is provided free of charge and free of monetization for the express benefit of those who enjoy using the Readup software to read and comment online.</p>
-				<p>The source code for the software hosted by The Service is provided by <Link href="https://github.com/reallyreadit" onClick={props.onNavTo}>The Readup Project</Link>. The Service is provided in cooperation with The Readup Collective which may reimburse the Service Provider in part or in full for expenses incurred in the operation of The Service.</p>
+				<p>The Readup Service is owned and operated by reallyread.it, inc. ("Service Provider"). The Service is provided free of charge and free of monetization for the express benefit of those who enjoy using the Readup software to read and comment online.</p>
 				<p>The Service is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the Service Provider be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with The Service or the use of or other dealings with The Service.</p>
 			</section>
 			<section>
