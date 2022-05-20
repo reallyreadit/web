@@ -10,7 +10,7 @@
 		{
 			"label": "build:dev:app",
 			"type": "shell",
-			"command": "powershell",
+			"command": "pwsh",
 			"args": [
 				"-Command",
 				"node",

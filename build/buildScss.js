@@ -2,7 +2,7 @@ const
 	{ src, dest } = require('gulp'),
 	sourcemaps = require('gulp-sourcemaps'),
 	concat = require('gulp-concat'),
-	sass = require('gulp-sass'),
+	sass = require('gulp-sass')(require('sass')),
 	clean = require('gulp-clean-css'),
 	insert = require('gulp-insert'),
 	fs = require('fs');
