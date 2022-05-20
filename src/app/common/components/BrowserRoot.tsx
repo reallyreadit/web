@@ -140,12 +140,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.ReplaceAll
 		});
 	};
-	private readonly _viewMission = () => {
-		this.setScreenState({
-			key: ScreenKey.Mission,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
@@ -487,7 +481,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
-				onViewMission: this._viewMission,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(

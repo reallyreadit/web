@@ -44,7 +44,6 @@ interface Props {
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
 	onViewAuthor: (slug: string, name: string) => void,
-	onViewMission: () => void,
 	user: UserAccount | null
 }
 export interface Quote {

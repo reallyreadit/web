@@ -58,8 +58,8 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 				// 	navFunction: () => { window.location.href = "/#how-it-works" }
 				// },
 				{
-					screenKey: ScreenKey.Mission,
-					linkText: 'Our Mission',
+					screenKey: ScreenKey.About,
+					linkText: 'About',
 				},
 				{
 					screenKey: ScreenKey.Faq,

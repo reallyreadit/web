@@ -16,9 +16,8 @@ import createAdminPageScreenFactory from './AdminPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
-import { createScreenFactory as createMissionScreenFactory } from './MissionPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
-import createTeamPageFactory from './TeamPage';
+import createTeamPageFactory from './AboutPage';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
 import classNames from 'classnames';
@@ -722,11 +721,6 @@ export default abstract class Root<
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
-			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission,
-				{
-					onNavTo: this._navTo
-				}
-			),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(
 				ScreenKey.PrivacyPolicy, {
@@ -737,8 +731,8 @@ export default abstract class Root<
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
 			}),
-			[ScreenKey.Team]: createTeamPageFactory(
-				ScreenKey.Team,
+			[ScreenKey.About]: createTeamPageFactory(
+				ScreenKey.About,
 				{
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onNavTo: this._navTo

@@ -1,4 +1,5 @@
 enum ScreenKey {
+	About,
 	Admin,
 	AotdHistory,
 	Author,
@@ -13,7 +14,6 @@ enum ScreenKey {
 	Faq,
 	Home,
 	Leaderboards,
-	Mission,
 	MyFeed,
 	MyImpact,
 	MyReads,
@@ -25,7 +25,6 @@ enum ScreenKey {
 	Search,
 	Settings,
 	Stats,
-	Team
 }
 export default ScreenKey;
 export type ScreenParams = {

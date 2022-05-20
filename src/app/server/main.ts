@@ -315,11 +315,18 @@ server.get('/earnings', (req, res) => {
 		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()
 	);
 });
-server.get('/about', (req, res) => {
+server.get('/mission', (req, res) => {
 	redirect(
 		req,
 		res,
-		findRouteByKey(routes, ScreenKey.Mission).createUrl()
+		findRouteByKey(routes, ScreenKey.About).createUrl()
+	);
+});
+server.get('/team', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.About).createUrl()
 	);
 });
 server.get('/downloads', (req, res) => {
