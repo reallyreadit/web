@@ -120,7 +120,7 @@ export default class NotificationPreferencesControl extends React.Component<Prop
 			<div className="notification-preferences-control_m5xqhx">
 				<div>Digest emails are sent at 6 AM EST. Weekly digests go out on Tuesday.</div>
 				<AlertSelector
-					title="Company updates"
+					title="Product updates"
 					subtitle="The inside scoop on Readup."
 					showChannels={false}
 					onChange={this._changeCompanyUpdate}

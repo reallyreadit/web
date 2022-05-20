@@ -30,7 +30,7 @@ export default class extends React.PureComponent<{
 		const links:LinkSet[] = [
 			// TODO: can we import the slug from a single place?
 			{
-				title: "Company",
+				title: "Organization",
 				sublinks: [
 					<Link key="about" screen={ScreenKey.About} onClick={navTo}>About</Link>,
 					<DiscordInviteLink key="contact" onClick={navTo}>Discord Community</DiscordInviteLink>,
