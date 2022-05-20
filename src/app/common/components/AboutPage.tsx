@@ -82,7 +82,7 @@ const teamPage = (props: Services) => (
 				<p className="our-story__intro">
 				 Bill and Jeff both loved reading, but were  frustrated by how hard it was to actually read full articles on the web. Distractions abounded, and on top of that, people commented on articles without even reading them fully. They set out to create an app to fix this.
 				</p>
-				<p className="our-story__intro">Today, Readup.org continued by a group of volunteers who came to love Readup over the years. They maintain and improve Readup, and let hundreds of people enjoy deep reading online.</p>
+				<p className="our-story__intro">Today, Readup.org is continued by a group of volunteers who came to love Readup over the years. They maintain and improve the platform, and let hundreds of people enjoy deep reading online.</p>
 		</HomePanel>
 		<HomeHero
 			title="Meet the Team"
