@@ -21,6 +21,7 @@ import ShareResponse from '../../common/sharing/ShareResponse';
 import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../common/models/auth/AuthServiceAccountAssociation';
 import { ShareChannelData } from '../../common/sharing/ShareData';
+import {DiscordInviteLink} from '../../common/components/Link';
 
 export interface Props {
 	article: UserArticle
@@ -105,7 +106,7 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 							user={this.props.user}
 						/>
 						<div className="embed-solicitation">
-							Want a reader-only comments section like this on your blog? <a href="mailto:support@readup.com?subject=Blog%20Comments%20Embed">Drop us a line.</a>
+							Want a reader-only comments section like this on your blog? <DiscordInviteLink onClick={this.props.onNavTo}>Help our community achieve it.</DiscordInviteLink>
 						</div>
 					</>}
 			</div>

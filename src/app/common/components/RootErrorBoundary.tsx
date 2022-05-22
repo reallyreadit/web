@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
 import InfoBox from '../../../common/components/InfoBox';
-import Link from '../../../common/components/Link';
+import Link, {DiscordInviteLink} from '../../../common/components/Link';
 
 interface Props {
 	children: React.ReactNode,
@@ -28,7 +28,7 @@ export default class RootErrorBoundary extends React.PureComponent<Props, { isRe
 						style="warning"
 					>
 						<p>An error occurred and caused the app to crash.</p>
-						<p>If this keeps happening please <Link href="mailto:support@readup.com?subject=App%20Crash" onClick={this.props.onNavTo}>let us know.</Link></p>
+						<p>If this keeps happening please <DiscordInviteLink onClick={this.props.onNavTo}>let us know in Discord.</DiscordInviteLink></p>
 						<p>
 							<Link
 								iconLeft="refresh2"

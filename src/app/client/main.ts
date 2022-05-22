@@ -11,8 +11,6 @@ import ExtensionApi from './ExtensionApi';
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
 import * as smoothscroll from 'smoothscroll-polyfill';
 import SemanticVersion from '../../common/SemanticVersion';
-import { loadStripe } from '@stripe/stripe-js/pure';
-import Lazy from '../../common/Lazy';
 import { DeviceType } from '../../common/DeviceType';
 
 const initData = window.reallyreadit.app.initData;
@@ -59,14 +57,6 @@ const rootProps = {
 	initialUserProfile: initData.userProfile,
 	serverApi,
 	staticServerEndpoint: initData.staticServerEndpoint,
-	stripeLoader: new Lazy(
-		() => {
-			loadStripe.setLoadParameters({
-				advancedFraudSignals: false
-			});
-			return loadStripe(initData.stripePublishableKey);
-		}
-	),
 	version: new SemanticVersion(initData.version),
 	webServerEndpoint: initData.webServerEndpoint
 };

@@ -10,6 +10,11 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Home
 	},
 	{
+		createUrl: () => '/about',
+		pathRegExp: /^\/about$/,
+		screenKey: ScreenKey.About
+	},
+	{
 		createUrl: params => `/?reset-password&email=${params['email']}&token=${params['token']}`,
 		dialogKey: DialogKey.ResetPassword,
 		pathRegExp: /^\/$/,
@@ -155,11 +160,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		pathRegExp: /^\/notifications$/,
 		screenKey: ScreenKey.Notifications
 	},
-	{
-		createUrl: () => '/mission',
-		pathRegExp: /^\/mission$/,
-		screenKey: ScreenKey.Mission
-	},
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;
 		return {
@@ -266,16 +266,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		createUrl: () => '/stats',
 		pathRegExp: /^\/stats$/,
 		screenKey: ScreenKey.Stats
-	},
-	{
-		createUrl: () => '/subscribe',
-		pathRegExp: /^\/subscribe$/,
-		screenKey: ScreenKey.Subscribe
-  },
-  {
-		createUrl: () => '/team',
-		pathRegExp: /^\/team$/,
-		screenKey: ScreenKey.Team
 	},
 	(function () {
 		const pathRegExp = /^\/writers\/([^/]+)$/;

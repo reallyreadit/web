@@ -23,8 +23,6 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import { Sort } from '../controls/articles/AotdView';
 import {DeviceType} from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import {SubscriptionStatus, SubscriptionStatusType} from '../../../../common/models/subscriptions/SubscriptionStatus';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
 import PageResult from '../../../../common/models/PageResult';
 import List from '../controls/List';
@@ -34,7 +32,6 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import {LeaderboardsViewParams} from '../screens/LeaderboardsScreen';
 import MorphingArticleDetails from '../../../../common/components/MorphingArticleDetails';
 import Icon from '../../../../common/components/Icon';
-import FreeTrialNotice from './FreeTrialNotice';
 
 interface Props {
 	deviceType: DeviceType,
@@ -43,7 +40,6 @@ interface Props {
 	onGetAotdHistory: FetchFunctionWithParams<ArticleQuery, PageResult<UserArticle>>,
 	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenSubscriptionPromptDialog: (article?: UserArticle, provider?: SubscriptionProvider) => void,
 	onPostArticle: (article: UserArticle) => void,
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
 	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
@@ -53,8 +49,7 @@ interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>,
 	onViewComments: (article: UserArticle) => void,
 	onViewProfile: (userName: string) => void,
-	user: UserAccount | null,
-	subscriptionStatus: SubscriptionStatus
+	user: UserAccount | null
 }
 interface State {
 	aotdHistory: Fetchable<PageResult<UserArticle>>,
@@ -265,17 +260,6 @@ class HomeScreen extends React.Component<Props, State> {
 								text="Show new Article of the Day"
 							/> :
 						null}
-						{(
-							!(this.props.subscriptionStatus.isUserFreeForLife) &&
-							this.props.subscriptionStatus.type === SubscriptionStatusType.NeverSubscribed
-						)
-							?
-							<FreeTrialNotice
-								onNavTo={this.props.onNavTo}
-								onOpenSubscriptionPromptDialog={this.props.onOpenSubscriptionPromptDialog}
-								subscriptionStatus={this.props.subscriptionStatus}
-							/> :
-						null}
 						<h2 className="section-header">
 							<Icon name="trophy"/> Article of the Day
 						</h2>
@@ -395,7 +379,7 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function <TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'user' | 'subscriptionStatus'>>
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
 ) {
 	return {
 		create: (id: number, location: RouteLocation) => ({
@@ -408,8 +392,7 @@ export default function <TScreenKey>(
 			<HomeScreen {
 				...{
 					...deps,
-					user: sharedState.user,
-					subscriptionStatus: sharedState.subscriptionStatus
+					user: sharedState.user
 				}
 			} />
 		)

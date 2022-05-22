@@ -1,0 +1,127 @@
+/*
+        componentPath: src/app/common/components/AboutPage
+        cssComponentId: about-page_irab6h
+*/
+@import '../../../../src/common/styles/breakpoints.scss';
+
+.about-page_irab6h {
+	.home-panel_w65z7c {
+		overflow: hidden;
+	}
+
+	// .home-panel_w65z7c:nth-child(odd) {
+	// 	background-color: var(--app-background-alt-color);
+	// }
+
+	.meet-team-hero,
+	.meet-team {
+		background-color: var(--app-background-alt-color);
+	}
+
+	.community-shoutout {
+		.button_ovrlmi {
+			max-width: 300px;
+			margin: auto;
+		}
+	}
+
+
+
+
+	.home-panel_w65z7c {
+		> .content {
+			> h2 {
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+
+			> div.profiles {
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 2rem;
+				align-items: center;
+				@include from(tablet-portrait) {
+					flex-direction: row;
+					justify-content: center;
+				}
+			}
+		}
+	}
+
+	.home-panel_w65z7c > .content > p.special-thanks {
+		margin: auto;
+		max-width: 700px;
+		font-family: 'Museo Sans (300)', sans-serif;
+		font-size: 13pt;
+		text-align: center;
+	}
+
+	.home-panel_w65z7c > .content > p.our-story__intro {
+		max-width: 600px;
+		text-align: left;
+		width: 100%;
+		display: block;
+		margin: 30px auto;
+	}
+
+	.home-panel_w65z7c.meet-team-hero > .content {
+		padding: 40px 20px 10px 20px;
+		min-height: 0;
+	}
+
+	.our-story {
+
+
+		.title--our-story {
+			margin-bottom: 44px;
+			text-align: center;
+		}
+
+		&__timeline-card {
+			background-color: var(--app-background-alt-color);
+			@media screen and (min-width: 768px) {
+				padding: 30px 40px;
+				border-radius: 2px;
+				width: max-content;
+				margin: auto;
+			}
+		}
+
+		&__timeline {
+			table-layout: fixed;
+			border-collapse: collapse;
+			max-width: 500px;
+			margin: auto;
+
+			tr > td:nth-child(1) {
+				width: 25%;
+				font-family: 'Museo Sans (700)', sans-serif;
+			}
+
+			tr > td:nth-child(2) {
+				width: 75%;
+				padding-left: 16px;
+				font-size: 18px;
+			}
+
+			td {
+				padding-bottom: 14px;
+			}
+
+			@media screen and (min-width: 768px) {
+				min-width: 410px;
+				max-width: 670px;
+				width: 60vw;
+
+				tr > td:nth-child(2) {
+					padding-left: 16px;
+				}
+
+				td {
+					padding-bottom: 18px;
+				}
+			}
+		}
+	}
+
+}

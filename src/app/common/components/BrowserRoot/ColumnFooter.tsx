@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NavReference, NavOptions, NavMethod } from '../Root';
-import Link, { Props as LinkProps } from '../../../../common/components/Link';
+import Link, { DiscordInviteLink, Props as LinkProps } from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 // import GetStartedButton from './GetStartedButton';
@@ -22,9 +22,8 @@ export default class extends React.PureComponent<{
 			{
 				title: "Company",
 				sublinks: [
-					<Link key="team" screen={ScreenKey.Team} onClick={navTo}>Meet the Team</Link>,
-					<Link key="mission" screen={ScreenKey.Mission} onClick={navTo}>Our Mission</Link>,
-					<Link key="contact" href="mailto:support@readup.com" onClick={navTo}>Contact</Link>,
+					<Link key="about" screen={ScreenKey.About} onClick={navTo}>About</Link>,
+					<DiscordInviteLink key="contact" onClick={navTo}>Discord Community</DiscordInviteLink>,
 					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>Privacy Policy</Link>
 				]
 			},
@@ -41,31 +40,9 @@ export default class extends React.PureComponent<{
 			{
 				title: "Download",
 				sublinks: [
-					// {
-					// 	key: "ios_button",
-					// 	component:
-					// 		// TODO: copied from web/src/app/common/components/BrowserRoot/GetStartedButton.tsx
-					// 		// extract as reusable component
-					// 		// <a
-					// 		// className="ios"
-					// 		// href={getStoreUrl(DeviceType.Ios)}
-					// 		// onClick={this._copyAppReferrerTextToClipboard}
-					// 		// >
-					// 		// 	<img src="/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="App Store Badge" />
-					// 		// </a>
-					// 		// <GetStartedButton
-					// 		// 	// TODO: is this a valid analytics action?
-					// 		// 	analyticsAction="HomeScreenFooter"
-					// 		// 	deviceType={this.props.deviceType}
-					// 		// 	onBeginOnboarding={this.props.onBeginOnboarding}
-					// 		// 	onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-					// 		// 	onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
-					// 		// ></GetStartedButton>
-					// },
 					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navToPush}><Icon name='phone'/>iPhone and iPad</Link>,
 					<Link key="mac" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navToPush}><Icon name='apple'/>Mac</Link>,
 					<Link key="windows" href="https://static.readup.com/downloads/windows/ReadupSetup.exe" onClick={navToPush}><Icon name='windows'/>Windows</Link>,
-					// <Link key="web-extensions" screen={ScreenKey.Download} onClick={navTo}><Icon name="internet" />Web Importer</Link>
 				]
 			},
 		]
@@ -100,9 +77,6 @@ export default class extends React.PureComponent<{
 							</div>
 						)}
 					</div>
-				</div>
-				<div className="corp">
-					<Link onClick={navTo} href="mailto:support@readup.com">support@readup.com</Link> · reallyread.it, inc., 309 Poe Ave, Toms River NJ 08753
 				</div>
 			</div>
 		);

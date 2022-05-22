@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavReference, ReadArticleReference, Screen } from '../Root';
+import { NavReference, Screen } from '../Root';
 import { SharedState } from '../Root';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
@@ -19,23 +19,16 @@ import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
 import classNames = require('classnames');
 import Icon from '../../../../common/components/Icon';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
-import {isFreeTrialOverSubscription, isTrialingSubscription, SubscriptionStatus} from '../../../../common/models/subscriptions/SubscriptionStatus';
-import SubscribePitchElement from './SubscribePitchElement';
-import StickyNote from '../../../../common/components/StickyNote';
 
 interface Props {
 	article: Fetchable<UserArticle>,
 	deviceType: DeviceType,
 	location: RouteLocation,
-	onCanReadArticle: (article: UserArticle) => boolean,
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference) => void,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onOpenSubscriptionPromptDialog: (article?: ReadArticleReference, provider?: SubscriptionProvider) => void
 	onReadArticle: (article: UserArticle) => void,
-	user: UserAccount | null,
-	subscriptionStatus: SubscriptionStatus
+	user: UserAccount | null
 }
 class ReadScreen extends React.PureComponent<Props> {
 	private readonly _readArticle = () => {
@@ -74,11 +67,7 @@ class ReadScreen extends React.PureComponent<Props> {
 								{/* NOTE: trialing the subscription here means that the reader is out of free views,
 									because they should only be landing on this screen within the app if they're out of free views
 								*/}
-								{ isFreeTrialOverSubscription(this.props.subscriptionStatus) ?
-									<StickyNote type='straight'>You're out of free articles!</StickyNote>
-									:
-									'How would you like to read the article?'
-								}
+								How would you like to read the article?
 							</div>
 							<div className="spacer"></div>
 							<div className={classNames("choice-container", {"mobile": isMobileDevice(this.props.deviceType)}) }>
@@ -89,45 +78,21 @@ class ReadScreen extends React.PureComponent<Props> {
 										<div className="choice__details">
 											<div>
 												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
-												{
-													isFreeTrialOverSubscription(this.props.subscriptionStatus) ?
-													<>
-														<h2>Become a Reader</h2>
-														<SubscribePitchElement />
-													</>
-													:
-													<>
-													<h2>Read it on Readup,<br/> the app for reading.</h2>
-														<ul className="info dashed">
-														{ isTrialingSubscription(this.props.subscriptionStatus) ?
-															<>
-																<li>100% ad-free</li>
-																<li>Compensate writers</li>
-																<li>Pick your price</li>
-															</>
-															:
-															<>
-																<li>Better reading</li>
-																<li>100% ad-free</li>
-																<li>Pick your price</li>
-															</>
-														}
-
-															<li>Better reading</li>
-															<li>100% ad-free</li>
-															<li>Pick your price</li>
-														</ul>
-													</>
-												}
+												<>
+													<h2>Read it on Readup,<br /> the app for reading.</h2>
+													<ul className="info dashed">
+														<li>Better reading</li>
+														<li>100% ad-free</li>
+														<li>Pick your price</li>
+													</ul>
+												</>
 											</div>
 												<Button
 													intent="loud"
-													onClick={(this.props.onCanReadArticle(this.props.article.value)) ?
-															this._readArticle :
-															() => this.props.onOpenSubscriptionPromptDialog(this.props.article.value)}
+													onClick={this._readArticle}
 													size="large"
 													align="center"
-													text={isFreeTrialOverSubscription(this.props.subscriptionStatus) ? "Subscribe" : "Read Article"}
+													text="Read Article"
 												/>
 											</div>
 									</>
@@ -150,7 +115,7 @@ class ReadScreen extends React.PureComponent<Props> {
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user' | 'subscriptionStatus'>> & {
+	deps: Pick<Props, Exclude<keyof Props, 'article' | 'location' | 'user'>> & {
 		onGetArticle: FetchFunctionWithParams<{ slug: string }, UserArticle>,
 		onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen<Fetchable<UserArticle>>>) => Partial<Screen<Fetchable<UserArticle>>>) => void
 	}
@@ -190,8 +155,7 @@ export default function createReadScreenFactory<TScreenKey>(
 						...deps,
 						article: screenState.componentState,
 						location: screenState.location,
-						user: sharedState.user,
-						subscriptionStatus: sharedState.subscriptionStatus
+						user: sharedState.user
 					}
 				} />
 			);

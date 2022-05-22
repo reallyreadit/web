@@ -11,7 +11,6 @@ import createCommentsScreenFactory from './AppRoot/CommentsScreen';
 import createContenderScreenFactory from './AppRoot/ContendersScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
-import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import classNames from 'classnames';
 import AppApi from '../AppApi';
 import { createQueryString, clientTypeQueryStringKey, unroutableQueryStringKeys } from '../../../common/routing/queryString';
@@ -44,30 +43,18 @@ import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet, getPromiseErrorMessage, formatProblemDetails, formatFetchable } from '../../../common/format';
-import AppStoreSubscriptionPrompt from './AppRoot/AppStoreSubscriptionPrompt';
-import { AppleSubscriptionValidationResponseType, AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
-import { SubscriptionProductsRequest } from '../../../common/models/app/SubscriptionProducts';
-import { SubscriptionPurchaseRequest } from '../../../common/models/app/SubscriptionPurchase';
-import { Result, ResultType } from '../../../common/Result';
-import { SubscriptionStatusType, ActiveSubscriptionStatus, SubscriptionStatus,calculateFreeViewBalance, isFreeViewCreditRequiredForArticle, createFreeTrialArticleView, isTrialingSubscription } from '../../../common/models/subscriptions/SubscriptionStatus';
+import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
-import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
-import { ProblemDetails } from '../../../common/ProblemDetails';
-import { AppStoreErrorType } from '../../../common/Errors';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './AppRoot/BlogScreen';
 import { TweetWebIntentParams, createTweetWebIntentUrl } from '../../../common/sharing/twitter';
-import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
-import { FreeTrialPromoTweetIntentRegistrationRequest } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
-import { isReadupBlogPost } from '../../../common/models/UserArticle';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBestEverScreenFactory from './screens/BestEverScreen';
 
@@ -83,59 +70,15 @@ export interface AuthStatus {
 	provider: AuthServiceProvider,
 	step: AuthStep
 }
-type MenuState = 'opened' | 'closing' | 'closed';
 interface State extends RootState {
 	authStatus: AuthStatus | null,
 	isInOrientation: boolean,
-	isPoppingScreen: boolean,
-	isProcessingPayment: boolean,
-	menuState: MenuState,
+	isPoppingScreen: boolean
 }
-type SharedState = RootSharedState & Pick<State, 'isProcessingPayment'>;
 interface Events extends RootEvents {
-	'newStars': number,
-	'purchaseCompleted': Result<AppleSubscriptionValidationResponse, ProblemDetails>
+	'newStars': number
 }
-function canRead(subscriptionStatus: SubscriptionStatus | null, isProcessingPayment: boolean, article: Pick<ReadArticleReference, 'slug'>) {
-	if (!subscriptionStatus) {
-		return false;
-	}
-	return (
-			subscriptionStatus.isUserFreeForLife
-		||
-			(
-				(subscriptionStatus.type === SubscriptionStatusType.Active) &&
-				!isProcessingPayment
-			)
-		||
-
-			(
-				// determine whether the reader is a free trial reader
-				(
-						isTrialingSubscription(subscriptionStatus)
-					// edge case that should never happen, and if it happens, it's not bad if we top the free trial here?
-					// ||
-					// 	(
-					// 		subscriptionStatus.type === SubscriptionStatusType.Active
-					// 		&& isProcessingPayment
-					// 	)
-				)
-					&&
-				(
-					// free trial reader has remaining balance
-					( calculateFreeViewBalance(subscriptionStatus.freeTrial) > 0 )
-					||
-					// free trial reader already opened this article before
-					!!(subscriptionStatus.freeTrial.articleViews.find(
-						articleView => articleView.articleSlug === article.slug
-					))
-				)
-			)
-		||
-			isReadupBlogPost(article)
-	);
-}
-export default class extends Root<Props, State, SharedState, Events> {
+export default class extends Root<Props, State, RootSharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
 	private _signInLocation: RouteLocation | null;
 	private readonly _noop = () => {
@@ -146,9 +89,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _registerNewStarsEventHandler = (handler: (count: number) => void) => {
 		return this._eventManager.addListener('newStars', handler);
 	};
-	private readonly _registerPurchaseCompletedEventHandler = (handler: (result: Result<AppleSubscriptionValidationResponse, ProblemDetails>) => void) => {
-		return this._eventManager.addListener('purchaseCompleted', handler);
-	}
 
 	// notifications
 	private readonly _requestNotificationAuthorization = () => {
@@ -294,196 +234,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		);
 	};
-	private readonly _registerFreeTrialPromoTweetIntent = (params: FreeTrialPromoTweetIntentRegistrationRequest) => {
-		return this.props.serverApi
-			.registerFreeTrialPromoTweetIntent(params)
-			.then(
-				res => {
-					this.onSubscriptionStatusChanged(res.subscriptionStatus, EventSource.Local);
-					return res;
-				}
-			);
-	}
-
-	// subscriptions
-	private readonly _openAppStoreSubscriptionPromptDialog = (article?: ReadArticleReference, activeSubscription?: ActiveSubscriptionStatus) => {
-		this.props.appApi
-			.getDeviceInfo()
-			.then(
-				deviceInfo => {
-					if (deviceInfo.appVersion.compareTo(new SemanticVersion('7.0.0')) >= 0) {
-						this._dialog.openDialog(
-							sharedState => (
-								<AppStoreSubscriptionPrompt
-									activeSubscription={activeSubscription}
-									article={article}
-									isPaymentProcessing={sharedState.isProcessingPayment}
-									onClose={this._dialog.closeDialog}
-									onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-									onGetSubscriptionStatus={this._getSubscriptionStatus}
-									onReadArticle={this._readArticle}
-									onRegisterPurchaseCompletedEventHandler={this._registerPurchaseCompletedEventHandler}
-									onRequestSubscriptionProducts={this._requestSubscriptionProducts}
-									onRequestSubscriptionPurchase={this._requestSubscriptionPurchase}
-									onRequestSubscriptionReceipt={this._requestSubscriptionReceipt}
-									onValidateSubscription={this._validateSubscription}
-								/>
-							)
-						);
-					} else {
-						this.openAppUpdateRequiredDialog('7.0');
-					}
-				}
-			);
-	};
-	private readonly _openPriceChangeDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			throw new Error('Invalid subscription state.');
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
-			this._openStripePriceChangeDialog(this.state.subscriptionStatus);
-			return;
-		}
-		this._openAppStoreSubscriptionPromptDialog(null, this.state.subscriptionStatus);
-	};
-	private readonly _openSubscriptionAutoRenewDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			return Promise.reject(
-				new Error('Invalid subscription state.')
-			);
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Stripe) {
-			return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
-		}
-		this.props.appApi.openExternalUrlUsingSystem('https://apps.apple.com/account/subscriptions');
-		return new Promise<void>(
-			(resolve, reject) => {
-				const refreshSubscriptionStatus = () => {
-					this.props.appApi.removeListener('didBecomeActive', refreshSubscriptionStatus);
-					this.props.serverApi
-						.requestAppleSubscriptionStatusUpdate()
-						.then(
-							response => {
-								this.onSubscriptionStatusChanged(response.status, EventSource.Local);
-								resolve();
-							}
-						)
-						.catch(reject);
-				};
-				this.props.appApi.addListener('didBecomeActive', refreshSubscriptionStatus);
-			}
-		);
-	};
-	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
-		if (provider == null) {
-			switch (this.props.appApi.deviceInfo.appPlatform) {
-				case AppPlatform.Android:
-					throw new Error(`Subscriptions not implemented for platform: ${AppPlatform.Android}.`);
-				case AppPlatform.Ios:
-				case AppPlatform.MacOs:
-					provider = SubscriptionProvider.Apple;
-					break;
-				case AppPlatform.Linux:
-				case AppPlatform.Windows:
-					provider = SubscriptionProvider.Stripe;
-					break;
-			}
-		}
-		switch (provider) {
-			case SubscriptionProvider.Apple:
-				this._openAppStoreSubscriptionPromptDialog(article);
-				break;
-			case SubscriptionProvider.Stripe:
-				this._openStripeSubscriptionPromptDialog(article);
-				break;
-		}
-	};
-	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
-		.requestPayoutAccountLoginLink()
-		.then(
-			response => {
-				this.props.appApi.openExternalUrl(response.loginUrl);
-			}
-		);
-	private readonly _requestPayoutAccountOnboarding = () => this.props.serverApi
-		.requestPayoutAccountOnboardingLink()
-		.then(
-			response => {
-				if (response.type === PayoutAccountOnboardingLinkRequestResponseType.ReadyForOnboarding) {
-					this.props.appApi.openExternalUrlUsingSystem(response.onboardingUrl);
-					return new Promise<PayoutAccountOnboardingLinkRequestResponse>(
-						(resolve, reject) => {
-							const refreshPayoutAccount = () => {
-								this.props.appApi.removeListener('didBecomeActive', refreshPayoutAccount);
-								this.props.serverApi
-									.requestPayoutAccountUpdate()
-									.then(
-										response => {
-											resolve({
-												type: PayoutAccountOnboardingLinkRequestResponseType.OnboardingCompleted,
-												payoutAccount: response.payoutAccount
-											});
-										}
-									)
-									.catch(reject);
-							};
-							this.props.appApi.addListener('didBecomeActive', refreshPayoutAccount);
-						}
-					);
-				}
-				return response;
-			}
-		);
-	private readonly _requestSubscriptionProducts = (request: SubscriptionProductsRequest) => this.props.appApi.requestSubscriptionProducts(request);
-	private readonly _requestSubscriptionPurchase = (request: SubscriptionPurchaseRequest) => {
-		this.setState(
-			prevState => {
-				if (prevState.isProcessingPayment) {
-					return null;
-				}
-				this.props.appApi
-					.requestSubscriptionPurchase(request)
-					.then(
-						result => {
-							// only process failures here. if the transaction was successfully added to the
-							// payment queue then we will remain in a processing state until we receive a
-							// payment completion event
-							if (result.type === ResultType.Failure) {
-								this._toaster.addToast(
-									formatProblemDetails(result.error),
-									Intent.Danger
-								);
-								this.setState({
-									isProcessingPayment: false
-								});
-							}
-						}
-					)
-					.catch(
-						reason => {
-							this._toaster.addToast(`Purchase failed: ${getPromiseErrorMessage(reason)}`, Intent.Danger);
-							this.setState({
-								isProcessingPayment: false
-							});
-						}
-					);
-				return {
-					isProcessingPayment: true
-				};
-			}
-		);
-	};
-	private readonly _requestSubscriptionReceipt = () => this.props.appApi.requestSubscriptionReceipt();
-	private readonly _validateSubscription = (request: AppleSubscriptionValidationRequest) => this.props.serverApi
-		.validateAppleSubscription(request)
-		.then(
-			response => {
-				if (response.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-					this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-				}
-				return response;
-			}
-		);
 
 	// updates
 	private readonly _installUpdate = () => {
@@ -508,7 +258,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.onUserSignedIn(
 				{
 					displayPreference: response.displayPreference,
-					subscriptionStatus: response.subscriptionStatus,
 					userAccount: response.user
 				},
 				SignInEventType.ExistingUser,
@@ -827,7 +576,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
-				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -852,7 +600,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetAotdHistory: this.props.serverApi.getAotdHistory,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
 				onNavTo: this._navTo,
-				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -943,11 +690,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
 					onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 					onNavTo: this._navTo,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposerWithCompletionHandler: this._openTweetComposerWithCompletionHandler,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onRegisterFreeTrialPromoTweetIntent: this._registerFreeTrialPromoTweetIntent,
 					onShowToast: this._toaster.addToast,
 					onViewAuthor: this._viewAuthor
 				}
@@ -1006,12 +750,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: DeviceType.Ios,
-				onCanReadArticle: this.canRead.bind(this),
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
@@ -1038,45 +780,29 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					appPlatform: this.props.appApi.deviceInfo.appPlatform,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
-					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onDeleteAccount: this._deleteAccount,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
-					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenPriceChangeDialog: this._openPriceChangeDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
-					onRequestPayoutAccountLogin: this._requestPayoutAccountLogin,
-					onRequestPayoutAccountOnboarding: this._requestPayoutAccountOnboarding,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
 					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
-					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
-					onViewPrivacyPolicy: this._viewPrivacyPolicy,
-					stripe: this.props.stripeLoader.value
+					onViewPrivacyPolicy: this._viewPrivacyPolicy
 				}
-			),
-			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {
-				onNavTo: this._navTo,
-				deviceType: DeviceType.Ios
-				// TODO app platform needed?
-			})
+			)
 		};
 
 		// state
@@ -1095,8 +821,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					false
 			),
 			isPoppingScreen: false,
-			isProcessingPayment: false,
-			menuState: 'closed',
 			screens
 		};
 
@@ -1253,7 +977,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							queryString: url.search
 						},
 						route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
-					if (route && route.screenKey !== ScreenKey.Subscribe) {
+					if (route) {
 						const { screens, dialog } = this.processNavigationRequest(this.state.user, location);
 						this.setState({
 							dialogs: (
@@ -1262,90 +986,13 @@ export default class extends Root<Props, State, SharedState, Events> {
 									[]
 							),
 							isPoppingScreen: false,
-							menuState: 'closed',
 							screens
 						});
-					} else if (route?.screenKey === ScreenKey.Subscribe) {
-						if (this.state.user) {
-							this._openSubscriptionPromptDialog();
-						}
 					} else {
 						// must be a redirect url or broken link
 						// send to server for appropriate redirect
 						window.location.href = urlString;
 					}
-				}
-			)
-			.addListener(
-				'openSubscriptionPrompt',
-				() => {
-					this._openSubscriptionPromptDialog();
-				}
-			)
-			.addListener(
-				'subscriptionPurchaseCompleted',
-				result => {
-					// this event can fire at any time. for example a purchased or failed
-					// transaction could have failed to register with the api server. in such
-					// a case the registration will be retried until completed, potentially on
-					// subsequent app launches. therefore only show a toast if we're currently
-					// processing a payment.
-					switch (result.type) {
-						case ResultType.Success:
-							if (result.value.type === AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser) {
-								this.onSubscriptionStatusChanged(result.value.subscriptionStatus, EventSource.Local);
-							}
-							if (this.state.isProcessingPayment) {
-								this.setState({
-									isProcessingPayment: false
-								});
-								let toast: {
-									content: string,
-									intent: Intent
-								};
-								switch (result.value.type) {
-									case AppleSubscriptionValidationResponseType.AssociatedWithAnotherUser:
-										// this toast probably shouldn't disappear on its own but it's also very unlikely
-										// that a user will ever see this. subscriptions associated with another account
-										// should be caught during the status check when the SubscriptionPrompt opens.
-										toast = {
-											content: `Purchase failed: Subscription associated with another account: ${result.value.subscribedUsername}.`,
-											intent: Intent.Neutral
-										};
-										break;
-									case AppleSubscriptionValidationResponseType.AssociatedWithCurrentUser:
-										// this or a failure is what we should see 99% of the time.
-										toast = {
-											content: 'Purchase completed.',
-											intent: Intent.Success
-										};
-										break;
-									case AppleSubscriptionValidationResponseType.EmptyReceipt:
-										// this should never happen
-										toast = {
-											content: 'Purchase failed: Subscription status inactive.',
-											intent: Intent.Danger
-										};
-										break;
-								}
-								this._toaster.addToast(toast.content, toast.intent);
-							}
-							break;
-						case ResultType.Failure:
-							if (this.state.isProcessingPayment) {
-								this._toaster.addToast(
-									formatProblemDetails(result.error),
-									result.error.type === AppStoreErrorType.PurchaseCancelled ?
-										Intent.Neutral :
-										Intent.Danger
-								);
-								this.setState({
-									isProcessingPayment: false
-								});
-							}
-							break;
-					}
-					this._eventManager.triggerEvent('purchaseCompleted', result);
 				}
 			)
 			.addListener(
@@ -1372,23 +1019,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			);
 	}
 	private enterReaderView(article: Pick<ReadArticleReference, 'slug'>) {
-		// Proactively register the article view in order to keep the subscription status state (and free view counters) up to date.
-		if (
-			isFreeViewCreditRequiredForArticle(this.state.subscriptionStatus, article)
-		) {
-			this.onSubscriptionStatusChanged(
-				{
-					...this.state.subscriptionStatus,
-					freeTrial: {
-						...this.state.subscriptionStatus.freeTrial,
-						articleViews: this.state.subscriptionStatus.freeTrial.articleViews.concat(
-							createFreeTrialArticleView(article)
-						),
-					}
-				},
-				EventSource.Local
-			);
-		}
 		// Send the signal to the native app.
 		this.props.appApi.readArticle(article);
 	}
@@ -1421,18 +1051,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 		let screens: Screen[];
 		let dialog: React.ReactNode;
 		const route = findRouteByLocation(routes, location, unroutableQueryStringKeys);
-		if (route.screenKey === ScreenKey.Read || route.screenKey === ScreenKey.Subscribe) {
+		if (route.screenKey === ScreenKey.Read) {
 			dialog = null;
 			if (user) {
 				screens = [
-					route.screenKey === ScreenKey.Read ?
-						this.createScreen(ScreenKey.Comments, route.getPathParams(location.path)) :
-						this.createScreen(ScreenKey.Home)
+					this.createScreen(ScreenKey.Comments, route.getPathParams(location.path))
 				];
 			} else {
-				this._signInLocation = route.screenKey === ScreenKey.Read ?
-					location :
-					null;
+				this._signInLocation = location;
 				screens = [];
 			}
 		} else {
@@ -1490,7 +1116,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 	private setScreenState(screens: Screen[]) {
 		this.setState({
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
 		});
 	}
@@ -1504,9 +1129,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected getSharedState() {
 		return {
 			displayTheme: this.state.displayTheme,
-			isProcessingPayment: this.state.isProcessingPayment,
-			revenueReport: this.state.revenueReport,
-			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
 	}
@@ -1521,16 +1143,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected navTo(ref: NavReference, options: NavOptions = { method: NavMethod.Push }) {
 		const result = parseNavReference(ref);
 		if (result.isInternal && result.screenKey != null) {
-			let readRef: Pick<ReadArticleReference, 'slug'>;
-			if (
-				result.screenKey === ScreenKey.Read &&
-				this.canRead(
-					readRef = {
-						slug: createArticleSlug(result.screenParams)
-					}
-				)
-			) {
-				this.enterReaderView(readRef);
+			if (result.screenKey === ScreenKey.Read) {
+				this.enterReaderView({
+					slug: createArticleSlug(result.screenParams)
+				});
 			} else {
 				switch (options.method) {
 					case NavMethod.Push:
@@ -1594,33 +1210,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 			screen = this.createScreen(ScreenKey.Home);
 		} else {
 			const route = findRouteByLocation(routes, this._signInLocation, unroutableQueryStringKeys);
-			let
-				articlePathParams: { [key: string]: string } | undefined,
-				articleRef: Pick<ReadArticleReference, 'slug'> | undefined;
 			// We need to use the stateless canRead function here because the new user state isn't
 			// set until this function returns.
-			if (
-				route.screenKey === ScreenKey.Read &&
-				canRead(
-					profile.subscriptionStatus,
-					this.state.isProcessingPayment,
+			if (route.screenKey === ScreenKey.Read) {
+				const
+					articlePathParams = route.getPathParams(this._signInLocation.path),
 					articleRef = {
-						slug: createArticleSlug(
-							articlePathParams = route.getPathParams(this._signInLocation.path)
-						)
-					}
-				)
-			) {
+						slug: createArticleSlug(articlePathParams)
+					};
 				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
-				// We can't user enterReaderView here because it modifies the current state and the new user
-				// state isn't set until this function returns.
-				if (
-					isFreeViewCreditRequiredForArticle(profile.subscriptionStatus, articleRef)
-				) {
-					profile.subscriptionStatus.freeTrial.articleViews.push(
-						createFreeTrialArticleView(articleRef)
-					);
-				}
 				this.props.appApi.readArticle(articleRef);
 			} else {
 				screen = this
@@ -1666,23 +1264,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		return super.onUserSignedOut(
 			{
-				menuState: 'closed',
 				screens: []
 			}
 		);
 	}
 
-	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
-		return canRead(this.state.subscriptionStatus, this.state.isProcessingPayment, article);
-	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<Element>) {
 		ev?.preventDefault();
-		if (this.canRead(article)) {
-			this.enterReaderView(article);
-		} else {
-			this._viewRead(article);
-			// this._openSubscriptionPromptDialog(article);
-		}
+		this.enterReaderView(article);
 	}
 	protected reloadWindow() {
 		window.location.reload(true);
@@ -1706,7 +1295,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewMyFeed={this._viewMyFeed}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
-							subscriptionStatus={this.state.subscriptionStatus}
 							user={this.state.user}
 						/>
 						<div className="content">
@@ -1745,7 +1333,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}
-							subscriptionStatus={this.state.subscriptionStatus}
 						/>
 						{this.state.isInOrientation ?
 							<OrientationWizard
@@ -1820,31 +1407,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}
 		}, 100);
 		// check for read url (the following condition can only be true in old iOS clients)
-		let articleSlug: string | undefined;
 		if (
 			initialRoute.screenKey === ScreenKey.Read &&
-			this.props.initialUserProfile &&
-			this.canRead({
-				slug: (
-					articleSlug = createArticleSlug(
-						initialRoute.getPathParams(this.props.initialLocation.path)
-					)
-				)
-			})
+			this.props.initialUserProfile
 		) {
 			this.enterReaderView({
-				slug: articleSlug
+				slug: createArticleSlug(
+					initialRoute.getPathParams(this.props.initialLocation.path)
+				)
 			});
-		}
-		// open subscription dialog if the initial route is to Subscribe
-		// ugly hack since the dialog doesn't support server-side rendering
-		if (initialRoute.screenKey === ScreenKey.Subscribe && this.state.user) {
-			window.setTimeout(
-				() => {
-					this._openSubscriptionPromptDialog();
-				},
-				0
-			);
 		}
 	}
 	public componentWillUnmount() {

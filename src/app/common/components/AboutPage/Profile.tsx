@@ -11,6 +11,7 @@ export enum SocialType {
 
 export interface ProfileData {
 	name: string,
+	title: string,
 	readerName: string,
 	imageName: string,
 	web: string,
@@ -18,7 +19,7 @@ export interface ProfileData {
 }
 
 const profile = ({
-	data: {name, readerName, imageName, web, mail},
+	data: {name, readerName, imageName, web, title},
 	onCreateStaticContentUrl,
 	onNavTo
 	}: {
@@ -30,6 +31,7 @@ const profile = ({
 		<img className="picture" src={onCreateStaticContentUrl(`/app/images/team-page/${imageName}`)} alt={`${name}'s profile picture`} />
 		<div className="details">
 			<span className="name">{name}</span>
+			<span>{title}</span>
 			<div>
 				Reader name: <Link
 					className="reader-link"

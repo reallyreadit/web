@@ -16,9 +16,8 @@ import createAdminPageScreenFactory from './AdminPage';
 import { createScreenFactory as createPrivacyPolicyScreenFactory } from './PrivacyPolicyPage';
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
-import { createScreenFactory as createMissionScreenFactory } from './MissionPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
-import createTeamPageFactory from './TeamPage';
+import createTeamPageFactory from './AboutPage';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
 import classNames from 'classnames';
@@ -59,25 +58,10 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionStatus, ActiveSubscriptionStatus, SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import Lazy from '../../../common/Lazy';
-import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import { StripePaymentResponse, StripePaymentResponseType } from '../../../common/models/subscriptions/StripePaymentResponse';
-import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { SubscriptionPriceSelection, isStandardSubscriptionPriceLevel } from '../../../common/models/subscriptions/SubscriptionPrice';
-import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
-import StripeSubscriptionPrompt from './StripeSubscriptionPrompt';
-import StripePaymentConfirmationDialog from './StripePaymentConfirmationDialog';
-import StripeAutoRenewDialog from './StripeAutoRenewDialog';
-import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
-import StripePriceChangeDialog from './StripePriceChangeDialog';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
-import { SubscriptionPaymentMethodUpdateRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
-import { RevenueReportResponse } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
-import { EarningsExplainerDialog } from './EarningsExplainerDialog';
 import { ArticleStarredEvent } from '../AppApi';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
@@ -88,7 +72,6 @@ export interface Props {
 	initialUserProfile: WebAppUserProfile | null,
 	serverApi: ServerApi,
 	staticServerEndpoint: HttpEndpoint,
-	stripeLoader: Lazy<Promise<Stripe>>,
 	version: SemanticVersion,
 	webServerEndpoint: HttpEndpoint
 }
@@ -151,15 +134,13 @@ export interface ScreenFactory<TSharedState> {
 export type State = (
 	{
 		displayTheme: DisplayTheme | null,
-		revenueReport: Fetchable<RevenueReportResponse>,
 		screens: Screen[],
-		subscriptionStatus: SubscriptionStatus,
 		user: UserAccount | null
 	} &
 	ToasterState &
 	DialogServiceState
 );
-export type SharedState = Pick<State, 'displayTheme' | 'revenueReport' | 'subscriptionStatus' | 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'user'>;
 export type Events = {
 	'articleUpdated': ArticleUpdatedEvent,
 	'articlePosted': Post,
@@ -345,17 +326,6 @@ export default abstract class Root<
 	};
 
 	// dialogs
-	protected readonly _openEarningsExplainerDialog = () => {
-		this._dialog.openDialog(
-			sharedState => (
-				<EarningsExplainerDialog
-					onClose={this._dialog.closeDialog}
-					onReadArticle={this._readArticle}
-					revenueReport={sharedState.revenueReport}
-				/>
-			)
-		);
-	};
 	protected readonly _openNewPlatformNotificationRequestDialog = () => {
 		this._dialog.openDialog(
 			<NewPlatformNotificationRequestDialog
@@ -534,208 +504,7 @@ export default abstract class Root<
 	};
 
 	// subscriptions
-	private readonly _changeStripeSubscriptionPrice = (price: SubscriptionPriceSelection) => this.props.serverApi
-		.changeStripeSubscriptionPrice(
-			isStandardSubscriptionPriceLevel(price) ?
-				({
-					priceLevelId: price.id
-				}) :
-				({
-					customPriceAmount: price.amount
-				})
-		)
-		.then(this._handleSubscriptionPaymentResponse);
-	protected readonly _changeSubscriptionPaymentMethod = (card: StripeCardElement) => this.props.serverApi
-		.createStripeSetupIntent()
-		.then(
-			response => this.props.stripeLoader.value.then(
-				stripe => stripe.confirmCardSetup(
-					response.clientSecret,
-					{
-						payment_method: {
-							card
-						}
-					}
-				)
-			)
-		)
-		.then(
-			result => {
-				if (!result.setupIntent) {
-					throw result.error;
-				}
-				return this.props.serverApi.changeSubscriptionPaymentMethod({
-					paymentMethodId: result.setupIntent.payment_method
-				});
-			}
-		);
-	private readonly _completeStripeSubscriptionUpgrade = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
-		card,
-		price,
-		request => this.props.serverApi.completeStripeSubscriptionUpgrade(request)
-	);
-	private readonly _confirmSubscriptionCardPayment: ((invoiceId: string, clientSecret?: string) => Promise<StripePaymentResponse>) = (invoiceId, clientSecret) => {
-		let clientConfirmation: Promise<any>;
-		if (clientSecret) {
-			clientConfirmation = this.props.stripeLoader.value.then(
-				stripe => stripe.confirmCardPayment(clientSecret)
-			);
-		} else {
-			clientConfirmation = Promise.resolve();
-		}
-		return clientConfirmation.then(
-			() => this.props.serverApi
-				.confirmStripeSubscriptionPayment({
-					invoiceId
-				})
-				.then(this._handleSubscriptionPaymentResponse)
-		);
-	};
-	private readonly _createStripeSubscription = (card: StripeCardElement, price: SubscriptionPriceSelection) => this._processStripeSubscriptionPayment(
-		card,
-		price,
-		request => this.props.serverApi.createStripeSubscription(request)
-	);
-	private readonly _handleSubscriptionPaymentResponse = (response: StripePaymentResponse) => {
-		this.onSubscriptionStatusChanged(response.subscriptionStatus, EventSource.Local);
-		if (response.type === StripePaymentResponseType.RequiresConfirmation) {
-			return this._confirmSubscriptionCardPayment(response.invoiceId, response.clientSecret);
-		}
-		return response;
-	};
-	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => {
-		return this.props.serverApi.getSubscriptionDistributionSummary(
-			summary => {
-				if (summary.value) {
-					this.onSubscriptionStatusChanged(summary.value.subscriptionStatus, EventSource.Local);
-				}
-				callback(summary);
-			}
-		);
-	}
-	protected readonly _getSubscriptionStatus = (callback: (response: Fetchable<SubscriptionStatusResponse>) => void) => this.props.serverApi.getSubscriptionStatus(
-		response => {
-			if (response.value) {
-				this.onSubscriptionStatusChanged(response.value.status, EventSource.Local);
-			}
-			callback(response);
-		}
-	);
-	protected readonly _openStripeAutoRenewDialog = (currentStatus: ActiveSubscriptionStatus) => new Promise<void>(
-		resolve => {
-			const
-				close = () => {
-					this._dialog.closeDialog();
-					resolve();
-				},
-				setAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.props.serverApi
-					.setStripeSubscriptionAutoRenewStatus(request)
-					.then(
-						response => {
-							this.onSubscriptionStatusChanged(response.status, EventSource.Local);
-							return response;
-						}
-					);
-			this._dialog.openDialog(
-				() => (
-					<StripeAutoRenewDialog
-						currentStatus={currentStatus}
-						onClose={close}
-						onSetStripeSubscriptionAutoRenewStatus={setAutoRenewStatus}
-						onShowToast={this._toaster.addToast}
-					/>
-				)
-			);
-		}
-	);
-	protected readonly _openStripePaymentConfirmationDialog = (invoiceId: string) => {
-		this._dialog.openDialog(
-			() => (
-				<StripePaymentConfirmationDialog
-					invoiceId={invoiceId}
-					onClose={this._dialog.closeDialog}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onShowToast={this._toaster.addToast}
-					onConfirmPayment={this._confirmSubscriptionCardPayment}
-				/>
-			)
-		);
-	};
-	protected readonly _openStripePriceChangeDialog = (activeSubscription: ActiveSubscriptionStatus) => {
-		this._dialog.openDialog(
-			sharedState => (
-				<StripePriceChangeDialog
-					activeSubscription={activeSubscription}
-					displayTheme={sharedState.displayTheme}
-					onChangePrice={this._changeStripeSubscriptionPrice}
-					onClose={this._dialog.closeDialog}
-					onCompleteUpgrade={this._completeStripeSubscriptionUpgrade}
-					onCreateStaticContentUrl={this._createStaticContentUrl}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onOpenStripeSubscriptionPrompt={this._openStripeSubscriptionPromptDialog}
-					onShowToast={this._toaster.addToast}
-					stripe={this.props.stripeLoader.value}
-				/>
-			)
-		);
-	};
-	protected readonly _openStripeSubscriptionPromptDialog = (article?: ReadArticleReference) => {
-		this._dialog.openDialog(
-			sharedState => (
-				<StripeSubscriptionPrompt
-					article={article}
-					displayTheme={sharedState.displayTheme}
-					onClose={this._dialog.closeDialog}
-					onCreateStaticContentUrl={this._createStaticContentUrl}
-					onGetSubscriptionPriceLevels={this.props.serverApi.getSubscriptionPriceLevels}
-					onGetSubscriptionStatus={this._getSubscriptionStatus}
-					onReadArticle={this._readArticle}
-					onShowToast={this._toaster.addToast}
-					onSubscribe={this._createStripeSubscription}
-					stripe={this.props.stripeLoader.value}
-					subscriptionStatus={sharedState.subscriptionStatus}
-				/>
-			)
-		);
-	};
-	private readonly _processStripeSubscriptionPayment = (
-		card: StripeCardElement,
-		price: SubscriptionPriceSelection,
-		submit: (request: StripeSubscriptionPaymentRequest) => Promise<StripePaymentResponse>
-	) => this.props.stripeLoader.value
-		.then(
-			stripe => stripe.createPaymentMethod({
-				type: 'card',
-				card
-			})
-		)
-		.then(
-			result => {
-				if (result.error) {
-					throw new Error(result.error.message);
-				}
-				let request: StripeSubscriptionPaymentRequest;
-				if (
-					isStandardSubscriptionPriceLevel(price)
-				) {
-					request = {
-						paymentMethodId: result.paymentMethod.id,
-						priceLevelId: price.id
-					};
-				} else {
-					request = {
-						paymentMethodId: result.paymentMethod.id,
-						customPriceAmount: price.amount
-					};
-				}
-				return submit(request)
-					.then(this._handleSubscriptionPaymentResponse);
-			}
-		);
-	protected readonly _updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) =>
-		this.props.serverApi.updateSubscriptionPaymentMethod(request);
-	private _revenueReportTimestamp = Date.now();
+	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
@@ -824,7 +593,6 @@ export default abstract class Root<
 			settings => {
 				if (settings.value) {
 					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
-					this.onSubscriptionStatusChanged(settings.value.subscriptionStatus, EventSource.Local);
 				}
 				callback(settings);
 			}
@@ -894,18 +662,7 @@ export default abstract class Root<
 		// state
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
-			revenueReport: props.serverApi.getSubscriptionRevenueReport(
-				{
-					useCache: true
-				},
-				response => {
-					this.setState({
-						revenueReport: response
-					});
-				}
-			),
 			toasts: [],
-			subscriptionStatus: props.initialUserProfile?.subscriptionStatus,
 			user: props.initialUserProfile?.userAccount
 		} as TState;
 
@@ -964,11 +721,6 @@ export default abstract class Root<
 			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
 				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
 			}),
-			[ScreenKey.Mission]: createMissionScreenFactory(ScreenKey.Mission,
-				{
-					onNavTo: this._navTo
-				}
-			),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(
 				ScreenKey.PrivacyPolicy, {
@@ -979,8 +731,8 @@ export default abstract class Root<
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
 			}),
-			[ScreenKey.Team]: createTeamPageFactory(
-				ScreenKey.Team,
+			[ScreenKey.About]: createTeamPageFactory(
+				ScreenKey.About,
 				{
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onNavTo: this._navTo
@@ -1028,7 +780,6 @@ export default abstract class Root<
 					{
 						...supplementaryState as State,
 						displayTheme: userProfile?.displayPreference.theme,
-						subscriptionStatus: userProfile?.subscriptionStatus,
 						user: userProfile?.userAccount
 					},
 					() => {
@@ -1038,24 +789,6 @@ export default abstract class Root<
 				);
 			}
 		);
-	}
-	protected checkRevenueReportExpiration() {
-		const now = Date.now();
-		if (now - this._revenueReportTimestamp >= 1 * 60 * 60 * 1000) {
-			// Don't request the cached value if the revenue report timestamp has been invalidated.
-			this.props.serverApi.getSubscriptionRevenueReport(
-				{
-					useCache: this._revenueReportTimestamp !== 0
-				},
-				response => {
-					this.setState({
-						revenueReport: response
-					});
-				}
-			);
-			// Reset the revenue report timestamp.
-			this._revenueReportTimestamp = now;
-		}
 	}
 	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: SemanticVersion }> {
 		const
@@ -1137,24 +870,6 @@ export default abstract class Root<
 	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
 		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
 	}
-	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
-		// Invalidate the revenue report timestamp if the subscription has changed.
-		const currentStatus = this.state.subscriptionStatus as SubscriptionStatus;
-		if (
-			status.type === SubscriptionStatusType.Active &&
-			(
-				!currentStatus ||
-				currentStatus.type !== SubscriptionStatusType.Active ||
-				currentStatus.price.amount !== status.price.amount
-			)
-		) {
-			this._revenueReportTimestamp = 0;
-		}
-		// Update the state.
-		this.setState({
-			subscriptionStatus: status
-		});
-	}
 	protected onTitleChanged(title: string) { }
 	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<TState>) {
 		if (
@@ -1175,7 +890,6 @@ export default abstract class Root<
 		});
 	}
 
-	protected abstract canRead(article: Pick<ReadArticleReference, 'slug'>): boolean;
 	protected abstract readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;

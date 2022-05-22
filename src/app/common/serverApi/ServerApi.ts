@@ -64,26 +64,13 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType } from '../../../common/DeviceType';
-import { AppleSubscriptionValidationRequest, AppleSubscriptionValidationResponse } from '../../../common/models/subscriptions/AppleSubscriptionValidation';
-import { StripeSubscriptionPaymentRequest } from '../../../common/models/subscriptions/StripeSubscriptionPaymentRequest';
-import { SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse } from '../../../common/models/subscriptions/SubscriptionPriceLevels';
-import { SubscriptionStatusResponse } from '../../../common/models/subscriptions/SubscriptionStatusResponse';
-import { StripePaymentConfirmationRequest } from '../../../common/models/subscriptions/StripePaymentConfirmationRequest';
-import { StripePaymentResponse } from '../../../common/models/subscriptions/StripePaymentResponse';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
-import { StripeAutoRenewStatusRequest } from '../../../common/models/subscriptions/StripeAutoRenewStatusRequest';
-import { StripePriceChangeRequest } from '../../../common/models/subscriptions/StripePriceChangeRequest';
-import { SubscriptionPaymentMethodUpdateRequest, SubscriptionPaymentMethodResponse, SubscriptionPaymentMethodChangeRequest } from '../../../common/models/subscriptions/SubscriptionPaymentMethod';
-import { StripeSetupIntentResponse } from '../../../common/models/subscriptions/StripeSetupIntentResponse';
-import { RevenueReportResponse, RevenueReportRequest } from '../../../common/models/subscriptions/RevenueReport';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
 import { AuthorsEarningsReportResponse, AuthorsEarningsReportRequest } from '../../../common/models/subscriptions/AuthorEarningsReport';
 import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
-import { PayoutAccountOnboardingLinkRequestResponse, PayoutAccountResponse, PayoutAccountLoginLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
-import { FreeTrialPromoTweetIntentRegistrationRequest, FreeTrialPromoTweetIntentRegistrationResponse } from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 import { PayoutReportRequest, PayoutReportResponse } from '../../../common/models/subscriptions/PayoutReport';
 
@@ -229,26 +216,9 @@ export default abstract class {
 	public readonly getUserCount = this.createFetchFunction<{ userCount: number }>('/Stats/UserCount');
 
 	// Subscriptions
-	public readonly changeStripeSubscriptionPrice = (request: StripePriceChangeRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePriceChange', data: request });
-	public readonly changeSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodChangeRequest) => this.post<SubscriptionPaymentMethodResponse>({ path: '/Subscriptions/StripePaymentMethodChange', data: request });
-	public readonly confirmStripeSubscriptionPayment = (request: StripePaymentConfirmationRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripePaymentConfirmation', data: request });
-	public readonly completeStripeSubscriptionUpgrade = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeUpgradePayment', data: request });
 	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<AuthorsEarningsReportRequest, AuthorsEarningsReportResponse>('/Subscriptions/AuthorsEarningsReport');
 	public readonly getPayoutReport = this.createFetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>('/Subscriptions/PayoutReport');
 	public readonly getSubscriptionDistributionSummary = this.createFetchFunction<SubscriptionDistributionSummaryResponse>('/Subscriptions/DistributionSummary');
-	public readonly getSubscriptionPriceLevels = this.createFetchFunctionWithParams<SubscriptionPriceLevelsRequest, SubscriptionPriceLevelsResponse>('/Subscriptions/PriceLevels');
-	public readonly getSubscriptionRevenueReport = this.createFetchFunctionWithParams<RevenueReportRequest, RevenueReportResponse>('/Subscriptions/RevenueReport');
-	public readonly getSubscriptionStatus = this.createFetchFunction<SubscriptionStatusResponse>('/Subscriptions/Status');
-	public readonly createStripeSetupIntent = () => this.post<StripeSetupIntentResponse>({ path: '/Subscriptions/StripeSetupIntentRequest' });
-	public readonly createStripeSubscription = (request: StripeSubscriptionPaymentRequest) => this.post<StripePaymentResponse>({ path: '/Subscriptions/StripeSubscription', data: request });
-	public readonly registerFreeTrialPromoTweetIntent = (request: FreeTrialPromoTweetIntentRegistrationRequest) => this.post<FreeTrialPromoTweetIntentRegistrationResponse>({ path: '/Subscriptions/FreeTrialPromoTweetIntent', data: request });
-	public readonly requestAppleSubscriptionStatusUpdate = () => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/AppleSubscriptionStatusUpdateRequest' });
-	public readonly requestPayoutAccountLoginLink = () => this.post<PayoutAccountLoginLinkRequestResponse>({ path: '/Subscriptions/PayoutAccountLoginLinkRequest' });
-	public readonly requestPayoutAccountOnboardingLink = () => this.post<PayoutAccountOnboardingLinkRequestResponse>({ path: '/Subscriptions/PayoutAccountOnboardingLinkRequest' });
-	public readonly requestPayoutAccountUpdate = () => this.post<PayoutAccountResponse>({ path: '/Subscriptions/PayoutAccountUpdateRequest' });
-	public readonly setStripeSubscriptionAutoRenewStatus = (request: StripeAutoRenewStatusRequest) => this.post<SubscriptionStatusResponse>({ path: '/Subscriptions/StripeAutoRenewStatus', data: request });
-	public readonly updateSubscriptionPaymentMethod = (request: SubscriptionPaymentMethodUpdateRequest) => this.post<SubscriptionPaymentMethodResponse>({ path: '/Subscriptions/StripePaymentMethodUpdate', data: request });
-	public readonly validateAppleSubscription = (request: AppleSubscriptionValidationRequest) => this.post<AppleSubscriptionValidationResponse>({ path: '/Subscriptions/AppleSubscriptionValidation', data: request });
 
 	// UserAccounts
 	public readonly changeDisplayPreference = (data: DisplayPreference) => this.post<DisplayPreference>({ path: '/UserAccounts/DisplayPreference', data });

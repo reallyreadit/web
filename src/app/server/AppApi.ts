@@ -4,8 +4,6 @@ import UserAccount from '../../common/models/UserAccount';
 import SignInEventType from '../../common/models/userAccounts/SignInEventType';
 import WebAuthRequest from '../../common/models/app/WebAuthRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
-import { SubscriptionProductsRequest } from '../../common/models/app/SubscriptionProducts';
-import { SubscriptionPurchaseRequest } from '../../common/models/app/SubscriptionPurchase';
 
 export default class extends AppApi {
 	public displayPreferenceChanged(preference: DisplayPreference) {
@@ -36,15 +34,6 @@ export default class extends AppApi {
 		throw new Error('Operation not supported in server environment');
 	}
 	public requestNotificationAuthorization() {
-		return Promise.reject('Operation not supported in server environment');
-	}
-	public requestSubscriptionProducts(request: SubscriptionProductsRequest) {
-		return Promise.reject('Operation not supported in server environment');
-	}
-	public requestSubscriptionPurchase(request: SubscriptionPurchaseRequest) {
-		return Promise.reject('Operation not supported in server environment');
-	}
-	public requestSubscriptionReceipt() {
 		return Promise.reject('Operation not supported in server environment');
 	}
 	public requestWebAuthentication(request: WebAuthRequest) {

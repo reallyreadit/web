@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavOptions, NavReference, ReadArticleReference, Screen } from '../Root';
+import { NavOptions, NavReference, Screen } from '../Root';
 import { SharedState } from '../BrowserRoot';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import UserArticle from '../../../../common/models/UserArticle';
@@ -23,7 +23,6 @@ import { calculateEstimatedReadTime } from '../../../../common/calculate';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
-import SubscriptionProvider from '../../../../common/models/subscriptions/SubscriptionProvider';
 import SemanticVersion from '../../../../common/SemanticVersion';
 
 interface Props {
@@ -33,12 +32,10 @@ interface Props {
 	location: RouteLocation,
 	isExtensionInstalled: boolean,
 	onBeginOnboarding: (analyticsAction: string) => void,
-	onCanReadArticle: (article: UserArticle) => boolean,
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
 	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
 	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onOpenSubscriptionPromptDialog: (article?: ReadArticleReference, provider?: SubscriptionProvider) => void
 	onReadArticle: (article: UserArticle) => void,
 	user: UserAccount | null
 }
@@ -50,7 +47,6 @@ class ReadScreen extends React.PureComponent<Props> {
 		if (
 			(
 				this.props.article.value &&
-				this.props.onCanReadArticle(this.props.article.value) &&
 				this.props.isExtensionInstalled &&
 				this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) < 0 &&
 				localStorage.getItem('extensionReminderAcknowledged')
@@ -152,9 +148,7 @@ class ReadScreen extends React.PureComponent<Props> {
 												:
 													<Button
 														intent="loud"
-														onClick={(this.props.onCanReadArticle(this.props.article.value)) ?
-																this._readArticle :
-																() => this.props.onOpenSubscriptionPromptDialog(this.props.article.value)}
+														onClick={this._readArticle}
 														size="large"
 														align="center"
 														text="Read Article"

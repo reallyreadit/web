@@ -1,16 +1,13 @@
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
-import NavBar from './BrowserRoot/NavBar';
 import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference, parseNavReference, ReadArticleReference } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
-import { createScreenFactory as createSubscriptionPageScreenFactory } from './SubscriptionPage';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
 import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
@@ -49,21 +46,16 @@ import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../c
 import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
-import { SubscriptionStatusType, SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
-import SubscriptionProvider from '../../../common/models/subscriptions/SubscriptionProvider';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
-import { PayoutAccountOnboardingLinkRequestResponseType, PayoutAccountOnboardingLinkRequestResponse } from '../../../common/models/subscriptions/PayoutAccount';
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import SemanticVersion from '../../../common/SemanticVersion';
-import {FreeTrialPromoTweetIntentRegistrationRequest} from '../../../common/models/subscriptions/FreeTrialPromoTweetIntent';
-import { isReadupBlogPost } from '../../../common/models/UserArticle';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -73,17 +65,14 @@ interface Props extends RootProps {
 type OnboardingState = Pick<OnboardingProps, 'analyticsAction' | 'authServiceToken' | 'initialAuthenticationStep' | 'passwordResetEmail' | 'passwordResetToken'>;
 interface State extends RootState {
 	isExtensionInstalled: boolean,
-	menuState: MenuState,
 	onboarding: OnboardingState | null,
 	welcomeMessage: WelcomeMessage | null
 }
-type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
 	AppleIdInvalidSession = 'AppleInvalidSessionId',
 	Rebrand = 'rebrand',
-	StripeOnboardingFailed = 'StripeOnboardingFailed',
 	TwitterEmailAddressRequired = 'TwitterEmailAddressRequired',
 	TwitterVerificationFailed = 'TwitterInvalidAuthToken'
 }
@@ -91,7 +80,6 @@ const welcomeMessages = {
 	[WelcomeMessage.AppleIdInvalidJwt]: 'We were unable to validate the ID token.',
 	[WelcomeMessage.AppleIdInvalidSession]: 'We were unable to validate your session ID.',
 	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!',
-	[WelcomeMessage.StripeOnboardingFailed]: 'We were unable to connect your Stripe account. Please contact support.',
 	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
 	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.'
 };
@@ -118,18 +106,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 
-	// menu
-	private readonly _closeMenu = () => {
-		this.setState({ menuState: 'closing' });
-	};
-	private readonly _hideMenu = () => {
-		this.setState({ menuState: 'closed' });
-	};
-	private readonly _openMenu = () => {
-		this.checkRevenueReportExpiration();
-		this.setState({ menuState: 'opened' });
-	};
-
 	// welcome message
 	private readonly _dismissWelcomeMessage = () => {
 		this.setState({ welcomeMessage: null });
@@ -143,12 +119,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		'Author not found'
 	);
 	private readonly _createFaqScreenTitle = () => 'Frequently Asked Questions';
-	private readonly _viewAdminPage = () => {
-		this.setScreenState({
-			key: ScreenKey.Admin,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewAotdHistory = () => {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
@@ -164,69 +134,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.Push
 		});
 	};
-	private readonly _viewFaq = () => {
-		this.setScreenState({
-			key: ScreenKey.Faq,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
 			method: NavMethod.ReplaceAll
 		});
 	};
-	private readonly _viewNotifications = () => {
-		this.setScreenState({
-			key: ScreenKey.Notifications,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewLeaderboards = () => {
-		this.setScreenState({
-			key: ScreenKey.Leaderboards,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewMyImpact = () => {
-		this.setScreenState({
-			key: ScreenKey.MyImpact,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewMission = () => {
-		this.setScreenState({
-			key: ScreenKey.Mission,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewMyReads = () => {
-		this.setScreenState({
-			key: ScreenKey.MyReads,
-			method: NavMethod.ReplaceAll
-		});
-	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewSearch = () => {
-		this.setScreenState({
-			key: ScreenKey.Search,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewSettings = () => {
-		this.setScreenState({
-			key: ScreenKey.Settings,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewStats = () => {
-		this.setScreenState({
-			key: ScreenKey.Stats,
 			method: NavMethod.ReplaceAll
 		});
 	};
@@ -267,77 +183,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 		openTweetComposerBrowserWindow(params);
 	};
 
-	// subscriptions
-	private readonly _openPriceChangeDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			throw new Error('Invalid subscription state.');
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Apple) {
-			throw new Error('Operation not supported in browser environment.');
-		}
-		this._openStripePriceChangeDialog(this.state.subscriptionStatus);
-	};
-	private readonly _openSubscriptionAutoRenewDialog = () => {
-		if (this.state.subscriptionStatus.type !== SubscriptionStatusType.Active) {
-			return Promise.reject(
-				new Error('Invalid subscription state.')
-			);
-		}
-		if (this.state.subscriptionStatus.provider === SubscriptionProvider.Apple) {
-			return Promise.reject(
-				new Error('Operation not supported in browser environment.')
-			);
-		}
-		return this._openStripeAutoRenewDialog(this.state.subscriptionStatus);
-	};
-	private readonly _openSubscriptionPromptDialog = (article?: ReadArticleReference, provider?: SubscriptionProvider) => {
-		if (provider === SubscriptionProvider.Apple) {
-			throw new Error('Operation not supported in browser environment.');
-		}
-		this._openStripeSubscriptionPromptDialog(article);
-	};
-	private readonly _requestPayoutAccountLogin = () => this.props.serverApi
-		.requestPayoutAccountLoginLink()
-		.then(
-			response => {
-				window.location.href = response.loginUrl;
-				return new Promise<void>(
-					() => {
-						// leave the promise unresolved as the browser navigates
-					}
-				);
-			}
-		);
-	private readonly _requestPayoutAccountOnboarding = () => this.props.serverApi
-		.requestPayoutAccountOnboardingLink()
-		.then(
-			response => {
-				if (response.type === PayoutAccountOnboardingLinkRequestResponseType.ReadyForOnboarding) {
-					window.location.href = response.onboardingUrl;
-					return new Promise<PayoutAccountOnboardingLinkRequestResponse>(
-						() => {
-							// leave the promise unresolved as the browser navigates
-						}
-					);
-				}
-				return response;
-			}
-		);
-
 	// user account
 	private readonly _beginOnboarding = (analyticsAction: string) => {
 		this.setState({
 			onboarding: {
 				analyticsAction,
 				initialAuthenticationStep: OnboardingStep.CreateAccount
-			}
-		});
-	};
-	private readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
-		this.setState({
-			onboarding: {
-				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.SignIn
 			}
 		});
 	};
@@ -618,7 +469,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
 				onNavTo: this._navTo,
-				onOpenEarningsExplainerDialog: this._openEarningsExplainerDialog,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
@@ -631,7 +481,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
-				onViewMission: this._viewMission,
 				onViewProfile: this._viewProfile
 			}),
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(
@@ -684,14 +533,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
 					onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
 					onNavTo: this.navTo,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 					onViewAuthor: this._viewAuthor,
 					onShowToast: this._toaster.addToast,
 					// dummy
-					onOpenTweetComposerWithCompletionHandler: (param) => Promise.reject(),
-					onRegisterFreeTrialPromoTweetIntent: (request: FreeTrialPromoTweetIntentRegistrationRequest) => Promise.reject()
+					onOpenTweetComposerWithCompletionHandler: (param) => Promise.reject()
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
@@ -756,13 +602,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 				deviceType: this.props.deviceType,
 				extensionVersion: this.props.extensionApi.installedVersion,
 				onBeginOnboarding: this._beginOnboarding,
-				onCanReadArticle: this.canRead.bind(this),
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState
 			}),
@@ -789,48 +633,29 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Settings]: createSettingsScreenFactory(
 				ScreenKey.Settings,
 				{
-					/*
-						This isn't inaccurate but it doesn't matter since viewing settings in the browser is deprecated.
-						All that matters is that we pass a non-Apple platform so that App Store APIs are not called.
-					*/
-					appPlatform: AppPlatform.Windows,
 					onCloseDialog: this._dialog.closeDialog,
 					onChangeDisplayPreference: this._changeDisplayPreference,
 					onChangeEmailAddress: this._changeEmailAddress,
 					onChangeNotificationPreference: this._changeNotificationPreference,
 					onChangePassword: this._changePassword,
-					onChangePaymentMethod: this._changeSubscriptionPaymentMethod,
 					onChangeTimeZone: this._changeTimeZone,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onDeleteAccount: this._deleteAccount,
 					onGetSettings: this._getSettings,
 					onGetTimeZones: this.props.serverApi.getTimeZones,
 					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
-					onOpenPaymentConfirmationDialog: this._openStripePaymentConfirmationDialog,
-					onOpenPriceChangeDialog: this._openPriceChangeDialog,
-					onOpenSubscriptionAutoRenewDialog: this._openSubscriptionAutoRenewDialog,
-					onOpenSubscriptionPromptDialog: this._openSubscriptionPromptDialog,
 					onOpenTweetComposer: this._openTweetComposer,
 					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
-					onRequestPayoutAccountLogin: this._requestPayoutAccountLogin,
-					onRequestPayoutAccountOnboarding: this._requestPayoutAccountOnboarding,
 					onResendConfirmationEmail: this._resendConfirmationEmail,
 					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
 					onShowToast: this._toaster.addToast,
 					onSignOut: this._signOut,
 					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
-					onUpdatePaymentMethod: this._updateSubscriptionPaymentMethod,
-					onViewPrivacyPolicy: this._viewPrivacyPolicy,
-					stripe: this.props.stripeLoader.value
+					onViewPrivacyPolicy: this._viewPrivacyPolicy
 				}
-			),
-			[ScreenKey.Subscribe]: createSubscriptionPageScreenFactory(ScreenKey.Subscribe, {
-				onNavTo: this._navTo,
-				deviceType: this.props.deviceType
-			})
+			)
 		};
 
 		// route state
@@ -854,7 +679,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			...this.state,
 			dialogs: [],
 			isExtensionInstalled: props.extensionApi.isInstalled,
-			menuState: 'closed',
 			onboarding: onboardingState,
 			screens: [locationState.screen],
 			welcomeMessage: (
@@ -912,12 +736,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			.addListener('notificationPreferenceChanged', preference => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
-			.addListener(
-				'subscriptionStatusChanged',
-				status => {
-					this.onSubscriptionStatusChanged(status, EventSource.Remote);
-				}
-			)
 			.addListener('userSignedIn', data => {
 				let profile: WebAppUserProfile;
 				// check for broadcast from legacy web app instance
@@ -925,8 +743,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					profile = data;
 				} else {
 					profile = {
-						userAccount: data,
-						subscriptionStatus: null
+						userAccount: data
 					};
 					// manually check for display preference before setting default
 					this.props.serverApi.getDisplayPreference(
@@ -1053,7 +870,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 		// return the new state object
 		return {
-			menuState: this.state.menuState === 'opened' ? 'closing' : 'closed' as MenuState,
 			screens
 		};
 	}
@@ -1103,8 +919,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
-			revenueReport: this.state.revenueReport,
-			subscriptionStatus: this.state.subscriptionStatus,
 			user: this.state.user
 		};
 	}
@@ -1187,13 +1001,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onNotificationPreferenceChanged(preference);
 	}
-	protected onSubscriptionStatusChanged(status: SubscriptionStatus, eventSource: EventSource) {
-		if (eventSource === EventSource.Local) {
-			this.props.browserApi.subscriptionStatusChanged(status);
-			this.props.extensionApi.subscriptionStatusChanged(status);
-		}
-		super.onSubscriptionStatusChanged(status, eventSource);
-	}
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
@@ -1263,23 +1070,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 
-	protected canRead(article: Pick<ReadArticleReference, 'slug'>) {
-		return (
-			isReadupBlogPost(article) ||
-			(
-				!!this.state.user &&
-				(
-					this.state.subscriptionStatus.type === SubscriptionStatusType.Active
-					||
-					this.state.subscriptionStatus.isUserFreeForLife
-				)
-			)
-		)
-	}
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) {
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
-			this.canRead(article) &&
 			this.props.extensionApi.isInstalled &&
 			this.props.extensionApi.installedVersion.compareTo(new SemanticVersion('6.0.0')) < 0
 		) {
@@ -1333,54 +1126,20 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div> :
 					null}
-				{(
-					(
-						topScreen.templateSection == null ||
-						(topScreen.templateSection & TemplateSection.Header)
-					)
-					&&
-					(
-						// hack to hide the footer on the subscribe loader "landing" page
-						topScreen.key !== ScreenKey.Subscribe
-					)
-				 )
+				{
+				(
+					topScreen.templateSection == null ||
+					(topScreen.templateSection & TemplateSection.Header)
+				)
 				 ?
 					<HomeHeader
-						deviceType={this.props.deviceType}
-						onBeginOnboarding={this._beginOnboarding}
-						onCopyAppReferrerTextToClipboard={this._copyAppReferrerTextToClipboard}
-						onCreateStaticContentUrl={this._createStaticContentUrl}
-						onOpenMenu={this._openMenu}
-						onOpenNewPlatformNotificationRequestDialog={this._openNewPlatformNotificationRequestDialog}
-						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 						onViewHome={this._viewHome}
-						onViewNotifications={this._viewNotifications}
 						onNavTo={this._navTo}
 						// navTo uses the Push navigation method, so the current screen is the last one
 						currentScreen={this.state.screens[0]}
-						user={this.state.user}
 					/> :
 					null}
 				<main>
-					{(
-						// hack to hide the nav bar on the subscribe loader "landing" page, when logged in
-						(topScreen.key !== ScreenKey.Subscribe)
-						  &&
-						(
-							topScreen.templateSection == null ||
-							(topScreen.templateSection & TemplateSection.Navigation)
-						) &&
-						this.state.user
-					) ?
-						<NavBar
-							onNavTo={this._navTo}
-							onViewHome={this._viewHome}
-							onViewMyImpact={this._viewMyImpact}
-							onViewMyReads={this._viewMyReads}
-							selectedScreen={this.state.screens[0]}
-							user={this.state.user}
-						/> :
-						null}
 					<ol className="screens">
 						{this.state.screens.map(screen => (
 							<li
@@ -1393,11 +1152,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 										screen.templateSection == null ||
 										(screen.templateSection & TemplateSection.Footer)
 									) &&
-									(
-										!this.state.user &&
-										// hack to hide the footer on the subscribe loader "landing" page
-										screen.key !== ScreenKey.Subscribe
-									)
+									!this.state.user
 								) ?
 									<ColumnFooter
 										onNavTo={this._navTo}
@@ -1408,24 +1163,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						))}
 					</ol>
 				</main>
-				{this.state.menuState !== 'closed' ?
-					<Menu
-						isClosing={this.state.menuState === 'closing'}
-						onClose={this._closeMenu}
-						onClosed={this._hideMenu}
-						onOpenEarningsExplainerDialog={this._openEarningsExplainerDialog}
-						onViewAdminPage={this._viewAdminPage}
-						onViewFaq={this._viewFaq}
-						onViewLeaderboards={this._viewLeaderboards}
-						onViewProfile={this._viewProfile}
-						onViewSearch={this._viewSearch}
-						onViewSettings={this._viewSettings}
-						onViewStats={this._viewStats}
-						revenueReport={this.state.revenueReport}
-						selectedScreen={this.state.screens[0]}
-						userAccount={this.state.user}
-					/> :
-					null}
 				<DialogManager
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}
@@ -1488,11 +1225,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (this.props.initialUserProfile?.displayPreference) {
 			this.props.browserApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
 			this.props.extensionApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
-		}
-		// broadcast subscription status if signed in
-		if (this.props.initialUserProfile?.subscriptionStatus) {
-			this.props.browserApi.subscriptionStatusChanged(this.props.initialUserProfile.subscriptionStatus);
-			this.props.extensionApi.subscriptionStatusChanged(this.props.initialUserProfile.subscriptionStatus);
 		}
 		// broadcast extension installation or removal
 		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);

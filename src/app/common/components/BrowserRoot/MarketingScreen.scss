@@ -4,7 +4,6 @@
 */
 @import '../../../../common/styles/colors';
 @import '../../../../common/styles/breakpoints';
-@import '../AppRoot/SubscribePitchElement.scss';
 
 .marketing-screen_n5a6wc p {
 	line-height: 1.4;
@@ -58,13 +57,6 @@
 }
 .marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > h2 {
 	text-align: center;
-}
-.marketing-screen_n5a6wc > .home-panel_w65z7c.pricing-panel > .content > .price-list_eorvmi {
-	margin-top: 1.5em;
-	ul {
-		text-align: start;
-		@extend %pitch-element-list-style;
-	}
 }
 
 // styles for the revenue section
@@ -204,18 +196,6 @@
 		max-width: 420px;
 		margin-top: 0.2em;
 	}
-
-	.mission-button {
-		// margin-top: 18px;
-		text-decoration: none;
-		font-size: 3rem;
-		font-family: 'Cambria (bold)';
-		white-space: normal;
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-
 
 	@media screen and (min-width: 768px) {
 		padding: 104px 20px;

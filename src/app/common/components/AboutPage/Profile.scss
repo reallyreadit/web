@@ -39,6 +39,10 @@ $tablet-up-margin-title-intro: 2.6rem;
 			display: none;
 		}
 
+		&:not(:last-child) {
+			margin-bottom: 1.4rem;
+		}
+
 	}
 
 	.picture {

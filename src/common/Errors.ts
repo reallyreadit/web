@@ -10,9 +10,6 @@ export enum BrowserExtensionAppErrorType {
 	ReadupProtocolFailed = "https://docs.readup.com/errors/browser-extension-app/readup-protocol-failed",
 	UnexpectedMessageType = "https://docs.readup.com/errors/browser-extension-app/unexpected-message-type"
 }
-export enum ReadingErrorType {
-	SubscriptionRequired = "https://docs.readup.com/errors/reading/subscription-required"
-};
 export enum SubscriptionsErrorType {
 	FreeTrialCreditLimitExceeded = "https://docs.readup.com/errors/subscriptions/free-trial-credit-limit-exceeded",
 	ReceiptValidationFailed = "https://docs.readup.com/errors/subscriptions/receipt-validation-failed"

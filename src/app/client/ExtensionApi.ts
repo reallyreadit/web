@@ -11,7 +11,6 @@ import * as Cookies  from 'js-cookie';
 import { extensionVersionCookieKey } from '../../common/cookies';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
-import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
@@ -133,9 +132,6 @@ export default class extends ExtensionApi {
             this.changeInstallationStatus(event.version);
         }
     }
-	public subscriptionStatusChanged(status: SubscriptionStatus) {
-		this.sendMessage('subscriptionStatusChanged', status);
-	}
     public userSignedIn(profile: WebAppUserProfile) {
         this.sendMessage('userSignedIn', profile);
     }

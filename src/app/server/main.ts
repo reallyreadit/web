@@ -34,8 +34,6 @@ import TwitterCardMetadataRequest from '../../common/models/articles/TwitterCard
 import { TwitterCard, TwitterCardType } from './TwitterCard';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import PackageVersionInfo from '../../common/PackageVersionInfo';
-import Lazy from '../../common/Lazy';
-import { Stripe } from '@stripe/stripe-js';
 import LinkType from '../../common/models/articles/LinkType';
 import InitData from '../common/InitData';
 import Exchange from '../common/serverApi/Exchange';
@@ -317,11 +315,18 @@ server.get('/earnings', (req, res) => {
 		findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()
 	);
 });
-server.get('/about', (req, res) => {
+server.get('/mission', (req, res) => {
 	redirect(
 		req,
 		res,
-		findRouteByKey(routes, ScreenKey.Mission).createUrl()
+		findRouteByKey(routes, ScreenKey.About).createUrl()
+	);
+});
+server.get('/team', (req, res) => {
+	redirect(
+		req,
+		res,
+		findRouteByKey(routes, ScreenKey.About).createUrl()
 	);
 });
 server.get('/downloads', (req, res) => {
@@ -554,13 +559,6 @@ server.get<
 		initialUserProfile: req.userProfile,
 		serverApi: req.api,
 		staticServerEndpoint: config.staticServer,
-		stripeLoader: new Lazy<Promise<Stripe>>(
-			() => new Promise<Stripe>(
-				() => {
-					// Never resolves in server environment.
-				}
-			)
-		),
 		version: new SemanticVersion(version.app),
 		webServerEndpoint: config.webServer
 	};
@@ -574,7 +572,6 @@ server.get<
 		extensionVersion: extensionVersionString,
 		initialLocation: rootProps.initialLocation,
 		staticServerEndpoint: config.staticServer,
-		stripePublishableKey: config.stripePublishableKey,
 		userProfile: req.userProfile,
 		version: version.app,
 		webServerEndpoint: config.webServer

@@ -7,6 +7,7 @@ import AlertBadge from './AlertBadge';
 import ScreenKey, { ScreenKeyNavParams, ScreenParams } from '../routing/ScreenKey';
 import { findRouteByKey } from '../routing/Route';
 import routes from '../routing/routes';
+import {NavReference} from '../../app/common/components/Root';
 
 type BaseProps = {
 	badge?: number,
@@ -44,7 +45,7 @@ function isScreenHrefProps(props: NoHrefProps | StringHrefProps | ScreenHrefProp
 	return typeof (props as ScreenHrefProps).screen === 'number';
 }
 
-export default class extends React.Component<Props> {
+class Link extends React.Component<Props> {
 	private _handleClick = (e: React.MouseEvent<HTMLElement>) => {
 		e.preventDefault();
 		if (this.props.stopPropagation != null && this.props.stopPropagation !== false) {
@@ -133,3 +134,7 @@ export default class extends React.Component<Props> {
 		);
 	}
 }
+
+export default Link;
+
+export const DiscordInviteLink = (props: {children: React.ReactNode, onClick: (ref: NavReference) => void}) => <Link onClick={props.onClick} href="https://discord.gg/XQZa8pHdVs">{props.children}</Link>

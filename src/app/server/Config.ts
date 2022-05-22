@@ -18,6 +18,5 @@ export interface Config {
 	secureCookie: boolean,
 	serveStaticContent: boolean,
 	staticServer: HttpEndpoint,
-	stripePublishableKey: string,
 	webServer: HttpEndpoint
 }

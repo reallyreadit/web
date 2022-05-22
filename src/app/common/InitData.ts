@@ -13,7 +13,6 @@ type CommonInitData = {
 	exchanges: Exchange[],
 	initialLocation: RouteLocation,
 	staticServerEndpoint: HttpEndpoint,
-	stripePublishableKey: string,
 	userProfile: WebAppUserProfile | null,
 	version: string,
 	webServerEndpoint: HttpEndpoint

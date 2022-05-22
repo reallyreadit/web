@@ -15,7 +15,6 @@
 		"protocol": "https",
 		"host": "static.dev.readup.com"
 	},
-	"stripePublishableKey": "pk_test_51HijWFCE1GzMLmqKvofmVRpDVS8W4luWtNwnl1B7suGtm8As8mqodOElF7Vz6ZmRa2tFyLjJ3ghBIa7o2zYegO5400mhv8plhk",
 	"webServer": {
 		"protocol": "https",
 		"host": "dev.readup.com"

@@ -95,12 +95,6 @@
 	}
 }
 
-.column-footer_ltflpc > .corp {
-	text-align: center;
-	margin-bottom: 1rem;
-	font-size: 0.8rem;
-}
-
 @include theme using ($root, $scheme) {
 	#{$root} .column-footer_ltflpc {
 		@include theme-colors(
@@ -108,14 +102,6 @@
 			(
 				"border-top-color": $nav-border-color,
 				// "background-color": $nav-background-color
-			)
-		);
-	}
-	#{$root} .column-footer_ltflpc > .corp {
-		@include theme-colors(
-			$scheme,
-			(
-				"color": $text-muted-color
 			)
 		);
 	}
