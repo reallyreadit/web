@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -32,7 +32,7 @@ export default class extends React.PureComponent<{
 			{
 				title: "Organization",
 				sublinks: [
-					<Link key="about" screen={ScreenKey.About} onClick={navTo}>About</Link>,
+					<Link key="collective" href="https://opencollective.com/readup-collective" onClick={navTo}>Open Collective</Link>,
 					<DiscordInviteLink key="contact" onClick={navTo}>Discord Community</DiscordInviteLink>,
 					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>Privacy Policy</Link>
 				]
@@ -40,6 +40,7 @@ export default class extends React.PureComponent<{
 			{
 				title: "Learn more",
 				sublinks: [
+					<Link key="about" screen={ScreenKey.About} onClick={navTo}>About</Link>,
 					this.props.showWhatIsReadup ?
 						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>What is Readup?</Link> :
 						null,

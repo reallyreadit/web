@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -36,7 +36,7 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "How much does Readup cost?",
-				answer: <p>Readup is free and supported by the donations of our generous readers on our OpenCollective. Enjoy ad-free reading to your heart's content!</p>
+				answer: <p>Readup is free and supported by the donations of our generous readers <Link href="https://opencollective.com/readup-collective" onClick={props.onNavTo}>on our Open Collective</Link>. Enjoy ad-free reading to your heart's content!</p>
 			},
 			{
 				question: "How do I get started on my iPhone (or iPad)?",
@@ -172,15 +172,23 @@ const faqs: FaqCategory[] = [
 		questions: [
 			{
 				question: "Who owns Readup?",
-				answer: <p>Readup is owned by co-founder Jeff Camera, who also hosts the readup.org infrastructure. Volunteers led by Thor Galle support in maintentance and develop the platform further.</p>
+				answer: <>
+						<p>Readup's is owned by co-founder <Link onClick={props.onNavTo} href="https://jefcamera.com">Jeff Camera</Link>, who hosts the readup.org &amp; readup.com infrastructure.</p>
+						<p>Readup is fully open-source under the <Link href="https://github.com/reallyreadit/web/blob/master/LICENSE" onClick={props.onNavTo}>AGPL 3 license</Link>, which means anyone can modify or reuse Readup as long as they respect the license.</p>
+						<p>Volunteers led by <Link onClick={props.onNavTo} href="https://thorgalle.me">Thor Galle</Link> maintain and develop the platform further. They organize their work and budget transparently on <Link href="https://opencollective.com/readup-collective" onClick={props.onNavTo}>Open Collective</Link>.</p>
+					</>
 			},
 			{
 				question: "I'm a developer. Can I help?",
-				answer: <p>Maybe! <Link onClick={props.onNavTo} href="https://discord.gg/XQZa8pHdVs">Join our Discord,</Link> then drop us a message in <Link href="https://discord.com/channels/917433643796946964/930514149077835838" onClick={props.onNavTo}>the #development channel</Link></p>
+				answer: <p>Yes! Readup is fully open-source, we manage the code, issues and projects <Link href="https://github.com/reallyreadit/dev-env" onClick={props.onNavTo}>on our GitHub</Link>.
+					If you need support, <Link onClick={props.onNavTo} href="https://discord.gg/XQZa8pHdVs">join our Discord</Link> &amp; drop us a message in <Link href="https://discord.com/channels/917433643796946964/930514149077835838" onClick={props.onNavTo}>the #development channel</Link>.</p>
 			},
 			{
 				question: "I'm not a developer. Can I help?",
-				answer: <p>Maybe! Let us know how you'd like to contribute in <Link onClick={props.onNavTo} href="https://discord.gg/XQZa8pHdVs">our Discord</Link>. If you can work self-sufficiently, your skills in design/marketing/social media/community management/... would be much appreciated.</p>
+				answer: <>
+					<p>Possibly! Let us know how you'd like to contribute in <Link onClick={props.onNavTo} href="https://discord.gg/XQZa8pHdVs">our Discord</Link>. If you can work with relative independence, your skills in design/marketing/social media/community management/... would be much appreciated. You can also contact volunteer lead Thor directly at thorgalle+readup <code>at</code> gmail <code>dot</code> com.</p>
+					<p>You can also donate. Supporting us financially <Link href="https://opencollective.com/readup-collective/contribute" onClick={props.onNavTo}>on Open Collective</Link> helps us pay our server bills, and devote more time to improving Readup.</p>
+				</>
 			},
 
 		]

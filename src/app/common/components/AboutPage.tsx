@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -51,11 +51,11 @@ const helper = {
 const timeLinePoints = [
 	{
 		timeString: "2016",
-		description: "Bill gets annoyed about the internet and calls Jeff to talk about an idea: People shouldn't be able to comment on articles and stories that they haven't actually read. They found the company reallyread.it, inc."
+		description: "Bill gets annoyed about the internet and calls Jeff with an idea: People shouldn't be able to comment on articles and stories that they haven't actually read. They start the company reallyread.it, inc."
 	},
 	{
 		timeString: "2017",
-		description: "Bill and Jeff invent and release reallyreadit's read-tracking technology. Readers begin voting with their attention to surface the best articles on the web."
+		description: "Bill and Jeff invent reallyreadit's read-tracking technology. Readers begin voting with their attention to surface the best articles on the web."
 	},
 	{
 		timeString: "2018",
@@ -63,11 +63,11 @@ const timeLinePoints = [
 	},
 	{
 		timeString: "2019",
-		description: "reallyread.it becomes Readup.com. Bill and Jeff abandon all remnants of a B2B business plan. Instead, they focus on Readup's social reading features."
+		description: "reallyread.it becomes Readup.com. Bill and Jeff abandon their initial B2B business plan. Instead, they focus on Readup's social reading features."
 	},
 	{
 		timeString: "2020",
-		description: "Early in the year, Readup fails to get into Y Combinator for the third time. Bill and Jeff decide to make one last, big move: Start charging people for Readup. Long-time reader Thor joins the team."
+		description: "Early in the year, Readup fails to get into Y Combinator for the third time. Bill and Jeff decide to make one last, big move: Start charging people for Readup. Long-time reader Thor joins the team to help."
 	},
 	{
 		timeString: "2021",
@@ -75,11 +75,11 @@ const timeLinePoints = [
 	},
 	{
 		timeString: "2021",
-		description: "Sad news. Readup's marketplace was not successful, and couldn't convince investors. It means the end of reallyreadit, inc. Bill, Jeff & Thor look for ways to let Readup's community and core product live on."
+		description: "Sad news. Readup's marketplace was unsuccessful and couldn't convince investors. This signifies the end of the company's runway. Bill, Jeff & Thor look for ways to let Readup's community and core product live on."
 	},
 	{
 		timeString: "Spring 2022",
-		description: "Readup.com is reborn as the open-source Readup Project, the free Readup.org Service, and the non-profit Readup Collective. The Collective maintains the Project, which is hosted by Jeff on Readup.org Service. Readers continue to read happily!"
+		description: "Rejoice! Readup.com is reborn as the open-source Readup Project, the free Readup Service, and the non-profit Readup Collective. The Collective maintains the Project, which is hosted by Jeff on Readup Service. Readers continue to read happily ever after!"
 	}
 ];
 
@@ -138,7 +138,8 @@ const teamPage = (props: Services) => (
 		</HomePanel>
 		<HomeHero
 			title="Join us!"
-			description={<>Want to contribute? Let us know <DiscordInviteLink onClick={props.onNavTo}>on our Discord</DiscordInviteLink>.</>}
+			className="join-us"
+			description={<>Want to contribute? Let us know <DiscordInviteLink onClick={props.onNavTo}>on our Discord</DiscordInviteLink> what you want to do, <Link onClick={props.onNavTo} href="https://opencollective.com/readup-collective/contribute">contribute financially</Link>, or dive in the code <Link href="https://github.com/reallyreadit/dev-env" onClick={props.onNavTo}>on GitHub</Link>.</>}
 		/>
 	</div>
 )

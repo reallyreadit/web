@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -28,10 +28,11 @@ import HomePanel from './HomePanel';
 import ImageAndText from './ImageAndText';
 import QuoteCard from './QuoteCard';
 import { NavOptions, NavReference } from '../Root';
-// import Link from '../../../../common/components/Link';
+import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
 import DownloadButton from './DownloadButton';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
+import Icon from '../../../../common/components/Icon';
 interface Props {
 	communityReads: Fetchable<CommunityReads>,
 	deviceType: DeviceType,
@@ -99,7 +100,7 @@ export default class MarketingScreen extends React.Component<
 		const valuePoints = [
 			{
 				heading: "Made for readers, by readers",
-				paragraph: "Readup was built by people love deep reading. The app removes distractions from articles.",
+				paragraph: "Readup is built by people who love deep reading. The app removes distractions from articles.",
 				imageName: "kill-ads-3.0.png",
 				imageAlt: "No paywalls or ads on Readup"
 			},
@@ -123,7 +124,7 @@ export default class MarketingScreen extends React.Component<
 			// },
 			{
 				heading: "Read-certified comments",
-				paragraph: "Readup requires you to read the article if you want to comment on it. This is the key to true civil discourse.",
+				paragraph: "Readup requires you to read an article before commenting on it. This is key to true civil discourse.",
 				imageName: "civilized-discussion-3.0.png",
 				imageAlt: "Readup requires you to read the article if you want to comment on it."
 			},
@@ -249,7 +250,7 @@ export default class MarketingScreen extends React.Component<
 				</HomePanel>
 				<HomePanel
 					data-nosnippet
-					className="pricing-panel"
+					className="get-readup"
 				>
 					<h2 className="heading-regular">Get Readup</h2>
 					<DownloadSection
@@ -274,6 +275,30 @@ export default class MarketingScreen extends React.Component<
 								quote={quote} />
 						)}
 					</div>
+				</HomePanel>
+				<HomePanel
+					data-nosnippet
+					className="support-section"
+				>
+					<h2 className="heading-regular">Support Us <Icon name="charity"></Icon></h2>
+					<p>A small group of volunteers builds and maintains Readup. Help us keep the service up and running!</p>
+					<div className="oc-support">
+						{/*
+							https://docs.opencollective.com/help/collectives/widgets
+							We're not using the script because it tracks visitors to Sentry.
+						*/}
+						<Link className="button" onClick={this.props.onNavTo} href="https://opencollective.com/readup-collective/contribute">
+							<img src="https://opencollective.com/readup-collective/contribute/button@2x.png?color=white" width="300" />
+						</Link>
+						{/*
+							See https://docs.opencollective.com/help/collectives/collective-settings/data-export for docs.
+							We're not using the script because it tracks visitors to Sentry.
+						*/}
+						<p>These wonderful people make Readup possible:</p>
+						<object className="people" type="image/svg+xml" data="https://opencollective.com/readup-collective/tiers/reader.svg?avatarHeight=48&width=348&button=false&limit=40"></object>
+					</div>
+
+
 				</HomePanel>
 				<JsonLd<Corporation>
 					item={{
