@@ -222,11 +222,8 @@ class HomeScreen extends React.Component<Props, State> {
 				// merge in the new AOTD
 				prevState.communityReads = communityReads;
 				// set loading state
-				return {
-					...prevState,
-					isLoadingNewItems: false,
-					newAotd: false
-				}
+				prevState.isLoadingNewItems = false;
+				prevState.newAotd = false;
 			}));
 			this.clearAlertIfNeeded();
 		})
