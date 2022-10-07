@@ -1,32 +1,69 @@
-// Copyright (C) 2022 reallyread.it, inc.
-// 
-// This file is part of Readup.
-// 
-// Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
-// Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
-
+import CommentThread from '../../common/models/CommentThread';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import Post from '../../common/models/social/Post';
+import UserAccount from '../../common/models/UserAccount';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import { Message } from '../../common/MessagingContext';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import { SubscriptionStatus } from '../../common/models/subscriptions/SubscriptionStatus';
 
 export default class WebAppApi {
 	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
-	constructor() {
+	constructor(
+		handlers: {
+			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
+			onAuthServiceLinkCompleted: (response: AuthServiceBrowserLinkResponse) => void,
+			onCommentPosted: (comment: CommentThread) => void,
+			onCommentUpdated: (comment: CommentThread) => void,
+			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
+			onSubscriptionStatusChanged: (status: SubscriptionStatus) => void,
+			onUserSignedIn: (profile: WebAppUserProfile) => void,
+			onUserSignedOut: () => void,
+			onUserUpdated: (user: UserAccount) => void
+		}
+	) {
 		// listen for messages from content script
 		chrome.runtime.onMessage.addListener(
 			(message, sender) => {
 				if (message.to === 'eventPage' && message.from === 'webAppContentScript') {
 					console.log(`[WebAppApi] received ${message.type} message from tab # ${sender.tab?.id}`);
 					switch (message.type) {
+						case 'articleUpdated':
+							handlers.onArticleUpdated(message.data);
+							break;
+						case 'authServiceLinkCompleted':
+							handlers.onAuthServiceLinkCompleted(message.data);
+							break;
+						case 'commentPosted':
+							handlers.onCommentPosted(message.data);
+							break;
+						case 'commentUpdated':
+							handlers.onCommentUpdated(message.data);
+							break;
+						case 'displayPreferenceChanged':
+							handlers.onDisplayPreferenceChanged(message.data);
+							break;
 						case 'registerPage':
 							this.addTab(sender.tab.id);
+							break;
+						case 'subscriptionStatusChanged':
+							handlers.onSubscriptionStatusChanged(message.data);
 							break;
 						case 'unregisterPage':
 							// sender.tab.id is undefined in Firefox
 							// tab won't be removed until a messaging error occurs
 							this.removeTab(sender.tab.id);
+							break;
+						case 'userSignedIn':
+							handlers.onUserSignedIn(message.data);
+							break;
+						case 'userSignedOut':
+							handlers.onUserSignedOut();
+							break;
+						case 'userUpdated':
+							handlers.onUserUpdated(message.data);
 							break;
 					}
 				}
@@ -41,14 +78,7 @@ export default class WebAppApi {
 			this._tabs.set(tabs);
 		}
 	}
-	private removeTab(id: number) {
-		const tabs = this._tabs.get();
-		if (tabs.includes(id)) {
-			tabs.splice(tabs.indexOf(id), 1);
-			this._tabs.set(tabs);
-		}
-	}
-	public broadcastMessage<T>(message: Message) {
+	private broadcastMessage<T>(message: Message) {
 		this._tabs
 			.get()
 			.forEach(
@@ -67,8 +97,45 @@ export default class WebAppApi {
 				}
 			);
 	}
+	private removeTab(id: number) {
+		const tabs = this._tabs.get();
+		if (tabs.includes(id)) {
+			tabs.splice(tabs.indexOf(id), 1);
+			this._tabs.set(tabs);
+		}
+	}
+	public articlePosted(post: Post) {
+		this.broadcastMessage({
+			type: 'articlePosted',
+			data: post
+		});
+	}
+	public articleUpdated(event: ArticleUpdatedEvent) {
+		this.broadcastMessage({
+			type: 'articleUpdated',
+			data: event
+		});
+	}
 	public clearTabs() {
 		this._tabs.clear();
+	}
+	public commentPosted(comment: CommentThread) {
+		this.broadcastMessage({
+			type: 'commentPosted',
+			data: comment
+		});
+	}
+	public commentUpdated(comment: CommentThread) {
+		this.broadcastMessage({
+			type: 'commentUpdated',
+			data: comment
+		});
+	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		this.broadcastMessage({
+			type: 'displayPreferenceChanged',
+			data: preference
+		});
 	}
 	public injectContentScripts() {
 		// some browsers do not allow querying whitelisted urls without 'tabs' permission
@@ -100,5 +167,11 @@ export default class WebAppApi {
 				);
 			}
 		);
+	}
+	public userUpdated(user: UserAccount) {
+		this.broadcastMessage({
+			type: 'userUpdated',
+			data: user
+		});
 	}
 }

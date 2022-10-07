@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Save to Readup",
-  "description": "Easily save articles to the world’s best reading app.",
+  "name": "Readup",
+  "description": "The best way to read online.",
   "author": "reallyread.it, inc.",
 
   "icons": {
@@ -38,19 +38,16 @@
       ]
     }
   ],
-  "options_ui": {
-	"page": "options-page/index.html",
-	"open_in_tab": true,
-	"browser_style": true,
-	"chrome_style": true
-  },
   "permissions": [
     "activeTab",
-    "nativeMessaging",
-    "storage"
+    "cookies",
+    "alarms",
+    "notifications"
   ],
   "web_accessible_resources": [
     "content-scripts/alert/bundle.css",
+    "content-scripts/reader/bundle.css",
+    "content-scripts/reader/reset.css",
     "content-scripts/ui/fonts/cambria-bold.ttf",
     "content-scripts/ui/fonts/cambria-regular.ttf",
     "content-scripts/ui/fonts/museo-sans-100.ttf",
@@ -59,7 +56,6 @@
     "content-scripts/ui/fonts/museo-sans-700.ttf",
     "content-scripts/ui/fonts/museo-sans-900.ttf",
     "content-scripts/ui/images/logo.svg",
-    "content-scripts/ui/images/logo-white.svg",
-    "options-page/bundle.css"
+    "content-scripts/ui/images/logo-white.svg"
   ]
 }
