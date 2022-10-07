@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import Fetchable from '../../../common/Fetchable';
@@ -73,7 +73,7 @@ import SearchQuery from '../../../common/models/articles/SearchQuery';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
-import { DeviceType } from '../../../common/DeviceType';
+import { DeviceType, isMobileDevice } from '../../../common/DeviceType';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
@@ -103,7 +103,10 @@ export default abstract class {
 		this._reqStore = requestStore;
 		this._clientType = clientType;
 		this._clientVersion = clientVersion;
-		this._shouldIncludeCredentials = clientType === ClientType.App;
+		this._shouldIncludeCredentials = (
+			clientType === ClientType.App ||
+			!isMobileDevice(deviceType)
+		);
 	}
 	private createFetchFunction<TResult>(path: string) {
 		return (callback: (value: Fetchable<TResult>) => void) => this.get<TResult>({ path }, callback);
