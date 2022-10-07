@@ -15,21 +15,32 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
-import { NavMethod, NavOptions, NavReference, Screen }  from '../../../common/components/Root'
-// import GetStartedButton from './GetStartedButton';
+import { NavOptions, NavReference, Screen }  from '../../../common/components/Root'
 import Link from '../../../../common/components/Link';
+import {DeviceType, isMobileDevice} from '../../../../common/DeviceType';
+import UserAccount from '../../../../common/models/UserAccount';
+import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	currentScreen: Screen,
+	deviceType: DeviceType,
+	onBeginOnboarding: (analyticsAction: string) => void,
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
+	onCreateStaticContentUrl: (path: string) => string,
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onViewHome: () => void
+	onOpenMenu: () => void,
+	onOpenNewPlatformNotificationRequestDialog: () => void,
+	onOpenSignInPrompt: (analyticsAction: string) => void,
+	onViewHome: () => void,
+	onViewNotifications: () => void,
+	user: UserAccount | null,
 }
 
 type State = {
 	menuOpen: boolean
 }
 
-// const analyticsAction = 'Header';
+const analyticsAction = 'Header';
 
 export default class HomeHeader extends React.PureComponent<Props, State> {
 	state: State = {
@@ -42,6 +53,10 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 
 	private _toggleMenu() {
 		this.setState((prevState) => ({menuOpen: !prevState.menuOpen}));
+	};
+
+	private readonly _openSignInPrompt = () => {
+		this.props.onOpenSignInPrompt(analyticsAction);
 	};
 
 	// capture the page navigation and close the mobile menu
@@ -111,12 +126,33 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 						<Link href="https://github.com/reallyreadit" onClick={this.props.onNavTo}>
 							<Icon name="github"></Icon>
 						</Link>
-						<Button
+						{!isMobileDevice(this.props.deviceType) ?
+								<Button
+									text="Log In"
+									size="large"
+									onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
+								/> :
+								null}
+							{this.props.deviceType !== DeviceType.Android ?
+								<GetStartedButton
+									analyticsAction={analyticsAction}
+									deviceType={this.props.deviceType}
+									iosPromptType="download"
+									location={this.props.currentScreen.location}
+									onBeginOnboarding={(analyticsAction: string) => this.pageNavigation(() => this.props.onBeginOnboarding(analyticsAction))}
+									onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+									onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+									onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+									size="large"
+								/> :
+								null}
+						{/* TODO PROXY EXT */}
+						{/* <Button
 							text="Download App"
 							size="large"
 							intent="loud"
 							onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({ key: ScreenKey.Download }, { method: NavMethod.ReplaceAll }), ev)}
-						/>
+						/> */}
 					</>
 				</div>
 			</header>

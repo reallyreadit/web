@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 const
@@ -16,6 +16,7 @@ const
 const
 	project = require('../project'),
 	createBuild = require('../createBuild'),
+	readerContentScript = require('./extension/contentScripts/reader'),
 	eventPage = require('./extension/eventPage'),
 	optionsPage = require('./extension/optionsPage'),
 	webAppContentScript = require('./extension/contentScripts/webApp'),
@@ -70,6 +71,9 @@ function clean(env) {
 function build(env) {
 	return Promise.all([
 		eventPage.build(env),
+		// TODO PROXY EXT: do we still need the alertContentScript here?
+		// Should we also remove the reader content script?
+		readerContentScript.build(env),
 		optionsPage.build(env),
 		staticAssets.build(env),
 		webAppContentScript.build(env),
@@ -77,6 +81,7 @@ function build(env) {
 	]);
 }
 function watch() {
+	readerContentScript.watch();
 	eventPage.watch();
 	optionsPage.watch(),
 	staticAssets.watch();

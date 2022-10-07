@@ -18,8 +18,6 @@ import UserAccount from '../../../common/models/UserAccount';
 import WindowOpenRequest from '../../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { SubscriptionStatus } from '../../../common/models/subscriptions/SubscriptionStatus';
-
 
 function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: MessageResponse<T>) => void) {
 	try {
@@ -68,7 +66,6 @@ export default class EventPageApi {
 		onCommentPosted: (comment: CommentThread) => void,
 		onCommentUpdated: (comment: CommentThread) => void,
 		onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
-		onSubscriptionStatusChanged: (status: SubscriptionStatus) => void,
 		onUserSignedOut: () => void,
 		onUserUpdated: (user: UserAccount) => void
 	}) {
@@ -89,9 +86,6 @@ export default class EventPageApi {
 						break;
 					case 'displayPreferenceChanged':
 						handlers.onDisplayPreferenceChanged(message.data);
-						break;
-					case 'subscriptionStatusChanged':
-						handlers.onSubscriptionStatusChanged(message.data);
 						break;
 					case 'userSignedOut':
 						handlers.onUserSignedOut();

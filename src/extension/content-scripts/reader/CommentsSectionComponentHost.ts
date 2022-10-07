@@ -6,7 +6,7 @@ import UserArticle from '../../../common/models/UserArticle';
 import UserAccount from '../../../common/models/UserAccount';
 import ExtensionComponentHost from './ExtensionComponentHost';
 
-type Services = Pick<CommentsSectionProps, 'clipboardService' | 'dialogService' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onLinkAuthServiceAccount' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onViewProfile' | 'toasterService'>;
+type Services = Pick<CommentsSectionProps, 'clipboardService' | 'dialogService' | 'onCreateAbsoluteUrl' | 'onDeleteComment' | 'onLinkAuthServiceAccount' | 'onNavTo' | 'onPostArticle' | 'onPostComment' | 'onPostCommentAddendum' | 'onPostCommentRevision' | 'onShare' | 'onShareViaChannel' | 'onViewProfile' | 'toasterService'>;
 type State = Pick<CommentsSectionProps, 'article' | 'comments' | 'user'>;
 export default class CommentsSectionComponentHost extends ExtensionComponentHost<Services, State> {
 	protected readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
@@ -30,7 +30,7 @@ export default class CommentsSectionComponentHost extends ExtensionComponentHost
 			this.setState({
 				article
 			});
-		}	
+		}
 	}
 	public commentPosted(comment: CommentThread) {
 		if (this.isInitialized && !this._state.comments.isLoading) {

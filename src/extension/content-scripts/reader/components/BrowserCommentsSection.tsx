@@ -21,6 +21,7 @@ import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthServiceAccountAssociation';
+import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 export interface Props {
 	article: UserArticle
@@ -36,6 +37,7 @@ export interface Props {
 	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
 	onShare: (shareData: ShareEvent) => ShareResponse,
+	onShareViaChannel: (data: ShareChannelData) => void,
 	onViewProfile: (userName: string) => void,
 	toasterService: ToasterService,
 	user: UserAccount
@@ -71,7 +73,7 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 						comments={this.props.comments.value}
 						noCommentsMessage="No comments on this article yet."
 						onCloseDialog={this.props.dialogService.closeDialog}
-						onCopyTextToClipboard={this.props.clipboardService.copyText}
+						onShareViaChannel={this.props.onShareViaChannel}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onDeleteComment={this.props.onDeleteComment}
 						onNavTo={this.props.onNavTo}

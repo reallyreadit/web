@@ -25,15 +25,11 @@ import UserAccount from '../../../common/models/UserAccount';
 import { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
 import DisplayPreference, { DisplayTheme, getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
-import { ReaderSubscriptionPrompt } from '../../../common/components/ReaderSubscriptionPrompt';
-import { ReadingErrorType } from '../../../common/Errors';
-import { SubscriptionStatusType } from '../../../common/models/subscriptions/SubscriptionStatus';
 import { getPromiseErrorMessage } from '../../../common/format';
-import { createUrl } from '../../../common/HttpEndpoint';
-import { findRouteByKey } from '../../../common/routing/Route';
-import routes from '../../../common/routing/routes';
-import ScreenKey from '../../../common/routing/ScreenKey';
-import { subscribeQueryStringKey } from '../../../common/routing/queryString';
+import {ShareChannelData} from '../../../common/sharing/ShareData';
+import ShareChannel from '../../../common/sharing/ShareChannel';
+import {createQueryString} from '../../../common/routing/queryString';
+import {createTweetWebIntentUrl} from '../../../common/sharing/twitter';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -54,8 +50,7 @@ let
 	lookupResult: ArticleLookupResult,
 	page: Page,
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void,
-	hasStyledArticleDocument = false,
-	isWaitingForSubscription = false;
+	hasStyledArticleDocument = false
 
 function updateArticle(article: UserArticle) {
 	if (!lookupResult) {
@@ -153,13 +148,6 @@ const eventPageApi = new EventPageApi({
 			updateDisplayPreference(preference);
 		} else {
 			displayPreference = preference;
-		}
-	},
-	onSubscriptionStatusChanged: status => {
-		if (isWaitingForSubscription && status.type === SubscriptionStatusType.Active) {
-			globalUi.dialogs.closeDialog();
-			reader.loadPage(page);
-			isWaitingForSubscription = false;
 		}
 	},
 	onUserSignedOut: () => {
@@ -390,6 +378,24 @@ const commentsSection = new CommentsSectionComponentHost({
 				}
 			),
 		onShare: globalUi.handleShareRequest,
+		onShareViaChannel: (data: ShareChannelData) => {
+			switch (data.channel) {
+				case ShareChannel.Clipboard:
+					globalUi.clipboard.copyText(data.text, 'Link copied to clipboard');
+					break;
+				case ShareChannel.Email:
+					globalUi.navTo(`mailto:${createQueryString({
+						'body': data.body,
+						'subject': data.subject
+					})}`);
+					break;
+				case ShareChannel.Twitter:
+					globalUi.navTo(
+						createTweetWebIntentUrl(data)
+					);
+					break;
+			}
+		},
 		onViewProfile: globalUi.viewProfile,
 		toasterService: globalUi.toaster
 	}
@@ -411,39 +417,16 @@ const reader = new Reader(
 					updateArticle(article);
 				}
 			)
-			.catch(
-				reason => {
-					if (reason?.type === ReadingErrorType.SubscriptionRequired && !isWaitingForSubscription) {
-						reader.unloadPage();
-						globalUi.dialogs.openDialog(
-							React.createElement(
-								ReaderSubscriptionPrompt,
-								{
-									onCreateStaticContentUrl: path => createUrl(window.reallyreadit.extension.config.staticServer, path),
-									onSubscribe: () => {
-										window.open(
-											globalUi.createAbsoluteUrl(
-												findRouteByKey(routes, ScreenKey.MyImpact)
-													.createUrl(),
-												{
-													[subscribeQueryStringKey]: null
-												}
-											),
-											'_blank'
-										);
-									}
-								}
-							)
-						);
-						isWaitingForSubscription = true;
-					}
-				}
-			);
 	}
 )
 
 // parse metadata
-const metaParseResult = parseDocumentMetadata();
+// TODO PROXY EXT: the param might be wrong or not necessary
+const metaParseResult = parseDocumentMetadata({url: {
+	protocol: window.location.protocol,
+	hostname: window.location.hostname,
+	href: window.location.href
+}});
 
 // try and get a cached copy of the display preference for the transition animation
 eventPageApi
@@ -472,19 +455,7 @@ eventPageApi
 
 			// begin content parsing and article lookup while the animation is happening
 			Promise
-				.all<
-					{
-						contentParser: {
-							prune: (parseResult: ParseResult) => {
-								contentRoot: HTMLElement,
-								scrollRoot: HTMLElement
-							}
-						},
-						contentParseResult: ParseResult,
-						lookupResult: Promise<ArticleLookupResult>
-					},
-					void
-				>([
+				.all([
 					window.reallyreadit.readerContentScript.contentParser
 						.get()
 						.then(
@@ -578,13 +549,7 @@ eventPageApi
 
 						// process the lookup result while the animation is happening
 						Promise
-							.all<
-								{
-									article: UserArticle,
-									page: Page
-								},
-								void
-							>([
+							.all([
 								results[0].lookupResult.then(
 									result => {
 										// store the lookup result
