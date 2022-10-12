@@ -27,9 +27,14 @@ interface ReaderContentScriptTab {
 	articleId: number | null,
 	id: number
 }
+
+/**
+ * An API for the event (background) scripts to communicate with reader content script(s).
+ */
 export default class ReaderContentScriptApi {
 	private readonly _badge: BrowserActionBadgeApi;
 	private readonly _tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'localStorage');
+
 	constructor(
 		params: {
 			badgeApi: BrowserActionBadgeApi,

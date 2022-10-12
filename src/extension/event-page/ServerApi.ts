@@ -30,6 +30,9 @@ import CommentCreationResponse from '../../common/models/social/CommentCreationR
 function addCustomHeaders(req: XMLHttpRequest, params: Request) {
 	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension}`);
 }
+/**
+ * An API for the event page to communicate with Readup's resource API.
+ */
 export default class ServerApi {
 	public static alarms = {
 		checkNotifications: 'ServerApi.checkNotifications',

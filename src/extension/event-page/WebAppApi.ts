@@ -8,6 +8,9 @@ import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthSer
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
+/**
+ * An API for the event page to communicate with Readup's web app tabs, if any are running.
+ */
 export default class WebAppApi {
 	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
 	constructor(
@@ -132,6 +135,11 @@ export default class WebAppApi {
 			data: preference
 		});
 	}
+
+	/**
+	 * Inject the content scripts in any running Readup web app tabs that will allow this event page to
+	 * communicate with the web app.
+	 */
 	public injectContentScripts() {
 		// some browsers do not allow querying whitelisted urls without 'tabs' permission
 		const webAppBaseUrl = window.reallyreadit.extension.config.webServer.protocol + '://' + window.reallyreadit.extension.config.webServer.host + '/';
