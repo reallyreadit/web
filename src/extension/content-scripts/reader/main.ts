@@ -52,6 +52,10 @@ let
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void,
 	hasStyledArticleDocument = false
 
+/**
+ * Tells the components in this reader to refresh themselves
+ * with the latest UserArticle data, when a lookup result exists. 
+ */
 function updateArticle(article: UserArticle) {
 	if (!lookupResult) {
 		return;
@@ -107,6 +111,10 @@ function updateUser(user: UserAccount) {
 	commentsSection.userUpdated(user);
 }
 
+/**
+ * Tell the components in this reader that a new
+ * CommentThread was posted to the loaded article.
+ */
 function addComment(comment: CommentThread) {
 	commentsSection.commentPosted(comment);
 }
@@ -115,11 +123,15 @@ function updateComment(comment: CommentThread) {
 	commentsSection.commentUpdated(comment);
 }
 
-// event page interface
+// event page interface: initialize with event handlers
+// for events coming from the Event Page
 const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
 		updateArticle(event.article);
 	},
+	/** Update the locally cached user with its new logged in
+	 *  state via Twitter, in case such a login happened.
+	 */
 	onAuthServiceLinkCompleted: response => {
 		if (
 			lookupResult &&
@@ -208,6 +220,11 @@ const header = new HeaderComponentHost({
 		scrollRoot.prepend(headerContainer);
 	},
 	services: {
+		/**
+		 * Reacts om the change of display preferemces in the header component and
+		 * syncs these prefernces to the locally stored compoments, as well as forwards 
+		 * them to the general app via the event page interface.
+		 */
 		onChangeDisplayPreference: preference => {
 			if (displayPreference) {
 				const message = getDisplayPreferenceChangeMessage(displayPreference, preference);
