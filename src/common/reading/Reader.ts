@@ -1,21 +1,31 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import Page from './Page';
 
+/**
+ * A "reading progress update" of the reading simulation on the Page that is being read.
+ */
 interface CommitEvent {
+	/**
+	 * Whether the simulated reader completed reading the article since the last published event.
+	 */
 	isCompletionCommit: boolean,
 	isRead: boolean,
 	percentComplete: number,
 	readStateArray: number[]
 }
+/**
+ * Represents a simulated reader reading an article in a loaded Page,
+ * word per word. Currently, only one Page is supported.
+ */
 export default class Reader {
 	private _commitInterval: number | null;
 	private _isReading = false;
@@ -41,6 +51,11 @@ export default class Reader {
 			window.setTimeout(this._read, 300);
 		}
 	};
+
+	/**
+	 * @param onCommitReadState a function to handle progress updates from the simulated
+	 * reader. This will be called frequently as the reader progresses.
+	 */
 	constructor(onCommitReadState: (event: CommitEvent) => void) {
 		this._onCommitReadState = onCommitReadState;
 		window.document.addEventListener('visibilitychange', () => {

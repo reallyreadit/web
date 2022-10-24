@@ -221,8 +221,8 @@ const header = new HeaderComponentHost({
 	},
 	services: {
 		/**
-		 * Reacts om the change of display preferemces in the header component and
-		 * syncs these prefernces to the locally stored compoments, as well as forwards 
+		 * Reacts on the change of display preferences in the header component,
+		 * syncs these preferences to the locally stored compoments, as well as forwards 
 		 * them to the general app via the event page interface.
 		 */
 		onChangeDisplayPreference: preference => {
