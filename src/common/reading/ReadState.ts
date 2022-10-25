@@ -1,13 +1,21 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Represents a sequence of read and unread words, keeping counts
+ * but not the words themselves.
+ *
+ * To understand the context behind this core abstraction of reading
+ * progress in Readup, read Jeff's blog post:
+ * https://blog.readup.com/2020/11/02/how-readup-knows-whether-or-not-youve-read-an-article.html
+ */
 export default class ReadState {
     private _state: number[];
     private _wordCount: number;
@@ -42,7 +50,7 @@ export default class ReadState {
         }
     }
     public getPercentComplete() {
-        return (this._wordsRead * 100) / this._wordCount; 
+        return (this._wordsRead * 100) / this._wordCount;
     }
     public isComplete() {
         return this._wordsRead === this._wordCount;

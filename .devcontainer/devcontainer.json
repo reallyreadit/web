@@ -1,0 +1,7 @@
+{
+	"name": "Readup Web App",
+	"dockerComposeFile": "../../dev-env/docker-compose.yml",
+	"service": "web",
+	"workspaceFolder": "/web",
+	"shutdownAction": "none"
+}

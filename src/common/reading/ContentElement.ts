@@ -1,16 +1,22 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import ReadState from './ReadState';
 import Line from './Line';
 
+/**
+ * Represents a DOM Element that contains a section of text, and keeps geometrical
+ * metadata regarding its position in the reader viewport, as well as data
+ * relevant to reading simulation: the lines of text contained, the number of words, a
+ * read state...
+ */
 export default class ContentElement {
     private _element: HTMLElement;
     private _lineHeight: number;
@@ -59,6 +65,11 @@ export default class ContentElement {
             this._contentRect.top + line.top <= window.innerHeight + window.pageYOffset &&
             !line.isRead();
     }
+
+	/**
+	* Calculates the number of Lines presented to the article viewer in this ContentElement,
+	* and stores their geometrical properties and individual reading states in Line objects.
+	*/
     private _setLines(readState: ReadState) {
         var lineCount = Math.max(1, Math.floor(this._contentRect.height / this._lineHeight)),
             minWordsPerLine = Math.floor(this._wordCount / lineCount),
@@ -75,7 +86,17 @@ export default class ContentElement {
         }
         this._syncDebugDisplay();
     }
-    private _getContentOffset() {
+
+	/**
+	* Gets the offsets of the content of this element relative to its parent
+	* element, caused by any applied CSS border and/or padding properties.
+	*/
+    private _getContentOffset(): {
+		top: number;
+		right: number;
+		bottom: number;
+		left: number;
+	} {
         const computedStyle = window.getComputedStyle(this._element);
         const border = {
             top: parseInt(computedStyle.borderTopWidth),
@@ -96,6 +117,11 @@ export default class ContentElement {
             left: border.left + padding.left
         };
     }
+
+	/**
+	 * Gets the offset of this ContentElement relative to the viewport, taking into
+	 * account any border widths or padding that the element itself might have.
+	 */
     private _getContentRect() {
         const rect = this._element.getBoundingClientRect();
         return {
@@ -165,15 +191,22 @@ export default class ContentElement {
         testElement.remove();
         this._lineHeight = lineHeight || this._contentRect.height || 1;
     }
+	/**
+	 * Updates the internal representation of the offset of this ContentElement
+	 * relative to its viewport, in case it has changed.
+	 * Also recalculates the lines of this ContentElement.
+	 */
     public updateOffset() {
+		// Get the new content rect from the DOM
         const contentRect = this._getContentRect();
+		// Compare it to the previously persisted _contentRect
         if (contentRect.top !== this._contentRect.top ||
             contentRect.left !== this._contentRect.left ||
             contentRect.width !== this._contentRect.width ||
             contentRect.height !== this._contentRect.height) {
                 this._contentRect = contentRect;
                 this._setLines(this.getReadState());
-        }		
+        }
     }
     public toggleVisualDebugging() {
         if (this._isDebugging = !this._isDebugging) {
