@@ -26,10 +26,10 @@ import { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
 import DisplayPreference, { DisplayTheme, getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
 import { getPromiseErrorMessage } from '../../../common/format';
-import {ShareChannelData} from '../../../common/sharing/ShareData';
+import { ShareChannelData } from '../../../common/sharing/ShareData';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import {createQueryString} from '../../../common/routing/queryString';
-import {createTweetWebIntentUrl} from '../../../common/sharing/twitter';
+import { createQueryString } from '../../../common/routing/queryString';
+import { createTweetWebIntentUrl } from '../../../common/sharing/twitter';
 
 window.reallyreadit = {
 	readerContentScript: {
@@ -54,9 +54,9 @@ let
 
 /**
  * Tells the components in this reader to refresh themselves
- * with the latest UserArticle data, when a lookup result exists. 
+ * with the latest UserArticle data, when a lookup result exists.
  */
-function updateArticle(article: UserArticle) {
+function updateUserArticle(article: UserArticle) {
 	if (!lookupResult) {
 		return;
 	}
@@ -127,7 +127,7 @@ function updateComment(comment: CommentThread) {
 // for events coming from the Event Page
 const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
-		updateArticle(event.article);
+		updateUserArticle(event.article);
 	},
 	/** Update the locally cached user with its new logged in
 	 *  state via Twitter, in case such a login happened.
@@ -222,7 +222,7 @@ const header = new HeaderComponentHost({
 	services: {
 		/**
 		 * Reacts on the change of display preferences in the header component,
-		 * syncs these preferences to the locally stored compoments, as well as forwards 
+		 * syncs these preferences to the locally stored compoments, as well as forwards
 		 * them to the general app via the event page interface.
 		 */
 		onChangeDisplayPreference: preference => {
@@ -259,7 +259,7 @@ const title = new TitleComponentHost({
 			})
 			.then(
 				article => {
-					updateArticle(article);
+					updateUserArticle(article);
 				}
 			),
 		onToggleDebugMode: () => {
@@ -361,7 +361,7 @@ const commentsSection = new CommentsSectionComponentHost({
 			.postArticle(form)
 			.then(
 				post => {
-					updateArticle(post.article);
+					updateUserArticle(post.article);
 					if (post.comment) {
 						addComment(
 							createCommentThread(post)
@@ -374,7 +374,7 @@ const commentsSection = new CommentsSectionComponentHost({
 			.postComment(form)
 			.then(
 				result => {
-					updateArticle(result.article);
+					updateUserArticle(result.article);
 					addComment(result.comment);
 				}
 			),
@@ -431,7 +431,7 @@ const reader = new Reader(
 			)
 			.then(
 				article => {
-					updateArticle(article);
+					updateUserArticle(article);
 				}
 			)
 	}
@@ -439,198 +439,196 @@ const reader = new Reader(
 
 // parse metadata
 // TODO PROXY EXT: the param might be wrong or not necessary
-const metaParseResult = parseDocumentMetadata({url: {
-	protocol: window.location.protocol,
-	hostname: window.location.hostname,
-	href: window.location.href
-}});
+const metaParseResult = parseDocumentMetadata({
+	url: {
+		protocol: window.location.protocol,
+		hostname: window.location.hostname,
+		href: window.location.href
+	}
+});
 
-// try and get a cached copy of the display preference for the transition animation
-eventPageApi
-	.getDisplayPreference()
-	.then(
-		cachedDisplayPreference => {
-			// begin fade out animation
-			const transitionAnimationDuration = 700;
-			document.body.style.transition = `opacity ${transitionAnimationDuration / 2}ms`;
-			document.body.style.opacity = '0';
-			if (cachedDisplayPreference) {
-				let preferredBackgroundColor: string;
-				switch (cachedDisplayPreference.theme) {
-					case DisplayTheme.Light:
-						preferredBackgroundColor = lightBackgroundColor;
-						break;
-					case DisplayTheme.Dark:
-						preferredBackgroundColor = darkBackgroundColor;
-						break;
-				}
-				document.documentElement.style.transition = `background-color ${transitionAnimationDuration / 2}ms`;
-				document.documentElement.style.background = 'none';
-				document.documentElement.style.backgroundImage = 'none';
-				document.documentElement.style.backgroundColor = preferredBackgroundColor;
+// Try and get a cached copy of the display preference for the transition animation
+// TODO PROXY EXT: top level async/await not allowed in TS target ES5
+eventPageApi.getDisplayPreference().then(
+	async (cachedDisplayPreference) => {
+
+		// TODO PROXY EXT: the fade out used to be necessary, because the original
+		// content HTML was already laoded in the page
+
+		// begin fade out animation
+		const transitionAnimationDuration = 700;
+		document.body.style.transition = `opacity ${transitionAnimationDuration / 2}ms`;
+		document.body.style.opacity = '0';
+		if (cachedDisplayPreference) {
+			let preferredBackgroundColor: string;
+			switch (cachedDisplayPreference.theme) {
+				case DisplayTheme.Light:
+					preferredBackgroundColor = lightBackgroundColor;
+					break;
+				case DisplayTheme.Dark:
+					preferredBackgroundColor = darkBackgroundColor;
+					break;
 			}
-
-			// begin content parsing and article lookup while the animation is happening
-			Promise
-				.all([
-					window.reallyreadit.readerContentScript.contentParser
-						.get()
-						.then(
-							contentParser => {
-								const contentParseResult = contentParser.parse({
-									url: window.location
-								});
-								return {
-									contentParser,
-									contentParseResult,
-									lookupResult: eventPageApi.registerPage(
-										createPageParseResult(metaParseResult, contentParseResult)
-									)
-								};
-							}
-						),
-					new Promise<void>(
-						resolve => setTimeout(resolve, transitionAnimationDuration / 2)
-					)
-				])
-				.then(
-					results => {
-						// store the parse result
-						contentParseResult = results[0].contentParseResult;
-
-						// prune and style
-						const rootElements = results[0].contentParser.prune(contentParseResult);
-						contentRoot = rootElements.contentRoot;
-						scrollRoot = rootElements.scrollRoot;
-						styleArticleDocument({
-							useScrollContainer: true,
-							transitionElement: document.body
-						});
-						hasStyledArticleDocument = true;
-
-						// intercept mouseup event on article content to prevent article scripts from handling
-						document
-							.getElementById('com_readup_article_content')
-							.addEventListener(
-								'mouseup',
-								event => {
-									event.stopPropagation();
-								}
-							);
-
-						// update the display preference
-						// this version is loaded from local storage. prefer an existing copy
-						// that would have been set by an external change event.
-						updateDisplayPreference(displayPreference || cachedDisplayPreference);
-
-						// set up the global user interface
-						const resetStyleLink = document.createElement('link');
-						resetStyleLink.rel = 'stylesheet';
-						resetStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/reset.css');
-						document.head.appendChild(resetStyleLink);
-						insertExtensionFontStyleElement();
-						globalUi
-							.initialize()
-							.attach();
-
-						// set up the header user interface
-						header
-							.initialize(displayPreference)
-							.attach();
-
-						new ScrollService({
-							scrollContainer: scrollRoot,
-							setBarVisibility: isVisible => {
-								if (isVisible) {
-									headerContainer.style.transform = '';
-									headerContainer.style.pointerEvents = 'auto';
-								} else {
-									headerContainer.style.transform = 'translateY(-100%)';
-									headerContainer.style.pointerEvents = 'none';
-								}
-								header.setVisibility(isVisible);
-							}
-						});
-
-						// set up the title user interface
-						title
-							.initialize({
-								authors: metaParseResult.metadata.article.authors.map(author => author.name),
-								title: metaParseResult.metadata.article.title,
-								wordCount: contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
-							})
-							.attach();
-
-						// begin fade in animation
-						document.body.style.opacity = '1';
-
-						// process the lookup result while the animation is happening
-						Promise
-							.all([
-								results[0].lookupResult.then(
-									result => {
-										// store the lookup result
-										lookupResult = result;
-
-										// create page
-										page = new Page(contentParseResult.primaryTextContainers);
-										page.setReadState(result.userPage.readState);
-										reader.loadPage(page);
-
-										// trigger an update
-										updateArticle(lookupResult.userArticle);
-										updateUser(lookupResult.user);
-
-										// return the article and page for the bookmark prompt
-										return {
-											article: result.userArticle,
-											page
-										};
-									}
-								),
-								new Promise<void>(
-									resolve => setTimeout(resolve, transitionAnimationDuration / 2)
-								)
-							])
-							.then(
-								results => {
-									// display the bookmark prompt if needed
-									if (
-										!results[0].article.isRead &&
-										results[0].page.getBookmarkScrollTop() > window.innerHeight
-									) {
-										globalUi.dialogs.openDialog(
-											React.createElement(
-												BookmarkDialog,
-												{
-													onClose: globalUi.dialogs.closeDialog,
-													onSubmit: () => {
-														const bookmarkScrollTop = results[0].page.getBookmarkScrollTop();
-														if (bookmarkScrollTop > 0) {
-															scrollRoot.scrollTo({
-																behavior: 'smooth',
-																top: bookmarkScrollTop
-															});
-														}
-														return Promise.resolve();
-													}
-												}
-											)
-										);
-									}
-								}
-							)
-							.catch(
-								reason => {
-									showError(
-										getPromiseErrorMessage(reason)
-									);
-								}
-							);
-					}
-				);
+			document.documentElement.style.transition = `background-color ${transitionAnimationDuration / 2}ms`;
+			document.documentElement.style.background = 'none';
+			document.documentElement.style.backgroundImage = 'none';
+			document.documentElement.style.backgroundColor = preferredBackgroundColor;
 		}
-	);
+
+		// Begin content parsing and article lookup while the animation is happening
+		// But only use the parse result after the transition animation.
+		const contentParseAndLookupPromise = window.reallyreadit.readerContentScript.contentParser
+			.get()
+			.then(contentParser => {
+				const contentParseResult = contentParser.parse({
+					url: window.location
+				});
+				return {
+					contentParser,
+					contentParseResult,
+					articleLookupPromise: eventPageApi.registerPage(
+						createPageParseResult(metaParseResult, contentParseResult)
+					)
+				};
+			});
+		const [contentParseAndLookupResult, _] = await Promise.all([
+			contentParseAndLookupPromise,
+			new Promise<void>(
+				resolve => setTimeout(resolve, transitionAnimationDuration / 2)
+			)
+		]);
+
+		// Store the parse result.
+		contentParseResult = contentParseAndLookupResult.contentParseResult;
+
+		// Prune and style.
+		const rootElements = contentParseAndLookupResult.contentParser.prune(contentParseResult);
+		contentRoot = rootElements.contentRoot;
+		scrollRoot = rootElements.scrollRoot;
+		styleArticleDocument({
+			useScrollContainer: true,
+			transitionElement: document.body
+		});
+		hasStyledArticleDocument = true;
+
+		// Intercept mouseup event on article content to prevent article scripts
+		// from handling click events.
+		document
+			.getElementById('com_readup_article_content')
+			.addEventListener(
+				'mouseup',
+				event => {
+					event.stopPropagation();
+				}
+			);
+
+		// Update the display preference.
+		// This version is loaded from local storage. Prefer an existing copy
+		// that would have been set by an external change event.
+		updateDisplayPreference(displayPreference || cachedDisplayPreference);
+
+		// Set up the global user interface.
+		const resetStyleLink = document.createElement('link');
+		resetStyleLink.rel = 'stylesheet';
+		resetStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/reset.css');
+		document.head.appendChild(resetStyleLink);
+		insertExtensionFontStyleElement();
+		globalUi
+			.initialize()
+			.attach();
+
+		// Set up the header user interface.
+		header
+			.initialize(displayPreference)
+			.attach();
+
+		new ScrollService({
+			scrollContainer: scrollRoot,
+			setBarVisibility: isVisible => {
+				if (isVisible) {
+					headerContainer.style.transform = '';
+					headerContainer.style.pointerEvents = 'auto';
+				} else {
+					headerContainer.style.transform = 'translateY(-100%)';
+					headerContainer.style.pointerEvents = 'none';
+				}
+				header.setVisibility(isVisible);
+			}
+		});
+
+		// Set up the title user interface.
+		title
+			.initialize({
+				authors: metaParseResult.metadata.article.authors.map(author => author.name),
+				title: metaParseResult.metadata.article.title,
+				wordCount: contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
+			})
+			.attach();
+
+		// Begin fade in animation of styled Readup content
+		document.body.style.opacity = '1';
+
+		// Process (and load) the lookup + content parse result while the animation is happening,
+		// but don't show the bookmark dialog until the page content is fully visible.
+		const processLookupPromise = Promise.all
+			([contentParseAndLookupResult.articleLookupPromise.then(
+				lookupResult => {
+
+					// create page
+					page = new Page(contentParseResult.primaryTextContainers);
+					page.setReadState(lookupResult.userPage.readState);
+					reader.loadPage(page);
+
+					// trigger an update
+					updateUserArticle(lookupResult.userArticle);
+					updateUser(lookupResult.user);
+
+					// return the article and page for the bookmark prompt
+					return {
+						article: lookupResult.userArticle,
+						page
+					};
+				}
+			),
+			new Promise<void>(
+				resolve => setTimeout(resolve, transitionAnimationDuration / 2)
+			)
+			]);
+
+		try {
+			const [lookupResult, _] = await processLookupPromise;
+
+			// Display the bookmark prompt if needed
+			if (
+				!lookupResult.article.isRead &&
+				lookupResult.page.getBookmarkScrollTop() > window.innerHeight
+			) {
+				globalUi.dialogs.openDialog(
+					React.createElement(
+						BookmarkDialog,
+						{
+							onClose: globalUi.dialogs.closeDialog,
+							onSubmit: () => {
+								const bookmarkScrollTop = lookupResult.page.getBookmarkScrollTop();
+								if (bookmarkScrollTop > 0) {
+									scrollRoot.scrollTo({
+										behavior: 'smooth',
+										top: bookmarkScrollTop
+									});
+								}
+								return Promise.resolve();
+							}
+						}
+					)
+				);
+			}
+		} catch (reason) {
+			showError(
+				getPromiseErrorMessage(reason)
+			);
+		}
+	}
+);
 
 // unload
 window.addEventListener(

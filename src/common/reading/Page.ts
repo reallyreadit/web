@@ -80,6 +80,7 @@ function findContentElements(element: Element, contentElements: ContentElement[]
  * Represents a web page containing an article, or a part of an article.
  * Interfaces with the web page via the DOM, through the primary TextContainer
  * DOM Element wrappers passed into the construtor.
+ * Also represents the reading progress of the reader in this DOM page.
  */
 export default class Page {
 	private _contentEls: ContentElement[];
