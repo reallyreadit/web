@@ -83,7 +83,7 @@ function build(env) {
 function watch() {
 	readerContentScript.watch();
 	eventPage.watch();
-	optionsPage.watch(),
+	optionsPage.watch();
 	staticAssets.watch();
 	webAppContentScript.watch();
 	alertContentScript.watch();
