@@ -45,7 +45,7 @@ export default class extends React.PureComponent<{
 						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>What is Readup?</Link> :
 						null,
 					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>FAQ</Link>,
-					<Link key="blog" href="https://blog.readup.com" onClick={navTo} >Blog</Link>
+					<Link key="blog" href="https://blog.readup.org" onClick={navTo} >Blog</Link>
 				]
 			},
 			{
@@ -53,7 +53,7 @@ export default class extends React.PureComponent<{
 				sublinks: [
 					<Link key="ios" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navToPush}><Icon name='phone'/>iPhone and iPad</Link>,
 					<Link key="mac" href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={navToPush}><Icon name='apple'/>Mac</Link>,
-					<Link key="windows" href="https://static.readup.com/downloads/windows/ReadupSetup.exe" onClick={navToPush}><Icon name='windows'/>Windows</Link>,
+					<Link key="windows" href="https://static.readup.org/downloads/windows/ReadupSetup.exe" onClick={navToPush}><Icon name='windows'/>Windows</Link>,
 				]
 			},
 		]

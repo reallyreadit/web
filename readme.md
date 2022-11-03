@@ -67,7 +67,7 @@ To point the parser in the right direction, add a new rule that specifies a sele
 		}
 3. **Test the rule.** Increment the versions for `common/contentParser` (in this case to version `2.0.2`) as well as `nativeClient/reader` and `nativeClient/shareExtension` which both reference the content parser. Build both scripts using `npx gulp build:prod:native-client-reader` and `npx gulp build:prod:native-client-share-extension`. Copy both scripts to their respective locations in either the `ios` or `desktop` repositories for testing.
 
-	Repeat the previous steps as many times as necessary until all new rules are working as intended. Then commit the changes to this repository, follow instructions in other repositories for updating the bundled script files, and follow the instructions in the `static` repository for uploading the scripts to the `static.readup.com` server to make them available for existing Readup client applications.
+	Repeat the previous steps as many times as necessary until all new rules are working as intended. Then commit the changes to this repository, follow instructions in other repositories for updating the bundled script files, and follow the instructions in the `static` repository for uploading the scripts to the `static.readup.org` server to make them available for existing Readup client applications.
 ## Publishing & Deploying
 ### App
 In all the steps below, `{version}` is a placeholder for the unquoted version number of this release, e.g. `1.2.3`.
@@ -76,7 +76,7 @@ In all the steps below, `{version}` is a placeholder for the unquoted version nu
 3. Run the `publish-app.ps1` script. The deployable assets will be available in the `pkg/app/{version}` directory after the script finishes.
 4. Upload the assets.
     1. Upload the `app-{version}.zip` package to `s3://aws.reallyread.it/web-sites`. This is the private location that the EC2 instances will download the package from during installation.
-    2. Upload the `.js` and `.css` bundle files to `s3://static.readup.com/app/bundles`. This is the public hosted location that the webapp will link to.
+    2. Upload the `.js` and `.css` bundle files to `s3://static.readup.org/app/bundles`. This is the public hosted location that the webapp will link to.
 5. Install the package.
 
 	Perform a zero-downtime deployment by installing the package to a server that is offline, bringing that server online, and then taking the server with the old version of the package offline.

@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -314,7 +314,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		// encoded as %20 (which encodeURIComponent does) instead of +
 		const queryString = createQueryString({
 			'client_id': 'com.readup.webapp',
-			'redirect_uri': 'https://api.readup.com/Auth/AppleWeb',
+			'redirect_uri': 'https://api.readup.org/Auth/AppleWeb',
 			'response_type': 'code id_token',
 			'scope': 'email',
 			'response_mode': 'form_post',

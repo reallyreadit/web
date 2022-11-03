@@ -327,11 +327,11 @@ export default class MarketingScreen extends React.Component<
 								"addressRegion": "New Jersey"
 							}
 						},
-						"logo": "https://static.readup.com/media/logo-512.png",
+						"logo": "https://static.readup.org/media/logo-512.png",
 						"naics": "519130",
 						"name": "Readup",
 						"slogan": "The best way to find, read and share articles online.",
-						"url": "https://readup.com/"
+						"url": "https://readup.org/"
 					}}
 				/>
 			</div>
