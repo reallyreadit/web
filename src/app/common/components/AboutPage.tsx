@@ -29,16 +29,14 @@ const profiles: ProfileData[] = [
 		title: "Readup Owner",
 		readerName: "jeff",
 		imageName: 'jeff.jpg',
-		web: "https://jeffcamera.com",
-		mail: "jeff@readup.com"
+		web: "https://jeffcamera.com"
 	},
 	{
 		name: "Thor Galle",
 		title: "Readup Maintainer",
 		readerName: "thorgalle",
 		imageName: 'thor.jpg',
-		web: "https://thorgalle.me",
-		mail: "thorgalle+readup@gmail.com"
+		web: "https://thorgalle.me"
 	}
 ];
 
