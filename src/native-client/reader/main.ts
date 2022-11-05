@@ -26,7 +26,7 @@ import pruneDocument from '../../common/contentParsing/pruneDocument';
 import procesLazyImages from '../../common/contentParsing/processLazyImages';
 import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
 import configs from '../../common/contentParsing/configuration/configs';
-import App, { Props as EmbedProps } from './components/App';
+import ReaderUIEmbed, { Props as EmbedProps } from '../../common/reader-app/ReaderUIEmbed';
 import PostForm from '../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../common/models/social/Post';
 import CommentForm from '../../common/models/social/CommentForm';
@@ -55,6 +55,7 @@ import { ParserDocumentLocation } from '../../common/ParserDocumentLocation';
 import ShareResponse from '../../common/sharing/ShareResponse';
 import {DeviceType} from '../../common/DeviceType';
 import { AppPlatform } from '../../common/AppPlatform';
+import {createUrl} from '../../common/HttpEndpoint';
 
 const initData = window.reallyreadit.nativeClient.reader.initData;
 
@@ -256,6 +257,11 @@ const dialogService = new DialogService({
 		);
 	}
 });
+
+function onCreateAbsoluteUrl(path: string) {
+	return createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
+}
+
 let
 	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user' >> = {
 		appPlatform: initData.appPlatform,
@@ -265,6 +271,7 @@ let
 		dialogService,
 		isHeaderHidden: false,
 		onChangeDisplayPreference: changeDisplayPreference,
+		onCreateAbsoluteUrl,
 		onDeleteComment: deleteComment,
 		onLinkAuthServiceAccount: linkAuthServiceAccount,
 		onNavBack: navBack,
@@ -280,7 +287,7 @@ let
 	embedRootElement: HTMLDivElement;
 
 /**
- * Inserts an element in the document that contains an attachment point for App.tsx via render(),
+ * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
  * which is thehost for reader-related UI & behavior.
  *
  * This element injector should be called after the document has been "pruned".
@@ -326,7 +333,7 @@ function insertEmbed() {
 function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>, callback?: () => void) {
 	ReactDOM.render(
 		React.createElement(
-			App,
+			ReaderUIEmbed,
 			{
 				...(
 					embedProps = {

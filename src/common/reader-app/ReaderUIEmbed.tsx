@@ -10,45 +10,44 @@
 
 import * as React from 'react';
 import * as classNames from 'classnames';
-import ShareChannel from '../../../common/sharing/ShareChannel';
-import Toaster, { Intent } from '../../../common/components/Toaster';
-import { createUrl } from '../../../common/HttpEndpoint';
-import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
-import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
-import AsyncTracker from '../../../common/AsyncTracker';
-import UserArticle from '../../../common/models/UserArticle';
-import Fetchable from '../../../common/Fetchable';
-import CommentThread from '../../../common/models/CommentThread';
-import UserAccount from '../../../common/models/UserAccount';
-import PostDialog from '../../../common/components/PostDialog';
-import DialogManager from '../../../common/components/DialogManager';
-import CommentsSection from '../../../common/components/comments/CommentsSection';
-import PostForm from '../../../common/models/social/PostForm';
-import Post from '../../../common/models/social/Post';
-import { ShareEvent, createRelativeShareSelection } from '../../../common/sharing/ShareEvent';
-import PostPrompt from '../../../common/components/PostPrompt';
-import CommentForm from '../../../common/models/social/CommentForm';
-import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
-import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
-import ContentBox from '../../../common/components/ContentBox';
-import SpinnerIcon from '../../../common/components/SpinnerIcon';
-import { findRouteByKey } from '../../../common/routing/Route';
-import routes from '../../../common/routing/routes';
-import ScreenKey from '../../../common/routing/ScreenKey';
-import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
-import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
-import ReaderHeader from '../../../common/components/ReaderHeader';
-import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
-import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
-import ShareResponse from '../../../common/sharing/ShareResponse';
-import {DeviceType} from '../../../common/DeviceType';
-import { ShareChannelData } from '../../../common/sharing/ShareData';
-import ClipboardService from '../../../common/services/ClipboardService';
-import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
-import { createQueryString } from '../../../common/routing/queryString';
-import { createTweetWebIntentUrl } from '../../../common/sharing/twitter';
-import { AppPlatform } from '../../../common/AppPlatform';
+import ShareChannel from '../sharing/ShareChannel';
+import Toaster, { Intent } from '../components/Toaster';
+import ToasterService, { State as ToasterState } from '../services/ToasterService';
+import DialogService, { DialogServiceState } from '../services/DialogService';
+import AsyncTracker from '../AsyncTracker';
+import UserArticle from '../models/UserArticle';
+import Fetchable from '../Fetchable';
+import CommentThread from '../models/CommentThread';
+import UserAccount from '../models/UserAccount';
+import PostDialog from '../components/PostDialog';
+import DialogManager from '../components/DialogManager';
+import CommentsSection from '../components/comments/CommentsSection';
+import PostForm from '../models/social/PostForm';
+import Post from '../models/social/Post';
+import { ShareEvent, createRelativeShareSelection } from '../sharing/ShareEvent';
+import PostPrompt from '../components/PostPrompt';
+import CommentForm from '../models/social/CommentForm';
+import CommentDeletionForm from '../models/social/CommentDeletionForm';
+import CommentAddendumForm from '../models/social/CommentAddendumForm';
+import CommentRevisionForm from '../models/social/CommentRevisionForm';
+import ContentBox from '../components/ContentBox';
+import SpinnerIcon from '../components/SpinnerIcon';
+import { findRouteByKey } from '../routing/Route';
+import routes from '../routing/routes';
+import ScreenKey from '../routing/ScreenKey';
+import AuthServiceProvider from '../models/auth/AuthServiceProvider';
+import AuthServiceAccountAssociation from '../models/auth/AuthServiceAccountAssociation';
+import ReaderHeader from '../components/ReaderHeader';
+import ArticleIssueReportRequest from '../models/analytics/ArticleIssueReportRequest';
+import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../models/userAccounts/DisplayPreference';
+import ShareResponse from '../sharing/ShareResponse';
+import {DeviceType} from '../DeviceType';
+import { ShareChannelData } from '../sharing/ShareData';
+import ClipboardService from '../services/ClipboardService';
+import ClipboardTextInput from '../components/ClipboardTextInput';
+import { createQueryString } from '../routing/queryString';
+import { createTweetWebIntentUrl } from '../sharing/twitter';
+import { AppPlatform } from '../AppPlatform';
 
 export interface Props extends DialogServiceState {
 	appPlatform: AppPlatform,
@@ -59,6 +58,7 @@ export interface Props extends DialogServiceState {
 	displayPreference: DisplayPreference | null,
 	isHeaderHidden: boolean,
 	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
+	onCreateAbsoluteUrl: (path: string) => string,
 	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
 	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
 	onNavBack: () => void,
@@ -80,7 +80,7 @@ export interface Props extends DialogServiceState {
  * - global dialog UI (fixed overlay)
  * - comment section UI
  */
-export default class App extends React.Component<
+export default class ReaderUIEmbed extends React.Component<
 	Props,
 	ToasterState
 > {
@@ -115,14 +115,11 @@ export default class App extends React.Component<
 	// profile links
 	private readonly _viewProfile = (userName: string) => {
 		this.props.onNavTo(
-			this._createAbsoluteUrl(
+			this.props.onCreateAbsoluteUrl(
 				findRouteByKey(routes, ScreenKey.Profile).createUrl({ userName })
 			)
 		);
 	};
-
-	// routing
-	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
 
 	// sharing
 	private readonly _handleShareChannelRequest = (data: ShareChannelData) => {
@@ -189,7 +186,7 @@ export default class App extends React.Component<
 	}
 	public render() {
 		return (
-			<div className="app_n0jlkg">
+			<div className="reader-embed_2818km">
 				{this.props.article.value?.isRead ?
 					<PostPrompt
 						article={this.props.article.value}
@@ -207,7 +204,7 @@ export default class App extends React.Component<
 							comments={this.props.comments.value}
 							noCommentsMessage="No comments on this article yet."
 							onCloseDialog={this.props.dialogService.closeDialog}
-							onCreateAbsoluteUrl={this._createAbsoluteUrl}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 							onDeleteComment={this.props.onDeleteComment}
 							onNavTo={this.props.onNavTo}
 							onOpenDialog={this.props.dialogService.openDialog}
@@ -227,7 +224,7 @@ export default class App extends React.Component<
 						deviceType={this.props.deviceType}
 						isHidden={this.props.isHeaderHidden}
 						onNavBack={this.props.onNavBack}
-						onCreateAbsoluteUrl={this._createAbsoluteUrl}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onChangeDisplayPreference={this._changeDisplayPreference}
 						onReportArticleIssue={this._reportArticleIssue}
 						onShare={this._handleShareRequest}

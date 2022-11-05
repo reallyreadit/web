@@ -22,6 +22,7 @@ const
 			files: [
 				`${project.srcDir}/common/components/**/*.{css,scss}`,
 				`${project.srcDir}/common/styles/reset.css`,
+				`${project.srcDir}/common/reader-app/**/*.{css,scss}`,
 				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`
 			],
 		},

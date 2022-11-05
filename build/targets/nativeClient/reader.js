@@ -138,6 +138,7 @@ const build = createBuild({
 		files: [
 			`${project.srcDir}/common/components/**/*.{css,scss}`,
 			`${project.srcDir}/common/styles/reset.css`,
+			`${project.srcDir}/common/reader-app/**/*.{css,scss}`,
 			`${project.srcDir}/native-client/reader/**/*.{css,scss}`
 		]
 	},

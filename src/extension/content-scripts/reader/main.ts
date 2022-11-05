@@ -27,7 +27,7 @@ import {findPublisherConfig} from '../../../common/contentParsing/configuration/
 import configs from '../../../common/contentParsing/configuration/configs';
 import procesLazyImages from '../../../common/contentParsing/processLazyImages';
 
-import App,{Props as EmbedProps} from './App';
+import ReaderUIEmbed,{Props as EmbedProps} from '../../../common/reader-app/ReaderUIEmbed';
 import {AppPlatform} from '../../../common/AppPlatform';
 import DialogService from '../../../common/services/DialogService';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
@@ -44,6 +44,7 @@ import {createArticleSlug} from '../../../common/routing/routes';
 import UserPage from '../../../common/models/UserPage';
 import icons from '../../../common/svg/icons';
 import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
+import {createUrl} from '../../../common/HttpEndpoint';
 
 // TODO PROXY EXT: We don't need to ask the event page to load this script anymore
 // we just include it by default?
@@ -97,7 +98,7 @@ let
 function render(props?: Partial<Pick<EmbedProps,Exclude<keyof EmbedProps,'article' | 'user'>>>,callback?: () => void) {
 	ReactDOM.render(
 		React.createElement(
-			App,
+			ReaderUIEmbed,
 			{
 				...(
 					embedProps = {
@@ -388,6 +389,10 @@ async function toggleStar() {
 		);
 }
 
+function onCreateAbsoluteUrl(path: string) {
+	return createUrl(window.reallyreadit.extension.config.webServer, path);
+}
+
 let
 	embedProps: Pick<EmbedProps,Exclude<keyof EmbedProps,'article' | 'displayPreference' | 'user'>> = {
 		// TODO PROXY EXT: can we make this unnecessary
@@ -399,6 +404,7 @@ let
 		dialogService,
 		isHeaderHidden: false,
 		onChangeDisplayPreference: onChangeDisplayPreference,
+		onCreateAbsoluteUrl,
 		onDeleteComment: onDeleteComment,
 		onLinkAuthServiceAccount: onLinkAuthServiceAccount,
 		// TODO PROXY EXT: Decide how to handle this
@@ -415,7 +421,7 @@ let
 	embedRootElement: HTMLDivElement;
 
 /**
- * Inserts an element in the document that contains an attachment point for App.tsx via render(),
+ * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
  * which is thehost for reader-related UI & behavior.
  * 
  * Depends on context. These variables should be available:
@@ -734,11 +740,11 @@ eventPageApi.getDisplayPreference().then(
 		// which will make it quicker. See build files
 
 		// insert SVG icons
-		document.body.insertAdjacentHTML('afterbegin', icons)
+		document.body.insertAdjacentHTML('afterbegin',icons)
 
 		// insert fonts
 		insertExtensionFontStyleElement();
-		
+
 		// insert Readup Reader style bundle
 		const link = document.createElement('link');
 		link.type = 'text/css'

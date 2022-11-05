@@ -9,31 +9,31 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
-	componentPath: src/native-client/reader/components/App
-	cssComponentId: app_n0jlkg
+        componentPath: src/common/reader-app/ReaderUIEmbed
+        cssComponentId: reader-embed_2818km
 */
-@import '../../../common/styles/colors';
+@import '../styles/colors';
 
-.app_n0jlkg > .post-prompt_de6v6u {
+.reader-embed_2818km > .post-prompt_de6v6u {
 	margin-bottom: 15px;
 	opacity: 0;
-	animation: app_n0jlkg-fade-in 500ms forwards;
+	animation: reader-embed_2818km-fade-in 500ms forwards;
 }
-.app_n0jlkg > .loading-comments {
+.reader-embed_2818km > .loading-comments {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	opacity: 0;
-	animation: app_n0jlkg-fade-in 500ms forwards;
+	animation: reader-embed_2818km-fade-in 500ms forwards;
 }
-.app_n0jlkg > .loading-comments > .spinner-icon_6s5uk2 {
+.reader-embed_2818km > .loading-comments > .spinner-icon_6s5uk2 {
 	margin-right: 5px;
 }
-.app_n0jlkg > .comments-section_mqmgnd {
+.reader-embed_2818km > .comments-section_mqmgnd {
 	opacity: 0;
-	animation: app_n0jlkg-fade-in 500ms forwards;
+	animation: reader-embed_2818km-fade-in 500ms forwards;
 }
-.app_n0jlkg > .header-container {
+.reader-embed_2818km > .header-container {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -42,12 +42,12 @@
 	border-top-style: solid;
 	transition: transform 250ms;
 }
-.app_n0jlkg > .header-container.hidden {
+.reader-embed_2818km > .header-container.hidden {
 	transform: translateY(-100%);
 	pointer-events: none;
 }
 
-@keyframes app_n0jlkg-fade-in {
+@keyframes reader-embed_2818km-fade-in {
 	from {
 		opacity: 0;
 	}
@@ -57,7 +57,7 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .app_n0jlkg > .header-container {
+	#{$root} .reader-embed_2818km > .header-container {
 		@include theme-colors(
 			$scheme,
 			(
