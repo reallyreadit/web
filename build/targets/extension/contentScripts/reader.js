@@ -27,7 +27,8 @@ const
 			{
 				src: `${project.srcDir}/common/styles/reset.css`,
 				base: `${project.srcDir}/common/styles`
-			}
+			},
+			`${project.srcDir}/extension/content-scripts/reader/index.html`
 		],
 		webpack: {
 			appConfig: {

@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import WebViewMessagingContext from '../../common/WebViewMessagingContext';
@@ -115,6 +115,10 @@ let
 	userPage: UserPage,
 	user: UserAccount;
 
+/**
+ * Let the components in this reader know that the display preference has changed,
+ * following an external or internal action.
+ */
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
 	if (preference) {
@@ -223,6 +227,7 @@ function handleLink(url: string) {
 	}
 	return false;
 }
+
 function handleArticleLink(this: HTMLAnchorElement, ev: MouseEvent) {
 	ev.preventDefault();
 	if (
@@ -231,6 +236,7 @@ function handleArticleLink(this: HTMLAnchorElement, ev: MouseEvent) {
 		handleLink(this.href);
 	}
 }
+
 Array
 	.from(
 		document.getElementsByTagName('a')
@@ -272,6 +278,16 @@ let
 		onToggleStar: toggleStar
 	},
 	embedRootElement: HTMLDivElement;
+
+/**
+ * Inserts an element in the document that contains an attachment point for App.tsx via render(),
+ * which is thehost for reader-related UI & behavior.
+ *
+ * This element injector should be called after the document has been "pruned".
+ * This allows the embed to be inserted after the #com_readup_article_content element,
+ * which means the natural position of the App in the document flow is *after* the article content.
+ * Note that this is exactly the place where the comment section should be rendered by the App.
+ */
 function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
@@ -304,6 +320,9 @@ function insertEmbed() {
 		}
 	);
 }
+/**
+ * Renders or re-renders the reader UI embed.
+ */
 function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>, callback?: () => void) {
 	ReactDOM.render(
 		React.createElement(

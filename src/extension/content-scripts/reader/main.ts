@@ -5,8 +5,7 @@ import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
 import ArticleLookupResult from '../../../common/models/ArticleLookupResult';
-import ParseResult from '../../../common/contentParsing/ParseResult';
-import styleArticleDocument, { applyDisplayPreferenceToArticleDocument, darkBackgroundColor, lightBackgroundColor } from '../../../common/reading/styleArticleDocument';
+import styleArticleDocument,{applyDisplayPreferenceToArticleDocument,createByline,darkBackgroundColor,lightBackgroundColor} from '../../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 import * as React from 'react';
 import GlobalComponentHost from './GlobalComponentHost';
@@ -14,36 +13,62 @@ import CommentsSectionComponentHost from './CommentsSectionComponentHost';
 import TitleComponentHost from './TitleComponentHost';
 import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
-import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
+import {AuthServiceBrowserLinkResponse,isAuthServiceBrowserLinkSuccessResponse} from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import BookmarkDialog from '../../../common/components/BookmarkDialog';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
-import { Intent } from '../../../common/components/Toaster';
+import {Intent} from '../../../common/components/Toaster';
 import ScrollService from '../../../common/services/ScrollService';
 import HeaderComponentHost from './HeaderComponentHost';
 import UserAccount from '../../../common/models/UserAccount';
-import { createCommentThread } from '../../../common/models/social/Post';
+import {createCommentThread} from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
-import DisplayPreference, { DisplayTheme, getDisplayPreferenceChangeMessage } from '../../../common/models/userAccounts/DisplayPreference';
-import { getPromiseErrorMessage } from '../../../common/format';
-import { ShareChannelData } from '../../../common/sharing/ShareData';
+import DisplayPreference,{DisplayTheme,getDisplayPreferenceChangeMessage} from '../../../common/models/userAccounts/DisplayPreference';
+import {getPromiseErrorMessage} from '../../../common/format';
+import {ShareChannelData} from '../../../common/sharing/ShareData';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { createQueryString } from '../../../common/routing/queryString';
-import { createTweetWebIntentUrl } from '../../../common/sharing/twitter';
+import {createQueryString,parseQueryString} from '../../../common/routing/queryString';
+import {createTweetWebIntentUrl} from '../../../common/sharing/twitter';
+import {ParserDocumentLocation} from '../../../common/ParserDocumentLocation';
+import {DeviceType} from '../../../common/DeviceType';
+import parseDocumentContent from '../../../common/contentParsing/parseDocumentContent';
+import pruneDocument from '../../../common/contentParsing/pruneDocument';
+import {findPublisherConfig} from '../../../common/contentParsing/configuration/PublisherConfig';
+import configs from '../../../common/contentParsing/configuration/configs';
+import procesLazyImages from '../../../common/contentParsing/processLazyImages';
 
+// TODO PROXY EXT: We don't need to ask the event page to load this script anymore
+// we just include it by default?
+// remove these commands? -> probably yes
+//
 window.reallyreadit = {
 	readerContentScript: {
 		contentParser: new LazyScript(
 			() => {
-				eventPageApi.loadContentParser();
+				// 				eventPageApi.loadContentParser();
 			}
 		)
 	}
 };
 
+
+// TODO PROXY EXT: taken from the native reader
+// our case is similar to
+// ensure the rest also respects this documentLocation
+
+let documentLocation: ParserDocumentLocation = new URL(
+	parseQueryString(window.location.search)['url']
+);
+
+
+
+// TODO PROXY EXT: emulating the native reader, just hardcoded something here
+let deviceType: DeviceType = DeviceType.DesktopChrome;
+
+
 // globals
 let
-	contentParseResult: ParseResult,
+	// contentParseResult: ParseResult,
 	displayPreference: DisplayPreference | null,
 	contentRoot: HTMLElement,
 	scrollRoot: HTMLElement,
@@ -57,17 +82,17 @@ let
  * with the latest UserArticle data, when a lookup result exists.
  */
 function updateUserArticle(article: UserArticle) {
-	if (!lookupResult) {
+	if(!lookupResult) {
 		return;
 	}
 	lookupResult.userArticle = article;
 	header.articleUpdated(article);
 	title.articleUpdated(article);
-	if (commentsSection.isInitialized) {
+	if(commentsSection.isInitialized) {
 		commentsSection.articleUpdated(article);
-	} else if (article.isRead) {
+	} else if(article.isRead) {
 		commentsSection
-			.initialize(article, lookupResult.user)
+			.initialize(article,lookupResult.user)
 			.attach();
 		eventPageApi
 			.getComments(article.slug)
@@ -81,7 +106,7 @@ function updateUserArticle(article: UserArticle) {
 
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
-	if (preference) {
+	if(preference) {
 		textSizeChanged = (
 			displayPreference == null ||
 			displayPreference.textSize !== preference.textSize
@@ -98,13 +123,13 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 			}
 		)
 	);
-	if (textSizeChanged && page) {
+	if(textSizeChanged && page) {
 		page.updateLineHeight();
 	}
 }
 
 function updateUser(user: UserAccount) {
-	if (!lookupResult) {
+	if(!lookupResult) {
 		return;
 	}
 	lookupResult.user = user;
@@ -133,7 +158,7 @@ const eventPageApi = new EventPageApi({
 	 *  state via Twitter, in case such a login happened.
 	 */
 	onAuthServiceLinkCompleted: response => {
-		if (
+		if(
 			lookupResult &&
 			isAuthServiceBrowserLinkSuccessResponse(response) &&
 			response.association.provider === AuthServiceProvider.Twitter &&
@@ -144,7 +169,7 @@ const eventPageApi = new EventPageApi({
 				hasLinkedTwitterAccount: true
 			});
 		}
-		if (authServiceLinkCompletionHandler) {
+		if(authServiceLinkCompletionHandler) {
 			authServiceLinkCompletionHandler(response);
 		}
 	},
@@ -156,7 +181,7 @@ const eventPageApi = new EventPageApi({
 	},
 	onDisplayPreferenceChanged: preference => {
 		// only update if already styled
-		if (hasStyledArticleDocument) {
+		if(hasStyledArticleDocument) {
 			updateDisplayPreference(preference);
 		} else {
 			displayPreference = preference;
@@ -175,10 +200,10 @@ const eventPageApi = new EventPageApi({
 window.addEventListener(
 	'message',
 	event => {
-		if (!/(\/\/|\.)readup\.com$/.test(event.origin)) {
+		if(!/(\/\/|\.)readup\.com$/.test(event.origin)) {
 			return;
 		}
-		switch (event.data?.type as String || null) {
+		switch(event.data?.type as String || null) {
 			case 'toggleVisualDebugging':
 				page?.toggleVisualDebugging();
 				break;
@@ -226,10 +251,10 @@ const header = new HeaderComponentHost({
 		 * them to the general app via the event page interface.
 		 */
 		onChangeDisplayPreference: preference => {
-			if (displayPreference) {
-				const message = getDisplayPreferenceChangeMessage(displayPreference, preference);
-				if (message) {
-					globalUi.toaster.addToast(message, Intent.Success);
+			if(displayPreference) {
+				const message = getDisplayPreferenceChangeMessage(displayPreference,preference);
+				if(message) {
+					globalUi.toaster.addToast(message,Intent.Success);
 				}
 			}
 			updateDisplayPreference(preference);
@@ -237,7 +262,7 @@ const header = new HeaderComponentHost({
 		},
 		onReportArticleIssue: request => {
 			eventPageApi.reportArticleIssue(request);
-			globalUi.toaster.addToast('Issue Reported', Intent.Success);
+			globalUi.toaster.addToast('Issue Reported',Intent.Success);
 		}
 	}
 });
@@ -294,13 +319,13 @@ const commentsSection = new CommentsSectionComponentHost({
 				}
 			),
 		onLinkAuthServiceAccount: provider => new Promise<AuthServiceAccountAssociation>(
-			(resolve, reject) => {
+			(resolve,reject) => {
 				eventPageApi
 					.requestTwitterBrowserLinkRequestToken()
 					.then(
 						token => {
 							const url = new URL('https://api.twitter.com/oauth/authorize');
-							url.searchParams.set('oauth_token', token.value);
+							url.searchParams.set('oauth_token',token.value);
 							eventPageApi
 								.openWindow({
 									url: url.href,
@@ -310,14 +335,14 @@ const commentsSection = new CommentsSectionComponentHost({
 								.then(
 									windowId => {
 										authServiceLinkCompletionHandler = response => {
-											if (response.requestToken === token.value) {
+											if(response.requestToken === token.value) {
 												cleanupEventHandlers();
 												eventPageApi.closeWindow(windowId);
-												if (isAuthServiceBrowserLinkSuccessResponse(response)) {
+												if(isAuthServiceBrowserLinkSuccessResponse(response)) {
 													resolve(response.association);
 												} else {
 													let errorMessage: string;
-													switch (response.error) {
+													switch(response.error) {
 														case AuthenticationError.Cancelled:
 															errorMessage = 'Cancelled';
 															break;
@@ -332,14 +357,14 @@ const commentsSection = new CommentsSectionComponentHost({
 													.hasWindowClosed(windowId)
 													.then(
 														closed => {
-															if (closed) {
+															if(closed) {
 																cleanupEventHandlers();
 																reject(new Error('Cancelled'));
 															}
 														}
 													)
 													.catch(
-														() => { }
+														() => {}
 													);
 											},
 											1000
@@ -362,7 +387,7 @@ const commentsSection = new CommentsSectionComponentHost({
 			.then(
 				post => {
 					updateUserArticle(post.article);
-					if (post.comment) {
+					if(post.comment) {
 						addComment(
 							createCommentThread(post)
 						);
@@ -396,9 +421,9 @@ const commentsSection = new CommentsSectionComponentHost({
 			),
 		onShare: globalUi.handleShareRequest,
 		onShareViaChannel: (data: ShareChannelData) => {
-			switch (data.channel) {
+			switch(data.channel) {
 				case ShareChannel.Clipboard:
-					globalUi.clipboard.copyText(data.text, 'Link copied to clipboard');
+					globalUi.clipboard.copyText(data.text,'Link copied to clipboard');
 					break;
 				case ShareChannel.Email:
 					globalUi.navTo(`mailto:${createQueryString({
@@ -438,30 +463,40 @@ const reader = new Reader(
 )
 
 // parse metadata
-// TODO PROXY EXT: the param might be wrong or not necessary
-const metaParseResult = parseDocumentMetadata({
-	url: {
-		protocol: window.location.protocol,
-		hostname: window.location.hostname,
-		href: window.location.href
+
+async function fetchAndInjectArticle() {
+	// Test adding some content
+	// TODO PROXY EXT: this gives an error without
+	// any content. The parsing script really expects something to be in `<body>`
+	// should fail more gracefully!
+
+	let doc: Document;
+	try {
+		const text = await fetch(documentLocation.href).then(r => r.text());
+		const parser = new DOMParser();
+		doc = parser.parseFromString(text,"text/html");
+	} catch(e) {
+		console.error("oops, something went wrong while fetching the article")
+		throw e
 	}
-});
+
+	document.body = doc.body
+	document.head.title = doc.head.title
+}
+
+
+const transitionAnimationDuration = 700;
 
 // Try and get a cached copy of the display preference for the transition animation
 // TODO PROXY EXT: top level async/await not allowed in TS target ES5
 eventPageApi.getDisplayPreference().then(
 	async (cachedDisplayPreference) => {
 
-		// TODO PROXY EXT: the fade out used to be necessary, because the original
-		// content HTML was already laoded in the page
-
-		// begin fade out animation
-		const transitionAnimationDuration = 700;
-		document.body.style.transition = `opacity ${transitionAnimationDuration / 2}ms`;
+		// Hide the content until the parsed result can be shown
 		document.body.style.opacity = '0';
-		if (cachedDisplayPreference) {
+		if(cachedDisplayPreference) {
 			let preferredBackgroundColor: string;
-			switch (cachedDisplayPreference.theme) {
+			switch(cachedDisplayPreference.theme) {
 				case DisplayTheme.Light:
 					preferredBackgroundColor = lightBackgroundColor;
 					break;
@@ -469,47 +504,83 @@ eventPageApi.getDisplayPreference().then(
 					preferredBackgroundColor = darkBackgroundColor;
 					break;
 			}
-			document.documentElement.style.transition = `background-color ${transitionAnimationDuration / 2}ms`;
 			document.documentElement.style.background = 'none';
 			document.documentElement.style.backgroundImage = 'none';
 			document.documentElement.style.backgroundColor = preferredBackgroundColor;
 		}
 
+		await fetchAndInjectArticle();
+
+		// const testURL = 'https://article-test.dev.readup.com/Articles/A'
+		// TODO PROXY EXT: the param might be wrong or not necessary
+		// it results in errors at least
+		const metadataParseResult = parseDocumentMetadata(
+			{
+				url: documentLocation
+				// {
+				// 	protocol: window.location.protocol,
+				// 	hostname: window.location.hostname,
+				// 	href: window.location.href
+				// }
+			});
+
+		// NOTE PROXY EXT using native method
+		const contentParseResult = parseDocumentContent({
+			url: documentLocation
+		});
+
 		// Begin content parsing and article lookup while the animation is happening
 		// But only use the parse result after the transition animation.
-		const contentParseAndLookupPromise = window.reallyreadit.readerContentScript.contentParser
-			.get()
-			.then(contentParser => {
-				const contentParseResult = contentParser.parse({
-					url: window.location
-				});
-				return {
-					contentParser,
-					contentParseResult,
-					articleLookupPromise: eventPageApi.registerPage(
-						createPageParseResult(metaParseResult, contentParseResult)
-					)
-				};
-			});
-		const [contentParseAndLookupResult, _] = await Promise.all([
-			contentParseAndLookupPromise,
-			new Promise<void>(
-				resolve => setTimeout(resolve, transitionAnimationDuration / 2)
+		// const contentParseAndLookupResult = await window.reallyreadit.readerContentScript.contentParser
+		// 	.get()
+		// 	.then(async (contentParser) => {
+
+
+
+
+		// 		const contentParseResult = contentParser.parse({
+		// 			url: window.location
+		// 		});
+		// 		return {
+		// 			contentParser,
+		// 			contentParseResult,
+		// 			articleLookupPromise: eventPageApi.registerPage(
+		// 				createPageParseResult(metaParseResult,contentParseResult)
+		// 			)
+		// 		};
+		// 	});
+
+		const contentParseAndLookupResult = {
+			contentParseResult,
+			articleLookupPromise: eventPageApi.registerPage(
+				createPageParseResult(metadataParseResult, contentParseResult)
 			)
-		]);
+		}
 
 		// Store the parse result.
-		contentParseResult = contentParseAndLookupResult.contentParseResult;
+		// COMMENT PROXY EXT: no more need for this
+		// contentParseResult = contentParseAndLookupResult.contentParseResult;
 
 		// Prune and style.
-		const rootElements = contentParseAndLookupResult.contentParser.prune(contentParseResult);
-		contentRoot = rootElements.contentRoot;
-		scrollRoot = rootElements.scrollRoot;
+		// const rootElements = contentParseAndLookupResult.contentParser.prune(contentParseResult);
+		const parseResult = pruneDocument(contentParseResult);
+		contentRoot = parseResult.contentRoot;
+		scrollRoot = parseResult.scrollRoot;
+
 		styleArticleDocument({
+			// header: {
+			// 	title: metadataParseResult.metadata.article.title,
+			// 	byline: createByline(metadataParseResult.metadata.article.authors)
+			// },
 			useScrollContainer: true,
 			transitionElement: document.body
+			// COMMENT PROXY EXT: what is completeTransition in the native ext?
 		});
 		hasStyledArticleDocument = true;
+
+		// COMMENT PROXY EXT added from native
+		const publisherConfig = findPublisherConfig(configs.publishers, documentLocation.hostname);
+		procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
 
 		// Intercept mouseup event on article content to prevent article scripts
 		// from handling click events.
@@ -545,7 +616,7 @@ eventPageApi.getDisplayPreference().then(
 		new ScrollService({
 			scrollContainer: scrollRoot,
 			setBarVisibility: isVisible => {
-				if (isVisible) {
+				if(isVisible) {
 					headerContainer.style.transform = '';
 					headerContainer.style.pointerEvents = 'auto';
 				} else {
@@ -556,12 +627,14 @@ eventPageApi.getDisplayPreference().then(
 			}
 		});
 
+
+		// COMMENT PROXY EXT: native does the updating of the title UI differently
 		// Set up the title user interface.
 		title
 			.initialize({
-				authors: metaParseResult.metadata.article.authors.map(author => author.name),
-				title: metaParseResult.metadata.article.title,
-				wordCount: contentParseResult.primaryTextContainers.reduce((sum, el) => sum + el.wordCount, 0)
+				authors: metadataParseResult.metadata.article.authors.map(author => author.name),
+				title: metadataParseResult.metadata.article.title,
+				wordCount: contentParseResult.primaryTextContainers.reduce((sum,el) => sum + el.wordCount,0)
 			})
 			.attach();
 
@@ -591,15 +664,15 @@ eventPageApi.getDisplayPreference().then(
 				}
 			),
 			new Promise<void>(
-				resolve => setTimeout(resolve, transitionAnimationDuration / 2)
+				resolve => setTimeout(resolve,transitionAnimationDuration / 2)
 			)
 			]);
 
 		try {
-			const [lookupResult, _] = await processLookupPromise;
+			const [lookupResult] = await processLookupPromise;
 
 			// Display the bookmark prompt if needed
-			if (
+			if(
 				!lookupResult.article.isRead &&
 				lookupResult.page.getBookmarkScrollTop() > window.innerHeight
 			) {
@@ -610,7 +683,7 @@ eventPageApi.getDisplayPreference().then(
 							onClose: globalUi.dialogs.closeDialog,
 							onSubmit: () => {
 								const bookmarkScrollTop = lookupResult.page.getBookmarkScrollTop();
-								if (bookmarkScrollTop > 0) {
+								if(bookmarkScrollTop > 0) {
 									scrollRoot.scrollTo({
 										behavior: 'smooth',
 										top: bookmarkScrollTop
@@ -622,7 +695,7 @@ eventPageApi.getDisplayPreference().then(
 					)
 				);
 			}
-		} catch (reason) {
+		} catch(reason) {
 			showError(
 				getPromiseErrorMessage(reason)
 			);

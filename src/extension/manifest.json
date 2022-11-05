@@ -1,6 +1,5 @@
 {
   "manifest_version": 2,
-
   "name": "Readup",
   "description": "The best way to read online.",
   "author": "reallyread.it, inc.",
@@ -42,7 +41,8 @@
     "activeTab",
     "cookies",
     "alarms",
-    "notifications"
+    "notifications",
+	"<all_urls>"
   ],
   "web_accessible_resources": [
     "content-scripts/alert/bundle.css",
