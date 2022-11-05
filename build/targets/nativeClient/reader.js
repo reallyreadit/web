@@ -43,6 +43,7 @@ const svgInliningTemplate = `
 }());
 `;
 
+// HTML Template build contains the SVG icons
 const htmlTemplateBuild = createBuild({
 	onBuildComplete: (buildInfo, resolve) => {
 		if (buildInfo.build === 'webpack') {
@@ -80,7 +81,8 @@ const build = createBuild({
 				htmlTemplateBuild
 					.build(buildInfo.env)
 					.then(() => {
-						// merge everything into js bundle
+						// concat the inline CSS injector and SVG injectors
+						// into to the built js bundle
 						const jsBundleFilePath = path.join(buildInfo.outPath, jsBundleFileName);
 						fs.writeFileSync(
 							jsBundleFilePath,

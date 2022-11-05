@@ -4,31 +4,21 @@ import parseDocumentMetadata from '../../../common/reading/parseDocumentMetadata
 import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
-import ArticleLookupResult from '../../../common/models/ArticleLookupResult';
-import styleArticleDocument,{applyDisplayPreferenceToArticleDocument,createByline,darkBackgroundColor,lightBackgroundColor} from '../../../common/reading/styleArticleDocument';
+import styleArticleDocument,{applyDisplayPreferenceToArticleDocument,createByline,darkBackgroundColor,lightBackgroundColor,updateArticleHeader} from '../../../common/reading/styleArticleDocument';
 import LazyScript from './LazyScript';
 import * as React from 'react';
-import GlobalComponentHost from './GlobalComponentHost';
-import CommentsSectionComponentHost from './CommentsSectionComponentHost';
-import TitleComponentHost from './TitleComponentHost';
-import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import {AuthServiceBrowserLinkResponse,isAuthServiceBrowserLinkSuccessResponse} from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import BookmarkDialog from '../../../common/components/BookmarkDialog';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
-import {Intent} from '../../../common/components/Toaster';
 import ScrollService from '../../../common/services/ScrollService';
-import HeaderComponentHost from './HeaderComponentHost';
 import UserAccount from '../../../common/models/UserAccount';
-import {createCommentThread} from '../../../common/models/social/Post';
+import Post,{createCommentThread} from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
-import DisplayPreference,{DisplayTheme,getDisplayPreferenceChangeMessage} from '../../../common/models/userAccounts/DisplayPreference';
-import {getPromiseErrorMessage} from '../../../common/format';
-import {ShareChannelData} from '../../../common/sharing/ShareData';
+import DisplayPreference,{DisplayTheme} from '../../../common/models/userAccounts/DisplayPreference';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import {createQueryString,parseQueryString} from '../../../common/routing/queryString';
-import {createTweetWebIntentUrl} from '../../../common/sharing/twitter';
+import {parseQueryString} from '../../../common/routing/queryString';
 import {ParserDocumentLocation} from '../../../common/ParserDocumentLocation';
 import {DeviceType} from '../../../common/DeviceType';
 import parseDocumentContent from '../../../common/contentParsing/parseDocumentContent';
@@ -36,6 +26,24 @@ import pruneDocument from '../../../common/contentParsing/pruneDocument';
 import {findPublisherConfig} from '../../../common/contentParsing/configuration/PublisherConfig';
 import configs from '../../../common/contentParsing/configuration/configs';
 import procesLazyImages from '../../../common/contentParsing/processLazyImages';
+
+import App,{Props as EmbedProps} from './App';
+import {AppPlatform} from '../../../common/AppPlatform';
+import DialogService from '../../../common/services/DialogService';
+import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
+import {parseUrlForRoute} from '../../../common/routing/Route';
+import ScreenKey from '../../../common/routing/ScreenKey';
+import PostForm from '../../../common/models/social/PostForm';
+import CommentForm from '../../../common/models/social/CommentForm';
+import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
+import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
+import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
+import ReactDOM = require('react-dom');
+import {mergeComment,updateComment} from '../../../common/comments';
+import {createArticleSlug} from '../../../common/routing/routes';
+import UserPage from '../../../common/models/UserPage';
+import icons from '../../../common/svg/icons';
+import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
 
 // TODO PROXY EXT: We don't need to ask the event page to load this script anymore
 // we just include it by default?
@@ -60,50 +68,404 @@ let documentLocation: ParserDocumentLocation = new URL(
 	parseQueryString(window.location.search)['url']
 );
 
-
-
 // TODO PROXY EXT: emulating the native reader, just hardcoded something here
+// DesktopChrome is used for Electron (linux, windows)
 let deviceType: DeviceType = DeviceType.DesktopChrome;
 
+
+// TODO PROXY EXT: native article, fill these vars
+let
+	// TODO PROXY EXT: this could be passed in initData like native?
+	displayPreference: DisplayPreference | null,
+	article: UserArticle,
+	page: Page,
+	userPage: UserPage,
+	user: UserAccount,
+	contentRoot: HTMLElement,
+	scrollRoot: HTMLElement;
 
 // globals
 let
 	// contentParseResult: ParseResult,
-	displayPreference: DisplayPreference | null,
-	contentRoot: HTMLElement,
-	scrollRoot: HTMLElement,
-	lookupResult: ArticleLookupResult,
-	page: Page,
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void,
 	hasStyledArticleDocument = false
 
+
 /**
- * Tells the components in this reader to refresh themselves
- * with the latest UserArticle data, when a lookup result exists.
+ * Renders or re-renders the reader UI embed.
  */
-function updateUserArticle(article: UserArticle) {
-	if(!lookupResult) {
-		return;
-	}
-	lookupResult.userArticle = article;
-	header.articleUpdated(article);
-	title.articleUpdated(article);
-	if(commentsSection.isInitialized) {
-		commentsSection.articleUpdated(article);
-	} else if(article.isRead) {
-		commentsSection
-			.initialize(article,lookupResult.user)
-			.attach();
-		eventPageApi
-			.getComments(article.slug)
-			.then(
-				comments => {
-					commentsSection.commentsLoaded(comments);
-				}
-			);
-	}
+function render(props?: Partial<Pick<EmbedProps,Exclude<keyof EmbedProps,'article' | 'user'>>>,callback?: () => void) {
+	ReactDOM.render(
+		React.createElement(
+			App,
+			{
+				...(
+					embedProps = {
+						...embedProps,
+						...props
+					}
+				),
+				article: {
+					isLoading: !article,
+					value: article
+				},
+				displayPreference,
+				user
+			}
+		),
+		embedRootElement,
+		callback
+	);
 }
 
+// user interface
+const dialogService = new DialogService({
+	setState: (delegate,callback) => {
+		render(
+			delegate(embedProps),
+			callback
+		);
+	}
+});
+
+/**
+ * Reacts on the change of display preferences in the header component,
+ * syncs these preferences to the locally stored compoments, as well as forwards
+ * them to the general app via the event page interface.
+ */
+const onChangeDisplayPreference = (preference: DisplayPreference): Promise<DisplayPreference> => {
+	updateDisplayPreference(preference);
+	return eventPageApi.changeDisplayPreference(preference);
+};
+
+const onDeleteComment = async (form: CommentDeletionForm): Promise<CommentThread> => eventPageApi
+	.deleteComment(form)
+	.then(
+		(comment: CommentThread) => {
+			render({
+				comments: {
+					...embedProps.comments,
+					value: updateComment(comment,embedProps.comments.value)
+				}
+			});
+
+			return comment;
+		}
+	);
+
+const onReportArticleIssue = (request: ArticleIssueReportRequest): void => {
+	eventPageApi.reportArticleIssue(request);
+};
+
+
+const onLinkAuthServiceAccount = async (provider: AuthServiceProvider): Promise<AuthServiceAccountAssociation> => new Promise<AuthServiceAccountAssociation>(
+	(resolve,reject) => {
+		eventPageApi
+			.requestTwitterBrowserLinkRequestToken()
+			.then(
+				token => {
+					const url = new URL('https://api.twitter.com/oauth/authorize');
+					url.searchParams.set('oauth_token',token.value);
+					eventPageApi
+						.openWindow({
+							url: url.href,
+							width: 400,
+							height: 300
+						})
+						.then(
+							windowId => {
+								authServiceLinkCompletionHandler = response => {
+									if(response.requestToken === token.value) {
+										cleanupEventHandlers();
+										eventPageApi.closeWindow(windowId);
+										if(isAuthServiceBrowserLinkSuccessResponse(response)) {
+											resolve(response.association);
+										} else {
+											let errorMessage: string;
+											switch(response.error) {
+												case AuthenticationError.Cancelled:
+													errorMessage = 'Cancelled';
+													break;
+											}
+											reject(new Error(errorMessage));
+										}
+									}
+								};
+								const popupClosePollingInterval = window.setInterval(
+									() => {
+										eventPageApi
+											.hasWindowClosed(windowId)
+											.then(
+												closed => {
+													if(closed) {
+														cleanupEventHandlers();
+														reject(new Error('Cancelled'));
+													}
+												}
+											)
+											.catch(
+												() => {}
+											);
+									},
+									1000
+								);
+								const cleanupEventHandlers = () => {
+									authServiceLinkCompletionHandler = null;
+									window.clearInterval(popupClosePollingInterval);
+								};
+							}
+						)
+						.catch(reject);
+				}
+			)
+			.catch(reject);
+	}
+);
+
+// TODO PROXY EXT copied from global host ui
+// seems fine? because this is intended for iOS only?
+// and the shareViaChannel is handled inside app
+const handleShareRequest = () => {
+	return {
+		channels: [
+			ShareChannel.Clipboard,
+			ShareChannel.Email,
+			ShareChannel.Twitter
+		]
+	};
+};
+
+function openInNewTab(url: string) {
+	window.open(url,'_blank');
+}
+
+// TODO PROXY EXT copied from global host ui
+// little bit adapted
+const navTo = (url: string) => {
+	const result = parseUrlForRoute(url);
+	if(
+		(result.isInternal && result.route) ||
+		(!result.isInternal && result.url)
+	) {
+		openInNewTab(result.url.href);
+		return true;
+	}
+	return false;
+}
+
+// TODO PROXY EXT: eventPageApi should implement readArticle behavior!
+function readArticle(slug: string) {
+	throw Error("Unimplemented");
+	// messagingContext.sendMessage({
+	// 	type: 'readArticle',
+	// 	data: slug
+	// });
+}
+
+// TODO PROXY EXT: copy pasted from native reader,
+// and adapted a bit
+// handle article and embed links
+function handleLink(url: string) {
+	const result = parseUrlForRoute(url);
+	if(result.isInternal && result.route) {
+		if(result.route.screenKey === ScreenKey.Read) {
+			readArticle(
+				createArticleSlug(
+					result.route.getPathParams(result.url.pathname)
+				)
+			);
+		} else {
+			navTo(result.url.href);
+		}
+		return true;
+	} else if(!result.isInternal && result.url) {
+		// PROXY EXT NOTE: we don't need specia lexternal url handling here? test this
+		// openExternalUrl(result.url.href);
+		navTo(result.url.href)
+		return true;
+	}
+	return false;
+}
+
+function renderNewComment(comment: CommentThread) {
+	render({
+		comments: {
+			...embedProps.comments,
+			value: mergeComment(comment,embedProps.comments.value)
+		}
+	});
+}
+
+// PROXY EXT NOTE: this does not exit in the native reader
+function renderUpdatedComment(comment: CommentThread) {
+	render({
+		comments: {
+			...embedProps.comments,
+			value: updateComment(comment,embedProps.comments.value)
+		}
+	});
+}
+
+
+
+const onPostComment = (form: CommentForm): Promise<void> => eventPageApi
+	.postComment(form)
+	.then(
+		result => {
+			// updateUserArticle(result.article);
+			// addComment(result.comment);
+			article = result.article;
+			renderNewComment(result.comment)
+		}
+	);
+
+
+const onPostArticle = (form: PostForm): Promise<Post> => eventPageApi
+	.postArticle(form)
+	.then(
+		post => {
+			article = post.article;
+			if(post.comment) {
+				render({
+					comments: {
+						...embedProps.comments,
+						value: mergeComment(
+							createCommentThread(post),
+							embedProps.comments.value
+						)
+					}
+				});
+			} else {
+				render();
+			}
+			return post;
+		}
+	);
+
+const onPostCommentAddendum = (form: CommentAddendumForm): Promise<CommentThread> => eventPageApi
+	.postCommentAddendum(form)
+	.then(
+		comment => {
+			render({
+				comments: {
+					...embedProps.comments,
+					value: updateComment(comment,embedProps.comments.value)
+				}
+			});
+			return comment;
+		}
+	);
+
+const onPostCommentRevision = (form: CommentRevisionForm): Promise<CommentThread> => eventPageApi
+	.postCommentRevision(form)
+	.then(
+		comment => {
+			render({
+				comments: {
+					...embedProps.comments,
+					value: updateComment(comment,embedProps.comments.value)
+				}
+			});
+			return comment;
+		}
+	);
+
+// TODO PROXY EXT app embed expects toggleStar, which depends on exteral knowledge of starred or not
+// but event page api only has setStarred
+// compare to native toggleStar
+async function toggleStar() {
+	eventPageApi
+		.setStarred({
+			// articleId: lookupResult.userArticle.id,
+			articleId: article.id,
+			// isStarred
+			isStarred: article.dateStarred ? false : true
+		}).then(
+			result => {
+				article = result;
+				render();
+			}
+		);
+}
+
+let
+	embedProps: Pick<EmbedProps,Exclude<keyof EmbedProps,'article' | 'displayPreference' | 'user'>> = {
+		// TODO PROXY EXT: can we make this unnecessary
+		// appPlatform: initData.appPlatform,
+		appPlatform: AppPlatform.Windows,
+		comments: null,
+		deviceType,
+		dialogs: [],
+		dialogService,
+		isHeaderHidden: false,
+		onChangeDisplayPreference: onChangeDisplayPreference,
+		onDeleteComment: onDeleteComment,
+		onLinkAuthServiceAccount: onLinkAuthServiceAccount,
+		// TODO PROXY EXT: Decide how to handle this
+		onNavBack: () => {},
+		onNavTo: handleLink,
+		onPostArticle,
+		onPostComment,
+		onPostCommentAddendum,
+		onPostCommentRevision: onPostCommentRevision,
+		onReportArticleIssue: onReportArticleIssue,
+		onShare: handleShareRequest,
+		onToggleStar: toggleStar
+	},
+	embedRootElement: HTMLDivElement;
+
+/**
+ * Inserts an element in the document that contains an attachment point for App.tsx via render(),
+ * which is thehost for reader-related UI & behavior.
+ * 
+ * Depends on context. These variables should be available:
+ * - scrollRoot 
+ * - contentRoot
+ *
+ * This element injector should be called after the document has been "pruned".
+ * This allows the embed to be inserted after the #com_readup_article_content element,
+ * which means the natural position of the App in the document flow is *after* the article content.
+ * Note that this is exactly the place where the comment section should be rendered by the App.
+ */
+function insertEmbed() {
+	// create root element
+	embedRootElement = window.document.createElement('div');
+	embedRootElement.id = 'com_readup_embed';
+	scrollRoot.append(embedRootElement);
+	// initial render
+	render();
+	// create scroll service
+	const scrollService = new ScrollService({
+		scrollContainer: window,
+		setBarVisibility: isVisible => {
+			if(isVisible === embedProps.isHeaderHidden) {
+				// TODO PROXY NOTE: we unfortunately can't control the status bar visibility in browser
+				// setStatusBarVisibility(isVisible);
+				render({
+					isHeaderHidden: !isVisible
+				});
+			}
+		}
+	});
+	// add click listener to toggle header
+	contentRoot.addEventListener(
+		'click',
+		() => {
+			const isHeaderHidden = !embedProps.isHeaderHidden;
+			scrollService.setBarVisibility(!isHeaderHidden);
+			// TODO PROXY NOTE: we unfortunately can't control the status bar visibility in browser
+			// setStatusBarVisibility(!isHeaderHidden);
+			render({
+				isHeaderHidden
+			});
+		}
+	);
+}
+
+/**
+ * Let the components in this reader know that the display preference has changed,
+ * following an external or internal action.
+ */
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
 	if(preference) {
@@ -112,9 +474,13 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 			displayPreference.textSize !== preference.textSize
 		);
 		displayPreference = preference;
-		header.displayPreferenceUpdated(preference);
+		render();
 	}
 	applyDisplayPreferenceToArticleDocument(preference);
+
+	// TODO PROXY EXT: this doesn't happen in the native reader.
+	// The shadowhost ComponentHost listened to this, we don't need it anymore
+	// But the alert content script does too, maybe we need that one?
 	window.dispatchEvent(
 		new CustomEvent(
 			'com.readup.themechange',
@@ -123,49 +489,45 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 			}
 		)
 	);
+
 	if(textSizeChanged && page) {
 		page.updateLineHeight();
 	}
 }
 
-function updateUser(user: UserAccount) {
-	if(!lookupResult) {
-		return;
-	}
-	lookupResult.user = user;
-	commentsSection.userUpdated(user);
-}
-
-/**
- * Tell the components in this reader that a new
- * CommentThread was posted to the loaded article.
- */
-function addComment(comment: CommentThread) {
-	commentsSection.commentPosted(comment);
-}
-
-function updateComment(comment: CommentThread) {
-	commentsSection.commentUpdated(comment);
+function updateUser(userIn: UserAccount) {
+	// PROXY EXT NOTE: user is not kept in lookupResult anymore
+	// if(!lookupResult) {
+	// 	return;
+	// }
+	// lookupResult.user = user;
+	// commentsSection.userUpdated(user);
+	user = userIn;
+	// rerender
+	render();
 }
 
 // event page interface: initialize with event handlers
 // for events coming from the Event Page
 const eventPageApi = new EventPageApi({
 	onArticleUpdated: event => {
-		updateUserArticle(event.article);
+		// PROXY EXT NOTE: native reader doesn't have this handler
+		console.warn("onArticleUpdated not implemented in new extension reader")
+		// updateUserArticle(event.article);
 	},
+	// TODO PROXY EXT: lookup result handling different
 	/** Update the locally cached user with its new logged in
 	 *  state via Twitter, in case such a login happened.
 	 */
 	onAuthServiceLinkCompleted: response => {
 		if(
-			lookupResult &&
+			(article && user && userPage) &&
 			isAuthServiceBrowserLinkSuccessResponse(response) &&
 			response.association.provider === AuthServiceProvider.Twitter &&
-			!lookupResult.user.hasLinkedTwitterAccount
+			!user.hasLinkedTwitterAccount
 		) {
 			updateUser({
-				...lookupResult.user,
+				...user,
 				hasLinkedTwitterAccount: true
 			});
 		}
@@ -174,12 +536,13 @@ const eventPageApi = new EventPageApi({
 		}
 	},
 	onCommentPosted: comment => {
-		addComment(comment);
+		renderNewComment(comment)
 	},
 	onCommentUpdated: comment => {
-		updateComment(comment);
+		renderUpdatedComment(comment);
 	},
 	onDisplayPreferenceChanged: preference => {
+		// TODO PROXY EXT: native does not have an equivalent of this
 		// only update if already styled
 		if(hasStyledArticleDocument) {
 			updateDisplayPreference(preference);
@@ -189,7 +552,9 @@ const eventPageApi = new EventPageApi({
 	},
 	onUserSignedOut: () => {
 		reader.unloadPage();
-		showError('You were signed out in another tab.');
+		// TODO PROXY EXT Native does not have this error handler
+		console.error('You were signed out in another tab.')
+		// showError('You were signed out in another tab.');
 	},
 	onUserUpdated: user => {
 		updateUser(user);
@@ -211,237 +576,41 @@ window.addEventListener(
 	}
 );
 
-// global ui
-const globalUi = new GlobalComponentHost({
-	domAttachmentDelegate: shadowHost => {
-		shadowHost.style.position = 'fixed';
-		shadowHost.style.bottom = '0';
-		shadowHost.style.left = '0';
-		shadowHost.style.width = '0';
-		shadowHost.style.height = '0';
-		shadowHost.style.margin = '0';
-		shadowHost.style.padding = '0';
-		shadowHost.style.transform = 'none';
-		shadowHost.style.zIndex = '2147483647';
-		document.body.appendChild(shadowHost);
-	}
-});
 
-function showError(error: string) {
-	(scrollRoot || document.body).style.overflow = 'hidden';
-	globalUi.showError(error);
+// Should we make a quick fix for allowing this? Or handle it inside the App?
+// function showError(error: string) {
+// 	(scrollRoot || document.body).style.overflow = 'hidden';
+// 	globalUi.showError(error);
+// }
+
+
+// PROXY EXT NOTE: adapted from native
+function loadComments() {
+	render({
+		comments: {
+			isLoading: true
+		}
+	});
+	eventPageApi
+		.getComments(article.slug)
+		.then((comments: CommentThread[]) => {
+			render({
+				comments: {
+					isLoading: false,
+					value: comments
+				}
+			});
+		});
 }
 
-// header ui
-const headerContainer = document.createElement('div');
-headerContainer.style.position = 'sticky';
-headerContainer.style.top = '0';
-headerContainer.style.zIndex = '1';
-headerContainer.style.transition = 'transform 250ms';
-
-const header = new HeaderComponentHost({
-	domAttachmentDelegate: shadowHost => {
-		headerContainer.append(shadowHost);
-		scrollRoot.prepend(headerContainer);
-	},
-	services: {
-		/**
-		 * Reacts on the change of display preferences in the header component,
-		 * syncs these preferences to the locally stored compoments, as well as forwards
-		 * them to the general app via the event page interface.
-		 */
-		onChangeDisplayPreference: preference => {
-			if(displayPreference) {
-				const message = getDisplayPreferenceChangeMessage(displayPreference,preference);
-				if(message) {
-					globalUi.toaster.addToast(message,Intent.Success);
-				}
-			}
-			updateDisplayPreference(preference);
-			return eventPageApi.changeDisplayPreference(preference);
-		},
-		onReportArticleIssue: request => {
-			eventPageApi.reportArticleIssue(request);
-			globalUi.toaster.addToast('Issue Reported',Intent.Success);
-		}
+function renderUserArticle(articleIn: UserArticle) {
+	article = articleIn;
+	if(article.isRead && !embedProps.comments) {
+		loadComments();
+	} else {
+		render();
 	}
-});
-
-// title ui
-const title = new TitleComponentHost({
-	domAttachmentDelegate: shadowHost => {
-		const wrapper = document.createElement('div');
-		wrapper.style.margin = '2.5em 0 1.5em 0';
-		wrapper.append(shadowHost);
-		contentRoot.prepend(wrapper);
-	},
-	services: {
-		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
-		onSetStarred: isStarred => eventPageApi
-			.setStarred({
-				articleId: lookupResult.userArticle.id,
-				isStarred
-			})
-			.then(
-				article => {
-					updateUserArticle(article);
-				}
-			),
-		onToggleDebugMode: () => {
-			page.toggleVisualDebugging();
-		},
-		onViewComments: globalUi.viewComments,
-		onViewProfile: globalUi.viewProfile
-	}
-});
-
-// comments ui
-const commentsSection = new CommentsSectionComponentHost({
-	domAttachmentDelegate: shadowHost => {
-		const wrapper = document.createElement('div');
-		wrapper.style.margin = '2em 0 0 0';
-		wrapper.append(shadowHost);
-		page.elements[page.elements.length - 1].element.insertAdjacentElement(
-			'afterend',
-			wrapper
-		)
-	},
-	services: {
-		clipboardService: globalUi.clipboard,
-		dialogService: globalUi.dialogs,
-		onCreateAbsoluteUrl: globalUi.createAbsoluteUrl,
-		onDeleteComment: form => eventPageApi
-			.deleteComment(form)
-			.then(
-				comment => {
-					updateComment(comment);
-					return comment;
-				}
-			),
-		onLinkAuthServiceAccount: provider => new Promise<AuthServiceAccountAssociation>(
-			(resolve,reject) => {
-				eventPageApi
-					.requestTwitterBrowserLinkRequestToken()
-					.then(
-						token => {
-							const url = new URL('https://api.twitter.com/oauth/authorize');
-							url.searchParams.set('oauth_token',token.value);
-							eventPageApi
-								.openWindow({
-									url: url.href,
-									width: 400,
-									height: 300
-								})
-								.then(
-									windowId => {
-										authServiceLinkCompletionHandler = response => {
-											if(response.requestToken === token.value) {
-												cleanupEventHandlers();
-												eventPageApi.closeWindow(windowId);
-												if(isAuthServiceBrowserLinkSuccessResponse(response)) {
-													resolve(response.association);
-												} else {
-													let errorMessage: string;
-													switch(response.error) {
-														case AuthenticationError.Cancelled:
-															errorMessage = 'Cancelled';
-															break;
-													}
-													reject(new Error(errorMessage));
-												}
-											}
-										};
-										const popupClosePollingInterval = window.setInterval(
-											() => {
-												eventPageApi
-													.hasWindowClosed(windowId)
-													.then(
-														closed => {
-															if(closed) {
-																cleanupEventHandlers();
-																reject(new Error('Cancelled'));
-															}
-														}
-													)
-													.catch(
-														() => {}
-													);
-											},
-											1000
-										);
-										const cleanupEventHandlers = () => {
-											authServiceLinkCompletionHandler = null;
-											window.clearInterval(popupClosePollingInterval);
-										};
-									}
-								)
-								.catch(reject);
-						}
-					)
-					.catch(reject);
-			}
-		),
-		onNavTo: globalUi.navTo,
-		onPostArticle: form => eventPageApi
-			.postArticle(form)
-			.then(
-				post => {
-					updateUserArticle(post.article);
-					if(post.comment) {
-						addComment(
-							createCommentThread(post)
-						);
-					}
-					return post;
-				}
-			),
-		onPostComment: form => eventPageApi
-			.postComment(form)
-			.then(
-				result => {
-					updateUserArticle(result.article);
-					addComment(result.comment);
-				}
-			),
-		onPostCommentAddendum: form => eventPageApi
-			.postCommentAddendum(form)
-			.then(
-				comment => {
-					updateComment(comment);
-					return comment;
-				}
-			),
-		onPostCommentRevision: form => eventPageApi
-			.postCommentRevision(form)
-			.then(
-				comment => {
-					updateComment(comment);
-					return comment;
-				}
-			),
-		onShare: globalUi.handleShareRequest,
-		onShareViaChannel: (data: ShareChannelData) => {
-			switch(data.channel) {
-				case ShareChannel.Clipboard:
-					globalUi.clipboard.copyText(data.text,'Link copied to clipboard');
-					break;
-				case ShareChannel.Email:
-					globalUi.navTo(`mailto:${createQueryString({
-						'body': data.body,
-						'subject': data.subject
-					})}`);
-					break;
-				case ShareChannel.Twitter:
-					globalUi.navTo(
-						createTweetWebIntentUrl(data)
-					);
-					break;
-			}
-		},
-		onViewProfile: globalUi.viewProfile,
-		toasterService: globalUi.toaster
-	}
-});
+}
 
 // reader
 const reader = new Reader(
@@ -450,17 +619,22 @@ const reader = new Reader(
 			.commitReadState(
 				{
 					readState: event.readStateArray,
-					userPageId: lookupResult.userPage.id
+					userPageId: userPage.id
 				},
 				event.isCompletionCommit
 			)
 			.then(
-				article => {
-					updateUserArticle(article);
+				articleIn => {
+					renderUserArticle(articleIn)
+					// updateUserArticle(article);
 				}
 			)
+			// TODO PROXY EXT: native messagingContext has ProblemDetails here
+			.catch(error => console.error(error));
 	}
 )
+
+
 
 // parse metadata
 
@@ -481,11 +655,11 @@ async function fetchAndInjectArticle() {
 	}
 
 	document.body = doc.body
-	document.head.title = doc.head.title
+	document.head.innerHTML = doc.head.innerHTML
 }
 
 
-const transitionAnimationDuration = 700;
+// const transitionAnimationDuration = 700;
 
 // Try and get a cached copy of the display preference for the transition animation
 // TODO PROXY EXT: top level async/await not allowed in TS target ES5
@@ -529,59 +703,112 @@ eventPageApi.getDisplayPreference().then(
 			url: documentLocation
 		});
 
-		// Begin content parsing and article lookup while the animation is happening
-		// But only use the parse result after the transition animation.
-		// const contentParseAndLookupResult = await window.reallyreadit.readerContentScript.contentParser
-		// 	.get()
-		// 	.then(async (contentParser) => {
-
-
-
-
-		// 		const contentParseResult = contentParser.parse({
-		// 			url: window.location
-		// 		});
-		// 		return {
-		// 			contentParser,
-		// 			contentParseResult,
-		// 			articleLookupPromise: eventPageApi.registerPage(
-		// 				createPageParseResult(metaParseResult,contentParseResult)
-		// 			)
-		// 		};
-		// 	});
-
-		const contentParseAndLookupResult = {
-			contentParseResult,
-			articleLookupPromise: eventPageApi.registerPage(
-				createPageParseResult(metadataParseResult, contentParseResult)
-			)
-		}
-
-		// Store the parse result.
-		// COMMENT PROXY EXT: no more need for this
-		// contentParseResult = contentParseAndLookupResult.contentParseResult;
-
 		// Prune and style.
 		// const rootElements = contentParseAndLookupResult.contentParser.prune(contentParseResult);
 		const parseResult = pruneDocument(contentParseResult);
 		contentRoot = parseResult.contentRoot;
 		scrollRoot = parseResult.scrollRoot;
 
+
+		// insert React UI
+		insertEmbed();
+
+		// hide html element until custom css is applied
+		document.documentElement.style.transition = 'none';
+		document.documentElement.style.opacity = '0';
+
+		// PROXY EXT NOTE: userScrollContainer was true in web. Needed?
 		styleArticleDocument({
-			// header: {
-			// 	title: metadataParseResult.metadata.article.title,
-			// 	byline: createByline(metadataParseResult.metadata.article.authors)
-			// },
-			useScrollContainer: true,
-			transitionElement: document.body
-			// COMMENT PROXY EXT: what is completeTransition in the native ext?
+			header: {
+				title: metadataParseResult.metadata.article.title,
+				byline: createByline(metadataParseResult.metadata.article.authors)
+			},
+			transitionElement: document.documentElement,
+			completeTransition: true
 		});
+
+		// TODO EXT NOTE: web needed this, but nativedoesn't have
 		hasStyledArticleDocument = true;
 
-		// COMMENT PROXY EXT added from native
-		const publisherConfig = findPublisherConfig(configs.publishers, documentLocation.hostname);
+		// TODO PROXY EXT: this could be done vs JS inlining, like with the native reader.
+		// which will make it quicker. See build files
+
+		// insert SVG icons
+		document.body.insertAdjacentHTML('afterbegin', icons)
+
+		// insert fonts
+		insertExtensionFontStyleElement();
+		
+		// insert Readup Reader style bundle
+		const link = document.createElement('link');
+		link.type = 'text/css'
+		link.rel = 'stylesheet'
+		link.href = "/content-scripts/reader/bundle.css";
+		document.head.appendChild(link)
+
+
+		const publisherConfig = findPublisherConfig(configs.publishers,documentLocation.hostname);
 		procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
 
+		// Begin fade in animation of styled Readup content
+		document.body.style.opacity = '1';
+
+		// ArticleLookupResult
+		const result = await eventPageApi.registerPage(
+			createPageParseResult(metadataParseResult,contentParseResult)
+		);
+
+		// TODO PROXY EXT NOTE: The below is currently exactly the same as the native reader
+		// extract into common?
+
+		// set globals
+		article = result.userArticle;
+		userPage = result.userPage;
+		user = result.user;
+
+		// update the title and byline
+		updateArticleHeader({
+			title: result.userArticle.title,
+			byline: createByline(result.userArticle.articleAuthors)
+		});
+
+		// set up the reader
+		page = new Page(contentParseResult.primaryTextContainers);
+		page.setReadState(result.userPage.readState);
+		reader.loadPage(page);
+		// re-render ui
+		render();
+
+
+		// load comments or check for bookmark
+		if(result.userArticle.isRead) {
+			loadComments();
+		} else if(page.getBookmarkScrollTop() > window.innerHeight) {
+			dialogService.openDialog(
+				React.createElement(
+					BookmarkDialog,
+					{
+						onClose: dialogService.closeDialog,
+						onSubmit: () => {
+							const scrollTop = page.getBookmarkScrollTop();
+							if(scrollTop > window.innerHeight) {
+								contentRoot.style.opacity = '0';
+								setTimeout(
+									() => {
+										window.scrollTo(0,scrollTop);
+										contentRoot.style.opacity = '1';
+									},
+									350
+								);
+							}
+							return Promise.resolve();
+						}
+					}
+				)
+			);
+		}
+
+		// PROXY EXT NOTE: native doesn't have, stilll needed?
 		// Intercept mouseup event on article content to prevent article scripts
 		// from handling click events.
 		document
@@ -597,109 +824,6 @@ eventPageApi.getDisplayPreference().then(
 		// This version is loaded from local storage. Prefer an existing copy
 		// that would have been set by an external change event.
 		updateDisplayPreference(displayPreference || cachedDisplayPreference);
-
-		// Set up the global user interface.
-		const resetStyleLink = document.createElement('link');
-		resetStyleLink.rel = 'stylesheet';
-		resetStyleLink.href = chrome.runtime.getURL('/content-scripts/reader/reset.css');
-		document.head.appendChild(resetStyleLink);
-		insertExtensionFontStyleElement();
-		globalUi
-			.initialize()
-			.attach();
-
-		// Set up the header user interface.
-		header
-			.initialize(displayPreference)
-			.attach();
-
-		new ScrollService({
-			scrollContainer: scrollRoot,
-			setBarVisibility: isVisible => {
-				if(isVisible) {
-					headerContainer.style.transform = '';
-					headerContainer.style.pointerEvents = 'auto';
-				} else {
-					headerContainer.style.transform = 'translateY(-100%)';
-					headerContainer.style.pointerEvents = 'none';
-				}
-				header.setVisibility(isVisible);
-			}
-		});
-
-
-		// COMMENT PROXY EXT: native does the updating of the title UI differently
-		// Set up the title user interface.
-		title
-			.initialize({
-				authors: metadataParseResult.metadata.article.authors.map(author => author.name),
-				title: metadataParseResult.metadata.article.title,
-				wordCount: contentParseResult.primaryTextContainers.reduce((sum,el) => sum + el.wordCount,0)
-			})
-			.attach();
-
-		// Begin fade in animation of styled Readup content
-		document.body.style.opacity = '1';
-
-		// Process (and load) the lookup + content parse result while the animation is happening,
-		// but don't show the bookmark dialog until the page content is fully visible.
-		const processLookupPromise = Promise.all
-			([contentParseAndLookupResult.articleLookupPromise.then(
-				lookupResult => {
-
-					// create page
-					page = new Page(contentParseResult.primaryTextContainers);
-					page.setReadState(lookupResult.userPage.readState);
-					reader.loadPage(page);
-
-					// trigger an update
-					updateUserArticle(lookupResult.userArticle);
-					updateUser(lookupResult.user);
-
-					// return the article and page for the bookmark prompt
-					return {
-						article: lookupResult.userArticle,
-						page
-					};
-				}
-			),
-			new Promise<void>(
-				resolve => setTimeout(resolve,transitionAnimationDuration / 2)
-			)
-			]);
-
-		try {
-			const [lookupResult] = await processLookupPromise;
-
-			// Display the bookmark prompt if needed
-			if(
-				!lookupResult.article.isRead &&
-				lookupResult.page.getBookmarkScrollTop() > window.innerHeight
-			) {
-				globalUi.dialogs.openDialog(
-					React.createElement(
-						BookmarkDialog,
-						{
-							onClose: globalUi.dialogs.closeDialog,
-							onSubmit: () => {
-								const bookmarkScrollTop = lookupResult.page.getBookmarkScrollTop();
-								if(bookmarkScrollTop > 0) {
-									scrollRoot.scrollTo({
-										behavior: 'smooth',
-										top: bookmarkScrollTop
-									});
-								}
-								return Promise.resolve();
-							}
-						}
-					)
-				);
-			}
-		} catch(reason) {
-			showError(
-				getPromiseErrorMessage(reason)
-			);
-		}
 	}
 );
 

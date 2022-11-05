@@ -11,24 +11,29 @@ const
 const
 	targetPath = 'extension/content-scripts/reader',
 	contentScriptBuild = createBuild({
+		// Unlike the native reader, we load css from Readup
 		scss: {
 			appConfig: {
 				path: appConfigPath
 			},
+			// fileName: `bundle-${package['it.reallyread'].version.app}.css`,
+			// how to get access to the version inside the content script?
+			fileName: `bundle.css`,
 			files: [
 				`${project.srcDir}/common/components/**/*.{css,scss}`,
 				`${project.srcDir}/common/styles/reset.css`,
-				`${project.srcDir}/common/styles/shadow-host.scss`,
 				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`
 			],
-			targetShadowDom: true
 		},
 		staticAssets: [
 			{
 				src: `${project.srcDir}/common/styles/reset.css`,
 				base: `${project.srcDir}/common/styles`
 			},
-			`${project.srcDir}/extension/content-scripts/reader/index.html`
+			// TODO PROXY EXT, do we need this?
+			`${project.srcDir}/native-client/reader/fonts/**/*.*`,
+			`${project.srcDir}/extension/content-scripts/reader/index.html`,
+
 		],
 		webpack: {
 			appConfig: {

@@ -124,6 +124,7 @@ export default class App extends React.Component<
 	};
 
 	// routing
+	// TODO: refactor this for proxy ext
 	private readonly _createAbsoluteUrl = (path: string) => createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
 
 	// sharing
