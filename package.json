@@ -12,10 +12,10 @@
       },
       "embed": "1.0.1",
       "embedIframe": "1.0.0",
-      "extension": "6.2.0",
+      "extension": "6.2.1",
       "nativeClient": {
-        "reader": "14.0.2",
-        "shareExtension": "4.0.5"
+        "reader": "14.0.3",
+        "shareExtension": "4.0.6"
       }
     }
   },
