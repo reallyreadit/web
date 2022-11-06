@@ -407,8 +407,12 @@ let
 		onCreateAbsoluteUrl,
 		onDeleteComment: onDeleteComment,
 		onLinkAuthServiceAccount: onLinkAuthServiceAccount,
-		// TODO PROXY EXT: Decide how to handle this
-		onNavBack: () => {},
+		onNavBack: () => {
+			// TODO PROXY EXT: this depends on the reader being loaded
+			// in the same tab as where the article request happened
+			// In case of action button.
+			window.history.go(-1)
+		},
 		onNavTo: handleLink,
 		onPostArticle,
 		onPostComment,

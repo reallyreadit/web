@@ -19,6 +19,7 @@ import SemanticVersion from '../../common/SemanticVersion';
 import HttpEndpoint from '../../common/HttpEndpoint';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import {ReadArticleReference} from './components/Root';
 
 export interface Params {
 	installedVersion: SemanticVersion | null,
@@ -57,6 +58,7 @@ export default abstract class ExtensionApi extends EventEmitter<{
 	public abstract commentUpdated(comment: CommentThread): void;
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
 	public abstract extensionInstallationEventReceived(event: ExtensionInstallationEvent): void;
+	public abstract readArticle(article: ReadArticleReference): void;
 	public abstract userSignedIn(profile: WebAppUserProfile): void;
 	public abstract userSignedOut(): void;
 	public abstract userUpdated(user: UserAccount): void;

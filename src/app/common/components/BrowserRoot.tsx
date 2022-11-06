@@ -36,7 +36,6 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
-import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
 import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep } from './BrowserRoot/OnboardingFlow';
 import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
@@ -1217,32 +1216,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 	}
 
 	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLAnchorElement>) {
+		ev.preventDefault();
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (
 			this.props.extensionApi.isInstalled
 		) {
-			if (
-				!localStorage.getItem('extensionReminderAcknowledged')
-			) {
-				ev?.preventDefault();
-				this._dialog.openDialog(
-					<ExtensionReminderDialog
-						deviceType={this.props.deviceType}
-						onCreateStaticContentUrl={this._createStaticContentUrl}
-						onSubmit={
-							() => {
-								localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
-								location.href = article.url;
-								return new Promise(
-									resolve => { }
-								);
-							}
-						}
-					/>
-				);
-			} else if (!ev) {
-				location.href = article.url;
-			}
+			// open extension reader
+			// TODO PROXY EXT: get extension URL/ID ƒrom messaging event page? or config?
+			// location.href = ;
+			this.props.extensionApi.readArticle(article)
 		} else {
 			ev?.preventDefault();
 			this.setScreenState({

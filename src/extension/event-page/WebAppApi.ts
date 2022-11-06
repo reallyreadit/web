@@ -7,6 +7,7 @@ import { Message } from '../../common/MessagingContext';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import {ReadArticleReference} from '../../app/common/components/Root';
 
 /**
  * An API for the event page to communicate with Readup's web app tabs, if any are running.
@@ -20,6 +21,7 @@ export default class WebAppApi {
 			onCommentPosted: (comment: CommentThread) => void,
 			onCommentUpdated: (comment: CommentThread) => void,
 			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
+			onReadArticle: (article: ReadArticleReference) => void,
 			onUserSignedIn: (profile: WebAppUserProfile) => void,
 			onUserSignedOut: () => void,
 			onUserUpdated: (user: UserAccount) => void
@@ -48,6 +50,9 @@ export default class WebAppApi {
 							break;
 						case 'registerPage':
 							this.addTab(sender.tab.id);
+							break;
+						case 'readArticle':
+							handlers.onReadArticle(message.data)
 							break;
 						case 'unregisterPage':
 							// sender.tab.id is undefined in Firefox
@@ -177,4 +182,5 @@ export default class WebAppApi {
 			data: user
 		});
 	}
+
 }

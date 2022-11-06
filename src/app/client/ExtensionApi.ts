@@ -21,7 +21,11 @@ import * as Cookies  from 'js-cookie';
 import { extensionVersionCookieKey } from '../../common/cookies';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import {ReadArticleReference} from '../common/components/Root';
 
+/**
+ * Interface to communicate with the event page of the Readup reader extension.
+ */
 export default class extends ExtensionApi {
     private readonly _contentScriptMessagingContext: ContentScriptMessagingContext;
     private _hasEstablishedCommunication = false;
@@ -142,6 +146,9 @@ export default class extends ExtensionApi {
             this.changeInstallationStatus(event.version);
         }
     }
+	public readArticle(article: ReadArticleReference) {
+		this.sendMessage('readArticle', article)
+	}
     public userSignedIn(profile: WebAppUserProfile) {
         this.sendMessage('userSignedIn', profile);
     }

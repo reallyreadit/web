@@ -1,11 +1,11 @@
 import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
-import { createUrl } from '../../common/HttpEndpoint';
+import {createUrl} from '../../common/HttpEndpoint';
 import SemanticVersion from '../../common/SemanticVersion';
-import { createCommentThread } from '../../common/models/social/Post';
-import { sessionIdCookieKey } from '../../common/cookies';
-import { extensionInstalledQueryStringKey, extensionAuthQueryStringKey } from '../../common/routing/queryString';
+import {createCommentThread} from '../../common/models/social/Post';
+import {sessionIdCookieKey} from '../../common/cookies';
+import {extensionInstalledQueryStringKey,extensionAuthQueryStringKey} from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import UserAccount from '../../common/models/UserAccount';
 
@@ -17,18 +17,18 @@ function setIcon(
 ) {
 	const placeholder = '{SIZE}';
 	let pathTemplate = '/icons/';
-	if (state.user) {
+	if(state.user) {
 		pathTemplate += `icon-${placeholder}.png`;
 	} else {
 		pathTemplate += `icon-${placeholder}-warning.png`;
 	}
 	chrome.browserAction.setIcon({
-		path: [16, 24, 32, 40, 48].reduce<{ [key: string]: string }>(
-			(paths, size) => {
-				paths[size] = pathTemplate.replace(placeholder, size.toString());
+		path: [16,24,32,40,48].reduce<{[key: string]: string}>(
+			(paths,size) => {
+				paths[size] = pathTemplate.replace(placeholder,size.toString());
 				return paths;
 			},
-			{ }
+			{}
 		)
 	});
 }
@@ -69,8 +69,8 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 		// persist
 		return serverApi.changeDisplayPreference(preference);
 	},
-	onRegisterPage: (tabId, data) => serverApi
-		.registerPage(tabId, data)
+	onRegisterPage: (tabId,data) => serverApi
+		.registerPage(tabId,data)
 		.then(
 			result => {
 				// update web app (article is automatically starred)
@@ -81,11 +81,11 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 				return result;
 			}
 		),
-	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
+	onCommitReadState: (tabId,commitData,isCompletionCommit) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
 		return serverApi
-			.commitReadState(tabId, commitData)
+			.commitReadState(tabId,commitData)
 			.then(
 				article => {
 					// update web app
@@ -100,19 +100,19 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	},
 	onLoadContentParser: tabId => {
 		try {
-			if (
+			if(
 				new SemanticVersion(localStorage.getItem('contentParserVersion'))
 					.compareTo(new SemanticVersion(window.reallyreadit.extension.config.version.common.contentParser)) > 0
 			) {
 				console.log(`contentScriptApi.onLoadContentParser (loading content parser from localStorage, tabId: ${tabId})`);
-				chrome.tabs.executeScript(tabId, { code: localStorage.getItem('contentParserScript') });
+				chrome.tabs.executeScript(tabId,{code: localStorage.getItem('contentParserScript')});
 				return;
 			}
 		} catch {
 			// fall back to bundled script
 		}
 		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
-		chrome.tabs.executeScript(tabId, { file: '/content-scripts/reader/content-parser/bundle.js' });
+		chrome.tabs.executeScript(tabId,{file: '/content-scripts/reader/content-parser/bundle.js'});
 	},
 	onGetComments: slug => serverApi.getComments(slug),
 	onPostArticle: form => {
@@ -125,7 +125,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 						article: post.article,
 						isCompletionCommit: false
 					});
-					if (post.comment) {
+					if(post.comment) {
 						webAppApi.commentPosted(createCommentThread(post));
 					}
 					return post;
@@ -171,7 +171,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 		return serverApi.reportArticleIssue(request);
 	},
 	onSetStarred: form => serverApi
-		.setStarred(form.articleId, form.isStarred)
+		.setStarred(form.articleId,form.isStarred)
 		.then(
 			article => {
 				webAppApi.articleUpdated({
@@ -238,14 +238,39 @@ const webAppApi = new WebAppApi({
 		serverApi.userUpdated(user);
 		// update readers
 		readerContentScriptApi.userUpdated(user);
+	},
+	onReadArticle: article => {
+		openReaderInCurrentTab(article.url)
 	}
 });
+
+async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
+	return new Promise((resolve,reject) => {
+		chrome.tabs.query(
+			{
+				active: true,
+				currentWindow: true
+			},
+			(tabs) => {
+				resolve(tabs[0])
+			}
+		)
+	})
+}
+
+async function openReaderInCurrentTab(articleUrl: string) {
+	const readerUrl = `${chrome.runtime.getURL('/content-scripts/reader/index.html')}?url=${articleUrl}`;
+	let currentTab = await getCurrentTab()
+	if (currentTab) {
+			chrome.tabs.update(currentTab.id, {url: readerUrl})
+	}
+}
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(details => {
 	console.log('[EventPage] installed, reason: ' + details.reason);
 	// ensure sameSite is set on sessionId and sessionKey cookies
-	[window.reallyreadit.extension.config.cookieName, sessionIdCookieKey].forEach(
+	[window.reallyreadit.extension.config.cookieName,sessionIdCookieKey].forEach(
 		cookieName => {
 			chrome.cookies.get(
 				{
@@ -253,7 +278,7 @@ chrome.runtime.onInstalled.addListener(details => {
 					name: cookieName
 				},
 				cookie => {
-					if (cookie?.sameSite === 'unspecified') {
+					if(cookie?.sameSite === 'unspecified') {
 						chrome.cookies.set({
 							url: createUrl(window.reallyreadit.extension.config.webServer),
 							domain: cookie.domain,
@@ -278,7 +303,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	localStorage.removeItem('sourceRules');
 	localStorage.removeItem('articles');
 	localStorage.removeItem('tabs');
-	localStorage.setItem('debug', JSON.stringify(false));
+	localStorage.setItem('debug',JSON.stringify(false));
 	// update icon
 	setIcon({
 		user: serverApi.getUser()
@@ -296,7 +321,7 @@ chrome.runtime.onInstalled.addListener(details => {
 	// so we need to rely on the api server to get and set them for us
 	chrome.runtime.getPlatformInfo(
 		platformInfo => {
-			if (details.reason === 'install') {
+			if(details.reason === 'install') {
 				badgeApi.setLoading();
 			}
 			serverApi
@@ -307,7 +332,7 @@ chrome.runtime.onInstalled.addListener(details => {
 				})
 				.then(
 					response => {
-						if (details.reason === 'install') {
+						if(details.reason === 'install') {
 							chrome.tabs.create({
 								url: createUrl(
 									window.reallyreadit.extension.config.webServer,
@@ -318,7 +343,7 @@ chrome.runtime.onInstalled.addListener(details => {
 								)
 							});
 						}
-						if (!response.installationId) {
+						if(!response.installationId) {
 							return;
 						}
 						chrome.runtime.setUninstallURL(
@@ -330,13 +355,13 @@ chrome.runtime.onInstalled.addListener(details => {
 								}
 							)
 						);
-						localStorage.setItem('installationId', response.installationId);
+						localStorage.setItem('installationId',response.installationId);
 					}
 				)
 				.catch(
 					error => {
 						console.log('[EventPage] error logging installation');
-						if (error) {
+						if(error) {
 							console.log(error);
 						}
 					}
@@ -356,7 +381,7 @@ chrome.runtime.onInstalled.addListener(details => {
 			periodInMinutes: 120
 		}
 	);
-	if (chrome.notifications) {
+	if(chrome.notifications) {
 		chrome.alarms.create(
 			ServerApi.alarms.checkNotifications,
 			{
@@ -389,9 +414,9 @@ chrome.runtime.onStartup.addListener(
 	}
 );
 chrome.browserAction.onClicked.addListener(
-	tab => {
+	async (tab) => {
 		// check if we're logged in
-		if (!serverApi.isAuthenticated()) {
+		if(!serverApi.isAuthenticated()) {
 			chrome.tabs.create({
 				url: createUrl(
 					window.reallyreadit.extension.config.webServer,
@@ -404,11 +429,11 @@ chrome.browserAction.onClicked.addListener(
 			return;
 		}
 		// check which type of page we're looking at
-		if (!tab.url) {
+		if(!tab.url) {
 			return;
 		}
 		// web app
-		if (tab.url.startsWith(createUrl(window.reallyreadit.extension.config.webServer))) {
+		if(tab.url.startsWith(createUrl(window.reallyreadit.extension.config.webServer))) {
 			chrome.tabs.executeScript(
 				tab.id,
 				{
@@ -419,7 +444,7 @@ chrome.browserAction.onClicked.addListener(
 		}
 		// blacklisted
 		const blacklist = serverApi.getBlacklist();
-		if (
+		if(
 			blacklist.some(
 				regex => regex.test(tab.url)
 			)
@@ -432,21 +457,18 @@ chrome.browserAction.onClicked.addListener(
 			);
 			return;
 		}
-		// article
-		chrome.tabs.executeScript(
-			tab.id,
-			{
-				code: "if (!window.reallyreadit?.readerContentScript) { window.reallyreadit = { ...window.reallyreadit, readerContentScript: { } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectReader' }); }"
-			}
-		);
+
+		// open article
+		await openReaderInCurrentTab(tab.url)
+
 	}
 );
 chrome.runtime.onMessage.addListener(
-	(message, sender) => {
-		if (message.from !== 'contentScriptInitializer' || message.to !== 'eventPage') {
+	(message,sender) => {
+		if(message.from !== 'contentScriptInitializer' || message.to !== 'eventPage') {
 			return;
 		}
-		switch (message.type) {
+		switch(message.type) {
 			case 'injectAlert':
 				chrome.tabs.executeScript(
 					sender.tab.id,
@@ -468,17 +490,17 @@ chrome.runtime.onMessage.addListener(
 );
 chrome.alarms.onAlarm.addListener(
 	alarm => {
-		if (alarm.name === 'updateContentParser') {
+		if(alarm.name === 'updateContentParser') {
 			const currentVersion = SemanticVersion.greatest(
 				...[
 					window.reallyreadit.extension.config.version.common.contentParser,
 					localStorage.getItem('contentParserVersion')
 				]
-				.filter(string => !!string)
-				.map(versionString => new SemanticVersion(versionString))
+					.filter(string => !!string)
+					.map(versionString => new SemanticVersion(versionString))
 			);
 			console.log(`chrome.alarms.onAlarm (updateContentParser: checking for new version. current version: ${currentVersion.toString()})`);
-			fetch(createUrl(window.reallyreadit.extension.config.staticServer, '/extension/content-parser.txt'))
+			fetch(createUrl(window.reallyreadit.extension.config.staticServer,'/extension/content-parser.txt'))
 				.then(res => res.text())
 				.then(text => {
 					const newVersionInfo = text
@@ -491,13 +513,13 @@ chrome.alarms.onAlarm.addListener(
 							})
 						)
 						.find(versionInfo => currentVersion.canUpgradeTo(versionInfo.version));
-					if (newVersionInfo) {
+					if(newVersionInfo) {
 						console.log(`chrome.alarms.onAlarm (updateContentParser: updating to version: ${newVersionInfo.version.toString()})`);
-						fetch(createUrl(window.reallyreadit.extension.config.staticServer, '/extension/content-parser/' + newVersionInfo.fileName))
+						fetch(createUrl(window.reallyreadit.extension.config.staticServer,'/extension/content-parser/' + newVersionInfo.fileName))
 							.then(res => res.text())
 							.then(text => {
-								localStorage.setItem('contentParserScript', text);
-								localStorage.setItem('contentParserVersion', newVersionInfo.version.toString());
+								localStorage.setItem('contentParserScript',text);
+								localStorage.setItem('contentParserVersion',newVersionInfo.version.toString());
 							})
 							.catch(() => {
 								console.log('chrome.alarms.onAlarm (updateContentParser: error updating to new version)');

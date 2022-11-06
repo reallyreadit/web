@@ -354,6 +354,7 @@ export default class ReaderContentScriptApi {
 			}
 		)
 	};
+
 	public userSignedOut() {
 		this.sendMessageToAllTabs(
 			{
