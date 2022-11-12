@@ -98,22 +98,6 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 				}
 			);
 	},
-	onLoadContentParser: tabId => {
-		try {
-			if(
-				new SemanticVersion(localStorage.getItem('contentParserVersion'))
-					.compareTo(new SemanticVersion(window.reallyreadit.extension.config.version.common.contentParser)) > 0
-			) {
-				console.log(`contentScriptApi.onLoadContentParser (loading content parser from localStorage, tabId: ${tabId})`);
-				chrome.tabs.executeScript(tabId,{code: localStorage.getItem('contentParserScript')});
-				return;
-			}
-		} catch {
-			// fall back to bundled script
-		}
-		console.log(`contentScriptApi.onLoadContentParser (loading content parser from bundle, tabId: ${tabId})`);
-		chrome.tabs.executeScript(tabId,{file: '/content-scripts/reader/content-parser/bundle.js'});
-	},
 	onGetComments: slug => serverApi.getComments(slug),
 	onPostArticle: form => {
 		return serverApi

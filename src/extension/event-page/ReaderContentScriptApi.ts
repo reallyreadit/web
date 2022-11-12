@@ -42,7 +42,6 @@ export default class ReaderContentScriptApi {
 			onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 			onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 			onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
-			onLoadContentParser: (tabId: number) => void,
 			onGetComments: (slug: string) => Promise<CommentThread[]>,
 			onPostArticle: (form: PostForm) => Promise<Post>,
 			onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
@@ -146,9 +145,6 @@ export default class ReaderContentScriptApi {
 							// sender.tab.id is undefined in Firefox
 							// tab won't be removed until a messaging error occurs
 							this._tabs.remove(sender.tab.id);
-							break;
-						case 'loadContentParser':
-							params.onLoadContentParser(sender.tab.id);
 							break;
 						case 'closeWindow':
 							chrome.windows.remove(

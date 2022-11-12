@@ -5,7 +5,6 @@ import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
 import styleArticleDocument,{applyDisplayPreferenceToArticleDocument,createByline,darkBackgroundColor,lightBackgroundColor,updateArticleHeader} from '../../../common/reading/styleArticleDocument';
-import LazyScript from './LazyScript';
 import * as React from 'react';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import {AuthServiceBrowserLinkResponse,isAuthServiceBrowserLinkSuccessResponse} from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
@@ -26,7 +25,6 @@ import pruneDocument from '../../../common/contentParsing/pruneDocument';
 import {findPublisherConfig} from '../../../common/contentParsing/configuration/PublisherConfig';
 import configs from '../../../common/contentParsing/configuration/configs';
 import procesLazyImages from '../../../common/contentParsing/processLazyImages';
-
 import ReaderUIEmbed,{Props as EmbedProps} from '../../../common/reader-app/ReaderUIEmbed';
 import {AppPlatform} from '../../../common/AppPlatform';
 import DialogService from '../../../common/services/DialogService';
@@ -42,24 +40,7 @@ import ReactDOM = require('react-dom');
 import {mergeComment,updateComment} from '../../../common/comments';
 import {createArticleSlug} from '../../../common/routing/routes';
 import UserPage from '../../../common/models/UserPage';
-import icons from '../../../common/svg/icons';
-import insertExtensionFontStyleElement from '../ui/insertExtensionFontStyleElement';
 import {createUrl} from '../../../common/HttpEndpoint';
-
-// TODO PROXY EXT: We don't need to ask the event page to load this script anymore
-// we just include it by default?
-// remove these commands? -> probably yes
-//
-window.reallyreadit = {
-	readerContentScript: {
-		contentParser: new LazyScript(
-			() => {
-				// 				eventPageApi.loadContentParser();
-			}
-		)
-	}
-};
-
 
 // TODO PROXY EXT: taken from the native reader
 // our case is similar to
@@ -371,26 +352,36 @@ const onPostCommentRevision = (form: CommentRevisionForm): Promise<CommentThread
 		}
 	);
 
-// TODO PROXY EXT app embed expects toggleStar, which depends on exteral knowledge of starred or not
-// but event page api only has setStarred
-// compare to native toggleStar
 async function toggleStar() {
-	eventPageApi
-		.setStarred({
-			// articleId: lookupResult.userArticle.id,
-			articleId: article.id,
-			// isStarred
-			isStarred: article.dateStarred ? false : true
-		}).then(
-			result => {
-				article = result;
-				render();
-			}
-		);
+	// Even eventPageApi.setStarred returns a promise, it seems like it only does
+	// so after it's done processing the action (synchronously).
+	// For this reason we have to wrap the function in another, immediately-returned
+	// promise, so that the "is starring" state gets activated.
+	return new Promise<void>((resolve,reject) => {
+		eventPageApi
+			.setStarred({
+				// articleId: lookupResult.userArticle.id,
+				articleId: article.id,
+				// isStarred
+				isStarred: article.dateStarred ? false : true
+			}).then(
+				result => {
+					if(result) {
+
+						article = result;
+						render();
+						resolve();
+					} else {
+						reject()
+					}
+				}
+			)
+			.catch(reject);
+	});
 }
 
 function onCreateAbsoluteUrl(path: string) {
-	return createUrl(window.reallyreadit.extension.config.webServer, path);
+	return createUrl(window.reallyreadit.extension.config.webServer,path);
 }
 
 let
@@ -427,9 +418,9 @@ let
 /**
  * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
  * which is thehost for reader-related UI & behavior.
- * 
+ *
  * Depends on context. These variables should be available:
- * - scrollRoot 
+ * - scrollRoot
  * - contentRoot
  *
  * This element injector should be called after the document has been "pruned".
@@ -719,7 +710,6 @@ eventPageApi.getDisplayPreference().then(
 		contentRoot = parseResult.contentRoot;
 		scrollRoot = parseResult.scrollRoot;
 
-
 		// insert React UI
 		insertEmbed();
 
@@ -735,27 +725,18 @@ eventPageApi.getDisplayPreference().then(
 			},
 			transitionElement: document.documentElement,
 			completeTransition: true
-		});
+	 	});
 
-		// TODO EXT NOTE: web needed this, but nativedoesn't have
+		// See build/targets/extension/contentScripts/reader.js
+		// We need to load these here (after document pruning and styling)
+		window.reallyreadit.extension.injectInlineStyles();
+		window.reallyreadit.extension.injectSvgElements();
+
+		// TODO EXT NOTE: web needed this, but native doesn't have
 		hasStyledArticleDocument = true;
 
 		// TODO PROXY EXT: this could be done vs JS inlining, like with the native reader.
 		// which will make it quicker. See build files
-
-		// insert SVG icons
-		document.body.insertAdjacentHTML('afterbegin',icons)
-
-		// insert fonts
-		insertExtensionFontStyleElement();
-
-		// insert Readup Reader style bundle
-		const link = document.createElement('link');
-		link.type = 'text/css'
-		link.rel = 'stylesheet'
-		link.href = "/content-scripts/reader/bundle.css";
-		document.head.appendChild(link)
-
 
 		const publisherConfig = findPublisherConfig(configs.publishers,documentLocation.hostname);
 		procesLazyImages(publisherConfig && publisherConfig.imageStrategy);

@@ -126,9 +126,6 @@ export default class EventPageApi {
 	public unregisterPage() {
 		sendMessage('unregisterPage');
 	}
-	public loadContentParser() {
-		sendMessage('loadContentParser');
-	}
 	public closeWindow(id: number) {
 		sendMessage('closeWindow', id);
 	}

@@ -18,12 +18,10 @@ declare global {
 	}
 	interface AlertContentScriptWindow { }
 	interface EmbedWindow { }
-	interface ReaderContentScriptWindow { }
 	interface ReaderWindow { }
 	interface Window {
 		reallyreadit: {
 			alertContentScript?: AlertContentScriptWindow,
-			readerContentScript?: ReaderContentScriptWindow,
 			app?: AppWindow,
 			embed?: EmbedWindow,
 			extension?: {
@@ -34,7 +32,9 @@ declare global {
 					staticServer: HttpEndpoint,
 					webServer: HttpEndpoint,
 					version: PackageVersionInfo
-				}
+				},
+				injectInlineStyles?: () => void,
+				injectSvgElements?: () => void
 			},
 			nativeClient?: {
 				reader: ReaderWindow
