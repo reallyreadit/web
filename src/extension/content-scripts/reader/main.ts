@@ -650,6 +650,7 @@ async function fetchAndInjectArticle() {
 		const text = await fetch(documentLocation.href).then(r => r.text());
 		const parser = new DOMParser();
 		doc = parser.parseFromString(text,"text/html");
+		processArticleContent(doc)
 	} catch(e) {
 		console.error("oops, something went wrong while fetching the article")
 		throw e
@@ -659,6 +660,47 @@ async function fetchAndInjectArticle() {
 	document.head.innerHTML = doc.head.innerHTML
 }
 
+async function processArticleContent(doc: Document) {
+	// Sanitize unwanted elements from HTML
+	const removeElementsWithQuerySelector = (selector: string) =>
+		Array.from(doc.querySelectorAll(selector)).forEach(e => e.remove())
+	// TODO: is this a correct replication?
+
+	const querySelectorsForElementsToRemove = [
+		'script:not([type="application/json+ld"])',
+		'iframe',
+		'style',
+		'link[rel="stylesheet"]',
+		'meta[name="viewport"]'
+	]
+	querySelectorsForElementsToRemove.forEach(qs => removeElementsWithQuerySelector(qs))
+
+	// Insert replacement viewport tag
+	// TODO test
+	const metaTag = document.createElement('meta')
+	metaTag.name = "viewport"
+	metaTag.content = "width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover"
+	document.head.insertAdjacentElement('afterbegin',metaTag)
+
+	// Make relative image requests absolute
+	// TODO specify
+	Array.from(doc.querySelectorAll('img')).forEach(img => {
+		// Try to detect relative urls: starts with / or with a word sign.
+		// Exception for '//'  
+		// TODO find reliable relative url regex?
+		const match = /^(\/(?!\/)|(\b\w))/.exec(img.src)
+		if(match) {
+			// note: the image.src getter prepends the extension URL automatically
+			// TODO: relative cases with "../" , "" and "./" are probably not handled well now
+			// relative case starting with /
+			if(match[1]) {
+				img.src = documentLocation.protocol + '//' + documentLocation.hostname + img.getAttribute('src')
+			} else {
+				img.src = documentLocation.protocol + '//' + documentLocation.hostname + '/' + img.getAttribute('src')
+			}
+		}
+	})
+}
 
 // const transitionAnimationDuration = 700;
 
@@ -725,7 +767,7 @@ eventPageApi.getDisplayPreference().then(
 			},
 			transitionElement: document.documentElement,
 			completeTransition: true
-	 	});
+		});
 
 		// See build/targets/extension/contentScripts/reader.js
 		// We need to load these here (after document pruning and styling)

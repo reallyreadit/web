@@ -242,11 +242,15 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
 	})
 }
 
-async function openReaderInCurrentTab(articleUrl: string) {
+async function openReaderInTab(tab: chrome.tabs.Tab, articleUrl: string) {
 	const readerUrl = `${chrome.runtime.getURL('/content-scripts/reader/index.html')}?url=${articleUrl}`;
+	chrome.tabs.update(tab.id, {url: readerUrl})
+}
+
+async function openReaderInCurrentTab(articleUrl: string) {
 	let currentTab = await getCurrentTab()
 	if (currentTab) {
-			chrome.tabs.update(currentTab.id, {url: readerUrl})
+		openReaderInTab(currentTab, articleUrl)
 	}
 }
 
@@ -443,8 +447,7 @@ chrome.browserAction.onClicked.addListener(
 		}
 
 		// open article
-		await openReaderInCurrentTab(tab.url)
-
+		await openReaderInTab(tab, tab.url) 
 	}
 );
 chrome.runtime.onMessage.addListener(

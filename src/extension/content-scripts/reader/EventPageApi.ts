@@ -49,7 +49,7 @@ function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
 						if (isSuccessResponse<T>(response)) {
 							resolve(response.value);
 						} else {
-							reject(response.error);
+							reject(response != null ? response.error : "Something went wrong in the event page API");
 						}
 					}
 				);
