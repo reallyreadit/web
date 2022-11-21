@@ -82,6 +82,11 @@ export default class EventPageApi {
 	}) {
 		chrome.runtime.onMessage.addListener(
 			(message, sender, sendResponse) => {
+				// Don't answer messages from other content scripts.
+				// TODO: Explore full consequences of running this messaging service in a chrome-extension://... page instead of a regular http(s)://... web page and refactor as required.
+				if (message.from === 'readerContentScript') {
+					return;
+				}
 				switch (message.type) {
 					case 'articleUpdated':
 						handlers.onArticleUpdated(message.data);
