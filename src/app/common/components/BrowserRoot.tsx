@@ -53,10 +53,12 @@ import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
+import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
 import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
+import Header from './BrowserRoot/Header';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase,
@@ -178,12 +180,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	private readonly _viewLeaderboards = () => {
 		this.setScreenState({
 			key: ScreenKey.Leaderboards,
-			method: NavMethod.ReplaceAll
-		});
-	};
-	private readonly _viewMyImpact = () => {
-		this.setScreenState({
-			key: ScreenKey.MyImpact,
 			method: NavMethod.ReplaceAll
 		});
 	};
@@ -621,6 +617,36 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onSetScreenState: this._setScreenState,
 					onViewAuthor: this._viewAuthor,
 					onViewProfile: this._viewProfile
+				}
+			),
+			[ScreenKey.MyFeed]: createMyFeedScreenFactory(
+				ScreenKey.MyFeed,
+				{
+					deviceType: DeviceType.Ios,
+					onClearAlerts: this._clearAlerts,
+					onCloseDialog: this._dialog.closeDialog,
+					onCopyTextToClipboard: this._clipboard.copyText,
+					onCreateAbsoluteUrl: this._createAbsoluteUrl,
+					onFollowUser: this._followUser,
+					onGetFollowees: this.props.serverApi.getFollowees,
+					onGetFollowers: this.props.serverApi.getFollowers,
+					onGetProfile: this.props.serverApi.getProfile,
+					onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
+					onNavTo: this._navTo,
+					onOpenDialog: this._dialog.openDialog,
+					onPostArticle: this._openPostDialog,
+					onRateArticle: this._rateArticle,
+					onReadArticle: this._readArticle,
+					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
+					onSetScreenState: this._setScreenState,
+					onShare: this._handleShareRequest,
+					onShareViaChannel: this._handleShareChannelRequest,
+					onToggleArticleStar: this._toggleArticleStar,
+					onUnfollowUser: this._unfollowUser,
+					onViewComments: this._viewComments,
+					onViewProfile: this._viewProfile,
+					onViewThread: this._viewThread
 				}
 			),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
@@ -1257,6 +1283,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 					topScreen.templateSection == null ||
 					(topScreen.templateSection & TemplateSection.Header)
 				 ) ?
+					this.state.user != null ? 
+					<Header 
+						deviceType={this.props.deviceType}
+						onBeginOnboarding={this._beginOnboarding}
+						onOpenMenu={this._openMenu}
+						onOpenSignInPrompt={this._beginOnboardingAtSignIn}
+						onViewHome={this._viewHome}
+						onViewNotifications={this._viewNotifications}
+						user={this.state.user}
+					/> :
 					<HomeHeader
 						deviceType={this.props.deviceType}
 						onBeginOnboarding={this._beginOnboarding}
@@ -1284,7 +1320,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 						<NavBar
 							onNavTo={this._navTo}
 							onViewHome={this._viewHome}
-							onViewMyImpact={this._viewMyImpact}
 							onViewMyReads={this._viewMyReads}
 							selectedScreen={this.state.screens[0]}
 							user={this.state.user}

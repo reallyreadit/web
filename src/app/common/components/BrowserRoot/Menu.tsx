@@ -99,7 +99,12 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								display="block"
 							/>
 						</li>
-						<li>
+						{/* TODO: to test the search screen in development again, 
+							try accessing the page with a database that has a valid result 
+							for community_reads.get_search_options
+							Currently the API returns a 500, probably because it doesn't get valid DB data.
+						*/}
+						{/* <li>
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Search).createUrl()}
 								onClick={this.props.onViewSearch}
@@ -108,17 +113,7 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 								size="x-large"
 								display="block"
 							/>
-						</li>
-						<li>
-							<Button
-								href={findRouteByKey(routes, ScreenKey.Leaderboards).createUrl()}
-								onClick={this.props.onViewLeaderboards}
-								state={this.props.selectedScreen.key === ScreenKey.Leaderboards ? 'selected' : 'normal'}
-								text="Leaderboards"
-								size="x-large"
-								display="block"
-							/>
-						</li>
+						</li> */}
 						<li>
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Faq).createUrl()}
