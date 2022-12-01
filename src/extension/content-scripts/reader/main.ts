@@ -683,21 +683,60 @@ async function processArticleContent(doc: Document) {
 	document.head.insertAdjacentElement('afterbegin',metaTag)
 
 	// Make relative image requests absolute
-	// TODO specify
 	Array.from(doc.querySelectorAll('img')).forEach(img => {
-		// Try to detect relative urls: starts with / or with a word sign.
-		// Exception for '//'  
-		// TODO find reliable relative url regex?
-		const match = /^(\/(?!\/)|(\b\w))/.exec(img.src)
-		if(match) {
-			// note: the image.src getter prepends the extension URL automatically
-			// TODO: relative cases with "../" , "" and "./" are probably not handled well now
-			// relative case starting with /
-			if(match[1]) {
-				img.src = documentLocation.protocol + '//' + documentLocation.hostname + img.getAttribute('src')
+		// Detect relative URLs, without extraction.
+		// See https://regex101.com/r/YbzyN7/1 for unit tests
+		// img.src is already a processed "src" attribute: it's always an absolute url.
+		const host = `${documentLocation.protocol}//${documentLocation.hostname}`;
+
+		let href = documentLocation.href;
+		let hrefParts = href.split('/');
+
+		const originalSrc = img.getAttribute('src');
+		const match = /(^\/(?!\/))|(^\.\/)|(^\.\.\/)|(^(?!https?:\/\/)[-a-z0-9)]+)/.exec(originalSrc)
+		if (match) {
+			if (match[1]) {
+				// The URL is of the form /image.png.
+				img.src = `${host}${originalSrc}`
 			} else {
-				img.src = documentLocation.protocol + '//' + documentLocation.hostname + '/' + img.getAttribute('src')
-			}
+				if (match[2] || match[4]) {
+					// The URL is of the form ./image.png or image.png
+					// These relative URLs are immediately relative to the current folder 
+					const relativeImagePathMatch = /^(\.\/)?(.*)$/.exec(originalSrc)
+					const relativeImagePath = relativeImagePathMatch[1];		
+					if (relativeImagePath) {
+						if (href.endsWith('/')) {
+							// Add path relative to the current directory on to it
+							img.src = `${href}${relativeImagePath}` 
+						} else {
+							// the href ends in someting like /index.php -> pop it off to address a sibling
+							const hrefPartsCopy = [...hrefParts]
+							hrefPartsCopy.pop()
+							const newHrefBase = hrefPartsCopy.join('/')
+							img.src = `${newHrefBase}/${relativeImagePath}`
+						}
+					} else {
+						console.warn('Problem in determining the absolute image URL of a \'./\' relative format image')
+					}
+				} else if (match[3]) {
+					// The URL is of the form ../image.png
+					const relativeImagePathMatch = /^(\.\.\/)(.*)$/.exec(originalSrc)
+					const relativeImagePath = relativeImagePathMatch[1];
+					if (relativeImagePath) {
+						const hrefPartsCopy = [...hrefParts]
+						if (href.endsWith('/')) {
+							// pops ''
+							hrefPartsCopy.pop()
+						}
+						// pops the name of the parent folder
+						hrefPartsCopy.pop()
+						const newHrefBase = hrefPartsCopy.join('/')
+						img.src = `${newHrefBase}/${relativeImagePath}`	
+					} else {
+						console.warn('Problem in determining the absolute image URL of a \'../\' relative format image')
+					}	
+				}
+			} 
 		}
 	})
 }
