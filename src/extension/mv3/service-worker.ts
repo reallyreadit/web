@@ -22,7 +22,7 @@ function setIcon(
 	} else {
 		pathTemplate += `icon-${placeholder}-warning.png`;
 	}
-	chrome.browserAction.setIcon({
+	chrome.action.setIcon({
 		path: [16,24,32,40,48].reduce<{[key: string]: string}>(
 			(paths,size) => {
 				paths[size] = pathTemplate.replace(placeholder,size.toString());
@@ -255,7 +255,7 @@ async function openReaderInCurrentTab(articleUrl: string) {
 }
 
 // chrome event handlers
-chrome.runtime.onInstalled.addListener(details => {
+chrome.runtime.onInstalled.addListener(async (details) => {
 	console.log('[EventPage] installed, reason: ' + details.reason);
 	// ensure sameSite is set on sessionId and sessionKey cookies
 	[window.reallyreadit.extension.config.cookieName,sessionIdCookieKey].forEach(
@@ -285,13 +285,15 @@ chrome.runtime.onInstalled.addListener(details => {
 		}
 	);
 	// initialize settings
-	localStorage.removeItem('parseMode');
-	localStorage.removeItem('showOverlay');
-	localStorage.removeItem('newReplyNotification');
-	localStorage.removeItem('sourceRules');
-	localStorage.removeItem('articles');
-	localStorage.removeItem('tabs');
-	localStorage.setItem('debug',JSON.stringify(false));
+	('parseMode');
+	await chrome.storage.local.remove([
+		'showOverlay',
+		'newReplyNotification',
+		'sourceRules',
+		'articles',
+		'tabs'
+	]);
+	await chrome.storage.local.set({ 'debug': JSON.stringify(false) });
 	// update icon
 	setIcon({
 		user: serverApi.getUser()
@@ -308,18 +310,19 @@ chrome.runtime.onInstalled.addListener(details => {
 	// in fact chrome.cookies.* api calls take 30+s to time out with no results
 	// so we need to rely on the api server to get and set them for us
 	chrome.runtime.getPlatformInfo(
-		platformInfo => {
+		async (platformInfo) => {
 			if(details.reason === 'install') {
 				badgeApi.setLoading();
 			}
+
 			serverApi
 				.logExtensionInstallation({
 					arch: platformInfo.arch,
-					installationId: localStorage.getItem('installationId'),
+					installationId: (await chrome.storage.local.get('installationId'))['installationId'],
 					os: platformInfo.os
 				})
 				.then(
-					response => {
+					async (response) => {
 						if(details.reason === 'install') {
 							chrome.tabs.create({
 								url: createUrl(
@@ -343,7 +346,7 @@ chrome.runtime.onInstalled.addListener(details => {
 								}
 							)
 						);
-						localStorage.setItem('installationId',response.installationId);
+						await chrome.storage.local.set({'installationId': response.installationId});
 					}
 				)
 				.catch(
@@ -401,7 +404,7 @@ chrome.runtime.onStartup.addListener(
 		webAppApi.injectContentScripts();
 	}
 );
-chrome.browserAction.onClicked.addListener(
+chrome.action.onClicked.addListener(
 	async (tab) => {
 		// check if we're logged in
 		if(!serverApi.isAuthenticated()) {
@@ -422,12 +425,22 @@ chrome.browserAction.onClicked.addListener(
 		}
 		// web app
 		if(tab.url.startsWith(createUrl(window.reallyreadit.extension.config.webServer))) {
-			chrome.tabs.executeScript(
-				tab.id,
-				{
-					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+			chrome.scripting.executeScript({
+				target: {
+					tabId: tab.id
+				},
+				func: () => {
+					if (!window.reallyreadit?.alertContentScript) {
+						window.reallyreadit = {
+							...window.reallyreadit,
+							alertContentScript: { alertContent: 'Press the Readup button when you\'re on an article web page.' }
+						};
+						chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' });
+					} else if (!window.reallyreadit.alertContentScript.isActive) {
+						window.reallyreadit.alertContentScript.display();
+					}
 				}
-			);
+			});
 			return;
 		}
 		// blacklisted
@@ -437,13 +450,28 @@ chrome.browserAction.onClicked.addListener(
 				regex => regex.test(tab.url)
 			)
 		) {
-			chrome.tabs.executeScript(
-				tab.id,
-				{
-					code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }"
+			chrome.scripting.executeScript({
+				target: {
+					tabId: tab.id
+				},
+				func: () => {
+					if (!window.reallyreadit?.alertContentScript) {
+						window.reallyreadit = {
+							...window.reallyreadit,
+							alertContentScript: {
+								alertContent: 'No article detected on this web page.'
+							}
+						};
+						chrome.runtime.sendMessage({
+							from: 'contentScriptInitializer',
+							to: 'eventPage',
+							type: 'injectAlert'
+						});
+					} else if (!window.reallyreadit.alertContentScript.isActive) {
+						window.reallyreadit.alertContentScript.display();
+					}
 				}
-			);
-			return;
+			});
 		}
 
 		// open article
@@ -457,31 +485,31 @@ chrome.runtime.onMessage.addListener(
 		}
 		switch(message.type) {
 			case 'injectAlert':
-				chrome.tabs.executeScript(
-					sender.tab.id,
-					{
-						file: '/content-scripts/alert/bundle.js'
-					}
-				);
+				chrome.scripting.executeScript({
+					target: {
+						tabId: sender.tab.id,
+					},
+					files: ['/content-scripts/alert/bundle.js']
+				});
 				return;
 			case 'injectReader':
-				chrome.tabs.executeScript(
-					sender.tab.id,
-					{
-						file: '/content-scripts/reader/bundle.js'
-					}
-				);
+				chrome.scripting.executeScript({
+					target: {
+						tabId: sender.tab.id,
+					},
+					files: ['/content-scripts/reader/bundle.js']
+				});
 				return;
 		}
 	}
 );
 chrome.alarms.onAlarm.addListener(
-	alarm => {
+	async (alarm) => {
 		if(alarm.name === 'updateContentParser') {
 			const currentVersion = SemanticVersion.greatest(
 				...[
 					window.reallyreadit.extension.config.version.common.contentParser,
-					localStorage.getItem('contentParserVersion')
+					(await chrome.storage.local.get('contentParserVersion'))['contentParserVersion']
 				]
 					.filter(string => !!string)
 					.map(versionString => new SemanticVersion(versionString))
@@ -504,9 +532,9 @@ chrome.alarms.onAlarm.addListener(
 						console.log(`chrome.alarms.onAlarm (updateContentParser: updating to version: ${newVersionInfo.version.toString()})`);
 						fetch(createUrl(window.reallyreadit.extension.config.staticServer,'/extension/content-parser/' + newVersionInfo.fileName))
 							.then(res => res.text())
-							.then(text => {
-								localStorage.setItem('contentParserScript',text);
-								localStorage.setItem('contentParserVersion',newVersionInfo.version.toString());
+							.then(async (text) => {
+								await chrome.storage.local.set({'contentParserScript': text});
+								await chrome.storage.local.set({'contentParserVersion': newVersionInfo.version.toString()});
 							})
 							.catch(() => {
 								console.log('chrome.alarms.onAlarm (updateContentParser: error updating to new version)');

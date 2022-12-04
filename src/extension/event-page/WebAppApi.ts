@@ -165,12 +165,21 @@ export default class WebAppApi {
 							return;
 						}
 						console.log('[WebAppApi] injecting content script into tab # ' + tab.id);
-						chrome.tabs.executeScript(
-							tab.id,
-							{
-								file: '/content-scripts/web-app/bundle.js'
-							}
-						);
+						const scriptPath = '/content-scripts/web-app/bundle.js';
+						const manifestVersion = chrome.runtime.getManifest().manifest_version
+						if (manifestVersion > 2) {
+							chrome.scripting.executeScript({
+								target: { tabId: tab.id },
+								files: [ scriptPath ]
+							});
+						} else {
+							chrome.tabs.executeScript(
+								tab.id,
+								{
+									file: scriptPath
+								}
+							);
+						}
 					}
 				);
 			}

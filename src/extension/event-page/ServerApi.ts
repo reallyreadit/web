@@ -3,7 +3,7 @@ import SetStore from '../../common/webStorage/SetStore';
 import ObjectStore from '../../common/webStorage/ObjectStore';
 import ParseResult from '../../common/reading/ParseResult';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
-import Request from './Request';
+import ReadupRequest from './Request';
 import { Cached, cache, isExpired } from './Cached';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
@@ -27,9 +27,10 @@ import InstallationRequest from '../../common/models/extension/InstallationReque
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
 
-function addCustomHeaders(req: XMLHttpRequest, params: Request) {
-	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension}`);
+function getCustomHeaders() {
+	return {'X-Readup-Client': `web/extension@${window.reallyreadit.extension.config.version.extension}`}
 }
+
 /**
  * An API for the event page to communicate with Readup's resource API.
  */
@@ -195,50 +196,74 @@ export default class ServerApi {
 				.catch(() => {});
 		}
 	}
-	private fetchJson<T>(request: Request) {
+	private fetchJson<T>(request: ReadupRequest) {
 		const _this = this;
 		return new Promise<T>((resolve, reject) => {
-			const
-				req = new XMLHttpRequest(),
-				url = createUrl(window.reallyreadit.extension.config.apiServer, request.path);
-			req.withCredentials = true;
-			req.addEventListener('load', function () {
-				const contentType = this.getResponseHeader('Content-Type');
-				let object: any;
+			const url = createUrl(window.reallyreadit.extension.config.apiServer, request.path);
+
+			// Prepare request
+			let req: Request;
+			if (request.method === 'POST') {
+				req = new Request(url, {
+					method: 'POST',
+					credentials: 'include',
+					headers: {
+						...getCustomHeaders(),
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(request.data)
+				})
+			} else {
+				req = new Request(`${url}${createQueryString(request.data)}`, {
+					credentials: 'include',
+					headers: {
+						...getCustomHeaders()
+					}
+				})
+			}
+
+			// Send request
+			fetch(req)
+			// Parse response
+			.then((response: Response) => {
+				const contentType = response.headers.get('Content-Type')
 				if (
 					contentType?.startsWith('application/json') ||
 					contentType?.startsWith('application/problem+json')
 				) {
-					object = JSON.parse(this.responseText);
+					return response.json().then(object => ({
+						response,
+						responseText: undefined,
+						responseObject: object
+					}))
 				}
-				if (this.status === 200) {
-					if (object) {
-						resolve(object);
+				return response.text().then(text => ({
+					response,
+					responseObject: undefined,
+					responseText: text
+				}))
+			})
+			// Process response
+			.then(( {response, responseText, responseObject}: {response: Response, responseText?: string, responseObject?: any} ) => {
+				if (response.status === 200) {
+					if (responseObject) {
+						resolve(responseObject);
 					} else {
-						resolve();
+						resolve(null);
 					}
 				} else {
-					if (this.status === 401) {
+					if (response.status === 401) {
 						console.log(`[ServerApi] user signed out (received 401 response from API server)`);
 						_this.userSignedOut();
 						_this._onUserSignedOut();
 					}
-					reject(object || ['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
+					reject(responseObject || ['ServerApi fetch response. Status: ' + response.status + ' Status text: ' + response.statusText + ' Response text: ' + responseText]);
 				}
+			})
+			.catch(() => {
+				reject(['ServerApi fetch error']);
 			});
-			req.addEventListener('error', function () {
-				reject(['ServerApi XMLHttpRequest error event']);
-			});
-			if (request.method === 'POST') {
-				req.open(request.method, url);
-				addCustomHeaders(req, request);
-				req.setRequestHeader('Content-Type', 'application/json');
-				req.send(JSON.stringify(request.data));
-			} else {
-				req.open(request.method, url + createQueryString(request.data));
-				addCustomHeaders(req, request);
-				req.send();
-			}
+
 		});
 	}
 	public registerPage(tabId: number, data: ParseResult) {

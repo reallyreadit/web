@@ -10,10 +10,14 @@ interface LoadingAnimation {
 	interval: number,
 	tabId: OptionalTabId
 }
+
+const manifestVersion = chrome.runtime.getManifest().manifest_version
+const browserActionApi = manifestVersion > 2 ? chrome.action : chrome.browserAction;
+
 function createLoadingAnimation(tabId: OptionalTabId) {
 	let frameIndex = 0;
 	let frameCount = 5;
-	chrome.browserAction.setBadgeBackgroundColor(
+	browserActionApi.setBadgeBackgroundColor(
 		{
 			color: Color.Default,
 			tabId
@@ -31,7 +35,7 @@ function createLoadingAnimation(tabId: OptionalTabId) {
 						text += String.fromCharCode(0x2008);
 					}
 				}
-				chrome.browserAction.setBadgeText({
+				browserActionApi.setBadgeText({
 					tabId,
 					text
 				});
@@ -58,15 +62,15 @@ export default class BrowserActionBadgeApi {
 	private getAnimation(tabId: OptionalTabId) {
 		return this._animations.find(
 			animation => animation.tabId === tabId
-		);			
+		);
 	}
 	public setDefault(tabId: OptionalTabId = null) {
 		this.cancelAnimation(tabId);
-		chrome.browserAction.setBadgeBackgroundColor({
+		browserActionApi.setBadgeBackgroundColor({
 			color: Color.Default,
 			tabId
 		});
-		chrome.browserAction.setBadgeText({
+		browserActionApi.setBadgeText({
 			tabId,
 			text: ''
 		});
@@ -83,13 +87,13 @@ export default class BrowserActionBadgeApi {
 	public setReading(tabId: number, article: Pick<UserArticle, 'isRead' | 'percentComplete'>) {
 		console.log(`[BrowserActionBadgeApi] setting progress at ${Math.floor(article.percentComplete)}% for tab # ${tabId}`);
 		this.cancelAnimation(tabId);
-		chrome.browserAction.setBadgeBackgroundColor({
+		browserActionApi.setBadgeBackgroundColor({
 			color: article.isRead ?
 				Color.Read :
 				Color.Unread,
 			tabId
 		});
-		chrome.browserAction.setBadgeText({
+		browserActionApi.setBadgeText({
 			tabId,
 			text: Math.floor(article.percentComplete) + '%'
 		});

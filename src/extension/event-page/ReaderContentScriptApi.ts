@@ -100,7 +100,9 @@ export default class ReaderContentScriptApi {
 													tab => {
 														if (tab.articleId === result.userArticle.id) {
 															this._badge.setReading(tab.id, result.userArticle);
-															chrome.browserAction.setTitle({
+															const manifestVersion = chrome.runtime.getManifest().manifest_version
+															const browserActionApi = manifestVersion > 2 ? chrome.action : chrome.browserAction;
+															browserActionApi.setTitle({
 																tabId: tab.id,
 																title: `${calculateEstimatedReadTime(result.userArticle.wordCount)} min. read`
 															});
