@@ -10,7 +10,14 @@ const
 
 const jsBundleFileName = 'bundle.js';
 
-// TODO: shouldn't we use a webpack plugin for inline styling, 
+let targetPath;
+const setTargetPath = (targetPathParam) => {
+	targetPath = targetPathParam;
+	createHtmlTemplateBuild()
+	createContentScriptBuild()
+}
+
+// TODO: shouldn't we use a webpack plugin for inline styling,
 // rather than writing it ourselves? ("style" plugin afaik)
 
 // NOTE: The reason that we load styles & svgs inline, is consistency with the way the native reader works.
@@ -45,7 +52,7 @@ const svgInliningTemplate = `
 		...window.reallyreadit,
 		extension: {
 			...(window.reallyreadit ? window.reallyreadit.extension : {}),
-			injectSvgElements: function () {	
+			injectSvgElements: function () {
 				const svgs = window.document.createElement('div');
 				svgs.innerHTML = \`{SVG_SYMBOLS}\`;
 				window.document.body.append(svgs);
@@ -58,34 +65,38 @@ const svgInliningTemplate = `
 // This build builds a "HTML template" (html.js) that contains the SVG icons.
 // Note: templates/html.scss is not picked up here, but it is included in the style inline
 // build.
-const htmlTemplateBuild = createBuild({
-	onBuildComplete: (buildInfo, resolve) => {
-		if (buildInfo.build === 'webpack') {
-			const template = path.join(buildInfo.outPath, 'html.js');
-			// The output of the htmlTemplate bundle is assigned to the global variable 'html'
-			// when executed with eval() like below.
-			// See the execution example in https://webpack.js.org/configuration/output/#outputlibrary
-			eval(fs.readFileSync(template).toString());
-			fs.writeFileSync(path.join(buildInfo.outPath, 'svgs.html'), html.svgTemplates.default);
-			fs.unlinkSync(template);
-			if (resolve) {
-				resolve();
+let htmlTemplateBuild;
+const createHtmlTemplateBuild = () => {
+	htmlTemplateBuild = createBuild({
+		onBuildComplete: (buildInfo, resolve) => {
+			if (buildInfo.build === 'webpack') {
+				const template = path.join(buildInfo.outPath, 'html.js');
+				// The output of the htmlTemplate bundle is assigned to the global variable 'html'
+				// when executed with eval() like below.
+				// See the execution example in https://webpack.js.org/configuration/output/#outputlibrary
+				eval(fs.readFileSync(template).toString());
+				fs.writeFileSync(path.join(buildInfo.outPath, 'svgs.html'), html.svgTemplates.default);
+				fs.unlinkSync(template);
+				if (resolve) {
+					resolve();
+				}
 			}
+		},
+		path: targetPath,
+		webpack: {
+			entry: path.posix.join(project.srcDir, 'extension/content-scripts/reader/templates/html.ts'),
+			fileName: 'html.js',
+			minify: false,
+			// https://webpack.js.org/configuration/output/#outputlibraryname
+			outputLibrary: 'html',
+			sourceMaps: false
 		}
-	},
-	path: 'extension/content-scripts/reader',
-	webpack: {
-		entry: path.posix.join(project.srcDir, 'extension/content-scripts/reader/templates/html.ts'),
-		fileName: 'html.js',
-		minify: false,
-		// https://webpack.js.org/configuration/output/#outputlibraryname
-		outputLibrary: 'html',
-		sourceMaps: false
-	}
-});
+	});
+}
 
-const
-	targetPath = 'extension/content-scripts/reader',
+let
+	contentScriptBuild
+const createContentScriptBuild = () => {
 	contentScriptBuild = createBuild({
 		onBuildComplete: (function () {
 			const completedBuilds = new Set();
@@ -133,7 +144,7 @@ const
 							// cleanup
 							del([
 								// This is a hack to not delete the bundle.css while developing
-								// A watcher could call this onBuildComplete without rebuilding the styles 
+								// A watcher could call this onBuildComplete without rebuilding the styles
 								// (when they didn't change), leading to missing inputs for the onBuildComplete.
 								...(buildInfo.env !== project.env.dev ?
 									[`${buildInfo.outPath}/bundle.css*`] : []
@@ -161,8 +172,10 @@ const
 			],
 		},
 		staticAssets: [
-			`${project.srcDir}/extension/content-scripts/reader/index.html`,
-
+			{
+				base: `${project.srcDir}/extension/content-scripts/reader`,
+				src: `${project.srcDir}/extension/content-scripts/reader/index.html`
+			}
 		],
 		webpack: {
 			appConfig: {
@@ -173,6 +186,7 @@ const
 		},
 		path: targetPath
 	});
+}
 
 function clean(env) {
 	return del(project.getOutPath(targetPath, env) + '/*');
@@ -185,5 +199,5 @@ function watch() {
 }
 
 module.exports = {
-	clean, build, watch
+	clean, build, watch, setTargetPath
 };

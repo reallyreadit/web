@@ -14,7 +14,7 @@ const project = require('../../project'),
 	  createBuild = require('../../createBuild'),
 	  appConfigPath = path.posix.join(project.srcDir, 'extension/common/config.{env}.json');
 
-const build = createBuild({
+const build = (targetPath) => createBuild({
 	scss: {
 		appConfig: {
 			path: appConfigPath
@@ -46,9 +46,12 @@ const build = createBuild({
 		sourceMaps: false
 	},
 	staticAssets: [
-		`${project.srcDir}/extension/options-page/index.html`
+		{
+			base: `${project.srcDir}/extension/options-page`,
+			src: `${project.srcDir}/extension/options-page/index.html`
+		}
 	],
-	path: 'extension/options-page'
+	path: targetPath
 });
 
 module.exports = build;

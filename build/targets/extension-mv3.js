@@ -17,20 +17,26 @@ const
 	project = require('../project'),
 	createBuild = require('../createBuild'),
 	readerContentScript = require('./extension-common/contentScripts/reader'),
-	eventPage = require('./extension/eventPage'),
+	serviceWorker = require('./extension-mv3/serviceWorker'),
 	// The target path for these "leave node" builds can be configured by passing a parameter
-	optionsPage = require('./extension-common/optionsPage')('extension/options-page'),
-	webAppContentScript = require('./extension-common/contentScripts/webApp')('extension/content-scripts/web-app'),
-	alertContentScript = require('./extension-common/contentScripts/alert')('extension/content-scripts/alert');
-
+	optionsPage = require('./extension-common/optionsPage')('extension-mv3/options-page'),
+	webAppContentScript = require('./extension-common/contentScripts/webApp')('extension-mv3/content-scripts/web-app'),
+	alertContentScript = require('./extension-common/contentScripts/alert')('extension-mv3/content-scripts/alert');
 
 const
-	targetPath = 'extension',
+	targetPath = 'extension-mv3',
 	staticAssets = createBuild({
 		onBuildComplete: (buildInfo, resolve) => {
 			// update manifest
+
+			if (!(typeof buildInfo.src == 'string' && buildInfo.src.endsWith('manifest.json'))) {
+				// Ignore the onBuildComplete called when the static asset batch with base
+				// `${project.srcDir}/extension` has completed
+				return;
+			}
+
 			const
-				manifestFileName = path.posix.join(buildInfo.outPath, 'manifest.json'),
+				manifestFileName = path.posix.join(buildInfo.outPath, '/manifest.json'),
 				manifest = JSON.parse(
 					fs
 						.readFileSync(manifestFileName)
@@ -49,9 +55,10 @@ const
 				webUrlPattern = config.webServer.protocol + '://' + config.webServer.host + '/*';
 			manifest.version = package['it.reallyread'].version.extension;
 			manifest.content_scripts[0].matches.push(webUrlPattern);
-			manifest.permissions.push(webUrlPattern);
+			manifest.host_permissions.push(webUrlPattern);
+			const manifestOutFilename = path.posix.join(buildInfo.outPath, 'manifest.json')
 			fs.writeFileSync(
-				manifestFileName,
+				manifestOutFilename,
 				JSON.stringify(manifest, null, 3)
 			);
 			if (resolve) {
@@ -59,11 +66,21 @@ const
 			}
 		},
 		path: targetPath,
+		// TODO PROXY EXT: find a way to not assume base path from targetPath here in createBuild
+		// based on an option? (especially in inner scripts)
 		staticAssets: [
-			`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
-			`${project.srcDir}/extension/content-scripts/ui/images/**`,
-			`${project.srcDir}/extension/icons/**`,
-			`${project.srcDir}/extension/manifest.json`
+			{
+				base: `${project.srcDir}/extension`,
+				src: [
+					`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
+					`${project.srcDir}/extension/content-scripts/ui/images/**`,
+					`${project.srcDir}/extension/icons/**`
+				]
+			},
+			{
+				base: `${project.srcDir}/extension/mv3`,
+				src: `${project.srcDir}/extension/mv3/manifest.json`,
+			},
 		]
 	});
 
@@ -71,11 +88,11 @@ function clean(env) {
 	return del(project.getOutPath(targetPath, env) + '/*');
 }
 
-const readerTargetPath = 'extension/content-scripts/reader';
+const readerTargetPath = 'extension-mv3/content-scripts/reader'
 function build(env) {
-	readerContentScript.setTargetPath(readerTargetPath)
+	readerContentScript.setTargetPath(readerTargetPath);
 	return Promise.all([
-		eventPage.build(env),
+		serviceWorker.build(env),
 		// TODO PROXY EXT: do we still need the alertContentScript here?
 		// Should we also remove the reader content script?
 		readerContentScript.build(env),
@@ -86,9 +103,9 @@ function build(env) {
 	]);
 }
 function watch() {
-	readerContentScript.setTargetPath(readerTargetPath)
+	readerContentScript.setTargetPath(readerTargetPath);
 	readerContentScript.watch();
-	eventPage.watch();
+	serviceWorker.watch();
 	optionsPage.watch();
 	staticAssets.watch();
 	webAppContentScript.watch();
