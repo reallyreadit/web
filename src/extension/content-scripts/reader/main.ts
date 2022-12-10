@@ -511,10 +511,10 @@ function updateUser(userIn: UserAccount) {
 // event page interface: initialize with event handlers
 // for events coming from the Event Page
 const eventPageApi = new EventPageApi({
-	onArticleUpdated: event => {
-		// PROXY EXT NOTE: native reader doesn't have this handler
-		console.warn("onArticleUpdated not implemented in new extension reader")
-		// updateUserArticle(event.article);
+	onArticleUpdated: ({ article }) => {
+		// NOTE: the native reader doesn't have this handler
+		// Nothing is done with the isCompletionCommit in the event
+		renderUserArticle(article);
 	},
 	// TODO PROXY EXT: lookup result handling different
 	/** Update the locally cached user with its new logged in
@@ -701,13 +701,13 @@ async function processArticleContent(doc: Document) {
 			} else {
 				if (match[2] || match[4]) {
 					// The URL is of the form ./image.png or image.png
-					// These relative URLs are immediately relative to the current folder 
+					// These relative URLs are immediately relative to the current folder
 					const relativeImagePathMatch = /^(\.\/)?(.*)$/.exec(originalSrc)
-					const relativeImagePath = relativeImagePathMatch[1];		
+					const relativeImagePath = relativeImagePathMatch[1];
 					if (relativeImagePath) {
 						if (href.endsWith('/')) {
 							// Add path relative to the current directory on to it
-							img.src = `${href}${relativeImagePath}` 
+							img.src = `${href}${relativeImagePath}`
 						} else {
 							// the href ends in someting like /index.php -> pop it off to address a sibling
 							const hrefPartsCopy = [...hrefParts]
@@ -731,12 +731,12 @@ async function processArticleContent(doc: Document) {
 						// pops the name of the parent folder
 						hrefPartsCopy.pop()
 						const newHrefBase = hrefPartsCopy.join('/')
-						img.src = `${newHrefBase}/${relativeImagePath}`	
+						img.src = `${newHrefBase}/${relativeImagePath}`
 					} else {
 						console.warn('Problem in determining the absolute image URL of a \'../\' relative format image')
-					}	
+					}
 				}
-			} 
+			}
 		}
 	})
 }

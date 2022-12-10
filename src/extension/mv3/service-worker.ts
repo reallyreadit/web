@@ -296,7 +296,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	await chrome.storage.local.set({ 'debug': JSON.stringify(false) });
 	// update icon
 	setIcon({
-		user: serverApi.getUser()
+		user: await serverApi.getUser()
 	});
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
@@ -392,11 +392,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
 });
 chrome.runtime.onStartup.addListener(
-	() => {
+	async () => {
 		console.log('[EventPage] startup');
 		// update icon
 		setIcon({
-			user: serverApi.getUser()
+			user: await serverApi.getUser()
 		});
 		// initialize tabs
 		readerContentScriptApi.clearTabs();
@@ -444,7 +444,7 @@ chrome.action.onClicked.addListener(
 			return;
 		}
 		// blacklisted
-		const blacklist = serverApi.getBlacklist();
+		const blacklist = await serverApi.getBlacklist();
 		if(
 			blacklist.some(
 				regex => regex.test(tab.url)

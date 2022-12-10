@@ -63,9 +63,8 @@ function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
  * An API for content scripts to communicate to the extension's event (background) page.
  * The event page can itself communicate with Readup's API.
  *
- * @deprecated Event pages are a deprecated concept in Chromium-based browsers:
+ * Event pages are a deprecated concept in Chromium-based browsers:
  * https://developer.chrome.com/docs/extensions/mv2/background_pages/
- * They should be refactored, but might be preserved for Firefox.
  */
 export default class EventPageApi {
 	/**

@@ -2,18 +2,25 @@ import CommentThread from '../../common/models/CommentThread';
 import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
 import Post from '../../common/models/social/Post';
 import UserAccount from '../../common/models/UserAccount';
-import ObjectStore from '../../common/webStorage/ObjectStore';
 import { Message } from '../../common/MessagingContext';
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import {ReadArticleReference} from '../../app/common/components/Root';
+import AsyncObjectStore from '../common/storage/AsyncObjectStore';
 
 /**
  * An API for the event page to communicate with Readup's web app tabs, if any are running.
  */
 export default class WebAppApi {
-	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
+	private readonly _tabs = new AsyncObjectStore<number[]>('webAppTabs', [], 'local');
+	/**
+	 * @deprecated
+	 */
+	public async initializeAsyncStores(): Promise<void> {
+		await this._tabs.initialized()
+	}
+
 	constructor(
 		handlers: {
 			onArticleUpdated: (event: ArticleUpdatedEvent) => void,
@@ -74,16 +81,16 @@ export default class WebAppApi {
 			}
 		);
 	}
-	private addTab(id: number) {
-		const tabs = this._tabs.get();
+	private async addTab(id: number) {
+		const tabs = await this._tabs.get();
 		if (!tabs.includes(id)) {
 			tabs.push(id);
-			this._tabs.set(tabs);
+			await this._tabs.set(tabs);
 		}
 	}
-	private broadcastMessage<T>(message: Message) {
-		this._tabs
-			.get()
+	private async broadcastMessage<T>(message: Message) {
+		(await this._tabs
+			.get())
 			.forEach(
 				tabId => {
 					console.log(`[WebAppApi] sending ${message.type} message to tab # ${tabId}`);
@@ -100,11 +107,11 @@ export default class WebAppApi {
 				}
 			);
 	}
-	private removeTab(id: number) {
-		const tabs = this._tabs.get();
+	private async removeTab(id: number) {
+		const tabs = await this._tabs.get();
 		if (tabs.includes(id)) {
 			tabs.splice(tabs.indexOf(id), 1);
-			this._tabs.set(tabs);
+			await this._tabs.set(tabs);
 		}
 	}
 	public articlePosted(post: Post) {

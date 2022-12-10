@@ -12,7 +12,6 @@ import CommentRevisionForm from '../../common/models/social/CommentRevisionForm'
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import { createMessageResponseHandler } from '../common/messaging';
 import StarForm from '../../common/models/articles/StarForm';
-import SetStore from '../../common/webStorage/SetStore';
 import { Message } from '../../common/MessagingContext';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { calculateEstimatedReadTime } from '../../common/calculate';
@@ -22,6 +21,7 @@ import UserAccount from '../../common/models/UserAccount';
 import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import AsyncSetStore from '../common/storage/AsyncSetStore';
 
 interface ReaderContentScriptTab {
 	articleId: number | null,
@@ -33,12 +33,12 @@ interface ReaderContentScriptTab {
  */
 export default class ReaderContentScriptApi {
 	private readonly _badge: BrowserActionBadgeApi;
-	private readonly _tabs = new SetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'localStorage');
+	private readonly _tabs = new AsyncSetStore<number, ReaderContentScriptTab>('readerTabs', t => t.id, 'local');
 
 	constructor(
 		params: {
 			badgeApi: BrowserActionBadgeApi,
-			onGetDisplayPreference: () => DisplayPreference | null,
+			onGetDisplayPreference: () => Promise<DisplayPreference | null>,
 			onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
 			onRegisterPage: (tabId: number, data: ParseResult) => Promise<ArticleLookupResult>,
 			onCommitReadState: (tabId: number, commitData: ReadStateCommitData, isCompletionCommit: boolean) => Promise<UserArticle>,
@@ -62,10 +62,11 @@ export default class ReaderContentScriptApi {
 					console.log(`[ReaderApi] received ${message.type} message from tab # ${sender.tab?.id}`);
 					switch (message.type) {
 						case 'getDisplayPreference':
-							sendResponse({
-								value: params.onGetDisplayPreference()
-							});
-							break;
+							createMessageResponseHandler(
+								params.onGetDisplayPreference(),
+								sendResponse
+							);
+							return true;
 						case 'changeDisplayPreference':
 							this.sendMessageToOtherTabs(
 								sender.tab.id,
@@ -80,56 +81,58 @@ export default class ReaderContentScriptApi {
 							);
 							return true;
 						case 'registerPage':
+
 							this._tabs.set({
 								articleId: null,
 								id: sender.tab.id
-							});
-							this._badge.setLoading(sender.tab.id);
-							createMessageResponseHandler(
-								params
-									.onRegisterPage(sender.tab.id, message.data)
-									.then(
-										result => {
-											this._tabs.set({
-												articleId: result.userArticle.id,
-												id: sender.tab.id
-											});
-											this._tabs
-												.getAll()
-												.forEach(
-													tab => {
-														if (tab.articleId === result.userArticle.id) {
-															this._badge.setReading(tab.id, result.userArticle);
-															const manifestVersion = chrome.runtime.getManifest().manifest_version
-															const browserActionApi = manifestVersion > 2 ? chrome.action : chrome.browserAction;
-															browserActionApi.setTitle({
-																tabId: tab.id,
-																title: `${calculateEstimatedReadTime(result.userArticle.wordCount)} min. read`
-															});
+							}).then(() => {
+								this._badge.setLoading(sender.tab.id);
+								createMessageResponseHandler(
+									params
+										.onRegisterPage(sender.tab.id, message.data)
+										.then(
+											async (result) => {
+												await this._tabs.set({
+													articleId: result.userArticle.id,
+													id: sender.tab.id
+												});
+												(await this._tabs
+													.getAll())
+													.forEach(
+														tab => {
+															if (tab.articleId === result.userArticle.id) {
+																this._badge.setReading(tab.id, result.userArticle);
+																const manifestVersion = chrome.runtime.getManifest().manifest_version
+																const browserActionApi = manifestVersion > 2 ? chrome.action : chrome.browserAction;
+																browserActionApi.setTitle({
+																	tabId: tab.id,
+																	title: `${calculateEstimatedReadTime(result.userArticle.wordCount)} min. read`
+																});
+															}
 														}
-													}
-												);
-											return result;
-										}
-									)
-									.catch(
-										error => {
-											this._tabs.remove(sender.tab.id);
-											this._badge.setDefault(sender.tab.id);
-											throw error;
-										}
-									),
-								sendResponse
-							);
+													);
+												return result;
+											}
+										)
+										.catch(
+											async (error) => {
+												await this._tabs.remove(sender.tab.id);
+												this._badge.setDefault(sender.tab.id);
+												throw error;
+											}
+										),
+									sendResponse
+								);
+							});
 							return true;
 						case 'commitReadState':
 							createMessageResponseHandler(
 								params
 									.onCommitReadState(sender.tab.id, message.data.commitData, message.data.isCompletionCommit)
 									.then(
-										article => {
-											this._tabs
-												.getAll()
+										async (article) => {
+											(await this._tabs
+												.getAll())
 												.forEach(
 													tab => {
 														if (tab.articleId === article.id) {
@@ -146,8 +149,10 @@ export default class ReaderContentScriptApi {
 						case 'unregisterPage':
 							// sender.tab.id is undefined in Firefox
 							// tab won't be removed until a messaging error occurs
-							this._tabs.remove(sender.tab.id);
-							break;
+							createMessageResponseHandler(
+								this._tabs.remove(sender.tab.id),
+								sendResponse);
+							return true;
 						case 'closeWindow':
 							chrome.windows.remove(
 								(message.data as number),
@@ -280,26 +285,26 @@ export default class ReaderContentScriptApi {
 			}
 		);
 	}
-	private sendMessageToAllTabs(message: Message) {
+	private async sendMessageToAllTabs(message: Message) {
 		this.broadcastMessage(
-			this._tabs.getAll(),
+			await this._tabs.getAll(),
 			message
 		);
 	}
-	private sendMessageToOtherTabs(fromTabId: number, message: Message) {
+	private async sendMessageToOtherTabs(fromTabId: number, message: Message) {
 		this.broadcastMessage(
-			this._tabs
-				.getAll()
+			(await this._tabs
+				.getAll())
 				.filter(
 					tab => tab.id !== fromTabId
 				),
 			message
 		);
 	}
-	private sendMessageToArticleTabs(articleId: number, message: Message) {
+	private async sendMessageToArticleTabs(articleId: number, message: Message) {
 		this.broadcastMessage(
-			this._tabs
-				.getAll()
+			(await this._tabs
+				.getAll())
 				.filter(
 					tab => tab.articleId === articleId
 				),
@@ -353,14 +358,14 @@ export default class ReaderContentScriptApi {
 		)
 	};
 
-	public userSignedOut() {
+	public async userSignedOut() {
 		this.sendMessageToAllTabs(
 			{
 				type: 'userSignedOut'
 			}
 		);
-		this._tabs
-			.getAll()
+		(await this._tabs
+			.getAll())
 			.forEach(
 				tab => {
 					this._badge.setDefault(tab.id);

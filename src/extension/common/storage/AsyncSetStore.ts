@@ -8,45 +8,49 @@
 //
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-import Store, { StorageType } from './Store';
+import AsyncStore, { ChromeStorageArea } from './AsyncStore';
 
 /**
  * Stores a set of values, backed by either web localStorage or sessionStorage.
+ * Usage: `const store = await new SetStore<K,V>().initialized
  */
-export default class SetStore<K, V> extends Store<V[]> {
+export default class AsyncSetStore<K, V> extends AsyncStore<V[]> {
 	private _getKey: (item: V) => K;
-	constructor(key: string, getKey: (item: V) => K, storageType: StorageType = 'localStorage') {
+
+	constructor(key: string, getKey: (item: V) => K, storageType: ChromeStorageArea = 'local') {
 		super(key, [], storageType);
 		this._getKey = getKey;
 	}
 	private _getItemByKey(key: K, items: V[]) {
 		return items.filter(item => this._getKey(item) === key)[0];
 	}
+
 	private _removeItem(item: V, items: V[]) {
 		items.splice(items.indexOf(item), 1);
 	}
-	public get(key: K) {
-		return this._getItemByKey(key, this._read());
+
+	public async get(key: K) {
+		return this._getItemByKey(key, await this._read());
 	}
-	public getAll() {
-		return this._read();
+	public async getAll() {
+		return await this._read();
 	}
-	public set(item: V) {
-		const items = this._read();
+	public async set(item: V) {
+		const items = await this._read();
 		const existingItem = this._getItemByKey(this._getKey(item), items);
 		if (existingItem) {
 			this._removeItem(existingItem, items);
 		}
 		items.push(item);
-		this._write(items);
+		await this._write(items);
 		return item;
 	}
-	public remove(key: K) {
-		const items = this._read();
+	public async remove(key: K) {
+		const items = await this._read();
 		const item = this._getItemByKey(key, items);
 		if (item) {
 			this._removeItem(item, items);
-			this._write(items);
+			await this._write(items);
 		}
 		return item;
 	}

@@ -8,13 +8,19 @@ enum Color {
 type OptionalTabId = number | null;
 interface LoadingAnimation {
 	interval: number,
-	tabId: OptionalTabId
+	tabId: OptionalTabId,
+
 }
 
 const manifestVersion = chrome.runtime.getManifest().manifest_version
 const browserActionApi = manifestVersion > 2 ? chrome.action : chrome.browserAction;
 
 function createLoadingAnimation(tabId: OptionalTabId) {
+	if (typeof window != 'object') {
+		// Manifest v3 service workers don't have window.setInterval
+		// We can't use chrome alarms, since those are limited to 1 minute.
+		return null;
+	}
 	let frameIndex = 0;
 	let frameCount = 5;
 	browserActionApi.setBadgeBackgroundColor(
@@ -79,6 +85,14 @@ export default class BrowserActionBadgeApi {
 		if (this.getAnimation(tabId)) {
 			return;
 		}
+		if (typeof window != 'object') {
+			// Can't call window.setInterval in manifest v3
+			// This disables the creation of loading animations.
+			// There is no good alternative, chrome.alarms are only available
+			// starting from once per minute.
+			return;
+		}
+
 		console.log(`[BrowserActionBadgeApi] creating loading animation for tab # ${tabId}`);
 		this._animations.push(
 			createLoadingAnimation(tabId)

@@ -27,11 +27,19 @@ const
 	targetPath = 'extension-mv3',
 	staticAssets = createBuild({
 		onBuildComplete: (buildInfo, resolve) => {
-			// update manifest
+			// Update manifest
 
-			if (!(typeof buildInfo.src == 'string' && buildInfo.src.endsWith('manifest.json'))) {
+			if ((buildInfo.src != null) &&
+				!(
+					typeof buildInfo.src == 'string'
+					&& buildInfo.src.endsWith('manifest.json')
+				)) {
+				// On build, this function gets called twice.
 				// Ignore the onBuildComplete called when the static asset batch with base
 				// `${project.srcDir}/extension` has completed
+
+				// On watch, somehow this onBuildComplete gets calle once, without src param.
+				// In that case, just let the update happen.
 				return;
 			}
 
