@@ -29,17 +29,18 @@ const
 		onBuildComplete: (buildInfo, resolve) => {
 			// Update manifest
 
+			console.log(buildInfo)
 			if ((buildInfo.src != null) &&
 				!(
-					typeof buildInfo.src == 'string'
-					&& buildInfo.src.endsWith('manifest.json')
+					buildInfo.src instanceof Array
+					&& buildInfo.src.find(file => file.endsWith('manifest.json'))
 				)) {
-				// On build, this function gets called twice.
-				// Ignore the onBuildComplete called when the static asset batch with base
-				// `${project.srcDir}/extension` has completed
+				// On build, this function gets called thrice.
+				// Ignore the onBuildComplete called for each base, until the one with the manifest in it appears.
 
-				// On watch, somehow this onBuildComplete gets calle once, without src param.
+				// On watch, somehow this onBuildComplete gets called once, without src param.
 				// In that case, just let the update happen.
+				if (resolve) resolve();
 				return;
 			}
 
@@ -87,8 +88,22 @@ const
 			},
 			{
 				base: `${project.srcDir}/extension/mv3`,
-				src: `${project.srcDir}/extension/mv3/manifest.json`,
+				src: [
+					`${project.srcDir}/extension/mv3/manifest.json`,
+					`${project.srcDir}/extension/mv3/rules.json`,
+
+				]
 			},
+			// We copy these into the root directory, to make the reader url look a little prettier
+			// They are logically part of extension/content-scripts/
+			// TODO: maybe rename this, since it's not really a 'content script' anymore.
+			{
+				base: `${project.srcDir}/extension/content-scripts/reader/`,
+				src: [
+					`${project.srcDir}/extension/content-scripts/reader/reader.html`,
+					`${project.srcDir}/extension/content-scripts/reader/reader-dark.html`
+				]
+			}
 		]
 	});
 

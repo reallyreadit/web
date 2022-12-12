@@ -8,6 +8,7 @@ import {sessionIdCookieKey} from '../../common/cookies';
 import {extensionInstalledQueryStringKey,extensionAuthQueryStringKey} from '../../common/routing/queryString';
 import BrowserActionBadgeApi from '../event-page/BrowserActionBadgeApi';
 import UserAccount from '../../common/models/UserAccount';
+import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
 
 // browser action icon
 function setIcon(
@@ -243,7 +244,16 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
 }
 
 async function openReaderInTab(tab: chrome.tabs.Tab, articleUrl: string) {
-	const readerUrl = `${chrome.runtime.getURL('/content-scripts/reader/index.html')}?url=${articleUrl}`;
+	// TODO: sending the displayPreference became less important again, since trying
+	// out the reader.html / dark-reader solution
+	// maybe it's cleaner to just request these extra params via the eventPageApi like before
+	const displayPreference = await serverApi.getDisplayPreferenceFromCache()
+	const baseURL = chrome.runtime.getURL(`/${displayPreference.theme === DisplayTheme.Light ? 'reader.html' : 'reader-dark.html'}`);
+	const searchParams = new URLSearchParams({
+		url: articleUrl,
+		displayPreference: JSON.stringify(displayPreference)
+	});
+	const readerUrl = `${baseURL}?${searchParams}`
 	chrome.tabs.update(tab.id, {url: readerUrl})
 }
 

@@ -407,6 +407,11 @@ export default class ServerApi {
 	public async userUpdated(user: UserAccount) {
 		await this._user.set(user || null);
 	}
+
+	public async getDisplayPreferenceFromCache() {
+		return await this._displayPreference.get()
+	}
+
 	public async getDisplayPreference() {
 		const storedPreference = await this._displayPreference.get();
 		this.fetchJson<DisplayPreference | null>({

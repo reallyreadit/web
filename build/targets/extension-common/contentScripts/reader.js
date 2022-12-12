@@ -104,7 +104,6 @@ const createContentScriptBuild = () => {
 				completedBuilds.add(buildInfo.build);
 				if (
 					completedBuilds.has('scss') &&
-					completedBuilds.has('staticAssets') &&
 					completedBuilds.has('webpack')
 				) {
 					// build the html template
@@ -171,12 +170,6 @@ const createContentScriptBuild = () => {
 				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`
 			],
 		},
-		staticAssets: [
-			{
-				base: `${project.srcDir}/extension/content-scripts/reader`,
-				src: `${project.srcDir}/extension/content-scripts/reader/index.html`
-			}
-		],
 		webpack: {
 			appConfig: {
 				path: appConfigPath,

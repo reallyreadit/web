@@ -4,7 +4,7 @@ import parseDocumentMetadata from '../../../common/reading/parseDocumentMetadata
 import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
-import styleArticleDocument,{applyDisplayPreferenceToArticleDocument,createByline,darkBackgroundColor,lightBackgroundColor,updateArticleHeader} from '../../../common/reading/styleArticleDocument';
+import styleArticleDocument,{applyDisplayPreferenceToArticleDocument,createByline, updateArticleHeader} from '../../../common/reading/styleArticleDocument';
 import * as React from 'react';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import {AuthServiceBrowserLinkResponse,isAuthServiceBrowserLinkSuccessResponse} from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
@@ -15,7 +15,7 @@ import ScrollService from '../../../common/services/ScrollService';
 import UserAccount from '../../../common/models/UserAccount';
 import Post,{createCommentThread} from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
-import DisplayPreference,{DisplayTheme} from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import {parseQueryString} from '../../../common/routing/queryString';
 import {ParserDocumentLocation} from '../../../common/ParserDocumentLocation';
@@ -46,9 +46,12 @@ import {createUrl} from '../../../common/HttpEndpoint';
 // our case is similar to
 // ensure the rest also respects this documentLocation
 
+const { url, displayPreference: queryDisplayPreference } = parseQueryString(window.location.search)
+
 let documentLocation: ParserDocumentLocation = new URL(
-	parseQueryString(window.location.search)['url']
+	url
 );
+
 
 // TODO PROXY EXT: emulating the native reader, just hardcoded something here
 // DesktopChrome is used for Electron (linux, windows)
@@ -57,8 +60,7 @@ let deviceType: DeviceType = DeviceType.DesktopChrome;
 
 // TODO PROXY EXT: native article, fill these vars
 let
-	// TODO PROXY EXT: this could be passed in initData like native?
-	displayPreference: DisplayPreference | null,
+	displayPreference: DisplayPreference = JSON.parse(queryDisplayPreference) as DisplayPreference,
 	article: UserArticle,
 	page: Page,
 	userPage: UserPage,
@@ -71,7 +73,6 @@ let
 	// contentParseResult: ParseResult,
 	authServiceLinkCompletionHandler: (response: AuthServiceBrowserLinkResponse) => void,
 	hasStyledArticleDocument = false
-
 
 /**
  * Renders or re-renders the reader UI embed.
@@ -465,7 +466,7 @@ function insertEmbed() {
 
 /**
  * Let the components in this reader know that the display preference has changed,
- * following an external or internal action.
+ * following an external or internal action. Sets the font-size, theme and link visibility.
  */
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
@@ -647,7 +648,9 @@ async function fetchAndInjectArticle() {
 
 	let doc: Document;
 	try {
-		const text = await fetch(documentLocation.href).then(r => r.text());
+		const text = await fetch(documentLocation.href, {
+			credentials: 'omit'
+		}).then(r => r.text());
 		const parser = new DOMParser();
 		doc = parser.parseFromString(text,"text/html");
 		processArticleContent(doc)
@@ -656,8 +659,17 @@ async function fetchAndInjectArticle() {
 		throw e
 	}
 
+	// Hide the content to-be-injected until the parsed result can be shown
+	doc.body.style.opacity = '0'
+	doc.body.style.transition = 'none'
+
+	// Inject the article content
 	document.body = doc.body
 	document.head.innerHTML = doc.head.innerHTML
+
+	// Note that the <html> element is not overwritten here.
+	// One good side-effect of this is that the background color
+	// set in the reader(-dark).html stays preserved while loading
 }
 
 async function processArticleContent(doc: Document) {
@@ -668,6 +680,10 @@ async function processArticleContent(doc: Document) {
 
 	const querySelectorsForElementsToRemove = [
 		'script:not([type="application/json+ld"])',
+		// 'link[rel="preload"][as="script"]',
+		// 'link[rel="preload"][as="style"]',
+		// 'link[rel="preload"][as="font"]',
+		'link[rel="preload"]',
 		'iframe',
 		'style',
 		'link[rel="stylesheet"]',
@@ -694,6 +710,14 @@ async function processArticleContent(doc: Document) {
 
 		const originalSrc = img.getAttribute('src');
 		const match = /(^\/(?!\/))|(^\.\/)|(^\.\.\/)|(^(?!https?:\/\/)[-a-z0-9)]+)/.exec(originalSrc)
+		if (!originalSrc) {
+			// TODO: sometimes src="" happens, but srcset is set in those cases. Support srcset here?
+			return;
+		}
+		if (originalSrc.startsWith('data:')) {
+			// Do nothing, this is a base64 or svg+xml encoded image
+			return;
+		}
 		if (match) {
 			if (match[1]) {
 				// The URL is of the form /image.png.
@@ -745,159 +769,144 @@ async function processArticleContent(doc: Document) {
 
 // Try and get a cached copy of the display preference for the transition animation
 // TODO PROXY EXT: top level async/await not allowed in TS target ES5
-eventPageApi.getDisplayPreference().then(
-	async (cachedDisplayPreference) => {
+// eventPageApi.getDisplayPreference().then(
+// 	async (cachedDisplayPreference) => {
+async function initialize() {
 
-		// Hide the content until the parsed result can be shown
-		document.body.style.opacity = '0';
-		if(cachedDisplayPreference) {
-			let preferredBackgroundColor: string;
-			switch(cachedDisplayPreference.theme) {
-				case DisplayTheme.Light:
-					preferredBackgroundColor = lightBackgroundColor;
-					break;
-				case DisplayTheme.Dark:
-					preferredBackgroundColor = darkBackgroundColor;
-					break;
-			}
-			document.documentElement.style.background = 'none';
-			document.documentElement.style.backgroundImage = 'none';
-			document.documentElement.style.backgroundColor = preferredBackgroundColor;
-		}
+	await fetchAndInjectArticle();
 
-		await fetchAndInjectArticle();
-
-		// const testURL = 'https://article-test.dev.readup.com/Articles/A'
-		// TODO PROXY EXT: the param might be wrong or not necessary
-		// it results in errors at least
-		const metadataParseResult = parseDocumentMetadata(
-			{
-				url: documentLocation
-				// {
-				// 	protocol: window.location.protocol,
-				// 	hostname: window.location.hostname,
-				// 	href: window.location.href
-				// }
-			});
-
-		// NOTE PROXY EXT using native method
-		const contentParseResult = parseDocumentContent({
+	const metadataParseResult = parseDocumentMetadata(
+		{
 			url: documentLocation
 		});
 
-		// Prune and style.
-		// const rootElements = contentParseAndLookupResult.contentParser.prune(contentParseResult);
-		const parseResult = pruneDocument(contentParseResult);
-		contentRoot = parseResult.contentRoot;
-		scrollRoot = parseResult.scrollRoot;
+	const contentParseResult = parseDocumentContent({
+		url: documentLocation
+	});
 
-		// insert React UI
-		insertEmbed();
+	const parseResult = pruneDocument(contentParseResult);
+	contentRoot = parseResult.contentRoot;
+	scrollRoot = parseResult.scrollRoot;
 
-		// hide html element until custom css is applied
-		document.documentElement.style.transition = 'none';
-		document.documentElement.style.opacity = '0';
+	// PROXY EXT NOTE: userScrollContainer was true in web. Needed?
+	styleArticleDocument({
+		header: {
+			title: metadataParseResult.metadata.article.title,
+			byline: createByline(metadataParseResult.metadata.article.authors)
+		},
+		transitionElement: document.documentElement,
+		// completeTransition works on the <html> element,
+		// which results in a longer flash in dark mode (0 opacity = white)
+		// TODO: target the body in this styleArticleDocument, instead of in this file?
+		// completeTransition: true
+	});
 
-		// PROXY EXT NOTE: userScrollContainer was true in web. Needed?
-		styleArticleDocument({
-			header: {
-				title: metadataParseResult.metadata.article.title,
-				byline: createByline(metadataParseResult.metadata.article.authors)
-			},
-			transitionElement: document.documentElement,
-			completeTransition: true
-		});
+	// Complete the fade-in transition of the text
+	// These can't be inserted as inline styles, because the old inline styles
+	// still need to exist for the old transition state to exist.
+	const styleElement = document.createElement('style');
+	styleElement.textContent = `
+		body {
+			opacity: 1 !important;
+			transition: opacity 350ms !important;
+		}`;
+	document.head.insertAdjacentElement('beforeend', styleElement);
 
-		// See build/targets/extension/contentScripts/reader.js
-		// We need to load these here (after document pruning and styling)
-		window.reallyreadit.extension.injectInlineStyles();
-		window.reallyreadit.extension.injectSvgElements();
+	// insert React UI
+	insertEmbed();
 
-		// TODO EXT NOTE: web needed this, but native doesn't have
-		hasStyledArticleDocument = true;
+	// Update the display preference (re-renders the first time)
+	// Sets the font and background color.
+	updateDisplayPreference(displayPreference);
 
-		// TODO PROXY EXT: this could be done vs JS inlining, like with the native reader.
-		// which will make it quicker. See build files
+	// Overwrite the cached copy that was given as a URL parameter, if needed.
+	eventPageApi.getDisplayPreference()
+		.then((displayPreference) => updateDisplayPreference(displayPreference));
 
-		const publisherConfig = findPublisherConfig(configs.publishers,documentLocation.hostname);
-		procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
+	// See build/targets/extension/contentScripts/reader.js
+	// We need to load these here (after document pruning and styling)
+	window.reallyreadit.extension.injectInlineStyles();
+	window.reallyreadit.extension.injectSvgElements();
 
-		// Begin fade in animation of styled Readup content
-		document.body.style.opacity = '1';
+	// TODO EXT NOTE: web needed this, but native doesn't have
+	hasStyledArticleDocument = true;
 
-		// ArticleLookupResult
-		const result = await eventPageApi.registerPage(
-			createPageParseResult(metadataParseResult,contentParseResult)
+	// TODO PROXY EXT: this could be done vs JS inlining, like with the native reader.
+	// which will make it quicker. See build files
+
+	const publisherConfig = findPublisherConfig(configs.publishers,documentLocation.hostname);
+	procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
+
+	// ArticleLookupResult
+	const result = await eventPageApi.registerPage(
+		createPageParseResult(metadataParseResult,contentParseResult)
+	);
+
+	// TODO PROXY EXT NOTE: The below is currently exactly the same as the native reader
+	// extract into common?
+
+	// set globals
+	article = result.userArticle;
+	userPage = result.userPage;
+	user = result.user;
+
+	// update the title and byline
+	updateArticleHeader({
+		title: result.userArticle.title,
+		byline: createByline(result.userArticle.articleAuthors)
+	});
+
+	// set up the reader
+	page = new Page(contentParseResult.primaryTextContainers);
+	page.setReadState(result.userPage.readState);
+	reader.loadPage(page);
+	// re-render ui
+	render();
+
+
+	// load comments or check for bookmark
+	if(result.userArticle.isRead) {
+		loadComments();
+	} else if(page.getBookmarkScrollTop() > window.innerHeight) {
+		dialogService.openDialog(
+			React.createElement(
+				BookmarkDialog,
+				{
+					onClose: dialogService.closeDialog,
+					onSubmit: () => {
+						const scrollTop = page.getBookmarkScrollTop();
+						if(scrollTop > window.innerHeight) {
+							contentRoot.style.opacity = '0';
+							setTimeout(
+								() => {
+									window.scrollTo(0,scrollTop);
+									contentRoot.style.opacity = '1';
+								},
+								350
+							);
+						}
+						return Promise.resolve();
+					}
+				}
+			)
+		);
+	}
+
+	// PROXY EXT NOTE: native doesn't have this, still needed?
+	// Intercept mouseup event on article content to prevent article scripts
+	// from handling click events.
+	document
+		.getElementById('com_readup_article_content')
+		.addEventListener(
+			'mouseup',
+			event => {
+				event.stopPropagation();
+			}
 		);
 
-		// TODO PROXY EXT NOTE: The below is currently exactly the same as the native reader
-		// extract into common?
+};
 
-		// set globals
-		article = result.userArticle;
-		userPage = result.userPage;
-		user = result.user;
-
-		// update the title and byline
-		updateArticleHeader({
-			title: result.userArticle.title,
-			byline: createByline(result.userArticle.articleAuthors)
-		});
-
-		// set up the reader
-		page = new Page(contentParseResult.primaryTextContainers);
-		page.setReadState(result.userPage.readState);
-		reader.loadPage(page);
-		// re-render ui
-		render();
-
-
-		// load comments or check for bookmark
-		if(result.userArticle.isRead) {
-			loadComments();
-		} else if(page.getBookmarkScrollTop() > window.innerHeight) {
-			dialogService.openDialog(
-				React.createElement(
-					BookmarkDialog,
-					{
-						onClose: dialogService.closeDialog,
-						onSubmit: () => {
-							const scrollTop = page.getBookmarkScrollTop();
-							if(scrollTop > window.innerHeight) {
-								contentRoot.style.opacity = '0';
-								setTimeout(
-									() => {
-										window.scrollTo(0,scrollTop);
-										contentRoot.style.opacity = '1';
-									},
-									350
-								);
-							}
-							return Promise.resolve();
-						}
-					}
-				)
-			);
-		}
-
-		// PROXY EXT NOTE: native doesn't have, stilll needed?
-		// Intercept mouseup event on article content to prevent article scripts
-		// from handling click events.
-		document
-			.getElementById('com_readup_article_content')
-			.addEventListener(
-				'mouseup',
-				event => {
-					event.stopPropagation();
-				}
-			);
-
-		// Update the display preference.
-		// This version is loaded from local storage. Prefer an existing copy
-		// that would have been set by an external change event.
-		updateDisplayPreference(displayPreference || cachedDisplayPreference);
-	}
-);
+initialize();
 
 // unload
 window.addEventListener(
