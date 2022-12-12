@@ -63,7 +63,17 @@ const
 			`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
 			`${project.srcDir}/extension/content-scripts/ui/images/**`,
 			`${project.srcDir}/extension/icons/**`,
-			`${project.srcDir}/extension/manifest.json`
+			`${project.srcDir}/extension/manifest.json`,
+			// We copy these into the root directory, to make the reader url look a little prettier
+			// They are logically part of extension/content-scripts/
+			// TODO: maybe rename this, since it's not really a 'content script' anymore.
+			{
+				base: `${project.srcDir}/extension/content-scripts/reader/`,
+				src: [
+					`${project.srcDir}/extension/content-scripts/reader/reader.html`,
+					`${project.srcDir}/extension/content-scripts/reader/reader-dark.html`
+				]
+			}
 		]
 	});
 

@@ -42,6 +42,7 @@
     "cookies",
     "alarms",
     "notifications",
+	"storage",
 	"<all_urls>"
   ],
   "web_accessible_resources": [
