@@ -29,7 +29,7 @@ function createAlertComponent() {
 	const buttonContainer = document.createElement('div');
 	buttonContainer.classList.add('button-container');
 	buttonContainer.append(dismissButton);
-	
+
 	const component = document.createElement('div');
 	component.classList.add('alert');
 	component.addEventListener(

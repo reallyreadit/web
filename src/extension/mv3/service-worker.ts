@@ -8,7 +8,10 @@ import {sessionIdCookieKey} from '../../common/cookies';
 import {extensionInstalledQueryStringKey,extensionAuthQueryStringKey} from '../../common/routing/queryString';
 import BrowserActionBadgeApi from '../event-page/BrowserActionBadgeApi';
 import UserAccount from '../../common/models/UserAccount';
-import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
+import {DisplayTheme} from '../../common/models/userAccounts/DisplayPreference';
+
+// NOTE: `window` does not exist in service workers.
+// All window config references are replaced at compile time by Webpack's DefinePlugin
 
 // browser action icon
 function setIcon(
@@ -243,7 +246,7 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
 	})
 }
 
-async function openReaderInTab(tab: chrome.tabs.Tab, articleUrl: string) {
+async function openReaderInTab(tab: chrome.tabs.Tab,articleUrl: string) {
 	// TODO: sending the displayPreference became less important again, since trying
 	// out the reader.html / dark-reader solution
 	// maybe it's cleaner to just request these extra params via the eventPageApi like before
@@ -254,13 +257,13 @@ async function openReaderInTab(tab: chrome.tabs.Tab, articleUrl: string) {
 		displayPreference: JSON.stringify(displayPreference)
 	});
 	const readerUrl = `${baseURL}?${searchParams}`
-	chrome.tabs.update(tab.id, {url: readerUrl})
+	chrome.tabs.update(tab.id,{url: readerUrl})
 }
 
 async function openReaderInCurrentTab(articleUrl: string) {
 	let currentTab = await getCurrentTab()
-	if (currentTab) {
-		openReaderInTab(currentTab, articleUrl)
+	if(currentTab) {
+		openReaderInTab(currentTab,articleUrl)
 	}
 }
 
@@ -303,7 +306,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		'articles',
 		'tabs'
 	]);
-	await chrome.storage.local.set({ 'debug': JSON.stringify(false) });
+	await chrome.storage.local.set({'debug': JSON.stringify(false)});
 	// update icon
 	setIcon({
 		user: await serverApi.getUser()
@@ -440,13 +443,19 @@ chrome.action.onClicked.addListener(
 					tabId: tab.id
 				},
 				func: () => {
-					if (!window.reallyreadit?.alertContentScript) {
-						window.reallyreadit = {
-							...window.reallyreadit,
-							alertContentScript: { alertContent: 'Press the Readup button when you\'re on an article web page.' }
-						};
-						chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' });
-					} else if (!window.reallyreadit.alertContentScript.isActive) {
+					// Note: don't use TS features like the ? operator here, or the ... operator.
+					// TS transpiles these, but this function is executed in a different context
+					// from the current context where it is defined.
+					// `window` doesn't exist in the service worker, but this is run in the
+					// content script context of the tab.
+					if(!(window.reallyreadit && window.reallyreadit.alertContentScript)) {
+						window.reallyreadit = Object.assign(
+							window.reallyreadit,
+							{
+								alertContentScript: {alertContent: 'Press the Readup button when you\'re on an article web page.'}
+							});
+						chrome.runtime.sendMessage({from: 'contentScriptInitializer',to: 'eventPage',type: 'injectAlert'});
+					} else if(!window.reallyreadit.alertContentScript.isActive) {
 						window.reallyreadit.alertContentScript.display();
 					}
 				}
@@ -465,19 +474,23 @@ chrome.action.onClicked.addListener(
 					tabId: tab.id
 				},
 				func: () => {
-					if (!window.reallyreadit?.alertContentScript) {
-						window.reallyreadit = {
-							...window.reallyreadit,
-							alertContentScript: {
-								alertContent: 'No article detected on this web page.'
-							}
-						};
+					// Note: don't use TS features like the ? operator here, or the ... operator.
+					// TS transpiles these, but this function is executed in a different context
+					// from the current context where it is defined.
+					if(!(window.reallyreadit && window.reallyreadit.alertContentScript)) {
+						window.reallyreadit = Object.assign(
+							window.reallyreadit,
+							{
+								alertContentScript: {
+									alertContent: 'No article detected on this web page.'
+								}
+							});
 						chrome.runtime.sendMessage({
 							from: 'contentScriptInitializer',
 							to: 'eventPage',
 							type: 'injectAlert'
 						});
-					} else if (!window.reallyreadit.alertContentScript.isActive) {
+					} else if(!window.reallyreadit.alertContentScript.isActive) {
 						window.reallyreadit.alertContentScript.display();
 					}
 				}
@@ -485,7 +498,7 @@ chrome.action.onClicked.addListener(
 		}
 
 		// open article
-		await openReaderInTab(tab, tab.url)
+		await openReaderInTab(tab,tab.url)
 	}
 );
 chrome.runtime.onMessage.addListener(

@@ -35,6 +35,28 @@
 			]
 		}
 	],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"content-scripts/alert/bundle.css",
+				"content-scripts/reader/bundle.css",
+				"content-scripts/reader/reset.css",
+				"content-scripts/ui/fonts/cambria-bold.ttf",
+				"content-scripts/ui/fonts/cambria-regular.ttf",
+				"content-scripts/ui/fonts/museo-sans-100.ttf",
+				"content-scripts/ui/fonts/museo-sans-300.ttf",
+				"content-scripts/ui/fonts/museo-sans-500.ttf",
+				"content-scripts/ui/fonts/museo-sans-700.ttf",
+				"content-scripts/ui/fonts/museo-sans-900.ttf",
+				"content-scripts/ui/images/logo.svg",
+				"content-scripts/ui/images/logo-white.svg"
+			],
+			"matches": [
+				"http://*/*",
+				"https://*/*"
+			]
+		}
+	],
 	"permissions": [
 		"activeTab",
 		"cookies",
@@ -48,12 +70,12 @@
 		"<all_urls>"
 	],
 	"declarative_net_request": {
-        "rule_resources": [
-            {
-                "id": "ruleset",
-                "enabled": true,
-                "path": "rules.json"
-            }
-        ]
-    }
+		"rule_resources": [
+			{
+				"id": "ruleset",
+				"enabled": true,
+				"path": "rules.json"
+			}
+		]
+	}
 }
