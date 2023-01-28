@@ -196,7 +196,7 @@ window.addEventListener(
 	'message',
 	event => {
 		if (
-			!/(^|\.)readup\.com$/.test(documentLocation.hostname)
+			!/(^|\.)readup\.org$/.test(documentLocation.hostname)
 		) {
 			return;
 		}

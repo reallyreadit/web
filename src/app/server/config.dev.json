@@ -1,11 +1,11 @@
 {
 	"apiServer": {
 		"protocol": "https",
-		"host": "api.dev.readup.com"
+		"host": "api.dev.readup.org"
 	},
 	"chromeExtensionId": "",
 	"contentRootPath": "bin/dev/app/client",
-	"cookieDomain": ".dev.readup.com",
+	"cookieDomain": ".dev.readup.org",
 	"cookieName": "devSessionKey",
 	"packageFilePath": "package.json",
 	"port": 5001,
@@ -13,10 +13,10 @@
 	"serveStaticContent": true,
 	"staticServer": {
 		"protocol": "https",
-		"host": "static.dev.readup.com"
+		"host": "static.dev.readup.org"
 	},
 	"webServer": {
 		"protocol": "https",
-		"host": "dev.readup.com"
+		"host": "dev.readup.org"
 	}
 }

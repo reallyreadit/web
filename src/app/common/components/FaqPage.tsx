@@ -62,8 +62,8 @@ const faqs: FaqCategory[] = [
 				question: "How do I get started on my computer?",
 				answer: <p>Download the app for{" "}
 					<Link href="https://apps.apple.com/us/app/readup-social-reading/id1441825432" onClick={props.onNavTo}>Mac</Link>,{" "}
-					<Link href="https://static.readup.com/downloads/windows/ReadupSetup.exe" onClick={props.onNavTo}>Windows</Link> or{" "}
-					<Link href="https://static.readup.com/downloads/linux/latest" onClick={props.onNavTo}>Linux</Link>.
+					<Link href="https://static.readup.org/downloads/windows/ReadupSetup.exe" onClick={props.onNavTo}>Windows</Link> or{" "}
+					<Link href="https://static.readup.org/downloads/linux/latest" onClick={props.onNavTo}>Linux</Link>.
 				</p>
 			},
 			{
@@ -173,7 +173,7 @@ const faqs: FaqCategory[] = [
 			{
 				question: "Who owns Readup?",
 				answer: <>
-						<p>Readup's is owned by co-founder <Link onClick={props.onNavTo} href="https://jefcamera.com">Jeff Camera</Link>, who hosts the readup.org &amp; readup.com infrastructure.</p>
+						<p>Readup's is owned by co-founder <Link onClick={props.onNavTo} href="https://jefcamera.com">Jeff Camera</Link>, who hosts the readup.org infrastructure.</p>
 						<p>Readup is fully open-source under the <Link href="https://github.com/reallyreadit/web/blob/master/LICENSE" onClick={props.onNavTo}>AGPL 3 license</Link>, which means anyone can modify or reuse Readup as long as they respect the license.</p>
 						<p>Volunteers led by <Link onClick={props.onNavTo} href="https://thorgalle.me">Thor Galle</Link> maintain and develop the platform further. They organize their work and budget transparently on <Link href="https://opencollective.com/readup-collective" onClick={props.onNavTo}>Open Collective</Link>.</p>
 					</>
