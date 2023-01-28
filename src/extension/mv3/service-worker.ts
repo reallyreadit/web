@@ -436,6 +436,13 @@ chrome.action.onClicked.addListener(
 		if(!tab.url) {
 			return;
 		}
+
+		// from a reader tab
+		if(tab.url.startsWith(`chrome-extension://${chrome.runtime.id}/reader`)) {
+			chrome.tabs.goBack(tab.id)
+			return;
+		}
+
 		// web app
 		if(tab.url.startsWith(createUrl(window.reallyreadit.extension.config.webServer))) {
 			chrome.scripting.executeScript({
