@@ -4,7 +4,8 @@
 		"ignore": [
 			"node_modules",
 			"bin",
-			"pkg"
+			"pkg",
+			"pub"
 		],
 		"indentStyle": "tab",
 		"indentSize": 2,

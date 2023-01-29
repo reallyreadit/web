@@ -5,17 +5,24 @@
 <!-- Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details. -->
 <!-- You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>. -->
 <html>
-  <head>
-    <meta charset="UTF-8"/>
-	<title>Readup Reader</title>
-	<!--
+	<head>
+		<meta charset="UTF-8" />
+		<title>Readup Reader</title>
+		<!--
 		This style element has the intention to allow loading the reader in dark mode,
 		without a flash of a pure white background color, that shows in the milliseconds
 		before the first JS gets executed.
 	-->
-	<style>html { background-color: #181818 } ;</style>
-  </head>
-  <body>
-		<script type="text/javascript" src="/content-scripts/reader/bundle.js"></script>
-  </body>
+		<style>
+			html {
+				background-color: #181818;
+			}
+		</style>
+	</head>
+	<body>
+		<script
+			type="text/javascript"
+			src="/content-scripts/reader/bundle.js"
+		></script>
+	</body>
 </html>

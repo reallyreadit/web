@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -13,29 +13,73 @@
 	cssComponentId: settings-widget_eu0rn0
 */
 
-.settings-widget_eu0rn0 > .popover_r7v81v > .menu > .widget-menu-content > table > tbody > tr > th {
+.settings-widget_eu0rn0
+	> .popover_r7v81v
+	> .menu
+	> .widget-menu-content
+	> table
+	> tbody
+	> tr
+	> th {
 	vertical-align: middle;
 	text-align: right;
 	padding-left: 10px;
 	font-family: 'Museo Sans (500)';
 }
-.settings-widget_eu0rn0 > .popover_r7v81v > .menu > .widget-menu-content > table > tbody > tr > td {
+.settings-widget_eu0rn0
+	> .popover_r7v81v
+	> .menu
+	> .widget-menu-content
+	> table
+	> tbody
+	> tr
+	> td {
 	padding: 0 10px;
 }
-.settings-widget_eu0rn0 > .popover_r7v81v > .menu > .widget-menu-content > table > tbody > tr > td > label {
+.settings-widget_eu0rn0
+	> .popover_r7v81v
+	> .menu
+	> .widget-menu-content
+	> table
+	> tbody
+	> tr
+	> td
+	> label {
 	display: none;
 }
-.settings-widget_eu0rn0 > .popover_r7v81v > .menu > .widget-menu-content > table > tbody > tr > td[colspan] {
+.settings-widget_eu0rn0
+	> .popover_r7v81v
+	> .menu
+	> .widget-menu-content
+	> table
+	> tbody
+	> tr
+	> td[colspan] {
 	height: 10px;
 }
 
 @media (max-width: 399px) {
-	.settings-widget_eu0rn0 > .popover_r7v81v > .menu > .widget-menu-content > table > tbody > tr > th {
+	.settings-widget_eu0rn0
+		> .popover_r7v81v
+		> .menu
+		> .widget-menu-content
+		> table
+		> tbody
+		> tr
+		> th {
 		display: none;
 	}
-	.settings-widget_eu0rn0 > .popover_r7v81v > .menu > .widget-menu-content > table > tbody > tr > td > label {
+	.settings-widget_eu0rn0
+		> .popover_r7v81v
+		> .menu
+		> .widget-menu-content
+		> table
+		> tbody
+		> tr
+		> td
+		> label {
 		display: block;
 		font-family: 'Museo Sans (500)';
 		margin-bottom: 5px;
-	}	
+	}
 }

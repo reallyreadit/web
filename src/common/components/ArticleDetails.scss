@@ -1,15 +1,15 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 @import '../styles/colors';
-@import "../styles/breakpoints.scss";
+@import '../styles/breakpoints.scss';
 
 // image overrides
 $borderRadius: 3px;
@@ -45,7 +45,6 @@ $borderRadius: 3px;
 	}
 
 	> .image_1ctn9c {
-
 		cursor: pointer;
 		box-sizing: border-box;
 		overflow: hidden;
@@ -119,11 +118,19 @@ $borderRadius: 3px;
 	flex-grow: 1;
 }
 
-.article-details_d2vnmv > .article-container > .content > .title > .star_n3lkaj {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .title
+	> .star_n3lkaj {
 	float: right;
 	margin-left: 8px;
 }
-.article-details_d2vnmv > .article-container > .content > .title > .share-control_mnbspk {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .title
+	> .share-control_mnbspk {
 	float: right;
 	// the bookmark with a % has some right-margin already
 	margin-left: 2px;
@@ -139,7 +146,12 @@ $borderRadius: 3px;
 	float: right;
 	margin-top: -10px;
 }
-.article-details_d2vnmv > .article-container > .content > .title > .bookmark > .percent-complete {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .title
+	> .bookmark
+	> .percent-complete {
 	font-family: 'Museo Sans (500)';
 	font-size: 8pt;
 	position: absolute;
@@ -148,7 +160,12 @@ $borderRadius: 3px;
 	left: 50%;
 	z-index: 1;
 }
-.article-details_d2vnmv > .article-container > .content > .title > .bookmark > .icon_rour3d {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .title
+	> .bookmark
+	> .icon_rour3d {
 	display: block;
 	width: 42px;
 	height: 42px;
@@ -163,7 +180,11 @@ $borderRadius: 3px;
 .article-details_d2vnmv > .article-container > .content > .columns {
 	display: flex;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .star-container {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .star-container {
 	flex: 0 0 auto;
 	width: 20px;
 	margin-right: 5px;
@@ -172,20 +193,42 @@ $borderRadius: 3px;
 .article-details_d2vnmv > .article-container > .content > .columns > .article {
 	flex: 1 1 auto;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .meta {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .meta {
 	margin-top: 5px;
 	font-family: 'Museo Sans (300)';
 	font-size: 11pt;
 }
 // TODO: 'spacer' should be defined somewhere globally, it is reused
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .meta
+	> .spacer {
 	margin: 0 5px;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer::before {
-	content: "•";
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .meta
+	> .spacer::before {
+	content: '•';
 	font-style: normal;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .stats {
 	display: flex;
 	align-items: center;
 	height: 22px;
@@ -193,20 +236,57 @@ $borderRadius: 3px;
 	font-family: 'Museo Sans (500)';
 	font-size: 12pt;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .reads,
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .comments {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .stats
+	> .reads,
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .stats
+	> .comments {
 	margin-right: 10px;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .popover_r7v81v {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .stats
+	> .popover_r7v81v {
 	flex: 0 0 auto;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .popover_r7v81v + .popover_r7v81v {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .stats
+	> .popover_r7v81v
+	+ .popover_r7v81v {
 	margin-left: 10px;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .article
+	> .stats
+	> .share-control_mnbspk
+	> .children
+	> .icon_rour3d {
 	font-size: 16px;
 }
-.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article {
+.article-details_d2vnmv
+	> .article-container
+	> .content
+	> .columns
+	> .small-stats-article {
 	display: none;
 }
 .article-details_d2vnmv > .article-container > .content > .columns > .post {
@@ -219,7 +299,12 @@ $borderRadius: 3px;
 }
 
 .article-details_d2vnmv {
-	& > .article-container > .content > .columns > .small-stats-article > .description,
+	&
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .description,
 	& > .article-container > .content > .columns > .article > .description {
 		font-size: 11pt;
 		color: var(--text-muted-color);
@@ -229,7 +314,12 @@ $borderRadius: 3px;
 
 // for non-featured articles, the description lines are clamped to a standardised 3 lines
 .article-details_d2vnmv:not(.is-featured) {
-	& > .article-container > .content > .columns > .small-stats-article > .description,
+	&
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .description,
 	& > .article-container > .content > .columns > .article > .description {
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
@@ -238,54 +328,128 @@ $borderRadius: 3px;
 	}
 }
 
-
 @media (max-width: 449px) {
 	.article-details_d2vnmv > .article-container > .content > .title {
 		margin-bottom: 2px;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .star-container,
-	.article-details_d2vnmv > .article-container > .content > .columns > .article {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .star-container,
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .article {
 		display: none;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article {
 		flex: 1 1 auto;
 		display: flex;
 		flex-flow: column;
 		min-width: 0;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta {
 		flex: 0 0 auto;
 		font-family: 'Museo Sans (300)';
 		font-size: 11pt;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .publisher,
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .publisher,
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length {
 		display: flex;
 		margin-top: 1px;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .author {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length
+		> .author {
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length
+		> .spacer {
 		flex: 0 0 auto;
 		width: 10px;
 		text-align: center;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer::before {
-		content: "|";
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length
+		> .spacer::before {
+		content: '|';
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .date,
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .length {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length
+		> .date,
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length
+		> .length {
 		flex: 0 0 auto;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats {
 		flex: 0 0 auto;
 		display: flex;
 		align-items: center;
@@ -293,24 +457,62 @@ $borderRadius: 3px;
 		font-family: 'Museo Sans (500)';
 		font-size: 11pt;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .reads,
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .comments {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .reads,
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .comments {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		margin-right: 5px;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .reads,
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .popover_r7v81v {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .reads,
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .popover_r7v81v {
 		flex: 0 0 auto;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .popover_r7v81v + .popover_r7v81v {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .popover_r7v81v
+		+ .popover_r7v81v {
 		margin-left: 5px;
 	}
-	.article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+	.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .share-control_mnbspk
+		> .children
+		> .icon_rour3d {
 		font-size: 16px;
 	}
-
 }
 
 @include until(tablet-portrait) {
@@ -342,23 +544,68 @@ $borderRadius: 3px;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .article-details_d2vnmv > .article-container > .content > .title > .bookmark > .percent-complete {
+	#{$root}
+		.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .title
+		> .bookmark
+		> .percent-complete {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-text-color
+				'color': $intent-text-color,
 			)
 		);
 	}
-	#{$root} .article-details_d2vnmv > .article-container > .content > .title > .bookmark > .icon_rour3d,
-	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .article > .meta > .spacer,
-	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .article > .stats > .share-control_mnbspk > .children > .icon_rour3d,
-	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .meta > .author-date-length > .spacer,
-	#{$root} .article-details_d2vnmv > .article-container > .content > .columns > .small-stats-article > .stats > .share-control_mnbspk > .children > .icon_rour3d {
+	#{$root}
+		.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .title
+		> .bookmark
+		> .icon_rour3d,
+	#{$root}
+		.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .article
+		> .meta
+		> .spacer,
+	#{$root}
+		.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .article
+		> .stats
+		> .share-control_mnbspk
+		> .children
+		> .icon_rour3d,
+	#{$root}
+		.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .meta
+		> .author-date-length
+		> .spacer,
+	#{$root}
+		.article-details_d2vnmv
+		> .article-container
+		> .content
+		> .columns
+		> .small-stats-article
+		> .stats
+		> .share-control_mnbspk
+		> .children
+		> .icon_rour3d {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-neutral-color
+				'color': $intent-neutral-color,
 			)
 		);
 	}

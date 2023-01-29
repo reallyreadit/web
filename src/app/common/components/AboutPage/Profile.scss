@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -14,7 +14,6 @@
 */
 
 @import '../../../../../src/common/styles/breakpoints.scss';
-
 
 $tablet-up-margin-title-intro: 2.6rem;
 
@@ -25,7 +24,6 @@ $tablet-up-margin-title-intro: 2.6rem;
 	align-items: center;
 	width: 100%;
 	max-width: 400px;
-
 
 	@include from(tablet-portrait) {
 		flex-direction: column;
@@ -45,14 +43,13 @@ $tablet-up-margin-title-intro: 2.6rem;
 
 	@include only(phone) {
 		.name::after {
-			content: "|";
+			content: '|';
 			display: none;
 		}
 
 		&:not(:last-child) {
 			margin-bottom: 1.4rem;
 		}
-
 	}
 
 	.picture {
@@ -75,7 +72,6 @@ $tablet-up-margin-title-intro: 2.6rem;
 		flex-direction: column;
 		justify-content: center;
 
-
 		text-align: flex-start;
 		@include from(tablet-portrait) {
 			text-align: center;
@@ -84,6 +80,5 @@ $tablet-up-margin-title-intro: 2.6rem;
 		> *:not(:last-child) {
 			margin-bottom: 0.75rem;
 		}
-
 	}
- }
+}

@@ -17,7 +17,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background": $overlay-color
+				'background': $overlay-color,
 			)
 		);
 	}

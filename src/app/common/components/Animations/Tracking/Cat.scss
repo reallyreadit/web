@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -28,7 +28,7 @@
 	border-radius: 50%;
 }
 .cat_tpgfsr > .head::before {
-	content: "";
+	content: '';
 	position: absolute;
 	width: 55%;
 	height: 41%;
@@ -38,7 +38,7 @@
 	transform: rotate(35deg) skewY(30deg);
 }
 .cat_tpgfsr > .head::after {
-	content: "";
+	content: '';
 	position: absolute;
 	width: 55%;
 	height: 41%;
@@ -116,12 +116,12 @@
 	transform: rotate(38deg);
 }
 .cat_tpgfsr > .tail::before {
-	content: "";
+	content: '';
 	position: absolute;
 	width: 0.1em;
 	height: 0.1em;
 	border-radius: 50%;
-   right: 0.01em;
+	right: 0.01em;
 }
 
 @keyframes cat_tpgfsr-wag {
@@ -149,7 +149,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $intent-neutral-color
+				'background-color': $intent-neutral-color,
 			)
 		);
 	}
@@ -157,8 +157,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-right-color": $intent-neutral-color,
-				"border-bottom-color": $intent-neutral-color
+				'border-right-color': $intent-neutral-color,
+				'border-bottom-color': $intent-neutral-color,
 			)
 		);
 	}

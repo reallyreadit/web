@@ -27,8 +27,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-right-color": $nav-border-color,
-				"background-color": $nav-background-color
+				'border-right-color': $nav-border-color,
+				'background-color': $nav-background-color,
 			)
 		);
 	}

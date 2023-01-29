@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -38,9 +38,9 @@
 
 		margin: 28px auto;
 
-		 & p {
-			 text-align: center;
-		 }
+		& p {
+			text-align: center;
+		}
 	}
 
 	&__heading {
@@ -109,28 +109,34 @@
 					margin-right: 20px;
 					position: relative;
 					left: -2vw;
-					width: 50vw;;
+					width: 50vw;
 				}
 			}
 		}
 	}
 }
 
-
 @include theme using ($root, $scheme) {
 	#{$root} .marketing-screen_n5a6wc > .home-panel_w65z7c:nth-child(even) {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $app-background-alt-color
+				'background-color': $app-background-alt-color,
 			)
 		);
 	}
-	#{$root} .marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links {
+	#{$root}
+		.marketing-screen_n5a6wc
+		> .about
+		> .content
+		> .bios
+		> .popover_r7v81v
+		> .menu
+		> .links {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color
+				'background-color': $content-background-color,
 			)
 		);
 	}

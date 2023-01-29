@@ -1,27 +1,25 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
         componentPath: src/app/common/components/BrowserRoot/DownloadPage
         cssComponentId: download-page_4u78ip
 */
-@import "../../../../common/styles/breakpoints.scss";
+@import '../../../../common/styles/breakpoints.scss';
 
 // this scss affects the outer component!
-
 
 $option-set-max-width: 285px;
 $options-set-margin-horizontal: 76px;
 
 .download-page_4u78ip {
-
 	.download-options {
 		margin: auto;
 		display: flex;
@@ -32,11 +30,11 @@ $options-set-margin-horizontal: 76px;
 
 	h2 {
 		margin-bottom: 18px;
-		font-family: "Cambria (Regular)";
+		font-family: 'Cambria (Regular)';
 		font-size: 32px;
 
 		&::after {
-			content: "";
+			content: '';
 			display: block;
 			position: relative;
 			background-color: #c3c3c3;
@@ -50,7 +48,6 @@ $options-set-margin-horizontal: 76px;
 	.options-set {
 		width: 80%;
 		max-width: $option-set-max-width;
-
 
 		// @media screen and (max-width: 767px) {
 		@include until(tablet-portrait) {
@@ -74,7 +71,8 @@ $options-set-margin-horizontal: 76px;
 			flex-direction: column;
 			align-items: center;
 
-			h2, p {
+			h2,
+			p {
 				text-align: center;
 			}
 
@@ -88,7 +86,7 @@ $options-set-margin-horizontal: 76px;
 				margin-bottom: 0.2rem;
 				&::before {
 					display: block;
-					content: "Browser Extensions";
+					content: 'Browser Extensions';
 					font-size: 0.7rem;
 					text-transform: uppercase;
 					font-family: 'Museo Sans (500)';
@@ -129,7 +127,6 @@ $options-set-margin-horizontal: 76px;
 		}
 	}
 
-
 	.download-option {
 		display: flex;
 		&:not(:first-child) {
@@ -159,7 +156,6 @@ $options-set-margin-horizontal: 76px;
 			}
 		}
 	}
-
 }
 
 // @media screen and (min-width: 768px) {

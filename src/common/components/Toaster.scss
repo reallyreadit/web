@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -43,13 +43,23 @@
 }
 
 @keyframes toaster_2zbeib-pop-in {
-	0% { transform: scale(0, 0); }
-	75% { transform: scale(1.25, 1.25); }
-	100% { transform: scale(1, 1); }
+	0% {
+		transform: scale(0, 0);
+	}
+	75% {
+		transform: scale(1.25, 1.25);
+	}
+	100% {
+		transform: scale(1, 1);
+	}
 }
 @keyframes toaster_2zbeib-pop-out {
-	0% { transform: scale(1, 1); }
-	100% { transform: scale(0, 0); }
+	0% {
+		transform: scale(1, 1);
+	}
+	100% {
+		transform: scale(0, 0);
+	}
 }
 
 @include theme using ($root, $scheme) {
@@ -57,7 +67,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"box-shadow": 0px 1px 3px 1px
+				'box-shadow': 0px 1px 3px 1px,
 			)
 		);
 	}
@@ -65,27 +75,27 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-text-color,
-				"background-color": $intent-neutral-color
+				'color': $intent-text-color,
+				'background-color': $intent-neutral-color,
 			)
-		);		
+		);
 	}
 	#{$root} .toaster_2zbeib > .toasts > .toast.success {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-text-color,
-				"background-color": $intent-success-color
+				'color': $intent-text-color,
+				'background-color': $intent-success-color,
 			)
-		);		
+		);
 	}
 	#{$root} .toaster_2zbeib > .toasts > .toast.danger {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-text-color,
-				"background-color": $intent-danger-color
+				'color': $intent-text-color,
+				'background-color': $intent-danger-color,
 			)
-		);		
+		);
 	}
 }

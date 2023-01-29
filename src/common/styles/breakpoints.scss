@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 // base breakpoint range indicators
@@ -14,7 +14,6 @@ $tablet-portrait-start: 600px;
 $tablet-landscape-start: 900px;
 $desktop-start: 1200px;
 $desktop-big-start: 1800px;
-
 
 // range keys
 $phone: 'phone';
@@ -25,52 +24,56 @@ $desktop-big: 'desktop-big';
 
 // Query range for a specific target device type range only
 $range-queries-only-size: (
-  $phone: '(max-width: #{$tablet-portrait-start - 1})',
-  $tablet-portrait: '(min-width: #{$tablet-portrait-start}) and (max-width: #{$tablet-landscape-start - 1})',
-  $tablet-landscape: '(min-width: #{$tablet-landscape-start}) and (max-width: #{$desktop-start - 1})',
-  $desktop: '(min-width: #{$desktop-start}) and (max-width: #{$desktop-big-start - 1})',
-  $desktop-big: '(min-width: #{$desktop-big-start})' // here 'only' is the same as 'from
+	$phone: '(max-width: #{$tablet-portrait-start - 1})',
+	$tablet-portrait:
+		'(min-width: #{$tablet-portrait-start}) and (max-width: #{$tablet-landscape-start - 1})',
+	$tablet-landscape:
+		'(min-width: #{$tablet-landscape-start}) and (max-width: #{$desktop-start - 1})',
+	$desktop:
+		'(min-width: #{$desktop-start}) and (max-width: #{$desktop-big-start - 1})',
+	$desktop-big: '(min-width: #{$desktop-big-start})'
+		// here 'only' is the same as 'from',
 );
 
 // Queries ranges from and including the start of a range to ininity width
 $range-queries-from-size: (
-  // from phone is just from width 0, it shouldn't be used: it's the default in mobile-first design
-  // overrides happen with @include only(phone)
-  $tablet-portrait: '(min-width: #{$tablet-portrait-start})',
-  $tablet-landscape: '(min-width: #{$tablet-landscape-start})',
-  $desktop: '(min-width: #{$desktop-start})',
-  $desktop-big: '(min-width: #{$desktop-big-start})'
+	// from phone is just from width 0, it shouldn't be used: it's the default in mobile-first design
+	// overrides happen with @include only(phone)
+	$tablet-portrait: '(min-width: #{$tablet-portrait-start})',
+	$tablet-landscape: '(min-width: #{$tablet-landscape-start})',
+	$desktop: '(min-width: #{$desktop-start})',
+	$desktop-big: '(min-width: #{$desktop-big-start})'
 );
 
 // Queries ranges from width 0 until but NOT including the specified breakpoint.
 // Counterpart of the 'from' queries. Mutually exclusive, collectively exhaustive.
 $range-queries-until-size: (
-  // 'phone' shouldn't exist because the styles by default apply to a phone always
-  $tablet-portrait: '(max-width: #{$tablet-portrait-start - 1})',
-  $tablet-landscape: '(max-width: #{$tablet-landscape-start - 1})',
-  $desktop: '(max-width: #{$desktop-start - 1})',
-  $desktop-big: '(max-width: #{$desktop-big-start - 1})'
+	// 'phone' shouldn't exist because the styles by default apply to a phone always
+	$tablet-portrait: '(max-width: #{$tablet-portrait-start - 1})',
+	$tablet-landscape: '(max-width: #{$tablet-landscape-start - 1})',
+	$desktop: '(max-width: #{$desktop-start - 1})',
+	$desktop-big: '(max-width: #{$desktop-big-start - 1})'
 );
 
 @mixin for-range($range-queries, $range-name) {
 	$breakpoint-found: false;
 
 	@each $breakpoint in $range-queries {
-	  $name: nth($breakpoint, 1);
-	  $declaration: nth($breakpoint, 2);
+		$name: nth($breakpoint, 1);
+		$declaration: nth($breakpoint, 2);
 
-	  @if $range-name == $name and $declaration {
-		$breakpoint-found: true;
+		@if $range-name == $name and $declaration {
+			$breakpoint-found: true;
 
-		@media only screen and #{$declaration} {
-		  @content;
+			@media only screen and #{$declaration} {
+				@content;
+			}
 		}
-	  }
 	}
 
 	@if $breakpoint-found == false {
-	  @warn 'Breakpoint range "#{$range-name}" does not exist in the range set';
-	  @debug $range-queries;
+		@warn 'Breakpoint range "#{$range-name}" does not exist in the range set';
+		@debug $range-queries;
 	}
 }
 
@@ -90,18 +93,17 @@ $range-queries-until-size: (
 @mixin from($range) {
 	@include for-range($range-queries-from-size, $range) {
 		@content;
-	};
+	}
 }
 
 @mixin until($range) {
 	@include for-range($range-queries-until-size, $range) {
 		@content;
-	};
-
+	}
 }
 
 @mixin only($range) {
 	@include for-range($range-queries-only-size, $range) {
 		@content;
-	};
+	}
 }

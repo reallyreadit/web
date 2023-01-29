@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -182,24 +182,60 @@
 	opacity: 1;
 }
 
-.article-details_brocy1.n-1 > .lines > .line:nth-child(1) { width: 55%; }
-.article-details_brocy1.n-1 > .lines > .line:nth-child(2) { width: 25%; }
-.article-details_brocy1.n-1 > .lines > .line:nth-child(3) { width: 30%; }
-.article-details_brocy1.n-2 > .lines > .line:nth-child(1) { width: 65%; }
-.article-details_brocy1.n-2 > .lines > .line:nth-child(2) { width: 30%; }
-.article-details_brocy1.n-2 > .lines > .line:nth-child(3) { width: 25%; }
-.article-details_brocy1.n-3 > .lines > .line:nth-child(1) { width: 50%; }
-.article-details_brocy1.n-3 > .lines > .line:nth-child(2) { width: 25%; }
-.article-details_brocy1.n-3 > .lines > .line:nth-child(3) { width: 30%; }
-.article-details_brocy1.n-4 > .lines > .line:nth-child(1) { width: 55%; }
-.article-details_brocy1.n-4 > .lines > .line:nth-child(2) { width: 20%; }
-.article-details_brocy1.n-4 > .lines > .line:nth-child(3) { width: 30%; }
-.article-details_brocy1.n-5 > .lines > .line:nth-child(1) { width: 60%; }
-.article-details_brocy1.n-5 > .lines > .line:nth-child(2) { width: 30%; }
-.article-details_brocy1.n-5 > .lines > .line:nth-child(3) { width: 30%; }
-.article-details_brocy1.n-6 > .lines > .line:nth-child(1) { width: 45%; }
-.article-details_brocy1.n-6 > .lines > .line:nth-child(2) { width: 25%; }
-.article-details_brocy1.n-6 > .lines > .line:nth-child(3) { width: 30%; }
+.article-details_brocy1.n-1 > .lines > .line:nth-child(1) {
+	width: 55%;
+}
+.article-details_brocy1.n-1 > .lines > .line:nth-child(2) {
+	width: 25%;
+}
+.article-details_brocy1.n-1 > .lines > .line:nth-child(3) {
+	width: 30%;
+}
+.article-details_brocy1.n-2 > .lines > .line:nth-child(1) {
+	width: 65%;
+}
+.article-details_brocy1.n-2 > .lines > .line:nth-child(2) {
+	width: 30%;
+}
+.article-details_brocy1.n-2 > .lines > .line:nth-child(3) {
+	width: 25%;
+}
+.article-details_brocy1.n-3 > .lines > .line:nth-child(1) {
+	width: 50%;
+}
+.article-details_brocy1.n-3 > .lines > .line:nth-child(2) {
+	width: 25%;
+}
+.article-details_brocy1.n-3 > .lines > .line:nth-child(3) {
+	width: 30%;
+}
+.article-details_brocy1.n-4 > .lines > .line:nth-child(1) {
+	width: 55%;
+}
+.article-details_brocy1.n-4 > .lines > .line:nth-child(2) {
+	width: 20%;
+}
+.article-details_brocy1.n-4 > .lines > .line:nth-child(3) {
+	width: 30%;
+}
+.article-details_brocy1.n-5 > .lines > .line:nth-child(1) {
+	width: 60%;
+}
+.article-details_brocy1.n-5 > .lines > .line:nth-child(2) {
+	width: 30%;
+}
+.article-details_brocy1.n-5 > .lines > .line:nth-child(3) {
+	width: 30%;
+}
+.article-details_brocy1.n-6 > .lines > .line:nth-child(1) {
+	width: 45%;
+}
+.article-details_brocy1.n-6 > .lines > .line:nth-child(2) {
+	width: 25%;
+}
+.article-details_brocy1.n-6 > .lines > .line:nth-child(3) {
+	width: 30%;
+}
 
 @keyframes article-details_brocy1-article-1 {
 	0% {
@@ -341,8 +377,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color,
-				"border-color": $content-border-color
+				'background-color': $content-background-color,
+				'border-color': $content-border-color,
 			)
 		);
 	}
@@ -350,7 +386,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $content-border-color
+				'border-color': $content-border-color,
 			)
 		);
 	}
@@ -360,7 +396,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $control-border-color
+				'background-color': $control-border-color,
 			)
 		);
 	}
@@ -368,7 +404,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $control-border-color
+				'color': $control-border-color,
 			)
 		);
 	}

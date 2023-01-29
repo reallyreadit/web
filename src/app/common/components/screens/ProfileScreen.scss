@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -62,7 +62,12 @@
 	font-family: 'Museo Sans (500)';
 	font-size: 18pt;
 }
-.profile-screen_1u1j1e > .main > .content > .profile > .user-name > .leaderboard-badges_s4o6nj {
+.profile-screen_1u1j1e
+	> .main
+	> .content
+	> .profile
+	> .user-name
+	> .leaderboard-badges_s4o6nj {
 	font-size: 0.75em;
 	margin-left: 0.5em;
 }
@@ -78,7 +83,12 @@
 .profile-screen_1u1j1e > .main > .content > .profile > .sticky-note_zcw6jg {
 	margin-top: 20px;
 }
-.profile-screen_1u1j1e > .main > .content > .profile > .sticky-note_zcw6jg > span {
+.profile-screen_1u1j1e
+	> .main
+	> .content
+	> .profile
+	> .sticky-note_zcw6jg
+	> span {
 	text-decoration: underline;
 	cursor: pointer;
 }

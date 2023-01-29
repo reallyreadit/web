@@ -25,20 +25,46 @@
 .marketing-screen_n5a6wc > .aotd > .content > h2 {
 	margin-bottom: 20px;
 }
-.marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .children {
+.marketing-screen_n5a6wc
+	> .about
+	> .content
+	> .bios
+	> .popover_r7v81v
+	> .children {
 	text-decoration: underline;
 	cursor: pointer;
 }
-.marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links {
+.marketing-screen_n5a6wc
+	> .about
+	> .content
+	> .bios
+	> .popover_r7v81v
+	> .menu
+	> .links {
 	display: block;
 	position: relative;
 	padding: 5px;
 	font-size: 13pt;
 }
-.marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links > a {
+.marketing-screen_n5a6wc
+	> .about
+	> .content
+	> .bios
+	> .popover_r7v81v
+	> .menu
+	> .links
+	> a {
 	display: block;
 }
-.marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links > a + a {
+.marketing-screen_n5a6wc
+	> .about
+	> .content
+	> .bios
+	> .popover_r7v81v
+	> .menu
+	> .links
+	> a
+	+ a {
 	margin-top: 5px;
 }
 .marketing-screen_n5a6wc > .blog > .content > h2 {
@@ -57,7 +83,11 @@
 	font-family: 'Museo Sans (300)', sans-serif;
 	line-height: 1.6;
 }
-.marketing-screen_n5a6wc > .home-panel_w65z7c > .content > .home-section-intro strong {
+.marketing-screen_n5a6wc
+	> .home-panel_w65z7c
+	> .content
+	> .home-section-intro
+	strong {
 	font-family: 'Museo Sans (500)', sans-serif;
 }
 
@@ -88,12 +118,10 @@
 			margin-bottom: 0.6rem;
 		}
 	}
-
 }
 
 // styles for the quotes flex grid
-.marketing-screen_n5a6wc  {
-
+.marketing-screen_n5a6wc {
 	$desktop-point: 768px;
 
 	.quote-panel > .content {
@@ -104,7 +132,6 @@
 	}
 
 	.quote-grid {
-
 		$box-shadow-length: 30px;
 		padding-top: 30px;
 		margin-top: 30px;
@@ -116,23 +143,26 @@
 		align-items: center;
 		height: 524px;
 
-
 		overflow-x: scroll;
 		$fade-perc: 5%;
 		padding-left: $fade-perc;
 		left: -$fade-perc;
-		-webkit-mask-image: linear-gradient(to left,
-				rgba(0, 0, 0, 0),
-				rgba(0, 0, 0, 0.73) $fade-perc,
-				rgb(0, 0, 0, 1) $fade-perc*1.5,
-				rgb(0, 0, 0, 1) 100%-$fade-perc,
-				rgba( 0, 0, 0, 0) 100%);
-		mask-image: linear-gradient(to left,
-				rgba(0, 0, 0, 0),
-				rgba(0, 0, 0, 0.73) $fade-perc,
-				rgb(0, 0, 0, 1) $fade-perc*1.5,
-				rgb(0, 0, 0, 1) 100%-$fade-perc,
-				rgba( 0, 0, 0, 0) 100%);
+		-webkit-mask-image: linear-gradient(
+			to left,
+			rgba(0, 0, 0, 0),
+			rgba(0, 0, 0, 0.73) $fade-perc,
+			rgb(0, 0, 0, 1) $fade-perc * 1.5,
+			rgb(0, 0, 0, 1) 100%-$fade-perc,
+			rgba(0, 0, 0, 0) 100%
+		);
+		mask-image: linear-gradient(
+			to left,
+			rgba(0, 0, 0, 0),
+			rgba(0, 0, 0, 0.73) $fade-perc,
+			rgb(0, 0, 0, 1) $fade-perc * 1.5,
+			rgb(0, 0, 0, 1) 100%-$fade-perc,
+			rgba(0, 0, 0, 0) 100%
+		);
 		position: relative;
 		padding: $box-shadow-length 0 $box-shadow-length $fade-perc;
 
@@ -159,7 +189,7 @@
 			border-radius: 10px;
 		}
 
-		.quote-card_xa1vt  {
+		.quote-card_xa1vt {
 			width: 90%;
 			margin: 9px 8px;
 			min-height: 80px;
@@ -178,7 +208,7 @@
 		@media screen and (min-width: $desktop-point) {
 			height: 474px;
 
-			.quote-card_xa1vt  {
+			.quote-card_xa1vt {
 				width: 45%;
 				margin: 0 32px 32px 0;
 			}
@@ -277,7 +307,7 @@
 	min-height: 230px;
 
 	// from medium iPhone upwards
-	@media screen and (min-width: 375px){
+	@media screen and (min-width: 375px) {
 		// box-sizing: border-box;
 		// content-box is useful here! so the max-width includes the padding
 		// max-width: 475px;
@@ -297,7 +327,6 @@
 	}
 
 	.home-hero-image {
-
 		&__image {
 			margin-bottom: 20px;
 			transform: translateX(8px);
@@ -309,7 +338,6 @@
 				// min-height: 230px;
 				max-height: 36vh;
 			}
-
 		}
 	}
 
@@ -325,7 +353,6 @@
 			align-items: flex-start;
 		}
 
-
 		.home-hero-image {
 			&__intro-text {
 				margin-left: 40px;
@@ -335,10 +362,8 @@
 		.heading-regular {
 			line-height: 44px;
 		}
-
 	}
 }
-
 
 // @media screen and (min-width: 768px) {
 
@@ -375,15 +400,22 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $app-background-alt-color
+				'background-color': $app-background-alt-color,
 			)
 		);
 	}
-	#{$root} .marketing-screen_n5a6wc > .about > .content > .bios > .popover_r7v81v > .menu > .links {
+	#{$root}
+		.marketing-screen_n5a6wc
+		> .about
+		> .content
+		> .bios
+		> .popover_r7v81v
+		> .menu
+		> .links {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color
+				'background-color': $content-background-color,
 			)
 		);
 	}

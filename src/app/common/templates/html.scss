@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 @import '../../../common/styles/colors';
@@ -13,35 +13,59 @@
 
 @font-face {
 	font-family: 'Cambria (bold)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/cambria-bold.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/cambria-bold.ttf'
+	));
 }
 @font-face {
 	font-family: 'Cambria (regular)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/cambria-regular.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/cambria-regular.ttf'
+	));
 }
 @font-face {
 	font-family: 'Museo Sans (100)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/museo-sans-100.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/museo-sans-100.ttf'
+	));
 }
 @font-face {
 	font-family: 'Museo Sans (300)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/museo-sans-300.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/museo-sans-300.ttf'
+	));
 }
 @font-face {
 	font-family: 'Museo Sans (500)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/museo-sans-500.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/museo-sans-500.ttf'
+	));
 }
 @font-face {
 	font-family: 'Museo Sans (700)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/museo-sans-700.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/museo-sans-700.ttf'
+	));
 }
 @font-face {
 	font-family: 'Museo Sans (900)';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/museo-sans-900.ttf'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/museo-sans-900.ttf'
+	));
 }
 @font-face {
 	font-family: 'SF Pro Text';
-	src: url(create-url(map-get($readup-config, 'static-server'), '/common/fonts/sf-pro-text.woff'));
+	src: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/fonts/sf-pro-text.woff'
+	));
 }
 html {
 	font-family: 'Museo Sans (300)', sans-serif;
@@ -51,43 +75,48 @@ html {
 	// https://web.dev/font-display/
 	font-display: swap;
 }
-html[data-client-type="App"] {
+html[data-client-type='App'] {
 	height: 100vh;
 }
-html[data-client-type="Browser"] {
+html[data-client-type='Browser'] {
 	height: 100%;
 }
-body, #root {
+body,
+#root {
 	height: 100%;
 }
 body {
 	overflow: hidden;
 }
-a, button, div, span, svg {
+a,
+button,
+div,
+span,
+svg {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 a {
 	color: inherit;
 }
 /* captcha animation. tabindex prevents interference with stripe.js 3ds container. */
-html > body:not([tabindex="-1"]) > div:not(#root) {
+html > body:not([tabindex='-1']) > div:not(#root) {
 	position: absolute;
 	right: 0;
 	bottom: 0;
 	z-index: -1;
 	transform: translateX(75px);
 }
-html > body:not([tabindex="-1"]).show-captcha > div:not(#root) {
+html > body:not([tabindex='-1']).show-captcha > div:not(#root) {
 	animation: show-captcha 200ms forwards;
 }
-html > body:not([tabindex="-1"]).hide-captcha > div:not(#root) {
+html > body:not([tabindex='-1']).hide-captcha > div:not(#root) {
 	animation: hide-captcha 200ms forwards;
 }
 
 /* shared global styles */
 .heading-small {
-    font-family: 'Cambria (Bold)', sans-serif;
-    font-size: 24px;
+	font-family: 'Cambria (Bold)', sans-serif;
+	font-size: 24px;
 }
 
 // current panel h2 heading
@@ -97,18 +126,18 @@ html > body:not([tabindex="-1"]).hide-captcha > div:not(#root) {
 // text-align: center;
 
 .heading-regular {
-    font-family: 'Cambria (Bold)', sans-serif;
-    font-size: 36px;
+	font-family: 'Cambria (Bold)', sans-serif;
+	font-size: 36px;
 }
 
 .heading-display {
-    font-family: 'Cambria (Bold)', sans-serif;
-    font-size: 44px;
+	font-family: 'Cambria (Bold)', sans-serif;
+	font-size: 44px;
 }
 
 .preheading {
-    font-family: 'Museo Sans (700)';
-    font-size: 14px;
+	font-family: 'Museo Sans (700)';
+	font-size: 14px;
 	text-transform: uppercase;
 }
 
@@ -138,79 +167,80 @@ html > body:not([tabindex="-1"]).hide-captcha > div:not(#root) {
 		@include theme-colors(
 			$scheme,
 			(
-				"--app-background-color": $app-background-color,
-				"--app-background-alt-color": $app-background-alt-color,
+				'--app-background-color': $app-background-color,
+				'--app-background-alt-color': $app-background-alt-color,
 
-				"--apple-button-background-color": $apple-button-background-color,
-				"--apple-button-text-color": $apple-button-text-color,
+				'--apple-button-background-color': $apple-button-background-color,
+				'--apple-button-text-color': $apple-button-text-color,
 
-				"--box-shadow-color": $box-shadow-color,
+				'--box-shadow-color': $box-shadow-color,
 
-				"--button-selected-background-color": $button-selected-background-color,
-				"--button-selected-text-color": $button-selected-text-color,
+				'--button-selected-background-color': $button-selected-background-color,
+				'--button-selected-text-color': $button-selected-text-color,
 
-				"--callout-arrow-color": $callout-arrow-color,
+				'--callout-arrow-color': $callout-arrow-color,
 
-				"--chart-1-background-color": $chart-1-background-color,
-				"--chart-1-border-color": $chart-1-border-color,
-				"--chart-2-background-color": $chart-2-background-color,
-				"--chart-2-border-color": $chart-2-border-color,
+				'--chart-1-background-color': $chart-1-background-color,
+				'--chart-1-border-color': $chart-1-border-color,
+				'--chart-2-background-color': $chart-2-background-color,
+				'--chart-2-border-color': $chart-2-border-color,
 
-				"--content-background-color": $content-background-color,
-				"--content-border-color": $content-border-color,
-				"--content-divider-color": $content-divider-color,
-				"--content-highlight-color": $content-highlight-color,
+				'--content-background-color': $content-background-color,
+				'--content-border-color': $content-border-color,
+				'--content-divider-color': $content-divider-color,
+				'--content-highlight-color': $content-highlight-color,
 
-				"--control-background-color": $control-background-color,
-				"--control-border-color": $control-border-color,
-				"--control-disabled-color": $control-disabled-color,
+				'--control-background-color': $control-background-color,
+				'--control-border-color': $control-border-color,
+				'--control-disabled-color': $control-disabled-color,
 
-				"--embed-progress-background-color": $embed-progress-background-color,
-				"--embed-progress-complete-color": $embed-progress-complete-color,
-				"--embed-progress-fill-color": $embed-progress-fill-color,
+				'--embed-progress-background-color': $embed-progress-background-color,
+				'--embed-progress-complete-color': $embed-progress-complete-color,
+				'--embed-progress-fill-color': $embed-progress-fill-color,
 
-				"--intent-alert-color": $intent-alert-color,
-				"--intent-danger-color": $intent-danger-color,
-				"--intent-neutral-color": $intent-neutral-color,
-				"--intent-primary-color": $intent-primary-color,
-				"--intent-success-color": $intent-success-color,
-				"--intent-text-color": $intent-text-color,
-				"--intent-warning-color": $intent-warning-color,
+				'--intent-alert-color': $intent-alert-color,
+				'--intent-danger-color': $intent-danger-color,
+				'--intent-neutral-color': $intent-neutral-color,
+				'--intent-primary-color': $intent-primary-color,
+				'--intent-success-color': $intent-success-color,
+				'--intent-text-color': $intent-text-color,
+				'--intent-warning-color': $intent-warning-color,
 
-				"--loud-background-color": $loud-background-color,
-				"--loud-text-color": $loud-text-color,
+				'--loud-background-color': $loud-background-color,
+				'--loud-text-color': $loud-text-color,
 
-				"--leaderboards-article-background-color": $leaderboards-article-background-color,
+				'--leaderboards-article-background-color':
+					$leaderboards-article-background-color,
 
-				"--markdown-block-background-color": $markdown-block-background-color,
-				"--markdown-block-border-color": $markdown-block-border-color,
+				'--markdown-block-background-color': $markdown-block-background-color,
+				'--markdown-block-border-color': $markdown-block-border-color,
 
-				"--nav-background-color": $nav-background-color,
-				"--nav-border-color": $nav-border-color,
+				'--nav-background-color': $nav-background-color,
+				'--nav-border-color': $nav-border-color,
 
-				"--overlay-color": $overlay-color,
+				'--overlay-color': $overlay-color,
 
-				"--progress-complete-color": $progress-complete-color,
-				"--progress-incomplete-color": $progress-incomplete-color,
+				'--progress-complete-color': $progress-complete-color,
+				'--progress-incomplete-color': $progress-incomplete-color,
 
-				"--rating-seal-text-color": $rating-seal-text-color,
+				'--rating-seal-text-color': $rating-seal-text-color,
 
-				"--reader-header-background-color": $reader-header-background-color,
-				"--reader-header-border-color": $reader-header-border-color,
-				"--reader-header-text-color": $reader-header-text-color,
+				'--reader-header-background-color': $reader-header-background-color,
+				'--reader-header-border-color': $reader-header-border-color,
+				'--reader-header-text-color': $reader-header-text-color,
 
-				"--star-starred-background-color": $star-starred-background-color,
-				"--star-starred-border-color": $star-starred-border-color,
+				'--star-starred-background-color': $star-starred-background-color,
+				'--star-starred-border-color': $star-starred-border-color,
 
-				"--sticky-note-gradient-start-color": $sticky-note-gradient-start-color,
-				"--sticky-note-gradient-stop-color": $sticky-note-gradient-stop-color,
-				"--sticky-note-text-color": $sticky-note-text-color,
+				'--sticky-note-gradient-start-color': $sticky-note-gradient-start-color,
+				'--sticky-note-gradient-stop-color': $sticky-note-gradient-stop-color,
+				'--sticky-note-text-color': $sticky-note-text-color,
 
-				"--text-color": $text-color,
-				"--text-muted-color": $text-muted-color,
+				'--text-color': $text-color,
+				'--text-muted-color': $text-muted-color,
 
-				"--twitter-button-background-color": $twitter-button-background-color,
-				"--twitter-button-text-color": $twitter-button-text-color
+				'--twitter-button-background-color': $twitter-button-background-color,
+				'--twitter-button-text-color': $twitter-button-text-color,
 			)
 		);
 	}

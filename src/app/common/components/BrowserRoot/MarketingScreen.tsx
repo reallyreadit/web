@@ -252,8 +252,8 @@ export default class MarketingScreen extends React.Component<
 							Join our community today!
 						</p>
 						<DownloadButton
-							analyticsAction='home-hero-download'
-							buttonType='platform'
+							analyticsAction="home-hero-download"
+							buttonType="platform"
 							deviceType={this.props.deviceType}
 							showOtherPlatforms={true}
 							onNavTo={this.props.onNavTo}

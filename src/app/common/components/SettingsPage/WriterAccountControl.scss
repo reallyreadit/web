@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -24,14 +24,36 @@
 	margin-bottom: 5px;
 }
 .writer-account-control_yerlvh > .content-box_kkp9lc > p > strong {
-	font-family: "Museo Sans (700)";
+	font-family: 'Museo Sans (700)';
 }
-.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr + tr > th,
-.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr + tr > td {
+.writer-account-control_yerlvh
+	> .content-box_kkp9lc
+	> table
+	> tbody
+	> tr
+	+ tr
+	> th,
+.writer-account-control_yerlvh
+	> .content-box_kkp9lc
+	> table
+	> tbody
+	> tr
+	+ tr
+	> td {
 	padding-top: 5px;
 }
-.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody:not(:last-child) > tr:last-child > th,
-.writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody:not(:last-child) > tr:last-child > td {
+.writer-account-control_yerlvh
+	> .content-box_kkp9lc
+	> table
+	> tbody:not(:last-child)
+	> tr:last-child
+	> th,
+.writer-account-control_yerlvh
+	> .content-box_kkp9lc
+	> table
+	> tbody:not(:last-child)
+	> tr:last-child
+	> td {
 	padding-bottom: 5px;
 }
 .writer-account-control_yerlvh > .content-box_kkp9lc > table > tbody > tr > th,
@@ -54,6 +76,9 @@
 	color: var(--intent-success-color);
 	font-family: 'Museo Sans (500)';
 }
-.writer-account-control_yerlvh > .content-box_kkp9lc > .account-status > .icon_rour3d {
+.writer-account-control_yerlvh
+	> .content-box_kkp9lc
+	> .account-status
+	> .icon_rour3d {
 	margin-right: 5px;
 }

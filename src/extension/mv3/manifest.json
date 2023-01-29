@@ -30,9 +30,7 @@
 	"content_scripts": [
 		{
 			"matches": [],
-			"js": [
-				"./content-scripts/web-app/bundle.js"
-			]
+			"js": ["./content-scripts/web-app/bundle.js"]
 		}
 	],
 	"web_accessible_resources": [
@@ -51,10 +49,7 @@
 				"content-scripts/ui/images/logo.svg",
 				"content-scripts/ui/images/logo-white.svg"
 			],
-			"matches": [
-				"http://*/*",
-				"https://*/*"
-			]
+			"matches": ["http://*/*", "https://*/*"]
 		}
 	],
 	"permissions": [
@@ -66,9 +61,7 @@
 		"storage",
 		"declarativeNetRequest"
 	],
-	"host_permissions": [
-		"<all_urls>"
-	],
+	"host_permissions": ["<all_urls>"],
 	"declarative_net_request": {
 		"rule_resources": [
 			{
