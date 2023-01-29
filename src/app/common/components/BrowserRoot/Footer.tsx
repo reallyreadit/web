@@ -16,24 +16,19 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import StoreLinks from '../StoreLinks';
 
 export default class extends React.PureComponent<{
-	onViewPrivacyPolicy: () => void
+	onViewPrivacyPolicy: () => void;
 }> {
-	private readonly _viewPrivacyPolicy = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+	private readonly _viewPrivacyPolicy = (
+		ev: React.MouseEvent<HTMLAnchorElement>
+	) => {
 		ev.preventDefault();
 		this.props.onViewPrivacyPolicy();
 	};
 	public render() {
 		return (
-			<div
-				className="footer_ink40x"
-				data-nosnippet
-			>
+			<div className="footer_ink40x" data-nosnippet>
 				<div className="links">
-					<a
-						href="https://blog.readup.org/"
-					>
-						Blog
-					</a>
+					<a href="https://blog.readup.org/">Blog</a>
 					<Separator />
 					<a
 						href={findRouteByKey(routes, ScreenKey.PrivacyPolicy).createUrl()}

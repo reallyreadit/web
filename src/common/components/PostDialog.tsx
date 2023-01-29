@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -23,27 +23,31 @@ import AuthServiceProvider from '../models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../models/auth/AuthServiceAccountAssociation';
 
 interface Props {
-	article: UserArticle,
-	onCloseDialog?: () => void,
-	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
-	onOpenDialog: (dialog: React.ReactNode, method: 'push' | 'replace') => void,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSubmit: (form: PostForm) => Promise<Post>,
-	user: UserAccount
+	article: UserArticle;
+	onCloseDialog?: () => void;
+	onLinkAuthServiceAccount: (
+		provider: AuthServiceProvider
+	) => Promise<AuthServiceAccountAssociation>;
+	onOpenDialog: (dialog: React.ReactNode, method: 'push' | 'replace') => void;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
+	onSubmit: (form: PostForm) => Promise<Post>;
+	user: UserAccount;
 }
 interface State {
-	commentText: string,
-	isLinkingTwitterAccount: boolean,
-	ratingScore?: number,
-	tweet: boolean
+	commentText: string;
+	isLinkingTwitterAccount: boolean;
+	ratingScore?: number;
+	tweet: boolean;
 }
 export default class PostDialog extends React.PureComponent<Props, State> {
-	private readonly _changeCommentText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+	private readonly _changeCommentText = (
+		event: React.ChangeEvent<HTMLTextAreaElement>
+	) => {
 		if (this._isLinkingTwitterAccount) {
 			return;
 		}
 		this.setState({
-			commentText: event.currentTarget.value
+			commentText: event.currentTarget.value,
 		});
 	};
 	private readonly _changeRatingScore = (ratingScore?: number) => {
@@ -51,12 +55,12 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 			return;
 		}
 		this.setState({
-			ratingScore
+			ratingScore,
 		});
 	};
 	private readonly _changeTweet = (value: string, isEnabled: boolean) => {
 		this.setState({
-			tweet: isEnabled
+			tweet: isEnabled,
 		});
 		if (
 			isEnabled &&
@@ -65,44 +69,38 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 		) {
 			this._isLinkingTwitterAccount = true;
 			this.setState({
-				isLinkingTwitterAccount: true
+				isLinkingTwitterAccount: true,
 			});
 			return this.props
 				.onLinkAuthServiceAccount(AuthServiceProvider.Twitter)
-				.then(
-					() => {
-						this._isLinkingTwitterAccount = false;
-						this._hasLinkedTwitterAccount = true;
-						this.setState({
-							isLinkingTwitterAccount: false
-						});
-						this.props.onShowToast('Account Linked', Intent.Success);
-					}
-				)
-				.catch(
-					error => {
-						this._isLinkingTwitterAccount = false;
-						this.setState({
-							isLinkingTwitterAccount: false,
-							tweet: false
-						});
-						const errorMessage = (error as Error)?.message;
-						if (errorMessage !== 'Unsupported') {
-							let
-								toastText: string,
-								toastIntent: Intent;
-							if (errorMessage === 'Cancelled') {
-								toastText = 'Authentication Cancelled';
-								toastIntent = Intent.Neutral;
-							} else {
-								toastText = 'Error: ' + (errorMessage ?? 'Unknown error') + '.';
-								toastIntent = Intent.Danger;
-							}
-							this.props.onShowToast(toastText, toastIntent);
+				.then(() => {
+					this._isLinkingTwitterAccount = false;
+					this._hasLinkedTwitterAccount = true;
+					this.setState({
+						isLinkingTwitterAccount: false,
+					});
+					this.props.onShowToast('Account Linked', Intent.Success);
+				})
+				.catch((error) => {
+					this._isLinkingTwitterAccount = false;
+					this.setState({
+						isLinkingTwitterAccount: false,
+						tweet: false,
+					});
+					const errorMessage = (error as Error)?.message;
+					if (errorMessage !== 'Unsupported') {
+						let toastText: string, toastIntent: Intent;
+						if (errorMessage === 'Cancelled') {
+							toastText = 'Authentication Cancelled';
+							toastIntent = Intent.Neutral;
+						} else {
+							toastText = 'Error: ' + (errorMessage ?? 'Unknown error') + '.';
+							toastIntent = Intent.Danger;
 						}
-						throw error;
+						this.props.onShowToast(toastText, toastIntent);
 					}
-				);
+					throw error;
+				});
 		}
 		return undefined;
 	};
@@ -112,9 +110,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 	private _isLinkingTwitterAccount = false;
 	private readonly _openMarkdownDialog = () => {
 		this.props.onOpenDialog(
-			<MarkdownDialog
-				onClose={this.props.onCloseDialog}
-			/>,
+			<MarkdownDialog onClose={this.props.onCloseDialog} />,
 			'push'
 		);
 	};
@@ -124,13 +120,11 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 				articleId: this.props.article.id,
 				ratingScore: this.state.ratingScore,
 				commentText: this.state.commentText,
-				tweet: this.state.tweet
+				tweet: this.state.tweet,
 			})
-			.then(
-				() => {
-					this.props.onShowToast('Article Posted', Intent.Success);
-				}
-			);
+			.then(() => {
+				this.props.onShowToast('Article Posted', Intent.Success);
+			});
 	};
 	constructor(props: Props) {
 		super(props);
@@ -138,7 +132,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 			commentText: '',
 			isLinkingTwitterAccount: false,
 			ratingScore: props.article.ratingScore,
-			tweet: props.user.hasLinkedTwitterAccount
+			tweet: props.user.hasLinkedTwitterAccount,
 		};
 	}
 	public render() {
@@ -168,11 +162,7 @@ export default class PostDialog extends React.PureComponent<Props, State> {
 				<Link
 					iconLeft="question-circle"
 					onClick={this._openMarkdownDialog}
-					state={
-						this.state.isLinkingTwitterAccount ?
-							'disabled' :
-							'normal'
-					}
+					state={this.state.isLinkingTwitterAccount ? 'disabled' : 'normal'}
 					text="Formatting Guide"
 				/>
 				<ToggleSwitchInput

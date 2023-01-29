@@ -1,36 +1,37 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
-import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
+import UserAccount, {
+	hasAnyAlerts,
+} from '../../../../common/models/UserAccount';
 import { Screen, NavReference, NavOptions } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
 
-const
-	contendersUrl = findRouteByKey(routes, ScreenKey.Contenders).createUrl(),
+const contendersUrl = findRouteByKey(routes, ScreenKey.Contenders).createUrl(),
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
-	onNavTo: (ref: NavReference, options: NavOptions) => void,
-	onViewContenders: () => void,
-	onViewHome: () => void,
-	onViewMyFeed: () => void,
-	onViewMyReads: () => void,
-	selectedScreen: Screen,
-	user: UserAccount,
+	onNavTo: (ref: NavReference, options: NavOptions) => void;
+	onViewContenders: () => void;
+	onViewHome: () => void;
+	onViewMyFeed: () => void;
+	onViewMyReads: () => void;
+	selectedScreen: Screen;
+	user: UserAccount;
 }
 export default class NavBar extends React.PureComponent<Props> {
 	public render() {
@@ -42,7 +43,11 @@ export default class NavBar extends React.PureComponent<Props> {
 							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							href={homeUrl}
 							onClick={this.props.onViewHome}
-							state={this.props.selectedScreen.key === ScreenKey.Home ? 'selected' : 'normal'}
+							state={
+								this.props.selectedScreen.key === ScreenKey.Home
+									? 'selected'
+									: 'normal'
+							}
 							iconLeft="trophy"
 							text="AOTD"
 							size="x-large"
@@ -53,7 +58,11 @@ export default class NavBar extends React.PureComponent<Props> {
 						<Button
 							href={contendersUrl}
 							onClick={this.props.onViewContenders}
-							state={this.props.selectedScreen.key === ScreenKey.Contenders ? 'selected' : 'normal'}
+							state={
+								this.props.selectedScreen.key === ScreenKey.Contenders
+									? 'selected'
+									: 'normal'
+							}
 							iconLeft="podium"
 							text="Contenders"
 							size="x-large"
@@ -64,7 +73,11 @@ export default class NavBar extends React.PureComponent<Props> {
 						<Button
 							href={myReadsUrl}
 							onClick={this.props.onViewMyReads}
-							state={this.props.selectedScreen.key === ScreenKey.MyReads ? 'selected' : 'normal'}
+							state={
+								this.props.selectedScreen.key === ScreenKey.MyReads
+									? 'selected'
+									: 'normal'
+							}
 							iconLeft="star"
 							text="My Reads"
 							size="x-large"
@@ -76,7 +89,11 @@ export default class NavBar extends React.PureComponent<Props> {
 							href={myFeedUrl}
 							badge={this.props.user.followerAlertCount}
 							onClick={this.props.onViewMyFeed}
-							state={this.props.selectedScreen.key === ScreenKey.MyFeed ? 'selected' : 'normal'}
+							state={
+								this.props.selectedScreen.key === ScreenKey.MyFeed
+									? 'selected'
+									: 'normal'
+							}
 							iconLeft="candy"
 							text="My Feed"
 							size="x-large"

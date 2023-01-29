@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -21,39 +21,38 @@ import PostHeader from './PostHeader';
 import CommentThread from '../models/CommentThread';
 import classNames from 'classnames';
 import Rating from '../models/Rating';
-import {DeviceType} from '../DeviceType';
+import { DeviceType } from '../DeviceType';
 import { ShareChannelData } from '../sharing/ShareData';
 import AbstractCommentShareable from './AbstractCommentShareable';
 
 interface Props {
-	deviceType: DeviceType,
-	highlightedCommentId?: string,
-	highlightedPostId?: string,
+	deviceType: DeviceType;
+	highlightedCommentId?: string;
+	highlightedPostId?: string;
 	// Whether this PostDetails is a reply to a comment of the current user. Used for verbose copy in the PostHeader.
-	isReply?: boolean,
-	onCloseDialog: () => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onNavTo: (url: string) => boolean,
-	onOpenDialog: (dialog: React.ReactNode) => void,
-	onPost: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onRead: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	onViewThread: (comment: CommentThread) => void,
-	post: Post,
-	user: UserAccount | null
+	isReply?: boolean;
+	onCloseDialog: () => void;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onNavTo: (url: string) => boolean;
+	onOpenDialog: (dialog: React.ReactNode) => void;
+	onPost: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onRead: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleStar: (article: UserArticle) => Promise<void>;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	onViewThread: (comment: CommentThread) => void;
+	post: Post;
+	user: UserAccount | null;
 }
 export default class PostDetails extends AbstractCommentShareable<Props> {
-
 	public render() {
 		const commentThread = this._getCommentThread();
 		return (
 			<div className="post-details_8qx033">
-				{this._hasComment() ?
+				{this._hasComment() ? (
 					<PostHeader
 						article={this.props.post.article}
 						userName={commentThread.userAccount}
@@ -68,7 +67,8 @@ export default class PostDetails extends AbstractCommentShareable<Props> {
 						onShareViaChannel={this.props.onShareViaChannel}
 						onViewProfile={this.props.onViewProfile}
 						verbose={true}
-					/> :
+					/>
+				) : (
 					<PostHeader
 						article={this.props.post.article}
 						userName={this.props.post.userName}
@@ -78,16 +78,15 @@ export default class PostDetails extends AbstractCommentShareable<Props> {
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 						onViewProfile={this.props.onViewProfile}
 						verbose={true}
-				/>}
+					/>
+				)}
 				<ContentBox
-					className={classNames('content', { 'alert': this.props.post.hasAlert })}
+					className={classNames('content', { alert: this.props.post.hasAlert })}
 					highlight={
-						(
-							this.props.post.silentPostId && this.props.post.silentPostId === this.props.highlightedPostId
-						) ||
-						(
-							this.props.post.comment && this.props.post.comment.id === this.props.highlightedCommentId
-						)
+						(this.props.post.silentPostId &&
+							this.props.post.silentPostId === this.props.highlightedPostId) ||
+						(this.props.post.comment &&
+							this.props.post.comment.id === this.props.highlightedCommentId)
 					}
 				>
 					<ArticleDetails
@@ -107,7 +106,7 @@ export default class PostDetails extends AbstractCommentShareable<Props> {
 						showMetaActions={false}
 						user={this.props.user}
 					/>
-					{ this._hasComment() ?
+					{this._hasComment() ? (
 						<CommentDetails
 							comment={createCommentThread(this.props.post)}
 							onCloseDialog={this.props.onCloseDialog}
@@ -120,8 +119,8 @@ export default class PostDetails extends AbstractCommentShareable<Props> {
 							onViewThread={this.props.onViewThread}
 							user={this.props.user}
 							showPostHeader={false}
-						/> : null
-					}
+						/>
+					) : null}
 				</ContentBox>
 			</div>
 		);

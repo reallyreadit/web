@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -20,20 +20,20 @@ import { ShareEvent } from '../sharing/ShareEvent';
 
 export { MenuPosition } from './Popover';
 interface Props {
-	children: React.ReactNode,
-	menuPosition: MenuPosition,
-	onComplete?: (form: ShareForm) => void,
-	onGetData: () => ShareData,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	stopPropagation?: boolean
+	children: React.ReactNode;
+	menuPosition: MenuPosition;
+	onComplete?: (form: ShareForm) => void;
+	onGetData: () => ShareData;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	stopPropagation?: boolean;
 }
 export default class ShareControl extends React.PureComponent<
 	Props,
 	{
-		data: ShareData | null,
-		menuState: MenuState,
-		shareChannels: ShareChannel[]
+		data: ShareData | null;
+		menuState: MenuState;
+		shareChannels: ShareChannel[];
 	}
 > {
 	private readonly _beginClosingMenu = () => {
@@ -43,7 +43,7 @@ export default class ShareControl extends React.PureComponent<
 	private readonly _copyLink = () => {
 		this.props.onShareViaChannel({
 			channel: ShareChannel.Clipboard,
-			text: this.props.onGetData().url
+			text: this.props.onGetData().url,
 		});
 		this.completeWithActivityType('Copy');
 	};
@@ -51,13 +51,12 @@ export default class ShareControl extends React.PureComponent<
 		this.setState({
 			data: null,
 			menuState: MenuState.Closed,
-			shareChannels: []
+			shareChannels: [],
 		});
 		this._shareResponseCompletionHandler = null;
 	};
 	private readonly _openMenu = (event: React.MouseEvent<HTMLElement>) => {
-		const
-			data = this.props.onGetData(),
+		const data = this.props.onGetData(),
 			targetRect = event.currentTarget.getBoundingClientRect(),
 			response = this.props.onShare({
 				...data,
@@ -65,14 +64,14 @@ export default class ShareControl extends React.PureComponent<
 					x: targetRect.x,
 					y: targetRect.y,
 					width: targetRect.width,
-					height: targetRect.height
-				}
+					height: targetRect.height,
+				},
 			});
 		if (response.channels.length) {
 			this.setState({
 				data,
 				menuState: MenuState.Opened,
-				shareChannels: response.channels
+				shareChannels: response.channels,
 			});
 			if (response.completionHandler) {
 				this._shareResponseCompletionHandler = response.completionHandler;
@@ -83,7 +82,7 @@ export default class ShareControl extends React.PureComponent<
 		this.props.onShareViaChannel({
 			channel: ShareChannel.Email,
 			body: this.state.data.email.body,
-			subject: this.state.data.email.subject
+			subject: this.state.data.email.subject,
 		});
 		this.completeWithActivityType('Email');
 	};
@@ -92,10 +91,8 @@ export default class ShareControl extends React.PureComponent<
 			channel: ShareChannel.Twitter,
 			text: truncateText(this.state.data.text, 280 - 25),
 			url: this.state.data.url,
-			hashtags: [
-				'ReadOnReadup'
-			],
-			via: 'ReadupDotCom'
+			hashtags: ['ReadOnReadup'],
+			via: 'ReadupDotCom',
 		});
 		this.completeWithActivityType('Twitter');
 	};
@@ -104,7 +101,7 @@ export default class ShareControl extends React.PureComponent<
 		this.state = {
 			data: null,
 			menuState: MenuState.Closed,
-			shareChannels: []
+			shareChannels: [],
 		};
 	}
 	private completeWithActivityType(activityType: string) {
@@ -116,7 +113,7 @@ export default class ShareControl extends React.PureComponent<
 				action: this.state.data.action,
 				activityType,
 				completed: null,
-				error: null
+				error: null,
 			};
 			if (this.props.onComplete) {
 				this.props.onComplete(form);
@@ -132,33 +129,24 @@ export default class ShareControl extends React.PureComponent<
 				className="share-control_mnbspk"
 				menuChildren={
 					<>
-						{this.state.shareChannels.includes(ShareChannel.Clipboard) ?
-							<button
-								className="button"
-								onClick={this._copyLink}
-							>
+						{this.state.shareChannels.includes(ShareChannel.Clipboard) ? (
+							<button className="button" onClick={this._copyLink}>
 								<Icon name="link" />
 								<label>Copy Link</label>
-							</button> :
-							null}
-						{this.state.shareChannels.includes(ShareChannel.Email) ?
-							<button
-								className="button"
-								onClick={this._openEmailComposer}
-							>
+							</button>
+						) : null}
+						{this.state.shareChannels.includes(ShareChannel.Email) ? (
+							<button className="button" onClick={this._openEmailComposer}>
 								<Icon name="paper-plane" />
 								<label>Email</label>
-							</button> :
-							null}
-						{this.state.shareChannels.includes(ShareChannel.Twitter) ?
-							<button
-								className="button"
-								onClick={this._openTweetComposer}
-							>
+							</button>
+						) : null}
+						{this.state.shareChannels.includes(ShareChannel.Twitter) ? (
+							<button className="button" onClick={this._openTweetComposer}>
 								<Icon name="twitter" />
 								<label>Tweet</label>
-							</button> :
-							null}
+							</button>
+						) : null}
 					</>
 				}
 				menuPosition={this.props.menuPosition}

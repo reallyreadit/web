@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -18,8 +18,7 @@ import ScreenKey from '../../../../../common/routing/ScreenKey';
 import * as classNames from 'classnames';
 import { formatCurrency } from '../../../../../common/format';
 
-const
-	chartMargin = 12,
+const chartMargin = 12,
 	authorRoute = findRouteByKey(routes, ScreenKey.Author);
 
 enum DataPointType {
@@ -27,54 +26,56 @@ enum DataPointType {
 	Platform,
 	PaymentProvider,
 	UnknownAuthor,
-	KnownAuthor
+	KnownAuthor,
 }
 
-type ChartDataPoint =
-	{
-		color: string,
-		value: number
-	} & (
-		{
-			type: DataPointType.Placeholder
-		} | {
-			type: DataPointType.Platform
-		} | {
-			type: DataPointType.PaymentProvider,
-			provider: SubscriptionProvider
-		} | {
-			type: DataPointType.UnknownAuthor
-			minutesRead: number,
-		} | {
-			type: DataPointType.KnownAuthor,
+type ChartDataPoint = {
+	color: string;
+	value: number;
+} & (
+	| {
+			type: DataPointType.Placeholder;
+	  }
+	| {
+			type: DataPointType.Platform;
+	  }
+	| {
+			type: DataPointType.PaymentProvider;
+			provider: SubscriptionProvider;
+	  }
+	| {
+			type: DataPointType.UnknownAuthor;
+			minutesRead: number;
+	  }
+	| {
+			type: DataPointType.KnownAuthor;
 			author: {
-				name: string,
-				slug: string
-			},
-			minutesRead: number
-		}
-	);
+				name: string;
+				slug: string;
+			};
+			minutesRead: number;
+	  }
+);
 
 type ActiveShapeParams = ChartDataPoint & {
-	percent: number,
-	midAngle: number,
-	middleRadius: number,
-	stroke: string,
-	fill: string,
-	cx: number,
-	cy: number,
-	innerRadius: number,
-	outerRadius: number,
-	maxRadius: number,
-	startAngle: number,
-	endAngle: number,
-	paddingAngle: number
+	percent: number;
+	midAngle: number;
+	middleRadius: number;
+	stroke: string;
+	fill: string;
+	cx: number;
+	cy: number;
+	innerRadius: number;
+	outerRadius: number;
+	maxRadius: number;
+	startAngle: number;
+	endAngle: number;
+	paddingAngle: number;
 };
 
 function generateColors(count: number) {
 	// use HSL colors with constant values for S and L
-	const
-		hues: number[] = [],
+	const hues: number[] = [],
 		// start at a known nice color and walk around the 360 degrees circle of hues
 		startDeg = 120,
 		// take nice big steps to get a nice diversity of colors
@@ -83,24 +84,29 @@ function generateColors(count: number) {
 		// if we need more colors then start at an offset on subsequent walks
 		offsetDeg = Math.round(stepDeg / Math.ceil(count / divisions));
 	for (let i = 0; i < count; i++) {
-		hues.push(startDeg + ((stepDeg * i) % 360) + (offsetDeg * Math.floor(i / divisions)));
+		hues.push(
+			startDeg + ((stepDeg * i) % 360) + offsetDeg * Math.floor(i / divisions)
+		);
 	}
-	return hues.map(
-		hue => `hsl(${hue}, 60%, 50%)`
-	)
+	return hues.map((hue) => `hsl(${hue}, 60%, 50%)`);
 }
 
-function createDataPoints(report: SubscriptionDistributionReport, reportType: ReportType) {
+function createDataPoints(
+	report: SubscriptionDistributionReport,
+	reportType: ReportType
+) {
 	// check for author distributions
 	if (
 		!hasAnyAuthorDistributions(report) &&
 		reportType === ReportType.CurrentPeriod
 	) {
-		return [{
-			type: DataPointType.Placeholder as DataPointType.Placeholder,
-			value: 1,
-			color: 'hsl(0, 0%, 25%)'
-		}];
+		return [
+			{
+				type: DataPointType.Placeholder as DataPointType.Placeholder,
+				value: 1,
+				color: 'hsl(0, 0%, 25%)',
+			},
+		];
 	}
 	// start by creating points for the platform and payment providers
 	const points: ChartDataPoint[] = [];
@@ -108,7 +114,7 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 		points.push({
 			type: DataPointType.Platform,
 			value: report.platformAmount,
-			color: 'hsl(0, 0%, 25%)'
+			color: 'hsl(0, 0%, 25%)',
 		});
 	}
 	if (report.appleAmount > 0) {
@@ -116,7 +122,7 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 			type: DataPointType.PaymentProvider,
 			provider: SubscriptionProvider.Apple,
 			value: report.appleAmount,
-			color: 'hsl(0, 0%, 50%)'
+			color: 'hsl(0, 0%, 50%)',
 		});
 	}
 	if (report.stripeAmount > 0) {
@@ -124,7 +130,7 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 			type: DataPointType.PaymentProvider,
 			provider: SubscriptionProvider.Stripe,
 			value: report.stripeAmount,
-			color: 'hsl(0, 0%, 50%)'
+			color: 'hsl(0, 0%, 50%)',
 		});
 	}
 	// check if there is an unknown author distribution
@@ -133,7 +139,7 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 			type: DataPointType.UnknownAuthor,
 			minutesRead: report.unknownAuthorMinutesRead,
 			value: report.unknownAuthorAmount,
-			color: 'hsl(0, 0%, 75%)'
+			color: 'hsl(0, 0%, 75%)',
 		});
 	}
 	// add all known authors along with their colors, sorting separately from previous points
@@ -141,24 +147,18 @@ function createDataPoints(report: SubscriptionDistributionReport, reportType: Re
 	points.push(
 		...report.authorDistributions
 			.slice()
-			.filter(
-				author => author.amount > 0
-			)
-			.sort(
-				(a, b) => a.amount - b.amount
-			)
-			.map(
-				(author, index) => ({
-					type: DataPointType.KnownAuthor as DataPointType.KnownAuthor,
-					author: {
-						name: author.authorName,
-						slug: author.authorSlug
-					},
-					minutesRead: author.minutesRead,
-					value: author.amount,
-					color: authorColors[index],
-				})
-			)
+			.filter((author) => author.amount > 0)
+			.sort((a, b) => a.amount - b.amount)
+			.map((author, index) => ({
+				type: DataPointType.KnownAuthor as DataPointType.KnownAuthor,
+				author: {
+					name: author.authorName,
+					slug: author.authorSlug,
+				},
+				minutesRead: author.minutesRead,
+				value: author.amount,
+				color: authorColors[index],
+			}))
 	);
 	return points;
 }
@@ -182,7 +182,7 @@ function renderActiveShape(params: ActiveShapeParams) {
 	if (params.type === DataPointType.Placeholder) {
 		return renderSector({
 			...params,
-			stroke: params.fill
+			stroke: params.fill,
 		});
 	}
 	return (
@@ -191,7 +191,7 @@ function renderActiveShape(params: ActiveShapeParams) {
 			<Sector
 				cx={params.cx}
 				cy={params.cy}
-				innerRadius={params.outerRadius + (chartMargin / 2)}
+				innerRadius={params.outerRadius + chartMargin / 2}
 				outerRadius={params.outerRadius + chartMargin}
 				startAngle={params.startAngle}
 				endAngle={params.endAngle}
@@ -205,24 +205,20 @@ function getPreferredActiveIndex(points: ChartDataPoint[]) {
 	const mostReadKnownAuthorIndex = points.indexOf(
 		points
 			.slice()
-			.sort(
-				(a, b) => b.value - a.value
-			)
-			.find(
-				point => point.type === DataPointType.KnownAuthor
-			)
+			.sort((a, b) => b.value - a.value)
+			.find((point) => point.type === DataPointType.KnownAuthor)
 	);
 	if (mostReadKnownAuthorIndex !== -1) {
 		return mostReadKnownAuthorIndex;
 	}
 	const unknownAuthorIndex = points.findIndex(
-		point => point.type === DataPointType.UnknownAuthor
+		(point) => point.type === DataPointType.UnknownAuthor
 	);
 	if (unknownAuthorIndex !== -1) {
 		return unknownAuthorIndex;
 	}
 	const platformIndex = points.findIndex(
-		point => point.type === DataPointType.Platform
+		(point) => point.type === DataPointType.Platform
 	);
 	if (platformIndex !== -1) {
 		return platformIndex;
@@ -231,22 +227,24 @@ function getPreferredActiveIndex(points: ChartDataPoint[]) {
 }
 
 function hasAnyAuthorDistributions(report: SubscriptionDistributionReport) {
-	return report.unknownAuthorAmount > 0 || report.authorDistributions.length > 0;
+	return (
+		report.unknownAuthorAmount > 0 || report.authorDistributions.length > 0
+	);
 }
 
 export enum ReportType {
 	CurrentPeriod,
-	CompletedPeriods
+	CompletedPeriods,
 }
 
 interface Props {
-	report: SubscriptionDistributionReport,
-	reportType: ReportType,
-	onViewAuthor: (slug: string, name: string) => void
+	report: SubscriptionDistributionReport;
+	reportType: ReportType;
+	onViewAuthor: (slug: string, name: string) => void;
 }
 interface State {
-	activeIndex: number,
-	segmentCount: number
+	activeIndex: number;
+	segmentCount: number;
 }
 export default class DistributionChart extends React.Component<Props, State> {
 	public static getDerivedStateFromProps(props: Props, state: State): State {
@@ -256,31 +254,35 @@ export default class DistributionChart extends React.Component<Props, State> {
 		if (points.length !== state.segmentCount) {
 			return {
 				activeIndex: getPreferredActiveIndex(points),
-				segmentCount: points.length
-			}
+				segmentCount: points.length,
+			};
 		}
 		return null;
 	}
 	private readonly _setActiveIndex = (data: ChartDataPoint, index: number) => {
 		this.setState({
-			activeIndex: index
+			activeIndex: index,
 		});
 	};
-	private readonly _viewAuthor = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	private readonly _viewAuthor = (
+		event: React.MouseEvent<HTMLAnchorElement>
+	) => {
 		event.preventDefault();
-		this.props.onViewAuthor(event.currentTarget.dataset['slug'], event.currentTarget.dataset['name']);
+		this.props.onViewAuthor(
+			event.currentTarget.dataset['slug'],
+			event.currentTarget.dataset['name']
+		);
 	};
 	constructor(props: Props) {
 		super(props);
 		const points = createDataPoints(props.report, props.reportType);
 		this.state = {
 			activeIndex: getPreferredActiveIndex(points),
-			segmentCount: points.length
+			segmentCount: points.length,
 		};
 	}
 	public render() {
-		const
-			points = createDataPoints(this.props.report, this.props.reportType),
+		const points = createDataPoints(this.props.report, this.props.reportType),
 			active = points[this.state.activeIndex];
 		return (
 			<div className="distribution-chart_n97yi3">
@@ -290,7 +292,7 @@ export default class DistributionChart extends React.Component<Props, State> {
 							top: chartMargin,
 							right: chartMargin,
 							bottom: chartMargin,
-							left: chartMargin
+							left: chartMargin,
 						}}
 					>
 						<Pie
@@ -302,59 +304,57 @@ export default class DistributionChart extends React.Component<Props, State> {
 							outerRadius="100%"
 							onMouseEnter={this._setActiveIndex}
 						>
-							{points.map(
-								(point, index) => (
-									<Cell
-										key={index}
-										fill={point.color}
-										stroke="#ccc"
-									/>
-								)
-							)}
+							{points.map((point, index) => (
+								<Cell key={index} fill={point.color} stroke="#ccc" />
+							))}
 						</Pie>
 					</PieChart>
 				</ResponsiveContainer>
 				<div className="active-info">
-					{active.type === DataPointType.Platform || active.type === DataPointType.PaymentProvider ?
+					{active.type === DataPointType.Platform ||
+					active.type === DataPointType.PaymentProvider ? (
 						<div
-							className={
-								classNames(
-									'logo',
-									active.type === DataPointType.Platform ?
-										'readup' :
-										active.provider === SubscriptionProvider.Apple ?
-											'apple' :
-											'stripe'
-								)
-							}
-						></div> :
-						null}
-					{active.type !== DataPointType.Placeholder ?
+							className={classNames(
+								'logo',
+								active.type === DataPointType.Platform
+									? 'readup'
+									: active.provider === SubscriptionProvider.Apple
+									? 'apple'
+									: 'stripe'
+							)}
+						></div>
+					) : null}
+					{active.type !== DataPointType.Placeholder ? (
 						<div className="title">
-							{active.type === DataPointType.Platform ?
-								'Platform fees' :
-								active.type === DataPointType.PaymentProvider ?
-									'Payment processor fees' :
-										active.type === DataPointType.UnknownAuthor ?
-											'Unknown authors' :
-											<a
-												href={authorRoute.createUrl({ 'slug': active.author.slug })}
-												data-slug={active.author.slug}
-												data-name={active.author.name}
-												onClick={this._viewAuthor}
-											>
-												{active.author.name}
-											</a>}
-						</div> :
-						null}
-					{active.type === DataPointType.UnknownAuthor || active.type === DataPointType.KnownAuthor ?
-						<div className="time">{active.minutesRead} min.</div> :
-						null}
-					{active.type === DataPointType.Placeholder ?
-						<div className="message">You haven't read anything yet.</div> :
-						<div className="amount">{formatCurrency(active.value)}</div>}
+							{active.type === DataPointType.Platform ? (
+								'Platform fees'
+							) : active.type === DataPointType.PaymentProvider ? (
+								'Payment processor fees'
+							) : active.type === DataPointType.UnknownAuthor ? (
+								'Unknown authors'
+							) : (
+								<a
+									href={authorRoute.createUrl({ slug: active.author.slug })}
+									data-slug={active.author.slug}
+									data-name={active.author.name}
+									onClick={this._viewAuthor}
+								>
+									{active.author.name}
+								</a>
+							)}
+						</div>
+					) : null}
+					{active.type === DataPointType.UnknownAuthor ||
+					active.type === DataPointType.KnownAuthor ? (
+						<div className="time">{active.minutesRead} min.</div>
+					) : null}
+					{active.type === DataPointType.Placeholder ? (
+						<div className="message">You haven't read anything yet.</div>
+					) : (
+						<div className="amount">{formatCurrency(active.value)}</div>
+					)}
 				</div>
 			</div>
-		)
+		);
 	}
 }

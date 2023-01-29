@@ -1,67 +1,67 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-import { Route } from "./Route";
-import DialogKey from "./DialogKey";
-import ScreenKey from "./ScreenKey";
-import UserAccountRole from "../models/UserAccountRole";
+import { Route } from './Route';
+import DialogKey from './DialogKey';
+import ScreenKey from './ScreenKey';
+import UserAccountRole from '../models/UserAccountRole';
 
 const routes: Route<DialogKey, ScreenKey>[] = [
 	{
 		createUrl: () => '/',
 		pathRegExp: /^\/$/,
-		screenKey: ScreenKey.Home
+		screenKey: ScreenKey.Home,
 	},
 	{
 		createUrl: () => '/about',
 		pathRegExp: /^\/about$/,
-		screenKey: ScreenKey.About
+		screenKey: ScreenKey.About,
 	},
 	{
-		createUrl: params => `/?reset-password&email=${params['email']}&token=${params['token']}`,
+		createUrl: (params) =>
+			`/?reset-password&email=${params['email']}&token=${params['token']}`,
 		dialogKey: DialogKey.ResetPassword,
 		pathRegExp: /^\/$/,
 		queryStringKeys: ['reset-password', 'email', 'token'],
-		screenKey: ScreenKey.Home
+		screenKey: ScreenKey.Home,
 	},
 	{
 		authLevel: UserAccountRole.Admin,
 		createUrl: () => '/admin',
 		pathRegExp: /^\/admin$/,
-		screenKey: ScreenKey.Admin
+		screenKey: ScreenKey.Admin,
 	},
 	{
 		createUrl: () => '/aotd/history',
 		pathRegExp: /^\/aotd\/history$/,
-		screenKey: ScreenKey.AotdHistory
+		screenKey: ScreenKey.AotdHistory,
 	},
 	{
 		createUrl: () => '/top-articles-of-all-time',
 		pathRegExp: /^\/top-articles-of-all-time$/,
-		screenKey: ScreenKey.BestEver
+		screenKey: ScreenKey.BestEver,
 	},
 	{
 		createUrl: () => '/blog',
 		noIndex: () => true,
 		pathRegExp: /^\/blog$/,
-		screenKey: ScreenKey.Blog
+		screenKey: ScreenKey.Blog,
 	},
 	(function () {
-		const
-			pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/,
+		const pathRegExp = /^\/comments\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/,
 			getPathParams = (path: string) => {
 				const [, sourceSlug, articleSlug, commentId] = path.match(pathRegExp);
 				let result = { articleSlug, sourceSlug } as {
-					articleSlug: string,
-					commentId?: string,
-					sourceSlug: string
+					articleSlug: string;
+					commentId?: string;
+					sourceSlug: string;
 				};
 				if (commentId != null) {
 					result.commentId = commentId;
@@ -69,7 +69,7 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 				return result;
 			};
 		return {
-			createUrl: params => {
+			createUrl: (params) => {
 				let url = `/comments/${params['sourceSlug']}/${params['articleSlug']}`;
 				if (params['commentId']) {
 					url += `/${params['commentId']}`;
@@ -78,61 +78,62 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 			},
 			getPathParams,
 			pathRegExp,
-			screenKey: ScreenKey.Comments
+			screenKey: ScreenKey.Comments,
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
 		createUrl: () => '/contenders',
 		pathRegExp: /^\/contenders$/,
-		screenKey: ScreenKey.Contenders
+		screenKey: ScreenKey.Contenders,
 	},
 	{
 		createUrl: () => '/download',
 		pathRegExp: /^\/download$/,
-		screenKey: ScreenKey.Download
+		screenKey: ScreenKey.Download,
 	},
 	{
-		createUrl: params => `/email/confirm/${params['result']}`,
+		createUrl: (params) => `/email/confirm/${params['result']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,
-		screenKey: ScreenKey.EmailConfirmation
+		screenKey: ScreenKey.EmailConfirmation,
 	},
 	{
-		createUrl: params => `/email/subscriptions?token=${params['token']}`,
+		createUrl: (params) => `/email/subscriptions?token=${params['token']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/email\/subscriptions$/,
 		queryStringKeys: ['token'],
-		screenKey: ScreenKey.EmailSubscriptions
+		screenKey: ScreenKey.EmailSubscriptions,
 	},
 	{
 		createUrl: () => `/extension/uninstall`,
 		noIndex: () => true,
 		pathRegExp: /^\/extension\/uninstall$/,
-		screenKey: ScreenKey.ExtensionRemoval
+		screenKey: ScreenKey.ExtensionRemoval,
 	},
 	{
-		createUrl: params => `/extension/uninstall?installationId=${params['installationId']}`,
+		createUrl: (params) =>
+			`/extension/uninstall?installationId=${params['installationId']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/extension\/uninstall$/,
 		queryStringKeys: ['installationId'],
-		screenKey: ScreenKey.ExtensionRemoval
+		screenKey: ScreenKey.ExtensionRemoval,
 	},
 	{
 		createUrl: () => '/faq',
 		pathRegExp: /^\/faq$/,
-		screenKey: ScreenKey.Faq
+		screenKey: ScreenKey.Faq,
 	},
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/my-feed',
 		pathRegExp: /^\/my-feed$/,
-		screenKey: ScreenKey.MyFeed
+		screenKey: ScreenKey.MyFeed,
 	},
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/impact',
 		pathRegExp: /^\/impact$/,
-		screenKey: ScreenKey.MyImpact
+		screenKey: ScreenKey.MyImpact,
 	},
 	// {
 	// 	createUrl: () => '/leaderboards',
@@ -142,70 +143,64 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	(function () {
 		const pathRegExp = /^\/leaderboards\/?(writers|readers)?$/;
 		return {
-			createUrl: params => {
+			createUrl: (params) => {
 				if (
 					params &&
-					(
-						params['view'] === 'writers' ||
-						params['view'] === 'readers'
-					)
+					(params['view'] === 'writers' || params['view'] === 'readers')
 				) {
 					return `/leaderboards/${params['view']}`;
 				}
 				return '/leaderboards/writers';
 			},
-			getPathParams: path => {
+			getPathParams: (path) => {
 				const [, view] = path.match(pathRegExp);
 				return {
-					view: view === 'readers' ? view : 'writers'
+					view: view === 'readers' ? view : 'writers',
 				};
 			},
 			pathRegExp,
-			screenKey: ScreenKey.Leaderboards
+			screenKey: ScreenKey.Leaderboards,
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/notifications',
 		pathRegExp: /^\/notifications$/,
-		screenKey: ScreenKey.Notifications
+		screenKey: ScreenKey.Notifications,
 	},
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;
 		return {
 			authLevel: UserAccountRole.Regular,
-			createUrl: params => {
+			createUrl: (params) => {
 				if (
 					params &&
-					(
-						params['view'] === 'starred' ||
-						params['view'] === 'history'
-					)
+					(params['view'] === 'starred' || params['view'] === 'history')
 				) {
 					return `/${params['view']}`;
 				}
 				return '/starred';
 			},
-			getPathParams: path => {
+			getPathParams: (path) => {
 				const [, view] = path.match(pathRegExp);
 				return {
-					view: view === 'history' ? view : 'starred'
+					view: view === 'history' ? view : 'starred',
 				};
 			},
 			pathRegExp,
-			screenKey: ScreenKey.MyReads
+			screenKey: ScreenKey.MyReads,
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
-		createUrl: params => `/password/${params['action']}/${params['result']}`,
+		createUrl: (params) => `/password/${params['action']}/${params['result']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/password\/([^/]+)\/([^/]+)$/,
-		screenKey: ScreenKey.Password
+		screenKey: ScreenKey.Password,
 	},
 	{
 		createUrl: () => '/privacy',
 		pathRegExp: /^\/privacy$/,
-		screenKey: ScreenKey.PrivacyPolicy
+		screenKey: ScreenKey.PrivacyPolicy,
 	},
 	(function () {
 		const pathRegExp = /^\/@([^/]+)(?:\/(comment|post)\/([^/]+))?$/;
@@ -214,10 +209,8 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 				let url = `/@${params['userName']}`;
 				if (
 					params['highlightedType'] &&
-					(
-						params['highlightedType'] === 'comment' ||
-						params['highlightedType'] === 'post'
-					) &&
+					(params['highlightedType'] === 'comment' ||
+						params['highlightedType'] === 'post') &&
 					params['highlightedId']
 				) {
 					url += `/${params['highlightedType']}/${params['highlightedId']}`;
@@ -225,14 +218,14 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 				return url;
 			},
 			getPathParams: (path: string) => {
-				const
-					[, userName, highlightedType, highlightedId] = path.match(pathRegExp),
+				const [, userName, highlightedType, highlightedId] =
+						path.match(pathRegExp),
 					params: {
-						userName: string,
-						highlightedType?: 'comment' | 'post',
-						highlightedId?: string
+						userName: string;
+						highlightedType?: 'comment' | 'post';
+						highlightedId?: string;
 					} = {
-						userName
+						userName,
 					};
 				if (highlightedType === 'comment' || highlightedType === 'post') {
 					params.highlightedType = highlightedType;
@@ -243,54 +236,59 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 				return params;
 			},
 			pathRegExp,
-			screenKey: ScreenKey.Profile
+			screenKey: ScreenKey.Profile,
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	(function () {
 		const pathRegExp = /^\/read\/([^/]+)\/([^/]+)$/;
 		return {
-			createUrl: params => `/read/${params['sourceSlug']}/${params['articleSlug']}`,
-			getPathParams: path => {
+			createUrl: (params) =>
+				`/read/${params['sourceSlug']}/${params['articleSlug']}`,
+			getPathParams: (path) => {
 				const [, sourceSlug, articleSlug] = path.match(pathRegExp);
 				return { articleSlug, sourceSlug };
 			},
 			noIndex: () => true,
 			pathRegExp,
-			screenKey: ScreenKey.Read
+			screenKey: ScreenKey.Read,
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/search',
 		pathRegExp: /^\/search$/,
-		screenKey: ScreenKey.Search
+		screenKey: ScreenKey.Search,
 	},
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/settings',
 		pathRegExp: /^\/settings$/,
-		screenKey: ScreenKey.Settings
+		screenKey: ScreenKey.Settings,
 	},
 	{
 		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/stats',
 		pathRegExp: /^\/stats$/,
-		screenKey: ScreenKey.Stats
+		screenKey: ScreenKey.Stats,
 	},
 	(function () {
 		const pathRegExp = /^\/writers\/([^/]+)$/;
 		return {
-			createUrl: params => `/writers/${params['slug']}`,
-			getPathParams: path => ({
-				slug: decodeURIComponent(path.match(pathRegExp)[1])
+			createUrl: (params) => `/writers/${params['slug']}`,
+			getPathParams: (path) => ({
+				slug: decodeURIComponent(path.match(pathRegExp)[1]),
 			}),
 			pathRegExp,
-			screenKey: ScreenKey.Author
+			screenKey: ScreenKey.Author,
 		} as Route<DialogKey, ScreenKey>;
 	})(),
 ];
 export default routes;
 
-export function createArticleSlug(articlePathParams: { [key: string]: string }) {
-	return articlePathParams['sourceSlug'] + '_' + articlePathParams['articleSlug'];
+export function createArticleSlug(articlePathParams: {
+	[key: string]: string;
+}) {
+	return (
+		articlePathParams['sourceSlug'] + '_' + articlePathParams['articleSlug']
+	);
 }

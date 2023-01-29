@@ -14,38 +14,38 @@ import PackageVersionInfo from './PackageVersionInfo';
 declare global {
 	interface AppWindow {
 		// iOS keyboard scroll bug
-		isFocusedOnField: boolean
+		isFocusedOnField: boolean;
 	}
-	interface AlertContentScriptWindow { }
-	interface EmbedWindow { }
-	interface ReaderWindow { }
+	interface AlertContentScriptWindow {}
+	interface EmbedWindow {}
+	interface ReaderWindow {}
 	interface Window {
 		reallyreadit: {
-			alertContentScript?: AlertContentScriptWindow,
-			app?: AppWindow,
-			embed?: EmbedWindow,
+			alertContentScript?: AlertContentScriptWindow;
+			app?: AppWindow;
+			embed?: EmbedWindow;
 			extension?: {
 				config?: {
-					apiServer: HttpEndpoint,
-					cookieName: string,
-					cookieDomain: string,
-					staticServer: HttpEndpoint,
-					webServer: HttpEndpoint,
-					version: PackageVersionInfo
-				},
-				injectInlineStyles?: () => void,
-				injectSvgElements?: () => void
-			},
+					apiServer: HttpEndpoint;
+					cookieName: string;
+					cookieDomain: string;
+					staticServer: HttpEndpoint;
+					webServer: HttpEndpoint;
+					version: PackageVersionInfo;
+				};
+				injectInlineStyles?: () => void;
+				injectSvgElements?: () => void;
+			};
 			nativeClient?: {
-				reader: ReaderWindow
-			}
-		},
+				reader: ReaderWindow;
+			};
+		};
 		webkit: {
 			messageHandlers: {
 				reallyreadit: {
-					postMessage: (message: any) => void
-				}
-			}
-		}
+					postMessage: (message: any) => void;
+				};
+			};
+		};
 	}
 }

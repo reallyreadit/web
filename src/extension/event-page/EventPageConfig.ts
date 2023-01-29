@@ -1,4 +1,4 @@
 interface EventPageConfig {
-	articleUnlockThreshold: number
+	articleUnlockThreshold: number;
 }
 export default EventPageConfig;

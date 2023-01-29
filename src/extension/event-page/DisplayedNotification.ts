@@ -1,4 +1,4 @@
 export default interface DisplayedNotification {
-	id: string,
-	date: number
+	id: string;
+	date: number;
 }

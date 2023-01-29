@@ -1,27 +1,23 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-import { CancellationToken } from "./AsyncTracker";
-import Fetchable from "./Fetchable";
-import { isProblemDetails, ProblemDetails } from "./ProblemDetails";
-import { FailureResult, ResultType } from "./Result";
+import { CancellationToken } from './AsyncTracker';
+import Fetchable from './Fetchable';
+import { isProblemDetails, ProblemDetails } from './ProblemDetails';
+import { FailureResult, ResultType } from './Result';
 
 export function formatCurrency(amount: number) {
-	return (amount / 100)
-		.toLocaleString(
-			'en-US',
-			{
-				style: 'currency',
-				currency: 'usd'
-			}
-		);
+	return (amount / 100).toLocaleString('en-US', {
+		style: 'currency',
+		currency: 'usd',
+	});
 }
 export function formatIsoDateAsDotNet(isoDate: string) {
 	return isoDate.replace(/z$/i, '');
@@ -31,7 +27,7 @@ export function formatIsoDateAsUtc(isoDate: string) {
 }
 export function formatFetchable<T, U>(
 	fetchable: Fetchable<T>,
-	formatter: ((value: T) => U),
+	formatter: (value: T) => U,
 	loadingMessage?: string,
 	errorMessage?: string
 ) {
@@ -50,7 +46,9 @@ export function formatList<T>(list: T[]) {
 	if (list.length === 1) {
 		return list[0];
 	}
-	return `${list.slice(0, list.length - 1).join(', ')} & ${list[list.length - 1]}`;
+	return `${list.slice(0, list.length - 1).join(', ')} & ${
+		list[list.length - 1]
+	}`;
 }
 export function formatProblemDetails(problem: ProblemDetails) {
 	return problem.detail ?? problem.title;
@@ -60,8 +58,10 @@ export function formatTimestamp(timestamp: string) {
 		return timestamp;
 	}
 	return (
-		parseInt(timestamp.substr(5, 2)) + '/' +
-		parseInt(timestamp.substr(8, 2)) + '/' +
+		parseInt(timestamp.substr(5, 2)) +
+		'/' +
+		parseInt(timestamp.substr(8, 2)) +
+		'/' +
 		timestamp.substr(2, 2)
 	);
 }
@@ -74,12 +74,19 @@ export function truncateText(text: string, length: number) {
 export function formatPossessive(text: string) {
 	return `${text}'${text.endsWith('s') ? '' : 's'}`;
 }
-export function formatCountable(count: number, singular: string, plural?: string) {
-	return count === 1 ?
-		singular :
-		plural || singular + 's';
+export function formatCountable(
+	count: number,
+	singular: string,
+	plural?: string
+) {
+	return count === 1 ? singular : plural || singular + 's';
 }
-export function pad(input: string, direction: 'left' | 'right', padding: string, spaces: number) {
+export function pad(
+	input: string,
+	direction: 'left' | 'right',
+	padding: string,
+	spaces: number
+) {
 	while (padding.length < spaces) {
 		padding += padding;
 	}
@@ -92,44 +99,35 @@ export function pad(input: string, direction: 'left' | 'right', padding: string,
 export function generateRandomString(byteCount: number) {
 	const bytes = new Uint8Array(byteCount);
 	window.crypto.getRandomValues(bytes);
-	return bytes.reduce(
-		(result, byte) => result + byte.toString(16),
-		''
-	);
+	return bytes.reduce((result, byte) => result + byte.toString(16), '');
 }
 export function getPromiseErrorMessage(reason: any) {
 	if (!reason) {
 		return 'An unknown error occurred.';
 	}
-	if (
-		isProblemDetails(reason)
-	) {
+	if (isProblemDetails(reason)) {
 		return formatProblemDetails(reason);
 	}
-	if (
-		Array.isArray(reason) &&
-		typeof reason[0] === 'string'
-	) {
+	if (Array.isArray(reason) && typeof reason[0] === 'string') {
 		return reason[0];
 	}
-	if (
-		'message' in reason
-	) {
+	if ('message' in reason) {
 		return reason.message;
 	}
-	if (
-		typeof reason === 'string'
-	) {
+	if (typeof reason === 'string') {
 		return reason;
 	}
 	return 'An unknown error occurred.';
 }
-export function mapPromiseErrorToResultIfNotCancelled(reason: any, handler: (result: FailureResult<string>) => void) {
+export function mapPromiseErrorToResultIfNotCancelled(
+	reason: any,
+	handler: (result: FailureResult<string>) => void
+) {
 	if ((reason as CancellationToken)?.isCancelled) {
 		return;
 	}
 	handler({
 		type: ResultType.Failure,
-		error: getPromiseErrorMessage(reason)
+		error: getPromiseErrorMessage(reason),
 	});
 }

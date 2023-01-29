@@ -8,44 +8,39 @@
 //
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-const
-	path = require('path'),
+const path = require('path'),
 	del = require('del'),
 	fs = require('fs');
 
-const
-	project = require('../project'),
+const project = require('../project'),
 	createBuild = require('../createBuild'),
 	authServiceLinkHandler = require('./client/authServiceLinkHandler'),
-	appConfigPath = path.posix.join(project.srcDir, 'app/server/config.{env}.json');
+	appConfigPath = path.posix.join(
+		project.srcDir,
+		'app/server/config.{env}.json'
+	);
 
-const package = JSON.parse(
-	fs
-		.readFileSync('./package.json')
-		.toString()
-);
+const packageData = JSON.parse(fs.readFileSync('./package.json').toString());
 
 const app = createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'app/client/main.ts'),
-		fileName: `bundle-${package['it.reallyread'].version.app}.js`
+		fileName: `bundle-${packageData['it.reallyread'].version.app}.js`,
 	},
 	scss: {
 		appConfig: {
-			path: appConfigPath
+			path: appConfigPath,
 		},
-		fileName: `bundle-${package['it.reallyread'].version.app}.css`,
+		fileName: `bundle-${packageData['it.reallyread'].version.app}.css`,
 		files: [
 			`${project.srcDir}/app/**/*.{css,scss}`,
 			`${project.srcDir}/common/components/**/*.{css,scss}`,
-			`${project.srcDir}/common/styles/reset.css`
-		]
+			`${project.srcDir}/common/styles/reset.css`,
+		],
 	},
-	staticAssets: [
-		`${project.srcDir}/app/client/.well-known/**/*`
-	],
+	staticAssets: [`${project.srcDir}/app/client/.well-known/**/*`],
 	templates: {
-		data: env => {
+		data: (env) => {
 			let staticServerUrl;
 			switch (env) {
 				case project.env.dev:
@@ -58,26 +53,21 @@ const app = createBuild({
 					throw new Error('Unexpected environment');
 			}
 			return {
-				'embed_iframe_version': package['it.reallyread'].version.embedIframe,
-				'static_server_url': staticServerUrl
+				embed_iframe_version: packageData['it.reallyread'].version.embedIframe,
+				static_server_url: staticServerUrl,
 			};
 		},
 		extension: '.html',
-		files: [
-			`${project.srcDir}/app/client/embed-iframe-bridge/index.mustache`,
-		]
+		files: [`${project.srcDir}/app/client/embed-iframe-bridge/index.mustache`],
 	},
-	path: 'app/client'
+	path: 'app/client',
 });
 
 function clean(env) {
 	return del(project.getOutPath('app/client', env));
 }
 function build(env) {
-	return Promise.all([
-		app.build(env),
-		authServiceLinkHandler.build(env)
-	]);
+	return Promise.all([app.build(env), authServiceLinkHandler.build(env)]);
 }
 function watch() {
 	app.watch();
@@ -85,5 +75,7 @@ function watch() {
 }
 
 module.exports = {
-	clean, build, watch
-}
+	clean,
+	build,
+	watch,
+};

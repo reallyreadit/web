@@ -14,19 +14,25 @@ import Page from '../../common/reading/Page';
 import createPageParseResult from '../../common/reading/createPageParseResult';
 import Reader from '../../common/reading/Reader';
 import * as ReactDOM from 'react-dom';
-import * as  React from 'react';
+import * as React from 'react';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
 import UserArticle from '../../common/models/UserArticle';
 import { ShareEvent } from '../../common/sharing/ShareEvent';
 import CommentThread from '../../common/models/CommentThread';
 import { mergeComment, updateComment } from '../../common/comments';
 import parseDocumentContent from '../../common/contentParsing/parseDocumentContent';
-import styleArticleDocument, { createByline, applyDisplayPreferenceToArticleDocument, updateArticleHeader } from '../../common/reading/styleArticleDocument';
+import styleArticleDocument, {
+	createByline,
+	applyDisplayPreferenceToArticleDocument,
+	updateArticleHeader,
+} from '../../common/reading/styleArticleDocument';
 import pruneDocument from '../../common/contentParsing/pruneDocument';
 import procesLazyImages from '../../common/contentParsing/processLazyImages';
 import { findPublisherConfig } from '../../common/contentParsing/configuration/PublisherConfig';
 import configs from '../../common/contentParsing/configuration/configs';
-import ReaderUIEmbed, { Props as EmbedProps } from '../../common/reader-app/ReaderUIEmbed';
+import ReaderUIEmbed, {
+	Props as EmbedProps,
+} from '../../common/reader-app/ReaderUIEmbed';
 import PostForm from '../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../common/models/social/Post';
 import CommentForm from '../../common/models/social/CommentForm';
@@ -53,9 +59,9 @@ import { createArticleSlug } from '../../common/routing/routes';
 import { parseQueryString } from '../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../common/ParserDocumentLocation';
 import ShareResponse from '../../common/sharing/ShareResponse';
-import {DeviceType} from '../../common/DeviceType';
+import { DeviceType } from '../../common/DeviceType';
 import { AppPlatform } from '../../common/AppPlatform';
-import {createUrl} from '../../common/HttpEndpoint';
+import { createUrl } from '../../common/HttpEndpoint';
 
 const initData = window.reallyreadit.nativeClient.reader.initData;
 
@@ -63,9 +69,7 @@ const initData = window.reallyreadit.nativeClient.reader.initData;
 // with the article's URL provided as a query parameter.
 let documentLocation: ParserDocumentLocation;
 if (window.location.protocol === 'file:') {
-	documentLocation = new URL(
-		parseQueryString(window.location.search)['url']
-	);
+	documentLocation = new URL(parseQueryString(window.location.search)['url']);
 } else {
 	documentLocation = window.location;
 }
@@ -94,9 +98,9 @@ window.reallyreadit = {
 		...window.reallyreadit.nativeClient,
 		reader: {
 			...window.reallyreadit.nativeClient.reader,
-			...messagingContext.createIncomingMessageHandlers()
-		}
-	}
+			...messagingContext.createIncomingMessageHandlers(),
+		},
+	},
 };
 
 messagingContext.addListener(
@@ -109,8 +113,7 @@ messagingContext.addListener(
 	}
 );
 
-let
-	article: UserArticle,
+let article: UserArticle,
 	displayPreference = initData.displayPreference,
 	page: Page,
 	userPage: UserPage,
@@ -123,10 +126,9 @@ let
 function updateDisplayPreference(preference: DisplayPreference | null) {
 	let textSizeChanged = false;
 	if (preference) {
-		textSizeChanged = (
+		textSizeChanged =
 			displayPreference == null ||
-			displayPreference.textSize !== preference.textSize
-		);
+			displayPreference.textSize !== preference.textSize;
 		displayPreference = preference;
 		render();
 	}
@@ -136,12 +138,11 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 	}
 }
 
-const
-	metadataParseResult = parseDocumentMetadata({
-		url: documentLocation
+const metadataParseResult = parseDocumentMetadata({
+		url: documentLocation,
 	}),
 	contentParseResult = parseDocumentContent({
-		url: documentLocation
+		url: documentLocation,
 	});
 
 const { contentRoot, scrollRoot } = pruneDocument(contentParseResult);
@@ -153,60 +154,56 @@ document.documentElement.style.opacity = '0';
 styleArticleDocument({
 	header: {
 		title: metadataParseResult.metadata.article.title,
-		byline: createByline(metadataParseResult.metadata.article.authors)
+		byline: createByline(metadataParseResult.metadata.article.authors),
 	},
 	transitionElement: document.documentElement,
-	completeTransition: true
+	completeTransition: true,
 });
 
-const publisherConfig = findPublisherConfig(configs.publishers, documentLocation.hostname);
+const publisherConfig = findPublisherConfig(
+	configs.publishers,
+	documentLocation.hostname
+);
 procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
 
-const reader = new Reader(
-	event => {
-		messagingContext.sendMessage(
-			{
-				type: 'commitReadState',
-				data: {
-					commitData: {
-						readState: event.readStateArray,
-						userPageId: userPage.id
-					},
-					isCompletionCommit: event.isCompletionCommit
-				}
+const reader = new Reader((event) => {
+	messagingContext.sendMessage(
+		{
+			type: 'commitReadState',
+			data: {
+				commitData: {
+					readState: event.readStateArray,
+					userPageId: userPage.id,
+				},
+				isCompletionCommit: event.isCompletionCommit,
 			},
-			(result: Result<UserArticle, ProblemDetails>) => {
-				switch (result.type) {
-					case ResultType.Success:
-						article = result.value;
-						if (article.isRead && !embedProps.comments) {
-							loadComments();
-						} else {
-							render();
-						}
-						break;
-				}
+		},
+		(result: Result<UserArticle, ProblemDetails>) => {
+			switch (result.type) {
+				case ResultType.Success:
+					article = result.value;
+					if (article.isRead && !embedProps.comments) {
+						loadComments();
+					} else {
+						render();
+					}
+					break;
 			}
-		)
-	}
-);
+		}
+	);
+});
 
 // document messaging interface
-window.addEventListener(
-	'message',
-	event => {
-		if (
-			!/(^|\.)readup\.org$/.test(documentLocation.hostname)
-		) {
-			return;
-		}
-		switch (event.data?.type as String || null) {
-			case 'toggleVisualDebugging':
-				page.toggleVisualDebugging();
-				break;
-		}
+window.addEventListener('message', (event) => {
+	if (!/(^|\.)readup\.org$/.test(documentLocation.hostname)) {
+		return;
 	}
-);
+	switch ((event.data?.type as String) || null) {
+		case 'toggleVisualDebugging':
+			page.toggleVisualDebugging();
+			break;
+	}
+});
 
 // handle article and embed links
 function handleLink(url: string) {
@@ -214,9 +211,7 @@ function handleLink(url: string) {
 	if (result.isInternal && result.route) {
 		if (result.route.screenKey === ScreenKey.Read) {
 			readArticle(
-				createArticleSlug(
-					result.route.getPathParams(result.url.pathname)
-				)
+				createArticleSlug(result.route.getPathParams(result.url.pathname))
 			);
 		} else {
 			navTo(result.url.href);
@@ -231,39 +226,33 @@ function handleLink(url: string) {
 
 function handleArticleLink(this: HTMLAnchorElement, ev: MouseEvent) {
 	ev.preventDefault();
-	if (
-		this.hasAttribute('href')
-	) {
+	if (this.hasAttribute('href')) {
 		handleLink(this.href);
 	}
 }
 
-Array
-	.from(
-		document.getElementsByTagName('a')
-	)
-	.forEach(
-		anchor => {
-			anchor.addEventListener('click', handleArticleLink);
-		}
-	);
+Array.from(document.getElementsByTagName('a')).forEach((anchor) => {
+	anchor.addEventListener('click', handleArticleLink);
+});
 
 // user interface
 const dialogService = new DialogService({
 	setState: (delegate, callback) => {
-		render(
-			delegate(embedProps),
-			callback
-		);
-	}
+		render(delegate(embedProps), callback);
+	},
 });
 
 function onCreateAbsoluteUrl(path: string) {
-	return createUrl(window.reallyreadit.nativeClient.reader.config.webServer, path);
+	return createUrl(
+		window.reallyreadit.nativeClient.reader.config.webServer,
+		path
+	);
 }
 
-let
-	embedProps: Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user' >> = {
+let embedProps: Pick<
+		EmbedProps,
+		Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user'>
+	> = {
 		appPlatform: initData.appPlatform,
 		comments: null,
 		deviceType,
@@ -282,7 +271,7 @@ let
 		onPostCommentRevision: postCommentRevision,
 		onReportArticleIssue: reportArticleIssue,
 		onShare: share,
-		onToggleStar: toggleStar
+		onToggleStar: toggleStar,
 	},
 	embedRootElement: HTMLDivElement;
 
@@ -305,69 +294,64 @@ function insertEmbed() {
 	// create scroll service
 	const scrollService = new ScrollService({
 		scrollContainer: window,
-		setBarVisibility: isVisible => {
+		setBarVisibility: (isVisible) => {
 			if (isVisible === embedProps.isHeaderHidden) {
 				setStatusBarVisibility(isVisible);
 				render({
-					isHeaderHidden: !isVisible
+					isHeaderHidden: !isVisible,
 				});
 			}
-		}
+		},
 	});
 	// add click listener to toggle header
-	contentRoot.addEventListener(
-		'click',
-		() => {
-			const isHeaderHidden = !embedProps.isHeaderHidden;
-			scrollService.setBarVisibility(!isHeaderHidden);
-			setStatusBarVisibility(!isHeaderHidden);
-			render({
-				isHeaderHidden
-			});
-		}
-	);
+	contentRoot.addEventListener('click', () => {
+		const isHeaderHidden = !embedProps.isHeaderHidden;
+		scrollService.setBarVisibility(!isHeaderHidden);
+		setStatusBarVisibility(!isHeaderHidden);
+		render({
+			isHeaderHidden,
+		});
+	});
 }
 /**
  * Renders or re-renders the reader UI embed.
  */
-function render(props?: Partial<Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>>, callback?: () => void) {
+function render(
+	props?: Partial<
+		Pick<EmbedProps, Exclude<keyof EmbedProps, 'article' | 'user'>>
+	>,
+	callback?: () => void
+) {
 	ReactDOM.render(
-		React.createElement(
-			ReaderUIEmbed,
-			{
-				...(
-					embedProps = {
-						...embedProps,
-						...props
-					}
-				),
-				article: {
-					isLoading: !article,
-					value: article
-				},
-				displayPreference,
-				user
-			}
-		),
+		React.createElement(ReaderUIEmbed, {
+			...(embedProps = {
+				...embedProps,
+				...props,
+			}),
+			article: {
+				isLoading: !article,
+				value: article,
+			},
+			displayPreference,
+			user,
+		}),
 		embedRootElement,
 		callback
 	);
 }
 
 function linkAuthServiceAccount(provider: AuthServiceProvider) {
-	return new Promise<TwitterRequestToken>(
-			resolve => {
-				messagingContext.sendMessage(
-					{
-						type: 'requestTwitterWebViewRequestToken'
-					},
-					resolve
-				);
-			}
-		)
+	return new Promise<TwitterRequestToken>((resolve) => {
+		messagingContext.sendMessage(
+			{
+				type: 'requestTwitterWebViewRequestToken',
+			},
+			resolve
+		);
+	})
 		.then(
-			token => new Promise<WebAuthResponse>(
-				resolve => {
+			(token) =>
+				new Promise<WebAuthResponse>((resolve) => {
 					const url = new URL('https://api.twitter.com/oauth/authorize');
 					url.searchParams.set('oauth_token', token.value);
 					messagingContext.sendMessage(
@@ -375,84 +359,76 @@ function linkAuthServiceAccount(provider: AuthServiceProvider) {
 							type: 'requestWebAuthentication',
 							data: {
 								authUrl: url.href,
-								callbackScheme: 'readup'
-							}
+								callbackScheme: 'readup',
+							},
 						},
 						resolve
 					);
-				}
-			)
+				})
 		)
-		.then(
-			webAuthResponse => new Promise<AuthServiceAccountAssociation>(
-				(resolve, reject) => {
-					if (!webAuthResponse.callbackURL) {
-						if (webAuthResponse.error === 'Unsupported') {
-							dialogService.openDialog(
-								React.createElement(
-									UpdateRequiredDialog,
-									{
-										message: 'You can link your Twitter account on the Readup website instead.',
-										onClose: dialogService.closeDialog,
-										updateType: 'ios',
-										versionRequired: '13'
-									}
-								),
-								'push'
-							);
-						}
-						reject(new Error(webAuthResponse.error ?? 'Unknown'));
-						return;
+		.then((webAuthResponse) =>
+			new Promise<AuthServiceAccountAssociation>((resolve, reject) => {
+				if (!webAuthResponse.callbackURL) {
+					if (webAuthResponse.error === 'Unsupported') {
+						dialogService.openDialog(
+							React.createElement(UpdateRequiredDialog, {
+								message:
+									'You can link your Twitter account on the Readup website instead.',
+								onClose: dialogService.closeDialog,
+								updateType: 'ios',
+								versionRequired: '13',
+							}),
+							'push'
+						);
 					}
-					const url = new URL(webAuthResponse.callbackURL);
-					if (url.searchParams.has('denied')) {
-						reject(new Error('Cancelled'));
-						return;
-					}
-					messagingContext.sendMessage(
-						{
-							type: 'linkTwitterAccount',
-							data: {
-								oauthToken: url.searchParams.get('oauth_token'),
-								oauthVerifier: url.searchParams.get('oauth_verifier')
-							}
+					reject(new Error(webAuthResponse.error ?? 'Unknown'));
+					return;
+				}
+				const url = new URL(webAuthResponse.callbackURL);
+				if (url.searchParams.has('denied')) {
+					reject(new Error('Cancelled'));
+					return;
+				}
+				messagingContext.sendMessage(
+					{
+						type: 'linkTwitterAccount',
+						data: {
+							oauthToken: url.searchParams.get('oauth_token'),
+							oauthVerifier: url.searchParams.get('oauth_verifier'),
 						},
-						resolve
-					);
+					},
+					resolve
+				);
+			}).then((association) => {
+				if (!user.hasLinkedTwitterAccount) {
+					user = {
+						...user,
+						hasLinkedTwitterAccount: true,
+					};
+					render();
 				}
-			)
-			.then(
-				association => {
-					if (!user.hasLinkedTwitterAccount) {
-						user = {
-							...user,
-							hasLinkedTwitterAccount: true
-						};
-						render();
-					}
-					return association;
-				}
-			)
+				return association;
+			})
 		);
 }
 
 function loadComments() {
 	render({
 		comments: {
-			isLoading: true
-		}
+			isLoading: true,
+		},
 	});
 	messagingContext.sendMessage(
 		{
 			type: 'getComments',
-			data: article.slug
+			data: article.slug,
 		},
 		(comments: CommentThread[]) => {
 			render({
 				comments: {
 					isLoading: false,
-					value: comments
-				}
+					value: comments,
+				},
 			});
 		}
 	);
@@ -460,69 +436,67 @@ function loadComments() {
 
 function navBack() {
 	messagingContext.sendMessage({
-		type: 'navBack'
+		type: 'navBack',
 	});
 }
 
 function navTo(url: string) {
 	messagingContext.sendMessage({
 		type: 'navTo',
-		data: url
+		data: url,
 	});
 }
 
 function openExternalUrl(url: string) {
 	messagingContext.sendMessage({
 		type: 'openExternalUrl',
-		data: url
+		data: url,
 	});
 }
 
 function postArticle(form: PostForm) {
-	return new Promise<Post>(
-		resolve => {
-			messagingContext.sendMessage(
-				{
-					type: 'postArticle',
-					data: form
-				},
-				(post: Post) => {
-					article = post.article;
-					if (post.comment) {
-						render({
-							comments: {
-								...embedProps.comments,
-								value: mergeComment(
-									createCommentThread(post),
-									embedProps.comments.value
-								)
-							}
-						});
-					} else {
-						render();
-					}
-					resolve(post);
+	return new Promise<Post>((resolve) => {
+		messagingContext.sendMessage(
+			{
+				type: 'postArticle',
+				data: form,
+			},
+			(post: Post) => {
+				article = post.article;
+				if (post.comment) {
+					render({
+						comments: {
+							...embedProps.comments,
+							value: mergeComment(
+								createCommentThread(post),
+								embedProps.comments.value
+							),
+						},
+					});
+				} else {
+					render();
 				}
-			);
-		}
-	);
+				resolve(post);
+			}
+		);
+	});
 }
 
 function postComment(form: CommentForm) {
-	return new Promise<void>(resolve => {
+	return new Promise<void>((resolve) => {
 		messagingContext.sendMessage(
 			{
 				type: 'postComment',
-				data: form
+				data: form,
 			},
-			(result: { article: UserArticle, comment: CommentThread }) => {
+			(result: { article: UserArticle; comment: CommentThread }) => {
 				resolve();
 				article = result.article;
 				render({
 					comments: {
 						...embedProps.comments,
-						value: mergeComment(result.comment, embedProps.comments.value)
-					}
+						value: mergeComment(result.comment, embedProps.comments.value),
+					},
 				});
 			}
 		);
@@ -530,138 +504,131 @@ function postComment(form: CommentForm) {
 }
 
 function postCommentAddendum(form: CommentAddendumForm) {
-	return new Promise<CommentThread>(
-		resolve => {
-			messagingContext.sendMessage(
-				{
-					type: 'postCommentAddendum',
-					data: form
-				},
-				(comment: CommentThread) => {
-					render({
-						comments: {
-							...embedProps.comments,
-							value: updateComment(comment, embedProps.comments.value)
-						}
-					});
-					resolve(comment);
-				}
-			);
-		}
-	);
+	return new Promise<CommentThread>((resolve) => {
+		messagingContext.sendMessage(
+			{
+				type: 'postCommentAddendum',
+				data: form,
+			},
+			(comment: CommentThread) => {
+				render({
+					comments: {
+						...embedProps.comments,
+						value: updateComment(comment, embedProps.comments.value),
+					},
+				});
+				resolve(comment);
+			}
+		);
+	});
 }
 
 function postCommentRevision(form: CommentRevisionForm) {
-	return new Promise<CommentThread>(
-		resolve => {
-			messagingContext.sendMessage(
-				{
-					type: 'postCommentRevision',
-					data: form
-				},
-				(comment: CommentThread) => {
-					render({
-						comments: {
-							...embedProps.comments,
-							value: updateComment(comment, embedProps.comments.value)
-						}
-					});
-					resolve(comment);
-				}
-			);
-		}
-	);
+	return new Promise<CommentThread>((resolve) => {
+		messagingContext.sendMessage(
+			{
+				type: 'postCommentRevision',
+				data: form,
+			},
+			(comment: CommentThread) => {
+				render({
+					comments: {
+						...embedProps.comments,
+						value: updateComment(comment, embedProps.comments.value),
+					},
+				});
+				resolve(comment);
+			}
+		);
+	});
 }
 
 function reportArticleIssue(request: ArticleIssueReportRequest) {
 	messagingContext.sendMessage({
 		type: 'reportArticleIssue',
-		data: request
+		data: request,
 	});
 }
 
 function changeDisplayPreference(preference: DisplayPreference) {
 	updateDisplayPreference(preference);
-	return new Promise<DisplayPreference>(
-		resolve => {
-			messagingContext.sendMessage(
-				{
-					type: 'changeDisplayPreference',
-					data: preference
-				},
-				(preference: DisplayPreference) => {
-					resolve(preference);
-				}
-			);
-		}
-	);
+	return new Promise<DisplayPreference>((resolve) => {
+		messagingContext.sendMessage(
+			{
+				type: 'changeDisplayPreference',
+				data: preference,
+			},
+			(preference: DisplayPreference) => {
+				resolve(preference);
+			}
+		);
+	});
 }
 
 function deleteComment(form: CommentRevisionForm) {
-	return new Promise<CommentThread>(
-		resolve => {
-			messagingContext.sendMessage(
-				{
-					type: 'deleteComment',
-					data: form
-				},
-				(comment: CommentThread) => {
-					render({
-						comments: {
-							...embedProps.comments,
-							value: updateComment(comment, embedProps.comments.value)
-						}
-					});
-					resolve(comment);
-				}
-			);
-		}
-	);
+	return new Promise<CommentThread>((resolve) => {
+		messagingContext.sendMessage(
+			{
+				type: 'deleteComment',
+				data: form,
+			},
+			(comment: CommentThread) => {
+				render({
+					comments: {
+						...embedProps.comments,
+						value: updateComment(comment, embedProps.comments.value),
+					},
+				});
+				resolve(comment);
+			}
+		);
+	});
 }
 
 function readArticle(slug: string) {
 	messagingContext.sendMessage({
 		type: 'readArticle',
-		data: slug
+		data: slug,
 	});
 }
 
 function setStatusBarVisibility(isVisible: boolean) {
 	messagingContext.sendMessage({
 		type: 'setStatusBarVisibility',
-		data: isVisible
+		data: isVisible,
 	});
 }
-
 
 function share(data: ShareEvent): ShareResponse {
 	messagingContext.sendMessage({
 		type: 'share',
-		data
+		data,
 	});
 
 	return {
-		channels: []
+		channels: [],
 	};
 }
 
 function toggleStar() {
 	return new Promise<void>((resolve, reject) => {
-		messagingContext.sendMessage({
-			type: article.dateStarred ? 'unstarArticle' : 'starArticle',
-			data: {
-				articleId: article.id
+		messagingContext.sendMessage(
+			{
+				type: article.dateStarred ? 'unstarArticle' : 'starArticle',
+				data: {
+					articleId: article.id,
+				},
+			},
+			(result: UserArticle) => {
+				if (result) {
+					article = result;
+					render();
+					resolve();
+				} else {
+					reject();
+				}
 			}
-		},
-		(result: UserArticle) => {
-			if (result) {
-				article = result;
-				render();
-				resolve();
-			} else {
-				reject();
-			}
-		})
+		);
 	});
 }
 
@@ -673,7 +640,7 @@ updateDisplayPreference(displayPreference);
 messagingContext.sendMessage(
 	{
 		type: 'parseResult',
-		data: createPageParseResult(metadataParseResult, contentParseResult)
+		data: createPageParseResult(metadataParseResult, contentParseResult),
 	},
 	(result: ArticleLookupResult) => {
 		// set globals
@@ -683,7 +650,7 @@ messagingContext.sendMessage(
 		// update the title and byline
 		updateArticleHeader({
 			title: result.userArticle.title,
-			byline: createByline(result.userArticle.articleAuthors)
+			byline: createByline(result.userArticle.articleAuthors),
 		});
 		// set up the reader
 		page = new Page(contentParseResult.primaryTextContainers);
@@ -696,26 +663,20 @@ messagingContext.sendMessage(
 			loadComments();
 		} else if (page.getBookmarkScrollTop() > window.innerHeight) {
 			dialogService.openDialog(
-				React.createElement(
-					BookmarkDialog,
-					{
-						onClose: dialogService.closeDialog,
-						onSubmit: () => {
-							const scrollTop = page.getBookmarkScrollTop();
-							if (scrollTop > window.innerHeight) {
-								contentRoot.style.opacity = '0';
-								setTimeout(
-									() => {
-										window.scrollTo(0, scrollTop);
-										contentRoot.style.opacity = '1';
-									},
-									350
-								);
-							}
-							return Promise.resolve();
+				React.createElement(BookmarkDialog, {
+					onClose: dialogService.closeDialog,
+					onSubmit: () => {
+						const scrollTop = page.getBookmarkScrollTop();
+						if (scrollTop > window.innerHeight) {
+							contentRoot.style.opacity = '0';
+							setTimeout(() => {
+								window.scrollTo(0, scrollTop);
+								contentRoot.style.opacity = '1';
+							}, 350);
 						}
-					}
-				)
+						return Promise.resolve();
+					},
+				})
 			);
 		}
 	}

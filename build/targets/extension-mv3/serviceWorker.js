@@ -11,18 +11,21 @@
 const path = require('path');
 
 const project = require('../../project'),
-	  createBuild = require('../../createBuild');
+	createBuild = require('../../createBuild');
 
 const build = createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'extension/mv3/service-worker.ts'),
 		appConfig: {
-			path: path.posix.join(project.srcDir, 'extension/common/config.{env}.json'),
-			key: 'window.reallyreadit.extension.config'
+			path: path.posix.join(
+				project.srcDir,
+				'extension/common/config.{env}.json'
+			),
+			key: 'window.reallyreadit.extension.config',
 		},
-		sourceMaps: false
+		sourceMaps: false,
 	},
-	path: 'extension-mv3/service-worker'
+	path: 'extension-mv3/service-worker',
 });
 
 module.exports = build;

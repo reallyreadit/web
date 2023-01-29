@@ -1,13 +1,13 @@
 export interface Cached<T> {
-	value: T,
-	timestamp: number,
-	expirationTimespan: number
+	value: T;
+	timestamp: number;
+	expirationTimespan: number;
 }
 export function cache<T>(value: T, expirationTimespan: number) {
 	return {
 		value,
 		timestamp: Date.now(),
-		expirationTimespan
+		expirationTimespan,
 	};
 }
 export function isExpired<T>(item: Cached<T>) {

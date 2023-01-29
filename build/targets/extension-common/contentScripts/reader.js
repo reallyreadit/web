@@ -1,21 +1,22 @@
-const
-	del = require('del'),
+const del = require('del'),
 	fs = require('fs'),
 	path = require('path');
 
-const
-	project = require('../../../project'),
+const project = require('../../../project'),
 	createBuild = require('../../../createBuild'),
-	appConfigPath = path.posix.join(project.srcDir, 'extension/common/config.{env}.json');
+	appConfigPath = path.posix.join(
+		project.srcDir,
+		'extension/common/config.{env}.json'
+	);
 
 const jsBundleFileName = 'bundle.js';
 
 let targetPath;
 const setTargetPath = (targetPathParam) => {
 	targetPath = targetPathParam;
-	createHtmlTemplateBuild()
-	createContentScriptBuild()
-}
+	createHtmlTemplateBuild();
+	createContentScriptBuild();
+};
 
 // TODO: shouldn't we use a webpack plugin for inline styling,
 // rather than writing it ourselves? ("style" plugin afaik)
@@ -75,7 +76,10 @@ const createHtmlTemplateBuild = () => {
 				// when executed with eval() like below.
 				// See the execution example in https://webpack.js.org/configuration/output/#outputlibrary
 				eval(fs.readFileSync(template).toString());
-				fs.writeFileSync(path.join(buildInfo.outPath, 'svgs.html'), html.svgTemplates.default);
+				fs.writeFileSync(
+					path.join(buildInfo.outPath, 'svgs.html'),
+					html.svgTemplates.default
+				);
 				fs.unlinkSync(template);
 				if (resolve) {
 					resolve();
@@ -84,81 +88,80 @@ const createHtmlTemplateBuild = () => {
 		},
 		path: targetPath,
 		webpack: {
-			entry: path.posix.join(project.srcDir, 'extension/content-scripts/reader/templates/html.ts'),
+			entry: path.posix.join(
+				project.srcDir,
+				'extension/content-scripts/reader/templates/html.ts'
+			),
 			fileName: 'html.js',
 			minify: false,
 			// https://webpack.js.org/configuration/output/#outputlibraryname
 			outputLibrary: 'html',
-			sourceMaps: false
-		}
+			sourceMaps: false,
+		},
 	});
-}
+};
 
-let
-	contentScriptBuild
+let contentScriptBuild;
 const createContentScriptBuild = () => {
 	contentScriptBuild = createBuild({
 		onBuildComplete: (function () {
 			const completedBuilds = new Set();
 			return (buildInfo, resolve) => {
 				completedBuilds.add(buildInfo.build);
-				if (
-					completedBuilds.has('scss') &&
-					completedBuilds.has('webpack')
-				) {
+				if (completedBuilds.has('scss') && completedBuilds.has('webpack')) {
 					// build the html template
-					htmlTemplateBuild
-						.build(buildInfo.env)
-						.then(() => {
-							// concat the inline CSS injector and SVG injectors
-							// into to the built js bundle
-							const jsBundleFilePath = path.join(buildInfo.outPath, jsBundleFileName);
-							const styleInjectorJs = styleInliningTemplate.replace(
-								'{CSS_BUNDLE}',
-								fs
-									.readFileSync(path.join(buildInfo.outPath, 'bundle.css'))
-									.toString()
-									.replace(/`/g, '\\`')
-								// In contrast to the native reader, we're not base64 encoding fonts here
-								// we load them from the extension's static files;
-								// extension/content-scripts/ui/fonts
-							);
-							fs.writeFileSync(
-								jsBundleFilePath,
-								fs
-									.readFileSync(jsBundleFilePath)
-									.toString()
-									.concat(
-										'\n',
-										styleInjectorJs,
-										'\n',
-										svgInliningTemplate.replace(
-											'{SVG_SYMBOLS}',
-											fs
-												.readFileSync(path.join(buildInfo.outPath, 'svgs.html'))
-												.toString()
-										)
+					htmlTemplateBuild.build(buildInfo.env).then(() => {
+						// concat the inline CSS injector and SVG injectors
+						// into to the built js bundle
+						const jsBundleFilePath = path.join(
+							buildInfo.outPath,
+							jsBundleFileName
+						);
+						const styleInjectorJs = styleInliningTemplate.replace(
+							'{CSS_BUNDLE}',
+							fs
+								.readFileSync(path.join(buildInfo.outPath, 'bundle.css'))
+								.toString()
+								.replace(/`/g, '\\`')
+							// In contrast to the native reader, we're not base64 encoding fonts here
+							// we load them from the extension's static files;
+							// extension/content-scripts/ui/fonts
+						);
+						fs.writeFileSync(
+							jsBundleFilePath,
+							fs
+								.readFileSync(jsBundleFilePath)
+								.toString()
+								.concat(
+									'\n',
+									styleInjectorJs,
+									'\n',
+									svgInliningTemplate.replace(
+										'{SVG_SYMBOLS}',
+										fs
+											.readFileSync(path.join(buildInfo.outPath, 'svgs.html'))
+											.toString()
 									)
-							);
-							// cleanup
-							del([
-								// This is a hack to not delete the bundle.css while developing
-								// A watcher could call this onBuildComplete without rebuilding the styles
-								// (when they didn't change), leading to missing inputs for the onBuildComplete.
-								...(buildInfo.env !== project.env.dev ?
-									[`${buildInfo.outPath}/bundle.css*`] : []
 								)
-							])
-								.then(resolve || (() => { }));
-						});
+						);
+						// cleanup
+						del([
+							// This is a hack to not delete the bundle.css while developing
+							// A watcher could call this onBuildComplete without rebuilding the styles
+							// (when they didn't change), leading to missing inputs for the onBuildComplete.
+							...(buildInfo.env !== project.env.dev
+								? [`${buildInfo.outPath}/bundle.css*`]
+								: []),
+						]).then(resolve || (() => {}));
+					});
 				} else {
 					resolve();
 				}
 			};
-		}()),
+		})(),
 		scss: {
 			appConfig: {
-				path: appConfigPath
+				path: appConfigPath,
 			},
 			// fileName: `bundle-${package['it.reallyread'].version.app}.css`,
 			// how to get access to the version inside the content script?
@@ -167,19 +170,22 @@ const createContentScriptBuild = () => {
 				`${project.srcDir}/common/components/**/*.{css,scss}`,
 				`${project.srcDir}/common/styles/reset.css`,
 				`${project.srcDir}/common/reader-app/**/*.{css,scss}`,
-				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`
+				`${project.srcDir}/extension/content-scripts/reader/**/*.{css,scss}`,
 			],
 		},
 		webpack: {
 			appConfig: {
 				path: appConfigPath,
-				key: 'window.reallyreadit.extension.config'
+				key: 'window.reallyreadit.extension.config',
 			},
-			entry: path.posix.join(project.srcDir, 'extension/content-scripts/reader/main.ts')
+			entry: path.posix.join(
+				project.srcDir,
+				'extension/content-scripts/reader/main.ts'
+			),
 		},
-		path: targetPath
+		path: targetPath,
 	});
-}
+};
 
 function clean(env) {
 	return del(project.getOutPath(targetPath, env) + '/*');
@@ -192,5 +198,8 @@ function watch() {
 }
 
 module.exports = {
-	clean, build, watch, setTargetPath
+	clean,
+	build,
+	watch,
+	setTargetPath,
 };

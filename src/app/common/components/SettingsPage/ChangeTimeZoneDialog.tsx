@@ -1,46 +1,65 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import FieldsetDialog, { Props as FormDialogProps, State } from '../controls/FieldsetDialog';
+import FieldsetDialog, {
+	Props as FormDialogProps,
+	State,
+} from '../controls/FieldsetDialog';
 import { FetchFunction } from '../../serverApi/ServerApi';
-import TimeZoneSelectListItem, { TimeZoneSelectListItemValue } from '../../../../common/models/TimeZoneSelectListItem';
+import TimeZoneSelectListItem, {
+	TimeZoneSelectListItemValue,
+} from '../../../../common/models/TimeZoneSelectListItem';
 import Fetchable from '../../../../common/Fetchable';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import SelectList, { SelectListOption } from '../../../../common/components/SelectList';
+import SelectList, {
+	SelectListOption,
+} from '../../../../common/components/SelectList';
 
 interface Props {
-	currentTimeZoneId: number | null,
-	onChangeTimeZone: (id: number, displayName: string) => Promise<void>,
-	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>
+	currentTimeZoneId: number | null;
+	onChangeTimeZone: (id: number, displayName: string) => Promise<void>;
+	onGetTimeZones: FetchFunction<TimeZoneSelectListItem[]>;
 }
-export default class ChangeTimeZoneDialog extends FieldsetDialog<void, Props, Partial<State> & {
-	timeZoneSelectListItems: Fetchable<TimeZoneSelectListItem[]>,
-	timeZoneSelection: {
-		id: number,
-		selectListItem: TimeZoneSelectListItem
-	} | null
-}> {
+export default class ChangeTimeZoneDialog extends FieldsetDialog<
+	void,
+	Props,
+	Partial<State> & {
+		timeZoneSelectListItems: Fetchable<TimeZoneSelectListItem[]>;
+		timeZoneSelection: {
+			id: number;
+			selectListItem: TimeZoneSelectListItem;
+		} | null;
+	}
+> {
 	private readonly _asyncTracker = new AsyncTracker();
-	private readonly _selectTimeZone = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const selectListItem = this.state.timeZoneSelectListItems.value.find(zone => zone.key === e.currentTarget.value);
+	private readonly _selectTimeZone = (
+		e: React.ChangeEvent<HTMLSelectElement>
+	) => {
+		const selectListItem = this.state.timeZoneSelectListItems.value.find(
+			(zone) => zone.key === e.currentTarget.value
+		);
 		this.setState({
 			timeZoneSelection: {
 				id: (
-					selectListItem.value.find(value => value.id === this.props.currentTimeZoneId) ||
-					selectListItem.value.find(value => value.name === this._timeZoneName) ||
+					selectListItem.value.find(
+						(value) => value.id === this.props.currentTimeZoneId
+					) ||
+					selectListItem.value.find(
+						(value) => value.name === this._timeZoneName
+					) ||
 					selectListItem.value[0]
 				).id,
-				selectListItem
-			}
+				selectListItem,
+			},
 		});
 	};
 	private readonly _timeZoneName = DateTime.local().zoneName;
@@ -49,7 +68,7 @@ export default class ChangeTimeZoneDialog extends FieldsetDialog<void, Props, Pa
 			{
 				title: 'Change Time Zone',
 				submitButtonText: 'Save Changes',
-				successMessage: 'Time zone changed'
+				successMessage: 'Time zone changed',
 			},
 			props
 		);
@@ -57,60 +76,70 @@ export default class ChangeTimeZoneDialog extends FieldsetDialog<void, Props, Pa
 			...this.state,
 			isLoading: true,
 			timeZoneSelection: null,
-			timeZoneSelectListItems: props.onGetTimeZones(this._asyncTracker.addCallback(timeZoneSelectListItems => {
-				const selectedItem = timeZoneSelectListItems.value
-					.reduce(
-						(zones, item) => zones.concat(item.value.map(zone => ({ ...zone, key: item.key }))),
-						[] as (TimeZoneSelectListItemValue & { key: string })[]
-					)
-					.filter(
-						zone => this.props.currentTimeZoneId != null ?
-							zone.id === this.props.currentTimeZoneId :
-							zone.name === this._timeZoneName
-					)
-					.sort((a, b) => {
-						if (a.territory > b.territory) {
-							return 1;
-						}
-						if (a.territory < b.territory) {
-							return -1;
-						}
-						return 0;
-					})[0];
-				this.setState({
-					isLoading: false,
-					timeZoneSelectListItems,
-					timeZoneSelection: selectedItem ? {
-							id: this.props.currentTimeZoneId != null ?
-								this.props.currentTimeZoneId :
-								selectedItem.id,
-							selectListItem: timeZoneSelectListItems.value.find(item => item.key === selectedItem.key)
-						} :
-						null
-				});
-			}))
+			timeZoneSelectListItems: props.onGetTimeZones(
+				this._asyncTracker.addCallback((timeZoneSelectListItems) => {
+					const selectedItem = timeZoneSelectListItems.value
+						.reduce(
+							(zones, item) =>
+								zones.concat(
+									item.value.map((zone) => ({ ...zone, key: item.key }))
+								),
+							[] as (TimeZoneSelectListItemValue & { key: string })[]
+						)
+						.filter((zone) =>
+							this.props.currentTimeZoneId != null
+								? zone.id === this.props.currentTimeZoneId
+								: zone.name === this._timeZoneName
+						)
+						.sort((a, b) => {
+							if (a.territory > b.territory) {
+								return 1;
+							}
+							if (a.territory < b.territory) {
+								return -1;
+							}
+							return 0;
+						})[0];
+					this.setState({
+						isLoading: false,
+						timeZoneSelectListItems,
+						timeZoneSelection: selectedItem
+							? {
+									id:
+										this.props.currentTimeZoneId != null
+											? this.props.currentTimeZoneId
+											: selectedItem.id,
+									selectListItem: timeZoneSelectListItems.value.find(
+										(item) => item.key === selectedItem.key
+									),
+							  }
+							: null,
+					});
+				})
+			),
 		};
 	}
 	protected renderFields() {
-		const canSelect = (
+		const canSelect =
 			!this.state.timeZoneSelectListItems.isLoading &&
-			this.state.timeZoneSelectListItems.value
-		);
+			this.state.timeZoneSelectListItems.value;
 		let options: SelectListOption[];
 		if (this.state.timeZoneSelectListItems.isLoading) {
-			options = [{
-				key: 'Loading...'
-			}];
+			options = [
+				{
+					key: 'Loading...',
+				},
+			];
 		} else if (this.state.timeZoneSelectListItems.value) {
-			options = this.state.timeZoneSelectListItems.value.map(
-				zone => ({
-					key: zone.key
-				})
-			);
+			options = this.state.timeZoneSelectListItems.value.map((zone) => ({
+				key: zone.key,
+			}));
 		} else {
-			options = [{
-				key: 'Error loading time zones.'
-			}];
+			options = [
+				{
+					key: 'Error loading time zones.',
+				},
+			];
 		}
 		return (
 			<div className="change-time-zone-dialog_gparpx">
@@ -119,9 +148,9 @@ export default class ChangeTimeZoneDialog extends FieldsetDialog<void, Props, Pa
 					onChange={this._selectTimeZone}
 					options={options}
 					value={
-						this.state.timeZoneSelection ?
-							this.state.timeZoneSelection.selectListItem.key :
-							''
+						this.state.timeZoneSelection
+							? this.state.timeZoneSelection.selectListItem.key
+							: ''
 					}
 				/>
 			</div>

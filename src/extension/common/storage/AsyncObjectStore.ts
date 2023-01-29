@@ -10,14 +10,18 @@
 
 import AsyncStore, { ChromeStorageArea } from './AsyncStore';
 
-export default class <T> extends AsyncStore<T> {
-	constructor(name: string, defaultValue: T, storageType: ChromeStorageArea = 'local') {
-		super(name, defaultValue, storageType)
+export default class<T> extends AsyncStore<T> {
+	constructor(
+		name: string,
+		defaultValue: T,
+		storageType: ChromeStorageArea = 'local'
+	) {
+		super(name, defaultValue, storageType);
 	}
 	public async get() {
-		return await this._read()
+		return await this._read();
 	}
 	public async set(value: T) {
-		return await this._write(value)
+		return await this._write(value);
 	}
 }

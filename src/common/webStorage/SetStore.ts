@@ -15,12 +15,16 @@ import Store, { StorageType } from './Store';
  */
 export default class SetStore<K, V> extends Store<V[]> {
 	private _getKey: (item: V) => K;
-	constructor(key: string, getKey: (item: V) => K, storageType: StorageType = 'localStorage') {
+	constructor(
+		key: string,
+		getKey: (item: V) => K,
+		storageType: StorageType = 'localStorage'
+	) {
 		super(key, [], storageType);
 		this._getKey = getKey;
 	}
 	private _getItemByKey(key: K, items: V[]) {
-		return items.filter(item => this._getKey(item) === key)[0];
+		return items.filter((item) => this._getKey(item) === key)[0];
 	}
 	private _removeItem(item: V, items: V[]) {
 		items.splice(items.indexOf(item), 1);

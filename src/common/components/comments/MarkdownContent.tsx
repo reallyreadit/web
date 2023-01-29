@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -14,13 +14,12 @@ import { ClassValue } from 'classnames/types';
 import * as commonmark from 'commonmark';
 import * as linkify from 'linkify-it';
 
-const
-	reader = new commonmark.Parser(),
+const reader = new commonmark.Parser(),
 	writer = new commonmark.HtmlRenderer({ safe: true }),
 	linkifyer = new linkify({
 		'ftp:': null,
 		'mailto:': null,
-		'//:': null
+		'//:': null,
 	});
 function createTextNode(text: string) {
 	const node = new commonmark.Node('text');
@@ -37,7 +36,7 @@ function render(plainText: string) {
 	const ast = reader.parse(plainText);
 	const walker = ast.walker();
 	let step: commonmark.NodeWalkingStep | null;
-	while (step = walker.next()) {
+	while ((step = walker.next())) {
 		let matches: linkify.Match[] | null;
 		if (
 			step.entering &&
@@ -49,7 +48,9 @@ function render(plainText: string) {
 			for (const match of matches) {
 				// preserve any text that appears before the match
 				if (match.index > index) {
-					step.node.insertBefore(createTextNode(step.node.literal.substring(index, match.index)));
+					step.node.insertBefore(
+						createTextNode(step.node.literal.substring(index, match.index))
+					);
 				}
 				// insert the link
 				step.node.insertBefore(createLinkNode(match.url, match.text));
@@ -58,7 +59,9 @@ function render(plainText: string) {
 			}
 			// preserve any text that appears after the last match
 			if (index < step.node.literal.length) {
-				step.node.insertBefore(createTextNode(step.node.literal.substring(index)));
+				step.node.insertBefore(
+					createTextNode(step.node.literal.substring(index))
+				);
 			}
 			// remove the text node
 			step.node.unlink();
@@ -67,9 +70,9 @@ function render(plainText: string) {
 	return writer.render(ast);
 }
 export default class MarkdownContent extends React.PureComponent<{
-	className?: ClassValue,
-	onNavTo: (url: string) => boolean,
-	text: string
+	className?: ClassValue;
+	onNavTo: (url: string) => boolean;
+	text: string;
 }> {
 	private readonly _handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.preventDefault();

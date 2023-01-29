@@ -17,10 +17,10 @@ interface CommitEvent {
 	/**
 	 * Whether the simulated reader completed reading the article since the last published event.
 	 */
-	isCompletionCommit: boolean,
-	isRead: boolean,
-	percentComplete: number,
-	readStateArray: number[]
+	isCompletionCommit: boolean;
+	isRead: boolean;
+	percentComplete: number;
+	readStateArray: number[];
 }
 /**
  * Represents a simulated reader reading an article in a loaded Page,
@@ -36,8 +36,7 @@ export default class Reader {
 	private _page: Page | null;
 	private readonly _read = () => {
 		if (this._isReading) {
-			const
-				now = Date.now(),
+			const now = Date.now(),
 				elapsed = now - (this._lastReadTimestamp || now - 300),
 				readWordCount = Math.floor(elapsed / 100);
 			for (let i = 0; i < readWordCount; i++) {
@@ -69,8 +68,7 @@ export default class Reader {
 		});
 	}
 	private commitReadState() {
-		const
-			readState = this._page.getReadState(),
+		const readState = this._page.getReadState(),
 			percentComplete = readState.getPercentComplete();
 		if (percentComplete > this._lastCommitPercentComplete) {
 			const isRead = percentComplete >= 90;
@@ -78,7 +76,7 @@ export default class Reader {
 				isCompletionCommit: this._lastCommitPercentComplete < 90 && isRead,
 				isRead,
 				percentComplete,
-				readStateArray: readState.readStateArray
+				readStateArray: readState.readStateArray,
 			});
 			this._lastCommitPercentComplete = percentComplete;
 		}
@@ -86,18 +84,12 @@ export default class Reader {
 	private startReading() {
 		if (!this._isReading && !this._page.isRead()) {
 			this._isReading = true;
-			this._commitInterval = window.setInterval(
-				() => {
-					this.commitReadState();
-				},
-				3000
-			);
-			this._offsetUpdateInterval = window.setInterval(
-				() => {
-					this._page.updateOffset();
-				},
-				3000
-			);
+			this._commitInterval = window.setInterval(() => {
+				this.commitReadState();
+			}, 3000);
+			this._offsetUpdateInterval = window.setInterval(() => {
+				this._page.updateOffset();
+			}, 3000);
 			this._read();
 		}
 	}

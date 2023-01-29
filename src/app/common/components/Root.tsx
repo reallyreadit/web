@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -15,11 +15,20 @@ import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
 import ResetPasswordDialog from './ResetPasswordDialog';
-import { parseQueryString, unroutableQueryStringKeys } from '../../../common/routing/queryString';
+import {
+	parseQueryString,
+	unroutableQueryStringKeys,
+} from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import ScreenKey, { ScreenKeyNavParams } from '../../../common/routing/ScreenKey';
+import ScreenKey, {
+	ScreenKeyNavParams,
+} from '../../../common/routing/ScreenKey';
 import DialogKey from '../../../common/routing/DialogKey';
-import { findRouteByLocation, findRouteByKey, parseUrlForRoute } from '../../../common/routing/Route';
+import {
+	findRouteByLocation,
+	findRouteByKey,
+	parseUrlForRoute,
+} from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import RequestPasswordResetDialog from './RequestPasswordResetDialog';
 import createAdminPageScreenFactory from './AdminPage';
@@ -33,7 +42,9 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import classNames from 'classnames';
 import { ClassValue } from 'classnames/types';
 import RootErrorBoundary from './RootErrorBoundary';
-import ToasterService, { State as ToasterState } from '../../../common/services/ToasterService';
+import ToasterService, {
+	State as ToasterState,
+} from '../../../common/services/ToasterService';
 import ClipboardTextInput from '../../../common/components/ClipboardTextInput';
 import HttpEndpoint, { createUrl } from '../../../common/HttpEndpoint';
 import ClipboardService from '../../../common/services/ClipboardService';
@@ -47,7 +58,9 @@ import UserNameForm from '../../../common/models/social/UserNameForm';
 import PostDialog from '../../../common/components/PostDialog';
 import PostForm from '../../../common/models/social/PostForm';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
-import DialogService, { DialogServiceState } from '../../../common/services/DialogService';
+import DialogService, {
+	DialogServiceState,
+} from '../../../common/services/DialogService';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import Alert from '../../../common/models/notifications/Alert';
 import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
@@ -63,48 +76,58 @@ import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalytic
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
-import DisplayPreference, { getClientPreferredColorScheme, DisplayTheme, getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, {
+	getClientPreferredColorScheme,
+	DisplayTheme,
+	getClientDefaultDisplayPreference,
+} from '../../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
-import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
+import {
+	AuthorAssignmentRequest,
+	AuthorUnassignmentRequest,
+} from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { ArticleStarredEvent } from '../AppApi';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 
 export interface Props {
-	captcha: CaptchaBase,
-	initialLocation: RouteLocation,
-	initialUserProfile: WebAppUserProfile | null,
-	serverApi: ServerApi,
-	staticServerEndpoint: HttpEndpoint,
-	version: SemanticVersion,
-	webServerEndpoint: HttpEndpoint
+	captcha: CaptchaBase;
+	initialLocation: RouteLocation;
+	initialUserProfile: WebAppUserProfile | null;
+	serverApi: ServerApi;
+	staticServerEndpoint: HttpEndpoint;
+	version: SemanticVersion;
+	webServerEndpoint: HttpEndpoint;
 }
 export enum TemplateSection {
 	None = 0,
 	Header = 1,
 	Navigation = 2,
-	Footer = 4
+	Footer = 4,
 }
 export enum NavMethod {
 	Pop,
 	Push,
 	Replace,
-	ReplaceAll
+	ReplaceAll,
 }
-export type NavOptions = {
-		method: NavMethod.Push
-	} | {
-		method: NavMethod.Replace,
-		screenId: number
-	} | {
-		method: NavMethod.ReplaceAll
-	};
+export type NavOptions =
+	| {
+			method: NavMethod.Push;
+	  }
+	| {
+			method: NavMethod.Replace;
+			screenId: number;
+	  }
+	| {
+			method: NavMethod.ReplaceAll;
+	  };
 export type NavReference = string | ScreenKeyNavParams;
 export function parseNavReference(ref: NavReference) {
 	if (typeof ref === 'string') {
@@ -112,54 +135,58 @@ export function parseNavReference(ref: NavReference) {
 		return {
 			isInternal: result.isInternal,
 			screenKey: result.route?.screenKey,
-			screenParams: result.route?.getPathParams ?
-				result.route.getPathParams(result.url.pathname) :
-				null,
-			url: result.url?.href
+			screenParams: result.route?.getPathParams
+				? result.route.getPathParams(result.url.pathname)
+				: null,
+			url: result.url?.href,
 		};
 	}
 	return {
 		isInternal: true,
 		screenKey: ref.key,
 		screenParams: ref.params,
-		url: null
+		url: null,
 	};
 }
 export type ReadArticleReference = Pick<UserArticle, 'slug' | 'url'>;
 export interface Screen<T = any> {
-	id: number,
-	componentState?: T,
-	key: ScreenKey,
-	location: RouteLocation,
-	templateSection?: TemplateSection,
-	title?: string,
-	titleContent?: React.ReactNode,
-	isReplacement?: boolean
+	id: number;
+	componentState?: T;
+	key: ScreenKey;
+	location: RouteLocation;
+	templateSection?: TemplateSection;
+	title?: string;
+	titleContent?: React.ReactNode;
+	isReplacement?: boolean;
 }
 export interface ScreenFactory<TSharedState> {
-	create: (id: number, location: RouteLocation, sharedState: TSharedState) => Screen,
-	render: (screenState: Screen, sharedState: TSharedState) => React.ReactNode,
-	renderHeaderContent?: (screenState: Screen, sharedState: TSharedState) => React.ReactNode
+	create: (
+		id: number,
+		location: RouteLocation,
+		sharedState: TSharedState
+	) => Screen;
+	render: (screenState: Screen, sharedState: TSharedState) => React.ReactNode;
+	renderHeaderContent?: (
+		screenState: Screen,
+		sharedState: TSharedState
+	) => React.ReactNode;
 }
-export type State = (
-	{
-		displayTheme: DisplayTheme | null,
-		screens: Screen[],
-		user: UserAccount | null
-	} &
-	ToasterState &
-	DialogServiceState
-);
+export type State = {
+	displayTheme: DisplayTheme | null;
+	screens: Screen[];
+	user: UserAccount | null;
+} & ToasterState &
+	DialogServiceState;
 export type SharedState = Pick<State, 'displayTheme' | 'user'>;
 export type Events = {
-	'articleUpdated': ArticleUpdatedEvent,
-	'articlePosted': Post,
-	'articleStarred': ArticleStarredEvent,
-	'authChanged': UserAccount | null,
-	'commentPosted': CommentThread,
-	'commentUpdated': CommentThread,
-	'followeeCountChanged': FolloweeCountChange,
-	'notificationPreferenceChanged': NotificationPreference
+	articleUpdated: ArticleUpdatedEvent;
+	articlePosted: Post;
+	articleStarred: ArticleStarredEvent;
+	authChanged: UserAccount | null;
+	commentPosted: CommentThread;
+	commentUpdated: CommentThread;
+	followeeCountChanged: FolloweeCountChange;
+	notificationPreferenceChanged: NotificationPreference;
 };
 export default abstract class Root<
 	TProps extends Props,
@@ -172,95 +199,85 @@ export default abstract class Root<
 	private readonly _concreteClassName: ClassValue;
 
 	// articles
-	protected readonly _assignAuthorToArticle = (request: AuthorAssignmentRequest) => this.props.serverApi.assignAuthorToArticle(request);
+	protected readonly _assignAuthorToArticle = (
+		request: AuthorAssignmentRequest
+	) => this.props.serverApi.assignAuthorToArticle(request);
 	protected readonly _rateArticle = (article: UserArticle, score: number) => {
 		return this.props.serverApi
 			.rateArticle(article.id, score)
-			.then(result => {
-				this.onArticleUpdated(
-					{
-						article: result.article,
-						isCompletionCommit: false
-					}
-				);
+			.then((result) => {
+				this.onArticleUpdated({
+					article: result.article,
+					isCompletionCommit: false,
+				});
 				return result.rating;
 			});
 	};
-	protected readonly _readArticle: (article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) => void;
+	protected readonly _readArticle: (
+		article: ReadArticleReference,
+		ev?: React.MouseEvent<HTMLElement>
+	) => void;
 	protected readonly _toggleArticleStar = (article: UserArticle) => {
 		return (
-			article.dateStarred ?
-				this.props.serverApi.unstarArticle :
-				this.props.serverApi.starArticle
-			)(article.id)
-			.then(article => {
-				this.onArticleUpdated(
-					{
-						article,
-						isCompletionCommit: false
-					}
-				);
+			article.dateStarred
+				? this.props.serverApi.unstarArticle
+				: this.props.serverApi.starArticle
+		)(article.id).then((article) => {
+			this.onArticleUpdated({
+				article,
+				isCompletionCommit: false,
 			});
+		});
 	};
-	protected readonly _unassignAuthorFromArticle = (request: AuthorUnassignmentRequest) => this.props.serverApi.unassignAuthorFromArticle(request);
+	protected readonly _unassignAuthorFromArticle = (
+		request: AuthorUnassignmentRequest
+	) => this.props.serverApi.unassignAuthorFromArticle(request);
 
 	// authors
-	protected readonly _assignUserAccountToAuthor = (request: AuthorUserAccountAssignmentRequest) => this.props.serverApi.assignUserAccountToAuthor(request);
+	protected readonly _assignUserAccountToAuthor = (
+		request: AuthorUserAccountAssignmentRequest
+	) => this.props.serverApi.assignUserAccountToAuthor(request);
 
 	// clipboard
 	protected readonly _clipboard: ClipboardService;
 
 	// comments
 	protected readonly _deleteComment = (form: CommentDeletionForm) => {
-		return this.props.serverApi
-			.deleteComment(form)
-			.then(
-				comment => {
-					this.onCommentUpdated(comment);
-					return comment;
-				}
-			);
+		return this.props.serverApi.deleteComment(form).then((comment) => {
+			this.onCommentUpdated(comment);
+			return comment;
+		});
 	};
 	protected readonly _postComment = (form: CommentForm) => {
-		return this.props.serverApi
-			.postComment(form)
-			.then(result => {
-				this.onArticleUpdated(
-					{
-						article: result.article,
-						isCompletionCommit: false
-					}
-				);
-				this.onCommentPosted(result.comment);
-				return result.comment;
+		return this.props.serverApi.postComment(form).then((result) => {
+			this.onArticleUpdated({
+				article: result.article,
+				isCompletionCommit: false,
 			});
+			this.onCommentPosted(result.comment);
+			return result.comment;
+		});
 	};
 	protected readonly _postCommentAddendum = (form: CommentAddendumForm) => {
-		return this.props.serverApi
-			.postCommentAddendum(form)
-			.then(
-				comment => {
-					this.onCommentUpdated(comment);
-					return comment;
-				}
-			);
+		return this.props.serverApi.postCommentAddendum(form).then((comment) => {
+			this.onCommentUpdated(comment);
+			return comment;
+		});
 	};
 	protected readonly _postCommentRevision = (form: CommentRevisionForm) => {
-		return this.props.serverApi
-			.postCommentRevision(form)
-			.then(
-				comment => {
-					this.onCommentUpdated(comment);
-					return comment;
-				}
-			);
+		return this.props.serverApi.postCommentRevision(form).then((comment) => {
+			this.onCommentUpdated(comment);
+			return comment;
+		});
 	};
-	protected readonly _viewComments = (article: Pick<UserArticle, 'slug'>, highlightedCommentId?: string) => {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
+	protected readonly _viewComments = (
+		article: Pick<UserArticle, 'slug'>,
+		highlightedCommentId?: string
+	) => {
+		const [sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {
 				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
+				['sourceSlug']: sourceSlug,
 			};
 		if (highlightedCommentId != null) {
 			urlParams['commentId'] = highlightedCommentId;
@@ -268,34 +285,35 @@ export default abstract class Root<
 		this.navTo(
 			{
 				key: ScreenKey.Comments,
-				params: urlParams
+				params: urlParams,
 			},
 			{
-				method: NavMethod.Push
+				method: NavMethod.Push,
 			}
 		);
 	};
 	protected readonly _viewRead = (article: ReadArticleReference) => {
-		const
-			[sourceSlug, articleSlug] = article.slug.split('_'),
+		const [sourceSlug, articleSlug] = article.slug.split('_'),
 			urlParams: { [key: string]: string } = {
 				['articleSlug']: articleSlug,
-				['sourceSlug']: sourceSlug
+				['sourceSlug']: sourceSlug,
 			};
 		this.navTo(
 			{
 				key: ScreenKey.Read,
-				params: urlParams
+				params: urlParams,
 			},
 			{
-				method: NavMethod.Push
+				method: NavMethod.Push,
 			}
-		)
-	}
-	protected readonly _viewThread = (comment: Pick<CommentThread, 'articleSlug' | 'id'>) => {
+		);
+	};
+	protected readonly _viewThread = (
+		comment: Pick<CommentThread, 'articleSlug' | 'id'>
+	) => {
 		this._viewComments(
 			{
-				slug: comment.articleSlug
+				slug: comment.articleSlug,
 			},
 			comment.id
 		);
@@ -305,10 +323,15 @@ export default abstract class Root<
 	protected readonly _dialog = new DialogService<TSharedState>({
 		setState: (delegate, callback) => {
 			this.setState(delegate, callback);
-		}
+		},
 	});
-	protected _dialogCreatorMap: Partial<{ [P in DialogKey]: (location: RouteLocation, sharedState: TSharedState) => React.ReactNode }> = {
-		[DialogKey.ResetPassword]: location => {
+	protected _dialogCreatorMap: Partial<{
+		[P in DialogKey]: (
+			location: RouteLocation,
+			sharedState: TSharedState
+		) => React.ReactNode;
+	}> = {
+		[DialogKey.ResetPassword]: (location) => {
 			const kvps = parseQueryString(location.queryString);
 			return (
 				<ResetPasswordDialog
@@ -319,7 +342,7 @@ export default abstract class Root<
 					token={kvps['token']}
 				/>
 			);
-		}
+		},
 	};
 	protected readonly _openLinkAuthServiceAccountDialog = (token: string) => {
 		this._dialog.openDialog(
@@ -359,7 +382,9 @@ export default abstract class Root<
 			/>
 		);
 	};
-	protected readonly _openRequestPasswordResetDialog = (authServiceToken?: string) => {
+	protected readonly _openRequestPasswordResetDialog = (
+		authServiceToken?: string
+	) => {
 		this._dialog.openDialog(
 			<RequestPasswordResetDialog
 				authServiceToken={authServiceToken}
@@ -374,29 +399,48 @@ export default abstract class Root<
 
 	// events
 	protected readonly _eventManager = new EventManager<TEvents>();
-	protected readonly _registerArticleChangeEventHandler = (handler: (event: ArticleUpdatedEvent) => void) => {
+	protected readonly _registerArticleChangeEventHandler = (
+		handler: (event: ArticleUpdatedEvent) => void
+	) => {
 		return this._eventManager.addListener('articleUpdated', handler);
 	};
-	protected readonly _registerArticlePostedEventHandler = (handler: (event: Post) => void) => {
+	protected readonly _registerArticlePostedEventHandler = (
+		handler: (event: Post) => void
+	) => {
 		return this._eventManager.addListener('articlePosted', handler);
 	};
-	protected readonly _registerArticleStarredEventHandler = (handler: (event: ArticleStarredEvent) => void) => {
+	protected readonly _registerArticleStarredEventHandler = (
+		handler: (event: ArticleStarredEvent) => void
+	) => {
 		return this._eventManager.addListener('articleStarred', handler);
 	};
-	protected readonly _registerAuthChangedEventHandler = (handler: (user: UserAccount | null) => void) => {
+	protected readonly _registerAuthChangedEventHandler = (
+		handler: (user: UserAccount | null) => void
+	) => {
 		return this._eventManager.addListener('authChanged', handler);
 	};
-	protected readonly _registerCommentPostedEventHandler = (handler: (comment: CommentThread) => void) => {
+	protected readonly _registerCommentPostedEventHandler = (
+		handler: (comment: CommentThread) => void
+	) => {
 		return this._eventManager.addListener('commentPosted', handler);
 	};
-	protected readonly _registerCommentUpdatedEventHandler = (handler: (comment: CommentThread) => void) => {
+	protected readonly _registerCommentUpdatedEventHandler = (
+		handler: (comment: CommentThread) => void
+	) => {
 		return this._eventManager.addListener('commentUpdated', handler);
 	};
-	protected readonly _registerFolloweeCountChangedEventHandler = (handler: (change: FolloweeCountChange) => void) => {
+	protected readonly _registerFolloweeCountChangedEventHandler = (
+		handler: (change: FolloweeCountChange) => void
+	) => {
 		return this._eventManager.addListener('followeeCountChanged', handler);
 	};
-	protected readonly _registerNotificationPreferenceChangedEventHandler = (handler: (preference: NotificationPreference) => void) => {
-		return this._eventManager.addListener('notificationPreferenceChanged', handler);
+	protected readonly _registerNotificationPreferenceChangedEventHandler = (
+		handler: (preference: NotificationPreference) => void
+	) => {
+		return this._eventManager.addListener(
+			'notificationPreferenceChanged',
+			handler
+		);
 	};
 
 	// notifications
@@ -405,7 +449,7 @@ export default abstract class Root<
 			return;
 		}
 		let newUser = {
-			...this.state.user
+			...this.state.user,
 		};
 		if (alerts & Alert.Aotd) {
 			newUser.aotdAlert = false;
@@ -423,76 +467,79 @@ export default abstract class Root<
 			newUser.followerAlertCount = 0;
 		}
 		this.props.serverApi.clearAlerts({
-			alerts
+			alerts,
 		});
 		this.onUserUpdated(newUser, EventSource.Local);
 	};
 
 	// routing
 	protected readonly _createAbsoluteUrl: (path: string) => string;
-	protected readonly _createStaticContentUrl = (path: string) => createUrl(this.props.staticServerEndpoint, path);
-	protected readonly _navTo: (ref: NavReference, options?: NavOptions) => boolean;
+	protected readonly _createStaticContentUrl = (path: string) =>
+		createUrl(this.props.staticServerEndpoint, path);
+	protected readonly _navTo: (
+		ref: NavReference,
+		options?: NavOptions
+	) => boolean;
 
 	// screens
-	protected _screenFactoryMap: Partial<{ [P in ScreenKey]: ScreenFactory<TSharedState> }>;
+	protected _screenFactoryMap: Partial<{
+		[P in ScreenKey]: ScreenFactory<TSharedState>;
+	}>;
 
 	// social
-	protected readonly _followUser = (form: UserNameForm) => this.props.serverApi
-		.followUser(form)
-		.then(
-			() => {
-				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Increment);
-			}
-		);
-	protected readonly _postArticle = (form: PostForm) => {
-		return this.props.serverApi
-			.postArticle(form)
-			.then(
-				post => {
-					this.onArticlePosted(post);
-					this.onArticleUpdated(
-						{
-							article: post.article,
-							isCompletionCommit: false
-						}
-					);
-					if (post.comment) {
-						this.onCommentPosted(createCommentThread(post));
-					}
-					return post;
-				}
+	protected readonly _followUser = (form: UserNameForm) =>
+		this.props.serverApi.followUser(form).then(() => {
+			this._eventManager.triggerEvent(
+				'followeeCountChanged',
+				FolloweeCountChange.Increment
 			);
-	};
-	protected readonly _unfollowUser = (form: UserNameForm) => this.props.serverApi
-		.unfollowUser(form)
-		.then(
-			() => {
-				this._eventManager.triggerEvent('followeeCountChanged', FolloweeCountChange.Decrement);
+		});
+	protected readonly _postArticle = (form: PostForm) => {
+		return this.props.serverApi.postArticle(form).then((post) => {
+			this.onArticlePosted(post);
+			this.onArticleUpdated({
+				article: post.article,
+				isCompletionCommit: false,
+			});
+			if (post.comment) {
+				this.onCommentPosted(createCommentThread(post));
 			}
-		);
-	protected readonly _viewProfile = (userName?: string, options?: NavOptions) => {
+			return post;
+		});
+	};
+	protected readonly _unfollowUser = (form: UserNameForm) =>
+		this.props.serverApi.unfollowUser(form).then(() => {
+			this._eventManager.triggerEvent(
+				'followeeCountChanged',
+				FolloweeCountChange.Decrement
+			);
+		});
+	protected readonly _viewProfile = (
+		userName?: string,
+		options?: NavOptions
+	) => {
 		this.navTo(
 			{
 				key: ScreenKey.Profile,
 				params: {
-					userName: userName || this.state.user.name
-				}
+					userName: userName || this.state.user.name,
+				},
 			},
 			options ?? {
-				method: userName ?
-					NavMethod.Push :
-					NavMethod.ReplaceAll
+				method: userName ? NavMethod.Push : NavMethod.ReplaceAll,
 			}
 		);
 	};
 
 	// state
 	private _screenId = 0;
-	protected readonly _setScreenState = (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => {
-		const screen = this.state.screens.find(screen => screen.id === id);
+	protected readonly _setScreenState = (
+		id: number,
+		getNextState: (currentState: Readonly<Screen>) => Partial<Screen>
+	) => {
+		const screen = this.state.screens.find((screen) => screen.id === id);
 		if (screen) {
-			const
-				screens = this.state.screens.slice(),
+			const screens = this.state.screens.slice(),
 				screenIndex = screens.indexOf(screen),
 				nextState = getNextState(screen);
 			screens.splice(screenIndex, 1, { ...screen, ...nextState });
@@ -503,10 +550,7 @@ export default abstract class Root<
 					nextState.location.path !== screen.location.path
 				) {
 					this.onLocationChanged(nextState.location.path, nextState.title);
-				} else if (
-					'title' in nextState &&
-					nextState.title !== screen.title
-				) {
+				} else if ('title' in nextState && nextState.title !== screen.title) {
 					this.onTitleChanged(nextState.title);
 				}
 			}
@@ -514,47 +558,57 @@ export default abstract class Root<
 	};
 
 	// subscriptions
-	protected readonly _getSubscriptionDistributionSummary = (callback: (result: Fetchable<SubscriptionDistributionSummaryResponse>) => void) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
+	protected readonly _getSubscriptionDistributionSummary = (
+		callback: (
+			result: Fetchable<SubscriptionDistributionSummaryResponse>
+		) => void
+	) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
 		asyncTracker: this._asyncTracker,
-		setState: (state: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>) => {
+		setState: (
+			state: (prevState: ToasterState) => Pick<ToasterState, keyof ToasterState>
+		) => {
 			this.setState(state);
-		}
+		},
 	});
 
 	// user account
-	protected readonly _changeDisplayPreference = (preference: DisplayPreference) => {
+	protected readonly _changeDisplayPreference = (
+		preference: DisplayPreference
+	) => {
 		this.onDisplayPreferenceChanged(preference, EventSource.Local);
 		return this.props.serverApi.changeDisplayPreference(preference);
 	};
 	protected readonly _changeEmailAddress = (email: string) => {
-		return this.props.serverApi
-			.changeEmailAddress(email)
-			.then(user => {
-				this.onUserUpdated(user, EventSource.Local);
-			});
+		return this.props.serverApi.changeEmailAddress(email).then((user) => {
+			this.onUserUpdated(user, EventSource.Local);
+		});
 	};
-	protected readonly _changeNotificationPreference = (data: NotificationPreference) => {
+	protected readonly _changeNotificationPreference = (
+		data: NotificationPreference
+	) => {
 		return this.props.serverApi
 			.changeNotificationPreference(data)
-			.then(
-				preference => {
-					this.onNotificationPreferenceChanged(preference);
-					return preference;
-				}
-			);
+			.then((preference) => {
+				this.onNotificationPreferenceChanged(preference);
+				return preference;
+			});
 	};
-	protected readonly _changePassword = (currentPassword: string, newPassword: string) => {
+	protected readonly _changePassword = (
+		currentPassword: string,
+		newPassword: string
+	) => {
 		return this.props.serverApi.changePassword(currentPassword, newPassword);
 	};
-	protected readonly _changeTimeZone = (timeZone: { id?: number, name?: string }) => {
-		return this.props.serverApi
-			.changeTimeZone(timeZone)
-			.then(user => {
-				this.onUserUpdated(user, EventSource.Local);
-			});
+	protected readonly _changeTimeZone = (timeZone: {
+		id?: number;
+		name?: string;
+	}) => {
+		return this.props.serverApi.changeTimeZone(timeZone).then((user) => {
+			this.onUserUpdated(user, EventSource.Local);
+		});
 	};
 	protected readonly _createAccount = (form: CreateAccountDialogForm) => {
 		return this.props.serverApi
@@ -566,50 +620,62 @@ export default abstract class Root<
 				timeZoneName: DateTime.local().zoneName,
 				theme: getClientPreferredColorScheme(),
 				analytics: this.getSignUpAnalyticsForm(form.analyticsAction),
-				pushDevice: this.getPushDeviceForm()
+				pushDevice: this.getPushDeviceForm(),
 			})
-			.then(
-				profile => {
-					this.onUserSignedIn(profile, SignInEventType.NewUser, EventSource.Local);
-				}
-			);
+			.then((profile) => {
+				this.onUserSignedIn(
+					profile,
+					SignInEventType.NewUser,
+					EventSource.Local
+				);
+			});
 	};
-	protected readonly _createAuthServiceAccount = (form: CreateAuthServiceAccountDialogForm) => {
+	protected readonly _createAuthServiceAccount = (
+		form: CreateAuthServiceAccountDialogForm
+	) => {
 		return this.props.serverApi
 			.createAuthServiceAccount({
 				...form,
 				timeZoneName: DateTime.local().zoneName,
 				theme: getClientPreferredColorScheme(),
-				pushDevice: this.getPushDeviceForm()
+				pushDevice: this.getPushDeviceForm(),
 			})
-			.then(
-				profile => {
-					this.onUserSignedIn(profile, SignInEventType.NewUser, EventSource.Local);
-				}
-			);
+			.then((profile) => {
+				this.onUserSignedIn(
+					profile,
+					SignInEventType.NewUser,
+					EventSource.Local
+				);
+			});
 	};
 	protected readonly _deleteAccount = () => {
 		const pushDeviceForm = this.getPushDeviceForm();
 		return this.props.serverApi
 			.deleteUserAccount({
-				installationId: pushDeviceForm && pushDeviceForm.installationId
+				installationId: pushDeviceForm && pushDeviceForm.installationId,
 			})
-			.then(
-				() => this.onUserSignedOut()
-			);
+			.then(() => this.onUserSignedOut());
 	};
-	protected readonly _getSettings = (callback: (result: Fetchable<Settings>) => void) => {
-		return this.props.serverApi.getSettings(
-			settings => {
-				if (settings.value) {
-					this.onDisplayPreferenceChanged(settings.value.displayPreference, EventSource.Local);
-				}
-				callback(settings);
+	protected readonly _getSettings = (
+		callback: (result: Fetchable<Settings>) => void
+	) => {
+		return this.props.serverApi.getSettings((settings) => {
+			if (settings.value) {
+				this.onDisplayPreferenceChanged(
+					settings.value.displayPreference,
+					EventSource.Local
+				);
 			}
-		);
-	}
-	protected abstract readonly _linkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>;
-	protected abstract readonly _resetPassword: (token: string, password: string) => Promise<void>;
+			callback(settings);
+		});
+	};
+	protected abstract readonly _linkAuthServiceAccount: (
+		provider: AuthServiceProvider
+	) => Promise<AuthServiceAccountAssociation>;
+	protected abstract readonly _resetPassword: (
+		token: string,
+		password: string
+	) => Promise<void>;
 	protected readonly _resendConfirmationEmail = () => {
 		return this.props.serverApi
 			.resendConfirmationEmail()
@@ -618,9 +684,9 @@ export default abstract class Root<
 			})
 			.catch((errors: string[]) => {
 				this._toaster.addToast(
-					errors.includes('ResendLimitExceeded') ?
-						'Error sending email.\nPlease try again in a few minutes.' :
-						'Error sending email.\nPlease try again later.',
+					errors.includes('ResendLimitExceeded')
+						? 'Error sending email.\nPlease try again in a few minutes.'
+						: 'Error sending email.\nPlease try again later.',
 					Intent.Danger
 				);
 			});
@@ -632,24 +698,31 @@ export default abstract class Root<
 		return this.props.serverApi
 			.signIn({
 				...form,
-				pushDevice: this.getPushDeviceForm()
+				pushDevice: this.getPushDeviceForm(),
 			})
-			.then(
-				profile => {
-					return this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Local);
-				}
-			);
+			.then((profile) => {
+				return this.onUserSignedIn(
+					profile,
+					SignInEventType.ExistingUser,
+					EventSource.Local
+				);
+			});
 	};
 	protected readonly _signOut = () => {
 		const pushDeviceForm = this.getPushDeviceForm();
 		return this.props.serverApi
 			.signOut({
-				installationId: pushDeviceForm && pushDeviceForm.installationId
+				installationId: pushDeviceForm && pushDeviceForm.installationId,
 			})
 			.then(() => this.onUserSignedOut());
 	};
-	protected readonly _submitAuthorEmailVerificationRequest = (request: AuthorEmailVerificationRequest) => this.props.serverApi.submitAuthorEmailVerificationRequest(request);
-	protected readonly _updateEmailSubscriptions = (token: string, preference: NotificationPreference) => {
+	protected readonly _submitAuthorEmailVerificationRequest = (
+		request: AuthorEmailVerificationRequest
+	) => this.props.serverApi.submitAuthorEmailVerificationRequest(request);
+	protected readonly _updateEmailSubscriptions = (
+		token: string,
+		preference: NotificationPreference
+	) => {
 		return this.props.serverApi
 			.updateEmailSubscriptions(token, preference)
 			.then(() => {
@@ -673,151 +746,149 @@ export default abstract class Root<
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
 			toasts: [],
-			user: props.initialUserProfile?.userAccount
+			user: props.initialUserProfile?.userAccount,
 		} as TState;
 
 		// clipboard
-		this._clipboard = new ClipboardService(
-			(content, intent) => {
-				this._toaster.addToast(content, intent);
-			}
-		);
+		this._clipboard = new ClipboardService((content, intent) => {
+			this._toaster.addToast(content, intent);
+		});
 
 		// delegates
 		this._navTo = this.navTo.bind(this);
 		this._readArticle = this.readArticle.bind(this);
 
 		// routing
-		this._createAbsoluteUrl = path => `${props.webServerEndpoint.protocol}://${props.webServerEndpoint.host}${path}`;
+		this._createAbsoluteUrl = (path) =>
+			`${props.webServerEndpoint.protocol}://${props.webServerEndpoint.host}${path}`;
 
 		// screens
 		this._screenFactoryMap = {
 			[ScreenKey.Admin]: createAdminPageScreenFactory(ScreenKey.Admin, {
 				onAssignAuthorToArticle: this._assignAuthorToArticle,
 				onAssignUserAccountToAuthor: this._assignUserAccountToAuthor,
-				onGetAuthorMetadataAssignmentQueue: this.props.serverApi.getAuthorMetadataAssignmentQueue,
+				onGetAuthorMetadataAssignmentQueue:
+					this.props.serverApi.getAuthorMetadataAssignmentQueue,
 				onCloseDialog: this._dialog.closeDialog,
-				onGetArticleIssueReports: this.props.serverApi.getArticleIssueReportAnalytics,
+				onGetArticleIssueReports:
+					this.props.serverApi.getArticleIssueReportAnalytics,
 				onGetBulkMailings: this.props.serverApi.getBulkMailings,
 				onGetConversions: this.props.serverApi.getConversionAnalytics,
 				onGetDailyTotals: this.props.serverApi.getDailyTotalAnalytics,
 				onGetPayoutReport: this.props.serverApi.getPayoutReport,
-				onGetRevenueReport: this.props.serverApi.getAdminSubscriptionRevenueReport,
+				onGetRevenueReport:
+					this.props.serverApi.getAdminSubscriptionRevenueReport,
 				onGetSignups: this.props.serverApi.getSignupAnalytics,
 				onGetUserStats: this.props.serverApi.getUserAccountStats,
-				onGetWeeklyUserActivityReport: this.props.serverApi.getWeeklyUserActivityReport,
+				onGetWeeklyUserActivityReport:
+					this.props.serverApi.getWeeklyUserActivityReport,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
 				onSendBulkMailing: this.props.serverApi.sendBulkMailing,
 				onSendTestBulkMailing: this.props.serverApi.sendTestBulkMailing,
 				onShowToast: this._toaster.addToast,
-				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle
+				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle,
 			}),
-			[ScreenKey.Download]: createDownloadPageFactory(
-				ScreenKey.Download,
+			[ScreenKey.Download]: createDownloadPageFactory(ScreenKey.Download, {
+				onOpenDialog: this._dialog.openDialog,
+				onCloseDialog: this._dialog.closeDialog,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onNavTo: this._navTo,
+			}),
+			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(
+				ScreenKey.EmailConfirmation
+			),
+			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(
+				ScreenKey.EmailSubscriptions,
 				{
-					onOpenDialog: this._dialog.openDialog,
-					onCloseDialog: this._dialog.closeDialog,
-					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onNavTo: this._navTo
+					onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
+					onUpdateEmailSubscriptions: this._updateEmailSubscriptions,
 				}
 			),
-			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(ScreenKey.EmailConfirmation),
-			[ScreenKey.EmailSubscriptions]: createEmailSubscriptionsScreenFactory(ScreenKey.EmailSubscriptions, {
-				onGetEmailSubscriptions: this.props.serverApi.getEmailSubscriptions,
-				onUpdateEmailSubscriptions: this._updateEmailSubscriptions
-			}),
-			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(ScreenKey.ExtensionRemoval, {
-				onLogExtensionRemovalFeedback: this.props.serverApi.logExtensionRemovalFeedback
-			}),
+			[ScreenKey.ExtensionRemoval]: createExtensionRemovalScreenFactory(
+				ScreenKey.ExtensionRemoval,
+				{
+					onLogExtensionRemovalFeedback:
+						this.props.serverApi.logExtensionRemovalFeedback,
+				}
+			),
 			[ScreenKey.Password]: createPasswordScreenFactory(ScreenKey.Password),
 			[ScreenKey.PrivacyPolicy]: createPrivacyPolicyScreenFactory(
-				ScreenKey.PrivacyPolicy, {
-					onNavTo: this._navTo
+				ScreenKey.PrivacyPolicy,
+				{
+					onNavTo: this._navTo,
 				}
 			),
 			[ScreenKey.Stats]: createStatsScreenFactory(ScreenKey.Stats, {
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 			}),
-			[ScreenKey.About]: createTeamPageFactory(
-				ScreenKey.About,
-				{
-					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onNavTo: this._navTo
-				}
-			),
-
+			[ScreenKey.About]: createTeamPageFactory(ScreenKey.About, {
+				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onNavTo: this._navTo,
+			}),
 		};
 	}
 	private checkProfileForUnsetValues(profile: WebAppUserProfile) {
 		if (profile.userAccount.timeZoneId == null) {
 			this._changeTimeZone({
-				name: DateTime
-					.local()
-					.zoneName
+				name: DateTime.local().zoneName,
 			});
 		}
 		if (profile.displayPreference == null) {
-			this._changeDisplayPreference(
-				getClientDefaultDisplayPreference()
-			);
+			this._changeDisplayPreference(getClientDefaultDisplayPreference());
 		}
 	}
 	private setThemeAttribute(theme: DisplayTheme | null) {
-		document.documentElement.dataset['com_readup_theme'] = (
-			theme != null ?
-				theme === DisplayTheme.Dark ?
-					'dark' :
-					'light' :
-				''
-		);
+		document.documentElement.dataset['com_readup_theme'] =
+			theme != null ? (theme === DisplayTheme.Dark ? 'dark' : 'light') : '';
 		window.dispatchEvent(
-			new CustomEvent(
-				'com.readup.themechange',
-				{
-					detail: theme
-				}
-			)
+			new CustomEvent('com.readup.themechange', {
+				detail: theme,
+			})
 		);
 	}
-	private setUserAuthChangedState(userProfile: WebAppUserProfile | null, supplementaryState?: Partial<TState>) {
+	private setUserAuthChangedState(
+		userProfile: WebAppUserProfile | null,
+		supplementaryState?: Partial<TState>
+	) {
 		this.setThemeAttribute(userProfile?.displayPreference?.theme);
-		return new Promise<void>(
-			resolve => {
-				this.setState(
-					{
-						...supplementaryState as State,
-						displayTheme: userProfile?.displayPreference.theme,
-						user: userProfile?.userAccount
-					},
-					() => {
-						this._eventManager.triggerEvent('authChanged', userProfile?.userAccount);
-						resolve();
-					}
-				);
-			}
-		);
+		return new Promise<void>((resolve) => {
+			this.setState(
+				{
+					...(supplementaryState as State),
+					displayTheme: userProfile?.displayPreference.theme,
+					user: userProfile?.userAccount,
+				},
+				() => {
+					this._eventManager.triggerEvent(
+						'authChanged',
+						userProfile?.userAccount
+					);
+					resolve();
+				}
+			);
+		});
 	}
-	protected fetchUpdateStatus(): Promise<{ isAvailable: boolean, version?: SemanticVersion }> {
-		const
-			now = Date.now(),
+	protected fetchUpdateStatus(): Promise<{
+		isAvailable: boolean;
+		version?: SemanticVersion;
+	}> {
+		const now = Date.now(),
 			lastCheck = localStorage.getItem('lastUpdateCheck');
-		if (
-			!lastCheck ||
-			now - parseInt(lastCheck) >= 1 * 60 * 60 * 1000
-		) {
+		if (!lastCheck || now - parseInt(lastCheck) >= 1 * 60 * 60 * 1000) {
 			localStorage.setItem('lastUpdateCheck', now.toString());
 			return fetch('/version')
-				.then(res => {
+				.then((res) => {
 					if (res.ok) {
-						return res.text().then(versionString => {
+						return res.text().then((versionString) => {
 							const version = new SemanticVersion(versionString);
 							if (this.props.version.compareTo(version) < 0) {
 								return {
 									isAvailable: true,
-									version
+									version,
 								};
 							}
 							return { isAvailable: false };
@@ -833,30 +904,48 @@ export default abstract class Root<
 		}
 		return Promise.resolve({ isAvailable: false });
 	}
-	protected createScreen(key: ScreenKey, urlParams?: { [key: string]: string }, options?: Pick<Screen, 'isReplacement'>) {
+	protected createScreen(
+		key: ScreenKey,
+		urlParams?: { [key: string]: string },
+		options?: Pick<Screen, 'isReplacement'>
+	) {
 		const [path, queryString] = findRouteByKey(routes, key)
 			.createUrl(urlParams)
 			.split('?');
-		const screen = this._screenFactoryMap[key].create(this._screenId++, { path, queryString }, this.getSharedState());
+		const screen = this._screenFactoryMap[key].create(
+			this._screenId++,
+			{ path, queryString },
+			this.getSharedState()
+		);
 		if (options) {
 			screen.isReplacement = options.isReplacement;
 		}
 		return screen;
 	}
 	protected getLocationDependentState(location: RouteLocation) {
-		const
-			route = findRouteByLocation(routes, location, unroutableQueryStringKeys),
+		const route = findRouteByLocation(
+				routes,
+				location,
+				unroutableQueryStringKeys
+			),
 			sharedState = this.getSharedState();
 		return {
-			dialog: route.dialogKey != null ?
-				this._dialogCreatorMap[route.dialogKey](location, sharedState) :
-				null,
-			screen: this._screenFactoryMap[route.screenKey].create(this._screenId++, location, sharedState)
+			dialog:
+				route.dialogKey != null
+					? this._dialogCreatorMap[route.dialogKey](location, sharedState)
+					: null,
+			screen: this._screenFactoryMap[route.screenKey].create(
+				this._screenId++,
+				location,
+				sharedState
+			),
 		};
 	}
 	protected abstract getPushDeviceForm(): PushDeviceForm | null;
 	protected abstract getSharedState(): TSharedState;
-	protected abstract getSignUpAnalyticsForm(action: string): SignUpAnalyticsForm;
+	protected abstract getSignUpAnalyticsForm(
+		action: string
+	): SignUpAnalyticsForm;
 	protected abstract navTo(ref: NavReference, options?: NavOptions): boolean;
 	protected onArticleUpdated(event: ArticleUpdatedEvent) {
 		this._eventManager.triggerEvent('articleUpdated', event);
@@ -870,18 +959,31 @@ export default abstract class Root<
 	protected onCommentUpdated(comment: CommentThread) {
 		this._eventManager.triggerEvent('commentUpdated', comment);
 	}
-	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
+	protected onDisplayPreferenceChanged(
+		preference: DisplayPreference,
+		eventSource: EventSource
+	) {
 		this.setThemeAttribute(preference.theme);
 		this.setState({
-			displayTheme: preference.theme
+			displayTheme: preference.theme,
 		});
 	}
-	protected onLocationChanged(path: string, title?: string) { }
-	protected onNotificationPreferenceChanged(preference: NotificationPreference) {
-		this._eventManager.triggerEvent('notificationPreferenceChanged', preference);
+	protected onLocationChanged(path: string, title?: string) {}
+	protected onNotificationPreferenceChanged(
+		preference: NotificationPreference
+	) {
+		this._eventManager.triggerEvent(
+			'notificationPreferenceChanged',
+			preference
+		);
 	}
-	protected onTitleChanged(title: string) { }
-	protected onUserSignedIn(userProfile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource, supplementaryState?: Partial<TState>) {
+	protected onTitleChanged(title: string) {}
+	protected onUserSignedIn(
+		userProfile: WebAppUserProfile,
+		eventType: SignInEventType,
+		eventSource: EventSource,
+		supplementaryState?: Partial<TState>
+	) {
 		if (
 			eventType === SignInEventType.ExistingUser &&
 			eventSource === EventSource.Local
@@ -893,14 +995,21 @@ export default abstract class Root<
 	protected onUserSignedOut(supplementaryState?: Partial<TState>) {
 		return this.setUserAuthChangedState(null, supplementaryState);
 	}
-	protected onUserUpdated(user: UserAccount, eventSource: EventSource, supplementaryState?: Partial<TState>) {
+	protected onUserUpdated(
+		user: UserAccount,
+		eventSource: EventSource,
+		supplementaryState?: Partial<TState>
+	) {
 		this.setState({
-			...supplementaryState as State,
-			user
+			...(supplementaryState as State),
+			user,
 		});
 	}
 
-	protected abstract readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>): void;
+	protected abstract readArticle(
+		article: ReadArticleReference,
+		ev?: React.MouseEvent<HTMLElement>
+	): void;
 	protected abstract reloadWindow(): void;
 	protected abstract renderBody(): React.ReactNode;
 	public componentDidMount() {

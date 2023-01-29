@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -17,55 +17,59 @@ import Fetchable from '../../../../common/Fetchable';
 import AsyncTracker from '../../../../common/AsyncTracker';
 
 export interface Header {
-	name: string,
-	colSpan?: number
+	name: string;
+	colSpan?: number;
 }
 type BaseProps<TData> = {
-	title: string,
-	onGetHeaders: (data?: TData) => Header[][],
-	onRenderBody: (data: TData, columnCount: number) => React.ReactNode | null,
-	onRenderChart?: (data: TData) => React.ReactNode,
-	onRenderFooter?: (data: TData, columnCount: number) => React.ReactNode
+	title: string;
+	onGetHeaders: (data?: TData) => Header[][];
+	onRenderBody: (data: TData, columnCount: number) => React.ReactNode | null;
+	onRenderChart?: (data: TData) => React.ReactNode;
+	onRenderFooter?: (data: TData, columnCount: number) => React.ReactNode;
 };
 type DateRangeQueryProps<TData> = BaseProps<TData> & {
-	initialStartDate: string,
-	initialEndDate: string,
-	onFetchData: FetchFunctionWithParams<DateRangeQuery, TData>
+	initialStartDate: string;
+	initialEndDate: string;
+	onFetchData: FetchFunctionWithParams<DateRangeQuery, TData>;
 };
 type UnknownQueryProps<TData> = BaseProps<TData> & {
-	onFetchData: FetchFunctionWithParams<unknown, TData>
+	onFetchData: FetchFunctionWithParams<unknown, TData>;
 };
 type Props<TData> = DateRangeQueryProps<TData> | UnknownQueryProps<TData>;
-function isDateRangeQueryProps<TData>(props: Props<TData>): props is DateRangeQueryProps<TData> {
+function isDateRangeQueryProps<TData>(
+	props: Props<TData>
+): props is DateRangeQueryProps<TData> {
 	return (
-		typeof (props as DateRangeQueryProps<TData>).initialStartDate === 'string' &&
+		typeof (props as DateRangeQueryProps<TData>).initialStartDate ===
+			'string' &&
 		typeof (props as DateRangeQueryProps<TData>).initialEndDate === 'string'
 	);
 }
 interface State<TData> {
-	startDate: string,
-	endDate: string,
-	data: Fetchable<TData> | null
+	startDate: string;
+	endDate: string;
+	data: Fetchable<TData> | null;
 }
-export class ReportTable<TData> extends React.Component<Props<TData>, State<TData>> {
+export class ReportTable<TData> extends React.Component<
+	Props<TData>,
+	State<TData>
+> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _runReport = (event: React.MouseEvent) => {
 		event.preventDefault();
 		const callback = this._asyncTracker.addCallback(
 			(data: Fetchable<TData>) => {
 				this.setState({
-					data
+					data,
 				});
 			}
 		);
 		let data: Fetchable<TData>;
-		if (
-			isDateRangeQueryProps(this.props)
-		) {
+		if (isDateRangeQueryProps(this.props)) {
 			data = this.props.onFetchData(
 				{
 					startDate: this.state.startDate,
-					endDate: this.state.endDate
+					endDate: this.state.endDate,
 				},
 				callback
 			);
@@ -73,34 +77,32 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 			data = this.props.onFetchData(null, callback);
 		}
 		this.setState({
-			data
+			data,
 		});
 	};
 	private readonly _setStartDate = (value: string) => {
 		this.setState({
-			startDate: value
+			startDate: value,
 		});
 	};
 	private readonly _setEndDate = (value: string) => {
 		this.setState({
-			endDate: value
+			endDate: value,
 		});
 	};
 	constructor(props: Props<TData>) {
 		super(props);
-		if (
-			isDateRangeQueryProps(props)
-		) {
+		if (isDateRangeQueryProps(props)) {
 			this.state = {
 				data: null,
 				startDate: props.initialStartDate,
-				endDate: props.initialEndDate
+				endDate: props.initialEndDate,
 			};
 		} else {
 			this.state = {
 				data: null,
 				startDate: '',
-				endDate: ''
+				endDate: '',
 			};
 		}
 	}
@@ -108,14 +110,12 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		const
-			headers = this.props.onGetHeaders(this.state.data?.value),
+		const headers = this.props.onGetHeaders(this.state.data?.value),
 			columnCount = headers[0].reduce(
 				(sum, header) => sum + (header.colSpan ?? 1),
 				0
 			);
-		let
-			chart: React.ReactNode | undefined,
+		let chart: React.ReactNode | undefined,
 			body: React.ReactNode,
 			footer: React.ReactNode | undefined;
 		if (this.state.data?.value) {
@@ -132,13 +132,13 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 				<tbody>
 					<tr>
 						<td colSpan={columnCount}>
-							{this.state.data ?
-								this.state.data.isLoading ?
-									'Loading...' :
-										this.state.data.errors ?
-											'Error loading data.' :
-											'No data found.' :
-								'Click "Run Report" to load data.'}
+							{this.state.data
+								? this.state.data.isLoading
+									? 'Loading...'
+									: this.state.data.errors
+									? 'Error loading data.'
+									: 'No data found.'
+								: 'Click "Run Report" to load data.'}
 						</td>
 					</tr>
 				</tbody>
@@ -152,7 +152,7 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 							<div className="header">
 								<label>{this.props.title}</label>
 								<form>
-									{isDateRangeQueryProps(this.props) ?
+									{isDateRangeQueryProps(this.props) ? (
 										<>
 											<InputControl
 												type="text"
@@ -166,38 +166,27 @@ export class ReportTable<TData> extends React.Component<Props<TData>, State<TDat
 												value={this.state.endDate}
 												onChange={this._setEndDate}
 											/>
-										</> :
-										null}
-									<Button
-										onClick={this._runReport}
-										text="Run Report"
-									/>
+										</>
+									) : null}
+									<Button onClick={this._runReport} text="Run Report" />
 								</form>
 							</div>
-							{chart ?
-								<div className="chart">
-									{chart}
-								</div> :
-								null}
+							{chart ? <div className="chart">{chart}</div> : null}
 						</div>
 					</caption>
 					<thead>
-						{headers.map(
-							row => (
-								<tr key={row.map(header => header.name).join(',')}>
-									{row.map(
-										(header, index) => (
-											<th
-												colSpan={header.colSpan ?? 1}
-												key={`${header.name}-${index}`}
-											>
-												{header.name}
-											</th>
-										)
-									)}
-								</tr>
-							)
-						)}
+						{headers.map((row) => (
+							<tr key={row.map((header) => header.name).join(',')}>
+								{row.map((header, index) => (
+									<th
+										colSpan={header.colSpan ?? 1}
+										key={`${header.name}-${index}`}
+									>
+										{header.name}
+									</th>
+								))}
+							</tr>
+						))}
 					</thead>
 					{body}
 					{footer}

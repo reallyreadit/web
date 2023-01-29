@@ -11,7 +11,11 @@
 import ReadState from './ReadState';
 import ContentElement from './ContentElement';
 import Line from './Line';
-import { getWordCount, isBlockElement, isElement } from '../contentParsing/utils';
+import {
+	getWordCount,
+	isBlockElement,
+	isElement,
+} from '../contentParsing/utils';
 import TextContainer from '../contentParsing/TextContainer';
 
 /**
@@ -25,9 +29,7 @@ function countTextNodeWords(element: Element): number {
 	for (const childNode of element.childNodes) {
 		if (childNode.nodeType === Node.TEXT_NODE) {
 			wordCount += getWordCount(childNode);
-		} else if (
-			isElement(childNode)
-		) {
+		} else if (isElement(childNode)) {
 			wordCount += countTextNodeWords(childNode);
 		}
 	}
@@ -40,31 +42,25 @@ function countTextNodeWords(element: Element): number {
  * content. These are wrapped inside ContentElement classes and returned as a list that
  * flattens the original DOM hierarchy of the elements.
  */
-function findContentElements(element: Element, contentElements: ContentElement[] = []): ContentElement[] {
-	let
-		containsTextNodeContent = false,
+function findContentElements(
+	element: Element,
+	contentElements: ContentElement[] = []
+): ContentElement[] {
+	let containsTextNodeContent = false,
 		containsBlockElement = false;
 	for (let child of element.childNodes) {
-		if (
-			child.nodeType === Node.TEXT_NODE &&
-			child.textContent.trim().length
-		) {
+		if (child.nodeType === Node.TEXT_NODE && child.textContent.trim().length) {
 			containsTextNodeContent = true;
-		} else if (
-			isBlockElement(child)
-		) {
+		} else if (isBlockElement(child)) {
 			containsBlockElement = true;
 		}
 	}
 	if (containsTextNodeContent || !containsBlockElement) {
-	// If the given element contains least one non-empty text node, OR does not
-	// contain any node that is a traditional block-level element, is assumed
-	// to be a piece of relevant content. We process it as a single ContentElement.
+		// If the given element contains least one non-empty text node, OR does not
+		// contain any node that is a traditional block-level element, is assumed
+		// to be a piece of relevant content. We process it as a single ContentElement.
 		contentElements.push(
-			new ContentElement(
-				element as HTMLElement,
-				countTextNodeWords(element)
-			)
+			new ContentElement(element as HTMLElement, countTextNodeWords(element))
 		);
 	} else {
 		// If at least one traditional block-level element was present in the child nodes,
@@ -89,14 +85,13 @@ export default class Page {
 		// into a larger list of the content
 		this._contentEls = primaryTextContainers
 			.reduce<ContentElement[]>(
-				(contentElements, textContainer) => contentElements.concat(
-					findContentElements(textContainer.containerElement)
-				),
+				(contentElements, textContainer) =>
+					contentElements.concat(
+						findContentElements(textContainer.containerElement)
+					),
 				[]
 			)
-			.sort(
-				(a, b) => a.offsetTop - b.offsetTop
-			);
+			.sort((a, b) => a.offsetTop - b.offsetTop);
 	}
 	public setReadState(readStateArray: number[]) {
 		// split the read state array over the block elements
@@ -107,7 +102,12 @@ export default class Page {
 			if (wordsAvailable >= block.wordCount) {
 				block.setReadState(readState.slice(wordCount, block.wordCount));
 			} else if (wordsAvailable > 0) {
-				block.setReadState(new ReadState([readState.slice(wordCount, wordsAvailable), new ReadState([-(block.wordCount - wordsAvailable)])]));
+				block.setReadState(
+					new ReadState([
+						readState.slice(wordCount, wordsAvailable),
+						new ReadState([-(block.wordCount - wordsAvailable)]),
+					])
+				);
 			} else {
 				block.setReadState(new ReadState([-block.wordCount]));
 			}
@@ -116,23 +116,21 @@ export default class Page {
 		return this;
 	}
 	public getReadState() {
-		return new ReadState(this._contentEls.map(b => b.getReadState()));
+		return new ReadState(this._contentEls.map((b) => b.getReadState()));
 	}
 	public updateLineHeight() {
-		this._contentEls.forEach(
-			element => {
-				element.setLineHeight();
-			}
-		);
+		this._contentEls.forEach((element) => {
+			element.setLineHeight();
+		});
 	}
 	public updateOffset() {
-		this._contentEls.forEach(block => block.updateOffset());
+		this._contentEls.forEach((block) => block.updateOffset());
 	}
 	public isRead() {
-		return !this._contentEls.some(block => !block.isRead());
+		return !this._contentEls.some((block) => !block.isRead());
 	}
 	public readWord() {
-		var block = this._contentEls.find(block => block.isReadable());
+		var block = this._contentEls.find((block) => block.isReadable());
 		if (block) {
 			return block.readWord();
 		}
@@ -142,41 +140,34 @@ export default class Page {
 		this.updateOffset();
 		const readState = this.getReadState();
 		const lastReadLine = this._contentEls
-			.reduce(
-				(lines, paragraph) => lines.concat(paragraph.lines),
-				[] as Line[]
-			)
-			.reduce(
-				(searchableLines, line) => {
-					if (searchableLines.reduce((sum, line) => sum + line.readState.wordCount, 0) < readState.wordsRead) {
-						return searchableLines.concat(line);
-					}
-					return searchableLines;
-				},
-				[] as Line[]
-			)
+			.reduce((lines, paragraph) => lines.concat(paragraph.lines), [] as Line[])
+			.reduce((searchableLines, line) => {
+				if (
+					searchableLines.reduce(
+						(sum, line) => sum + line.readState.wordCount,
+						0
+					) < readState.wordsRead
+				) {
+					return searchableLines.concat(line);
+				}
+				return searchableLines;
+			}, [] as Line[])
 			.reverse()
-			.find(
-				line => line.readState.wordsRead > 0
-			);
+			.find((line) => line.readState.wordsRead > 0);
 		if (lastReadLine) {
 			return Math.max(
 				0,
-				(
-					this._contentEls
-						.find(
-							paragraph => paragraph.lines.includes(lastReadLine)
-						)
-						.offsetTop +
+				this._contentEls.find((paragraph) =>
+					paragraph.lines.includes(lastReadLine)
+				).offsetTop +
 					lastReadLine.top -
 					window.innerHeight
-				)
 			);
 		}
 		return 0;
 	}
 	public toggleVisualDebugging() {
-		this._contentEls.forEach(block => block.toggleVisualDebugging());
+		this._contentEls.forEach((block) => block.toggleVisualDebugging());
 	}
 	public get elements() {
 		return this._contentEls;

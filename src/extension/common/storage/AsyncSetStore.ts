@@ -17,12 +17,16 @@ import AsyncStore, { ChromeStorageArea } from './AsyncStore';
 export default class AsyncSetStore<K, V> extends AsyncStore<V[]> {
 	private _getKey: (item: V) => K;
 
-	constructor(key: string, getKey: (item: V) => K, storageType: ChromeStorageArea = 'local') {
+	constructor(
+		key: string,
+		getKey: (item: V) => K,
+		storageType: ChromeStorageArea = 'local'
+	) {
 		super(key, [], storageType);
 		this._getKey = getKey;
 	}
 	private _getItemByKey(key: K, items: V[]) {
-		return items.filter(item => this._getKey(item) === key)[0];
+		return items.filter((item) => this._getKey(item) === key)[0];
 	}
 
 	private _removeItem(item: V, items: V[]) {

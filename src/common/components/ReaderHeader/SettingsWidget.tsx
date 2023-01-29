@@ -1,76 +1,79 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import Popover, { MenuPosition, MenuState } from '../Popover';
 import Icon from '../Icon';
 import RadioButtons from '../RadioButtons';
-import DisplayPreference, { DisplayTheme } from '../../models/userAccounts/DisplayPreference';
+import DisplayPreference, {
+	DisplayTheme,
+} from '../../models/userAccounts/DisplayPreference';
 
 interface Props {
-	displayPreference: DisplayPreference | null,
-	isHidden: boolean,
-	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
+	displayPreference: DisplayPreference | null;
+	isHidden: boolean;
+	onChangeDisplayPreference: (
+		preference: DisplayPreference
+	) => Promise<DisplayPreference>;
 }
 interface State {
-	menuState: MenuState
+	menuState: MenuState;
 }
-const
-	linkOptions = [
+const linkOptions = [
 		{
 			key: 'Show',
-			value: 'show'
+			value: 'show',
 		},
 		{
 			key: 'Hide',
-			value: 'hide'
-		}
+			value: 'hide',
+		},
 	],
 	textSizeOptions = [
 		{
 			key: 'M',
-			value: '1'
+			value: '1',
 		},
 		{
 			key: 'L',
-			value: '2'
+			value: '2',
 		},
 		{
 			key: 'XL',
-			value: '3'
-		}
+			value: '3',
+		},
 	],
 	themeOptions = [
 		{
 			key: 'Light',
-			value: DisplayTheme.Light.toString()
+			value: DisplayTheme.Light.toString(),
 		},
 		{
 			key: 'Dark',
-			value: DisplayTheme.Dark.toString()
-		}
+			value: DisplayTheme.Dark.toString(),
+		},
 	];
 export default class SettingsWidget extends React.PureComponent<Props, State> {
 	private readonly _beginClosingMenu = () => {
 		this.setState({
-			menuState: MenuState.Closing
+			menuState: MenuState.Closing,
 		});
 	};
 	private readonly _closeMenu = () => {
 		this.setState({
-			menuState: MenuState.Closed
+			menuState: MenuState.Closed,
 		});
 	};
 	private readonly _openMenu = () => {
 		this.setState({
-			menuState: MenuState.Opened
+			menuState: MenuState.Opened,
 		});
 	};
 	private readonly _setLinks = (value: string) => {
@@ -79,7 +82,7 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 		}
 		this.props.onChangeDisplayPreference({
 			...this.props.displayPreference,
-			hideLinks: value === 'hide'
+			hideLinks: value === 'hide',
 		});
 	};
 	private readonly _setTextSize = (value: string) => {
@@ -88,7 +91,7 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 		}
 		this.props.onChangeDisplayPreference({
 			...this.props.displayPreference,
-			textSize: parseInt(value)
+			textSize: parseInt(value),
 		});
 	};
 	private readonly _setTheme = (value: string) => {
@@ -97,13 +100,13 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 		}
 		this.props.onChangeDisplayPreference({
 			...this.props.displayPreference,
-			theme: parseInt(value) as DisplayTheme
+			theme: parseInt(value) as DisplayTheme,
 		});
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			menuState: MenuState.Closed
+			menuState: MenuState.Closed,
 		};
 	}
 	public componentDidUpdate(prevProps: Props) {
@@ -130,7 +133,9 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 											<RadioButtons
 												onChange={this._setTheme}
 												options={themeOptions}
-												value={this.props.displayPreference?.theme.toString() ?? ''}
+												value={
+													this.props.displayPreference?.theme.toString() ?? ''
+												}
 											/>
 										</td>
 									</tr>
@@ -144,7 +149,10 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 											<RadioButtons
 												onChange={this._setTextSize}
 												options={textSizeOptions}
-												value={this.props.displayPreference?.textSize.toString() ?? ''}
+												value={
+													this.props.displayPreference?.textSize.toString() ??
+													''
+												}
 											/>
 										</td>
 									</tr>
@@ -159,11 +167,11 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 												onChange={this._setLinks}
 												options={linkOptions}
 												value={
-													this.props.displayPreference != null ?
-														this.props.displayPreference.hideLinks ?
-															'hide' :
-															'show' :
-														''
+													this.props.displayPreference != null
+														? this.props.displayPreference.hideLinks
+															? 'hide'
+															: 'show'
+														: ''
 												}
 											/>
 										</td>
@@ -178,11 +186,7 @@ export default class SettingsWidget extends React.PureComponent<Props, State> {
 					onClose={this._closeMenu}
 					onOpen={this._openMenu}
 				>
-					<Icon
-						badge={false}
-						display="block"
-						name="equalizer"
-					/>
+					<Icon badge={false} display="block" name="equalizer" />
 				</Popover>
 			</div>
 		);

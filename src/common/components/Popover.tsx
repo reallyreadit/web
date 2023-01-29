@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -25,23 +25,23 @@ export enum MenuPosition {
 	BottomRight = 'bottom/right',
 	LeftTop = 'left/top',
 	LeftMiddle = 'left/middle',
-	LeftBottom = 'left/bottom'
+	LeftBottom = 'left/bottom',
 }
 export enum MenuState {
 	Closed,
 	Closing,
-	Opened
+	Opened,
 }
 interface Props {
-	children: React.ReactNode,
-	className?: ClassValue,
-	menuChildren: React.ReactNode,
-	menuPosition: MenuPosition,
-	menuState: MenuState,
-	onBeginClosing: () => void,
-	onClose: () => void,
-	onOpen: (event: React.MouseEvent<HTMLElement>) => void,
-	stopPropagation?: boolean
+	children: React.ReactNode;
+	className?: ClassValue;
+	menuChildren: React.ReactNode;
+	menuPosition: MenuPosition;
+	menuState: MenuState;
+	onBeginClosing: () => void;
+	onClose: () => void;
+	onOpen: (event: React.MouseEvent<HTMLElement>) => void;
+	stopPropagation?: boolean;
 }
 export default class Popover extends React.PureComponent<Props> {
 	private _childElementWillReceiveFocus = false;
@@ -59,7 +59,9 @@ export default class Popover extends React.PureComponent<Props> {
 			this._childElementWillReceiveFocus = false;
 		}
 	};
-	private readonly _handleChildrenClick = (event: React.MouseEvent<HTMLElement>) => {
+	private readonly _handleChildrenClick = (
+		event: React.MouseEvent<HTMLElement>
+	) => {
 		if (this.props.stopPropagation) {
 			// children themselves don't need to stop propagation (e.g. <RatingSelector> in <RatingControl>)
 			// because events will bubble up till here and then be stopped
@@ -82,13 +84,10 @@ export default class Popover extends React.PureComponent<Props> {
 				onBlur={this._handleBlur}
 				tabIndex={-1}
 			>
-				<span
-					className="children"
-					onClick={this._handleChildrenClick}
-				>
+				<span className="children" onClick={this._handleChildrenClick}>
 					{this.props.children}
 				</span>
-				{this.props.menuState !== MenuState.Closed ?
+				{this.props.menuState !== MenuState.Closed ? (
 					<Menu
 						isClosing={this.props.menuState === MenuState.Closing}
 						onMouseDown={this._registerImpendingChildFocusTransition}
@@ -96,8 +95,8 @@ export default class Popover extends React.PureComponent<Props> {
 						stopPropagation={this.props.stopPropagation}
 					>
 						{this.props.menuChildren}
-					</Menu>:
-					null}
+					</Menu>
+				) : null}
 			</span>
 		);
 	}

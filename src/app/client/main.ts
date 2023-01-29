@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -52,23 +52,20 @@ const serverApi = new ServerApi(
 );
 
 const rootProps = {
-	captcha: new Captcha(
-		null,
-		onLoadHandler => {
-			window.onReCaptchaLoaded = () => {
-				onLoadHandler(window.grecaptcha);
-			};
-		}
-	),
+	captcha: new Captcha(null, (onLoadHandler) => {
+		window.onReCaptchaLoaded = () => {
+			onLoadHandler(window.grecaptcha);
+		};
+	}),
 	initialLocation: {
 		...initData.initialLocation,
-		fragment: location.hash
+		fragment: location.hash,
 	},
 	initialUserProfile: initData.userProfile,
 	serverApi,
 	staticServerEndpoint: initData.staticServerEndpoint,
 	version: new SemanticVersion(initData.version),
-	webServerEndpoint: initData.webServerEndpoint
+	webServerEndpoint: initData.webServerEndpoint,
 };
 let rootElement: React.ReactElement<any>;
 switch (initData.clientType) {
@@ -76,37 +73,29 @@ switch (initData.clientType) {
 		const messagingContext = new WebViewMessagingContext();
 		window.reallyreadit.app = {
 			...window.reallyreadit.app,
-			...messagingContext.createIncomingMessageHandlers()
+			...messagingContext.createIncomingMessageHandlers(),
 		};
-		rootElement = React.createElement(
-			AppRoot,
-			{
-				...rootProps,
-				appApi: new AppApi({
-					messagingContext,
-					platform: initData.appPlatform
-				}),
-				appReferral: initData.appReferral
-			}
-		);
+		rootElement = React.createElement(AppRoot, {
+			...rootProps,
+			appApi: new AppApi({
+				messagingContext,
+				platform: initData.appPlatform,
+			}),
+			appReferral: initData.appReferral,
+		});
 		break;
 	case ClientType.Browser:
-		rootElement = React.createElement(
-			BrowserRoot,
-			{
-				...rootProps,
-				browserApi: new BrowserApi(),
-				deviceType: initData.deviceType,
-				extensionApi: new ExtensionApi({
-					installedVersion: (
-						initData.extensionVersion ?
-							new SemanticVersion(initData.extensionVersion) :
-							null
-					),
-					webServerEndpoint: initData.webServerEndpoint
-				})
-			}
-		);
+		rootElement = React.createElement(BrowserRoot, {
+			...rootProps,
+			browserApi: new BrowserApi(),
+			deviceType: initData.deviceType,
+			extensionApi: new ExtensionApi({
+				installedVersion: initData.extensionVersion
+					? new SemanticVersion(initData.extensionVersion)
+					: null,
+				webServerEndpoint: initData.webServerEndpoint,
+			}),
+		});
 		break;
 	default:
 		throw new Error('Invalid clientType');

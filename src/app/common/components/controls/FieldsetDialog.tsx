@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -14,15 +14,20 @@ import FormDialog from '../../../../common/components/FormDialog';
 import classNames from 'classnames';
 
 export interface Props {
-	onCloseDialog: () => void,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void
+	onCloseDialog: () => void;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
 }
 export interface State {
-	errorMessage: string,
-	showErrors: boolean,
-	isLoading: boolean
+	errorMessage: string;
+	showErrors: boolean;
+	isLoading: boolean;
 }
-export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Error = string[]> extends React.PureComponent<P & Props, S> {
+export default abstract class FieldsetDialog<
+	T,
+	P,
+	S extends Partial<State>,
+	Error = string[]
+> extends React.PureComponent<P & Props, S> {
 	private readonly _className: string;
 	private readonly _title: string;
 	private readonly _submitButtonText: string;
@@ -30,21 +35,22 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Err
 	private readonly _submit = () => {
 		this.setState({ showErrors: true });
 		if (
-			!this
-				.getClientErrors()
-				.some(errors => Object.keys(errors).some(key => !!(errors as { [key: string]: string })[key]))
+			!this.getClientErrors().some((errors) =>
+				Object.keys(errors).some(
+					(key) => !!(errors as { [key: string]: string })[key]
+				)
+			)
 		) {
 			this.setState({ errorMessage: null });
-			return this
-				.submitForm()
-				.then(result => {
+			return this.submitForm()
+				.then((result) => {
 					this.props.onCloseDialog();
 					if (this._successMessage) {
 						this.props.onShowToast(this._successMessage, Intent.Success);
 					}
 					this.onSuccess(result);
 				})
-				.catch(errors => {
+				.catch((errors) => {
 					this.onError(errors);
 					throw new Error();
 				});
@@ -53,10 +59,10 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Err
 	};
 	constructor(
 		params: {
-			className?: string,
-			title: string,
-			submitButtonText: string,
-			successMessage?: string
+			className?: string;
+			title: string;
+			submitButtonText: string;
+			successMessage?: string;
 		},
 		props: P & Props
 	) {
@@ -68,7 +74,7 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Err
 		this.state = {
 			errorMessage: null,
 			showErrors: false,
-			isLoading: false
+			isLoading: false,
 		} as S;
 	}
 	protected abstract renderFields(): JSX.Element | JSX.Element[];
@@ -77,10 +83,10 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Err
 	}
 	protected getClientErrors(): { [key: string]: string }[] {
 		return [];
-	};
+	}
 	protected abstract submitForm(): Promise<T>;
-	protected onSuccess(result: T) { }
-	protected onError(errors: Error) { }
+	protected onSuccess(result: T) {}
+	protected onError(errors: Error) {}
 	public render() {
 		return (
 			<FormDialog
@@ -92,13 +98,14 @@ export default abstract class FieldsetDialog<T, P, S extends Partial<State>, Err
 				submitButtonText={this._submitButtonText}
 				title={this._title}
 			>
-				{this.state.errorMessage ?
+				{this.state.errorMessage ? (
 					<div
 						className="error-message"
-						dangerouslySetInnerHTML={{ __html: this.state.errorMessage.replace(/\n/g, '<br />') }}
-					>
-					</div> :
-					null}
+						dangerouslySetInnerHTML={{
+							__html: this.state.errorMessage.replace(/\n/g, '<br />'),
+						}}
+					></div>
+				) : null}
 				{this.renderFields()}
 			</FormDialog>
 		);

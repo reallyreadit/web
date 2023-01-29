@@ -1,34 +1,37 @@
 interface MessageErrorResponse {
-	error: string
+	error: string;
 }
 interface MessageSuccessResponse<T> {
-	value: T
+	value: T;
 }
-export type MessageResponse<T> = MessageSuccessResponse<T> | MessageErrorResponse;
-export function isSuccessResponse<T>(response: MessageResponse<T>): response is MessageSuccessResponse<T> {
+export type MessageResponse<T> =
+	| MessageSuccessResponse<T>
+	| MessageErrorResponse;
+export function isSuccessResponse<T>(
+	response: MessageResponse<T>
+): response is MessageSuccessResponse<T> {
 	return response != null && 'value' in response;
 }
-export function createMessageResponseHandler<T>(promise: Promise<T>, sendResponse: (response: MessageResponse<T>) => void) {
+export function createMessageResponseHandler<T>(
+	promise: Promise<T>,
+	sendResponse: (response: MessageResponse<T>) => void
+) {
 	promise
-		.then(
-			value => {
-				sendResponse({
-					value
-				});
+		.then((value) => {
+			sendResponse({
+				value,
+			});
+		})
+		.catch((reason) => {
+			// Error properties are non-enumerable
+			if (reason instanceof Error) {
+				reason = {
+					message: reason.message,
+					name: reason.name,
+				};
 			}
-		)
-		.catch(
-			reason => {
-				// Error properties are non-enumerable
-				if (reason instanceof Error) {
-					reason = {
-						message: reason.message,
-						name: reason.name
-					};
-				}
-				sendResponse({
-					error: reason
-				});
-			}
-		);
+			sendResponse({
+				error: reason,
+			});
+		});
 }

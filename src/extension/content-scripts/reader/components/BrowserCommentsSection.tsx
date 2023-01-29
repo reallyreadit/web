@@ -24,23 +24,25 @@ import AuthServiceAccountAssociation from '../../../../common/models/auth/AuthSe
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 export interface Props {
-	article: UserArticle
-	clipboardService: ClipboardService,
-	comments: Fetchable<CommentThread[]>,
-	dialogService: DialogService<{}>,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
-	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>
-	onNavTo: (url: string) => boolean,
-	onPostArticle: (form: PostForm) => Promise<Post>,
-	onPostComment: (form: CommentForm) => Promise<void>,
-	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
-	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onShare: (shareData: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onViewProfile: (userName: string) => void,
-	toasterService: ToasterService,
-	user: UserAccount
+	article: UserArticle;
+	clipboardService: ClipboardService;
+	comments: Fetchable<CommentThread[]>;
+	dialogService: DialogService<{}>;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>;
+	onLinkAuthServiceAccount: (
+		provider: AuthServiceProvider
+	) => Promise<AuthServiceAccountAssociation>;
+	onNavTo: (url: string) => boolean;
+	onPostArticle: (form: PostForm) => Promise<Post>;
+	onPostComment: (form: CommentForm) => Promise<void>;
+	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>;
+	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>;
+	onShare: (shareData: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onViewProfile: (userName: string) => void;
+	toasterService: ToasterService;
+	user: UserAccount;
 }
 export default class BrowserCommentsSection extends React.Component<Props> {
 	protected readonly _openPostDialog = (article: UserArticle) => {
@@ -64,10 +66,11 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 					onPost={this._openPostDialog}
 					promptMessage="Post this article on Readup."
 				/>
-				{this.props.comments.isLoading ?
+				{this.props.comments.isLoading ? (
 					<ContentBox className="loading-comments">
 						<SpinnerIcon /> Loading comments...
-					</ContentBox> :
+					</ContentBox>
+				) : (
 					<CommentsSection
 						article={this.props.article}
 						comments={this.props.comments.value}
@@ -84,7 +87,8 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 						onShare={this.props.onShare}
 						onViewProfile={this.props.onViewProfile}
 						user={this.props.user}
-					/>}
+					/>
+				)}
 			</div>
 		);
 	}

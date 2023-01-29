@@ -89,18 +89,18 @@ export default class extends ServerApi {
 			if (exchange.responseData) {
 				return {
 					isLoading: false,
-					value: exchange.responseData as T
+					value: exchange.responseData as T,
 				};
 			} else {
 				return {
 					isLoading: false,
-					errors: exchange.responseErrors
+					errors: exchange.responseErrors,
 				};
 			}
 		} else {
 			this.fetchJson<T>('GET', request)
-				.then(value => callback({ isLoading: false, value }))
-				.catch(errors => callback({ isLoading: false, errors }));
+				.then((value) => callback({ isLoading: false, value }))
+				.catch((errors) => callback({ isLoading: false, errors }));
 			return { isLoading: true };
 		}
 	}
@@ -110,7 +110,7 @@ export default class extends ServerApi {
 	public getClientHeaderValue() {
 		return `web/app/client#${this._clientType}@${this._clientVersion}`;
 	}
-	public initialize() : void {
+	public initialize(): void {
 		this._isInitialized = true;
 	}
 }

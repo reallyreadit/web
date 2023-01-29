@@ -9,18 +9,18 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 export enum AppStoreErrorType {
-	PaymentsDisallowed = "https://docs.readup.org/errors/app-store/payments-disallowed",
-	ProductNotFound = "https://docs.readup.org/errors/app-store/product-not-found",
-	PurchaseCancelled = "https://docs.readup.org/errors/app-store/purchase-cancelled",
-	ReceiptNotFound = "https://docs.readup.org/errors/app-store/receipt-not-found",
-	ReceiptRequestFailed = "https://docs.readup.org/errors/app-store/receipt-request-failed"
-};
+	PaymentsDisallowed = 'https://docs.readup.org/errors/app-store/payments-disallowed',
+	ProductNotFound = 'https://docs.readup.org/errors/app-store/product-not-found',
+	PurchaseCancelled = 'https://docs.readup.org/errors/app-store/purchase-cancelled',
+	ReceiptNotFound = 'https://docs.readup.org/errors/app-store/receipt-not-found',
+	ReceiptRequestFailed = 'https://docs.readup.org/errors/app-store/receipt-request-failed',
+}
 export enum BrowserExtensionAppErrorType {
-	MessageParsingFailed = "https://docs.readup.org/errors/browser-extension-app/message-parsing-failed",
-	ReadupProtocolFailed = "https://docs.readup.org/errors/browser-extension-app/readup-protocol-failed",
-	UnexpectedMessageType = "https://docs.readup.org/errors/browser-extension-app/unexpected-message-type"
+	MessageParsingFailed = 'https://docs.readup.org/errors/browser-extension-app/message-parsing-failed',
+	ReadupProtocolFailed = 'https://docs.readup.org/errors/browser-extension-app/readup-protocol-failed',
+	UnexpectedMessageType = 'https://docs.readup.org/errors/browser-extension-app/unexpected-message-type',
 }
 export enum SubscriptionsErrorType {
-	FreeTrialCreditLimitExceeded = "https://docs.readup.org/errors/subscriptions/free-trial-credit-limit-exceeded",
-	ReceiptValidationFailed = "https://docs.readup.org/errors/subscriptions/receipt-validation-failed"
+	FreeTrialCreditLimitExceeded = 'https://docs.readup.org/errors/subscriptions/free-trial-credit-limit-exceeded',
+	ReceiptValidationFailed = 'https://docs.readup.org/errors/subscriptions/receipt-validation-failed',
 }

@@ -1,28 +1,37 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import UserAccount from '../../../../common/models/UserAccount';
-import CreateAccountStep, { Form as CreateAccountForm } from '../../../../common/components/BrowserOnboardingFlow/CreateAccountStep';
+import CreateAccountStep, {
+	Form as CreateAccountForm,
+} from '../../../../common/components/BrowserOnboardingFlow/CreateAccountStep';
 import CaptchaBase from '../../../../common/captcha/CaptchaBase';
-import SignInStep, { Form as SignInForm } from '../../../../common/components/BrowserOnboardingFlow/SignInStep';
+import SignInStep, {
+	Form as SignInForm,
+} from '../../../../common/components/BrowserOnboardingFlow/SignInStep';
 import PasswordResetRequestForm from '../../../../common/models/userAccounts/PasswordResetRequestForm';
 import RequestPasswordResetStep from '../../../../common/components/BrowserOnboardingFlow/RequestPasswordResetStep';
-import CreateAuthServiceAccountStep, { Form as CreateAuthServiceAccountForm } from '../../../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
+import CreateAuthServiceAccountStep, {
+	Form as CreateAuthServiceAccountForm,
+} from '../../../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
 import ResetPasswordStep from './OnboardingFlow/ResetPasswordStep';
 import InstallExtensionStep from './OnboardingFlow/InstallExtensionStep';
 import { DeviceType, isCompatibleBrowser } from '../../../../common/DeviceType';
 import ExtensionInstalledStep from './OnboardingFlow/ExtensionInstalledStep';
 import ButtonTutorialStep from './OnboardingFlow/ButtonTutorialStep';
 import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
-import BrowserOnboardingFlow, { BaseProps, ExitReason } from '../../../../common/components/BrowserOnboardingFlow';
+import BrowserOnboardingFlow, {
+	BaseProps,
+	ExitReason,
+} from '../../../../common/components/BrowserOnboardingFlow';
 import { Intent } from '../../../../common/components/Toaster';
 import BrowserPopupResponseResponse from '../../../../common/models/auth/BrowserPopupResponseResponse';
 import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
@@ -37,34 +46,40 @@ export enum Step {
 	InstallExtension,
 	ExtensionInstalled,
 	ButtonTutorial,
-	TrackingAnimation
+	TrackingAnimation,
 }
 export interface Props extends BaseProps {
-	analyticsAction?: string,
-	authServiceToken?: string,
-	captcha: CaptchaBase,
-	deviceType: DeviceType,
-	initialAuthenticationStep?: Step.CreateAccount | Step.SignIn,
-	isExtensionInstalled: boolean,
-	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
-	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
-	onCreateStaticContentUrl: (path: string) => string,
-	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
-	onResetPassword: (token: string, email: string) => Promise<void>,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSignIn: (form: SignInForm) => Promise<void>,
-	onSignInWithApple: (analyticsAction: string) => Promise<BrowserPopupResponseResponse>,
-	onSignInWithTwitter: (analyticsAction: string) => Promise<BrowserPopupResponseResponse>,
-	passwordResetEmail?: string,
-	passwordResetToken?: string
+	analyticsAction?: string;
+	authServiceToken?: string;
+	captcha: CaptchaBase;
+	deviceType: DeviceType;
+	initialAuthenticationStep?: Step.CreateAccount | Step.SignIn;
+	isExtensionInstalled: boolean;
+	onCreateAccount: (form: CreateAccountForm) => Promise<void>;
+	onCreateAuthServiceAccount: (
+		form: CreateAuthServiceAccountForm
+	) => Promise<void>;
+	onCreateStaticContentUrl: (path: string) => string;
+	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>;
+	onResetPassword: (token: string, email: string) => Promise<void>;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
+	onSignIn: (form: SignInForm) => Promise<void>;
+	onSignInWithApple: (
+		analyticsAction: string
+	) => Promise<BrowserPopupResponseResponse>;
+	onSignInWithTwitter: (
+		analyticsAction: string
+	) => Promise<BrowserPopupResponseResponse>;
+	passwordResetEmail?: string;
+	passwordResetToken?: string;
 }
 export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	private readonly _createAccount = (form: CreateAccountForm) => {
-		return this.props
-			.onCreateAccount(form)
-			.then(this._handleAccountCreation);
+		return this.props.onCreateAccount(form).then(this._handleAccountCreation);
 	};
-	private readonly _createAuthServiceAccount = (form: CreateAuthServiceAccountForm) => {
+	private readonly _createAuthServiceAccount = (
+		form: CreateAuthServiceAccountForm
+	) => {
 		return this.props
 			.onCreateAuthServiceAccount(form)
 			.then(this._handleAccountCreation);
@@ -107,20 +122,19 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		}
 	};
 	private readonly _resetPassword = (token: string, email: string) => {
-		return this.props
-			.onResetPassword(token, email)
-			.then(
-				() => {
-					this._beginClosing(ExitReason.Aborted);
-				}
-			);
+		return this.props.onResetPassword(token, email).then(() => {
+			this._beginClosing(ExitReason.Aborted);
+		});
 	};
 	private readonly _signIn = (form: SignInForm) => {
 		return this.props
 			.onSignIn(form)
 			.then(this._handleExistingUserAuthentication);
 	};
-	private readonly _signInWithAuthService = (provider: AuthServiceProvider, analyticsAction: string) => {
+	private readonly _signInWithAuthService = (
+		provider: AuthServiceProvider,
+		analyticsAction: string
+	) => {
 		switch (provider) {
 			case AuthServiceProvider.Apple:
 				return this.props.onSignInWithApple(analyticsAction);
@@ -194,33 +208,27 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			/>
 		),
 		[Step.ButtonTutorial]: (_: UserAccount) => (
-			<ButtonTutorialStep
-				onContinue={this._goToTrackingAnimationStep}
-			/>
+			<ButtonTutorialStep onContinue={this._goToTrackingAnimationStep} />
 		),
 		[Step.TrackingAnimation]: (_: UserAccount) => (
-			<TrackingAnimationStep
-				onContinue={this._complete}
-			/>
-		)
+			<TrackingAnimationStep onContinue={this._complete} />
+		),
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
 			...this.state,
-			step: (
-				!props.user ?
-					props.authServiceToken ?
-						Step.CreateAuthServiceAccount :
-						props.passwordResetToken ?
-							Step.ResetPassword :
-							props.initialAuthenticationStep != null ?
-								props.initialAuthenticationStep :
-								Step.CreateAccount :
-					!props.isExtensionInstalled ?
-						Step.InstallExtension :
-						Step.ExtensionInstalled
-			)
+			step: !props.user
+				? props.authServiceToken
+					? Step.CreateAuthServiceAccount
+					: props.passwordResetToken
+					? Step.ResetPassword
+					: props.initialAuthenticationStep != null
+					? props.initialAuthenticationStep
+					: Step.CreateAccount
+				: !props.isExtensionInstalled
+				? Step.InstallExtension
+				: Step.ExtensionInstalled,
 		};
 	}
 	protected getStepRenderer(step: Step) {

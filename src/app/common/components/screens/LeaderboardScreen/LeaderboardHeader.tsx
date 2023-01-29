@@ -1,37 +1,30 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import Icon, { IconName } from '../../../../../common/components/Icon';
 
-export default (
-	props: {
-		iconName?: IconName,
-		onOpenExplainer?: () => void,
-		title: string
-	}
-) => (
+export default (props: {
+	iconName?: IconName;
+	onOpenExplainer?: () => void;
+	title: string;
+}) => (
 	<div className="leaderboard-header_ruu55d">
-		{props.iconName ?
-			<Icon
-				className="icon"
-				name={props.iconName}
-			/> :
-			null}
+		{props.iconName ? <Icon className="icon" name={props.iconName} /> : null}
 		<span className="text">{props.title}</span>
-		{props.onOpenExplainer ?
+		{props.onOpenExplainer ? (
 			<Icon
 				className="icon"
 				name="question-circle"
 				onClick={props.onOpenExplainer}
-			/> :
-			null}
+			/>
+		) : null}
 	</div>
 );

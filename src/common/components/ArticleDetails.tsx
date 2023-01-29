@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -35,39 +35,51 @@ import * as classnames from 'classnames';
 import ImageComponent from './Image';
 
 export interface ArticleDetailsProps {
-	article: UserArticle,
-	className?: string,
-	deviceType: DeviceType,
-	highlight?: boolean,
-	imagePosition?: 'left' | 'right',
-	isFeatured?: boolean,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onNavTo: (ref: NavReference) => void,
-	onPost: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onRead: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	pointsCallout?: React.ReactNode,
-	rankCallout?: React.ReactNode,
-	shareMenuPosition?: MenuPosition,
-	showAotdMetadata?: boolean,
-	showDescription?: boolean,
-	showImage?: boolean,
+	article: UserArticle;
+	className?: string;
+	deviceType: DeviceType;
+	highlight?: boolean;
+	imagePosition?: 'left' | 'right';
+	isFeatured?: boolean;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onNavTo: (ref: NavReference) => void;
+	onPost: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onRead: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleStar: (article: UserArticle) => Promise<void>;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	pointsCallout?: React.ReactNode;
+	rankCallout?: React.ReactNode;
+	shareMenuPosition?: MenuPosition;
+	showAotdMetadata?: boolean;
+	showDescription?: boolean;
+	showImage?: boolean;
 	// metadata actions: the bottom metadata bar with reads (not an action), comments link, rating control
-	showMetaActions?: boolean,
-	showPoints?: boolean,
-	showScout?: boolean,
-	user?: UserAccount
+	showMetaActions?: boolean;
+	showPoints?: boolean;
+	showScout?: boolean;
+	user?: UserAccount;
 }
 export interface ArticleDetailsState {
-	isStarring: boolean,
+	isStarring: boolean;
 }
-export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extends React.PureComponent<P, ArticleDetailsState> {
-	public static defaultProps: Pick<ArticleDetailsProps, 'isFeatured' | 'shareMenuPosition' | 'showAotdMetadata' | 'showImage' | 'showMetaActions' | 'showScout' | 'imagePosition' | 'showPoints'> = {
+export default class<
+	P extends ArticleDetailsProps = ArticleDetailsProps
+> extends React.PureComponent<P, ArticleDetailsState> {
+	public static defaultProps: Pick<
+		ArticleDetailsProps,
+		| 'isFeatured'
+		| 'shareMenuPosition'
+		| 'showAotdMetadata'
+		| 'showImage'
+		| 'showMetaActions'
+		| 'showScout'
+		| 'imagePosition'
+		| 'showPoints'
+	> = {
 		shareMenuPosition: MenuPosition.LeftTop,
 		showAotdMetadata: true,
 		showImage: false,
@@ -75,7 +87,7 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 		showPoints: true,
 		showScout: true,
 		imagePosition: 'right',
-		isFeatured: false
+		isFeatured: false,
 	};
 	protected readonly _getShareData = () => {
 		return getShareData(
@@ -86,7 +98,7 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 	};
 	protected readonly _shouldShowImage = () => {
 		return this.props.showImage && this.props.article.imageUrl;
-	}
+	};
 	protected readonly _read = (e: React.MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		// e.preventDefault(); // this might break the browser behavior
@@ -97,8 +109,12 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 		this.setState({ isStarring: true });
 		this.props
 			.onToggleStar(this.props.article)
-			.then(() => { this.setState({ isStarring: false }); })
-			.catch(() => { this.setState({ isStarring: false }); })
+			.then(() => {
+				this.setState({ isStarring: false });
+			})
+			.catch(() => {
+				this.setState({ isStarring: false });
+			});
 	};
 	protected readonly _viewComments = (e: React.MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
@@ -110,24 +126,31 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 		const [sourceSlug, articleSlug] = this.props.article.slug.split('_');
 		return {
 			['articleSlug']: articleSlug,
-			['sourceSlug']: sourceSlug
+			['sourceSlug']: sourceSlug,
 		};
-	}
+	};
 
-	protected _renderAuthorLinks = () => this.props.article.articleAuthors.map(
-		(author, index, authors) => (
+	protected _renderAuthorLinks = () =>
+		this.props.article.articleAuthors.map((author, index, authors) => (
 			<React.Fragment key={author.slug}>
-				<Link className="data" screen={ScreenKey.Author} params={{ 'slug': author.slug }} onClick={this.props.onNavTo} text={author.name} stopPropagation={true} />
-				{index !== authors.length - 1 ?
-					<span>, </span> :
-					null}
+				<Link
+					className="data"
+					screen={ScreenKey.Author}
+					params={{ slug: author.slug }}
+					onClick={this.props.onNavTo}
+					text={author.name}
+					stopPropagation={true}
+				/>
+				{index !== authors.length - 1 ? <span>, </span> : null}
 			</React.Fragment>
-		)
-	);
+		));
 
-	protected _renderCommentsLinkHref = () => findRouteByKey(routes, ScreenKey.Comments)
-												.createUrl(this._getArticleUrlParams());
-	protected _renderEstimatedReadTime = () => calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
+	protected _renderCommentsLinkHref = () =>
+		findRouteByKey(routes, ScreenKey.Comments).createUrl(
+			this._getArticleUrlParams()
+		);
+	protected _renderEstimatedReadTime = () =>
+		calculateEstimatedReadTime(this.props.article.wordCount) + ' min';
 	protected _renderRatingControl = () => (
 		<RatingControl
 			article={this.props.article}
@@ -141,32 +164,44 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 			onGetData={this._getShareData}
 			onShare={this.props.onShare}
 			onShareViaChannel={this.props.onShareViaChannel}
-			menuPosition={!isMobileDevice(this.props.deviceType) ? this.props.shareMenuPosition : MenuPosition.LeftTop}
+			menuPosition={
+				!isMobileDevice(this.props.deviceType)
+					? this.props.shareMenuPosition
+					: MenuPosition.LeftTop
+			}
 			stopPropagation={true}
 		>
 			<Icon
 				display="block"
-				name={ this.props.deviceType === DeviceType.Ios ? "share" : "share-android" }
+				name={
+					this.props.deviceType === DeviceType.Ios ? 'share' : 'share-android'
+				}
 			/>
 		</ShareControl>
-	)
+	);
 
 	protected MAX_DESCRIPTION_LENGTH = 250;
 
 	constructor(props: P) {
 		super(props);
-		this.state ={
+		this.state = {
 			isStarring: false,
 		};
 	}
 
 	public render() {
 		return (
-			<div className={classnames( "article-details_d2vnmv", {
-				"has-image": this._shouldShowImage(),
-				"is-featured": this.props.isFeatured
-				}, this.props.className )}>
-				{this.props.showAotdMetadata ?
+			<div
+				className={classnames(
+					'article-details_d2vnmv',
+					{
+						'has-image': this._shouldShowImage(),
+						'is-featured': this.props.isFeatured,
+					},
+					this.props.className
+				)}
+			>
+				{this.props.showAotdMetadata ? (
 					<AotdMetadata
 						article={this.props.article}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -175,39 +210,36 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 						rankCallout={this.props.rankCallout}
 						showPoints={this.props.showPoints}
 						showScout={this.props.showScout}
-					/> :
-					null
-				}
+					/>
+				) : null}
 				<ContentBox
 					className={`article-container image--${this.props.imagePosition}`}
 					highlight={this.props.highlight}
 					onClick={this._read}
 				>
-					{
-						 this._shouldShowImage() ?
-							<ImageComponent src={this.props.article.imageUrl} /> :
-							null
-					}
+					{this._shouldShowImage() ? (
+						<ImageComponent src={this.props.article.imageUrl} />
+					) : null}
 					<div className="content">
 						<div className="title">
-							{this.props.user ?
+							{this.props.user ? (
 								<Star
 									starred={!!this.props.article.dateStarred}
 									busy={this.state.isStarring}
 									onClick={this._toggleStar}
-								/> :
-								null}
+								/>
+							) : null}
 							{this._renderShareControl()}
-							{!this.props.article.isRead && this.props.article.percentComplete >= 1 ?
+							{!this.props.article.isRead &&
+							this.props.article.percentComplete >= 1 ? (
 								<div className="bookmark">
-									<span className="percent-complete">{Math.floor(this.props.article.percentComplete)}%</span>
+									<span className="percent-complete">
+										{Math.floor(this.props.article.percentComplete)}%
+									</span>
 									<Icon name="bookmark" />
-								</div> :
-								null}
-							<a
-								className="title-link"
-								href={this.props.article.url}
-							>
+								</div>
+							) : null}
+							<a className="title-link" href={this.props.article.url}>
 								{this.props.article.title}
 							</a>
 						</div>
@@ -217,87 +249,112 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 									<span>{this.props.article.source}</span>
 									<i className="spacer"></i>
 									{this._renderAuthorLinks()}
-									{this._renderAuthorLinks().length ?
-										<i className="spacer"></i> :
-										null}
-									{this.props.article.datePublished ?
+									{this._renderAuthorLinks().length ? (
+										<i className="spacer"></i>
+									) : null}
+									{this.props.article.datePublished ? (
 										<>
-											<span>{formatTimestamp(this.props.article.datePublished)}</span>
+											<span>
+												{formatTimestamp(this.props.article.datePublished)}
+											</span>
 											<i className="spacer"></i>
-										</> :
-										null}
+										</>
+									) : null}
 									<span>{this._renderEstimatedReadTime()}</span>
 								</div>
-								{
-									this.props.showDescription && !!this.props.article.description ?
-										<p className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</p> : null
-								}
-								{ this.props.showMetaActions ?
+								{this.props.showDescription &&
+								!!this.props.article.description ? (
+									<p className="description">
+										{truncateText(
+											this.props.article.description,
+											this.MAX_DESCRIPTION_LENGTH
+										)}
+									</p>
+								) : null}
+								{this.props.showMetaActions ? (
 									<div className="stats">
-										<span className="reads">{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+										<span className="reads">
+											{this.props.article.readCount}{' '}
+											{formatCountable(this.props.article.readCount, 'read')}
+										</span>
 										<a
 											className="comments"
 											href={this._renderCommentsLinkHref()}
 											onClick={this._viewComments}
 										>
-											{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+											{this.props.article.commentCount}{' '}
+											{formatCountable(
+												this.props.article.commentCount,
+												'comment'
+											)}
 										</a>
 										{this._renderRatingControl()}
-									</div> : null
-								}
+									</div>
+								) : null}
 							</div>
 							<div className="small-stats-article">
 								<div className="meta">
-									<div className="publisher">
-										{this.props.article.source}
-									</div>
+									<div className="publisher">{this.props.article.source}</div>
 									<div className="author-date-length">
-										{this._renderAuthorLinks().length ?
+										{this._renderAuthorLinks().length ? (
 											<span className="author">
 												{this._renderAuthorLinks()}
-											</span> :
-											null}
-										{this._renderAuthorLinks().length && this.props.article.datePublished ?
-											<span className="spacer"></span> :
-											null}
-										{this.props.article.datePublished ?
+											</span>
+										) : null}
+										{this._renderAuthorLinks().length &&
+										this.props.article.datePublished ? (
+											<span className="spacer"></span>
+										) : null}
+										{this.props.article.datePublished ? (
 											<span className="date">
 												{formatTimestamp(this.props.article.datePublished)}
-											</span> :
-											null}
-										{this._renderAuthorLinks().length || this.props.article.datePublished ?
-											<span className="spacer"></span> :
-											null}
+											</span>
+										) : null}
+										{this._renderAuthorLinks().length ||
+										this.props.article.datePublished ? (
+											<span className="spacer"></span>
+										) : null}
 										<span className="length">
 											{this._renderEstimatedReadTime()}
 										</span>
 									</div>
 								</div>
-								{
-									this.props.showDescription && !!this.props.article.description ?
-										<p className="description">{truncateText(this.props.article.description, this.MAX_DESCRIPTION_LENGTH)}</p> : null
-								}
-								{ this.props.showMetaActions ?
+								{this.props.showDescription &&
+								!!this.props.article.description ? (
+									<p className="description">
+										{truncateText(
+											this.props.article.description,
+											this.MAX_DESCRIPTION_LENGTH
+										)}
+									</p>
+								) : null}
+								{this.props.showMetaActions ? (
 									<div className="stats">
 										<div className="reads">
-											<span>{this.props.article.readCount} {formatCountable(this.props.article.readCount, 'read')}</span>
+											<span>
+												{this.props.article.readCount}{' '}
+												{formatCountable(this.props.article.readCount, 'read')}
+											</span>
 										</div>
 										<div className="comments">
 											<a
 												href={this._renderCommentsLinkHref()}
 												onClick={this._viewComments}
 											>
-												{this.props.article.commentCount} {formatCountable(this.props.article.commentCount, 'comment')}
+												{this.props.article.commentCount}{' '}
+												{formatCountable(
+													this.props.article.commentCount,
+													'comment'
+												)}
 											</a>
 										</div>
 										{this._renderRatingControl()}
-									</div>  : null
-								}
+									</div>
+								) : null}
 							</div>
-							{(
-								this.props.onPost &&
-								(this.props.article.isRead || this.props.article.datesPosted.length)
-							) ?
+							{this.props.onPost &&
+							(this.props.article.isRead ||
+								this.props.article.datesPosted.length) ? (
 								<div className="post">
 									<PostButton
 										article={this.props.article}
@@ -305,8 +362,8 @@ export default class<P extends ArticleDetailsProps = ArticleDetailsProps> extend
 										onPost={this.props.onPost}
 										stopPropagation={true}
 									/>
-								</div> :
-								null}
+								</div>
+							) : null}
 						</div>
 					</div>
 				</ContentBox>
