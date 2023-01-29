@@ -47,6 +47,7 @@ export default class ReaderContentScriptApi {
 			onPostComment: (form: CommentForm) => Promise<{ article: UserArticle, comment: CommentThread }>,
 			onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
 			onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
+			onReadArticle: (tabId: number, slug: string) => Promise<void>,
 			onReportArticleIssue: (request: ArticleIssueReportRequest) => Promise<void>,
 			onRequestTwitterBrowserLinkRequestToken: () => Promise<TwitterRequestToken>,
 			onSetStarred: (form: StarForm) => Promise<UserArticle>,
@@ -235,6 +236,13 @@ export default class ReaderContentScriptApi {
 						case 'postCommentRevision':
 							createMessageResponseHandler(
 								params.onPostCommentRevision(message.data),
+								sendResponse
+							);
+							return true;
+						case 'readArticle':
+							createMessageResponseHandler(
+								params
+									.onReadArticle(sender.tab.id, message.data),
 								sendResponse
 							);
 							return true;

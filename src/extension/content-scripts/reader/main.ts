@@ -222,49 +222,22 @@ function openInNewTab(url: string) {
 	window.open(url,'_blank');
 }
 
-// TODO PROXY EXT copied from global host ui
-// little bit adapted
-const navTo = (url: string) => {
-	const result = parseUrlForRoute(url);
-	if(
-		(result.isInternal && result.route) ||
-		(!result.isInternal && result.url)
-	) {
-		openInNewTab(result.url.href);
-		return true;
-	}
-	return false;
-}
-
-// TODO PROXY EXT: eventPageApi should implement readArticle behavior!
 function readArticle(slug: string) {
-	throw Error("Unimplemented");
-	// messagingContext.sendMessage({
-	// 	type: 'readArticle',
-	// 	data: slug
-	// });
+	eventPageApi.readArticle(slug)
 }
 
-// TODO PROXY EXT: copy pasted from native reader,
-// and adapted a bit
 // handle article and embed links
 function handleLink(url: string) {
 	const result = parseUrlForRoute(url);
-	if(result.isInternal && result.route) {
-		if(result.route.screenKey === ScreenKey.Read) {
+	if(result.isInternal && result.route && result.route.screenKey === ScreenKey.Read) {
 			readArticle(
 				createArticleSlug(
 					result.route.getPathParams(result.url.pathname)
 				)
 			);
-		} else {
-			navTo(result.url.href);
-		}
-		return true;
-	} else if(!result.isInternal && result.url) {
-		// PROXY EXT NOTE: we don't need specia lexternal url handling here? test this
-		// openExternalUrl(result.url.href);
-		navTo(result.url.href)
+			return true;
+	} else if(result.url) {
+		openInNewTab(result.url.href);
 		return true;
 	}
 	return false;
@@ -649,7 +622,11 @@ async function fetchAndInjectArticle() {
 	let doc: Document;
 	try {
 		const text = await fetch(documentLocation.href, {
-			credentials: 'omit'
+			// TODO PROXY EXT: the article test server fails without cookies/credentials enabled
+			// because it sets an expected ID cookie with redirects.
+			// The desired behavior here will depend on de site.
+			// credentials: 'omit'
+			credentials: 'include'
 		}).then(r => r.text());
 		const parser = new DOMParser();
 		doc = parser.parseFromString(text,"text/html");

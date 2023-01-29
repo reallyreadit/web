@@ -154,6 +154,9 @@ export default class EventPageApi {
 	public postCommentRevision(form: CommentRevisionForm) {
 		return sendMessageAwaitingResponse<CommentThread>('postCommentRevision', form);
 	}
+	public readArticle(slug: string) {
+		return sendMessage('readArticle', slug);
+	}
 	public reportArticleIssue(request: ArticleIssueReportRequest) {
 		return sendMessageAwaitingResponse('reportArticleIssue', request);
 	}

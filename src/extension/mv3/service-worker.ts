@@ -152,6 +152,13 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 				}
 			);
 	},
+	onReadArticle: async (tabId: number,slug: string) => {
+		const article = await serverApi.getArticleDetails(slug);
+		console.log("article info: ",article)
+		// note: a Promise on tabs.get is MV3 only
+		const tab = await chrome.tabs.get(tabId);
+		await openReaderInTab(tab,article.url)
+	},
 	onRequestTwitterBrowserLinkRequestToken: () => {
 		return serverApi.requestTwitterBrowserLinkRequestToken();
 	},

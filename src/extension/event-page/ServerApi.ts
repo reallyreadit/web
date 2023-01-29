@@ -289,6 +289,13 @@ export default class ServerApi {
 			id: tabId
 		});
 	}
+	public getArticleDetails(slug: string) {
+		return this.fetchJson<UserArticle>({
+			method: 'GET',
+			path: '/Articles/Details',
+			data: { slug }
+		});
+	}
 	public getComments(slug: string) {
 		return this.fetchJson<CommentThread[]>({
 			method: 'GET',
