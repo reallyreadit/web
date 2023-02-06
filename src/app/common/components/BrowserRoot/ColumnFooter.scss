@@ -82,7 +82,8 @@
 			font-family: 'Museo Sans (700)';
 		}
 
-		a {
+		a.link_ke15oa,
+		span.link_ke15oa {
 			text-decoration: none;
 		}
 
@@ -90,7 +91,8 @@
 			width: 140px;
 		}
 
-		> ul > li > a.link_ke15oa > span > .icon_rour3d {
+		> ul > li > a.link_ke15oa > span > .icon_rour3d,
+		> ul > li > span.link_ke15oa > span > .icon_rour3d {
 			margin-right: 0.4rem;
 			vertical-align: top;
 		}

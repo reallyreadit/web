@@ -89,8 +89,8 @@ const renderDownloadOption = ({
 const downloadPage = (props: Services) => (
 	<div className="download-page_4u78ip">
 		<HomeHero
-			title="The world's best reading app."
-			description={'Get Readup on all your devices'}
+			title="The social reading platform."
+			description={'Get Readup on all your devices!'}
 		/>
 		<div className="download-options">
 			<div className="options-set options-mobile">
@@ -107,8 +107,57 @@ const downloadPage = (props: Services) => (
 					services: props,
 				})}
 			</div>
-			<div className="options-set options-desktop">
-				<h2 className="options-set__heading">Desktop</h2>
+			<div className="options-set web-reader">
+				<h2 className="options-set__heading">Web Reader</h2>
+				<p>
+					You can browse articles on the web, but to read them with Readup,
+					you'll need an extra extension.
+				</p>
+				<div className='browsers'>
+					{(
+						[
+							DeviceType.DesktopChrome,
+							DeviceType.DesktopFirefox,
+							DeviceType.DesktopEdge,
+							DeviceType.DesktopSafari,
+						] as CompatibleBrowser[]
+					).map((browserDeviceType) => {
+						let linkProps =
+							browserDeviceType === DeviceType.DesktopSafari
+								? {
+										onClick: () => {
+											props.onOpenDialog(
+												<SafariExtensionDialog
+													onClose={props.onCloseDialog}
+													onCreateStaticContentUrl={
+														props.onCreateStaticContentUrl
+													}
+													onNavTo={props.onNavTo}
+												/>
+											);
+										},
+								  }
+								: {
+										onClick: props.onNavTo,
+										href: getStoreUrl(browserDeviceType),
+								  };
+						return (
+							<Link key={browserDeviceType} {...linkProps}>
+								<Icon name={getBrowserIconName(browserDeviceType)} />
+								<span>{browserDeviceType}</span>
+							</Link>
+						);
+					})}
+				</div>
+			</div>
+		</div>
+		<HomePanel className="desktop-deprecated">
+			<h2>Desktop Apps</h2>
+			<p>
+				While we improve article support for our new Web Reader, the old desktop
+				apps could still be useful for some articles.
+			</p>
+			<div className="browsers">
 				{renderDownloadOption({
 					title: 'macOS',
 					iconName: 'apple',
@@ -126,46 +175,6 @@ const downloadPage = (props: Services) => (
 					iconName: 'linux',
 					link: 'https://static.readup.org/downloads/linux/latest',
 					services: props,
-				})}
-			</div>
-		</div>
-		<HomePanel className="save-to-readup">
-			<h2>Save to Readup</h2>
-			<p>Easily save articles from the web to Readup</p>
-			<div className="browsers">
-				{(
-					[
-						DeviceType.DesktopChrome,
-						DeviceType.DesktopFirefox,
-						DeviceType.DesktopEdge,
-						DeviceType.DesktopSafari,
-					] as CompatibleBrowser[]
-				).map((browserDeviceType) => {
-					let linkProps =
-						browserDeviceType === DeviceType.DesktopSafari
-							? {
-									onClick: () => {
-										props.onOpenDialog(
-											<SafariExtensionDialog
-												onClose={props.onCloseDialog}
-												onCreateStaticContentUrl={
-													props.onCreateStaticContentUrl
-												}
-												onNavTo={props.onNavTo}
-											/>
-										);
-									},
-							  }
-							: {
-									onClick: props.onNavTo,
-									href: getStoreUrl(browserDeviceType),
-							  };
-					return (
-						<Link key={browserDeviceType} {...linkProps}>
-							<Icon name={getBrowserIconName(browserDeviceType)} />
-							<span>{browserDeviceType}</span>
-						</Link>
-					);
 				})}
 			</div>
 		</HomePanel>

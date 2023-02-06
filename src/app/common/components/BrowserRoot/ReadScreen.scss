@@ -85,7 +85,7 @@ $breakpoint: 550px;
 	flex-grow: 1;
 }
 
-@media screen and (max-width: $breakpoint - 1px) {
+@media screen and (max-width: ($breakpoint - 1px)) {
 	.read-screen_ikr26q > .article {
 		flex-direction: column;
 		> .article__image {
@@ -119,9 +119,6 @@ $card-padding-desktop: 10px 2rem;
 	}
 	ul.dashed {
 		list-style-type: none;
-	}
-	ul.dashed > li {
-		// text-indent: -5px;
 	}
 	ul.dashed > li:before {
 		content: '-';

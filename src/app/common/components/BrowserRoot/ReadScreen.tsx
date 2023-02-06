@@ -206,7 +206,7 @@ class ReadScreen extends React.PureComponent<Props> {
 													<li>100% ad-free</li>
 												</ul>
 											</div>
-											{!this.props.user || !this.props.isExtensionInstalled ? (
+											{!(this.props.user && this.props.isExtensionInstalled) ? (
 												// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
 												// or somehow tell people to update?
 												// || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0

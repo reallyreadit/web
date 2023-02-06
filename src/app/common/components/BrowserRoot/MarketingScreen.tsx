@@ -33,9 +33,9 @@ import QuoteCard from './QuoteCard';
 import { NavOptions, NavReference } from '../Root';
 import Link from '../../../../common/components/Link';
 import DownloadSection from './MarketingScreen/DownloadSection';
-import DownloadButton from './DownloadButton';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import Icon from '../../../../common/components/Icon';
+import GetStartedButton from './GetStartedButton';
 interface Props {
 	communityReads: Fetchable<CommunityReads>;
 	deviceType: DeviceType;
@@ -108,7 +108,7 @@ export default class MarketingScreen extends React.Component<
 			{
 				heading: 'Made for readers, by readers',
 				paragraph:
-					'Readup is built by people who love deep reading. The app removes distractions from articles.',
+					'Readup is built by people who love deep reading. Our apps remove distractions from articles.',
 				imageName: 'kill-ads-3.0.png',
 				imageAlt: 'No paywalls or ads on Readup',
 			},
@@ -247,20 +247,23 @@ export default class MarketingScreen extends React.Component<
 							We're fixing it.
 						</h1>
 						<p>
-							Readup is a free &amp; open-source reading app.
+							Readup is a free &amp; open-source reading platform.
 							<br />
 							Join our community today!
 						</p>
-						<DownloadButton
+						<GetStartedButton
 							analyticsAction="home-hero-download"
-							buttonType="platform"
+							iosPromptType='download'
 							deviceType={this.props.deviceType}
-							showOtherPlatforms={true}
-							onNavTo={this.props.onNavTo}
+							location={this.props.location}
+							onBeginOnboarding={this.props.onBeginOnboarding}
 							onCopyAppReferrerTextToClipboard={
 								this.props.onCopyAppReferrerTextToClipboard
 							}
 							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+							onOpenNewPlatformNotificationRequestDialog={
+								this.props.onOpenNewPlatformNotificationRequestDialog
+							}
 						/>
 					</div>
 					<img
@@ -278,7 +281,7 @@ export default class MarketingScreen extends React.Component<
 							{...pointData}
 							key={pointData.imageName}
 							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							imageRight={!(i % 2 == 0)}
+							imageRight={!(i % 2 === 0)}
 							type="contained"
 						/>
 					))}
@@ -312,7 +315,7 @@ export default class MarketingScreen extends React.Component<
 				</HomePanel>
 				<HomePanel data-nosnippet className="support-section">
 					<h2 className="heading-regular">
-						Support Us <Icon name="charity"></Icon>
+						Support Us <Icon name="charity" />
 					</h2>
 					<p>
 						A small group of volunteers builds and maintains Readup. Help us
@@ -329,6 +332,7 @@ export default class MarketingScreen extends React.Component<
 							href="https://opencollective.com/readup-collective/contribute"
 						>
 							<img
+								alt="Contribute to The Readup Collective"
 								src="https://opencollective.com/readup-collective/contribute/button@2x.png?color=white"
 								width="300"
 							/>
@@ -342,7 +346,7 @@ export default class MarketingScreen extends React.Component<
 							className="people"
 							type="image/svg+xml"
 							data="https://opencollective.com/readup-collective/tiers/reader.svg?avatarHeight=48&width=348&button=false&limit=40"
-						></object>
+						/>
 					</div>
 				</HomePanel>
 				<JsonLd<Corporation>

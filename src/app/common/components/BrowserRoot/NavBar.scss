@@ -18,7 +18,10 @@
 }
 .nav-bar_yh8orf > .footer {
 	flex: 0 0 auto;
+	flex-direction: column;
+	display: flex;
 	text-align: center;
+	gap: 0.6rem;
 	padding: 20px;
 }
 

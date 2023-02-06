@@ -49,28 +49,63 @@ $options-set-margin-horizontal: 76px;
 		width: 80%;
 		max-width: $option-set-max-width;
 
-		// @media screen and (max-width: 767px) {
+		> h2 {
+			text-align: center;
+		}
 		@include until(tablet-portrait) {
-			> h2 {
-				text-align: center;
-			}
-
 			&:last-child {
 				margin-top: 34px;
 			}
 		}
 	}
 
-	.home-panel_w65z7c.save-to-readup {
-		width: 100%;
-		max-width: $option-set-max-width * 2 + $options-set-margin-horizontal;
-		margin: auto;
+	.options-set.web-reader {
+		> p {
+			max-width: 420px;
+			text-align: center;
+			margin: 1rem auto 1.25rem auto;
+			font-family: 'Cambria (Regular)';
+			font-size: 16pt;
+			line-height: 1.35em;
+		}
 
+		> h2 {
+			margin-bottom: 0.2rem;
+		}
+
+		> div.browsers {
+			display: grid;
+			grid-template-rows: auto auto;
+			grid-template-columns: auto auto;
+			// flex-flow: row wrap;
+			justify-content: center;
+
+			a.link_ke15oa,
+			span.link_ke15oa {
+				text-decoration: none;
+				margin-bottom: 1rem;
+				> span {
+					display: flex;
+					flex-flow: column nowrap;
+					justify-content: center;
+					align-items: center;
+					margin: 0 0.8rem;
+
+					.icon_rour3d {
+						width: 60px;
+						height: 60px;
+						margin-bottom: 0.6rem;
+					}
+				}
+			}
+		}
+	}
+
+	.home-panel_w65z7c.desktop-deprecated {
 		> .content {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-
 			h2,
 			p {
 				text-align: center;
@@ -86,7 +121,7 @@ $options-set-margin-horizontal: 76px;
 				margin-bottom: 0.2rem;
 				&::before {
 					display: block;
-					content: 'Browser Extensions';
+					content: 'Deprecated';
 					font-size: 0.7rem;
 					text-transform: uppercase;
 					font-family: 'Museo Sans (500)';
@@ -99,34 +134,8 @@ $options-set-margin-horizontal: 76px;
 					width: 140%;
 				}
 			}
-
-			> div.browsers {
-				display: flex;
-				flex-flow: row wrap;
-				justify-content: center;
-
-				a.link_ke15oa,
-				span.link_ke15oa {
-					text-decoration: none;
-					margin-bottom: 1rem;
-					> span {
-						display: flex;
-						flex-flow: column nowrap;
-						justify-content: center;
-						align-items: center;
-						margin: 0 0.8rem;
-
-						.icon_rour3d {
-							width: 60px;
-							height: 60px;
-							margin-bottom: 0.6rem;
-						}
-					}
-				}
-			}
 		}
 	}
-
 	.download-option {
 		display: flex;
 		&:not(:first-child) {

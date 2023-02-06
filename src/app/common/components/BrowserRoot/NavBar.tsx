@@ -111,6 +111,15 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 				</ol>
 				<div className="footer">
+					<Link
+						href='https://opencollective.com/readup-collective/contribute'
+						onClick={this._navTo}
+					>
+						Support Us
+					</Link>
+					<Link screen={ScreenKey.Download} onClick={this._navTo}>
+						Download Apps
+					</Link>
 					<Link screen={ScreenKey.Blog} onClick={this._navTo}>
 						Readup Blog
 					</Link>

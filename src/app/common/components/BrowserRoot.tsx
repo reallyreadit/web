@@ -1402,6 +1402,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 								!this.state.user ? (
 									<ColumnFooter
 										onNavTo={this._navTo}
+										onOpenDialog={this._dialog.openDialog}
+										onCloseDialog={this._dialog.closeDialog}
+										onCreateStaticContentUrl={this._createStaticContentUrl}
 										showWhatIsReadup={topScreen.key !== ScreenKey.Home}
 									/>
 								) : null}

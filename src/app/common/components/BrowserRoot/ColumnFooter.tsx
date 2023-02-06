@@ -16,9 +16,19 @@ import Link, {
 } from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
+import {
+	CompatibleBrowser,
+	DeviceType,
+	getBrowserIconName,
+	getStoreUrl,
+} from '../../../../common/DeviceType';
+import { SafariExtensionDialog } from './SafariExtensionDialog';
 // import GetStartedButton from './GetStartedButton';
 export default class extends React.PureComponent<{
-	onNavTo: (ref: NavReference, options: NavOptions) => void;
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
+	onOpenDialog: (dialog: React.ReactNode) => void;
+	onCloseDialog: () => void;
+	onCreateStaticContentUrl: (path: string) => string;
 	showWhatIsReadup: boolean;
 }> {
 	public render() {
@@ -82,21 +92,48 @@ export default class extends React.PureComponent<{
 						<Icon name='phone' />
 						iPhone and iPad
 					</Link>,
+					...(
+						[
+							DeviceType.DesktopChrome,
+							DeviceType.DesktopFirefox,
+							DeviceType.DesktopEdge,
+							DeviceType.DesktopSafari,
+						] as CompatibleBrowser[]
+					).map((browserDeviceType) => {
+						let linkProps =
+							browserDeviceType === DeviceType.DesktopSafari
+								? {
+										onClick: () => {
+											this.props.onOpenDialog(
+												<SafariExtensionDialog
+													onClose={this.props.onCloseDialog}
+													onCreateStaticContentUrl={
+														this.props.onCreateStaticContentUrl
+													}
+													onNavTo={this.props.onNavTo}
+												/>
+											);
+										},
+								  }
+								: {
+										onClick: this.props.onNavTo,
+										href: getStoreUrl(browserDeviceType),
+								  };
+						return (
+							<Link key={browserDeviceType} {...linkProps}>
+								<Icon name={getBrowserIconName(browserDeviceType)} />
+								<span>{browserDeviceType}</span>
+							</Link>
+						);
+					}),
+
 					<Link
-						key="mac"
-						href="https://apps.apple.com/us/app/readup-social-reading/id1441825432"
-						onClick={navToPush}
+						key="desktop"
+						screen={ScreenKey.Download}
+						onClick={this.props.onNavTo}
 					>
-						<Icon name='apple' />
-						Mac
-					</Link>,
-					<Link
-						key="windows"
-						href="https://static.readup.org/downloads/windows/ReadupSetup.exe"
-						onClick={navToPush}
-					>
-						<Icon name='windows' />
-						Windows
+						<Icon name='arrow-down' />
+						Desktop Apps
 					</Link>,
 				],
 			},

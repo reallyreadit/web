@@ -23,12 +23,11 @@ export const DownloadSection: React.FunctionComponent<Props> = (
 	<div className="download-section_45nqkz">
 		<div className="download-section_45nqkz__details">
 			<div className="download-section_45nqkz__details__heading">
-				Download the app to get started
+				Read on all your devices
 			</div>
 			<p>
-				Available on iPhone, iPad, Mac, Windows.
-				<br />
-				Android in progress.
+				Read with desktop browsers, or on the go with your iPhone & iPad.
+				Android coming soon.
 			</p>
 		</div>
 		<DownloadButton

@@ -120,7 +120,7 @@ export default class DownloadButton extends React.Component<Props> {
 	private _renderGenericButton = () => {
 		return (
 			<Button
-				text="Download App"
+				text="Download Apps"
 				size="large"
 				intent="loud"
 				onClick={() =>
