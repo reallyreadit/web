@@ -154,90 +154,113 @@ class ReadScreen extends React.PureComponent<Props> {
 				<ScreenContainer className="read-screen_ikr26q article-screen-container">
 					{this.renderArticle()}
 				</ScreenContainer>
-				<ScreenContainer className="read-screen_ikr26q">
-					<div className="spacer"></div>
-					<div className="read-question">
-						How would you like to read the article?
-					</div>
-					<div className="spacer"></div>
-					<div
-						className={classNames('choice-container', {
-							mobile: isMobileDevice(this.props.deviceType),
-						})}
-					>
-						<ContentBox className="choice--readup choice">
-							<>
-								<img
-									className="choice__image"
-									src={this.props.onCreateStaticContentUrl(
-										`/app/images/read-screen/` +
-											(isMobileDevice(this.props.deviceType)
-												? `clean-mobile.svg`
-												: `clean-desktop.svg`)
-									)}
-								/>
-								<div className="choice__details">
-									<div>
-										<h2>
-											Read it on Readup,
-											<br /> the app for reading.
-										</h2>
-										{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
-										<ul className="info dashed">
-											<li>Better reading</li>
-											<li>100% ad-free</li>
-											<li>Try for free</li>
-										</ul>
-									</div>
-									{!this.props.user || !this.props.isExtensionInstalled ? (
-										// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
-										// or somehow tell people to update?
-										// || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0
-										<DownloadButton
-											analyticsAction="ReadScreen"
-											deviceType={this.props.deviceType}
-											location={this.props.location}
-											showOpenInApp={true}
-											onNavTo={this.props.onNavTo}
-											onCopyAppReferrerTextToClipboard={
-												this.props.onCopyAppReferrerTextToClipboard
-											}
-											onCreateStaticContentUrl={
-												this.props.onCreateStaticContentUrl
-											}
-										/>
-									) : (
-										<Button
-											intent="loud"
-											onClick={this._readArticle}
-											size="large"
-											align="center"
-											text="Read Article"
-										/>
-									)}
-								</div>
-							</>
-						</ContentBox>
-						<div className="divider">or</div>
-						<div className="choice--direct choice">
-							<img
-								className="choice__image"
-								src={this.props.onCreateStaticContentUrl(
-									`/app/images/read-screen/` +
-										(isMobileDevice(this.props.deviceType)
-											? `distraction-mobile.svg`
-											: `distraction-desktop.svg`)
-								)}
+				<ScreenContainer
+					className={classNames('read-screen_ikr26q', {
+						installed: !!this.props.isExtensionInstalled,
+					})}
+				>
+					<div className="spacer" />
+					{!!this.props.user && !!this.props.isExtensionInstalled ? (
+						<div className='installed'>
+							<div className="read-question">Continue with the reader</div>
+							<div className="spacer" />
+							<Button
+								intent="loud"
+								onClick={this._readArticle}
+								size="large"
+								align="center"
+								text="Read Article"
 							/>
-							<div className="choice__details">
-								<p className="info">
-									Read through the noise
-									<br /> <a href={this.props.article.value.url}>on the web</a>
-									<Icon name='arrow-ne' className="outlink"></Icon>
-								</p>
-							</div>
 						</div>
-					</div>
+					) : (
+						<>
+							<div className="read-question">
+								How would you like to read the article?
+							</div>
+							<div className="spacer" />
+							<div
+								className={classNames('choice-container', {
+									mobile: isMobileDevice(this.props.deviceType),
+								})}
+							>
+								<ContentBox className="choice--readup choice">
+									<>
+										<img
+											className="choice__image"
+											src={this.props.onCreateStaticContentUrl(
+												`/app/images/read-screen/` +
+													(isMobileDevice(this.props.deviceType)
+														? `clean-mobile.svg`
+														: `clean-desktop.svg`)
+											)}
+										/>
+										<div className="choice__details">
+											<div>
+												<h2>
+													Read it on Readup,
+													<br /> the app for reading.
+												</h2>
+												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
+												<ul className="info dashed">
+													<li>Better reading</li>
+													<li>100% ad-free</li>
+												</ul>
+											</div>
+											{!this.props.user || !this.props.isExtensionInstalled ? (
+												// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
+												// or somehow tell people to update?
+												// || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0
+												<DownloadButton
+													analyticsAction="ReadScreen"
+													deviceType={this.props.deviceType}
+													location={this.props.location}
+													showOpenInApp={true}
+													onNavTo={this.props.onNavTo}
+													onCopyAppReferrerTextToClipboard={
+														this.props.onCopyAppReferrerTextToClipboard
+													}
+													onCreateStaticContentUrl={
+														this.props.onCreateStaticContentUrl
+													}
+												/>
+											) : (
+												// TODO: automatic redirect
+												<Button
+													intent="loud"
+													onClick={this._readArticle}
+													size="large"
+													align="center"
+													text="Read Article"
+												/>
+											)}
+										</div>
+									</>
+								</ContentBox>
+								<div className="divider">or</div>
+								<div className="choice--direct choice">
+									<img
+										className="choice__image"
+										alt="A typical browser with distractions"
+										src={this.props.onCreateStaticContentUrl(
+											`/app/images/read-screen/${
+												isMobileDevice(this.props.deviceType)
+													? 'distraction-mobile.svg'
+													: 'distraction-desktop.svg'
+											}`
+										)}
+									/>
+									<div className="choice__details">
+										<p className="info">
+											Read through the noise
+											<br />{' '}
+											<a href={this.props.article.value.url}>on the web</a>
+											<Icon name='arrow-ne' className="outlink" />
+										</p>
+									</div>
+								</div>
+							</div>
+						</>
+					)}
 				</ScreenContainer>
 			</>
 		);

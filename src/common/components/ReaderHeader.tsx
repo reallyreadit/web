@@ -50,7 +50,7 @@ export default class ReaderHeader extends React.Component<
 		showProgressBar: true,
 	};
 	private readonly _getShareData = (article: UserArticle) => {
-		return getShareData('Article', article, this.props.onCreateAbsoluteUrl);
+		return getShareData('Article', article);
 	};
 	private readonly _toggleStar = () => {
 		this.setState({ isStarring: true });

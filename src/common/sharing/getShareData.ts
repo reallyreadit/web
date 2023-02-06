@@ -9,23 +9,9 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import UserArticle from '../models/UserArticle';
-import { findRouteByKey } from '../routing/Route';
-import routes from '../routing/routes';
-import ScreenKey from '../routing/ScreenKey';
 
-export default function getShareData(
-	action: string,
-	article: UserArticle,
-	onCreateAbsoluteUrl: (path: string) => string
-) {
-	const [sourceSlug, articleSlug] = article.slug.split('_'),
-		articleUrlParams = {
-			['articleSlug']: articleSlug,
-			['sourceSlug']: sourceSlug,
-		},
-		shareUrl = onCreateAbsoluteUrl(
-			findRouteByKey(routes, ScreenKey.Read).createUrl(articleUrlParams)
-		);
+export default function getShareData(action: string, article: UserArticle) {
+	const shareUrl = article.url;
 	return {
 		action,
 		email: {

@@ -1313,7 +1313,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		article: ReadArticleReference,
 		ev?: React.MouseEvent<HTMLAnchorElement>
 	) {
-		ev.preventDefault();
+		ev?.preventDefault();
 		const [sourceSlug, articleSlug] = article.slug.split('_');
 		if (this.props.extensionApi.isInstalled) {
 			// open extension reader

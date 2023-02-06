@@ -90,11 +90,7 @@ export default class<
 		isFeatured: false,
 	};
 	protected readonly _getShareData = () => {
-		return getShareData(
-			'Article',
-			this.props.article,
-			this.props.onCreateAbsoluteUrl
-		);
+		return getShareData('Article', this.props.article);
 	};
 	protected readonly _shouldShowImage = () => {
 		return this.props.showImage && this.props.article.imageUrl;

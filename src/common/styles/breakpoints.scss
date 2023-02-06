@@ -31,9 +31,9 @@ $range-queries-only-size: (
 		'(min-width: #{$tablet-landscape-start}) and (max-width: #{$desktop-start - 1})',
 	$desktop:
 		'(min-width: #{$desktop-start}) and (max-width: #{$desktop-big-start - 1})',
-	$desktop-big: '(min-width: #{$desktop-big-start})'
-		// here 'only' is the same as 'from',
+	$desktop-big: '(min-width: #{$desktop-big-start})',
 );
+// here 'only' is the same as 'from'
 
 // Queries ranges from and including the start of a range to ininity width
 $range-queries-from-size: (

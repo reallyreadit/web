@@ -81,6 +81,10 @@ $breakpoint: 550px;
 	margin-right: 2rem;
 }
 
+.read-screen_ikr26q.installed {
+	flex-grow: 1;
+}
+
 @media screen and (max-width: $breakpoint - 1px) {
 	.read-screen_ikr26q > .article {
 		flex-direction: column;

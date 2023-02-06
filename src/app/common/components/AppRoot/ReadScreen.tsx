@@ -69,14 +69,14 @@ class ReadScreen extends React.PureComponent<Props> {
 							{this.renderArticle()}
 						</ScreenContainer> */}
 				<ScreenContainer className="read-screen_rfbmah">
-					<div className="spacer"></div>
+					<div className="spacer" />
 					<div className="read-question">
 						{/* NOTE: trialing the subscription here means that the reader is out of free views,
 									because they should only be landing on this screen within the app if they're out of free views
 								*/}
 						How would you like to read the article?
 					</div>
-					<div className="spacer"></div>
+					<div className="spacer" />
 					<div
 						className={classNames('choice-container', {
 							mobile: isMobileDevice(this.props.deviceType),
@@ -104,7 +104,6 @@ class ReadScreen extends React.PureComponent<Props> {
 											<ul className="info dashed">
 												<li>Better reading</li>
 												<li>100% ad-free</li>
-												<li>Pick your price</li>
 											</ul>
 										</>
 									</div>
