@@ -49,7 +49,6 @@ import * as classNames from 'classnames';
 import { PostList } from '../PostList';
 import HeaderSelector from '../HeaderSelector';
 import { ArticleList } from '../ArticleList';
-import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import AbstractFollowable from '../AbstractFollowable';
 
@@ -136,15 +135,15 @@ type PostsState = BaseState & {
 	posts: Fetchable<PageResult<Post>>;
 };
 type State = IndeterminateState | ArticlesState | PostsState;
-const listPageSize = 40,
-	headerSelectorItems = [
-		{
-			value: View.Posts,
-		},
-		{
-			value: View.Articles,
-		},
-	];
+const listPageSize = 40;
+const headerSelectorItems = [
+	{
+		value: View.Posts,
+	},
+	{
+		value: View.Articles,
+	},
+];
 
 export class ProfileScreen extends AbstractFollowable<Props, State> {
 	private readonly _changeArticles = (
@@ -382,22 +381,6 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 					</InfoBox>
 				) : (
 					<>
-						{!this.props.userAccount ? (
-							<MarketingBanner
-								analyticsAction="CommentsScreen"
-								deviceType={this.props.deviceType}
-								marketingVariant={{
-									headline: "Readup is the world's best reading app",
-									subtext: `Download Readup to read with @${this.props.profile.value.userName}`,
-								}}
-								location={this.props.location}
-								onNavTo={this.props.onNavTo}
-								onCopyAppReferrerTextToClipboard={
-									this.props.onCopyAppReferrerTextToClipboard
-								}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							/>
-						) : null}
 						<Panel className="main">
 							<div className="profile" data-nosnippet>
 								{this.props.profile.value.authorProfile ? (

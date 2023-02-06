@@ -32,8 +32,6 @@ import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import { NavOptions, NavReference } from '../Root';
 import { DeviceType } from '../../../../common/DeviceType';
-import MarketingBanner from '../BrowserRoot/MarketingBanner';
-import { variants } from '../../marketingTesting';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
@@ -209,19 +207,6 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 					<LoadingOverlay position="static" />
 				) : (
 					<>
-						{!this.props.user ? (
-							<MarketingBanner
-								analyticsAction="CommentsScreen"
-								deviceType={this.props.deviceType}
-								marketingVariant={variants[0]}
-								location={this.props.location}
-								onNavTo={this.props.onNavTo}
-								onCopyAppReferrerTextToClipboard={
-									this.props.onCopyAppReferrerTextToClipboard
-								}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							/>
-						) : null}
 						{this.props.title ? <h1>{this.props.title}</h1> : null}
 						<div className="controls">
 							<HeaderSelector

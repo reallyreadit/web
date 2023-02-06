@@ -43,8 +43,6 @@ import routes from '../../../../common/routing/routes';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Panel from '../BrowserRoot/Panel';
 import { DeviceType } from '../../../../common/DeviceType';
-import { variants as marketingVariants } from '../../marketingTesting';
-import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
@@ -169,19 +167,6 @@ class AuthorScreen extends React.Component<Props, State> {
 					</InfoBox>
 				) : (
 					<>
-						{!this.props.user ? (
-							<MarketingBanner
-								analyticsAction="AuthorScreen"
-								deviceType={this.props.deviceType}
-								marketingVariant={marketingVariants[0]}
-								location={this.props.location}
-								onNavTo={this.props.onNavTo}
-								onCopyAppReferrerTextToClipboard={
-									this.props.onCopyAppReferrerTextToClipboard
-								}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							/>
-						) : null}
 						<Panel className="main">
 							<div className="profile">
 								<h1>{this.props.profile.value.name}</h1>

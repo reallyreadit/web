@@ -26,14 +26,11 @@ import LoadingOverlay from '../controls/LoadingOverlay';
 import HeaderSelector from '../HeaderSelector';
 import AuthorLeaderboards from './LeaderboardScreen/AuthorLeaderboards';
 import { DeviceType } from '../../../../common/DeviceType';
-import { variants as marketingVariants } from '../../marketingTesting';
 import Panel from '../BrowserRoot/Panel';
-import DownloadButton from '../BrowserRoot/DownloadButton';
 import {
 	AuthorsEarningsReportResponse,
 	AuthorsEarningsReportRequest,
 } from '../../../../common/models/subscriptions/AuthorEarningsReport';
-import Link from '../../../../common/components/Link';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
@@ -268,47 +265,12 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	}
 
 	public render() {
-		const marketingVariant =
-			this.props.view === View.Authors
-				? {
-						headline: 'Better compensation for writers. 100% transparency.',
-						subtext: null,
-				  }
-				: marketingVariants[0];
 		return (
 			<div className="leaderboards-screen_wuzsob">
 				{this.state.isScreenLoading ? (
 					<LoadingOverlay position="absolute" />
 				) : (
 					<>
-						{!this.props.user ? (
-							<Panel className="header">
-								<h1>{marketingVariant.headline}</h1>
-								<h3>{marketingVariant.subtext}</h3>
-								<div className="buttons">
-									<DownloadButton
-										analyticsAction="LeaderboardsScreen"
-										deviceType={this.props.deviceType}
-										location={this.props.location}
-										onNavTo={this.props.onNavTo}
-										onCopyAppReferrerTextToClipboard={
-											this.props.onCopyAppReferrerTextToClipboard
-										}
-										onCreateStaticContentUrl={
-											this.props.onCreateStaticContentUrl
-										}
-									/>
-									{/* TODO: might look nicer if a secondary <Button> were used */}
-									<Link
-										href="https://www.youtube.com/watch?v=JwQOsdnywUs"
-										className="learn-more-button"
-										onClick={this.props.onNavTo}
-									>
-										Learn More
-									</Link>
-								</div>
-							</Panel>
-						) : null}
 						<Panel className="main">
 							{!this.props.user ? <h1>Leaderboards</h1> : null}
 							<HeaderSelector

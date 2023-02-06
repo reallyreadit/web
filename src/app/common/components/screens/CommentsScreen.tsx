@@ -29,11 +29,9 @@ import CommentAddendumForm from '../../../../common/models/social/CommentAddendu
 import CommentRevisionForm from '../../../../common/models/social/CommentRevisionForm';
 import InfoBox from '../../../../common/components/InfoBox';
 import Panel from '../BrowserRoot/Panel';
-import { variants as marketingVariants } from '../../marketingTesting';
 import { AggregateRating } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 import { DeviceType } from '../../../../common/DeviceType';
-import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 export function getPathParams(location: RouteLocation) {
@@ -86,12 +84,11 @@ export interface Props {
 export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => {};
 	public render() {
-		const marketingVariant = marketingVariants[0];
 		return (
 			<div className="comments-screen_udh2l6">
 				{this.props.article.isLoading || this.props.comments.isLoading ? (
 					<LoadingOverlay position="absolute" />
-				) : !this.props.article.value || !this.props.comments.value ? (
+				) : !(this.props.article.value && this.props.comments.value) ? (
 					<InfoBox position="absolute" style="normal">
 						{!this.props.article.value ? (
 							<p>Article not found.</p>
@@ -101,19 +98,6 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 					</InfoBox>
 				) : (
 					<>
-						{!this.props.user ? (
-							<MarketingBanner
-								analyticsAction="CommentsScreen"
-								deviceType={this.props.deviceType}
-								marketingVariant={marketingVariant}
-								location={this.props.location}
-								onNavTo={this.props.onNavTo}
-								onCopyAppReferrerTextToClipboard={
-									this.props.onCopyAppReferrerTextToClipboard
-								}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							/>
-						) : null}
 						<Panel className="main">
 							<ArticleDetails
 								article={this.props.article.value}
