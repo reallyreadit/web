@@ -425,7 +425,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 				// from the current context where it is defined.
 				// `window` doesn't exist in the service worker, but this is run in the
 				// content script context of the tab.
-				// rome-ignore lint/complexity/useOptionalChain: <explanation>
+				// rome-ignore lint/complexity/useOptionalChain: see above
 				if (!(window.reallyreadit && window.reallyreadit.alertContentScript)) {
 					window.reallyreadit = Object.assign(window.reallyreadit, {
 						alertContentScript: {

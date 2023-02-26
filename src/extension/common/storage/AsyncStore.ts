@@ -100,6 +100,7 @@ export default abstract class AsyncStore<T> {
 		},
 	};
 	private _isInitialized = false;
+	private _isInitializedPromise: Promise<boolean>;
 	private _key: string;
 	private _storageType: ChromeStorageArea;
 	private _onStorageChanged = (
@@ -141,66 +142,46 @@ export default abstract class AsyncStore<T> {
 			this._fallbackMemoryValue = this._defaultValue;
 		}
 
-		// Asynchronously upgrade to a chrome.storage store
-		// This is an alternative for having to asynchronously initialize
-		// the store by any consumer, but it might lead to some weird race conditions.
-		// See the fallback store read/write warnings above.
-		checkStorage(storageType)
-			.then(async () => {
-				// use storage
-				let storage = promisify(chrome.storage[storageType]);
+		this._isInitializedPromise = new Promise((resolve) => {
+			// Asynchronously upgrade to a chrome.storage store
+			// This is an alternative for having to asynchronously initialize
+			// the store by any consumer, but it might lead to some weird race conditions.
+			// See the fallback store read/write warnings above.
+			//
+			// The safest is to wait on the _isInitializedPromise
+			checkStorage(storageType)
+				.then(async () => {
+					// use storage
+					let storage = promisify(chrome.storage[storageType]);
 
-				// Overwrite internal storage accessors
-				this._storage = {
-					// PROXY EXT TODO: should we parse JSON here?
-					read: async () => (await storage.get(key))[key] as T,
-					write: async (value: T) => await storage.set({ [key]: value }),
-				};
+					// Overwrite internal storage accessors
+					this._storage = {
+						// PROXY EXT TODO: should we parse JSON here?
+						read: async () => (await storage.get(key))[key] as T,
+						write: async (value: T) => await storage.set({ [key]: value }),
+					};
 
-				const currentValue = await this._read();
-				// Reset the value in case it's uninitialized
-				if (currentValue == null) {
-					await this.clear();
-				}
-				this._isInitialized = true;
-			})
-			.catch((e) => {
-				console.warn("Can't load chrome.storage: ", e);
-				this._isInitialized = true;
-			});
+					const currentValue = await this._read();
+					// Reset the value in case it's uninitialized
+					if (currentValue == null) {
+						await this.clear();
+					}
+					this._isInitialized = true;
+					resolve(true);
+				})
+				.catch((e) => {
+					console.warn("Can't load chrome.storage: ", e);
+					this._isInitialized = true;
+					resolve(true);
+				});
+		});
 	}
 
 	/**
-	 * Asynchronously wait for chrome.storage quality checking before initializing it.
-	 * @deprecated
+	 * Asynchronously wait for chrome.storage initialization.
 	 */
-	public async initialized(): Promise<AsyncStore<T>> {
-		const key = this._key;
-		const storageType = this._storageType;
-		// check if storage is available
-		if (await checkStorage(storageType)) {
-			// use storage
-			let storage = promisify(chrome.storage[storageType]);
-
-			this._storage = {
-				// PROXY EXT TODO: should we parse JSON here?
-				read: async () => (await storage.get(key))[key] as T,
-				write: async (value: T) => await storage.set({ [key]: value }),
-			};
-
-			// reset the storage in case it's uninitialized/corrupted
-			// JSON.parse can throw an exception
-			try {
-				if ((await this._read()) == null) {
-					await this.clear();
-				}
-			} catch (ex) {
-				await this.clear();
-			}
-		} else {
-			// leave memory store in place
-		}
-		return this;
+	public async initialized(): Promise<boolean> {
+		return this._isInitializedPromise;
 	}
 
 	protected async _read() {

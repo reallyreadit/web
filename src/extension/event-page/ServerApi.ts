@@ -60,9 +60,6 @@ export default class ServerApi {
 	});
 	private _user = new AsyncObjectStore<UserAccount>('user', null);
 
-	/**
-	 * @deprecated
-	 */
 	public async initializeAsyncStores() {
 		await this._blacklist.initialized();
 		await this._displayPreference.initialized();
