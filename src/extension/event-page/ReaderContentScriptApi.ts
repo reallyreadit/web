@@ -163,10 +163,14 @@ export default class ReaderContentScriptApi {
 						);
 						return true;
 					case 'unregisterPage':
-						// sender.tab.id is undefined in Firefox
+						// sender.tab is undefined in Firefox
 						// tab won't be removed until a messaging error occurs
-						createMessageResponseHandler(
-							this._tabs.remove(sender.tab.id),
+						createMessageResponseHandler<ReaderContentScriptTab | string>(
+							sender?.tab?.id
+								? this._tabs.remove(sender.tab.id)
+								: Promise.resolve(
+										'Tab not removed because Firefox sets sender.tab to undefined'
+								  ),
 							sendResponse
 						);
 						return true;

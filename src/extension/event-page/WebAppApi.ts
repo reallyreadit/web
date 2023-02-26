@@ -70,9 +70,9 @@ export default class WebAppApi {
 						handlers.onReadArticle(message.data);
 						break;
 					case 'unregisterPage':
-						// sender.tab.id is undefined in Firefox
+						// sender.tab is undefined in Firefox
 						// tab won't be removed until a messaging error occurs
-						this.removeTab(sender.tab.id);
+						this.removeTab(sender?.tab?.id);
 						break;
 					case 'userSignedIn':
 						handlers.onUserSignedIn(message.data);
