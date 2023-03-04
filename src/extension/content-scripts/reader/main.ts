@@ -67,21 +67,20 @@ let deviceType: DeviceType = DeviceType.DesktopChrome;
 
 // TODO PROXY EXT: native article, fill these vars
 let displayPreference: DisplayPreference = JSON.parse(
-		queryDisplayPreference
-	) as DisplayPreference,
-	article: UserArticle,
-	page: Page,
-	userPage: UserPage,
-	user: UserAccount,
-	contentRoot: HTMLElement,
-	scrollRoot: HTMLElement;
+	queryDisplayPreference
+) as DisplayPreference;
+let article: UserArticle;
+let page: Page;
+let userPage: UserPage;
+let user: UserAccount;
+let contentRoot: HTMLElement;
+let scrollRoot: HTMLElement;
 
 // globals
-let // contentParseResult: ParseResult,
-	authServiceLinkCompletionHandler: (
-		response: AuthServiceBrowserLinkResponse
-	) => void,
-	hasStyledArticleDocument = false;
+let authServiceLinkCompletionHandler: (
+	response: AuthServiceBrowserLinkResponse
+) => void;
+let hasStyledArticleDocument = false;
 
 /**
  * Renders or re-renders the reader UI embed.
@@ -344,37 +343,37 @@ function onCreateAbsoluteUrl(path: string) {
 }
 
 let embedProps: Pick<
-		EmbedProps,
-		Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user'>
-	> = {
-		// TODO PROXY EXT: can we make this unnecessary
-		// appPlatform: initData.appPlatform,
-		appPlatform: AppPlatform.Windows,
-		comments: null,
-		deviceType,
-		dialogs: [],
-		dialogService,
-		isHeaderHidden: false,
-		onChangeDisplayPreference: onChangeDisplayPreference,
-		onCreateAbsoluteUrl,
-		onDeleteComment: onDeleteComment,
-		onLinkAuthServiceAccount: onLinkAuthServiceAccount,
-		onNavBack: () => {
-			// TODO PROXY EXT: this depends on the reader being loaded
-			// in the same tab as where the article request happened
-			// In case of action button.
-			window.history.go(-1);
-		},
-		onNavTo: handleLink,
-		onPostArticle,
-		onPostComment,
-		onPostCommentAddendum,
-		onPostCommentRevision: onPostCommentRevision,
-		onReportArticleIssue: onReportArticleIssue,
-		onShare: handleShareRequest,
-		onToggleStar: toggleStar,
+	EmbedProps,
+	Exclude<keyof EmbedProps, 'article' | 'displayPreference' | 'user'>
+> = {
+	// TODO PROXY EXT: can we make this unnecessary
+	// appPlatform: initData.appPlatform,
+	appPlatform: AppPlatform.Windows,
+	comments: null,
+	deviceType,
+	dialogs: [],
+	dialogService,
+	isHeaderHidden: false,
+	onChangeDisplayPreference: onChangeDisplayPreference,
+	onCreateAbsoluteUrl,
+	onDeleteComment: onDeleteComment,
+	onLinkAuthServiceAccount: onLinkAuthServiceAccount,
+	onNavBack: () => {
+		// TODO PROXY EXT: this depends on the reader being loaded
+		// in the same tab as where the article request happened
+		// In case of action button.
+		window.history.go(-1);
 	},
-	embedRootElement: HTMLDivElement;
+	onNavTo: handleLink,
+	onPostArticle,
+	onPostComment,
+	onPostCommentAddendum,
+	onPostCommentRevision: onPostCommentRevision,
+	onReportArticleIssue: onReportArticleIssue,
+	onShare: handleShareRequest,
+	onToggleStar: toggleStar,
+};
+let embedRootElement: HTMLDivElement;
 
 /**
  * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
@@ -785,15 +784,11 @@ async function initialize() {
 
 	// TODO EXT NOTE: web needed this, but native doesn't have
 	hasStyledArticleDocument = true;
-
-	// TODO PROXY EXT: this could be done vs JS inlining, like with the native reader.
-	// which will make it quicker. See build files
-
 	const publisherConfig = findPublisherConfig(
 		configs.publishers,
 		documentLocation.hostname
 	);
-	procesLazyImages(publisherConfig && publisherConfig.imageStrategy);
+	procesLazyImages(publisherConfig?.imageStrategy);
 
 	// ArticleLookupResult
 	const result = await eventPageApi.registerPage(
