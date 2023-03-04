@@ -110,7 +110,9 @@ export default (props: {
 		)}
 		onClick={props.onClick}
 	>
-		{props.badge !== false ? <AlertBadge count={props.badge} /> : null}
+		{typeof props.badge === 'number' ? (
+			<AlertBadge count={props.badge} />
+		) : null}
 		<svg className="icon">
 			{props.title ? <title>{props.title}</title> : null}
 			<use xlinkHref={'#icon-' + props.name}></use>
