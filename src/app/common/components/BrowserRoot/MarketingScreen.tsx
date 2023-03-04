@@ -290,9 +290,16 @@ export default class MarketingScreen extends React.Component<
 					<h2 className="heading-regular">Get Readup</h2>
 					<DownloadSection
 						onNavTo={this.props.onNavTo}
+						deviceType={this.props.deviceType}
 						onCopyAppReferrerTextToClipboard={
 							this.props.onCopyAppReferrerTextToClipboard
 						}
+						onOpenNewPlatformNotificationRequestDialog={
+							this.props.onOpenNewPlatformNotificationRequestDialog
+						}
+						location={this.props.location}
+						onBeginOnboarding={this.props.onBeginOnboarding}
+						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 					/>
 				</HomePanel>
 				<HomePanel data-nosnippet className="quote-panel">

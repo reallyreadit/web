@@ -130,8 +130,7 @@ class ReadScreen extends React.PureComponent<Props> {
 							/>
 							<div className="choice__details">
 								<p className="info">
-									Read through the noise
-									<br />{' '}
+									Read{' '}
 									<a
 										href={this.props.article.value.url}
 										onClick={this._navToExternal}

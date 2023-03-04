@@ -24,10 +24,7 @@ type BaseProps = {
 	size?: ButtonSize;
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
 	onCopyAppReferrerTextToClipboard?: (analyticsAction: string) => void;
-};
-
-type DeviceTypeProps = BaseProps & {
-	buttonType: 'platform';
+	onOpenNewPlatformNotificationRequestDialog: () => void;
 	deviceType: DeviceType;
 	onCreateStaticContentUrl: (path: string) => string;
 };
@@ -39,11 +36,7 @@ type ShowInAppProps = BaseProps & {
 	location: RouteLocation;
 };
 
-export type Props = BaseProps | DeviceTypeProps | ShowInAppProps;
-
-function isDeviceTypeProps(props: Props): props is DeviceTypeProps {
-	return typeof (props as DeviceTypeProps).deviceType === 'string';
-}
+export type Props = BaseProps | ShowInAppProps;
 
 function isShowInAppProps(props: Props): props is ShowInAppProps {
 	return typeof (props as ShowInAppProps).showOpenInApp === 'boolean';
@@ -59,17 +52,9 @@ export default class DownloadButton extends React.Component<Props> {
 		this.props.onCopyAppReferrerTextToClipboard(this.props.analyticsAction);
 	};
 
-	private _canRenderSpecificPlatform = () => {
-		return (
-			isDeviceTypeProps(this.props) && this.props.deviceType === DeviceType.Ios
-			// TODO: add Windows button, Linux button, Android button
-		);
-	};
-
 	private _openInApp = () => {
 		if (
 			isShowInAppProps(this.props) &&
-			isDeviceTypeProps(this.props) &&
 			this.props.showOpenInApp
 		) {
 			let targetUrl;
@@ -107,7 +92,6 @@ export default class DownloadButton extends React.Component<Props> {
 		if (
 			isShowInAppProps(this.props) &&
 			this.props.showOpenInApp &&
-			isDeviceTypeProps(this.props) &&
 			this.props.deviceType &&
 			this.props.deviceType !== DeviceType.DesktopSafari &&
 			this.props.deviceType !== DeviceType.Ios &&
@@ -120,7 +104,7 @@ export default class DownloadButton extends React.Component<Props> {
 	private _renderGenericButton = () => {
 		return (
 			<Button
-				text="Download Apps"
+				text="Install Extension"
 				size="large"
 				intent="loud"
 				onClick={() =>
@@ -135,9 +119,7 @@ export default class DownloadButton extends React.Component<Props> {
 	public render() {
 		return (
 			<div className="download-button_twjkoi">
-				{isDeviceTypeProps(this.props) &&
-				this._canRenderSpecificPlatform() &&
-				this.props.buttonType === 'platform' ? (
+				{
 					this.props.deviceType === DeviceType.Ios ? (
 						<a
 							className="ios"
@@ -155,16 +137,24 @@ export default class DownloadButton extends React.Component<Props> {
 								alt="App Store Badge"
 							/>
 						</a>
-					) : (
+					) : this.props.deviceType === DeviceType.Android ? (
+						<>
+							<p>Get notified when the app is out on Android</p>
+							<Button
+							text="Get Notified"
+							size="normal"
+							onClick={this.props.onOpenNewPlatformNotificationRequestDialog}
+						/>
+					</>
+					) :
+					(
 						this._renderGenericButton()
 					)
-				) : (
-					this._renderGenericButton()
-				)}
-				{isShowInAppProps(this.props) &&
-				this.props.showOpenInApp &&
-				isDeviceTypeProps(this.props) &&
-				this.props.deviceType !== DeviceType.Android ? (
+			}
+				{(isShowInAppProps(this.props) &&
+					this.props.showOpenInApp &&
+					(this.props.deviceType === DeviceType.Ios ||
+				this.props.deviceType === DeviceType.DesktopSafari) ? (
 					<Button
 						text="Open in App"
 						size='normal'
@@ -174,7 +164,7 @@ export default class DownloadButton extends React.Component<Props> {
 					/>
 				) : null}
 				{/* only show the link for other platforms if the download button isn't already generic */}
-				{this.props.showOtherPlatforms && this._canRenderSpecificPlatform() ? (
+				{this.props.showOtherPlatforms ? (
 					<div className="platforms">
 						<Link screen={ScreenKey.Download} onClick={this.props.onNavTo}>
 							Other platforms

@@ -222,6 +222,10 @@ class ReadScreen extends React.PureComponent<Props> {
 													onCreateStaticContentUrl={
 														this.props.onCreateStaticContentUrl
 													}
+													onOpenNewPlatformNotificationRequestDialog={
+														this.props
+															.onOpenNewPlatformNotificationRequestDialog
+													}
 												/>
 											) : (
 												// TODO: automatic redirect
@@ -251,9 +255,7 @@ class ReadScreen extends React.PureComponent<Props> {
 									/>
 									<div className="choice__details">
 										<p className="info">
-											Read through the noise
-											<br />{' '}
-											<a href={this.props.article.value.url}>on the web</a>
+											Read <a href={this.props.article.value.url}>on the web</a>
 											<Icon name='arrow-ne' className="outlink" />
 										</p>
 									</div>

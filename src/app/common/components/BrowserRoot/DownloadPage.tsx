@@ -68,9 +68,11 @@ const renderDownloadOption = ({
 				<DownloadButton
 					analyticsAction='download-page'
 					onNavTo={services.onNavTo}
-					buttonType='platform'
 					deviceType={DeviceType.Ios}
 					onCreateStaticContentUrl={services.onCreateStaticContentUrl}
+					onOpenNewPlatformNotificationRequestDialog={
+						services.onOpenNewPlatformNotificationRequestDialog
+					}
 				/>
 			) : (
 				// generic case

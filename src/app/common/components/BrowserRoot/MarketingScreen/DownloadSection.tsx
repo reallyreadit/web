@@ -9,12 +9,19 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
+import { DeviceType } from '../../../../../common/DeviceType';
+import RouteLocation from '../../../../../common/routing/RouteLocation';
 import { NavOptions, NavReference } from '../../Root';
-import DownloadButton from '../DownloadButton';
+import GetStartedButton from '../GetStartedButton';
 
 interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
+	deviceType: DeviceType;
+	location: RouteLocation;
+	onBeginOnboarding: (analyticsAction: string) => void;
+	onCreateStaticContentUrl: (path: string) => string;
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
+	onOpenNewPlatformNotificationRequestDialog: () => void;
 }
 
 export const DownloadSection: React.FunctionComponent<Props> = (
@@ -30,10 +37,16 @@ export const DownloadSection: React.FunctionComponent<Props> = (
 				Android coming soon.
 			</p>
 		</div>
-		<DownloadButton
-			analyticsAction='download-section'
-			onNavTo={props.onNavTo}
+		<GetStartedButton
+			iosPromptType='download'
+			deviceType={props.deviceType}
+			location={props.location}
+			onBeginOnboarding={props.onBeginOnboarding}
 			onCopyAppReferrerTextToClipboard={props.onCopyAppReferrerTextToClipboard}
+			onCreateStaticContentUrl={props.onCreateStaticContentUrl}
+			onOpenNewPlatformNotificationRequestDialog={
+				props.onOpenNewPlatformNotificationRequestDialog
+			}
 		/>
 	</div>
 );
