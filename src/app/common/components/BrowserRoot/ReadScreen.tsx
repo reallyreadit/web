@@ -32,12 +32,13 @@ import DownloadButton from './DownloadButton';
 import Button from '../../../../common/components/Button';
 import InfoBox from '../../../../common/components/InfoBox';
 import ContentBox from '../../../../common/components/ContentBox';
-import classNames = require('classnames');
+import classNames from 'classnames';
 import { calculateEstimatedReadTime } from '../../../../common/calculate';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
 import SemanticVersion from '../../../../common/SemanticVersion';
+import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	article: Fetchable<UserArticle>;
@@ -58,15 +59,9 @@ class ReadScreen extends React.PureComponent<Props> {
 		this.props.onReadArticle(this.props.article.value);
 	};
 	public componentDidMount() {
-		if (
-			this.props.article.value &&
-			this.props.isExtensionInstalled &&
-			// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
-			// or somehow tell people to update?
-			// this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) < 0 &&
-			localStorage.getItem('extensionReminderAcknowledged')
-		) {
-			window.location.href = this.props.article.value.url;
+		// Automatically redirect to the reader if logged in & the extension is installed
+		if (!!this.props.user && !!this.props.isExtensionInstalled) {
+			this._readArticle();
 		}
 	}
 	private renderArticle() {
@@ -206,7 +201,33 @@ class ReadScreen extends React.PureComponent<Props> {
 													<li>100% ad-free</li>
 												</ul>
 											</div>
-											{!(this.props.user && this.props.isExtensionInstalled) ? (
+											{/* If not logged in & on desktop: suggest to Get Started */}
+											{!this.props.user &&
+											!isMobileDevice(this.props.deviceType) ? (
+												<GetStartedButton
+													analyticsAction="home-hero-download"
+													iosPromptType='download'
+													deviceType={this.props.deviceType}
+													location={this.props.location}
+													onBeginOnboarding={this.props.onBeginOnboarding}
+													onCopyAppReferrerTextToClipboard={
+														this.props.onCopyAppReferrerTextToClipboard
+													}
+													onCreateStaticContentUrl={
+														this.props.onCreateStaticContentUrl
+													}
+													onOpenNewPlatformNotificationRequestDialog={
+														this.props
+															.onOpenNewPlatformNotificationRequestDialog
+													}
+												/>
+											) : null}
+											{/* If on desktop & logged in & extension NOT yet installed,
+											    OR, if on mobile
+												route to Download page */}
+											{(!!this.props.user &&
+												!this.props.isExtensionInstalled) ||
+											isMobileDevice(this.props.deviceType) ? (
 												// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
 												// or somehow tell people to update?
 												// || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0
@@ -227,8 +248,12 @@ class ReadScreen extends React.PureComponent<Props> {
 															.onOpenNewPlatformNotificationRequestDialog
 													}
 												/>
-											) : (
-												// TODO: automatic redirect
+											) : null}
+											{/*
+												Suggest to read article, in case the automatic redirect above fails
+											 */}
+											{!!this.props.user &&
+											!!this.props.isExtensionInstalled ? (
 												<Button
 													intent="loud"
 													onClick={this._readArticle}
@@ -236,7 +261,7 @@ class ReadScreen extends React.PureComponent<Props> {
 													align="center"
 													text="Read Article"
 												/>
-											)}
+											) : null}
 										</div>
 									</>
 								</ContentBox>

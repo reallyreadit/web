@@ -53,10 +53,7 @@ export default class DownloadButton extends React.Component<Props> {
 	};
 
 	private _openInApp = () => {
-		if (
-			isShowInAppProps(this.props) &&
-			this.props.showOpenInApp
-		) {
+		if (isShowInAppProps(this.props) && this.props.showOpenInApp) {
 			let targetUrl;
 			if (this.props.deviceType === DeviceType.Ios) {
 				targetUrl = createUrl(
@@ -119,42 +116,39 @@ export default class DownloadButton extends React.Component<Props> {
 	public render() {
 		return (
 			<div className="download-button_twjkoi">
-				{
-					this.props.deviceType === DeviceType.Ios ? (
-						<a
-							className="ios"
-							href={getStoreUrl(DeviceType.Ios)}
-							onClick={
-								this.props.onCopyAppReferrerTextToClipboard
-									? this._copyAppReferrerTextToClipboard
-									: null
-							}
-						>
-							<img
-								src={this.props.onCreateStaticContentUrl(
-									'/app/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg'
-								)}
-								alt="App Store Badge"
-							/>
-						</a>
-					) : this.props.deviceType === DeviceType.Android ? (
-						<>
-							<p>Get notified when the app is out on Android</p>
-							<Button
+				{this.props.deviceType === DeviceType.Ios ? (
+					<a
+						className="ios"
+						href={getStoreUrl(DeviceType.Ios)}
+						onClick={
+							this.props.onCopyAppReferrerTextToClipboard
+								? this._copyAppReferrerTextToClipboard
+								: null
+						}
+					>
+						<img
+							src={this.props.onCreateStaticContentUrl(
+								'/app/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg'
+							)}
+							alt="App Store Badge"
+						/>
+					</a>
+				) : this.props.deviceType === DeviceType.Android ? (
+					<>
+						<p>Get notified when the app is out on Android</p>
+						<Button
 							text="Get Notified"
 							size="normal"
 							onClick={this.props.onOpenNewPlatformNotificationRequestDialog}
 						/>
 					</>
-					) :
-					(
-						this._renderGenericButton()
-					)
-			}
-				{(isShowInAppProps(this.props) &&
-					this.props.showOpenInApp &&
-					(this.props.deviceType === DeviceType.Ios ||
-				this.props.deviceType === DeviceType.DesktopSafari) ? (
+				) : (
+					this._renderGenericButton()
+				)}
+				{isShowInAppProps(this.props) &&
+				this.props.showOpenInApp &&
+				(this.props.deviceType === DeviceType.Ios ||
+					this.props.deviceType === DeviceType.DesktopSafari) ? (
 					<Button
 						text="Open in App"
 						size='normal'
